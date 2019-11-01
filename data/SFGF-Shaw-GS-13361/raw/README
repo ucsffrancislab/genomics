@@ -1,0 +1,76 @@
+
+
+
+
+#	nohup wget --no-clobber --recursive http://sfgf-download-2.stanford.edu/~sfgf/191008_J00118_0508_AHCHWFBBXY-SFGF-Shaw-GS-13361/ &
+
+
+for f in $PWD/191008_J00118_0508_AHCHWFBBXY-L00*tar ; do echo $f ; echo "tar -C $PWD -xvf $f" | qsub ; done
+
+
+
+for f in 191008_J00118_0508_AHCHWFBBXY-L00*/71*z ; do l=$( basename $f ); l=${l#71-}; l=${l/-*_R/_R}; l=${l/_001./.}; echo $f $l ; done
+
+no leading zeroes
+easier to ...
+
+for i in $( seq 1 77 ); do l=$( printf "%02d" $i ); echo $i $l ; echo ${l}_R1.fastq.gz; echo 191008_J00118_0508_AHCHWFBBXY-L00*/71-${i}-*R1*z; echo ${l}_R2.fastq.gz; echo 191008_J00118_0508_AHCHWFBBXY-L00*/71-${i}-*R2*z; done
+
+for i in $( seq 1 77 ); do l=$( printf "%02d" $i ); echo $i $l ; ln -s 191008_J00118_0508_AHCHWFBBXY-L00*/71-${i}-*R1*z ${l}_R1.fastq.gz; ln -s 191008_J00118_0508_AHCHWFBBXY-L00*/71-${i}-*R2*z ${l}_R2.fastq.gz; done
+
+
+
+#	Look at adapters. All a bit different as include id tags. Use provided.
+for i in $( seq -w 1 77 ) ; do echo "/home/gwendt/.local/BBMap/bbmerge.sh in1=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/${i}_R1.fastq.gz in2=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/${i}_R2.fastq.gz outa=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/${i}.adapters.fa" | qsub -l nodes=1:ppn=8 -l vmem=8gb ; done
+
+#	Trim adapters
+BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361
+for i in $( seq -w 76 77 ) ; do echo "/home/gwendt/.local/BBMap/bbduk.sh -Xmx4g in1=${BASE}/${i}_R1.fastq.gz in2=${BASE}/${i}_R2.fastq.gz out1=${BASE}/trimmed/${i}_R1.fastq.gz out2=${BASE}/trimmed/${i}_R2.fastq.gz ref=${BASE}/adapters.fa ktrim=r k=23 mink=11 hdist=1 tbo ordered=t" | qsub -l vmem=16gb -o ${BASE}/trimmed/${i}.bbduk.out -e ${BASE}/trimmed/${i}.bbduk.err ; done
+
+
+
+
+
+#	Merge laned data
+BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed
+for i in $( seq -w 1 77 ) ; do echo "zcat ${BASE}/${i}_R1.fastq.gz ${BASE}/${i}_R2.fastq.gz | sed -E 's/ ([[:digit:]]):.*$/\/\1/' | gzip > ${BASE}/${i}.fastq.gz" | qsub ; done
+
+
+
+
+BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed
+REF=/data/shared/francislab/refs/
+for i in $( seq -w 1 77 ) ; do
+echo "${BASE}/${i}_R1.fastq.gz ${BASE}/${i}_R2.fastq.gz > ${BASE}/${i}.fastq.gz"
+
+
+kallisto quant -b 40 --threads 40 --index /raid/refs/kallisto/${hhv} --output-dir ${basename}.${hhv}.kallisto40 ${f1} ${f2} 2> ${basename}.${hhv}.kallisto40.log
+
+
+kallisto to human.rna
+kallisto to refseqgene
+kallisto to GRCh38.cdna
+kallisto to GRCh38.ncrna
+kallisto to GRCh38.rna
+
+subread hg38
+subread hg38.masked
+
+bowtie2 hg38
+bowtie2 hg38.masked
+
+bowtie2 to human.rna
+bowtie2 to refseqgene
+bowtie2 to GRCh38.cdna
+bowtie2 to GRCh38.ncrna
+bowtie2 to GRCh38.rna
+
+
+HAWK
+
+
+done
+
+
+
+
