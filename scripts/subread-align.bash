@@ -1,17 +1,10 @@
 #!/usr/bin/env bash
 
-#	This script will be called
-
-#	qsub .... subread-align.bash -F ...
-
-#	qsub -l nodes=1:ppn=4 -l vmem=8gb subread-align.bash -F -t 0 -T 4 -i REF -r R1 -R R2 -o OUTPUT
-
-
-
-
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
+
+set -x
 
 ARGS=$*
 
