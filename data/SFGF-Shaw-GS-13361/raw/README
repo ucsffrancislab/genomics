@@ -74,3 +74,12 @@ done
 
 
 
+
+
+Awk Sum Squares Standard Deviation (stddev)
+
+zcat /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/*fastq.gz | paste - - - - | cut -f 2 | awk '{ l=length; sum+=l; sumsq+=(l)^2; print "Avg:",sum/NR,"\tStddev:\t"sqrt((sumsq-sum^2/NR)/NR)}' > trimmed.avg_length.ssstdev.txt &
+
+
+
+
