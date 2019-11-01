@@ -1,0 +1,33 @@
+
+
+
+https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz
+https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.masked.gz
+
+
+
+wget ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz
+wget ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz
+wget ftp://mirbase.org/pub/mirbase/CURRENT/genomes/hsa.gff3
+
+
+zcat hairpin.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/miR/mir/g' > human_hairpin.ACTG.fa
+
+zcat mature.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/miR/mir/g' > human_mature.ACTG.fa
+
+sed 's/ /-hairpin /' human_hairpin.ACTG.fa > human_mirna.ACTG.fa
+sed 's/ /-mature /'  human_mature.ACTG.fa >> human_mirna.ACTG.fa
+
+
+
+
+wget ftp://ftp.ensembl.org/pub/release-93/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+wget ftp://ftp.ensembl.org/pub/release-93/fasta/homo_sapiens/ncrna/Homo_sapiens.GRCh38.ncrna.fa.gz
+zcat Homo_sapiens.GRCh38.cdna.all.fa.gz Homo_sapiens.GRCh38.ncrna.fa.gz | gzip > Homo_sapiens.GRCh38.rna.fa.gz
+
+
+
+
+
+
+

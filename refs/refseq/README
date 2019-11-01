@@ -1,0 +1,12 @@
+
+https://ftp.ncbi.nih.gov/refseq/H_sapiens/
+https://ftp.ncbi.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/
+https://ftp.ncbi.nih.gov/refseq/H_sapiens/mRNA_Prot/
+https://ftp.ncbi.nih.gov/refseq/H_sapiens/RefSeqGene/
+rsync -avz --progress --include=README --include="*fna.gz" --include="*gtf.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/mRNA_Prot/ mRNA_Prot/
+rsync -avz --progress --include=README.txt --include="*fna.gz" --include="*gtf.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/RefSeqGene/ RefSeqGene/
+ls -1 $PWD/refseq/mRNA_Prot/human.*.rna.fna.gz | paste -sd ,
+ls -1 $PWD/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz | paste -sd ,
+
+
+

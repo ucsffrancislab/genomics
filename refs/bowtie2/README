@@ -1,0 +1,11 @@
+
+
+echo "bowtie2-build --threads 8 /data/shared/francislab/refs/fasta/hg38.fa.gz /data/shared/francislab/refs/bowtie2/hg38.alts" | qsub -l nodes=1:ppn=8 -l vmem=8gb
+
+echo "bowtie2-build --threads 8 /data/shared/francislab/refs/fasta/hg38.fa.masked.gz /data/shared/francislab/refs/bowtie2/hg38.alts.masked" | qsub -l nodes=1:ppn=8 -l vmem=8gb
+
+echo "bowtie2-build --threads 8 /data/shared/francislab/refs/refseq/mRNA_Prot/human.1.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.2.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.3.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.4.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.5.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.6.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.7.rna.fna.gz,/data/shared/francislab/refs/refseq/mRNA_Prot/human.8.rna.fna.gz /data/shared/francislab/refs/bowtie2/human.rna" | qsub -l nodes=1:ppn=8 -l vmem=8gb
+
+echo "bowtie2-build --threads 8 /data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.1.genomic.fna.gz,/data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.2.genomic.fna.gz,/data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.3.genomic.fna.gz,/data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.4.genomic.fna.gz,/data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.5.genomic.fna.gz /data/shared/francislab/refs/bowtie2/refseqgene.genomic" | qsub -l nodes=1:ppn=8 -l vmem=8gb
+
+
