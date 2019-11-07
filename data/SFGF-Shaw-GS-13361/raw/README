@@ -94,21 +94,24 @@ Assign job names to jobs.
 #	Trim adapters
 BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361
 for i in $( seq -w 1 77 ) ; do
-OUT=${BASE}/trimmed_unpaired/${i}
-echo "/home/gwendt/.local/BBMap/bbduk.sh -Xmx4g in1=${BASE}/${i}_R1.fastq.gz in2=${BASE}/${i}_R2.fastq.gz out1=${OUT}_R1.fastq.gz out2=${OUT}_R2.fastq.gz outs=${OUT}_S.fastq.gz ref=${BASE}/adapters.fa ktrim=r k=23 mink=11 hdist=1 tbo ordered=t bhist=${OUT}.bhist.txt qhist=${OUT}.qhist.txt gchist=${OUT}.gchist.txt aqhist=${OUT}.aqhist.txt lhist=${OUT}.lhist.txt gcbins=auto maq=10" | qsub -l vmem=32gb -o ${OUT}.bbduk.out -e ${OUT}.bbduk.err -N bbduk.${i}
+qsub -l vmem=32gb -o ${OUT}.bbduk.out -e ${OUT}.bbduk.err -N bbduk.${i} ${BASE}/trimmed_reads.bash -F ${i}
 done
+
 
 #	Merge all / unpair data
+BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361
 for i in $( seq -w 1 77 ) ; do
-qsub -N ${i}.merge_trimmed /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/merge_trimmed.bash -F ${i}
+qsub -N ${i}.merge_trimmed ${BASE}/merge_trimmed.bash -F ${i}
 done
 
 
+New technique of self-calling scripts
 
+./trim_reads.bash
 
+./merge_trimmed_bash
 
-
-qsub /home/gwendt/github/ucsffrancislab/genomics/data/SFGF-Shaw-GS-13361/raw/read_length_analysis.bash
+./read_length_analysis.bash
 
 
 
