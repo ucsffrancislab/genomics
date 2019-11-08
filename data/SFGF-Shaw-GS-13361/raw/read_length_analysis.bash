@@ -3,8 +3,8 @@
 set -x
 
 if [ $# -eq 0 ] ; then
-	script=$( readline -f $0 )
-	qsub $script
+	script=$( readlink -f $0 )
+	qsub $script -F ignored_option
 else
 	BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired
 	zcat ${BASE}/*fastq.gz | paste - - - - | cut -f 2 | \

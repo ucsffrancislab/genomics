@@ -6,6 +6,7 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 
 
+KALLISTO=/data/shared/francislab/refs/kallisto
 SUBREAD=/data/shared/francislab/refs/subread
 BOWTIE2=/data/shared/francislab/refs/bowtie2
 threads=8
@@ -27,9 +28,13 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 	echo $base
 	jobbase=$( basename ${base} )
 
-	#	subread and bowtie2 references
-	for ref in h38au h38am h_rna rsg ; do
+	#	subread references
+	for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
 
+	#for ref_path in ${SUBREAD}/*.files ; do
+	#	ref=$( basename $ref_path .files )
+
+		sref=${SUBREAD}/${ref}
 		outbase=${base}.${ref}
 
 		#	subread
@@ -37,18 +42,20 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 		#                      0: RNA-seq data
 		#                      1: genomic DNA-seq data.
 
-		#	Run with -t 0 and -t 1
 		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${outbase}.subread.rna.${date}.out.txt -e ${outbase}.subread.rna.${date}.err.txt \
 			~/.local/bin/subread-align.bash \
-			-F "-t 0 -T ${threads} -i ${SUBREAD}/${ref} -r ${r1} -o ${outbase}.subread.rna.bam"
+			-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.rna.bam"
 
 		qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${outbase}.subread.dna.${date}.out.txt -e ${outbase}.subread.dna.${date}.err.txt \
 			~/.local/bin/subread-align.bash \
-			-F "-t 1 -T ${threads} -i ${SUBREAD}/${ref} -r ${r1} -o ${outbase}.subread.dna.bam"
+			-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.dna.bam"
 
+	done
 
+#	for ref in hg38am hg38au  ; do
+#
 #		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 #			-o ${outbase}.bowtie2.e2e.${date}.out.txt -e ${outbase}.bowtie2.e2e.${date}.err.txt \
 #			~/.local/bin/bowtie2.bash \
@@ -58,25 +65,40 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 #			-o ${outbase}.bowtie2.loc.${date}.out.txt -e ${outbase}.bowtie2.loc.${date}.err.txt \
 #			~/.local/bin/bowtie2.bash \
 #			-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} -1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.loc.bam"
+#
+#	done
 
-	done
 
 
-	for kref in /data/shared/francislab/refs/kallisto/*idx ; do
 
-		basekref=$( basename $kref .idx )
+#	for kref in ${KALLISTO}/*idx ; do
+#
+#		basekref=$( basename $kref .idx )
+#
+#		outbase=${base}.${basekref}.kallisto.single
+#		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#			~/.local/bin/kallisto.bash \
+#			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
+#				--single-overhang --single -l 144.9 -s 20.6282 --index ${kref} \
+#				--output-dir ${outbase} ${r1}"
+#
+#		#	Avg: 144.9 	Stddev:	20.6282
+#
+#	done
 
-		outbase=${base}.${basekref}.kallisto.single
-		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-			~/.local/bin/kallisto.bash \
-			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
-				--single-overhang --single -l 144.9 -s 20.6282 --index ${kref} \
-				--output-dir ${outbase} ${r1}"
 
-		#	Avg: 144.9 	Stddev:	20.6282
 
-	done
+
+
+
+
+
+
+
+
+
+
 
 
 #	#	ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz
