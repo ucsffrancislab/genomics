@@ -11,13 +11,16 @@ ARGS=$*
 
 #output=qsub.subread-align.out
 
+
+SELECT_ARGS=""
+
 #	Search for the output file
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-o)
 			shift; output=$1; shift;;
 		*)
-			shift;;
+			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 
@@ -30,7 +33,7 @@ else
 	#	http://bioinf.wehi.edu.au/subread/
 	#	-t (type 0 for rna, 1 for dna)
 	#	-a /raid/refs/mirbase-hsa.gff3
-	subread-align $ARGS
+	subread-align $SELECT_ARGS | samtools view -F 4 -o ${output} -
 	chmod a-w $f
 fi
 
