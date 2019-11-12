@@ -10,7 +10,6 @@ KALLISTO=/data/shared/francislab/refs/kallisto
 SUBREAD=/data/shared/francislab/refs/subread
 BOWTIE2=/data/shared/francislab/refs/bowtie2
 threads=8
-vmem=16
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -29,7 +28,8 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 	jobbase=$( basename ${base} )
 
 	#	subread references
-	for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
+	#for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
+	for ref in h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
 
 	#for ref_path in ${SUBREAD}/*.files ; do
 	#	ref=$( basename $ref_path .files )
@@ -41,6 +41,8 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 		#  -t <int>          Type of input sequencing data. Its values include
 		#                      0: RNA-seq data
 		#                      1: genomic DNA-seq data.
+
+		vmem=16
 
 		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${outbase}.subread.rna.${date}.out.txt -e ${outbase}.subread.rna.${date}.err.txt \
@@ -71,25 +73,35 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 
 
 
-#	for kref in ${KALLISTO}/*idx ; do
-#
-#		basekref=$( basename $kref .idx )
-#
-#		outbase=${base}.${basekref}.kallisto.single
-#		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#			~/.local/bin/kallisto.bash \
-#			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
-#				--single-overhang --single -l 144.9 -s 20.6282 --index ${kref} \
-#				--output-dir ${outbase} ${r1}"
-#
-#		#	Avg: 144.9 	Stddev:	20.6282
-#
-#	done
+	for kref in ${KALLISTO}/*idx ; do
+
+		basekref=$( basename $kref .idx )
+
+		case $basekref in
+			rsg)
+				vmem=64;;
+				#vmem=32;;
+			mi_*|mt_*|hp_*)
+				vmem=8;;
+			*)
+				vmem=16;;
+		esac
+
+		outbase=${base}.${basekref}.kallisto.single
+		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+			~/.local/bin/kallisto.bash \
+			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
+				--single-overhang --single -l 144.924 -s 20.6833 --index ${kref} \
+				--output-dir ${outbase} ${r1}"
+
+		#	Avg: 144.924 	Stddev:	20.6833
+
+	done
 
 
 
-
+#	WILL need to re-set vmem
 
 
 
