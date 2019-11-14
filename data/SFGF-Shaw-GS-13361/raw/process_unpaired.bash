@@ -73,6 +73,9 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 
 
 
+
+
+
 	for kref in ${KALLISTO}/*idx ; do
 
 		basekref=$( basename $kref .idx )
@@ -80,7 +83,7 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 		case $basekref in
 			rsg)
 				vmem=64;;
-				#vmem=32;;
+				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
 			mi_*|mt_*|hp_*)
 				vmem=8;;
 			*)
