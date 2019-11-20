@@ -26,8 +26,7 @@ wget ftp://ftp.ensembl.org/pub/release-93/fasta/homo_sapiens/ncrna/Homo_sapiens.
 zcat Homo_sapiens.GRCh38.cdna.all.fa.gz Homo_sapiens.GRCh38.ncrna.fa.gz | gzip > Homo_sapiens.GRCh38.rna.fa.gz
 
 
-
-
+wget ftp://ftp.ccb.jhu.edu/pub/alekseyz/na12878/na12878_MaSuRCA_3.2.8_nanopore_wgs_consortium_37x_GIAB_100x.scaffolds.fa
 
 
 

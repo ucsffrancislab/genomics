@@ -9,6 +9,10 @@ set -o pipefail
 KALLISTO=/data/shared/francislab/refs/kallisto
 SUBREAD=/data/shared/francislab/refs/subread
 BOWTIE2=/data/shared/francislab/refs/bowtie2
+
+#	do exported variables get passed to submitted jobs?
+export BOWTIE2_INDEXES=/data/shared/francislab/refs/bowtie2
+export BLASTDB=/data/shared/francislab/refs/blastn
 threads=8
 
 date=$( date "+%Y%m%d%H%M%S" )
@@ -19,7 +23,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
+for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/01*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}
@@ -27,84 +31,107 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 	echo $base
 	jobbase=$( basename ${base} )
 
-	#	subread references
-	#for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
-	for ref in h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
-
-	#for ref_path in ${SUBREAD}/*.files ; do
-	#	ref=$( basename $ref_path .files )
-
-		sref=${SUBREAD}/${ref}
-		outbase=${base}.${ref}
-
-		#	subread
-		#  -t <int>          Type of input sequencing data. Its values include
-		#                      0: RNA-seq data
-		#                      1: genomic DNA-seq data.
-
-		vmem=16
-
-		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${outbase}.subread.rna.${date}.out.txt -e ${outbase}.subread.rna.${date}.err.txt \
-			~/.local/bin/subread-align.bash \
-			-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.rna.bam"
-
-		qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${outbase}.subread.dna.${date}.out.txt -e ${outbase}.subread.dna.${date}.err.txt \
-			~/.local/bin/subread-align.bash \
-			-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.dna.bam"
-
-	done
-
-#	for ref in hg38am hg38au  ; do
 #
-#		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.bowtie2.e2e.${date}.out.txt -e ${outbase}.bowtie2.e2e.${date}.err.txt \
-#			~/.local/bin/bowtie2.bash \
-#			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/${ref} -1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.e2e.bam"
+#	WAITING UNTIL HAVE THE SPACE
 #
-#		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.bowtie2.loc.${date}.out.txt -e ${outbase}.bowtie2.loc.${date}.err.txt \
-#			~/.local/bin/bowtie2.bash \
-#			-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} -1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.loc.bam"
+#	#	subread references
+#	#for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
+#	for ref in h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
+#
+#	#for ref_path in ${SUBREAD}/*.files ; do
+#	#	ref=$( basename $ref_path .files )
+#
+#		sref=${SUBREAD}/${ref}
+#		outbase=${base}.${ref}
+#
+#		#	subread
+#		#  -t <int>          Type of input sequencing data. Its values include
+#		#                      0: RNA-seq data
+#		#                      1: genomic DNA-seq data.
+#
+#		vmem=16
+#
+#		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			-o ${outbase}.subread.rna.${date}.out.txt -e ${outbase}.subread.rna.${date}.err.txt \
+#			~/.local/bin/subread-align.bash \
+#			-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.rna.bam"
+#
+#		qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			-o ${outbase}.subread.dna.${date}.out.txt -e ${outbase}.subread.dna.${date}.err.txt \
+#			~/.local/bin/subread-align.bash \
+#			-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.dna.bam"
 #
 #	done
 
 
+	#for ref in hg38am hg38au  ; do
+	for ref in h38au  ; do
+
+		outbase=${base}.${ref}
+		#	bowtie2 really only uses a bit more memory than the reference.
+		#	4gb would probably be enough for hg38. Nope. Needs more than 4.
+		#	Ran well with 8gb.
+		vmem=8	
+
+		qoutbase="${outbase}.bowtie2.e2e"
+
+		bowtie2id=$( qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+			~/.local/bin/bowtie2.bash \
+			-F "--xeq --threads ${threads} --very-sensitive -x ${ref} \
+					-U ${r1} -o ${qoutbase}.bam" )
+
+		infile="${qoutbase}.bam"
+		qoutbase="${outbase}.unmapped"
+
+		unmappedid=$( qsub -W depend=afterok:${bowtie2id} -N ${jobbase}.${ref}.btun -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+			~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta ${infile}"
+
+		infile=${qoutbase}.fasta
+		qoutbase="${outbase}.blastn.nt.txt.gz"
+
+		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db nt -num_threads ${threads}"
 
 
-
-
-
-	for kref in ${KALLISTO}/*idx ; do
-
-		basekref=$( basename $kref .idx )
-
-		case $basekref in
-			rsg)
-				vmem=64;;
-				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
-			mi_*|mt_*|hp_*)
-				vmem=8;;
-			*)
-				vmem=16;;
-		esac
-
-		outbase=${base}.${basekref}.kallisto.single
-		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-			~/.local/bin/kallisto.bash \
-			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
-				--single-overhang --single -l 144.924 -s 20.6833 --index ${kref} \
-				--output-dir ${outbase} ${r1}"
-
-		#	Avg: 144.924 	Stddev:	20.6833
+#		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			-o ${outbase}.bowtie2.loc.${date}.out.txt -e ${outbase}.bowtie2.loc.${date}.err.txt \
+#			~/.local/bin/bowtie2.bash \
+#			-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} -1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.loc.bam"
 
 	done
 
+#
+#	WAITING UNTIL HAVE THE SPACE
+#
+#	for kref in ${KALLISTO}/*idx ; do
+#
+#		basekref=$( basename $kref .idx )
+#
+#		case $basekref in
+#			rsg)
+#				vmem=64;;
+#				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
+#			mi_*|mt_*|hp_*)
+#				vmem=8;;
+#			*)
+#				vmem=16;;
+#		esac
+#
+#		outbase=${base}.${basekref}.kallisto.single
+#		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#			~/.local/bin/kallisto.bash \
+#			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
+#				--single-overhang --single -l 144.924 -s 20.6833 --index ${kref} \
+#				--output-dir ${outbase} ${r1}"
+#
+#		#	Avg: 144.924 	Stddev:	20.6833
+#
+#	done
 
-
-#	WILL need to re-set vmem
 
 
 
