@@ -9,10 +9,11 @@ set -o pipefail
 KALLISTO=/data/shared/francislab/refs/kallisto
 SUBREAD=/data/shared/francislab/refs/subread
 BOWTIE2=/data/shared/francislab/refs/bowtie2
+BLASTDB=/data/shared/francislab/refs/blastn
 
-#	do exported variables get passed to submitted jobs?
-export BOWTIE2_INDEXES=/data/shared/francislab/refs/bowtie2
-export BLASTDB=/data/shared/francislab/refs/blastn
+#	do exported variables get passed to submitted jobs? No
+#export BOWTIE2_INDEXES=/data/shared/francislab/refs/bowtie2
+#export BLASTDB=/data/shared/francislab/refs/blastn
 threads=8
 
 date=$( date "+%Y%m%d%H%M%S" )
@@ -78,22 +79,25 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 		bowtie2id=$( qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
 			~/.local/bin/bowtie2.bash \
-			-F "--xeq --threads ${threads} --very-sensitive -x ${ref} \
+			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/${ref} \
 					-U ${r1} -o ${qoutbase}.bam" )
+		echo "${bowtie2id}"
 
 		infile="${qoutbase}.bam"
-		qoutbase="${outbase}.unmapped"
+		qoutbase="${qoutbase}.unmapped"
 
 		unmappedid=$( qsub -W depend=afterok:${bowtie2id} -N ${jobbase}.${ref}.btun -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta ${infile}"
+			~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta ${infile}" )
+		echo "${unmappedid}"
 
 		infile=${qoutbase}.fasta
-		qoutbase="${outbase}.blastn.nt.txt.gz"
+		qoutbase="${qoutbase}.blastn.nt"	#.txt.gz"
 
-		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		#	blastn nt REQUIRES more than 48gb to run. Successfully run with 64gb.
+		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=64gb \
 			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db nt -num_threads ${threads}"
+			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
 
 
 #		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
