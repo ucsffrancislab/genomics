@@ -94,10 +94,23 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 		infile=${qoutbase}.fasta
 		qoutbase="${qoutbase}.blastn.nt"	#.txt.gz"
 
-		#	blastn nt REQUIRES more than 48gb to run. Successfully run with 64gb.
-		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=64gb \
-			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
+		#	blastn needs fasta NOT fastq or fasta.gz
+
+#	01...fasta has about 2.7 million reads
+#	after about 4 hours, only 27,000 had been processed and it was 5GB.
+#	it will take about 4,000 hours to process this whole file and it will be about 20TB!
+#	TMI
+#	Need to filter and speed up and use less memory
+#	add evalue, num_hits or num_descriptions or ...
+#	split file into 100 read files
+#
+#		#	blastn nt NEEDED about 100GB for 01
+#		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
+#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
+
+
+
 
 
 #		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
