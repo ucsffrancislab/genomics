@@ -75,7 +75,7 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 		vmem=8	
 
 		qoutbase="${outbase}.bowtie2.e2e"
-
+#	dark
 		bowtie2id=$( qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
 			~/.local/bin/bowtie2.bash \
@@ -85,30 +85,30 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 
 		infile="${qoutbase}.bam"
 		qoutbase="${qoutbase}.unmapped"
-
+#	dark
 		unmappedid=$( qsub -W depend=afterok:${bowtie2id} -N ${jobbase}.${ref}.btun -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta ${infile}" )
+			~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${infile}" )
 		echo "${unmappedid}"
 
-		infile=${qoutbase}.fasta
+		#infile=${qoutbase}.fasta
+		infile=${qoutbase}.fasta.gz
 		qoutbase="${qoutbase}.blastn.nt"	#.txt.gz"
 
 		#	blastn needs fasta NOT fastq or fasta.gz
 
 #	01...fasta has about 2.7 million reads
 #	after about 4 hours, only 27,000 had been processed and it was 5GB.
-#	it will take about 4,000 hours to process this whole file and it will be about 20TB!
+#	it will take about 400 hours to process this whole file and it will be about 2TB!
 #	TMI
 #	Need to filter and speed up and use less memory
 #	add evalue, num_hits or num_descriptions or ...
 #	split file into 100 read files
-#
-#		#	blastn nt NEEDED about 100GB for 01
-#		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
-#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
 
+		#	blastn nt NEEDED about 100GB for 01
+		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
+			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
 
 
 

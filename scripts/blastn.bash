@@ -8,24 +8,51 @@ set -x
 
 ARGS=$*
 
-#	Search for the output file
+SELECT_ARGS=""
+#db=''
+#querybase=''
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-db)
-			shift; db=$( basename $1 ); shift;;
+			shift; db=$( basename $1 ); SELECT_ARGS="${SELECT_ARGS} -db $1"; shift;;
 		-query)
-			shift; query=$1; shift;;
-		*)
+			shift
+			query=$1
+			#	.fasta.gz or .fasta
+			if [ ${query: -3} == '.gz' ]; then
+				querybase=${query%.fasta.gz}
+				query="<(zcat ${query})"
+			else
+				querybase=${query%.fasta}
+			fi
+			SELECT_ARGS="${SELECT_ARGS} -query ${query}";
 			shift;;
+		*)
+			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 
-f=${query/.fasta/.blastn.${db}.txt.gz}
+
+##	Search for the output file
+#while [ $# -gt 0 ] ; do
+#	case $1 in
+#		-db)
+#			shift; db=$( basename $1 ); shift;;
+#		-query)
+#			shift; query=$1; shift;;
+#		*)
+#			shift;;
+#	esac
+#done
+
+#f=${query/.fasta/.blastn.${db}.txt.gz}
+f=${querybase}.blastn.${db}.txt.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	blastn $ARGS | gzip --best > ${f}
+	#	need to eval in case doing the <(zcat ...) thing
+	eval "blastn ${SELECT_ARGS} | gzip --best > ${f}"
 	chmod a-w $f
 fi
 

@@ -35,7 +35,14 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	samtools $SELECT_ARGS > ${f}
+	#	samtools $SELECT_ARGS > ${f}
+	#	eval "samtools $SELECT_ARGS > ${f}"
+	cmd="samtools $SELECT_ARGS"
+	if [ ${output: -3} == '.gz' ] ; then
+		cmd="${cmd} | gzip --best"
+	fi
+	cmd="${cmd} > ${f}"
+	eval "${cmd}"
 	chmod a-w $f
 fi
 
