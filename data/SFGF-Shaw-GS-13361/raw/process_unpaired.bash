@@ -24,7 +24,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/01*.fastq.gz ; do
+for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}
@@ -93,7 +93,12 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 
 		#infile=${qoutbase}.fasta
 		infile=${qoutbase}.fasta.gz
-		qoutbase="${qoutbase}.blastn.nt"	#.txt.gz"
+
+		qoutbase="${qoutbase}.blastn"	#.nt.txt.gz"
+
+
+
+#		qoutbase="${qoutbase}.blastn.nt"	#.txt.gz"
 
 		#	blastn needs fasta NOT fastq or fasta.gz
 
@@ -104,11 +109,43 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 #	Need to filter and speed up and use less memory
 #	add evalue, num_hits or num_descriptions or ...
 #	split file into 100 read files
+#
+#		#	blastn nt NEEDED about 100GB for 01
+#		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
+#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
+#
 
-		#	blastn nt NEEDED about 100GB for 01
-		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
-			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
+		for vref in viral viral.raw viral.masked ; do
+			abbrev=$( echo ${vref} | awk '{split($0,a,".");for(s in a){print substr(a[s],1,1)}}' | paste -sd '' )
+
+			vblastnid=$( qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btun${abbrev} \
+				-l nodes=1:ppn=${threads} -l vmem=8gb \
+				-o ${qoutbase}.${vref}.${date}.out.txt -e ${qoutbase}.${vref}.${date}.err.txt \
+				~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
+					-db ${BLASTDB}/${vref} -num_threads ${threads}" )
+
+			qsub -W depend=afterok:${vblastnid} -N ${jobbase}.${ref}.btun${abbrev}s \
+				-l nodes=1:ppn=${threads} -l vmem=8gb \
+				-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
+				~/.local/bin/summarize_blastn_output.bash \
+					-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
+
+		done
+
+#		vblastnid=$( qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunv \
+#			-l nodes=1:ppn=${threads} -l vmem=8gb \
+#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
+#				-db ${BLASTDB}/viral -num_threads ${threads}" )
+#
+#		vrblastnid=$( qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunvr \
+#			-l nodes=1:ppn=${threads} -l vmem=8gb \
+#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
+#				-db ${BLASTDB}/viral.raw -num_threads ${threads}" )
+
+
 
 
 
