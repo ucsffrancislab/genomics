@@ -4,3 +4,9 @@
 update_blastdb.pl --decompress nt
 
 
+
+zcat ../refseq/viral/viral.* | makeblastdb -dbtype nucl -out viral -title viral -parse_seqids
+
+Also, copied in a version from my mac and its masked couterpart.
+
+
