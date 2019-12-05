@@ -29,4 +29,25 @@ zcat Homo_sapiens.GRCh38.cdna.all.fa.gz Homo_sapiens.GRCh38.ncrna.fa.gz | gzip >
 wget ftp://ftp.ccb.jhu.edu/pub/alekseyz/na12878/na12878_MaSuRCA_3.2.8_nanopore_wgs_consortium_37x_GIAB_100x.scaffolds.fa
 
 
+These are also a bit different in the naming conventions of additional alternates and patches
+>KI270721.1 KI270721.1 ( in GRCh38.p12.genome.fa.gz )
+instead of 
+>chr22_KI270731v1_random ( in hg38.fa.gz )
+https://www.gencodegenes.org/human/release_29.html
+wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_29/gencode.v29.chr_patch_hapl_scaff.annotation.gtf.gz
+wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_29/gencode.v29.chr_patch_hapl_scaff.annotation.gff3.gz
+wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_29/GRCh38.p12.genome.fa.gz
+wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_29/GRCh38.primary_assembly.genome.fa.gz
+
+
+
+This is a big collection
+https://support.illumina.com/sequencing/sequencing_software/igenome.html
+wget http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Homo_sapiens/UCSC/hg38/Homo_sapiens_UCSC_hg38.tar.gz
+
+NOTE THAT THE UCSC VERSION CONTAINS chrEBV
+
+
+
+
 

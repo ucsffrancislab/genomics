@@ -1,0 +1,25 @@
+
+
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.gff.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.gtf.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/refseq/H_sapiens/annotation/GRCh38_latest/refseq_identifiers/GRCh38_latest_genomic.fna.gz
+
+These references do not use the "chr" style sequence designation ...
+
+I could delete them, but we shall see
+
+[gwendt@cclc01 /data/shared/francislab/refs/fasta]$ zcat GRCh38_latest_genomic.fna.gz | grep "^>"
+>NC_000001.11 Homo sapiens chromosome 1, GRCh38.p13 Primary Assembly
+>NT_187361.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG1_UNLOCALIZED
+>NT_187362.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG2_UNLOCALIZED
+>NT_187363.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG3_UNLOCALIZED
+>NT_187364.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG4_UNLOCALIZED
+>NT_187365.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG5_UNLOCALIZED
+>NT_187366.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG6_UNLOCALIZED
+>NT_187367.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG7_UNLOCALIZED
+>NT_187368.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG8_UNLOCALIZED
+>NT_187369.1 Homo sapiens chromosome 1 unlocalized genomic scaffold, GRCh38.p13 Primary Assembly HSCHR1_CTG9_UNLOCALIZED
+>NC_000002.12 Homo sapiens chromosome 2, GRCh38.p13 Primary Assembly
+
+
+

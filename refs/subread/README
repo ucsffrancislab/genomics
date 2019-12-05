@@ -20,3 +20,13 @@ echo "subread-buildindex -M 16000 -o /data/shared/francislab/refs/subread/hairpi
 echo "subread-buildindex -M 16000 -o /data/shared/francislab/refs/subread/mature /data/shared/francislab/refs/fasta/human_mature.ACTG.fa.gz" | qsub -l vmem=16gb
 echo "subread-buildindex -M 16000 -o /data/shared/francislab/refs/subread/mirna /data/shared/francislab/refs/fasta/human_mirna.ACTG.fa.gz" | qsub -l vmem=16gb
 
+
+
+link is to ...
+-r-xr-xr-x 1 gwendt 3161924569 Aug 18  2015 /data/shared/francislab/refs/Homo_sapiens/UCSC/hg38/Sequence/WholeGenomeFasta/genome.fa
+
+echo "subread-buildindex -M 16000 -o /data/shared/francislab/refs/subread/h38au /data/shared/francislab/refs/fasta/hg38.fa" | qsub -l vmem=16gb -N subread.h38au
+
+
+
+

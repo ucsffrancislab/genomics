@@ -6,10 +6,12 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 
 
-KALLISTO=/data/shared/francislab/refs/kallisto
-SUBREAD=/data/shared/francislab/refs/subread
-BOWTIE2=/data/shared/francislab/refs/bowtie2
-BLASTDB=/data/shared/francislab/refs/blastn
+REFS=/data/shared/francislab/refs
+FASTA=${REFS}/fasta
+KALLISTO=${REFS}/kallisto
+SUBREAD=${REFS}/subread
+BOWTIE2=${REFS}/bowtie2
+BLASTDB=${REFS}/blastn
 
 #	do exported variables get passed to submitted jobs? No
 #export BOWTIE2_INDEXES=/data/shared/francislab/refs/bowtie2
@@ -32,37 +34,44 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 	echo $base
 	jobbase=$( basename ${base} )
 
-#
-#	WAITING UNTIL HAVE THE SPACE
-#
-#	#	subread references
-#	#for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
-#	for ref in h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
-#
-#	#for ref_path in ${SUBREAD}/*.files ; do
-#	#	ref=$( basename $ref_path .files )
-#
-#		sref=${SUBREAD}/${ref}
-#		outbase=${base}.${ref}
-#
-#		#	subread
-#		#  -t <int>          Type of input sequencing data. Its values include
-#		#                      0: RNA-seq data
-#		#                      1: genomic DNA-seq data.
-#
-#		vmem=16
-#
-#		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.subread.rna.${date}.out.txt -e ${outbase}.subread.rna.${date}.err.txt \
-#			~/.local/bin/subread-align.bash \
-#			-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.rna.bam"
-#
-#		qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.subread.dna.${date}.out.txt -e ${outbase}.subread.dna.${date}.err.txt \
-#			~/.local/bin/subread-align.bash \
-#			-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread.dna.bam"
-#
-#	done
+	#	subread references
+	#for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
+	#for ref in h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
+	for ref in h38au ; do
+
+	#for ref_path in ${SUBREAD}/*.files ; do
+	#	ref=$( basename $ref_path .files )
+
+		sref=${SUBREAD}/${ref}
+		outbase=${base}.${ref}
+
+		#	subread
+		#  -t <int>          Type of input sequencing data. Its values include
+		#                      0: RNA-seq data
+		#                      1: genomic DNA-seq data.
+
+		vmem=16
+
+		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-o ${outbase}.subread-rna.${date}.out.txt -e ${outbase}.subread-rna.${date}.err.txt \
+			~/.local/bin/subread-align.bash \
+			-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread-rna.bam"
+
+		qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-o ${outbase}.subread-dna.${date}.out.txt -e ${outbase}.subread-dna.${date}.err.txt \
+			~/.local/bin/subread-align.bash \
+			-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread-dna.bam"
+
+	done
+
+	#	qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-rna.featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-rna.featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-rna.featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.subread-rna.bam"
+
+	#	qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-dna.featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-dna.featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-dna.featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.subread-dna.bam"
+
+
+
+
+#	Used older version of hg38 reference
 
 
 	#for ref in hg38am hg38au  ; do
@@ -74,22 +83,76 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 		#	Ran well with 8gb.
 		vmem=8	
 
-		qoutbase="${outbase}.bowtie2.e2e"
-#	dark
-		bowtie2id=$( qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/bowtie2.bash \
-			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/${ref} \
-					-U ${r1} -o ${qoutbase}.bam" )
-		echo "${bowtie2id}"
+		qoutbase="${outbase}.bowtie2-e2e"
+
+		bowtie2id=""
+		f=${qoutbase}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			#echo "Creating $f"
+			bowtie2id=$( qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/bowtie2.bash \
+				-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/${ref} \
+						-U ${r1} -o ${qoutbase}.bam" )
+			echo "${bowtie2id}"
+		fi
+
 
 		infile="${qoutbase}.bam"
-		qoutbase="${qoutbase}.unmapped"
-#	dark
-		unmappedid=$( qsub -W depend=afterok:${bowtie2id} -N ${jobbase}.${ref}.btun -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${infile}" )
-		echo "${unmappedid}"
+
+
+#		for feature in miRNA miRNA_primary_transcript ; do
+#
+#			qoutbase="${outbase}.bowtie2-e2e.featureCounts.${feature}"
+#
+#			f=${qoutbase}.txt.gz
+#			if [ -f $f ] && [ ! -w $f ] ; then
+#				echo "Write-protected $f exists. Skipping."
+#			else
+#				#echo "Creating $f"
+#				if [ ! -z ${bowtie2id} ] ; then
+#					depend="-W depend=afterok:${bowtie2id}"
+#				else
+#					depend=""
+#				fi
+#				qsub ${depend} -N ${jobbase}.${ref}.btfc -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+#					~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name \
+#						-a ${FASTA}/hg38.chr.hsa.gff3 -o ${f} ${infile}"
+#			fi
+#
+#		done
+
+		#	It is actually more useful to run featureCounts on all of the bam files in 1 call
+		#	It produces a nice csv
+		#	
+		#	qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.h38au.bowtie2-e2e.bam"
+
+
+
+
+		qoutbase="${outbase}.bowtie2-e2e.unmapped"
+		#qoutbase="${qoutbase}.unmapped"
+		unmappedid=""
+		f=${qoutbase}.fasta.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			#echo "Creating $f"
+			if [ ! -z ${bowtie2id} ] ; then
+				depend="-W depend=afterok:${bowtie2id}"
+			else
+				depend=""
+			fi
+			unmappedid=$( qsub ${depend} -N ${jobbase}.${ref}.btun -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${infile}" )
+			echo "${unmappedid}"
+		fi
+
+
 
 		#infile=${qoutbase}.fasta
 		infile=${qoutbase}.fasta.gz
@@ -119,31 +182,45 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 		for vref in viral viral.raw viral.masked ; do
 			abbrev=$( echo ${vref} | awk '{split($0,a,".");for(s in a){print substr(a[s],1,1)}}' | paste -sd '' )
 
-			vblastnid=$( qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btun${abbrev} \
-				-l nodes=1:ppn=${threads} -l vmem=8gb \
-				-o ${qoutbase}.${vref}.${date}.out.txt -e ${qoutbase}.${vref}.${date}.err.txt \
-				~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
-					-db ${BLASTDB}/${vref} -num_threads ${threads}" )
+			vblastnid=""
+			f=${qoutbase}.${vref}.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				#echo "Creating $f"
+				if [ ! -z ${unmappedid} ] ; then
+					depend="-W depend=afterok:${unmappedid}"
+				else
+					depend=""
+				fi
+				vblastnid=$( qsub ${depend} -N ${jobbase}.${ref}.btun${abbrev} \
+					-l nodes=1:ppn=${threads} -l vmem=8gb \
+					-o ${qoutbase}.${vref}.${date}.out.txt -e ${qoutbase}.${vref}.${date}.err.txt \
+					~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
+						-db ${BLASTDB}/${vref} -num_threads ${threads}" )
+				echo ${vblastnid}
+			fi
 
-			qsub -W depend=afterok:${vblastnid} -N ${jobbase}.${ref}.btun${abbrev}s \
-				-l nodes=1:ppn=${threads} -l vmem=8gb \
-				-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
-				~/.local/bin/summarize_blastn_output.bash \
-					-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
 
-		done
+			f=${qoutbase}.${vref}.summary.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				#echo "Creating $f"
+				if [ ! -z ${vblastnid} ] ; then
+					depend="-W depend=afterok:${vblastnid}"
+				else
+					depend=""
+				fi
+				qsub ${depend} -N ${jobbase}.${ref}.btun${abbrev}s \
+					-l nodes=1:ppn=${threads} -l vmem=8gb \
+					-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
+					~/.local/bin/summarize_blastn_output.bash \
+						-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
+			fi
 
-#		vblastnid=$( qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunv \
-#			-l nodes=1:ppn=${threads} -l vmem=8gb \
-#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
-#				-db ${BLASTDB}/viral -num_threads ${threads}" )
-#
-#		vrblastnid=$( qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunvr \
-#			-l nodes=1:ppn=${threads} -l vmem=8gb \
-#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
-#				-db ${BLASTDB}/viral.raw -num_threads ${threads}" )
+		done	#	for vref in viral viral.raw viral.masked ; do
+
 
 
 
@@ -155,7 +232,7 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 #			~/.local/bin/bowtie2.bash \
 #			-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} -1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.loc.bam"
 
-	done
+	done	#	for ref in h38au  ; do
 
 #
 #	WAITING UNTIL HAVE THE SPACE
@@ -321,5 +398,5 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 #	done
 #
 #
-done
+done	#	for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/01*.fastq.gz ; do
 

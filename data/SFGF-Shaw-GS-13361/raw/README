@@ -115,3 +115,39 @@ New technique of self-calling scripts
 
 
 
+FASTA=/data/shared/francislab/refs/fasta
+r1=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/77.fastq.gz
+base=${r1%.fastq.gz}
+jobbase=$( basename ${base} )
+ref=h38au
+outbase=${base}.${ref}
+threads=8
+vmem=8
+feature=miRNA
+date=$( date "+%Y%m%d%H%M%S" )
+qoutbase="${outbase}.bowtie2.e2e"
+infile="${qoutbase}.bam"
+qoutbase="${outbase}.bowtie2.e2e.featureCounts.${feature}"
+f=${qoutbase}.txt
+qsub -N ${jobbase}.${ref}.btfc -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+	-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+	~/.local/bin/featureCounts.bash -F "-F GFF3 -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o ${f} ${infile}"
+
+qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.h38au.bowtie2.e2e.bam"
+
+
+
+source=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired
+threads=16
+vmem=8
+date=$( date "+%Y%m%d%H%M%S" )
+for feature in miRNA miRNA_primary_transcript ; do
+qsub -N ${feature} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o ${source}/bowtie2.hsa.featureCounts.${feature}.${date}.out.txt -e ${source}/bowtie2.hsa.featureCounts.${feature}.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o ${source}/bowtie2.hsa.featureCounts.${feature}.txt ${source}/??.h38au.bowtie2.e2e.bam"
+done
+
+
+
+
+
+
+
