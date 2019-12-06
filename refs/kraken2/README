@@ -1,0 +1,28 @@
+
+
+
+https://github.com/DerrickWood/kraken2
+
+
+
+kraken2-build --standard --db $DBNAME
+
+
+nohup kraken2-build --standard --threads 16 --db standard > kraken2-build.out.txt 2> kraken2-build.err.txt &
+
+
+This failed after downloading a bunch of files. 
+Running -build to finish.
+
+
+nohup kraken2-build --build --threads 16 --db standard > kraken2-build.build.out.txt 2> kraken2-build.build.err.txt &
+
+nohup kraken2-build --build --threads 16 --db standard > kraken2-build.build2.out.txt 2> kraken2-build.build2.err.txt &
+
+nohup kraken2-build --build --threads 16 --db standard > kraken2-build.build3.out.txt 2> kraken2-build.build3.err.txt &
+
+nohup kraken2-build --build --threads 16 --db standard > kraken2-build.build4.out.txt 2> kraken2-build.build4.err.txt &
+
+nohup kraken2-build --build --threads 16 --db standard > kraken2-build.build5.out.txt 2> kraken2-build.build5.err.txt &
+
+
