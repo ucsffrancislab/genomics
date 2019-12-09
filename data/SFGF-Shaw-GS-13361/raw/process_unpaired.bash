@@ -12,6 +12,7 @@ KALLISTO=${REFS}/kallisto
 SUBREAD=${REFS}/subread
 BOWTIE2=${REFS}/bowtie2
 BLASTDB=${REFS}/blastn
+KRAKEN2=${REFS}/kraken2
 
 #	do exported variables get passed to submitted jobs? No
 #export BOWTIE2_INDEXES=/data/shared/francislab/refs/bowtie2
@@ -26,7 +27,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
+for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/01*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}
@@ -52,26 +53,33 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 
 		vmem=16
 
-		qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${outbase}.subread-rna.${date}.out.txt -e ${outbase}.subread-rna.${date}.err.txt \
-			~/.local/bin/subread-align.bash \
-			-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread-rna.bam"
+		qoutbase="${outbase}.subread-rna"
 
-		qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-o ${outbase}.subread-dna.${date}.out.txt -e ${outbase}.subread-dna.${date}.err.txt \
-			~/.local/bin/subread-align.bash \
-			-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${outbase}.subread-dna.bam"
+		f=${qoutbase}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			qsub -N ${jobbase}.${ref}.srr -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/subread-align.bash \
+				-F "-t 0 -T ${threads} -i ${sref} -r ${r1} -o ${qoutbase}.bam"
+		fi
+
+		qoutbase="${outbase}.subread-dna"
+
+		f=${qoutbase}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			qsub -N ${jobbase}.${ref}.srd -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/subread-align.bash \
+				-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${qoutbase}.bam"
+		fi
 
 	done
 
-	#	qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-rna.featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-rna.featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-rna.featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.subread-rna.bam"
 
-	#	qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-dna.featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-dna.featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/subread-dna.featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.subread-dna.bam"
-
-
-
-
-#	Used older version of hg38 reference
 
 
 	#for ref in hg38am hg38au  ; do
@@ -103,38 +111,11 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 		infile="${qoutbase}.bam"
 
 
-#		for feature in miRNA miRNA_primary_transcript ; do
-#
-#			qoutbase="${outbase}.bowtie2-e2e.featureCounts.${feature}"
-#
-#			f=${qoutbase}.txt.gz
-#			if [ -f $f ] && [ ! -w $f ] ; then
-#				echo "Write-protected $f exists. Skipping."
-#			else
-#				#echo "Creating $f"
-#				if [ ! -z ${bowtie2id} ] ; then
-#					depend="-W depend=afterok:${bowtie2id}"
-#				else
-#					depend=""
-#				fi
-#				qsub ${depend} -N ${jobbase}.${ref}.btfc -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-#					~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name \
-#						-a ${FASTA}/hg38.chr.hsa.gff3 -o ${f} ${infile}"
-#			fi
-#
-#		done
-
-		#	It is actually more useful to run featureCounts on all of the bam files in 1 call
-		#	It produces a nice csv
-		#	
-		#	qsub -N featureCounts -l nodes=1:ppn=${threads} -l vmem=${vmem}gb -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.${date}.out.txt -e /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.${date}.err.txt ~/.local/bin/featureCounts.bash -F "-T ${threads} -t ${feature} -g Name -a ${FASTA}/hg38.chr.hsa.gff3 -o /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/featureCounts.txt /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/??.h38au.bowtie2-e2e.bam"
 
 
 
 
 		qoutbase="${outbase}.bowtie2-e2e.unmapped"
-		#qoutbase="${qoutbase}.unmapped"
 		unmappedid=""
 		f=${qoutbase}.fasta.gz
 		if [ -f $f ] && [ ! -w $f ] ; then
@@ -154,9 +135,7 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 
 
 
-		#infile=${qoutbase}.fasta
 		infile=${qoutbase}.fasta.gz
-
 		qoutbase="${qoutbase}.blastn"	#.nt.txt.gz"
 
 
@@ -221,6 +200,34 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*
 
 		done	#	for vref in viral viral.raw viral.masked ; do
 
+
+
+		qoutbase="${outbase}.bowtie2-e2e.unmapped"
+		infile=${qoutbase}.fasta.gz
+		qoutbase="${qoutbase}.kraken2.standard"
+		f=${qoutbase}.txt
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			#echo "Creating $f"
+			if [ ! -z ${unmappedid} ] ; then
+				depend="-W depend=afterok:${unmappedid}"
+			else
+				depend=""
+			fi
+			qsub ${depend} -N ${jobbase}.${ref}.btunk \
+				-l nodes=1:ppn=${threads} -l vmem=32gb \
+				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/kraken2.bash -F "--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --use-names ${infile}"
+		fi
+
+#	  --memory-mapping        Avoids loading database into RAM
+#	  --paired                The filenames provided have paired-end reads
+#	  --use-names             Print scientific names instead of just taxids
+#	  --gzip-compressed       Input files are compressed with gzip
+#	  --bzip2-compressed      Input files are compressed with bzip2
+#	  --help                  Print this message
+#	  --version               Print version information
 
 
 

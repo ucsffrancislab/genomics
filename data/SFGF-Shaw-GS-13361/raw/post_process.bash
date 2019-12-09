@@ -23,7 +23,7 @@ for bambase in subread-dna subread-rna ; do
 	done	#	for feature in miRNA miRNA_primary_transcript ; do
 
 
-	for feature in exon CDS ; do
+	for feature in exon CDS start_codon stop_codon ; do
 		qsub -N ${feature} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-o ${dir}/${bambase}.genes.featureCounts.${feature}.${date}.out.txt \
 			-e ${dir}/${bambase}.genes.featureCounts.${feature}.${date}.err.txt \
@@ -31,7 +31,7 @@ for bambase in subread-dna subread-rna ; do
 				"-T ${threads} -t ${feature} -g gene_id -a ${REFS}/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf \
 				-o ${dir}/${bambase}.genes.featureCounts.${feature}.csv \
 				${dir}/??.h38au.${bambase}.bam"
-	done	#	for feature in exon CDS ; do
+	done	#	for feature in exon CDS start_codon stop_codon ; do
 
 
 done	#	for bambase in subread-dna subread-rna ; do

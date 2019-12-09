@@ -22,6 +22,18 @@ ARGS=$*
 #done
 
 
+#	Search for the output file
+while [ $# -gt 0 ] ; do
+	case $1 in
+		-o)
+			shift; output=$1; shift;;
+		*)
+			shift;;
+	esac
+done
+
+
+
 f=${output}
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
