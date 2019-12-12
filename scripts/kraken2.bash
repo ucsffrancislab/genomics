@@ -8,12 +8,22 @@ set -x
 
 ARGS=$*
 
+#	while [ $# -gt 0 ] ; do
+#		case $1 in
+#			--output)
+#				shift; output=$1; shift;;
+#			*)
+#				shift;;
+#		esac
+#	done
+
+SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		--output)
 			shift; output=$1; shift;;
 		*)
-			shift;;
+			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 
@@ -22,7 +32,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	kraken2 $ARGS
+	kraken2 $SELECT_ARGS | gzip > ${f}
 	chmod a-w $f
 fi
 

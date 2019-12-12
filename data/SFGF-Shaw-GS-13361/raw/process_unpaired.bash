@@ -27,7 +27,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/01*.fastq.gz ; do
+for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}
@@ -205,7 +205,7 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 		qoutbase="${outbase}.bowtie2-e2e.unmapped"
 		infile=${qoutbase}.fasta.gz
 		qoutbase="${qoutbase}.kraken2.standard"
-		f=${qoutbase}.txt
+		f=${qoutbase}.txt.gz
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
@@ -216,7 +216,7 @@ for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/0
 				depend=""
 			fi
 			qsub ${depend} -N ${jobbase}.${ref}.btunk \
-				-l nodes=1:ppn=${threads} -l vmem=32gb \
+				-l nodes=1:ppn=${threads} -l vmem=64gb \
 				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
 				~/.local/bin/kraken2.bash -F "--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --use-names ${infile}"
 		fi
