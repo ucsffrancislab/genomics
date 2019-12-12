@@ -1,0 +1,110 @@
+
+
+Add "machine gslanalyzer.qb3.berkeley.edu login ########## password ##########" to ~/.netrc
+
+Then DO NOT USE the "ftp://" prefix or "-u username,password" in command 
+
+
+
+lftp -e 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true' gslanalyzer.qb3.berkeley.edu:990
+
+lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true; open -e "mirror -c; quit" gslanalyzer.qb3.berkeley.edu:990'
+
+
+
+
+
+Count raw bases
+
+
+zcat SFSP003_S1_L001_R1_001.fastq.gz | paste -d "\t" - - - - | cut -f 2 | awk '{split($0,a,"");for(i in a){c[a[i]]++}}END{for(i in c){print(i" : "c[i])}}' > R1.base_counts.txt
+N : 7919
+A : 57727266
+C : 53311136
+T : 44407118
+G : 37585867
+
+
+zcat SFSP003_S1_L001_R2_001.fastq.gz | paste -d "\t" - - - - | cut -f 2 | awk '{split($0,a,"");for(i in a){c[a[i]]++}}END{for(i in c){print(i" : "c[i])}}' > R2.base_counts.txt
+N : 10936
+A : 59385649
+C : 35812150
+T : 40544524
+G : 57286047
+
+
+
+
+
+
+
+QC
+
+
+
+
+
+
+
+
+sampleindexes.txt is from Shahil
+Not sure of the origin of indexes.tsv
+
+
+
+
+
+Re-Demultiplex
+
+
+mkdir aryeelab
+cd aryeelab
+
+python ~/github/ucsffrancislab/umi/demultiplex.py --min_reads 100 --read1 ../SFSP003_S1_L001_R1_001.fastq.gz --read2 ../SFSP003_S1_L001_R2_001.fastq.gz --index1 ../SFSP003_S1_L001_I1_001.fastq.gz --index2 ../SFSP003_S1_L001_I2_001.fastq.gz --sample_barcodes ../sampleindexes.txt --max_hamming 1
+
+
+for r1 in ?.r1.fastq ??.r1.fastq ; do
+base=${r1%.r1.fastq}
+echo ${base}
+python ~/github/ucsffrancislab/umi/umitag.py \
+--read1_in ${base}.r1.fastq \
+--read2_in ${base}.r2.fastq \
+--read1_out ${base}.r1.umitagged.fastq \
+--read2_out ${base}.r2.umitagged.fastq \
+--index1 ${base}.i1.fastq \
+--index2 ${base}.i2.fastq
+done
+
+
+python ~/github/ucsffrancislab/umi/consolidate.py 36.r1.umitagged.fastq 36.r1.consolidated.fastq 15 0.9
+
+for r1 in *.r1.umitagged.fastq ; do
+base=${r1%.r1.umitagged.fastq}
+python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r1.umitagged.fastq ${base}.r1.consolidated.fastq 15 0.9
+python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r2.umitagged.fastq ${base}.r2.consolidated.fastq 15 0.9
+done
+
+
+
+
+
+
+
+
+Re-Demultiplex with just i7? Not i5?
+
+
+
+
+
+
+UMI fastq files with aryeelab/umi
+
+Same as previous HKLE-Seq
+
+??
+sickle pe -f SFSP002_S1_L001_R1_001.fastq.gz -r SFSP002_S1_L001_R2_001.fastq.gz -t sanger -o SFSP002_S1_L001_R1_001.sickle.fastq -p SFSP002_S1_L001_R2_001.sickle.fastq -s SFSP002_S1_L001_SI_001.sickle.fastq
+
+
+
+
