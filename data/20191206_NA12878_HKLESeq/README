@@ -38,7 +38,7 @@ G : 57286047
 
 
 
-QC
+QC ???
 
 
 
@@ -85,6 +85,94 @@ python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r2.umitagged.fastq ${b
 done
 
 
+for r1 in *.r1.consolidated.fastq ; do
+r2=${r1/r1/r2}
+base=${r1%.r1.consolidated.fastq}
+~/github/najoshi/sickle/sickle pe -f ${r1} -r ${r2} -t sanger -o ${base}.r1.sickle.fastq -p ${base}.r2.sickle.fastq -s ${base}.si.sickle.fastq > ${base}.sickle.out
+done
+
+
+Too few reads usually causes scripts to fail when no pre or post fasta file. No overlappers
+
+chimera.bash --human hg38 --viral SVAs_and_HERVs_KWHE --threads 4 *.r?.sickle.fastq &
+mv working_dir chimera_hg38_SVAs_and_HERVs_KWHE
+tail -n +2 chimera_hg38_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg38.Q20.sorted.csv | awk -F\| '{print $1":"$2}' | sort > chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points
+
+
+
+
+Get hg38 SVA/HERV positions from "aligned" app?
+Some time ago I aligned bowtie2 --all -x hg38 SVAs_and_HERVs_KWHE.fasta 
+
+ls -1 ~/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38*
+/Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38.vs.sam.gz
+/Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38.vsl.sam.gz
+/Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38_no_alts.vs.sam.gz
+/Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.sam.gz
+
+Which? Convert sam.gz to bam. I don't have to.
+
+for sam in ~/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38* ; do
+base=$( basename ${sam} .sam.gz )
+samtools view ${sam} | awk '{print $3":"$4}' | sort | uniq > ${base}.positions
+done
+
+for pos in *positions *points ; do
+sed -E 's/[[:digit:]]{3}$/000/' ${pos} | uniq | sort > ${pos}.1k
+sed -E 's/[[:digit:]]{4}$/0000/' ${pos} | uniq | sort > ${pos}.10k
+done
+
+
+for pos in *positions ; do
+comm -12 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.1k ${pos}.1k | wc -l > ${pos}.1k.same
+comm -12 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.10k ${pos}.10k | wc -l > ${pos}.10k.same
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+for r1 in *.r1.sickle.fastq ; do
+r2=${r1/r1/r2}
+si=${r1/r1/si}
+base=${r1%.r1.sickle.fastq}
+for ref in hg38 NA12878 SVAs_and_HERVs_KWHE ; do
+bowtie2 --threads 4 --very-sensitive-local -x ${ref} -U ${r1},${r2},${si} | samtools view -o ${base}.${ref}.bam
+done
+done
 
 
 
@@ -92,19 +180,5 @@ done
 
 
 Re-Demultiplex with just i7? Not i5?
-
-
-
-
-
-
-UMI fastq files with aryeelab/umi
-
-Same as previous HKLE-Seq
-
-??
-sickle pe -f SFSP002_S1_L001_R1_001.fastq.gz -r SFSP002_S1_L001_R2_001.fastq.gz -t sanger -o SFSP002_S1_L001_R1_001.sickle.fastq -p SFSP002_S1_L001_R2_001.sickle.fastq -s SFSP002_S1_L001_SI_001.sickle.fastq
-
-
 
 
