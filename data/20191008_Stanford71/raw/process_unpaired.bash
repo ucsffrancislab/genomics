@@ -27,7 +27,9 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
+#for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
+#for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
+for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/62*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}

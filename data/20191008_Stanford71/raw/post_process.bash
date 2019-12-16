@@ -3,7 +3,7 @@
 
 REFS=/data/shared/francislab/refs
 FASTA=${REFS}/fasta
-dir=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired
+dir=/data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired
 
 threads=16
 vmem=8
