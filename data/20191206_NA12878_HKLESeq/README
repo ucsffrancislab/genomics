@@ -8,13 +8,14 @@ Then DO NOT USE the "ftp://" prefix or "-u username,password" in command
 
 lftp -e 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true' gslanalyzer.qb3.berkeley.edu:990
 
+
+
+So I put the username and password into my ~/.netrc and then downloaded all data.
+
 lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true; open -e "mirror -c; quit" gslanalyzer.qb3.berkeley.edu:990'
 
 
-
-
-
-Count raw bases
+I counted the raw bases to ensure that we don't have a repeat of last time, and we don't.
 
 
 zcat SFSP003_S1_L001_R1_001.fastq.gz | paste -d "\t" - - - - | cut -f 2 | awk '{split($0,a,"");for(i in a){c[a[i]]++}}END{for(i in c){print(i" : "c[i])}}' > R1.base_counts.txt
@@ -23,7 +24,6 @@ A : 57727266
 C : 53311136
 T : 44407118
 G : 37585867
-
 
 zcat SFSP003_S1_L001_R2_001.fastq.gz | paste -d "\t" - - - - | cut -f 2 | awk '{split($0,a,"");for(i in a){c[a[i]]++}}END{for(i in c){print(i" : "c[i])}}' > R2.base_counts.txt
 N : 10936
@@ -36,32 +36,18 @@ G : 57286047
 
 
 
-
-
-QC ???
-
+NOTE: Should have ended the name with the lane instead (for chimera) .R1.fastq.gz
 
 
 
 
 
-
-
-sampleindexes.txt is from Shahil
-Not sure of the origin of indexes.tsv
-
-
-
-
-
-Re-Demultiplex
-
+I re-demultiplexed, umitagged and consolidated the reads with our copy of areelab/umi
 
 mkdir aryeelab
 cd aryeelab
 
 python ~/github/ucsffrancislab/umi/demultiplex.py --min_reads 100 --read1 ../SFSP003_S1_L001_R1_001.fastq.gz --read2 ../SFSP003_S1_L001_R2_001.fastq.gz --index1 ../SFSP003_S1_L001_I1_001.fastq.gz --index2 ../SFSP003_S1_L001_I2_001.fastq.gz --sample_barcodes ../sampleindexes.txt --max_hamming 1
-
 
 for r1 in ?.r1.fastq ??.r1.fastq ; do
 base=${r1%.r1.fastq}
@@ -75,14 +61,15 @@ python ~/github/ucsffrancislab/umi/umitag.py \
 --index2 ${base}.i2.fastq
 done
 
-
-python ~/github/ucsffrancislab/umi/consolidate.py 36.r1.umitagged.fastq 36.r1.consolidated.fastq 15 0.9
-
 for r1 in *.r1.umitagged.fastq ; do
 base=${r1%.r1.umitagged.fastq}
 python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r1.umitagged.fastq ${base}.r1.consolidated.fastq 15 0.9
 python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r2.umitagged.fastq ${base}.r2.consolidated.fastq 15 0.9
 done
+
+
+
+I then ran sickle to trim on quality
 
 
 for r1 in *.r1.consolidated.fastq ; do
@@ -92,17 +79,22 @@ base=${r1%.r1.consolidated.fastq}
 done
 
 
-Too few reads usually causes scripts to fail when no pre or post fasta file. No overlappers
 
-chimera.bash --human hg38 --viral SVAs_and_HERVs_KWHE --threads 4 *.r?.sickle.fastq &
+I then ran chimera on all of the SVAs and HERVs in hg38 with and without all of the alternates.
+
+
+chimera.bash --human hg38 --viral SVAs_and_HERVs_KWHE --threads 4 *.r?.sickle.fastq.gz &
 mv working_dir chimera_hg38_SVAs_and_HERVs_KWHE
 tail -n +2 chimera_hg38_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg38.Q20.sorted.csv | awk -F\| '{print $1":"$2}' | sort > chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points
 
+chimera.bash --human hg38_no_alts --viral SVAs_and_HERVs_KWHE --threads 4 *.r?.sickle.fastq.gz &
+mv working_dir chimera_hg38_no_alts_SVAs_and_HERVs_KWHE
+tail -n +2 chimera_hg38_no_alts_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg38_no_alts.Q20.sorted.csv | awk -F\| '{print $1":"$2}' | sort > chimera_hg38_no_alts_SVAs_and_HERVs_KWHE.insertion_points
 
 
 
-Get hg38 SVA/HERV positions from "aligned" app?
-Some time ago I aligned bowtie2 --all -x hg38 SVAs_and_HERVs_KWHE.fasta 
+Previously, I had run aligned all of the SVAs and HERVs to hg38, with and without alternates, to get a good list of all of their positions in the reference.
+
 
 ls -1 ~/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38*
 /Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38.vs.sam.gz
@@ -110,12 +102,28 @@ ls -1 ~/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38*
 /Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38_no_alts.vs.sam.gz
 /Users/jakewendt/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.sam.gz
 
-Which? Convert sam.gz to bam. I don't have to.
+I extracted all of these positions 
 
 for sam in ~/github/unreno/aligned/20180410/SVAs_and_HERVs_KWHE.hg38* ; do
 base=$( basename ${sam} .sam.gz )
 samtools view ${sam} | awk '{print $3":"$4}' | sort | uniq > ${base}.positions
 done
+
+
+and counted them.
+
+for f in *positions *points ; do wc -l $f; done
+  618 SVAs_and_HERVs_KWHE.hg38.vs.positions
+59555 SVAs_and_HERVs_KWHE.hg38.vsl.positions
+  561 SVAs_and_HERVs_KWHE.hg38_no_alts.vs.positions
+56259 SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions
+ 2087 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points
+ 2120 chimera_hg38_no_alts_SVAs_and_HERVs_KWHE.insertion_points
+
+
+
+I then "rounded" to 1,000 and 10,000 to "group" them, uniqued and sorted these positions, as well as the insertion points found by chimera
+
 
 for pos in *positions *points ; do
 sed -E 's/[[:digit:]]{3}$/000/' ${pos} | uniq | sort > ${pos}.1k
@@ -123,10 +131,56 @@ sed -E 's/[[:digit:]]{4}$/0000/' ${pos} | uniq | sort > ${pos}.10k
 done
 
 
-for pos in *positions ; do
-comm -12 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.1k ${pos}.1k | wc -l > ${pos}.1k.same
-comm -12 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.10k ${pos}.10k | wc -l > ${pos}.10k.same
-done
+And then counted them
+
+for f in *.1*k ; do wc -l $f ; done
+  438 SVAs_and_HERVs_KWHE.hg38.vs.positions.1k
+31320 SVAs_and_HERVs_KWHE.hg38.vsl.positions.1k
+  404 SVAs_and_HERVs_KWHE.hg38_no_alts.vs.positions.1k
+29599 SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions.1k
+ 1095 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.1k
+ 1110 chimera_hg38_no_alts_SVAs_and_HERVs_KWHE.insertion_points.1k
+
+  414 SVAs_and_HERVs_KWHE.hg38.vs.positions.10k
+25188 SVAs_and_HERVs_KWHE.hg38.vsl.positions.10k
+  386 SVAs_and_HERVs_KWHE.hg38_no_alts.vs.positions.10k
+23824 SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions.10k
+ 1071 chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.10k
+ 1085 chimera_hg38_no_alts_SVAs_and_HERVs_KWHE.insertion_points.10k
+
+
+
+I then compared the corresponding lists ...
+
+
+for r in 1k 10k ; do
+for ref in hg38 hg38_no_alts ; do
+for pos in *.${ref}.*.positions.${r} ; do
+echo $pos
+comm -12 chimera_${ref}_SVAs_and_HERVs_KWHE.insertion_points.${r} ${pos} | wc -l > ${pos}.same
+done ; done ; done
+
+
+
+And counted those positions that are the same
+
+
+for f in *.1k.same *.10k.same ; do c=$( cat $f ); echo $c $f ; done
+
+  84 SVAs_and_HERVs_KWHE.hg38.vs.positions.1k.same
+ 728 SVAs_and_HERVs_KWHE.hg38.vsl.positions.1k.same
+  85 SVAs_and_HERVs_KWHE.hg38_no_alts.vs.positions.1k.same
+ 735 SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions.1k.same
+
+ 145 SVAs_and_HERVs_KWHE.hg38.vs.positions.10k.same
+1021 SVAs_and_HERVs_KWHE.hg38.vsl.positions.10k.same
+ 149 SVAs_and_HERVs_KWHE.hg38_no_alts.vs.positions.10k.same
+1035 SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions.10k.same
+
+
+
+
+When rounded to 10,000, nearly all are found when the reference is aligned "locally".
 
 
 
@@ -150,20 +204,7 @@ done
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Align to refs?
 
 for r1 in *.r1.sickle.fastq ; do
 r2=${r1/r1/r2}
@@ -173,11 +214,6 @@ for ref in hg38 NA12878 SVAs_and_HERVs_KWHE ; do
 bowtie2 --threads 4 --very-sensitive-local -x ${ref} -U ${r1},${r2},${si} | samtools view -o ${base}.${ref}.bam
 done
 done
-
-
-
-
-
 
 Re-Demultiplex with just i7? Not i5?
 
