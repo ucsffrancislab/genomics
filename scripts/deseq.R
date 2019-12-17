@@ -5,9 +5,11 @@
 #if (!requireNamespace("BiocManager", quietly = TRUE))
 #    install.packages("BiocManager")
 #BiocManager::install(version = "3.10")
-#BiocManager::install(c('RColorBrewer','gplots','genefilter','calibrate','DESeq2'))
+#BiocManager::install(c('RColorBrewer','gplots','genefilter','calibrate','DESeq2','optparse','Cairo'))
 
 
+options(bitmapType='cairo')
+#options(bitmapType='Xlib')
 
 
 
@@ -20,9 +22,6 @@ option_list = list(
 		help="featureCounts file name", metavar="character"),
 	make_option(c("-m", "--metadata"), type="character", default=NULL, 
 		help="metadata file name", metavar="character")
-#,
-#	make_option(c("-o", "--outpath"), type="character", default="./", 
-#		help="output file name [default= %default]", metavar="character")
 ); 
  
 opt_parser = OptionParser(option_list=option_list);
@@ -30,8 +29,6 @@ opt = parse_args(opt_parser);
 
 message( "featureCounts: ",opt$featureCounts )
 message( "metadata: ",opt$metadata )
-#message( "QQ:  ",opt$qq )
-#message( "OutPath: ",opt$outpath )
 message()
 
 
@@ -45,27 +42,9 @@ if (is.null(opt$metadata)){
   stop("metadata file required.\n", call.=FALSE)
 }
 
-#if (is.null(opt$qq)){
-#  print_help(opt_parser)
-#  stop("QQ file required.\n", call.=FALSE)
-#}
-#
-#if( ( file.info(opt$manhattan)$size == 0 ) || ( file.info(opt$qq)$size == 0 ) ){
-#  stop("Manhattan or QQ file is empty\n", call.=FALSE)
-#}
-
-
-
-
-
 
 #	Set value otherwise Rplots.pdf is used
 pdf( paste0(opt$featureCount,'.plots.pdf') )
-
-
-
-
-
 
 
 ## RNA-seq analysis with DESeq2
@@ -78,14 +57,13 @@ pdf( paste0(opt$featureCount,'.plots.pdf') )
 # Import & pre-process ----------------------------------------------------
 
 # Import data from featureCounts
-## Previously ran at command line something like this:
-## featureCounts -a genes.gtf -o counts.txt -T 12 -t exon -g gene_id GSM*.sam
-#countdata <- read.table("counts.txt", header=TRUE, row.names=1)
-#countdata <- read.table("featureCounts.txt", header=TRUE, row.names=1)
+# Previously ran at command line something like this:
+# featureCounts -a genes.gtf -o counts.txt -T 12 -t exon -g gene_id GSM*.sam
 countdata <- read.table(opt$featureCounts, header=TRUE, row.names=1)
 
 # Remove first five columns (chr, start, end, strand, length)
 countdata <- countdata[ ,6:ncol(countdata)]
+#df = subset(df, select=-c(Chr,Start,End,Strand,Length))
 
 # Remove .bam or .sam from filenames
 #colnames(countdata) <- gsub("^/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/", "", colnames(countdata))
@@ -93,11 +71,9 @@ countdata <- countdata[ ,6:ncol(countdata)]
 #colnames(countdata) <- gsub("\\.[sb]am$", "", colnames(countdata))
 #colnames(countdata) <- gsub(".h38au.bowtie2.e2e$", "", colnames(countdata))
 
-
 # Convert to matrix
 countdata <- as.matrix(countdata)
 head(countdata)
-
 
 
 # Assign condition (first four are controls, second four contain the expansion)
@@ -109,13 +85,9 @@ casecontrol <- read.table(opt$metadata, header=TRUE, row.names=1, sep=",")
 #	expecting comma separated, 2 column csf with id and cc columns
 condition <- casecontrol$cc
 
-
 # Analysis with DESeq2 ----------------------------------------------------
 
-
 library(DESeq2)
-
-
 
 
 # Create a coldata frame and instantiate the DESeqDataSet. See ?DESeqDataSetFromMatrix
@@ -127,10 +99,129 @@ dds
 # Run the DESeq pipeline
 dds <- DESeq(dds)
 
+
+
+
+res <- results(dds)
+head(results(dds, tidy=TRUE))
+summary(res) #summary of results
+
+
+
+
+message("plotMA")
+plotMA( res, ylim = c(-1, 1) )
+plotMA( res, ylim = c(-2, 2) )
+plotMA( res, ylim = c(-5, 5) )
+
+
+
+
+message("plotDispEsts")
+plotDispEsts( dds, ylim = c(1e-6, 1e1) )
+plotDispEsts( dds, ylim = c(1e-6, 1e4) )
+
+
+message("hist")
+hist( res$pvalue, breaks=20, col="grey" )
+
+
+message("res")
+res <- res[order(res$padj),]
+head(res)
+
+
+#par(mfrow=c(2,3))
+
+message("Looping over top 10")
+for(gene in row.names(head(res,10))){
+        message(gene)
+        #print(plotCounts(dds, gene=gene, intgroup="cc"))
+        print(plotCounts(dds, gene=gene, intgroup="condition"))
+}
+message("end loop over top 10")
+
+
+
+
+#reset par
+#par(mfrow=c(1,1))
+
+# Make a basic volcano plot
+with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main="Volcano plot", xlim=c(-3,3)))
+
+# Add colored points: blue if padj<0.01, red if log2FC>1 and padj<0.05)
+with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col="blue"))
+with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="red"))
+
+with(subset(res, padj<.001 ), points(log2FoldChange, -log10(pvalue), pch=20, col="green"))
+with(subset(res, padj<.001 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col="yellow"))
+
+legend("topright",
+	legend=c('All','padj<0.01','padj<0.01 & abs>2','padj<0.001','padj<0.001 & abs>2'),
+	col=c('black','blue','red','green','yellow'),
+	pch = 20,
+	lty=1:2, cex=0.8)
+
+
+#github/unreno/genomics/dev/data_sets/Stanford_Project71/20190917-exploratory/deseq2.R
+
+#github/unreno/genomics/dev/data_sets/E-GEOD-105052/20190926-exploratory/deseq2.R
+
+
+print("rlog")
+rld <- rlog(dds)
+print("plotPCA")
+#plotPCA(rld)
+#plotPCA(rld, intgroup=c( 'disease' ))
+plotPCA(rld, intgroup=c( 'condition' ))
+
+
+
+
+# also possible to perform custom transformation:
+print("estimateSizeFactors")
+dds <- estimateSizeFactors(dds)
+# shifted log of normalized counts
+print("SummarizedExperiment")
+se <- SummarizedExperiment(log2(counts(dds, normalized=TRUE) + 1), colData=colData(dds))
+# the call to DESeqTransform() is needed to
+# trigger our plotPCA method.
+print("plotPCA")
+#plotPCA( DESeqTransform( se ) )
+#plotPCA( DESeqTransform( se ), intgroup=c( 'disease' ) )
+plotPCA( DESeqTransform( se ), intgroup=c( 'condition' ) )
+
+
+
+#	Concentration of counts over total sum of counts
+print("estimateSizeFactors")
+dds <- estimateSizeFactors(dds)
+print("plotSparsity")
+plotSparsity(dds)
+
+
+#	Cluster Dendrogram
+print("varianceStabilizingTransformation")
+vsd <- varianceStabilizingTransformation(dds)
+print("dist(t(assay(vsd)))")
+dists <- dist(t(assay(vsd)))
+print("plot(hclust(dists))")
+plot(hclust(dists))
+
+
+
+
+
+
+
+
+
+
 # Plot dispersions
-png(paste0(opt$featureCounts,".qc-dispersions.png"), 1000, 1000, pointsize=20)
+#png(paste0(opt$featureCounts,".qc-dispersions.png"), 1000, 1000, pointsize=20)
 plotDispEsts(dds, main="Dispersion plot")
-dev.off()
+#dev.off()
 
 # Regularized log transformation for clustering/heatmaps, etc
 rld <- rlogTransformation(dds)
@@ -147,17 +238,18 @@ library(RColorBrewer)
 # Sample distance heatmap
 sampleDists <- as.matrix(dist(t(assay(rld))))
 library(gplots)
-png(paste0(opt$featureCounts,".qc-heatmap-samples.png"), w=1000, h=1000, pointsize=20)
+#png(paste0(opt$featureCounts,".qc-heatmap-samples.png"), w=1000, h=1000, pointsize=20)
 heatmap.2(as.matrix(sampleDists), key=F, trace="none",
           col=colorpanel(100, "black", "white"),
           ColSideColors=mycols[condition], RowSideColors=mycols[condition],
           margin=c(10, 10), main="Sample Distance Matrix")
-dev.off()
+#dev.off()
 
 # Principal components analysis
 ## Could do with built-in DESeq2 function:
 ## DESeq2::plotPCA(rld, intgroup="condition")
 ## I like mine better:
+message("define rld_pca")
 rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL, legendpos="bottomleft", main="PCA Biplot", textcx=1, ...) {
   require(genefilter)
   require(calibrate)
@@ -184,34 +276,33 @@ rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL, legen
   #            pch = 16, cerld = 2, aspect = "iso", col = colours, main = draw.key(key = list(rect = list(col = colours),
   #                                                                                         terldt = list(levels(fac)), rep = FALSE)))
 }
-png(paste0(opt$featureCounts,".qc-pca.png"), 1000, 1000, pointsize=20)
+#png(paste0(opt$featureCounts,".qc-pca.png"), 1000, 1000, pointsize=20)
 rld_pca(rld, colors=mycols, intgroup="condition", xlim=c(-75, 35))
-dev.off()
-
+#dev.off()
 
 # Get differential expression results
 res <- results(dds)
 table(res$padj<0.05)
+
 ## Order by adjusted p-value
 res <- res[order(res$padj), ]
+
 ## Merge with normalized count data
 resdata <- merge(as.data.frame(res), as.data.frame(counts(dds, normalized=TRUE)), by="row.names", sort=FALSE)
 names(resdata)[1] <- "Gene"
 head(resdata)
+
 ## Write results
+message("write csv")
 write.csv(resdata, file=paste0(opt$featureCounts,".diffexpr-results.csv"))
 
-message("debug 1")
-
 ## Examine plot of p-values
+message("hist")
 hist(res$pvalue, breaks=50, col="grey")
 
-message("debug 2")
-
 ## Examine independent filtering
+message("attr filterThreshold")
 attr(res, "filterThreshold")
-
-message("debug 2b")
 
 #	
 #	Error in plot.window(...) : need finite 'xlim' values
@@ -223,14 +314,14 @@ message("debug 2b")
 #	4: In max(x) : no non-missing arguments to max; returning -Inf
 #	Execution halted
 #	
+#message("plot")
 #plot(attr(res,"filterNumRej"), type="b", xlab="quantiles of baseMean", ylab="number of rejections")
-
-message("debug 3")
 
 ## MA plot
 ## Could do with built-in DESeq2 function:
 ## DESeq2::plotMA(dds, ylim=c(-1,1), cex=1)
 ## I like mine better:
+message("define mplot")
 maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
   with(res, plot(baseMean, log2FoldChange, pch=20, cex=.5, log="x", ...))
   with(subset(res, padj<thresh), points(baseMean, log2FoldChange, col="red", pch=20, cex=1.5))
@@ -239,13 +330,14 @@ maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
     with(subset(res, padj<thresh), textxy(baseMean, log2FoldChange, labs=Gene, cex=textcx, col=2))
   }
 }
-png(paste0(opt$featureCounts,".diffexpr-maplot.png"), 1500, 1000, pointsize=20)
-maplot(resdata, main="MA Plot")
-dev.off()
 
-message("debug 4")
+message("maplot")
+#png(paste0(opt$featureCounts,".diffexpr-maplot.png"), 1500, 1000, pointsize=20)
+maplot(resdata, main="MA Plot")
+#dev.off()
 
 ## Volcano plot with "significant" genes labeled
+message("define volcanoplot")
 volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
   with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
   with(subset(res, padj<sigthresh ), points(log2FoldChange, -log10(pvalue), pch=20, col="red", ...))
@@ -258,11 +350,8 @@ volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", 
   legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|LogFC|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
 }
 
-message("debug 5")
-
-png(paste0(opt$featureCounts,".diffexpr-volcanoplot.png"), 1200, 1000, pointsize=20)
+message("volcanoplot")
+#png(paste0(opt$featureCounts,".diffexpr-volcanoplot.png"), 1200, 1000, pointsize=20)
 volcanoplot(resdata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-2.3, 2))
-dev.off()
-
-message("debug 6")
+#dev.off()
 
