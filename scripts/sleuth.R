@@ -45,10 +45,10 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
-message( "path: ",opt$path )
-message( "suffix: ",opt$suffix )
-message( "metadata: ",opt$metadata )
-message()
+print( paste0("path: ",opt$path ) )
+print( paste0("suffix: ",opt$suffix ) )
+print( paste0("metadata: ",opt$metadata ) )
+#print()
 
 if (is.null(opt$path)){
   print_help(opt_parser)
@@ -66,8 +66,12 @@ if (is.null(opt$metadata)){
 }
 
 
+
+#	print("PRINT FUNCTION")	#	goes to STDOUT
+#	message("MESSAGE FUNCTION")	#	goes to STDERR
+
 # Set value otherwise Rplots.pdf is used
-pdf( paste0(opt$path,opt$suffix,'.sleuth.plots.pdf') )
+pdf( paste0(opt$path,'/',opt$suffix,'.sleuth.plots.pdf') )
 
 
 
@@ -88,21 +92,14 @@ pdf( paste0(opt$path,opt$suffix,'.sleuth.plots.pdf') )
 #	kmer 11 causes ... for hairpin and mirna
 #Sample '01' had this error message: Error in apply(bs_mat, 2, quantile) : dim(X) must have a positive length
 
-#	Plotting inside a loop requires a print() as the for loop only returns the last thing it did to main.
-#	mature seems to have too little data
-#for( val in c( 'mature','hairpin','mirna' ) ){
-
-#val=opt$suffix	#	kallisto.single.mi_11
 
 
-message(paste0("Processing ",opt$suffix))
+print(paste0("Processing ",opt$suffix))
 #	For some reason, ONLY 1 plot ends up in this file.
 #	Probably has something to do with cowplot
-pdf( paste0(opt$suffix, ".plots.pdf") )
 
 #	specify colClasses as sample ids are numbers and R will strip leading zeroes
-message("Reading metadata")
-#metadata <- read.table('/raid/data/raw/Stanford_Project71/metadata.csv', sep=',',
+print("Reading metadata")
 metadata <- read.table(opt$metadata, sep=',',
 	header=TRUE,
 	stringsAsFactors = FALSE,
@@ -112,19 +109,18 @@ metadata <- dplyr::select(metadata, c( 'id','cc') )
 
 metadata[is.na(metadata)] <- 0
 
-#metadata <- dplyr::rename(metadata, run = id )
 #  'metadata' (sample_to_covariates) must contain a column named 'sample'
 #	Changing "run" to "sample", although not entirely accurate
 metadata <- dplyr::rename(metadata, sample = id )
 
 
-#	message("Selecting only present datasets.")
+#	print("Selecting only present datasets.")
 #	#	
 #	metadata <- dplyr::filter(metadata, file.exists(file.path( paste0(sample,".Homo_sapiens.GRCh38.rna"))))
 #	head(metadata)
 #	
 #	
-#	message("Selecting only lane 1 so 1 sample per line.")
+#	print("Selecting only lane 1 so 1 sample per line.")
 #	#	Select only the _1 so 1 run per line 
 #	metadata <- dplyr::filter( metadata, grepl('_1$', run_with_lane ))
 #	head(metadata)
@@ -142,8 +138,8 @@ metadata <- dplyr::mutate(metadata, path = file.path( paste0(opt$path,'/',sample
 
 
 
-message(paste("Using existing",nrow(metadata),"datasets"))
-head(metadata)
+#print(paste("Using existing",nrow(metadata),"datasets"))
+#head(metadata)
 
 
 
@@ -153,18 +149,18 @@ head(metadata)
 #	#> ensembl=useMart("ensembl")
 #	#> listDatasets(ensembl)
 #	
-#	message("Setting biomart")
+#	print("Setting biomart")
 #	mart <- biomaRt::useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl", host = "www.ensembl.org", ensemblRedirect = FALSE)
 #	#	Sometimes, the next step fails due to default host being down or being redirected
 #	#	to so include the host and stop the redirection. (redirection seems to be the problem at the moment)
 #	
-#	message("Getting biomart")
+#	print("Getting biomart")
 #	ttg <- biomaRt::getBM(attributes = c("ensembl_transcript_id", "ensembl_gene_id", "external_gene_name"), mart = mart)
 #	
-#	message("Modifying biomart")
+#	print("Modifying biomart")
 #	ttg <- dplyr::rename(ttg, target_id = ensembl_transcript_id, ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
 #	
-#	message("Subselecting biomart")
+#	print("Subselecting biomart")
 #	ttg <- dplyr::select(ttg, c('target_id', 'ens_gene', 'ext_gene'))
 #	head(ttg)
 
@@ -177,7 +173,7 @@ head(metadata)
 #	so <- sleuth_prep(metadata, target_mapping = ttg,
 #		aggregation_column = 'ens_gene', extra_bootstrap_summary = TRUE)
 so <- sleuth_prep(metadata, extra_bootstrap_summary = TRUE)
-head(so)
+#head(so)
 
 
 
@@ -188,11 +184,11 @@ head(so)
 
 #	Need multiple values for each of the offered factors so this doesn't run until enough data exists.
 #	  contrasts can be applied only to factors with 2 or more levels
-message("Fitting full")
+print("Fitting full")
 #so <- sleuth_fit(so, ~gender+smoke+tissue, 'full')
 so <- sleuth_fit(so, ~cc, 'full')
 
-message("Fitting reduced")
+print("Fitting reduced")
 #so <- sleuth_fit(so, ~gender+smoke, 'reduced')
 so <- sleuth_fit(so, ~1, 'reduced')
 
@@ -204,23 +200,23 @@ so <- sleuth_fit(so, ~1, 'reduced')
 #	#	https://pachterlab.github.io/sleuth/docs/sleuth_wt.html
 #	#so <- sleuth_wt(so, 'gender_smale')
 
-message("Performing likelihood ratio test")
+print("Performing likelihood ratio test")
 so <- sleuth_lrt(so, 'reduced', 'full')
 
 
-message("models(so)")
+print("models(so)")
 models(so)
 
 
-message("tests(so)")
+print("tests(so)")
 tests(so)
 
 
 
 #	https://pachterlab.github.io/sleuth/docs/sleuth_results.html
 
-#message("Obtaining gene-level differential expression results")
-message("Obtaining differential expression results")
+#print("Obtaining gene-level differential expression results")
+print("Obtaining differential expression results")
 
 #sleuth_table <- sleuth_results(so, 'gender_smale', show_all = FALSE)
 sleuth_table <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
@@ -228,19 +224,20 @@ sleuth_table <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
 #typeof(sleuth_table)
 
 print(head(sleuth_table[order(sleuth_table$pval),],20))
+head(sleuth_table[order(sleuth_table$pval),],20)
 
 sleuth_table_select <- dplyr::filter(sleuth_table, qval <= 0.05)
-print(head(sleuth_table_select,20))
+#print(head(sleuth_table_select,20))
+head(sleuth_table_select,20)
 
-message("Looping over top 5")
-#print(head(sleuth_table[order(sleuth_table$pval),],5)[['target_id']])
-for(ref in head(sleuth_table[order(sleuth_table$pval),],5)[['target_id']]){
-#	for(ref in head(sleuth_table[order(sleuth_table$pval),],5) ){
-##		print(plot_bootstrap(so, ref$target_id, units = "est_counts", color_by = "cc"))
+print("Looping over top 10")
+print(head(sleuth_table[order(sleuth_table$pval),],10)[['target_id']])
+
+for(ref in head(sleuth_table[order(sleuth_table$pval),],10)[['target_id']]){
 	print(ref)
 	print(plot_bootstrap(so, ref, units = "est_counts", color_by = "cc"))
 }
-message("end loop over top 5")
+print("end loop over top 10")
 
 #print(plot_bootstrap(so, "hsa-mir-3908-hairpin", units = "est_counts", color_by = "cc"))
 #print(plot_bootstrap(so, "hsa-mir-4430-hairpin", units = "est_counts", color_by = "cc"))
@@ -249,7 +246,7 @@ message("end loop over top 5")
 
 
 
-#	#	message("Obtaining consistent transcript-level differential expression results")
+#	#	print("Obtaining consistent transcript-level differential expression results")
 #	#	
 #	#	#sleuth_table_tx <- sleuth_results(so, 'gender_smale', show_all = FALSE, pval_aggregate = FALSE)
 #	#	sleuth_table_tx <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE, pval_aggregate = FALSE)
@@ -263,21 +260,23 @@ message("end loop over top 5")
 #	#	Perhaps clearer with bigger data set and more metadata to group.
 
 
-#	message("plot_pca(so, color_by = 'gender')")
+#	print("plot_pca(so, color_by = 'gender')")
 #	plot_pca(so, color_by = 'gender')
 #	
-#	message("plot_pca(so, color_by = 'smoke')")
+#	print("plot_pca(so, color_by = 'smoke')")
 #	plot_pca(so, color_by = 'smoke')
 #	
-#	message("plot_pca(so, color_by = 'tissue')")
+#	print("plot_pca(so, color_by = 'tissue')")
 #	plot_pca(so, color_by = 'tissue')
 
 
-message("plot_pca(so, color_by = 'cc')")
-print(plot_pca(so, color_by = 'cc'))
+print("plot_pca(so, color_by = 'cc')")
+#print(plot_pca(so, color_by = 'cc'))
+plot_pca(so, color_by = 'cc')
 
-message("plot_pca(so, text_labels = TRUE, color_by = 'cc')")
-print(plot_pca(so, text_labels = TRUE, color_by = 'cc'))
+print("plot_pca(so, text_labels = TRUE, color_by = 'cc')")
+#print(plot_pca(so, text_labels = TRUE, color_by = 'cc'))
+plot_pca(so, text_labels = TRUE, color_by = 'cc')
 
 
 
@@ -295,21 +294,21 @@ print(plot_pca(so, text_labels = TRUE, color_by = 'cc'))
 
 #	When print/plotting heatmap, nothing after it prints.
 
-#message("plot_sample_heatmap(so)")
+#print("plot_sample_heatmap(so)")
 #print(plot_sample_heatmap(so, main="test1"))
 
-#message("plot_sample_heatmap(so) without legend")
+#print("plot_sample_heatmap(so) without legend")
 #print(plot_sample_heatmap(so, legend=FALSE, main="test2"))
 
 
 
 
-#message("plot_group_density")
+#print("plot_group_density")
 
-#message("plot_qq(so,TEST)")
+#print("plot_qq(so,TEST)")
 #print(plot_qq(so,TEST))
 
-#message("plot_volcano(so,TEST)")
+#print("plot_volcano(so,TEST)")
 #print(plot_volcano(so,TEST))
 
 
@@ -336,4 +335,14 @@ print(plot_pca(so, text_labels = TRUE, color_by = 'cc'))
 #	#	plot_transcript_heatmap
 #	#	
 #	#	plot_vars
+
+
+print("At the end.")
+
+#dev.off()
+#dev.off()
+#dev.off()
+#Error in dev.off() : cannot shut down device 1 (the null device)
+#Execution halted
+
 

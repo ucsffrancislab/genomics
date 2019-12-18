@@ -12,20 +12,67 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-#	for ext in mi_11 mt_11 hp_11 ; do
-#	
-#		#	produces kallisto.single.hp_11.sleuth.plots.pdf
-#	
-#		outbase=${dir}/kallisto.single.${ext}.sleuth
-#		f=${outbase}.plots.pdf
-#		if [ -f $f ] && [ ! -w $f ] ; then
-#			echo "Write-protected $f exists. Skipping."
-#		else
-#			qsub -N sleuth.${ext} -l vmem=4gb -o ${outbase}.${date}.out -e ${outbase}.${date}.err \
-#				~/.local/bin/sleuth.bash -F "--suffix kallisto.single.${ext} --metadata /francislab/data1/raw/20191008_Stanford71/metadata.csv"
-#		fi
-#	
-#	done
+for ext in mi_11 mt_11 hp_11 ; do
+
+#	hp 80, mi 64, mt 8
+#	mi_11 .............................=>> PBS: job killed: vmem 51231789056 exceeded limit 17179869184
+
+		vmem=128
+#		vmem=64
+#	if [ ${ext} == 'mi_11' ] ; then
+#		vmem=32
+#	else
+#		vmem=16
+#	fi
+
+
+#Job Name:   sleuth.mi_11
+#Exit_status=-10 resources_used.cput=00:00:52 resources_used.mem=12915356kb resources_used.vmem=93678352kb resources_used.walltime=00:00:46
+
+
+#Job Name:   sleuth.hp_11
+#Exit_status=-10 resources_used.cput=00:02:09 resources_used.mem=6352032kb resources_used.vmem=69998936kb resources_used.walltime=00:00:51
+#
+#Job Name:   sleuth.mt_11
+#Exit_status=-10 resources_used.cput=00:00:51 resources_used.mem=9133452kb resources_used.vmem=58483792kb resources_used.walltime=00:00:51
+
+
+
+#Job Name:   sleuth.hp_11
+#Exit_status=-10 resources_used.cput=00:00:26 resources_used.mem=8617044kb resources_used.vmem=86286160kb resources_used.walltime=00:00:38
+#
+#Job Name:   sleuth.mt_11
+#Exit_status=-10 resources_used.cput=00:00:30 resources_used.mem=9159716kb resources_used.vmem=99378064kb resources_used.walltime=00:00:38
+#
+
+
+#	case $ext in
+#		rsg)
+#			vmem=64;;
+#			#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
+#		mi_*|mt_*|hp_*)
+#			vmem=8;;
+#		*)
+#			vmem=16;;
+#	esac
+
+
+
+	#	produces kallisto.single.hp_11.sleuth.plots.pdf
+
+	suffix="kallisto.single.${ext}"
+	outbase=${dir}/${suffix}.sleuth
+	f=${outbase}.plots.pdf
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N sleuth.${ext} -l vmem=${vmem}gb -o ${outbase}.${date}.out -e ${outbase}.${date}.err \
+			~/.local/bin/sleuth.bash -F \
+				"--suffix ${suffix} --path ${dir} \
+				--metadata /francislab/data1/raw/20191008_Stanford71/metadata.csv"
+	fi
+
+done
 
 
 

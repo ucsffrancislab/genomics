@@ -10,14 +10,16 @@ ARGS=$*
 
 while [ $# -gt 0 ] ; do
 	case $1 in
+		-p|--path)
+			shift; path=${1}; shift;;
 		-s|--suffix)
-			shift; outbase=${1}; output=${1}.sleuth.plots.pdf; shift;;
+			shift; suffix=${1}; shift;;
 		*)
 			shift;;
 	esac
 done
 
-f=${output}
+f=${path}/${suffix}.sleuth.plots.pdf
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else

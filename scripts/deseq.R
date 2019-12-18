@@ -1,5 +1,8 @@
 #!/usr/bin/env Rscript
 
+#	message -> STDERR
+#	print -> STDOUT
+
 #	adapted from https://gist.githubusercontent.com/stephenturner/f60c1934405c127f09a6/raw/3971589c8c017953ec0493329ed8c4b711cbe358/deseq2-analysis-template.R
 
 #if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -27,9 +30,9 @@ option_list = list(
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
-message( "featureCounts: ",opt$featureCounts )
-message( "metadata: ",opt$metadata )
-message()
+print( paste0("featureCounts: ",opt$featureCounts ) )
+print( paste0("metadata: ",opt$metadata ) )
+#print()
 
 
 if (is.null(opt$featureCounts)){
@@ -109,7 +112,7 @@ summary(res) #summary of results
 
 
 
-message("plotMA")
+print("plotMA")
 plotMA( res, ylim = c(-1, 1) )
 plotMA( res, ylim = c(-2, 2) )
 plotMA( res, ylim = c(-5, 5) )
@@ -117,28 +120,28 @@ plotMA( res, ylim = c(-5, 5) )
 
 
 
-message("plotDispEsts")
+print("plotDispEsts")
 plotDispEsts( dds, ylim = c(1e-6, 1e1) )
 plotDispEsts( dds, ylim = c(1e-6, 1e4) )
 
 
-message("hist")
+print("hist")
 hist( res$pvalue, breaks=20, col="grey" )
 
 
-message("res")
+print("res")
 res <- res[order(res$padj),]
 head(res)
 
 #par(mfrow=c(2,3))
 
-message("Looping over top 10")
+print("Looping over top 10")
 for(gene in row.names(head(res,10))){
-	message(gene)
+	print(gene)
 	#print(plotCounts(dds, gene=gene, intgroup="cc"))
 	print(plotCounts(dds, gene=gene, intgroup="condition"))
 }
-message("end loop over top 10")
+print("end loop over top 10")
 
 
 
@@ -206,7 +209,7 @@ plot(hclust(dists))
 
 
 # Plot dispersions
-message("plotDispEsts")
+print("plotDispEsts")
 plotDispEsts(dds, main="Dispersion plot")
 
 
@@ -225,7 +228,7 @@ library(RColorBrewer)
 # Sample distance heatmap
 sampleDists <- as.matrix(dist(t(assay(rld))))
 library(gplots)
-message("heatmap.2")
+print("heatmap.2")
 heatmap.2(as.matrix(sampleDists), key=F, trace="none",
 	col=colorpanel(100, "black", "white"),
 	ColSideColors=mycols[condition], RowSideColors=mycols[condition],
@@ -236,7 +239,7 @@ heatmap.2(as.matrix(sampleDists), key=F, trace="none",
 ## Could do with built-in DESeq2 function:
 ## DESeq2::plotPCA(rld, intgroup="condition")
 ## I like mine better:
-message("define rld_pca")
+print("define rld_pca")
 rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL,
 		legendpos="bottomleft", main="PCA Biplot", textcx=1, ...) {
 	require(genefilter)
@@ -266,7 +269,7 @@ rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL,
 }
 
 
-message("rld_pca")
+print("rld_pca")
 rld_pca(rld, colors=mycols, intgroup="condition", xlim=c(-75, 35))
 
 
@@ -283,15 +286,15 @@ names(resdata)[1] <- "Gene"
 head(resdata)
 
 ## Write results
-message("write csv")
+print("write csv")
 write.csv(resdata, file=paste0(opt$featureCounts,".deseq.diffexpr-results.csv"))
 
 ## Examine plot of p-values
-message("hist")
+print("hist")
 hist(res$pvalue, breaks=50, col="grey")
 
 ## Examine independent filtering
-message("attr filterThreshold")
+print("attr filterThreshold")
 attr(res, "filterThreshold")
 
 #
@@ -304,7 +307,7 @@ attr(res, "filterThreshold")
 #	4: In max(x) : no non-missing arguments to max; returning -Inf
 #	Execution halted
 #
-#message("plot")
+#print("plot")
 #plot(attr(res,"filterNumRej"), type="b", xlab="quantiles of baseMean", ylab="number of rejections")
 
 
@@ -312,7 +315,7 @@ attr(res, "filterThreshold")
 ## Could do with built-in DESeq2 function:
 ## DESeq2::plotMA(dds, ylim=c(-1,1), cex=1)
 ## I like mine better:
-message("define mplot")
+print("define mplot")
 maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
 	with(res, plot(baseMean, log2FoldChange, pch=20, cex=.5, log="x", ...))
 	with(subset(res, padj<thresh), points(baseMean, log2FoldChange, col="red", pch=20, cex=1.5))
@@ -322,12 +325,12 @@ maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
 	}
 }
 
-message("maplot")
+print("maplot")
 maplot(resdata, main="MA Plot")
 
 
 ## Volcano plot with "significant" genes labeled
-message("define volcanoplot")
+print("define volcanoplot")
 volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot",
 		legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
 	with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
@@ -349,6 +352,6 @@ volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot",
 }
 
 
-message("volcanoplot")
+print("volcanoplot")
 volcanoplot(resdata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-2.3, 2))
 
