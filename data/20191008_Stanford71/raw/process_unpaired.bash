@@ -249,7 +249,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 #
 	#for kref in ${KALLISTO}/*idx ; do
 	#for kref in ${KALLISTO}/??_??.idx ; do
-	for kref in ${KALLISTO}/??_11.idx ; do
+	for kref in ${KALLISTO}/??_1?.idx ; do
 
 		basekref=$( basename $kref .idx )
 
@@ -264,6 +264,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		esac
 
 		qoutbase=${base}.kallisto.single.${basekref}
+		f=${qoutbase}
 		#if [ -f $f ] && [ ! -w $f ] ; then
 		if [ -d $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."

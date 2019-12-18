@@ -125,8 +125,12 @@ plotDispEsts( dds, ylim = c(1e-6, 1e1) )
 plotDispEsts( dds, ylim = c(1e-6, 1e4) )
 
 
-print("hist")
+print("hist pvalue")
 hist( res$pvalue, breaks=20, col="grey" )
+
+
+print("hist padj")
+hist( res$padj, breaks=20, col="grey" )
 
 
 print("res")
@@ -135,13 +139,23 @@ head(res)
 
 #par(mfrow=c(2,3))
 
-print("Looping over top 10")
+print("Looping over head 10")
 for(gene in row.names(head(res,10))){
 	print(gene)
 	#print(plotCounts(dds, gene=gene, intgroup="cc"))
 	print(plotCounts(dds, gene=gene, intgroup="condition"))
 }
-print("end loop over top 10")
+print("end loop over head 10")
+
+#	Not sure if this is sorted in the correct order
+
+print("Looping over tail 10")
+for(gene in row.names(tail(res,10))){
+	print(gene)
+	#print(plotCounts(dds, gene=gene, intgroup="cc"))
+	print(plotCounts(dds, gene=gene, intgroup="condition"))
+}
+print("end loop over tail 10")
 
 
 
