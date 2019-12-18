@@ -16,14 +16,14 @@ options(bitmapType='cairo')
 #	install.packages('optparse')
 #	http://tuxette.nathalievilla.org/?p=1696
 library("optparse")
- 
+
 option_list = list(
-	make_option(c("-f", "--featureCounts"), type="character", default=NULL, 
+	make_option(c("-f", "--featureCounts"), type="character", default=NULL,
 		help="featureCounts file name", metavar="character"),
-	make_option(c("-m", "--metadata"), type="character", default=NULL, 
+	make_option(c("-m", "--metadata"), type="character", default=NULL,
 		help="metadata file name", metavar="character")
-); 
- 
+);
+
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
 
@@ -33,18 +33,18 @@ message()
 
 
 if (is.null(opt$featureCounts)){
-  print_help(opt_parser)
-  stop("featureCounts file required.\n", call.=FALSE)
+	print_help(opt_parser)
+	stop("featureCounts file required.\n", call.=FALSE)
 }
 
 if (is.null(opt$metadata)){
-  print_help(opt_parser)
-  stop("metadata file required.\n", call.=FALSE)
+	print_help(opt_parser)
+	stop("metadata file required.\n", call.=FALSE)
 }
 
 
 #	Set value otherwise Rplots.pdf is used
-pdf( paste0(opt$featureCount,'.plots.pdf') )
+pdf( paste0(opt$featureCount,'.deseq.plots.pdf') )
 
 
 ## RNA-seq analysis with DESeq2
@@ -130,14 +130,13 @@ message("res")
 res <- res[order(res$padj),]
 head(res)
 
-
 #par(mfrow=c(2,3))
 
 message("Looping over top 10")
 for(gene in row.names(head(res,10))){
-        message(gene)
-        #print(plotCounts(dds, gene=gene, intgroup="cc"))
-        print(plotCounts(dds, gene=gene, intgroup="condition"))
+	message(gene)
+	#print(plotCounts(dds, gene=gene, intgroup="cc"))
+	print(plotCounts(dds, gene=gene, intgroup="condition"))
 }
 message("end loop over top 10")
 
@@ -172,8 +171,6 @@ legend("topright",
 print("rlog")
 rld <- rlog(dds)
 print("plotPCA")
-#plotPCA(rld)
-#plotPCA(rld, intgroup=c( 'disease' ))
 plotPCA(rld, intgroup=c( 'condition' ))
 
 
@@ -188,10 +185,7 @@ se <- SummarizedExperiment(log2(counts(dds, normalized=TRUE) + 1), colData=colDa
 # the call to DESeqTransform() is needed to
 # trigger our plotPCA method.
 print("plotPCA")
-#plotPCA( DESeqTransform( se ) )
-#plotPCA( DESeqTransform( se ), intgroup=c( 'disease' ) )
 plotPCA( DESeqTransform( se ), intgroup=c( 'condition' ) )
-
 
 
 #	Concentration of counts over total sum of counts
@@ -211,17 +205,10 @@ plot(hclust(dists))
 
 
 
-
-
-
-
-
-
-
 # Plot dispersions
-#png(paste0(opt$featureCounts,".qc-dispersions.png"), 1000, 1000, pointsize=20)
+message("plotDispEsts")
 plotDispEsts(dds, main="Dispersion plot")
-#dev.off()
+
 
 # Regularized log transformation for clustering/heatmaps, etc
 rld <- rlogTransformation(dds)
@@ -238,47 +225,50 @@ library(RColorBrewer)
 # Sample distance heatmap
 sampleDists <- as.matrix(dist(t(assay(rld))))
 library(gplots)
-#png(paste0(opt$featureCounts,".qc-heatmap-samples.png"), w=1000, h=1000, pointsize=20)
+message("heatmap.2")
 heatmap.2(as.matrix(sampleDists), key=F, trace="none",
-          col=colorpanel(100, "black", "white"),
-          ColSideColors=mycols[condition], RowSideColors=mycols[condition],
-          margin=c(10, 10), main="Sample Distance Matrix")
-#dev.off()
+	col=colorpanel(100, "black", "white"),
+	ColSideColors=mycols[condition], RowSideColors=mycols[condition],
+	margin=c(10, 10), main="Sample Distance Matrix")
+
 
 # Principal components analysis
 ## Could do with built-in DESeq2 function:
 ## DESeq2::plotPCA(rld, intgroup="condition")
 ## I like mine better:
 message("define rld_pca")
-rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL, legendpos="bottomleft", main="PCA Biplot", textcx=1, ...) {
-  require(genefilter)
-  require(calibrate)
-  require(RColorBrewer)
-  rv = rowVars(assay(rld))
-  select = order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
-  pca = prcomp(t(assay(rld)[select, ]))
-  fac = factor(apply(as.data.frame(colData(rld)[, intgroup, drop = FALSE]), 1, paste, collapse = " : "))
-  if (is.null(colors)) {
-    if (nlevels(fac) >= 3) {
-      colors = brewer.pal(nlevels(fac), "Paired")
-    }   else {
-      colors = c("black", "red")
-    }
-  }
-  pc1var <- round(summary(pca)$importance[2,1]*100, digits=1)
-  pc2var <- round(summary(pca)$importance[2,2]*100, digits=1)
-  pc1lab <- paste0("PC1 (",as.character(pc1var),"%)")
-  pc2lab <- paste0("PC1 (",as.character(pc2var),"%)")
-  plot(PC2~PC1, data=as.data.frame(pca$x), bg=colors[fac], pch=21, xlab=pc1lab, ylab=pc2lab, main=main, ...)
-  with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
-  legend(legendpos, legend=levels(fac), col=colors, pch=20)
-  #     rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
-  #            pch = 16, cerld = 2, aspect = "iso", col = colours, main = draw.key(key = list(rect = list(col = colours),
-  #                                                                                         terldt = list(levels(fac)), rep = FALSE)))
+rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL,
+		legendpos="bottomleft", main="PCA Biplot", textcx=1, ...) {
+	require(genefilter)
+	require(calibrate)
+	require(RColorBrewer)
+	rv = rowVars(assay(rld))
+	select = order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+	pca = prcomp(t(assay(rld)[select, ]))
+	fac = factor(apply(as.data.frame(colData(rld)[, intgroup, drop = FALSE]), 1, paste, collapse = " : "))
+	if (is.null(colors)) {
+		if (nlevels(fac) >= 3) {
+			colors = brewer.pal(nlevels(fac), "Paired")
+		} else {
+			colors = c("black", "red")
+		}
+	}
+	pc1var <- round(summary(pca)$importance[2,1]*100, digits=1)
+	pc2var <- round(summary(pca)$importance[2,2]*100, digits=1)
+	pc1lab <- paste0("PC1 (",as.character(pc1var),"%)")
+	pc2lab <- paste0("PC1 (",as.character(pc2var),"%)")
+	plot(PC2~PC1, data=as.data.frame(pca$x), bg=colors[fac], pch=21, xlab=pc1lab, ylab=pc2lab, main=main, ...)
+	with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
+	legend(legendpos, legend=levels(fac), col=colors, pch=20)
+	#     rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
+	#            pch = 16, cerld = 2, aspect = "iso", col = colours, main = draw.key(key = list(rect = list(col = colours),
+	#                                                                                         terldt = list(levels(fac)), rep = FALSE)))
 }
-#png(paste0(opt$featureCounts,".qc-pca.png"), 1000, 1000, pointsize=20)
+
+
+message("rld_pca")
 rld_pca(rld, colors=mycols, intgroup="condition", xlim=c(-75, 35))
-#dev.off()
+
 
 # Get differential expression results
 res <- results(dds)
@@ -294,7 +284,7 @@ head(resdata)
 
 ## Write results
 message("write csv")
-write.csv(resdata, file=paste0(opt$featureCounts,".diffexpr-results.csv"))
+write.csv(resdata, file=paste0(opt$featureCounts,".deseq.diffexpr-results.csv"))
 
 ## Examine plot of p-values
 message("hist")
@@ -304,7 +294,7 @@ hist(res$pvalue, breaks=50, col="grey")
 message("attr filterThreshold")
 attr(res, "filterThreshold")
 
-#	
+#
 #	Error in plot.window(...) : need finite 'xlim' values
 #	Calls: plot -> plot -> plot.default -> localWindow -> plot.window
 #	In addition: Warning messages:
@@ -313,9 +303,10 @@ attr(res, "filterThreshold")
 #	3: In min(x) : no non-missing arguments to min; returning Inf
 #	4: In max(x) : no non-missing arguments to max; returning -Inf
 #	Execution halted
-#	
+#
 #message("plot")
 #plot(attr(res,"filterNumRej"), type="b", xlab="quantiles of baseMean", ylab="number of rejections")
+
 
 ## MA plot
 ## Could do with built-in DESeq2 function:
@@ -323,35 +314,41 @@ attr(res, "filterThreshold")
 ## I like mine better:
 message("define mplot")
 maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
-  with(res, plot(baseMean, log2FoldChange, pch=20, cex=.5, log="x", ...))
-  with(subset(res, padj<thresh), points(baseMean, log2FoldChange, col="red", pch=20, cex=1.5))
-  if (labelsig) {
-    require(calibrate)
-    with(subset(res, padj<thresh), textxy(baseMean, log2FoldChange, labs=Gene, cex=textcx, col=2))
-  }
+	with(res, plot(baseMean, log2FoldChange, pch=20, cex=.5, log="x", ...))
+	with(subset(res, padj<thresh), points(baseMean, log2FoldChange, col="red", pch=20, cex=1.5))
+	if (labelsig) {
+		require(calibrate)
+		with(subset(res, padj<thresh), textxy(baseMean, log2FoldChange, labs=Gene, cex=textcx, col=2))
+	}
 }
 
 message("maplot")
-#png(paste0(opt$featureCounts,".diffexpr-maplot.png"), 1500, 1000, pointsize=20)
 maplot(resdata, main="MA Plot")
-#dev.off()
+
 
 ## Volcano plot with "significant" genes labeled
 message("define volcanoplot")
-volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot", legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
-  with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
-  with(subset(res, padj<sigthresh ), points(log2FoldChange, -log10(pvalue), pch=20, col="red", ...))
-  with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="orange", ...))
-  with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), points(log2FoldChange, -log10(pvalue), pch=20, col="green", ...))
-  if (labelsig) {
-    require(calibrate)
-    with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=textcx, ...))
-  }
-  legend(legendpos, xjust=1, yjust=1, legend=c(paste("FDR<",sigthresh,sep=""), paste("|LogFC|>",lfcthresh,sep=""), "both"), pch=20, col=c("red","orange","green"))
+volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main="Volcano Plot",
+		legendpos="bottomright", labelsig=TRUE, textcx=1, ...) {
+	with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
+	with(subset(res, padj<sigthresh ), points(log2FoldChange,
+		-log10(pvalue), pch=20, col="red", ...))
+	with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange,
+		-log10(pvalue), pch=20, col="orange", ...))
+	with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh),
+		points(log2FoldChange, -log10(pvalue), pch=20, col="green", ...))
+	if (labelsig) {
+		require(calibrate)
+		with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh),
+			textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=textcx, ...))
+	}
+	legend(legendpos, xjust=1, yjust=1,
+		legend=c(paste("FDR<",sigthresh,sep=""),
+		paste("|LogFC|>",lfcthresh,sep=""), "both"),
+		pch=20, col=c("red","orange","green"))
 }
 
+
 message("volcanoplot")
-#png(paste0(opt$featureCounts,".diffexpr-volcanoplot.png"), 1200, 1000, pointsize=20)
 volcanoplot(resdata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-2.3, 2))
-#dev.off()
 

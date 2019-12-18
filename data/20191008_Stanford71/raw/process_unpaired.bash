@@ -6,7 +6,7 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 
 
-REFS=/data/shared/francislab/refs
+REFS=/francislab/data1/refs
 FASTA=${REFS}/fasta
 KALLISTO=${REFS}/kallisto
 SUBREAD=${REFS}/subread
@@ -15,8 +15,8 @@ BLASTDB=${REFS}/blastn
 KRAKEN2=${REFS}/kraken2
 
 #	do exported variables get passed to submitted jobs? No
-#export BOWTIE2_INDEXES=/data/shared/francislab/refs/bowtie2
-#export BLASTDB=/data/shared/francislab/refs/blastn
+#export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
+#export BLASTDB=/francislab/data1/refs/blastn
 threads=8
 
 date=$( date "+%Y%m%d%H%M%S" )
@@ -29,7 +29,8 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 #for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
 #for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
-for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/62*.fastq.gz ; do
+#for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/62*.fastq.gz ; do
+for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}
@@ -246,31 +247,46 @@ for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/
 #
 #	WAITING UNTIL HAVE THE SPACE
 #
-#	for kref in ${KALLISTO}/*idx ; do
-#
-#		basekref=$( basename $kref .idx )
-#
-#		case $basekref in
-#			rsg)
-#				vmem=64;;
-#				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
-#			mi_*|mt_*|hp_*)
-#				vmem=8;;
-#			*)
-#				vmem=16;;
-#		esac
-#
-#		outbase=${base}.${basekref}.kallisto.single
-#		qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#			~/.local/bin/kallisto.bash \
-#			-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
-#				--single-overhang --single -l 144.924 -s 20.6833 --index ${kref} \
-#				--output-dir ${outbase} ${r1}"
-#
-#		#	Avg: 144.924 	Stddev:	20.6833
-#
-#	done
+	#for kref in ${KALLISTO}/*idx ; do
+	#for kref in ${KALLISTO}/??_??.idx ; do
+	for kref in ${KALLISTO}/??_11.idx ; do
+
+		basekref=$( basename $kref .idx )
+
+		case $basekref in
+			rsg)
+				vmem=64;;
+				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
+			mi_*|mt_*|hp_*)
+				vmem=8;;
+			*)
+				vmem=16;;
+		esac
+
+		qoutbase=${base}.kallisto.single.${basekref}
+		#if [ -f $f ] && [ ! -w $f ] ; then
+		if [ -d $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+
+			#	Not sure if we actually need the bam file
+
+			qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/kallisto.bash \
+				-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
+					--single-overhang --single -l 144.924 -s 20.6833 --index ${kref} \
+					--output-dir ${qoutbase} ${r1}"
+		fi
+
+		#	zcat /francislab/data1/raw/20191008_Stanford71/trimmed/*fastq.gz | paste - - - - | cut -f 2 |
+		#		awk '{ l=length; sum+=l; sumsq+=(l)^2; print "Avg:",sum/NR,"\tStddev:\t"sqrt((sumsq-sum^2/NR)/NR)}' > trimmed.avg_length.ssstdev.txt
+		#	cat trimmed.avg_length.ssstdev.txt
+		#	Avg: 144.9 Stddev:20.6282
+
+		#	Avg: 144.924 	Stddev:	20.6833
+
+	done
 
 
 
@@ -407,5 +423,5 @@ for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/
 #	done
 #
 #
-done	#	for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/01*.fastq.gz ; do
+done	#	for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
 
