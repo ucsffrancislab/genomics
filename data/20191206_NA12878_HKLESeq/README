@@ -55,16 +55,16 @@ echo ${base}
 python ~/github/ucsffrancislab/umi/umitag.py \
 --read1_in ${base}.r1.fastq \
 --read2_in ${base}.r2.fastq \
---read1_out ${base}.r1.umitagged.fastq \
---read2_out ${base}.r2.umitagged.fastq \
+--read1_out ${base}.umitagged.r1.fastq \
+--read2_out ${base}.umitagged.r2.fastq \
 --index1 ${base}.i1.fastq \
 --index2 ${base}.i2.fastq
 done
 
 for r1 in *.r1.umitagged.fastq ; do
-base=${r1%.r1.umitagged.fastq}
-python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r1.umitagged.fastq ${base}.r1.consolidated.fastq 15 0.9
-python ~/github/ucsffrancislab/umi/consolidate.py ${base}.r2.umitagged.fastq ${base}.r2.consolidated.fastq 15 0.9
+base=${r1%.umitagged.r1.fastq}
+python ~/github/ucsffrancislab/umi/consolidate.py ${base}.umitagged.r1.fastq ${base}.consolidated.r1..fastq 15 0.9
+python ~/github/ucsffrancislab/umi/consolidate.py ${base}.umitagged.r2.fastq ${base}.consolidated.r2.fastq 15 0.9
 done
 
 
@@ -72,10 +72,10 @@ done
 I then ran sickle to trim on quality
 
 
-for r1 in *.r1.consolidated.fastq ; do
+for r1 in *.consolidated.r1.fastq ; do
 r2=${r1/r1/r2}
-base=${r1%.r1.consolidated.fastq}
-~/github/najoshi/sickle/sickle pe -f ${r1} -r ${r2} -t sanger -o ${base}.r1.sickle.fastq -p ${base}.r2.sickle.fastq -s ${base}.si.sickle.fastq > ${base}.sickle.out
+base=${r1%.consolidated.r1.fastq}
+~/github/najoshi/sickle/sickle pe -f ${r1} -r ${r2} -t sanger -o ${base}.sickle.r1.fastq -p ${base}.sickle.r2.fastq -s ${base}.sickle.si.fastq > ${base}.sickle.out
 done
 
 
@@ -83,11 +83,11 @@ done
 I then ran chimera on all of the SVAs and HERVs in hg38 with and without all of the alternates.
 
 
-chimera.bash --human hg38 --viral SVAs_and_HERVs_KWHE --threads 4 *.r?.sickle.fastq.gz &
+chimera.bash --human hg38 --viral SVAs_and_HERVs_KWHE --threads 4 *.sickle.r?.fastq.gz &
 mv working_dir chimera_hg38_SVAs_and_HERVs_KWHE
 tail -n +2 chimera_hg38_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg38.Q20.sorted.csv | awk -F\| '{print $1":"$2}' | sort > chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points
 
-chimera.bash --human hg38_no_alts --viral SVAs_and_HERVs_KWHE --threads 4 *.r?.sickle.fastq.gz &
+chimera.bash --human hg38_no_alts --viral SVAs_and_HERVs_KWHE --threads 4 *.sickle.r?.fastq.gz &
 mv working_dir chimera_hg38_no_alts_SVAs_and_HERVs_KWHE
 tail -n +2 chimera_hg38_no_alts_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg38_no_alts.Q20.sorted.csv | awk -F\| '{print $1":"$2}' | sort > chimera_hg38_no_alts_SVAs_and_HERVs_KWHE.insertion_points
 
@@ -204,12 +204,12 @@ When rounded to 10,000, nearly all are found when the reference is aligned "loca
 
 
 
-Align to refs?
+Align to all refs?
 
-for r1 in *.r1.sickle.fastq ; do
+for r1 in *.sickle.r1.fastq ; do
 r2=${r1/r1/r2}
 si=${r1/r1/si}
-base=${r1%.r1.sickle.fastq}
+base=${r1%.sickle.r1.fastq}
 for ref in hg38 NA12878 SVAs_and_HERVs_KWHE ; do
 bowtie2 --threads 4 --very-sensitive-local -x ${ref} -U ${r1},${r2},${si} | samtools view -o ${base}.${ref}.bam
 done
@@ -217,4 +217,162 @@ done
 
 Re-Demultiplex with just i7? Not i5?
 
+
+Swapping name and lane for chimera, although kinda pointless now.
+
+for r in r1 r2 ; do
+for s in sickle umitagged consolidated ; do
+rename ${r}.${s} ${s}.${r} *${r}.${s}.fastq.gz
+done ; done
+
+
+for r1 in *.sickle.r1.fastq.gz ; do
+r2=${r1/r1/r2}
+base=${r1%.sickle.r1.fastq.gz}
+ref=SVAs_and_HERVs_KWHE
+
+bowtie2 --threads 4 --very-sensitive-local -x ${ref} -1 ${r1} -2 ${r2} > ${base}.bowtie2.${ref}.p.loc.sam 2> ${base}.bowtie2.${ref}.p.loc.err.txt
+samtools sort -o ${base}.bowtie2.${ref}.p.loc.bam ${base}.bowtie2.${ref}.p.loc.sam
+rm -f ${base}.bowtie2.${ref}.p.loc.sam
+samtools index ${base}.bowtie2.${ref}.p.loc.bam
+
+bowtie2 --threads 4 --very-sensitive -x ${ref} -1 ${r1} -2 ${r2} > ${base}.bowtie2.${ref}.p.e2e.sam 2> ${base}.bowtie2.${ref}.p.e2e.err.txt
+samtools sort -o ${base}.bowtie2.${ref}.p.e2e.bam ${base}.bowtie2.${ref}.p.e2e.sam
+rm -f ${base}.bowtie2.${ref}.p.e2e.sam
+samtools index ${base}.bowtie2.${ref}.p.e2e.bam
+
+bowtie2 --threads 4 --very-sensitive -x ${ref} -U ${r1},${r2} > ${base}.bowtie2.${ref}.u.e2e.sam 2> ${base}.bowtie2.${ref}.u.e2e.err.txt
+samtools sort -o ${base}.bowtie2.${ref}.u.e2e.bam ${base}.bowtie2.${ref}.u.e2e.sam
+rm -f ${base}.bowtie2.${ref}.u.e2e.sam
+samtools index ${base}.bowtie2.${ref}.u.e2e.bam
+
+for ref in hg38 NA12878 ; do
+bowtie2 --threads 4 --very-sensitive -x ${ref} -1 ${r1} -2 ${r2} > ${base}.bowtie2.${ref}.p.e2e.sam 2> ${base}.bowtie2.${ref}.p.e2e.err.txt
+samtools sort -o ${base}.bowtie2.${ref}.p.e2e.bam ${base}.bowtie2.${ref}.p.e2e.sam
+rm -f ${base}.bowtie2.${ref}.p.e2e.sam
+samtools index ${base}.bowtie2.${ref}.p.e2e.bam
+done
+done
+
+
+
+
+tar cfv - SVAs_and_HERVs_KWHE.fasta* *bowtie2.SVAs_and_HERVs_KWHE.* | gzip > 20191219_NA12878_HKLE_bowtie2_SVAs_and_HERVs_KWHE.tar.gz
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Create Table
+
+for base in . .consolidated. .sickle. ; do
+echo $base
+for r1 in {?,??}${base}r1.fastq.gz ; do
+echo $r1
+zcat ${r1} | paste -d "\t" - - - - | wc -l > ${r1}.read_count
+done
+done
+
+for d in chimera_hg38_SVAs_and_HERVs_KWHE/*.r1.sickle ; do
+i=$( basename $d .r1.sickle )
+cat $d/*.paired.*.Q20.*points | sort | uniq | wc -l > ${i}.paired.Q20.insertion_points_count
+cat $d/*.unpaired.*.Q20.*points | sort | uniq | wc -l > ${i}.unpaired.Q20.insertion_points_count
+cat $d/*.paired.*.Q10.*points | sort | uniq | wc -l > ${i}.paired.Q10.insertion_points_count
+cat $d/*.unpaired.*.Q10.*points | sort | uniq | wc -l > ${i}.unpaired.Q10.insertion_points_count
+cat $d/*.paired.*.Q00.*points | sort | uniq | wc -l > ${i}.paired.Q00.insertion_points_count
+cat $d/*.unpaired.*.Q00.*points | sort | uniq | wc -l > ${i}.unpaired.Q00.insertion_points_count
+done
+
+
+SVAs_and_HERVs_KWHE p loc aligned
+SVAs_and_HERVs_KWHE p e2e aligned
+SVAs_and_HERVs_KWHE u e2e aligned
+
+
+
+echo "Sample #, raw paired read count, consolidated paired read count, sickle paired read count, paired endtoend concordant aligned, paired endtoend discordant aligned, paired endtoend individual reads aligned, paired local concordant aligned, paired local discordant aligned, paired local individual reads aligned, unpaired endtoend individual reads aligned, chimera Q20 paired insertion points found, chimera Q20 unpaired insertion points found, chimera Q10 paired insertion points found, chimera Q10 unpaired insertion points found, chimera Q00 paired insertion points found, chimera Q00 unpaired insertion points found" > HKLEPrimerAnalysisComplete.csv
+for i in $( seq 1 36 ) ; do
+if [ -e ${i}.sickle.r1.fastq.gz ] ; then
+echo -n $i
+echo -n ,$( cat ${i}.r1.fastq.gz.read_count )
+echo -n ,$( cat ${i}.consolidated.r1.fastq.gz.read_count )
+echo -n ,$( cat ${i}.sickle.r1.fastq.gz.read_count )
+echo -n ,$( awk '(/aligned con.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.e2e.err.txt )
+echo -n ,$( awk '(/aligned dis.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.e2e.err.txt )
+echo -n ,$( awk '(/aligned.*1 time/ && !/cord/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.e2e.err.txt )
+echo -n ,$( awk '(/aligned con.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.loc.err.txt )
+echo -n ,$( awk '(/aligned dis.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.loc.err.txt )
+echo -n ,$( awk '(/aligned.*1 time/ && !/cord/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.loc.err.txt )
+echo -n ,$( awk '(/aligned.*1 time/ && !/cord/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.u.e2e.err.txt )
+echo -n ,$( cat ${i}.paired.Q20.insertion_points_count )
+echo -n ,$( cat ${i}.unpaired.Q20.insertion_points_count )
+echo -n ,$( cat ${i}.paired.Q10.insertion_points_count )
+echo -n ,$( cat ${i}.unpaired.Q10.insertion_points_count )
+echo -n ,$( cat ${i}.paired.Q00.insertion_points_count )
+echo -n ,$( cat ${i}.unpaired.Q00.insertion_points_count )
+echo
+fi
+done >> HKLEPrimerAnalysisComplete.csv
+
+
+echo "Sample #, raw paired read count, consolidated paired read count, sickle paired read count, paired endtoend concordant aligned, paired endtoend concordant aligned / sickle count, paired endtoend discordant aligned, paired endtoend discordant aligned / sickle count, paired endtoend individual reads aligned, paired endtoend individual reads aligned / sickle count, paired local concordant aligned, paired local concordant aligned / sickle count, paired local discordant aligned, paired local discordant aligned / sickle count, paired local individual reads aligned, paired local individual reads aligned / sickle count, unpaired endtoend individual reads aligned, unpaired endtoend individual reads aligned / sickle count, chimera Q20 paired insertion points found , chimera Q20 paired insertion points / sickle count , chimera Q20 unpaired insertion points found , chimera Q20 unpaired insertion points found / sickle count " > HKLEPrimerAnalysisSelect.csv
+for i in $( seq 1 36 ) ; do
+if [ -e ${i}.sickle.r1.fastq.gz ] ; then
+echo -n $i
+echo -n ,$( cat ${i}.r1.fastq.gz.read_count )
+echo -n ,$( cat ${i}.consolidated.r1.fastq.gz.read_count )
+sic=$( cat ${i}.sickle.r1.fastq.gz.read_count )
+echo -n ,$sic
+pce2e=$( awk '(/aligned con.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.e2e.err.txt )
+echo -n ,$pce2e
+echo -n ,$( echo "scale=4; ${pce2e}/${sic}" | bc )
+pde2e=$( awk '(/aligned dis.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.e2e.err.txt )
+echo -n ,$pde2e
+echo -n ,$( echo "scale=4; ${pde2e}/${sic}" | bc )
+pie2e=$( awk '(/aligned.*1 time/ && !/cord/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.e2e.err.txt )
+echo -n ,$pie2e
+echo -n ,$( echo "scale=4; ${pie2e}/${sic}" | bc )
+pcloc=$( awk '(/aligned con.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.loc.err.txt )
+echo -n ,$pcloc
+echo -n ,$( echo "scale=4; ${pcloc}/${sic}" | bc )
+pdloc=$( awk '(/aligned dis.*1 time/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.loc.err.txt )
+echo -n ,$pdloc
+echo -n ,$( echo "scale=4; ${pdloc}/${sic}" | bc )
+piloc=$( awk '(/aligned.*1 time/ && !/cord/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.p.loc.err.txt )
+echo -n ,$piloc
+echo -n ,$( echo "scale=4; ${piloc}/${sic}" | bc )
+uie2e=$( awk '(/aligned.*1 time/ && !/cord/){s+=$1}END{print s}' $i.bowtie2.SVAs_and_HERVs_KWHE.u.e2e.err.txt )
+echo -n ,$uie2e
+echo -n ,$( echo "scale=4; ${uie2e}/${sic}" | bc )
+pip=$( cat ${i}.paired.Q20.insertion_points_count )
+uip=$( cat ${i}.unpaired.Q20.insertion_points_count )
+echo -n ,$pip
+echo -n ,$( echo "scale=4; ${pip}/${sic}" | bc )
+echo -n ,$uip
+echo -n ,$( echo "scale=4; ${uip}/${sic}" | bc )
+echo
+fi
+done >> HKLEPrimerAnalysisSelect.csv
+
+
+
+
+
+
+
+Insertion points found / trimmed sample read count
+# insertions per position
+Sort tables numerically, not alphabetically
+
+
+Unaligned reads  ( to SVA / HERV ) should be about half
 
