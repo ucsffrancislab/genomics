@@ -10,8 +10,10 @@ ARGS=$*
 
 while [ $# -gt 0 ] ; do
 	case $1 in
-		--execute)
-			shift; notebook=${1}; shift;;
+#		--execute)
+#			shift; notebook=${1}; shift;;
+		--output)
+			shift; output=${1}; shift;;
 		*)
 			shift;;
 	esac
@@ -40,7 +42,8 @@ done
 
 
 
-f=${notebook/.ipynb/.pdf}
+#f=${notebook/.ipynb/.pdf}
+f=${output}
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
