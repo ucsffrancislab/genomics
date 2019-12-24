@@ -9,6 +9,7 @@
 #    install.packages("BiocManager")
 #BiocManager::install(version = "3.10")
 #BiocManager::install(c('RColorBrewer','gplots','genefilter','calibrate','DESeq2','optparse','Cairo'))
+#BiocManager::install(c('vsn','ggplot2')
 
 
 options(bitmapType='cairo')
@@ -101,6 +102,76 @@ dds
 
 # Run the DESeq pipeline
 dds <- DESeq(dds)
+
+
+#	20191220 - From Intro to DGE Analysis
+# remove genes without any counts
+dds <- dds[rowSums(counts(dds)) > 0,]
+#
+#	NORMALIZE
+dds <- estimateSizeFactors(dds)
+sizeFactors(dds)
+counts.sf_normalized <- counts(dds, normalized=TRUE)
+log.norm.counts <- log2(counts.sf_normalized + 1)
+
+par(mfrow=c(2,1))
+
+print("boxplot(counts.sf_normalized")
+boxplot(counts.sf_normalized, notch=TRUE,
+	main="untransformed read counts", ylab="read counts")
+print("boxplot(log.norm.counts")
+boxplot(log.norm.counts, notch=TRUE,
+	main="log2-transformed read counts",
+	ylab="log2(read counts)")
+
+print("plot(log.norm.counts[,1:2]")
+plot(log.norm.counts[,1:2], cex=.1, main="Normalized log2(read counts)")
+
+library ( vsn )
+library ( ggplot2 )
+print("meanSdPlot(log.norm.counts")
+msd_plot<-meanSdPlot(log.norm.counts,ranks=FALSE,plot=FALSE)
+msd_plot$gg+ggtitle("sequencing depth normalized log2(read counts)")+ylab("standard deviation")
+
+
+dds.rlog<-rlog(dds,blind=TRUE)
+rlog.norm.counts<-assay(dds.rlog)
+
+# mean-sd plot for rlog - transformed data
+print("meanSdPlot(rlog.norm.counts")
+msd_plot<-meanSdPlot(rlog.norm.counts,ranks=FALSE,plot=FALSE)
+msd_plot$gg+ggtitle("rlog-transformed read counts")+ylab("standard deviation")
+
+
+# cor () calculates the correlation between columns of a matrix
+distance.m_rlog<-as.dist(1-cor(rlog.norm.counts,method="pearson"))
+# plot () can directly interpret the output of hclust ()
+print("plot(hclust(distance.m_rlog)")
+plot(hclust(distance.m_rlog),
+	labels=colnames(rlog.norm.counts),
+	main="rlog transformed read counts\ndistance : Pearson correlation")
+
+
+pc<-prcomp(t(rlog.norm.counts))
+print("plot(pc$x[,1],pc$x[,2],")
+plot(pc$x[,1],pc$x[,2],
+	col=colData(dds)[,1],
+	main="PCA of seq.depth normalized\nand rlog-transformed read counts")
+
+# PCA
+print("plotPCA")
+P<-plotPCA(dds.rlog)
+P<-P+theme_bw()+ggtitle("Rlog transformed counts")
+print(P)
+
+
+#	reset par
+par(mfrow=c(1,1))
+
+##################################################
+
+
+
 
 
 
