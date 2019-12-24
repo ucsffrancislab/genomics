@@ -43,7 +43,11 @@ done
 #	Nbconvert will fail if any cell takes longer than 30s to run, you may want to add --ExecutePreprocessor.timeout=600. – bckygldstn Jan 24 at 17:14
 
 
-#	jupyter nbconvert --to pdf --execute /home/gwendt/github/ucsffrancislab/genomics/scripts/sleuth.ipynb --ExecutePreprocessor.timeout=600 --output sleuth_nbconvert_testing.pdf
+#	ALWAYS USE FULL PATHS OR OUTPUT WILL BE NEXT TO INPUT
+
+#	jupyter nbconvert --to pdf --execute /home/gwendt/github/ucsffrancislab/genomics/scripts/sleuth.ipynb --ExecutePreprocessor.timeout=600 --output ~/sleuth_nbconvert_testing.pdf
+
+#	jupyter_nbconvert.bash --to notebook --execute ~/github/ucsffrancislab/genomics/scripts/sleuth.ipynb --ExecutePreprocessor.timeout=600 --output ~/sleuth_nbconvert_testing.ipynb
 
 
 #f=${notebook/.ipynb/.pdf}
