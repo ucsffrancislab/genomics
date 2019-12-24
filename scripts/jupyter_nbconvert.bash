@@ -35,6 +35,7 @@ done
 #	http://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz
 #	TEXLIVE_INSTALL_PREFIX=~/.local/texlive ./install-tl
 #	That took about 2 hours.
+#	Failed because glibc is older than 2.14
 
 #	jupyter nbconvert --to pdf --execute jupyter_R_1.ipynb 
 #	creates jupyter_R_1.pdf
