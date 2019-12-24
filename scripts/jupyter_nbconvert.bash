@@ -24,7 +24,7 @@ done
 #	devtools::install_github('IRkernel/IRkernel')
 #	IRkernel::installspec()
 #		also needed a bunch of other packages for many projects.
-#	BiocManager::install(c('pheatmap','pachterlab/sleuth','cowplot','biomaRt','RColorBrewer','gplots','genefilter','calibrate','DESeq2','optparse','Cairo'))
+#	BiocManager::install(c('pheatmap','pachterlab/sleuth','cowplot','biomaRt','RColorBrewer','gplots','genefilter','calibrate','DESeq2','optparse','Cairo','vsn','ggplot2'))
 
 #	Required pandoc binary https://github.com/jgm/pandoc
 #	and python pip package ( pip install --upgrade --user pandoc )
