@@ -13,7 +13,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-for bambase in subread-dna subread-rna bowtie2-e2e ; do
+for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
 
 	for feature in miRNA miRNA_primary_transcript ; do
 
