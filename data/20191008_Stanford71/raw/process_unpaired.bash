@@ -216,16 +216,17 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 				qsub ${depend} -N ${jobbase}.${ref}.btun${abbrev}s \
 					-l nodes=1:ppn=${threads} -l vmem=8gb \
 					-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
-					~/.local/bin/summarize_blastn_output.bash \
+					~/.local/bin/blastn_summary.bash \
 						-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
+#					~/.local/bin/summarize_blastn_output.bash \
 			fi
 
 		done	#	for vref in viral viral.raw viral.masked ; do
 
 
-
 		qoutbase="${outbase}.bowtie2-e2e.unmapped"
 		infile=${qoutbase}.fasta.gz
+
 		qoutbase="${qoutbase}.kraken2.standard"
 		f=${qoutbase}.txt.gz
 		if [ -f $f ] && [ ! -w $f ] ; then
@@ -237,19 +238,36 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 			else
 				depend=""
 			fi
-			qsub ${depend} -N ${jobbase}.${ref}.btunk \
+			#	  --memory-mapping        Avoids loading database into RAM
+			#	  --paired                The filenames provided have paired-end reads
+			#	  --use-names             Print scientific names instead of just taxids
+			#	  --gzip-compressed       Input files are compressed with gzip
+			#	  --bzip2-compressed      Input files are compressed with bzip2
+			#	  --help                  Print this message
+			#	  --version               Print version information
+			kraken2id=$( qsub ${depend} -N ${jobbase}.${ref}.btunk \
 				-l nodes=1:ppn=${threads} -l vmem=64gb \
 				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-				~/.local/bin/kraken2.bash -F "--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --use-names ${infile}"
+				~/.local/bin/kraken2.bash -F \
+					"--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --use-names ${infile}" )
 		fi
 
-#	  --memory-mapping        Avoids loading database into RAM
-#	  --paired                The filenames provided have paired-end reads
-#	  --use-names             Print scientific names instead of just taxids
-#	  --gzip-compressed       Input files are compressed with gzip
-#	  --bzip2-compressed      Input files are compressed with bzip2
-#	  --help                  Print this message
-#	  --version               Print version information
+		#qoutbase="${qoutbase}.kraken2.standard"
+		f=${qoutbase}.summary.txt.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			#echo "Creating $f"
+			if [ ! -z ${kraken2id} ] ; then
+				depend="-W depend=afterok:${kraken2id}"
+			else
+				depend=""
+			fi
+			#-l nodes=1:ppn=${threads} -l vmem=8gb \
+			qsub ${depend} -N ${jobbase}.${ref}.btunks \
+				-o ${qoutbase}.summary.${date}.out.txt -e ${qoutbase}.summary.${date}.err.txt \
+				~/.local/bin/kraken2_summary.bash -F "-input ${qoutbase}.txt.gz"
+		fi
 
 
 
