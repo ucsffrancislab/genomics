@@ -9,7 +9,7 @@
 #    install.packages("BiocManager")
 #BiocManager::install(version = "3.10")
 #BiocManager::install(c('RColorBrewer','gplots','genefilter','calibrate','DESeq2','optparse','Cairo'))
-#BiocManager::install(c('vsn','ggplot2')
+#BiocManager::install(c('vsn','ggplot2'))
 
 
 options(bitmapType='cairo')
@@ -358,9 +358,10 @@ rld_pca <- function (rld, intgroup = "condition", ntop = 500, colors=NULL,
 	plot(PC2~PC1, data=as.data.frame(pca$x), bg=colors[fac], pch=21, xlab=pc1lab, ylab=pc2lab, main=main, ...)
 	with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
 	legend(legendpos, legend=levels(fac), col=colors, pch=20)
-	#     rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
-	#            pch = 16, cerld = 2, aspect = "iso", col = colours, main = draw.key(key = list(rect = list(col = colours),
-	#                                                                                         terldt = list(levels(fac)), rep = FALSE)))
+	#rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
+	#  pch = 16, cerld = 2, aspect = "iso", col = colours,
+  #  main = draw.key(key = list(rect = list(col = colours),
+	#  terldt = list(levels(fac)), rep = FALSE)))
 }
 
 
