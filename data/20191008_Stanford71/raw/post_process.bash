@@ -11,6 +11,23 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
+for suffix in kraken2.standard blastn.viral.masked blastn.viral.raw blastn.viral ; do
+
+	outbase=${dir}/h38au.bowtie2-e2e.unmapped.${suffix}.summary
+	f=${outbase}.csv
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N ${suffix} -o ${outbase}.${date}.out -e ${outbase}.${date}.err \
+			~/.local/bin/tablify_sample_uniq_counts.bash -F \
+				"-o ${f} ${dir}/*.h38au.bowtie2-e2e.unmapped.${suffix}.summary.txt.gz"
+	fi
+
+done
+
+
+
+
 
 
 for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
