@@ -185,14 +185,20 @@ done
 
 export featureCounts="/francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/h38au.bowtie2-e2e.unmapped.kraken2.standard.summary.csv"
 export metadata="/francislab/data1/raw/20191008_Stanford71/metadata.csv"
-jupyter_nbconvert.bash --to notebook --execute ~/github/ucsffrancislab/genomics/scripts/deseq.ipynb --output h38au.bowtie2-e2e.unmapped.kraken2.standard.summary.deseq.ipynb
+jupyter_nbconvert.bash --to notebook --execute ~/github/ucsffrancislab/genomics/scripts/deseq.ipynb --output bowtie2-e2e.unmapped.kraken2.standard.summary.deseq.ipynb
+
+
 
 
 dir="/francislab/data1/raw/20191008_Stanford71/trimmed/unpaired"
 export metadata="/francislab/data1/raw/20191008_Stanford71/metadata.csv"
 for suffix in kraken2.standard blastn.viral.masked blastn.viral.raw blastn.viral ; do
-export featureCounts="${dir}/h38au.bowtie2-e2e.unmapped.${suffix}.summary.csv"
+export featureCounts="${dir}/bowtie2-e2e.unmapped.${suffix}.summary.csv"
 jupyter_nbconvert.bash --to notebook --execute ~/.local/bin/deseq.ipynb --output ${featureCounts}.deseq.ipynb --ExecutePreprocessor.timeout=600
 done
-
+for a in subread-dna subread-rna bowtie2-e2e ; do
+for b in hsa.featureCounts.miRNA_primary_transcript hsa.featureCounts.miRNA genes.featureCounts.exon ; do
+export featureCounts="${dir}/${a}.${b}.csv"
+jupyter_nbconvert.bash --to notebook --execute ~/.local/bin/deseq.ipynb --output ${featureCounts}.deseq.ipynb --ExecutePreprocessor.timeout=600
+done ; done
 

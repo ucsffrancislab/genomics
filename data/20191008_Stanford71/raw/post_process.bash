@@ -13,7 +13,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 for suffix in kraken2.standard blastn.viral.masked blastn.viral.raw blastn.viral ; do
 
-	outbase=${dir}/h38au.bowtie2-e2e.unmapped.${suffix}.summary
+	outbase=${dir}/bowtie2-e2e.unmapped.${suffix}.summary
 	f=${outbase}.csv
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
