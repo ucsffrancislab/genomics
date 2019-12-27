@@ -96,18 +96,18 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 
 		qoutbase="${outbase}.bowtie2-loc"
 
-		bowtie2id=""
+		#bowtie2id=""
 		f=${qoutbase}.bam
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
 			#echo "Creating $f"
-			bowtie2id=$( qsub -N ${jobbase}.${ref}.btloc -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			qsub -N ${jobbase}.${ref}.btloc -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
 				~/.local/bin/bowtie2.bash \
 				-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} \
-						-U ${r1} -o ${qoutbase}.bam" )
-			echo "${bowtie2id}"
+						-U ${r1} -o ${qoutbase}.bam"
+			#echo "${bowtie2id}"
 		fi
 
 
@@ -227,6 +227,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		qoutbase="${outbase}.bowtie2-e2e.unmapped"
 		infile=${qoutbase}.fasta.gz
 
+		kraken2id=""
 		qoutbase="${qoutbase}.kraken2.standard"
 		f=${qoutbase}.txt.gz
 		if [ -f $f ] && [ ! -w $f ] ; then
