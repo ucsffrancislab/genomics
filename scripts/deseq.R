@@ -63,11 +63,17 @@ pdf( paste0(opt$featureCount,'.deseq.plots.pdf') )
 # Import data from featureCounts
 # Previously ran at command line something like this:
 # featureCounts -a genes.gtf -o counts.txt -T 12 -t exon -g gene_id GSM*.sam
-countdata <- read.table(opt$featureCounts, header=TRUE, row.names=1)
+#	default sep is white space. some files contain "gene names" with spaces
+#	which will cause "more columns than column names" error
+countdata <- read.table(opt$featureCounts, header=TRUE, row.names=1, sep="\t")
+head(countdata)
 
 # Remove first five columns (chr, start, end, strand, length)
 countdata <- countdata[ ,6:ncol(countdata)]
+head(countdata)
 #df = subset(df, select=-c(Chr,Start,End,Strand,Length))
+
+
 
 # Remove .bam or .sam from filenames
 #colnames(countdata) <- gsub("^/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/", "", colnames(countdata))
@@ -95,7 +101,11 @@ library(DESeq2)
 
 
 # Create a coldata frame and instantiate the DESeqDataSet. See ?DESeqDataSetFromMatrix
-(coldata <- data.frame(row.names=colnames(countdata), condition))
+#(coldata <- data.frame(row.names=colnames(countdata), condition))
+#	why wrapped in parentheses?)
+coldata <- data.frame(row.names=colnames(countdata), condition)
+head(coldata)
+
 dds <- DESeqDataSetFromMatrix(countData=countdata, colData=coldata, design=~condition)
 dds
 

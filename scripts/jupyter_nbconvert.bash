@@ -50,6 +50,13 @@ done
 #	jupyter_nbconvert.bash --to notebook --execute ~/github/ucsffrancislab/genomics/scripts/sleuth.ipynb --ExecutePreprocessor.timeout=600 --output ~/sleuth_nbconvert_testing.ipynb
 
 
+#	pass arguments with environment variables to qsub
+#	qsub -v featureCounts="/francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/h38au.bowtie2-e2e.unmapped.kraken2.standard.summary.csv",metadata="/francislab/data1/raw/20191008_Stanford71/metadata.csv" jupyter_nbconvert.bash -to notebook --execute ~/github/ucsffrancislab/genomics/scripts/deseq.ipynb --output h38au.bowtie2-e2e.unmapped.kraken2.standard.summary.deseq.ipynb
+
+
+
+
+
 #f=${notebook/.ipynb/.pdf}
 f=${output}
 if [ -f $f ] && [ ! -w $f ] ; then

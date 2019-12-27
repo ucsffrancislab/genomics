@@ -180,22 +180,19 @@ for f in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/sub*featureC
 qsub -N deseq -l vmem=4gb -o ${f}.deseq.${date}.out -e ${f}.deseq.${date}.err ~/.local/bin/deseq.R -F "-f ${f} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
 done
 
-for f in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/bowt*featureCounts*.csv ; do
-last_arg=$( tail -n +2 $f | head -1 | awk '{print $NF}' )
-echo $last_arg
-last_arg_dir="${last_arg%/*}/"
-echo $last_arg_dir
-last_arg_file=${last_arg##*/}
-echo $last_arg_file
-last_arg_file_base=".${last_arg_file#*.}"
-echo $last_arg_file_base
-echo sed -e "2s\"${last_arg_dir}\"\"g" -e "2s\"${last_arg_file_base}\"\"g" -i ${f}
-sed -e "2s\"${last_arg_dir}\"s\"g" -e "2s\"${last_arg_file_base}\"\"g" -i ${f}
-done
 
 
-date=$( date "+%Y%m%d%H%M%S" )
-for f in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/bowtie*featureCounts*.csv ; do
-qsub -N deseq -l vmem=4gb -o ${f}.deseq.${date}.out -e ${f}.deseq.${date}.err ~/.local/bin/deseq.R -F "-f ${f} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
+
+export featureCounts="/francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/h38au.bowtie2-e2e.unmapped.kraken2.standard.summary.csv"
+export metadata="/francislab/data1/raw/20191008_Stanford71/metadata.csv"
+jupyter_nbconvert.bash --to notebook --execute ~/github/ucsffrancislab/genomics/scripts/deseq.ipynb --output h38au.bowtie2-e2e.unmapped.kraken2.standard.summary.deseq.ipynb
+
+
+dir="/francislab/data1/raw/20191008_Stanford71/trimmed/unpaired"
+export metadata="/francislab/data1/raw/20191008_Stanford71/metadata.csv"
+for suffix in kraken2.standard blastn.viral.masked blastn.viral.raw blastn.viral ; do
+export featureCounts="${dir}/h38au.bowtie2-e2e.unmapped.${suffix}.summary.csv"
+jupyter_nbconvert.bash --to notebook --execute ~/.local/bin/deseq.ipynb --output ${featureCounts}.deseq.ipynb --ExecutePreprocessor.timeout=600
 done
+
 
