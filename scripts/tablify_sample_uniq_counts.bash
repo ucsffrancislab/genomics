@@ -48,6 +48,7 @@ else
 		for(i=3;i<=NF;i++)
 			tax=sprintf("%s %s",tax,$i)
 		gsub("\047", "", tax)
+		gsub("#", "", tax)
 		t[tax]++
 		c[sample,tax]=$1
 	} END{
