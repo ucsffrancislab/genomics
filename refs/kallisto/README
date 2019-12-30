@@ -27,3 +27,16 @@ echo "kallisto index --index /data/shared/francislab/refs/kallisto/h_rna.idx /da
 echo "kallisto index --index /data/shared/francislab/refs/kallisto/rsg.idx /data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz" | qsub -l vmem=32gb
 
 
+
+for a in all_mirna all_hairpin all_mature ; do
+for b in 11 13 15 ; do
+echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/${a}_${b}.idx /francislab/data1/refs/fasta/${a}.ACTG.fa.gz" | qsub -l vmem=32gb
+done ; done
+
+
+rename all_ a all_*
+rename mirna mi amirna_1*
+rename mature mt amature_1*
+rename ahairpin ahp ahairpin_1*
+chmod -w *idx
+

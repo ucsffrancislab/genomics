@@ -287,7 +287,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 #
 	#for kref in ${KALLISTO}/*idx ; do
 	#for kref in ${KALLISTO}/??_??.idx ; do
-	for kref in ${KALLISTO}/??_1?.idx ; do
+	for kref in ${KALLISTO}/??_1?.idx ${KALLISTO}/a??_1?.idx ; do
 
 		basekref=$( basename $kref .idx )
 
