@@ -5,21 +5,24 @@ https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.gz
 https://hgdownload.cse.ucsc.edu/goldenpath/hg38/bigZips/hg38.fa.masked.gz
 
 
+wget ftp://mirbase.org/pub/mirbase/CURRENT/genomes/hsa.gff3
 
 wget -O all_hairpin.ACUG.fa.gz ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz
 wget -O all_mature.ACUG.fa.gz ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz
-wget ftp://mirbase.org/pub/mirbase/CURRENT/genomes/hsa.gff3
 
-zcat hairpin.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/miR/mir/g' > human_hairpin.ACTG.fa
-zcat mature.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/miR/mir/g' > human_mature.ACTG.fa
+zcat hairpin.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > human_hairpin.ACTG.fa
+zcat mature.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > human_mature.ACTG.fa
 sed 's/ /-hairpin /' human_hairpin.ACTG.fa > human_mirna.ACTG.fa
 sed 's/ /-mature /'  human_mature.ACTG.fa >> human_mirna.ACTG.fa
+gzip human_*.ACTG.fa
+chmod -w human_*.AC?G.fa.gz
 
-zcat all_hairpin.ACUG.fa.gz | sed -e '/^>/! s/U/T/g' -e 's/miR/mir/g' > all_hairpin.ACTG.fa
-zcat all_mature.ACUG.fa.gz |  sed -e '/^>/! s/U/T/g' -e 's/miR/mir/g' > all_mature.ACTG.fa
+zcat all_hairpin.ACUG.fa.gz | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > all_hairpin.ACTG.fa
+zcat all_mature.ACUG.fa.gz |  sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > all_mature.ACTG.fa
 sed 's/ /-hairpin /' all_hairpin.ACTG.fa > all_mirna.ACTG.fa
 sed 's/ /-mature /'  all_mature.ACTG.fa >> all_mirna.ACTG.fa
-gzip all_hairpin.ACTG.fa all_mature.ACTG.fa all_mirna.ACTG.fa
+gzip all_*.ACTG.fa
+chmod -w all_*.AC?G.fa.gz
 
 
 
