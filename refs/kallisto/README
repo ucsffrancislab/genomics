@@ -40,3 +40,8 @@ rename mature mt amature_1*
 rename ahairpin ahp ahairpin_1*
 chmod -w *idx
 
+for a in ahp amt ami hp mt mi ; do
+for b in 17 19 21 ; do
+echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/${a}_${b}.idx /francislab/data1/refs/kallisto/${a}.fa.gz" | qsub -l vmem=32gb -N ki_${a}_${b}
+done ; done
+
