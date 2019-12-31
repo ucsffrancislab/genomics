@@ -2,46 +2,14 @@
 kallisto
 
 
-The shortest mature reference is 16bp so should use a kmer size less than that
-
-echo "kallisto index --kmer-size=15 --index /data/shared/francislab/refs/kallisto/mi_15.idx /data/shared/francislab/refs/fasta/human_mirna.ACTG.fa.gz" | qsub
-echo "kallisto index --kmer-size=15 --index /data/shared/francislab/refs/kallisto/hp_15.idx /data/shared/francislab/refs/fasta/human_hairpin.ACTG.fa.gz" | qsub
-echo "kallisto index --kmer-size=15 --index /data/shared/francislab/refs/kallisto/mt_15.idx /data/shared/francislab/refs/fasta/human_mature.ACTG.fa.gz" | qsub
-
-echo "kallisto index --kmer-size=13 --index /data/shared/francislab/refs/kallisto/mi_13.idx /data/shared/francislab/refs/fasta/human_mirna.ACTG.fa.gz" | qsub
-echo "kallisto index --kmer-size=13 --index /data/shared/francislab/refs/kallisto/hp_13.idx /data/shared/francislab/refs/fasta/human_hairpin.ACTG.fa.gz" | qsub
-echo "kallisto index --kmer-size=13 --index /data/shared/francislab/refs/kallisto/mt_13.idx /data/shared/francislab/refs/fasta/human_mature.ACTG.fa.gz" | qsub
-
-echo "kallisto index --kmer-size=11 --index /data/shared/francislab/refs/kallisto/mirna.11.idx /data/shared/francislab/refs/fasta/human_mirna.ACTG.fa.gz" | qsub
-echo "kallisto index --kmer-size=11 --index /data/shared/francislab/refs/kallisto/hp_11.idx /data/shared/francislab/refs/fasta/human_hairpin.ACTG.fa.gz" | qsub
-echo "kallisto index --kmer-size=11 --index /data/shared/francislab/refs/kallisto/mt_11.idx /data/shared/francislab/refs/fasta/human_mature.ACTG.fa.gz" | qsub
+The shortest mature reference is 16bp so should use a kmer size less than that?
 
 
+Tue Dec 31 13:20:47 PST 2019
 
-
-
-echo "kallisto index --index /data/shared/francislab/refs/kallisto/h38_cdna.idx /data/shared/francislab/refs/fasta/Homo_sapiens.GRCh38.cdna.all.fa.gz" | qsub -l vmem=16gb
-echo "kallisto index --index /data/shared/francislab/refs/kallisto/h38_ncrna.idx /data/shared/francislab/refs/fasta/Homo_sapiens.GRCh38.ncrna.fa.gz" | qsub -l vmem=16gb
-echo "kallisto index --index /data/shared/francislab/refs/kallisto/h38_rna.idx /data/shared/francislab/refs/fasta/Homo_sapiens.GRCh38.rna.fa.gz" | qsub -l vmem=16gb
-echo "kallisto index --index /data/shared/francislab/refs/kallisto/h_rna.idx /data/shared/francislab/refs/refseq/mRNA_Prot/human.*.rna.fna.gz" | qsub -l vmem=16gb
-echo "kallisto index --index /data/shared/francislab/refs/kallisto/rsg.idx /data/shared/francislab/refs/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz" | qsub -l vmem=32gb
-
-
-
-for a in all_mirna all_hairpin all_mature ; do
-for b in 11 13 15 ; do
-echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/${a}_${b}.idx /francislab/data1/refs/fasta/${a}.ACTG.fa.gz" | qsub -l vmem=32gb
-done ; done
-
-
-rename all_ a all_*
-rename mirna mi amirna_1*
-rename mature mt amature_1*
-rename ahairpin ahp ahairpin_1*
-chmod -w *idx
 
 for a in ahp amt ami hp mt mi ; do
-for b in 17 19 21 ; do
+for b in 11 13 15 17 19 21 ; do
 echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/${a}_${b}.idx /francislab/data1/refs/kallisto/${a}.fa.gz" | qsub -l vmem=32gb -N ki_${a}_${b}
 done ; done
 
