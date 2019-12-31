@@ -92,202 +92,164 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		#	bowtie2 really only uses a bit more memory than the reference.
 		#	4gb would probably be enough for hg38. Nope. Needs more than 4.
 		#	Ran well with 8gb.
-		vmem=8	
+		vmem=8
 
-		qoutbase="${outbase}.bowtie2-loc"
+		for ali in e2e loc ; do
 
-		#bowtie2id=""
-		f=${qoutbase}.bam
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			#echo "Creating $f"
-			qsub -N ${jobbase}.${ref}.btloc -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-				~/.local/bin/bowtie2.bash \
-				-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} \
-						-U ${r1} -o ${qoutbase}.bam"
-			#echo "${bowtie2id}"
-		fi
+			case $ali in 'loc') opt="--very-sensitive-local";; 'e2e') opt="--very-sensitive";; esac
 
-
-
-		qoutbase="${outbase}.bowtie2-e2e"
-
-		bowtie2id=""
-		f=${qoutbase}.bam
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			#echo "Creating $f"
-			bowtie2id=$( qsub -N ${jobbase}.${ref}.bte2e -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-				~/.local/bin/bowtie2.bash \
-				-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/${ref} \
-						-U ${r1} -o ${qoutbase}.bam" )
-			echo "${bowtie2id}"
-		fi
-
-
-
-		infile="${qoutbase}.bam"
-
-
-
-
-
-
-		qoutbase="${outbase}.bowtie2-e2e.unmapped"
-		unmappedid=""
-		f=${qoutbase}.fasta.gz
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			#echo "Creating $f"
-			if [ ! -z ${bowtie2id} ] ; then
-				depend="-W depend=afterok:${bowtie2id}"
-			else
-				depend=""
-			fi
-			unmappedid=$( qsub ${depend} -N ${jobbase}.${ref}.btun -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-				~/.local/bin/samtools.bash -F "fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${infile}" )
-			echo "${unmappedid}"
-		fi
-
-
-
-		infile=${qoutbase}.fasta.gz
-		qoutbase="${qoutbase}.blastn"	#.nt.txt.gz"
-
-
-
-#		qoutbase="${qoutbase}.blastn.nt"	#.txt.gz"
-
-		#	blastn needs fasta NOT fastq or fasta.gz
-
-#	01...fasta has about 2.7 million reads
-#	after about 4 hours, only 27,000 had been processed and it was 5GB.
-#	it will take about 400 hours to process this whole file and it will be about 2TB!
-#	TMI
-#	Need to filter and speed up and use less memory
-#	add evalue, num_hits or num_descriptions or ...
-#	split file into 100 read files
-#
-#		#	blastn nt NEEDED about 100GB for 01
-#		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
-#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
-#
-
-		for vref in viral viral.raw viral.masked ; do
-			abbrev=$( echo ${vref} | awk '{split($0,a,".");for(s in a){print substr(a[s],1,1)}}' | paste -sd '' )
-
-			vblastnid=""
-			f=${qoutbase}.${vref}.txt.gz
+			qoutbase="${outbase}.bowtie2-${ali}"
+			bowtie2id=""
+			f=${qoutbase}.bam
+			bowtie2bam=${f}
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
-				#echo "Creating $f"
+				bowtie2id=$( qsub -N ${jobbase}.${ref}.bt${ali} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					~/.local/bin/bowtie2.bash \
+					-F "--xeq --threads ${threads} ${opt} -x ${BOWTIE2}/${ref} \
+							-U ${r1} -o ${qoutbase}.bam" )
+				echo "${bowtie2id}"
+			fi
+
+			qoutbase="${outbase}.bowtie2-${ali}.unmapped"
+			unmappedid=""
+			f=${qoutbase}.fasta.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${bowtie2id} ] ; then
+					depend="-W depend=afterok:${bowtie2id}"
+				else
+					depend=""
+				fi
+				unmappedid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					~/.local/bin/samtools.bash -F \
+						"fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${bowtie2bam}" )
+				echo "${unmappedid}"
+			fi
+
+
+
+			infile=${qoutbase}.fasta.gz
+			qoutbase="${qoutbase}.blastn"	#.nt.txt.gz"
+
+			#	blastn needs fasta NOT fastq or fasta.gz
+
+			#	01...fasta has about 2.7 million reads
+			#	after about 4 hours, only 27,000 had been processed and it was 5GB.
+			#	it will take about 400 hours to process this whole file and it will be about 2TB!
+			#	TMI
+			#	Need to filter and speed up and use less memory
+			#	add evalue, num_hits or num_descriptions or ...
+			#	split file into 100 read files
+			#
+			#		#	blastn nt NEEDED about 100GB for 01
+			#		qsub -W depend=afterok:${unmappedid} -N ${jobbase}.${ref}.btunnt -l nodes=1:ppn=${threads} -l vmem=128gb \
+			#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+			#			~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 -db ${BLASTDB}/nt -num_threads ${threads}"
+			#
+
+			for vref in viral viral.raw viral.masked ; do
+				abbrev=$( echo ${vref} | awk '{split($0,a,".");for(s in a){print substr(a[s],1,1)}}' | paste -sd '' )
+
+				vblastnid=""
+				f=${qoutbase}.${vref}.txt.gz
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					if [ ! -z ${unmappedid} ] ; then
+						depend="-W depend=afterok:${unmappedid}"
+					else
+						depend=""
+					fi
+					vblastnid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un${abbrev} \
+						-l nodes=1:ppn=${threads} -l vmem=8gb \
+						-o ${qoutbase}.${vref}.${date}.out.txt -e ${qoutbase}.${vref}.${date}.err.txt \
+						~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
+							-db ${BLASTDB}/${vref} -num_threads ${threads}" )
+					echo ${vblastnid}
+				fi
+
+
+				f=${qoutbase}.${vref}.summary.txt.gz
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					if [ ! -z ${vblastnid} ] ; then
+						depend="-W depend=afterok:${vblastnid}"
+					else
+						depend=""
+					fi
+					qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un${abbrev}s \
+						-l nodes=1:ppn=${threads} -l vmem=8gb \
+						-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
+						~/.local/bin/blastn_summary.bash \
+							-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
+				fi
+
+			done	#	for vref in viral viral.raw viral.masked ; do
+
+
+			qoutbase="${outbase}.bowtie2-${ali}.unmapped"
+			infile=${qoutbase}.fasta.gz
+
+			kraken2id=""
+			qoutbase="${qoutbase}.kraken2.standard"
+			f=${qoutbase}.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
 				if [ ! -z ${unmappedid} ] ; then
 					depend="-W depend=afterok:${unmappedid}"
 				else
 					depend=""
 				fi
-				vblastnid=$( qsub ${depend} -N ${jobbase}.${ref}.btun${abbrev} \
-					-l nodes=1:ppn=${threads} -l vmem=8gb \
-					-o ${qoutbase}.${vref}.${date}.out.txt -e ${qoutbase}.${vref}.${date}.err.txt \
-					~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
-						-db ${BLASTDB}/${vref} -num_threads ${threads}" )
-				echo ${vblastnid}
+				#	  --memory-mapping        Avoids loading database into RAM
+				#	  --paired                The filenames provided have paired-end reads
+				#	  --use-names             Print scientific names instead of just taxids
+				#	  --gzip-compressed       Input files are compressed with gzip
+				#	  --bzip2-compressed      Input files are compressed with bzip2
+				#	  --help                  Print this message
+				#	  --version               Print version information
+				kraken2id=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}unk \
+					-l nodes=1:ppn=${threads} -l vmem=64gb \
+					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					~/.local/bin/kraken2.bash -F \
+						"--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --use-names ${infile}" )
 			fi
 
-
-			f=${qoutbase}.${vref}.summary.txt.gz
+			#qoutbase="${qoutbase}.kraken2.standard"
+			f=${qoutbase}.summary.txt.gz
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
-				#echo "Creating $f"
-				if [ ! -z ${vblastnid} ] ; then
-					depend="-W depend=afterok:${vblastnid}"
+				if [ ! -z ${kraken2id} ] ; then
+					depend="-W depend=afterok:${kraken2id}"
 				else
 					depend=""
 				fi
-				qsub ${depend} -N ${jobbase}.${ref}.btun${abbrev}s \
-					-l nodes=1:ppn=${threads} -l vmem=8gb \
-					-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
-					~/.local/bin/blastn_summary.bash \
-						-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
-#					~/.local/bin/summarize_blastn_output.bash \
+				#-l nodes=1:ppn=${threads} -l vmem=8gb \
+				qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}unks \
+					-o ${qoutbase}.summary.${date}.out.txt -e ${qoutbase}.summary.${date}.err.txt \
+					~/.local/bin/kraken2_summary.bash -F "-input ${qoutbase}.txt.gz"
 			fi
 
-		done	#	for vref in viral viral.raw viral.masked ; do
+		done	#	for ali in e2e loc ; do
 
-
-		qoutbase="${outbase}.bowtie2-e2e.unmapped"
-		infile=${qoutbase}.fasta.gz
-
-		kraken2id=""
-		qoutbase="${qoutbase}.kraken2.standard"
-		f=${qoutbase}.txt.gz
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			#echo "Creating $f"
-			if [ ! -z ${unmappedid} ] ; then
-				depend="-W depend=afterok:${unmappedid}"
-			else
-				depend=""
-			fi
-			#	  --memory-mapping        Avoids loading database into RAM
-			#	  --paired                The filenames provided have paired-end reads
-			#	  --use-names             Print scientific names instead of just taxids
-			#	  --gzip-compressed       Input files are compressed with gzip
-			#	  --bzip2-compressed      Input files are compressed with bzip2
-			#	  --help                  Print this message
-			#	  --version               Print version information
-			kraken2id=$( qsub ${depend} -N ${jobbase}.${ref}.btunk \
-				-l nodes=1:ppn=${threads} -l vmem=64gb \
-				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
-				~/.local/bin/kraken2.bash -F \
-					"--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --use-names ${infile}" )
-		fi
-
-		#qoutbase="${qoutbase}.kraken2.standard"
-		f=${qoutbase}.summary.txt.gz
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			#echo "Creating $f"
-			if [ ! -z ${kraken2id} ] ; then
-				depend="-W depend=afterok:${kraken2id}"
-			else
-				depend=""
-			fi
-			#-l nodes=1:ppn=${threads} -l vmem=8gb \
-			qsub ${depend} -N ${jobbase}.${ref}.btunks \
-				-o ${qoutbase}.summary.${date}.out.txt -e ${qoutbase}.summary.${date}.err.txt \
-				~/.local/bin/kraken2_summary.bash -F "-input ${qoutbase}.txt.gz"
-		fi
-
-
-
-
-
-
-#		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-o ${outbase}.bowtie2.loc.${date}.out.txt -e ${outbase}.bowtie2.loc.${date}.err.txt \
-#			~/.local/bin/bowtie2.bash \
-#			-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} -1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.loc.bam"
+		#		qsub -N ${jobbase}.${ref}.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		#			-o ${outbase}.bowtie2.loc.${date}.out.txt -e ${outbase}.bowtie2.loc.${date}.err.txt \
+		#			~/.local/bin/bowtie2.bash \
+		#			-F "--xeq --threads ${threads} --very-sensitive-local -x ${BOWTIE2}/${ref} \
+		#			-1 ${r1} -2 ${r2} --no-unal -o ${outbase}.bowtie2.loc.bam"
 
 	done	#	for ref in h38au  ; do
 
-#
-#	WAITING UNTIL HAVE THE SPACE
-#
-	#for kref in ${KALLISTO}/*idx ; do
-	#for kref in ${KALLISTO}/??_??.idx ; do
-	for kref in ${KALLISTO}/??_1?.idx ${KALLISTO}/a??_1?.idx ; do
+
+	for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ; do
 
 		basekref=$( basename $kref .idx )
 
@@ -297,13 +259,15 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
 			mi_*|mt_*|hp_*)
 				vmem=8;;
+			ami_*|amt_*|ahp_*)
+				vmem=8;;
 			*)
 				vmem=16;;
 		esac
 
 		qoutbase=${base}.kallisto.single.${basekref}
 		f=${qoutbase}
-		#if [ -f $f ] && [ ! -w $f ] ; then
+		#	NOTE THAT THIS IS A DIRECTORY AND NOT A FILE
 		if [ -d $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
