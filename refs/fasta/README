@@ -10,8 +10,10 @@ wget ftp://mirbase.org/pub/mirbase/CURRENT/genomes/hsa.gff3
 wget -O all_hairpin.ACUG.fa.gz ftp://mirbase.org/pub/mirbase/CURRENT/hairpin.fa.gz
 wget -O all_mature.ACUG.fa.gz ftp://mirbase.org/pub/mirbase/CURRENT/mature.fa.gz
 
-zcat hairpin.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > human_hairpin.ACTG.fa
-zcat mature.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > human_mature.ACTG.fa
+\rm -f human_*.ACTG.fa.gz all_*.ACTG.fa.gz
+
+zcat all_hairpin.ACUG.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > human_hairpin.ACTG.fa
+zcat all_mature.ACUG.fa.gz | awk '(/^>/){hsa=0}(/^>hsa/){hsa=1}{if(hsa==1){print}}' | sed -e '/^>/! s/U/T/g' -e 's/MIR/mir/gi' > human_mature.ACTG.fa
 sed 's/ /-hairpin /' human_hairpin.ACTG.fa > human_mirna.ACTG.fa
 sed 's/ /-mature /'  human_mature.ACTG.fa >> human_mirna.ACTG.fa
 gzip human_*.ACTG.fa
