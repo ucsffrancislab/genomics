@@ -5,7 +5,8 @@ kallisto
 The shortest mature reference is 16bp so should use a kmer size less than that?
 
 
-Tue Dec 31 13:20:47 PST 2019
+Tue Dec 31 13:52:23 PST 2019
+
 
 
 for a in ahp amt ami hp mt mi ; do
