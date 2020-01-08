@@ -21,7 +21,7 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-f=${input/.txt.gz/.summary.txt.gz}
+f=${input/.txt.gz/.${max}.summary.txt.gz}
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
