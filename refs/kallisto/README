@@ -14,3 +14,14 @@ for b in 11 13 15 17 19 21 ; do
 echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/${a}_${b}.idx /francislab/data1/refs/kallisto/${a}.fa.gz" | qsub -l vmem=32gb -N ki_${a}_${b}
 done ; done
 
+
+
+
+kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_cdna.idx  /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.cdna.all.fa
+kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_ncrna.idx /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.ncrna.fa
+kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_rna.idx   /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.rna.fa.gz
+
+
+kallisto index --index /francislab/data1/refs/kallisto/Archive/h_rna.idx /francislab/data1/refs/refseq/mRNA_Prot/human.*.rna.fna.gz
+kallisto index --index /francislab/data1/refs/kallisto/Archive/rsg.idx /francislab/data1/refs/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz
+
