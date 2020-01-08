@@ -94,7 +94,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		#	Ran well with 8gb.
 		vmem=8
 
-		for ali in e2e loc ; do
+#		for ali in e2e loc ; do
+		for ali in e2e ; do
 
 			case $ali in 'loc') opt="--very-sensitive-local";; 'e2e') opt="--very-sensitive";; esac
 
@@ -175,7 +176,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 				fi
 
 
-				f=${qoutbase}.${vref}.summary.txt.gz
+				f=${qoutbase}.${vref}.10.summary.txt.gz
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
@@ -189,6 +190,23 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 						-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
 						~/.local/bin/blastn_summary.bash \
 							-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
+				fi
+
+
+				f=${qoutbase}.${vref}.1e-30.summary.txt.gz
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					if [ ! -z ${vblastnid} ] ; then
+						depend="-W depend=afterok:${vblastnid}"
+					else
+						depend=""
+					fi
+					qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un${abbrev}s30 \
+						-l nodes=1:ppn=${threads} -l vmem=8gb \
+						-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
+						~/.local/bin/blastn_summary.bash \
+							-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref} -max 1e-30"
 				fi
 
 			done	#	for vref in viral viral.raw viral.masked ; do

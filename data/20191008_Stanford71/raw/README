@@ -202,3 +202,34 @@ export featureCounts="${dir}/${a}.${b}.csv"
 jupyter_nbconvert.bash --to notebook --execute ~/.local/bin/deseq.ipynb --output ${featureCounts}.deseq.ipynb --ExecutePreprocessor.timeout=600
 done ; done
 
+
+
+
+
+subread-rna.genes.featureCounts.CDS.csv
+subread-dna.hsa.featureCounts.miRNA_primary_transcript.csv
+subread-dna.hsa.featureCounts.miRNA.csv
+subread-dna.genes.featureCounts.stop_codon.csv
+subread-dna.genes.featureCounts.start_codon.csv
+subread-dna.genes.featureCounts.exon.csv
+subread-dna.genes.featureCounts.CDS.csv
+subread-rna.hsa.featureCounts.miRNA_primary_transcript.csv
+subread-rna.hsa.featureCounts.miRNA.csv
+subread-rna.genes.featureCounts.stop_codon.csv
+subread-rna.genes.featureCounts.start_codon.csv
+subread-rna.genes.featureCounts.exon.csv
+bowtie2-e2e.hsa.featureCounts.miRNA.csv
+bowtie2-e2e.hsa.featureCounts.miRNA_primary_transcript.csv
+bowtie2-e2e.genes.featureCounts.exon.csv
+bowtie2-e2e.genes.featureCounts.CDS.csv
+bowtie2-e2e.genes.featureCounts.start_codon.csv
+bowtie2-e2e.genes.featureCounts.stop_codon.csv
+
+for a in subread-dna subread-rna bowtie2-e2e ; do
+for b in hsa.featureCounts.miRNA_primary_transcript hsa.featureCounts.miRNA ; do
+rename ${a}.${b} ${a}.${b}.Name ${a}.${b}.*
+done
+for b in genes.featureCounts.exon genes.featureCounts.start_codon genes.featureCounts.stop_codon genes.featureCounts.CDS ; do
+rename ${a}.${b} ${a}.${b}.gene_id ${a}.${b}.*
+done
+done
