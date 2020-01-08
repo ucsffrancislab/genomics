@@ -6,6 +6,7 @@ set -o pipefail
 
 set -x
 
+max=10
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -13,6 +14,8 @@ while [ $# -gt 0 ] ; do
 			shift; input=$1; shift;;
 		-db)
 			shift; db=$1; shift;;
+		-max)
+			shift; max=$1; shift;;
 		*)
 			shift;;
 	esac
@@ -23,7 +26,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	blastdbcmd -db ${db} -entry_batch <( zcat ${input} | awk '{print $1"\t"$2}' | sort | uniq | awk '{print $2}' ) -outfmt "%a %t" | sort | uniq -c | gzip > ${f}
+	blastdbcmd -db ${db} -entry_batch <( zcat ${input} | awk -F"\t" '( $11 < '${max}' ){print $1"\t"$2}' | sort | uniq | awk '{print $2}' ) -outfmt "%a %t" | sort | uniq -c | gzip > ${f}
 	chmod a-w $f
 fi
 
