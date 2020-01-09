@@ -12,20 +12,31 @@ vmem=2
 date=$( date "+%Y%m%d%H%M%S" )
 
 
+function tablify_sample_uniq_counts {
 
-for suffix in kraken2.standard blastn.viral.masked blastn.viral.raw blastn.viral ; do
-
-	outbase=${dir}/h38au.bowtie2-e2e.unmapped.${suffix}.summary
+	suffix=$1
+	max=.${2}
+	core=h38au.bowtie2-e2e.unmapped.${suffix}.summary${max}
+	outbase=${dir}/${core}
 	f=${outbase}.csv
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		qsub -N ${suffix} -o ${outbase}.${date}.out -e ${outbase}.${date}.err \
 			~/.local/bin/tablify_sample_uniq_counts.bash -F \
-				"-o ${f} ${dir}/*.h38au.bowtie2-e2e.unmapped.${suffix}.summary.txt.gz"
+				"-o ${f} ${dir}/*.${core}.txt.gz"
 	fi
 
-done
+}
+
+tablify_sample_uniq_counts kraken2.standard
+
+for suffix in blastn.viral.masked blastn.viral.raw blastn.viral ; do
+for max in 10 1e-10 1e-20 1e-30 ; do
+
+	tablify_sample_uniq_counts ${suffix} ${max}
+
+done ; done
 
 
 

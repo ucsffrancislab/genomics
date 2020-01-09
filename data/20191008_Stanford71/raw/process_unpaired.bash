@@ -167,7 +167,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 					else
 						depend=""
 					fi
-					vblastnid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un${abbrev} \
+					vblastnid=$( qsub ${depend} -N ${jobbase}.${ref}.b${ali:0:1}u${abbrev} \
 						-l nodes=1:ppn=${threads} -l vmem=8gb \
 						-o ${qoutbase}.${vref}.${date}.out.txt -e ${qoutbase}.${vref}.${date}.err.txt \
 						~/.local/bin/blastn.bash -F "-query ${infile} -outfmt 6 \
@@ -176,38 +176,44 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 				fi
 
 
-				f=${qoutbase}.${vref}.10.summary.txt.gz
-				if [ -f $f ] && [ ! -w $f ] ; then
-					echo "Write-protected $f exists. Skipping."
-				else
-					if [ ! -z ${vblastnid} ] ; then
-						depend="-W depend=afterok:${vblastnid}"
-					else
-						depend=""
-					fi
-					qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un${abbrev}s \
-						-l nodes=1:ppn=${threads} -l vmem=8gb \
-						-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
-						~/.local/bin/blastn_summary.bash \
-							-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
-				fi
+				#	f=${qoutbase}.${vref}.10.summary.txt.gz
+				#	if [ -f $f ] && [ ! -w $f ] ; then
+				#		echo "Write-protected $f exists. Skipping."
+				#	else
+				#		if [ ! -z ${vblastnid} ] ; then
+				#			depend="-W depend=afterok:${vblastnid}"
+				#		else
+				#			depend=""
+				#		fi
+				#		#	-l nodes=1:ppn=${threads} -l vmem=8gb \
+				#		qsub ${depend} -N ${jobbase}.${ref}.b${ali:0:1}u${abbrev}s \
+				#			-l nodes=1:ppn=4 -l vmem=4gb \
+				#			-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
+				#			~/.local/bin/blastn_summary.bash \
+				#				-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
+				#	fi
 
+				for max in 10 1e-10 1e-20 1e-30 ; do
 
-				f=${qoutbase}.${vref}.1e-30.summary.txt.gz
-				if [ -f $f ] && [ ! -w $f ] ; then
-					echo "Write-protected $f exists. Skipping."
-				else
-					if [ ! -z ${vblastnid} ] ; then
-						depend="-W depend=afterok:${vblastnid}"
+					core=${qoutbase}.${vref}.${max}.summary
+					f=${core}.txt.gz
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
 					else
-						depend=""
+						if [ ! -z ${vblastnid} ] ; then
+							depend="-W depend=afterok:${vblastnid}"
+						else
+							depend=""
+						fi
+						#	-l nodes=1:ppn=${threads} -l vmem=8gb \
+						qsub ${depend} -N ${jobbase}.${ref}.b${ali:0:1}u${abbrev}s${max:(-2):2} \
+							-l nodes=1:ppn=4 -l vmem=4gb \
+							-o ${core}.${date}.out.txt -e ${core}.${date}.err.txt \
+							~/.local/bin/blastn_summary.bash \
+								-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref} -max ${max}"
 					fi
-					qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un${abbrev}s30 \
-						-l nodes=1:ppn=${threads} -l vmem=8gb \
-						-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
-						~/.local/bin/blastn_summary.bash \
-							-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref} -max 1e-30"
-				fi
+
+				done
 
 			done	#	for vref in viral viral.raw viral.masked ; do
 
