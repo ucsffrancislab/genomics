@@ -27,9 +27,6 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-#for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/unpaired/*.fastq.gz ; do
-#for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
-#for r1 in /data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/62*.fastq.gz ; do
 for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
@@ -57,7 +54,6 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		vmem=16
 
 		qoutbase="${outbase}.subread-rna"
-
 		f=${qoutbase}.bam
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
@@ -69,7 +65,6 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		fi
 
 		qoutbase="${outbase}.subread-dna"
-
 		f=${qoutbase}.bam
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
@@ -79,6 +74,22 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 				~/.local/bin/subread-align.bash \
 				-F "-t 1 -T ${threads} -i ${sref} -r ${r1} -o ${qoutbase}.bam"
 		fi
+
+		#for s in subread-rna subread-dna ; do
+		#	j=${s/na}
+		#	j=${j/ubread-/r}
+		#	case $j in 'srd') opt="-t 1";; 'srr') opt="-t 0";; esac
+		#	qoutbase="${outbase}.${s}"
+		#	f=${qoutbase}.bam
+		#	if [ -f $f ] && [ ! -w $f ] ; then
+		#		echo "Write-protected $f exists. Skipping."
+		#	else
+		#		qsub -N ${jobbase}.${ref}.${s} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		#			-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+		#			~/.local/bin/subread-align.bash \
+		#			-F "${opt} -T ${threads} -i ${sref} -r ${r1} -o ${qoutbase}.bam"
+		#	fi
+		#done
 
 	done
 
@@ -94,8 +105,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		#	Ran well with 8gb.
 		vmem=8
 
-#		for ali in e2e loc ; do
-		for ali in e2e ; do
+		for ali in e2e loc ; do
+		#for ali in e2e ; do
 
 			case $ali in 'loc') opt="--very-sensitive-local";; 'e2e') opt="--very-sensitive";; esac
 
@@ -297,11 +308,12 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 		else
 
 			#	Not sure if we actually need the bam file
+			#-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
 
 			qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
 				~/.local/bin/kallisto.bash \
-				-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
+				-F "quant -b ${threads}0 --threads ${threads} \
 					--single-overhang --single -l 144.924 -s 20.6833 --index ${kref} \
 					--output-dir ${qoutbase} ${r1}"
 		fi
