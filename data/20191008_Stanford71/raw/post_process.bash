@@ -14,9 +14,10 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 function tablify_sample_uniq_counts {
 
-	suffix=$1
-	max=.${2}
-	core=h38au.bowtie2-e2e.unmapped.${suffix}${max}.summary
+	primary=$1
+	suffix=$2
+	max=.${3}
+	core=h38au.${primary}.unmapped.${suffix}${max}.summary
 	outbase=${dir}/${core}
 	f=${outbase}.csv
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -30,14 +31,15 @@ function tablify_sample_uniq_counts {
 
 }
 
-tablify_sample_uniq_counts kraken2.standard
+tablify_sample_uniq_counts bowtie2-e2e kraken2.standard
 
+for primary in bowtie2-e2e bowtie2-loc ; do
 for suffix in blastn.viral.masked blastn.viral.raw blastn.viral ; do
 for max in 10 1e-10 1e-20 1e-30 ; do
 
-	tablify_sample_uniq_counts ${suffix} ${max}
+	tablify_sample_uniq_counts ${primary} ${suffix} ${max}
 
-done ; done
+done ; done ; done
 
 
 
@@ -49,8 +51,7 @@ for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
 
 		for feature in miRNA miRNA_primary_transcript ; do
 
-			#for tag in ID Alias Name ; do
-			for tag in Name ; do
+			for tag in ID Alias Name ; do
 
 				jobname=${bambase}.${feature}.${tag}.${Q}
 				jobname=${jobname/ubread-}
@@ -98,10 +99,8 @@ for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
 
 
 		for feature in exon CDS start_codon stop_codon ; do
-		#for feature in exon ; do
 
 			for tag in gene_id gene_name transcript_id tss_id ; do
-			#for tag in gene_id tss_id ; do
 
 				jobname=${bambase}.${feature}.${tag}.${Q}
 				jobname=${jobname/ubread-}
