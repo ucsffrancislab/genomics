@@ -35,6 +35,53 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	echo $base
 	jobbase=$( basename ${base} )
 
+
+	
+	jfcountid=""
+	qoutbase="${base}_kmers_jellyfish"
+	f="${qoutbase}"
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		jfcountid=$( qsub -N ${jobbase}.hjc -l nodes=1:ppn=16 -l vmem=8gb \
+			-o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
+			~/.local/bin/hawk_jellyfish_count.bash -F "-t 16 -c -k 11 --input ${r1}" )
+	fi
+
+	qoutbase="${base}_kmers_sorted"
+	f="${qoutbase}.txt.gz"
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${jfcountid} ] ; then
+			depend="-W depend=afterok:${jfcountid}"
+		else
+			depend=""
+		fi
+		qsub ${depend} -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
+			-o ${qoutbase}.${date}.out.txt \
+			-e ${qoutbase}.${date}.err.txt \
+			~/.local/bin/hawk_jellyfish_dump.bash -F "-t 16 --input ${r1}"
+	fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	#	subread references
 	#for ref in h38au h38am h_rna rsg h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
 	#for ref in h38_cdna h38_ncrna h38_rna mirna mature hairpin ; do
