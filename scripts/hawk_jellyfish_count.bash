@@ -6,6 +6,11 @@ set -o pipefail
 
 set -x
 
+# -m, --mer-len=uint32                    *Length of mer
+# -s, --size=uint64                       *Hash size
+# -t, --threads=uint32                     Number of threads (1)
+# -o, --output=string                      Output prefix (mer_counts)
+# -C, --both-strands                       Count both strand, canonical representation (false)
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -13,9 +18,9 @@ while [ $# -gt 0 ] ; do
 			shift; file=$1; shift;;
 		-t|--t*)
 			shift; threads=$1; shift ;;
-		-c|--c*)
+		-c|--c*|-C|--b*)
 			shift; canonical='--both-strands';;		#	in jellyfish 2, this is --canonical
-		-k|--k*)
+		-k|--k*|-m|--m*)
 			shift; kmersize=$1; shift ;;
 		*)
 			shift;;

@@ -13,10 +13,6 @@ while [ $# -gt 0 ] ; do
 			shift; file=$1; shift;;
 		-t|--t*)
 			shift; threads=$1; shift ;;
-#		-c|--c*)
-#			shift; canonical='--both-strands';;		#	in jellyfish 2, this is --canonical
-#		-k|--k*)
-#			shift; kmersize=$1; shift ;;
 		*)
 			shift;;
 	esac
@@ -57,7 +53,8 @@ else
 		fi
 
 		echo "Creating $f2"
-		sort --parallel=${threads} -n -k 1 ${f3} > ${f2}
+		#sort --parallel=${threads} -n -k 1 ${f3} > ${f2}
+		sort --parallel=${threads} --numeric-sort --key 1 ${f3} > ${f2}
 		#sort -n -k 1 ${f3} > ${f2}
 		chmod a-w $f2
 
