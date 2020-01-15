@@ -37,31 +37,46 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 
 
 	
-	jfcountid=""
-	qoutbase="${base}_kmers_jellyfish"
-	f="${qoutbase}"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		jfcountid=$( qsub -N ${jobbase}.hjc -l nodes=1:ppn=16 -l vmem=8gb \
-			-o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
-			~/.local/bin/hawk_jellyfish_count.bash -F "--threads 16 -c --mer-len 11 --input ${r1}" )
-	fi
+#	jfcountid=""
+#	qoutbase="${base}_kmers_jellyfish"
+#	f="${qoutbase}"
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		jfcountid=$( qsub -N ${jobbase}.hjc -l nodes=1:ppn=16 -l vmem=8gb \
+#			-o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
+#			~/.local/bin/hawk_jellyfish_count.bash -F "--threads 16 -c --mer-len 11 --input ${r1}" )
+#	fi
+#
+#	qoutbase="${base}_kmers_sorted"
+#	f="${qoutbase}.txt.gz"
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		if [ ! -z ${jfcountid} ] ; then
+#			depend="-W depend=afterok:${jfcountid}"
+#		else
+#			depend=""
+#		fi
+#		qsub ${depend} -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
+#			-o ${qoutbase}.${date}.out.txt \
+#			-e ${qoutbase}.${date}.err.txt \
+#			~/.local/bin/hawk_jellyfish_dump.bash -F "--threads 16 --input ${r1}"
+#	fi
+
+
+
+
 
 	qoutbase="${base}_kmers_sorted"
 	f="${qoutbase}.txt.gz"
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${jfcountid} ] ; then
-			depend="-W depend=afterok:${jfcountid}"
-		else
-			depend=""
-		fi
-		qsub ${depend} -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
+		qsub -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
 			-o ${qoutbase}.${date}.out.txt \
 			-e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/hawk_jellyfish_dump.bash -F "--threads 16 --input ${r1}"
+			~/.local/bin/hawk_jellyfish_count_and_dump.bash -F "--threads 16 -c --mer-len 11 --input ${r1}"
 	fi
 
 
@@ -331,7 +346,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	done	#	for ref in h38au  ; do
 
 
-	for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ; do
+	for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ${KALLISTO}/hrna_??.idx ; do
 
 		basekref=$( basename $kref .idx )
 

@@ -16,14 +16,19 @@ function tablify_sample_uniq_counts {
 
 	primary=$1
 	suffix=$2
-	max=.${3}
+	#max=.${3}
+	[ -z ${3} ] || max=".${3}"
 	core=h38au.${primary}.unmapped.${suffix}${max}.summary
+	jobname=${primary}.${suffix}${max}
+	jobname=${jobname/bowtie2-}
+	jobname=${jobname/kraken2.standard/k2}
+	jobname=${jobname/blastn.viral/v}
 	outbase=${dir}/${core}
 	f=${outbase}.csv
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub -N ${suffix} -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+		qsub -N ${jobname} -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			~/.local/bin/tablify_sample_uniq_counts.bash -F \
 				"-o ${f} ${dir}/*.${core}.txt.gz"
@@ -32,6 +37,7 @@ function tablify_sample_uniq_counts {
 }
 
 tablify_sample_uniq_counts bowtie2-e2e kraken2.standard
+tablify_sample_uniq_counts bowtie2-loc kraken2.standard
 
 for primary in bowtie2-e2e bowtie2-loc ; do
 for suffix in blastn.viral.masked blastn.viral.raw blastn.viral ; do
@@ -42,7 +48,7 @@ for max in 10 1e-10 1e-20 1e-30 ; do
 done ; done ; done
 
 
-
+exit
 
 
 for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
