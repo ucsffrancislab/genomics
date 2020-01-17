@@ -35,49 +35,16 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	echo $base
 	jobbase=$( basename ${base} )
 
-
-	
-#	jfcountid=""
-#	qoutbase="${base}_kmers_jellyfish"
-#	f="${qoutbase}"
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		jfcountid=$( qsub -N ${jobbase}.hjc -l nodes=1:ppn=16 -l vmem=8gb \
-#			-o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
-#			~/.local/bin/hawk_jellyfish_count.bash -F "--threads 16 -c --mer-len 11 --input ${r1}" )
-#	fi
-#
 #	qoutbase="${base}_kmers_sorted"
 #	f="${qoutbase}.txt.gz"
 #	if [ -f $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
-#		if [ ! -z ${jfcountid} ] ; then
-#			depend="-W depend=afterok:${jfcountid}"
-#		else
-#			depend=""
-#		fi
-#		qsub ${depend} -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
+#		qsub -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
 #			-o ${qoutbase}.${date}.out.txt \
 #			-e ${qoutbase}.${date}.err.txt \
-#			~/.local/bin/hawk_jellyfish_dump.bash -F "--threads 16 --input ${r1}"
+#			~/.local/bin/hawk_jellyfish_count_and_dump.bash -F "--threads 16 -c --mer-len 11 --input ${r1}"
 #	fi
-
-
-
-
-
-	qoutbase="${base}_kmers_sorted"
-	f="${qoutbase}.txt.gz"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		qsub -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
-			-o ${qoutbase}.${date}.out.txt \
-			-e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/hawk_jellyfish_count_and_dump.bash -F "--threads 16 -c --mer-len 11 --input ${r1}"
-	fi
 
 
 
@@ -346,7 +313,10 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	done	#	for ref in h38au  ; do
 
 
-	for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ${KALLISTO}/hrna_??.idx ; do
+	#for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ${KALLISTO}/rsrna_??.idx ; do
+	#for kref in ${KALLISTO}/rsrna_??.idx ; do
+	#for kref in ${KALLISTO}/hrna_11.idx ; do
+	for kref in ${KALLISTO}/*_??.idx ; do
 
 		basekref=$( basename $kref .idx )
 
@@ -354,10 +324,10 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 			rsg)
 				vmem=64;;
 				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
-			mi_*|mt_*|hp_*)
+			mi_*|mt_*|hp_*|ami_*|amt_*|ahp_*)
 				vmem=8;;
-			ami_*|amt_*|ahp_*)
-				vmem=8;;
+			hrna_11)	#|rsrna_*)
+				vmem=32;;
 			*)
 				vmem=16;;
 		esac

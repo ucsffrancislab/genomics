@@ -1,0 +1,35 @@
+
+
+Small RNA-seq library preparation and sequencing
+Small RNA samples were converted to Illumina sequencing libraries using the NEBNext Multiplex Small RNA Library Prep Set for Illumina (Set 1&2) (New England Biolabs, MA, USA), following the manufacturer’s protocol. Briefly, 5′ and 3′ adapters were ligated with small RNA molecules purified from plasma, followed by a cDNA library construction and incorporation of index tags by reverse transcription-PCR (RT-PCR). The products of this RT-PCR were purified using 6% non-denaturing polyacrylamide gel electrophoresis, and then size selection of 145–160 bp fraction was performed. The cDNA library samples were hybridized to a paired end flow cell and individual fragments were clonally amplified by bridge amplification on the Illumina cBot cluster generation. Then, the flow cell was loaded on the HiScanSQ platform and sequenced using Illumina’s sequencing by synthesis chemistry, generating 50 bp single end reads.
+
+Pre-processing and processing of the reads
+The quality of the small RNA libraries was first evaluated using FastQC v0.11.5 software (Figure 2). The most important metrics checked were the overall sequence quality: mean of phred quality per base and per read greater than 30; the GC percentage distribution per read: the data (red curve) is expected to approximately follow the theoretical distribution (blue curve) (Figure 2c). The peaks on the left or on the right side are an indicator of the presence of adapters in the reads. We also checked the presence/absence of overrepresented sequences. Based on the results obtained, the sequence reads were trimmed to remove the following adapter: 5′ AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC- NNNNNN- ATCTCGTATGCCGTCTTCTGCTTG 3′ from each sample. The 6 N’s sequence is unique per sample and allows it to be barcoded. After this step, the bases at the end of the sequences with a quality less than 20 were removed. Finally, all the sequences with length less than 18 nucleotides were discarded. These operations were performed using the tool Cutadapt20. The remaining sequences were aligned to the human genome reference (Hg38) from the UCSC Genome Browser. The expression of every miRNA per sample was measured using an annotation file from miRBase (v21). It contained all the mature miRNAs known in humans so far. The alignment and quantification steps were performed using the Subread21 and RSubread22 packages (http://subread.sourceforge.net/), respectively.
+
+
+
+wget https://www.ebi.ac.uk/arrayexpress/files/E-GEOD-105052/E-GEOD-105052.sdrf.txt
+
+
+./getfiles.bash
+
+
+#mkdir fastq
+#for gz in *fastq.gz ; do
+#fq=$( basename $gz .gz )
+#gunzip -c $gz > fastq/$fq
+#done
+
+./trim.bash
+
+
+mkdir fastq/trimmed
+for fq in ${PWD}/fastq/*fastq.gz ; do
+bfq=$( basename $fq )
+dfq=$( dirname $fq )
+ofq="${dfq}/trimmed/${bfq}"
+qsub -N ${fq} -l nodes=1:ppn=8 -l vmem=2gb -o ${ofq}.out.txt -e ${ofq}.err.txt ~/.local/bin/cutadapt.bash -F "-j 8 -m 18 -a NNNNNNATCTCGTATGCCGTCTTCTGCTTG -g AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC -o ${ofq} ${fq}"
+done
+
+
+
