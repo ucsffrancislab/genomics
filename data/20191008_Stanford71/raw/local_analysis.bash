@@ -10,31 +10,44 @@
 #	HTML's don't add a title ON the page, but does have a title tag
 
 
-export metadata="/Users/jakewendt/20191008_Stanford71/metadata.csv"
+outpath="/Users/jakewendt/20191008_Stanford71"
+export metadata="${outpath}/metadata.csv"
 
 
-for fc in /Users/jakewendt/20191008_Stanford71/h38au.bowtie2-*.unmapped.*.summary.csv ; do
+
+for fc in ${outpath}/h38au.bowtie2-*.unmapped.*.summary.csv ; do
 	echo $fc
 	export featureCounts="${fc}"
-	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb 
-	b=$( basename $fc .summary.csv )
-	sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${featureCounts}.deseq.html
-	sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${featureCounts}.deseq.html
+
+	output=${featureCounts}.deseq.html
+	if [ -f ${output} ] && [ ! -w ${output} ] ; then
+		echo "Write-protected ${output} exists. Skipping."
+	else
+		jupyter_nbconvert.bash --to html --execute --ExecutePreprocessor.timeout=600 \
+			--output ${output} ~/.local/bin/deseq.ipynb
+		b=$( basename $fc .summary.csv )
+		sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${output}
+		sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${output}
+	fi
 done
 
 
 
-for fc in /Users/jakewendt/20191008_Stanford71/h38*featureCounts*csv ; do
+for fc in ${outpath}/h38*featureCounts*csv ; do
 	echo $fc
 	export featureCounts=${fc}
-	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb 
-	b=$( basename $fc .csv )
-	sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${featureCounts}.deseq.html
-	sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${featureCounts}.deseq.html
+
+	output=${featureCounts}.deseq.html
+	if [ -f ${output} ] && [ ! -w ${output} ] ; then
+		echo "Write-protected ${output} exists. Skipping."
+	else
+		jupyter_nbconvert.bash --to html --execute --ExecutePreprocessor.timeout=600 \
+			--output ${output} ~/.local/bin/deseq.ipynb
+		b=$( basename $fc .csv )
+		sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${output}
+		sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${output}
+	fi
 done
-
-
-
 
 
 
@@ -45,34 +58,42 @@ done
 #	Error in simpleLoess(y, x, w, span, degree = degree, parametric = parametric, : invalid 'x'
 
 
+export datapath="${outpath}/kallisto"
 
-export datapath="/Users/jakewendt/20191008_Stanford71/kallisto"
-for a in mt hp mi ami amt ahp ; do
+for a in mt hp mi ami amt ahp hrna ; do
 for b in 11 13 15 17 19 21 ; do
 	export suffix="kallisto.single.${a}_${b}"
 	echo "Processing ${suffix}"
 
 	if [ $( ls -d ${datapath}/*.${suffix} | wc -l ) -eq 77 ] ; then
-		jupyter_nbconvert.bash --to html --execute --output /Users/jakewendt/20191008_Stanford71/${suffix}.sleuth.html --ExecutePreprocessor.timeout=600 ~/.local/bin/sleuth.ipynb 
-		sed -i "s/<title>sleuth<\/title>/<title>${suffix}<\/title>/" /Users/jakewendt/20191008_Stanford71/${suffix}.sleuth.html
-		sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${suffix}'<\/h1>/' /Users/jakewendt/20191008_Stanford71/${suffix}.sleuth.html
+		output=${outpath}/${suffix}.sleuth.html
+		if [ -f ${output} ] && [ ! -w ${output} ] ; then
+			echo "Write-protected ${output} exists. Skipping."
+		else
+			jupyter_nbconvert.bash --to html --execute --ExecutePreprocessor.timeout=600 \
+				--output ${output} ~/.local/bin/sleuth.ipynb
+			sed -i "s/<title>sleuth<\/title>/<title>${suffix}<\/title>/" ${output}
+			sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${suffix}'<\/h1>/' ${output}
+		fi
 	fi
 done ; done
 
 
 
-
-
-
-
-
-for infile in /Users/jakewendt/20191008_Stanford71/h38au.bowtie2-*.unmapped.*.summary.csv ; do
+for infile in ${outpath}/h38au.bowtie2-*.unmapped.*.summary.csv ; do
 	export featureCounts="${infile/summary.csv/summary.summed.csv}"
-	./sum_summary.bash ${infile} > ${featureCounts}
-	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb 
-	b=$( basename $featureCounts .summary.summed.csv )
-	sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${featureCounts}.deseq.html
-	sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${featureCounts}.deseq.html
+
+	output=${featureCounts}.deseq.html
+	if [ -f ${output} ] && [ ! -w ${output} ] ; then
+		echo "Write-protected ${output} exists. Skipping."
+	else
+		./sum_summary.bash ${infile} > ${featureCounts}
+		jupyter_nbconvert.bash --to html --execute --ExecutePreprocessor.timeout=600 \
+			--output ${output} ~/.local/bin/deseq.ipynb
+		b=$( basename $featureCounts .summary.summed.csv )
+		sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${output}
+		sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${output}
+	fi
 done
 
 
@@ -80,28 +101,28 @@ done
 
 #	export metadata="/Users/jakewendt/20191008_Stanford71/metadata.csv"
 #	for infile in /Users/jakewendt/20191008_Stanford71/h38au.bowtie2-e2e.unmapped.*.summary.csv ; do
-#	
+#
 #	export featureCounts="${infile/summary.csv/summary.phage.csv}"
 #	grep -E "phage|Geneid" ${infile} > ${featureCounts}
-#	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb 
+#	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb
 #	b=$( basename $featureCounts .summary.phage.csv )
 #	sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${featureCounts}.deseq.html
 #	sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${featureCounts}.deseq.html
-#	
+#
 #	export featureCounts="${infile/summary.csv/summary.adeno.csv}"
 #	grep -E "adeno|Geneid" ${infile} > ${featureCounts}
-#	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb 
+#	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb
 #	b=$( basename $featureCounts .summary.adeno.csv )
 #	sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${featureCounts}.deseq.html
 #	sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${featureCounts}.deseq.html
-#	
+#
 #	export featureCounts="${infile/summary.csv/summary.herpes.csv}"
 #	grep -E "herpes|Geneid" ${infile} > ${featureCounts}
-#	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb 
+#	jupyter_nbconvert.bash --to html --execute --output ${featureCounts}.deseq.html --ExecutePreprocessor.timeout=600 ~/.local/bin/deseq.ipynb
 #	b=$( basename $featureCounts .summary.herpes.csv )
 #	sed -i "s/<title>deseq<\/title>/<title>${b}<\/title>/" ${featureCounts}.deseq.html
 #	sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${b}'<\/h1>/' ${featureCounts}.deseq.html
-#	
+#
 #	done
 
 
