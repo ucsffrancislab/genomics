@@ -60,12 +60,12 @@ done
 
 export datapath="${outpath}/kallisto"
 
-for a in mt hp mi ami amt ahp hrna ; do
-for b in 11 13 15 17 19 21 ; do
+for a in mt hp mi ami amt ahp hrna rsrna ; do
+for b in 11 13 15 17 19 21 31 ; do
 	export suffix="kallisto.single.${a}_${b}"
 	echo "Processing ${suffix}"
 
-	if [ $( ls -d ${datapath}/*.${suffix} | wc -l ) -eq 77 ] ; then
+	if [ $( ls -d ${datapath}/*.${suffix}/abundance.h5 | wc -l ) -eq 77 ] ; then
 		output=${outpath}/${suffix}.sleuth.html
 		if [ -f ${output} ] && [ ! -w ${output} ] ; then
 			echo "Write-protected ${output} exists. Skipping."
