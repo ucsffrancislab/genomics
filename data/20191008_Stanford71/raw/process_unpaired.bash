@@ -316,18 +316,21 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	#for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ${KALLISTO}/rsrna_??.idx ; do
 	#for kref in ${KALLISTO}/rsrna_??.idx ; do
 	#for kref in ${KALLISTO}/hrna_11.idx ; do
-	for kref in ${KALLISTO}/*_??.idx ; do
+	#for kref in ${KALLISTO}/*_??.idx ; do
+	#for kref in ${KALLISTO}/vm_13.idx ; do
+	for kref in ${KALLISTO}/rsg_13.idx ${KALLISTO}/{ahp,hp,ami,mi,amt,mt,vm}_??.idx ; do
 
 		basekref=$( basename $kref .idx )
 
 		case $basekref in
-			rsg)
+			rsg_13)
+				vmem=128;;
+			rsg*|vm_13)
 				vmem=64;;
-				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
+			hrna_11)
+				vmem=32;;
 			mi_*|mt_*|hp_*|ami_*|amt_*|ahp_*)
 				vmem=8;;
-			hrna_11)	#|rsrna_*)
-				vmem=32;;
 			*)
 				vmem=16;;
 		esac
