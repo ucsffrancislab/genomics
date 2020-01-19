@@ -24,13 +24,14 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz ; do
+for r1 in /francislab/data1/raw/E-GEOD-105052/fastq/trimmed/*.fastq.gz ; do
 
 	#       NEED FULL PATH HERE ON THE CLUSTER
 	base=${r1%.fastq.gz}
 
 	echo $base
 	jobbase=$( basename ${base} )
+	jobbase=${jobbase:(-3)}	#	just the last 3 digits
 
 
 #	was done on herv ...
@@ -40,18 +41,24 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	#for kref in ${KALLISTO}/??_??.idx ${KALLISTO}/a??_??.idx ${KALLISTO}/rsrna_??.idx ; do
 	#for kref in ${KALLISTO}/rsrna_??.idx ; do
 	#for kref in ${KALLISTO}/hrna_11.idx ; do
-	for kref in ${KALLISTO}/*_??.idx ; do
+	#for kref in ${KALLISTO}/rsrna_31.idx ; do
+	#for kref in ${KALLISTO}/rsrna_13.idx ; do
+	#for kref in ${KALLISTO}/ami_21.idx ; do
+	#for kref in ${KALLISTO}/mi_21.idx ; do
+	#for kref in ${KALLISTO}/rsrna_21.idx ; do
+	for kref in ${KALLISTO}/vm_??.idx ${KALLISTO}/rsg_??.idx ; do
+
+#	rsrna_13 rsrna_31 mi_11 mi_21 ami_11 ami_21
 
 		basekref=$( basename $kref .idx )
 
 		case $basekref in
-			rsg)
+			rsg_*|rsrna_13|vm_13)
 				vmem=64;;
-				#vmem=32;;	#	SOME rsg runs fail with bad_alloc so upping to 64GB
+			hrna_11|rsrna_21|rsrna_31)
+				vmem=32;;
 			mi_*|mt_*|hp_*|ami_*|amt_*|ahp_*)
 				vmem=8;;
-			hrna_11)	#|rsrna_*)
-				vmem=32;;
 			*)
 				vmem=16;;
 		esac
