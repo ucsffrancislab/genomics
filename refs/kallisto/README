@@ -24,11 +24,22 @@ echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/rs
 done
 
 
-kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_cdna.idx  /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.cdna.all.fa
-kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_ncrna.idx /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.ncrna.fa
-kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_rna.idx   /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.rna.fa.gz
+for b in 11 13 15 17 19 21 31 ; do
+echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/rsg_${b}.idx /francislab/data1/refs/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz" | qsub -l vmem=64gb -N ki_rsg_${b}
+done
 
 
-kallisto index --index /francislab/data1/refs/kallisto/Archive/h_rna.idx /francislab/data1/refs/refseq/mRNA_Prot/human.*.rna.fna.gz
-kallisto index --index /francislab/data1/refs/kallisto/Archive/rsg.idx /francislab/data1/refs/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz
+for b in 13 21 31 ; do
+echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/vm_${b}.idx /francislab/data1/refs/fasta/viral.masked.fa.gz" | qsub -l vmem=64gb -N ki_vm_${b}
+done
+
+
+#echo "kallisto index --kmer-size=${b} --index /francislab/data1/refs/kallisto/vr_${b}.idx /francislab/data1/refs/fasta/viral.raw.fa.gz" | qsub -l vmem=64gb -N ki_vr_${b}
+
+#kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_cdna.idx  /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.cdna.all.fa
+#kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_ncrna.idx /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.ncrna.fa
+#kallisto index --index /francislab/data1/refs/kallisto/Archive/h38_rna.idx   /francislab/data1/refs/fasta/Homo_sapiens.GRCh38.rna.fa.gz
+
+
+
 
