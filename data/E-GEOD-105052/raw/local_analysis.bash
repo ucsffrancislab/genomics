@@ -32,9 +32,15 @@ done
 
 export datapath="${outpath}/kallisto"
 
-for a in vm mt hp mi ami amt ahp hrna rsrna ; do
-for b in 11 13 15 17 19 21 31 ; do
-	export suffix="kallisto.single.${a}_${b}"
+#for a in rsg vm mt hp mi ami amt ahp hrna rsrna ; do
+#for b in 11 13 15 17 19 21 31 ; do
+#	export suffix="kallisto.single.${a}_${b}"
+
+for k in ${datapath}/SRR6182239.kallisto.single.* ; do
+
+	k=$( basename ${k} )
+	export suffix=${k#SRR6182239.}
+
 	echo "Processing ${suffix}"
 
 	if [ $( ls -d ${datapath}/*.${suffix}/abundance.h5 | wc -l ) -eq 42 ] ; then
@@ -48,7 +54,10 @@ for b in 11 13 15 17 19 21 31 ; do
 			sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${suffix}'<\/h1>/' ${output}
 		fi
 	fi
-done ; done
+
+done	#	for k in ${datapath}/01.kallisto.single.* ; do
+
+#done ; done
 
 
 #	ERROR: Error in simpleLoess(y, x, w, span, degree = degree, parametric = parametric, : invalid 'x'

@@ -60,9 +60,15 @@ done
 
 export datapath="${outpath}/kallisto"
 
-for a in mt hp mi ami amt ahp hrna rsrna ; do
-for b in 11 13 15 17 19 21 31 ; do
-	export suffix="kallisto.single.${a}_${b}"
+#for a in rsg vm mt hp mi ami amt ahp hrna rsrna ; do
+#for b in 11 13 15 17 19 21 31 ; do
+#	export suffix="kallisto.single.${a}_${b}"
+
+for k in ${datapath}/01.kallisto.single.* ; do
+
+	k=$( basename ${k} )
+	export suffix=${k#01.}
+
 	echo "Processing ${suffix}"
 
 	if [ $( ls -d ${datapath}/*.${suffix}/abundance.h5 | wc -l ) -eq 77 ] ; then
@@ -76,7 +82,10 @@ for b in 11 13 15 17 19 21 31 ; do
 			sed -i 's/\(id="notebook-container">\)$/\1<h1 align="center">'${suffix}'<\/h1>/' ${output}
 		fi
 	fi
-done ; done
+
+done	#	for k in ${datapath}/01.kallisto.single.* ; do
+
+#done ; done
 
 
 
