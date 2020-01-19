@@ -32,7 +32,7 @@ done
 
 export datapath="${outpath}/kallisto"
 
-for a in mt hp mi ami amt ahp hrna rsrna ; do
+for a in vm mt hp mi ami amt ahp hrna rsrna ; do
 for b in 11 13 15 17 19 21 31 ; do
 	export suffix="kallisto.single.${a}_${b}"
 	echo "Processing ${suffix}"
@@ -51,3 +51,5 @@ for b in 11 13 15 17 19 21 31 ; do
 done ; done
 
 
+#	ERROR: Error in simpleLoess(y, x, w, span, degree = degree, parametric = parametric, : invalid 'x'
+#	for rsrna_31
