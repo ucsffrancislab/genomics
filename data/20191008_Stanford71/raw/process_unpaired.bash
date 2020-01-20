@@ -318,16 +318,17 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	#for kref in ${KALLISTO}/hrna_11.idx ; do
 	#for kref in ${KALLISTO}/*_??.idx ; do
 	#for kref in ${KALLISTO}/vm_13.idx ; do
-	for kref in ${KALLISTO}/rsg_13.idx ${KALLISTO}/{ahp,hp,ami,mi,amt,mt,vm}_??.idx ; do
+	#for kref in ${KALLISTO}/rsg_{21,31}.idx ; do 	#${KALLISTO}/{ahp,hp,ami,mi,amt,mt,vm}_??.idx ; do
+	for kref in ${KALLISTO}/rsrna_13.idx ; do
 
 		basekref=$( basename $kref .idx )
 
 		case $basekref in
 			rsg_13)
 				vmem=128;;
-			rsg*|vm_13)
+			rsg_*|vm_13)
 				vmem=64;;
-			hrna_11)
+			hrna_11|rsrna_13)
 				vmem=32;;
 			mi_*|mt_*|hp_*|ami_*|amt_*|ahp_*)
 				vmem=8;;
