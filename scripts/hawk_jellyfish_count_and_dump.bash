@@ -6,6 +6,8 @@ set -o pipefail
 
 set -x
 
+script_dir=$( dirname $0 )
+
 # -m, --mer-len=uint32                    *Length of mer
 # -s, --size=uint64                       *Hash size
 # -t, --threads=uint32                     Number of threads (1)
@@ -32,22 +34,22 @@ unique_extension=".fastq.gz"
 
 INDIR=$( dirname $file )
 OUTPREFIX=$( basename $file	${unique_extension} )
-OUTDIR="${INDIR}/${OUTPREFIX}_kmers"
+OUTDIR="${INDIR}/${OUTPREFIX}"
 
 
-f1=${OUTDIR}_sorted.txt.gz
+f1=${OUTDIR}_kmers_sorted.txt.gz
 if [ -f $f1 ] && [ ! -w $f1 ] ; then
 	echo "Write-protected $f1 exists. Skipping."
 else
 
 
-	f=${OUTDIR}_jellyfish
+	f=${OUTDIR}_kmers_jellyfish
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		echo "Creating $f"
 	
-		mkdir -p ${OUTDIR}
+		mkdir -p ${OUTDIR}_kmers
 	
 	
 		#	I think that perhaps this samtools fastq should have some flags added to filter out only high quality, proper pair aligned reads?
@@ -60,21 +62,21 @@ else
 	
 		date
 		#	--matrix ${f}.Matrix 
-		hawk_jellyfish count ${canonical} --output ${OUTDIR}/tmp \
+		hawk_jellyfish count ${canonical} --output ${OUTDIR}_kmers/tmp \
 			--mer-len ${kmersize} --threads ${threads} --size 5G \
 			--timing ${f}.Timing --stats ${f}.Stats \
 			<( zcat ${file} )
 		date
 	
-		COUNT=$(ls ${OUTDIR}/tmp* |wc -l)
+		COUNT=$(ls ${OUTDIR}_kmers/tmp* |wc -l)
 	
 		if [ $COUNT -eq 1 ]
 		then
-			mv ${OUTDIR}/tmp_0 ${f}
+			mv ${OUTDIR}_kmers/tmp_0 ${f}
 		else
-			hawk_jellyfish merge -o ${f} ${OUTDIR}/tmp*
+			hawk_jellyfish merge -o ${f} ${OUTDIR}_kmers/tmp*
 		fi
-		rm -rf ${OUTDIR}
+		rm -rf ${OUTDIR}_kmers
 	
 		chmod a-w $f
 	fi
@@ -82,7 +84,44 @@ else
 
 
 
-	f2=${OUTDIR}_sorted.txt
+	f=${OUTDIR}.kmers.hist.csv
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+
+		f2=${OUTDIR}.kmers.jellyfish.hist.csv
+		if [ -f $f2 ] && [ ! -w $f2 ] ; then
+			echo "Write-protected $f2 exists. Skipping."
+		else
+			echo "Creating $f2"
+			hawk_jellyfish histo --full --output ${f2} --threads ${threads} ${OUTDIR}_kmers_jellyfish
+			chmod a-w $f2
+		fi
+
+		# swap, for some reason
+		awk '{print $2"\t"$1}' ${f2} > ${f}
+		chmod a-w $f
+
+		rm -f $f2
+	fi
+
+	f=${OUTDIR}_total_kmers_counts.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+		awk -f ${script_dir}/hawk_countTotalKmer.awk ${OUTDIR}.kmers.hist.csv > ${f}
+		chmod a-w $f
+	fi
+
+
+
+
+
+
+
+	f2=${OUTDIR}_kmers_sorted.txt
 	if [ -f $f2 ] && [ ! -w $f2 ] ; then
 		echo "Write-protected $f2 exists. Skipping."
 	else
@@ -94,12 +133,12 @@ else
 		#	${jellyfishDir}/jellyfish dump -c -L `expr $CUTOFF + 1` \
 		#		${OUTPREFIX}_kmers_jellyfish > ${OUTPREFIX}_kmers.txt
 
-		f3=${OUTDIR}.txt
+		f3=${OUTDIR}_kmers.txt
 		if [ -f $f3 ] && [ ! -w $f3 ] ; then
 			echo "Write-protected $f3 exists. Skipping."
 		else
 			echo "Creating $f3"
-			hawk_jellyfish dump --column --lower-count 2 ${OUTDIR}_jellyfish > ${f3}
+			hawk_jellyfish dump --column --lower-count 2 ${OUTDIR}_kmers_jellyfish > ${f3}
 			chmod a-w $f3
 		fi
 
@@ -116,7 +155,7 @@ else
 	#	should be "a-w" already as gzip preserves
 	#	it also removes the source so no rm necessary
 
-	rm -f ${OUTDIR}_jellyfish
+	rm -f ${OUTDIR}_kmers_jellyfish
 
 fi
 
