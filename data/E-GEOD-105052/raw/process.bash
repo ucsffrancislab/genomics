@@ -46,13 +46,18 @@ for r1 in /francislab/data1/raw/E-GEOD-105052/fastq/trimmed/*.fastq.gz ; do
 	#for kref in ${KALLISTO}/ami_21.idx ; do
 	#for kref in ${KALLISTO}/mi_21.idx ; do
 	#for kref in ${KALLISTO}/rsrna_21.idx ; do
-	for kref in ${KALLISTO}/vm_??.idx ${KALLISTO}/rsg_??.idx ; do
+	#for kref in ${KALLISTO}/vm_??.idx ${KALLISTO}/rsg_??.idx ; do
+	#for kref in ${KALLISTO}/{ami,mi,ahp,hp,amt,mt}_??.idx ; do
+
+	for kref in ${KALLISTO}/rsg_13.idx ; do
 
 #	rsrna_13 rsrna_31 mi_11 mi_21 ami_11 ami_21
 
 		basekref=$( basename $kref .idx )
 
 		case $basekref in
+			rsg_13)
+				vmem=128;;
 			rsg_*|rsrna_13|vm_13)
 				vmem=64;;
 			hrna_11|rsrna_21|rsrna_31)
