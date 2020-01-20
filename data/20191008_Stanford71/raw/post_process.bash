@@ -12,6 +12,30 @@ vmem=8
 date=$( date "+%Y%m%d%H%M%S" )
 
 
+
+
+
+#f=${outbase}.csv
+#if [ -f $f ] && [ ! -w $f ] ; then
+#	echo "Write-protected $f exists. Skipping."
+#else
+#	qsub -N ${jobname} -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#		-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#		~/.local/bin/tablify_sample_uniq_counts.bash -F \
+#			"-o ${f} ${dir}/*.${core}.txt.gz"
+#fi
+
+jobname='hawk'
+qsub -N ${jobname} -o hawk.${date}.out.txt -e hawk.${date}.err.txt \
+	-d ${dir} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+	~/.local/bin/hawk_runHawk.bash
+
+
+
+
+exit
+
+
 function tablify_sample_uniq_counts {
 
 	primary=$1
@@ -47,8 +71,6 @@ for max in 10 1e-10 1e-20 1e-30 ; do
 
 done ; done ; done
 
-
-exit
 
 
 for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
