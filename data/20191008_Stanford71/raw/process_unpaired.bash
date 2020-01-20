@@ -35,16 +35,16 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	echo $base
 	jobbase=$( basename ${base} )
 
-#	qoutbase="${base}_kmers_sorted"
-#	f="${qoutbase}.txt.gz"
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		qsub -N ${jobbase}.hjd -l nodes=1:ppn=16 -l vmem=8gb \
-#			-o ${qoutbase}.${date}.out.txt \
-#			-e ${qoutbase}.${date}.err.txt \
-#			~/.local/bin/hawk_jellyfish_count_and_dump.bash -F "--threads 16 -c --mer-len 11 --input ${r1}"
-#	fi
+	qoutbase="${base}_kmers_sorted"
+	f="${qoutbase}.txt.gz"
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N ${jobbase}.hjd -l nodes=1:ppn=32 -l vmem=16gb \
+			-o ${qoutbase}.${date}.out.txt \
+			-e ${qoutbase}.${date}.err.txt \
+			~/.local/bin/hawk_jellyfish_count_and_dump.bash -F "--threads 32 -c --mer-len 13 --input ${r1}"
+	fi
 
 
 
@@ -317,9 +317,9 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	#for kref in ${KALLISTO}/rsrna_??.idx ; do
 	#for kref in ${KALLISTO}/hrna_11.idx ; do
 	#for kref in ${KALLISTO}/*_??.idx ; do
-	#for kref in ${KALLISTO}/vm_13.idx ; do
+	for kref in ${KALLISTO}/vm_13.idx ; do
 	#for kref in ${KALLISTO}/rsg_{21,31}.idx ; do 	#${KALLISTO}/{ahp,hp,ami,mi,amt,mt,vm}_??.idx ; do
-	for kref in ${KALLISTO}/rsrna_13.idx ; do
+	#for kref in ${KALLISTO}/rsrna_13.idx ; do
 
 		basekref=$( basename $kref .idx )
 
