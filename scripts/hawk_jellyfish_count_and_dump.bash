@@ -6,7 +6,6 @@ set -o pipefail
 
 set -x
 
-script_dir=$( dirname $0 )
 
 # -m, --mer-len=uint32                    *Length of mer
 # -s, --size=uint64                       *Hash size
@@ -99,7 +98,7 @@ else
 			chmod a-w $f2
 		fi
 
-		# swap, for some reason
+		# swap, for some reason?
 		awk '{print $2"\t"$1}' ${f2} > ${f}
 		chmod a-w $f
 
@@ -111,7 +110,7 @@ else
 		echo "Write-protected $f exists. Skipping."
 	else
 		echo "Creating $f"
-		awk -f ${script_dir}/hawk_countTotalKmer.awk ${OUTBASE}.kmers.hist.csv > ${f}
+		awk '{if(NR!=1) sum+=$1*$2} END {print sum}' ${OUTDIR}.kmers.hist.csv > ${f}
 		chmod a-w $f
 	fi
 
