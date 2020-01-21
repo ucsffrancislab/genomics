@@ -11,11 +11,12 @@ set -o pipefail
 
 isDiploid=1
 kmersize=13
+threads=16
 
 while [ $# -gt 0 ] ; do
 	case $1 in
-#		-t|--t*)
-#			shift; threads=$1; shift ;;
+		-t|--t*)
+			shift; threads=$1; shift ;;
 		-k|--k*|-m|--m*)
 			shift; kmersize=$1; shift ;;
 		-g|--g*)
@@ -132,7 +133,7 @@ else
 	echo "Creating $f"
 	#	This can take about a day
 	#	It produces 7 files
-	hawkgz $caseCount $controlCount
+	hawkgz ${threads} ${caseCount} ${controlCount}
 	chmod a-w $f
 
 	#-rw-rw-r-- 1 jake            0 Jun 21 07:39 control_out_wo_bonf.kmerDiff

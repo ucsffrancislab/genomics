@@ -26,10 +26,10 @@ date=$( date "+%Y%m%d%H%M%S" )
 #fi
 
 jobname='hawk'
-qsub -N ${jobname} -o hawk.${date}.out.txt -e hawk.${date}.err.txt \
-	-d ${dir} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+qsub -N ${jobname} -o ${dir}/hawk.${date}.out.txt -e ${dir}/hawk.${date}.err.txt \
+	-d ${dir} -l nodes=1:ppn=32 -l vmem=128gb \
 	~/.local/bin/hawk_run_hawk_analysis.bash -F \
-		"--mer-length 13 --gwas_file /francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
+		"--threads 32 --mer-length 13 --gwas_file /francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
 
 
 
