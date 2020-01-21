@@ -35,7 +35,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	echo $base
 	jobbase=$( basename ${base} )
 
-	qoutbase="${base}_kmers_sorted"
+	qoutbase="${base}.13mers.sorted"
 	f="${qoutbase}.txt.gz"
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
