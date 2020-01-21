@@ -13,4 +13,12 @@ qsub -N ${bfq} -o ${ofq}.out.txt -e ${ofq}.err.txt ~/.local/bin/cutadapt.bash -F
 done
 
 
+#	Circulating miR-323-3p is a biomarker for cardiomyopathy and an indicator of phenotypic variability in Friedreich’s ataxia patients
+#	https://www.nature.com/articles/s41598-017-04996-9
+#	hsa-miR-128-3p, hsa-miR-625-3p, hsa-miR-130b-5p, hsa-miR-151a-5p, hsa-miR-330-3p, hsa-miR-323a-3p, and hsa-miR-142-3p
 
+#	Small RNA-seq analysis of circulating miRNAs to identify phenotypic variability in Friedreich’s ataxia patients
+#	https://www.nature.com/articles/sdata201821
+
+#	should have
+#	Therefore, we removed the adapter specifying the -b option in Cutadapt. It indicates to the program that the adapter may appear at the beginning (even degraded), within the read, or at the end of the read (even partially).
