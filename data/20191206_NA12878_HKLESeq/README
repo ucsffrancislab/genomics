@@ -385,3 +385,9 @@ bowtie2 --threads 4 --very-sensitive-local -x hg38 -1 SFSP003_S1_L001_R1_001.fas
 
 
 
+awk '(NR==FNR){s1[$2]=$1;s2[$3]=$1}(NR!=FNR){ print $1"\t"$2"\t"$3"\t( "s1[$2]" : "s2[$3]" )"}' sampleindexes.txt <( tail I1-2.sort.uniq-c.sort )
+
+
+
+
+
