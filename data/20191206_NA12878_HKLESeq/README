@@ -61,7 +61,7 @@ python ~/github/ucsffrancislab/umi/umitag.py \
 --index2 ${base}.i2.fastq
 done
 
-for r1 in *.r1.umitagged.fastq ; do
+for r1 in *.umitagged.r1.fastq ; do
 base=${r1%.umitagged.r1.fastq}
 python ~/github/ucsffrancislab/umi/consolidate.py ${base}.umitagged.r1.fastq ${base}.consolidated.r1..fastq 15 0.9
 python ~/github/ucsffrancislab/umi/consolidate.py ${base}.umitagged.r2.fastq ${base}.consolidated.r2.fastq 15 0.9
@@ -375,4 +375,13 @@ Sort tables numerically, not alphabetically
 
 
 Unaligned reads  ( to SVA / HERV ) should be about half
+
+
+
+bowtie2 --threads 4 --very-sensitive -x hg38 -1 SFSP003_S1_L001_R1_001.fastq.gz -2 SFSP003_S1_L001_R2_001.fastq.gz 2> bowtie2.hg38.vs.err.txt | samtools view -o SFSP003_S1_L001.hg38.vs.bam -
+
+bowtie2 --threads 4 --very-sensitive-local -x hg38 -1 SFSP003_S1_L001_R1_001.fastq.gz -2 SFSP003_S1_L001_R2_001.fastq.gz 2> bowtie2.hg38.vsl.err.txt | samtools view -o SFSP003_S1_L001.hg38.vsl.bam -
+
+
+
 
