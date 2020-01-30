@@ -391,3 +391,7 @@ awk '(NR==FNR){s1[$2]=$1;s2[$3]=$1}(NR!=FNR){ print $1"\t"$2"\t"$3"\t( "s1[$2]" 
 
 
 
+bowtie2 --threads 4 --very-sensitive -x hg38 -1 SFSP003_S1_L001_R1_001.fastq.gz -2 SFSP003_S1_L001_R2_001.fastq.gz 2> SFSP003_S1_L001.hg38.vs.err.txt | samtools view -o SFSP003_S1_L001.hg38.vs.bam -
+
+bowtie2 --threads 4 --very-sensitive-local -x hg38 -1 SFSP003_S1_L001_R1_001.fastq.gz -2 SFSP003_S1_L001_R2_001.fastq.gz 2> SFSP003_S1_L001.hg38.vsl.err.txt | samtools view -o SFSP003_S1_L001.hg38.vsl.bam -
+
