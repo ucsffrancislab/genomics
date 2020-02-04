@@ -18,6 +18,12 @@ while [ $# -gt 0 ] ; do
 			shift; kmersize=$1; shift ;;
 		-g|--g*)
 			shift; gwas_file=$1; shift ;;
+		-c|--c*)
+			shift; counts_file=$1; shift ;;
+		-s|--s*)
+			shift; sorted_file=$1; shift ;;
+		-o|--o*)
+			shift; outdir=$1; shift ;;
 		*)
 			shift;;
 	esac
@@ -25,7 +31,8 @@ done
 
 
 #	These have fixed names so put everything in named directory
-BASE="hawk_${kmersize}mers"
+#BASE="hawk_${kmersize}mers"
+BASE="${outdir}"
 
 if [ -d ${BASE} ] && [ ! -w ${BASE} ] ; then
 	echo "Write-protected ${BASE} exists. Skipping."
@@ -33,29 +40,35 @@ else
 	mkdir -p ${BASE}
 	cd ${BASE}
 
-	#	my mods moved from countKmers script
-	f=total_kmer_counts.txt
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		echo "Creating $f"
-		#cat *_total_kmer_counts.txt > ${f}
-		cat ../*.${kmersize}mers.total_counts.txt > ${f}
-		chmod a-w $f
-	fi
+#	#	my mods moved from countKmers script
+#	f=total_kmer_counts.txt
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		echo "Creating $f"
+#		#cat *_total_kmer_counts.txt > ${f}
+#		cat ../*.${kmersize}mers.total_counts.txt > ${f}
+#		chmod a-w $f
+#	fi
+#	date
+
+	cp ${counts_file} ./total_kmer_counts.txt
 	date
 	
-	f=sorted_files.txt
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		echo "Creating $f"
-		ls -1 ../*.${kmersize}mers.sorted.txt.gz > ${f}
-		chmod a-w $f
-	fi
+#	f=sorted_files.txt
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		echo "Creating $f"
+#		ls -1 ../*.${kmersize}mers.sorted.txt.gz > ${f}
+#		chmod a-w $f
+#	fi
+#	date
+
+	cp ${sorted_file} ./sorted_files.txt
 	date
 	
-	noInd=$(cat sorted_files.txt | wc -l)
+	noInd=$(cat sorted_files.txt | wc -l)	#	just want number, not filename so "cat|wc -l"
 	date
 	
 	#Next step requires a gwas_info.txt in the format of ...

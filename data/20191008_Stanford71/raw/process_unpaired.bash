@@ -35,33 +35,19 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 	echo $base
 	jobbase=$( basename ${base} )
 
-	qoutbase="${base}.13mers.sorted"
-	f="${qoutbase}.txt.gz"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		qsub -N ${jobbase}.hjd -l nodes=1:ppn=32 -l vmem=16gb \
-			-o ${qoutbase}.${date}.out.txt \
-			-e ${qoutbase}.${date}.err.txt \
-			~/.local/bin/hawk_jellyfish_count_and_dump.bash -F "--threads 32 -c --mer-len 13 --input ${r1}"
-	fi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	#	for k in 13 ; do
+	#		qoutbase="${base}.${k}mers.sorted"
+	#		f="${qoutbase}.txt.gz"
+	#		if [ -f $f ] && [ ! -w $f ] ; then
+	#			echo "Write-protected $f exists. Skipping."
+	#		else
+	#			qsub -N ${jobbase}.hjd.${k} -l nodes=1:ppn=32 -l vmem=16gb \
+	#				-o ${qoutbase}.${date}.out.txt \
+	#				-e ${qoutbase}.${date}.err.txt \
+	#				~/.local/bin/hawk_jellyfish_count_and_dump.bash \
+	#					-F "--threads 32 -c --mer-len ${k} --input ${r1}"
+	#		fi
+	#	done
 
 
 	#	subread references
@@ -174,6 +160,35 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 			fi
 
 
+			if [ $ali == 'e2e' ] ; then
+				#	base=${r1%.fastq.gz}
+				#	outbase=${base}.${ref}
+				#	qoutbase="${outbase}.bowtie2-${ali}.unmapped"
+				infile=${qoutbase}.fasta.gz
+
+				for k in 13 ; do
+					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.sorted"
+					f="${qoutbase}.txt.gz"
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${bowtie2id} ] ; then
+							depend="-W depend=afterok:${bowtie2id}"
+						else
+							depend=""
+						fi
+						qsub ${depend} -N ${jobbase}.hjd.${k} -l nodes=1:ppn=8 -l vmem=8gb \
+							-o ${qoutbase}.${date}.out.txt \
+							-e ${qoutbase}.${date}.err.txt \
+							~/.local/bin/hawk_jellyfish_count_and_dump.bash \
+								-F "--threads 8 -c --mer-len ${k} --input ${infile}"
+					fi
+				done
+			fi
+			#	RESET IT HERE
+			qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped"
+
+
 
 			infile=${qoutbase}.fasta.gz
 			qoutbase="${qoutbase}.blastn"	#.nt.txt.gz"
@@ -215,23 +230,6 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.fastq.gz 
 					echo ${vblastnid}
 				fi
 
-
-				#	f=${qoutbase}.${vref}.10.summary.txt.gz
-				#	if [ -f $f ] && [ ! -w $f ] ; then
-				#		echo "Write-protected $f exists. Skipping."
-				#	else
-				#		if [ ! -z ${vblastnid} ] ; then
-				#			depend="-W depend=afterok:${vblastnid}"
-				#		else
-				#			depend=""
-				#		fi
-				#		#	-l nodes=1:ppn=${threads} -l vmem=8gb \
-				#		qsub ${depend} -N ${jobbase}.${ref}.b${ali:0:1}u${abbrev}s \
-				#			-l nodes=1:ppn=4 -l vmem=4gb \
-				#			-o ${qoutbase}.${vref}.summary.${date}.out.txt -e ${qoutbase}.${vref}.summary.${date}.err.txt \
-				#			~/.local/bin/blastn_summary.bash \
-				#				-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref}"
-				#	fi
 
 				for max in 10 1e-10 1e-20 1e-30 ; do
 

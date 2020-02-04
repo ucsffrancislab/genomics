@@ -32,10 +32,12 @@ while [ $# -gt 0 ] ; do
 done
 
 
-unique_extension=".fastq.gz"
+#unique_extension=".fast?.gz"
 
 INDIR=$( dirname $file )
-OUTPREFIX=$( basename $file	${unique_extension} )
+#OUTPREFIX=$( basename $file	${unique_extension} )
+OUTPREFIX=$( basename $file	)
+OUTPREFIX=${OUTPREFIX%.fast?.gz}
 OUTBASE="${INDIR}/${OUTPREFIX}.${kmersize}mers"
 
 
@@ -113,7 +115,7 @@ else
 		echo "Write-protected $f exists. Skipping."
 	else
 		echo "Creating $f"
-		awk '{if(NR!=1) sum+=$1*$2} END {print sum}' ${OUTDIR}.hist.csv > ${f}
+		awk '{if(NR!=1) sum+=$1*$2} END {print sum}' ${OUTBASE}.hist.csv > ${f}
 		chmod a-w $f
 	fi
 
