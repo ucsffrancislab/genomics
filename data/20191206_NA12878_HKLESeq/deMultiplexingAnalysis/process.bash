@@ -168,7 +168,7 @@ done
 
 
 
-for x in 1 ; do
+for x in 12 ; do
 
 	dir="deML.${x}"
 #	if [ ! -d ${dir} ] ; then
