@@ -1,0 +1,227 @@
+
+
+#	Take the NA12878 hybrid (ONT/illumina) assembly and align the HERV/SVA database to separately using both 'local, --all', and 'end-to-end, --all'
+#	Use whatever number scheme for the contigs- this is really just for us
+#		??
+#	Create .bam and .bai for each.
+
+
+#	http://masurca.blogspot.com/
+#	http://masurca.blogspot.com/2018/11/masurca-329-hotfix.html
+#	ftp://ftp.ccb.jhu.edu/pub/alekseyz/na12878/na12878_MaSuRCA_3.2.8_nanopore_wgs_consortium_37x_GIAB_100x.scaffolds.fa
+#	Use sorted one
+
+
+
+
+
+#	bowtie2 -f --threads 4 --all --xeq --very-sensitive-local -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz 2> NA12878.SVAs_and_HERVs_KWHE.loc.all.err.txt | samtools view -o NA12878.SVAs_and_HERVs_KWHE.loc.all.unsorted.bam - &
+
+#	bowtie2 -f --threads 4 --all --xeq --very-sensitive -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz 2> NA12878.SVAs_and_HERVs_KWHE.e2e.all.err.txt | samtools view -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam - &
+
+#	samtools sort -o NA12878.SVAs_and_HERVs_KWHE.loc.all.bam NA12878.SVAs_and_HERVs_KWHE.loc.all.unsorted.bam 
+#	samtools sort -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam 
+
+#	samtools index NA12878.SVAs_and_HERVs_KWHE.loc.all.bam
+#	samtools index NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam
+
+
+
+
+#	Try to keep the SVA and HERV labels in the .bam file so they can been seen in IGV.
+#		??
+
+
+
+#
+#		https://github.com/grenaud/deML
+#
+#	~/github/grenaud/deML/src/deML -i ../deML_indexes.tsv \
+#		-f   ../../SFSP003_S1_L001_R1_001.fastq.gz \
+#		-r   ../../SFSP003_S1_L001_R2_001.fastq.gz \
+#		-if1 ../../SFSP003_S1_L001_I1_001.fastq.gz \
+#		-if2 ../../SFSP003_S1_L001_I2_001.fastq.gz \
+#		-s deML.summary.txt	-e deML.error.txt -o deML
+#	
+#		https://github.com/ucsffrancislab/umi
+#
+#	python ~/github/ucsffrancislab/umi/umitag.py \
+#		--read1_in  IN_r1.fq.gz \
+#		--read2_in  IN_r2.fq.gz \
+#		--read1_out OUT.r1.fastq \
+#		--read2_out OUT.r2.fastq \
+#		--index1    IN_i1.fq.gz \
+#		--index2    IN_i2.fq.gz
+#	
+#	python ~/github/ucsffrancislab/umi/consolidate.py IN.r1.fastq OUT.r1.fastq 15 0.9
+#	python ~/github/ucsffrancislab/umi/consolidate.py IN.r2.fastq OUT.r2.fastq 15 0.9
+#	
+#	
+#	~/Desktop/HKLE-Seq/20191206_NA12878_HKLESeq/deMultiplexingAnalysis/deML.12/tagged/15.0.9/
+
+
+#	Group the HKLE-seq data by subjects: 1-9, 10-18, 19-27, 28-36
+#	Align those HKLE groups individually to the NA12878 hybrid using 'end-to-end, -- all'
+#	Create .bam and .bai for each group
+
+
+dir=~/Desktop/HKLE-Seq/20191206_NA12878_HKLESeq/deMultiplexingAnalysis/deML.12/tagged/15.0.9
+
+#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/0[1-9].r?.fastq | paste -sd , ) 2> NA12878.01-09.U.e2e.all.err.txt | samtools view -o NA12878.01-09.U.e2e.all.unsorted.bam -
+
+bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/0[1-9].r1.fastq | paste -sd , ) -2 $( ls ${dir}/0[1-9].r2.fastq | paste -sd , ) 2> NA12878.01-09.P.e2e.all.err.txt | samtools view -o NA12878.01-09.P.e2e.all.unsorted.bam -
+
+#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/1[0-8].r?.fastq | paste -sd , ) 2> NA12878.10-18.U.e2e.all.err.txt | samtools view -o NA12878.10-18.U.e2e.all.unsorted.bam -
+
+bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/1[0-8].r1.fastq | paste -sd , ) -2 $( ls ${dir}/1[0-8].r2.fastq | paste -sd , ) 2> NA12878.10-18.P.e2e.all.err.txt | samtools view -o NA12878.10-18.P.e2e.all.unsorted.bam -
+
+#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/{19,2[0-7]}.r?.fastq | paste -sd , ) 2> NA12878.19-27.U.e2e.all.err.txt | samtools view -o NA12878.19-27.U.e2e.all.unsorted.bam -
+
+bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{19,2[0-7]}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{19,2[0-7]}.r2.fastq | paste -sd , ) 2> NA12878.19-27.P.e2e.all.err.txt | samtools view -o NA12878.19-27.P.e2e.all.unsorted.bam -
+
+#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/{28,29,3?}.r?.fastq | paste -sd , ) 2> NA12878.28-36.U.e2e.all.err.txt | samtools view -o NA12878.28-36.U.e2e.all.unsorted.bam -
+
+bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{28,29,3?}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{28,29,3?}.r2.fastq | paste -sd , ) 2> NA12878.28-36.P.e2e.all.err.txt | samtools view -o NA12878.28-36.P.e2e.all.unsorted.bam -
+
+
+for f in NA12878.??-??.?.e2e.all.unsorted.bam ; do
+echo $f
+o=$( basename $f .unsorted.bam )
+samtools sort -o ${o}.bam ${f}
+samtools index ${o}.bam
+done
+
+
+
+# Col  Field  Type    Brief description
+#   1  QNAME  String  Query template NAME
+#   2  FLAG   Int     bitwise FLAG
+#   3  RNAME  String  References sequence NAME
+#   4  POS    Int     1- based leftmost mapping POSition
+#   5  MAPQ   Int     MAPping Quality
+#   6  CIGAR  String  CIGAR String
+#   7  RNEXT  String  Ref. name of the mate/next read
+#   8  PNEXT  Int     Position of the mate/next read
+#   9  TLEN   Int     observed Template LENgth
+#  10  SEQ    String  segment SEQuence
+#  11  QUAL   String  ASCII of Phred-scaled base QUALity+33
+
+#  Flags:
+#    0x1    PAIRED        .. paired-end (or multiple-segment) sequencing technology
+#    0x2    PROPER_PAIR   .. each segment properly aligned according to the aligner
+#    0x4    UNMAP         .. segment unmapped
+#    0x8    MUNMAP        .. next segment in the template unmapped
+#    0x10   REVERSE       .. SEQ is reverse complemented
+#    0x20   MREVERSE      .. SEQ of the next segment in the template is reversed
+#    0x40   READ1         .. the first segment in the template
+#    0x80   READ2         .. the last segment in the template
+#    0x100  SECONDARY     .. secondary alignment
+#    0x200  QCFAIL        .. not passing quality controls
+#    0x400  DUP           .. PCR or optical duplicate
+#    0x800  SUPPLEMENTARY .. supplementary alignment
+
+#	Using the end-to-end-NA12878 alignment, create a list of all HERV/SVA locations (try to keep names).
+#	Make a matrix of the NA12878 HERV/SVA locations
+
+#	Selecting BEGINNING LOCATIONS, so explicitly paying attention to direction (16)
+
+#	SVA_C	272	scf7180000012871	1619872	2	
+
+#       $2 is the flag field
+#        and($2,16) = REVERSE
+#       !and($2,16) = NOT REVERSE = FORWARD
+
+#	"contig,position,reference"
+
+#	bam file already sorted
+#samtools view -F 4 NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam | gawk 'BEGIN{OFS=","}{dir=(and($2,16))?"R":"F"; print $3,$4,$1":"dir }' | sort > NA12878.SVAs_and_HERVs_KWHE.e2e.all.positions.csv
+
+samtools view -F 4 NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam | gawk 'BEGIN{OFS=","}{dir=(and($2,16))?"R":"F"; print $3,$4,$1":"dir }' > NA12878.SVAs_and_HERVs_KWHE.e2e.all.positions.csv
+
+
+
+
+
+
+#	bam file already sorted
+#samtools view -F 4 $f | gawk 'BEGIN{OFS=","}{print $3,$4,$1}' | sort -t, -k1,1 -k2n > ${b}.positions.csv
+
+for f in NA12878.??-??.?.e2e.all.bam ; do
+echo $f
+b=$( basename $f .bam )
+samtools view -F 4 $f | gawk 'BEGIN{OFS=","}{print $3,$4,$1}' > ${b}.positions.csv
+done
+
+
+
+
+
+
+#	With in 1000bp of each feature, count the coverage that each of the grouped HKLE-seq contributed
+
+
+jupyter notebook
+
+read ref
+
+loop over sample files and read ( only need first 2 columns )
+
+add columns for each files containing count of entries within range
+add another for count of total entries
+
+
+head NA12878.SVAs_and_HERVs_KWHE.e2e.all.positions.csv
+scf7180000017651,10921158,SVA_C:R
+scf7180000017651,10921158,SVA_D:R
+scf7180000017651,10921158,SVA_E:R
+scf7180000013207,614107,SVA_B:F
+scf7180000013207,614107,SVA_C:F
+scf7180000013207,614107,SVA_D:F
+scf7180000012954,2675056,SVA_C:F
+scf7180000012954,2675056,SVA_D:F
+scf7180000012871,1519577,SVA_A:R
+scf7180000012871,1619872,SVA_C:R
+
+head NA12878.28-36.U.e2e.all.positions.csv
+scf7180000017651,14140,TTTTGGAG_TTTGAG_AGATGG_1
+scf7180000017651,26777,CATTAGAA_TTGGCT_CGCCGT_1
+scf7180000017651,29913,AAATTTCG_CTCCTG_CCCAGC_1
+scf7180000017651,30018,TTTTGGAG_TTTGAG_AGATGG_1
+scf7180000017651,41416,TTTTGGAG_TTTGAG_AGATGG_1
+scf7180000017651,114818,TAAAGTTG_AGCGTG_CCCTGA_1
+scf7180000017651,120185,TTTTGGAG_TTTGAG_AGATGG_1
+scf7180000017651,137655,CCGGTAGT_CTGGCC_CCTCTT_1
+scf7180000017651,137701,TTTTGGAG_TTTGAG_AGATGG_1
+scf7180000017651,161124,CATTAGAA_TTGGCT_CGCCGT_1
+
+
+
+#	Sort matrix by coverage
+
+
+
+ 
+
+
+
+
+
+
+
+
+dir=~/Desktop/HKLE-Seq/20191206_NA12878_HKLESeq/deMultiplexingAnalysis/deML.12/tagged/15.0.9
+
+for f in ${dir}/*r1.fastq ; do
+b=$( basename $f .r1.fastq )
+c=$( cat $f | paste - - - - | wc -l )
+echo $b $c
+done
+
+
+
+
+cat ${dir}/0[1-9].r?.fastq | paste - - - - | wc -l
+cat ${dir}/1[0-8].r1.fastq | paste - - - - | wc -l
+cat ${dir}/{19,2[0-7]}.r1.fastq | paste - - - - | wc -l
+cat ${dir}/{28,29,3?}.r1.fastq | paste - - - - | wc -l
+
