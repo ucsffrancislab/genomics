@@ -1,5 +1,12 @@
 
 
+#	PAIRED ONLY ANALYSIS VERSION
+#	with --no-mixed and --no-discordant
+
+
+
+
+
 #	Take the NA12878 hybrid (ONT/illumina) assembly and align the HERV/SVA database to separately using both 'local, --all', and 'end-to-end, --all'
 #	Use whatever number scheme for the contigs- this is really just for us
 #		??
@@ -15,15 +22,21 @@
 
 
 
-#	bowtie2 -f --threads 4 --all --xeq --very-sensitive-local -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz 2> NA12878.SVAs_and_HERVs_KWHE.loc.all.err.txt | samtools view -o NA12878.SVAs_and_HERVs_KWHE.loc.all.unsorted.bam - &
+#	bowtie2 -f --threads 8 --all --xeq --very-sensitive-local -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz 2> NA12878.SVAs_and_HERVs_KWHE.loc.all.err.txt | samtools view -o NA12878.SVAs_and_HERVs_KWHE.loc.all.unsorted.bam -
 
-#	bowtie2 -f --threads 4 --all --xeq --very-sensitive -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz 2> NA12878.SVAs_and_HERVs_KWHE.e2e.all.err.txt | samtools view -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam - &
+#	bowtie2 -f --threads 8 --all --xeq --very-sensitive -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz 2> NA12878.SVAs_and_HERVs_KWHE.e2e.all.err.txt | samtools view -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam -
+
+bowtie2.bash -f --threads 8 --all --xeq --very-sensitive -x NA12878 -U SVAs_and_HERVs_KWHE.fasta.gz -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam #2> NA12878.SVAs_and_HERVs_KWHE.e2e.all.err.txt 
 
 #	samtools sort -o NA12878.SVAs_and_HERVs_KWHE.loc.all.bam NA12878.SVAs_and_HERVs_KWHE.loc.all.unsorted.bam 
 #	samtools sort -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam 
 
+samtools.bash sort -o NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam NA12878.SVAs_and_HERVs_KWHE.e2e.all.unsorted.bam 
+
 #	samtools index NA12878.SVAs_and_HERVs_KWHE.loc.all.bam
-#	samtools index NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam
+samtools index NA12878.SVAs_and_HERVs_KWHE.e2e.all.bam
+
+
 
 
 
@@ -67,27 +80,35 @@
 
 dir=~/Desktop/HKLE-Seq/20191206_NA12878_HKLESeq/deMultiplexingAnalysis/deML.12/tagged/15.0.9
 
-#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/0[1-9].r?.fastq | paste -sd , ) 2> NA12878.01-09.U.e2e.all.err.txt | samtools view -o NA12878.01-09.U.e2e.all.unsorted.bam -
+#	bowtie2 --threads 8 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/0[1-9].r?.fastq | paste -sd , ) 2> NA12878.01-09.U.e2e.all.err.txt | samtools view -o NA12878.01-09.U.e2e.all.unsorted.bam -
 
-bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/0[1-9].r1.fastq | paste -sd , ) -2 $( ls ${dir}/0[1-9].r2.fastq | paste -sd , ) 2> NA12878.01-09.P.e2e.all.err.txt | samtools view -o NA12878.01-09.P.e2e.all.unsorted.bam -
+#	bowtie2 --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/0[1-9].r1.fastq | paste -sd , ) -2 $( ls ${dir}/0[1-9].r2.fastq | paste -sd , ) 2> NA12878.01-09.P.e2e.all.err.txt | samtools view -o NA12878.01-09.P.e2e.all.unsorted.bam -
 
-#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/1[0-8].r?.fastq | paste -sd , ) 2> NA12878.10-18.U.e2e.all.err.txt | samtools view -o NA12878.10-18.U.e2e.all.unsorted.bam -
+bowtie2.bash --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/0[1-9].r1.fastq | paste -sd , ) -2 $( ls ${dir}/0[1-9].r2.fastq | paste -sd , ) -o NA12878.01-09.P.e2e.all.unsorted.bam #	2> NA12878.01-09.P.e2e.all.err.txt 
 
-bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/1[0-8].r1.fastq | paste -sd , ) -2 $( ls ${dir}/1[0-8].r2.fastq | paste -sd , ) 2> NA12878.10-18.P.e2e.all.err.txt | samtools view -o NA12878.10-18.P.e2e.all.unsorted.bam -
+#	bowtie2 --threads 8 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/1[0-8].r?.fastq | paste -sd , ) 2> NA12878.10-18.U.e2e.all.err.txt | samtools view -o NA12878.10-18.U.e2e.all.unsorted.bam -
 
-#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/{19,2[0-7]}.r?.fastq | paste -sd , ) 2> NA12878.19-27.U.e2e.all.err.txt | samtools view -o NA12878.19-27.U.e2e.all.unsorted.bam -
+#	bowtie2 --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/1[0-8].r1.fastq | paste -sd , ) -2 $( ls ${dir}/1[0-8].r2.fastq | paste -sd , ) 2> NA12878.10-18.P.e2e.all.err.txt | samtools view -o NA12878.10-18.P.e2e.all.unsorted.bam -
 
-bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{19,2[0-7]}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{19,2[0-7]}.r2.fastq | paste -sd , ) 2> NA12878.19-27.P.e2e.all.err.txt | samtools view -o NA12878.19-27.P.e2e.all.unsorted.bam -
+bowtie2.bash --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/1[0-8].r1.fastq | paste -sd , ) -2 $( ls ${dir}/1[0-8].r2.fastq | paste -sd , ) -o NA12878.10-18.P.e2e.all.unsorted.bam #	2> NA12878.10-18.P.e2e.all.err.txt 
 
-#	bowtie2 --threads 4 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/{28,29,3?}.r?.fastq | paste -sd , ) 2> NA12878.28-36.U.e2e.all.err.txt | samtools view -o NA12878.28-36.U.e2e.all.unsorted.bam -
+#	bowtie2 --threads 8 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/{19,2[0-7]}.r?.fastq | paste -sd , ) 2> NA12878.19-27.U.e2e.all.err.txt | samtools view -o NA12878.19-27.U.e2e.all.unsorted.bam -
 
-bowtie2 --no-mixed --no-discordant --threads 4 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{28,29,3?}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{28,29,3?}.r2.fastq | paste -sd , ) 2> NA12878.28-36.P.e2e.all.err.txt | samtools view -o NA12878.28-36.P.e2e.all.unsorted.bam -
+#	bowtie2 --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{19,2[0-7]}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{19,2[0-7]}.r2.fastq | paste -sd , ) 2> NA12878.19-27.P.e2e.all.err.txt | samtools view -o NA12878.19-27.P.e2e.all.unsorted.bam -
+
+bowtie2.bash --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{19,2[0-7]}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{19,2[0-7]}.r2.fastq | paste -sd , ) -o NA12878.19-27.P.e2e.all.unsorted.bam #	2> NA12878.19-27.P.e2e.all.err.txt
+
+#	bowtie2 --threads 8 --all --xeq --very-sensitive -x NA12878 -U $( ls ${dir}/{28,3?}.r?.fastq | paste -sd , ) 2> NA12878.28-36.U.e2e.all.err.txt | samtools view -o NA12878.28-36.U.e2e.all.unsorted.bam -
+
+#	bowtie2 --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{28,3?}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{28,3?}.r2.fastq | paste -sd , ) 2> NA12878.28-36.P.e2e.all.err.txt | samtools view -o NA12878.28-36.P.e2e.all.unsorted.bam -
+
+bowtie2.bash --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 $( ls ${dir}/{28,3?}.r1.fastq | paste -sd , ) -2 $( ls ${dir}/{28,3?}.r2.fastq | paste -sd , ) -o NA12878.28-36.P.e2e.all.unsorted.bam #	2> NA12878.28-36.P.e2e.all.err.txt 
 
 
 for f in NA12878.??-??.?.e2e.all.unsorted.bam ; do
 echo $f
 o=$( basename $f .unsorted.bam )
-samtools sort -o ${o}.bam ${f}
+samtools.bash sort -o ${o}.bam ${f}
 samtools index ${o}.bam
 done
 
@@ -160,39 +181,39 @@ done
 #	With in 1000bp of each feature, count the coverage that each of the grouped HKLE-seq contributed
 
 
-jupyter notebook
-
-read ref
-
-loop over sample files and read ( only need first 2 columns )
-
-add columns for each files containing count of entries within range
-add another for count of total entries
-
-
-head NA12878.SVAs_and_HERVs_KWHE.e2e.all.positions.csv
-scf7180000017651,10921158,SVA_C:R
-scf7180000017651,10921158,SVA_D:R
-scf7180000017651,10921158,SVA_E:R
-scf7180000013207,614107,SVA_B:F
-scf7180000013207,614107,SVA_C:F
-scf7180000013207,614107,SVA_D:F
-scf7180000012954,2675056,SVA_C:F
-scf7180000012954,2675056,SVA_D:F
-scf7180000012871,1519577,SVA_A:R
-scf7180000012871,1619872,SVA_C:R
-
-head NA12878.28-36.U.e2e.all.positions.csv
-scf7180000017651,14140,TTTTGGAG_TTTGAG_AGATGG_1
-scf7180000017651,26777,CATTAGAA_TTGGCT_CGCCGT_1
-scf7180000017651,29913,AAATTTCG_CTCCTG_CCCAGC_1
-scf7180000017651,30018,TTTTGGAG_TTTGAG_AGATGG_1
-scf7180000017651,41416,TTTTGGAG_TTTGAG_AGATGG_1
-scf7180000017651,114818,TAAAGTTG_AGCGTG_CCCTGA_1
-scf7180000017651,120185,TTTTGGAG_TTTGAG_AGATGG_1
-scf7180000017651,137655,CCGGTAGT_CTGGCC_CCTCTT_1
-scf7180000017651,137701,TTTTGGAG_TTTGAG_AGATGG_1
-scf7180000017651,161124,CATTAGAA_TTGGCT_CGCCGT_1
+#	jupyter notebook
+#	
+#	read ref
+#	
+#	loop over sample files and read ( only need first 2 columns )
+#	
+#	add columns for each files containing count of entries within range
+#	add another for count of total entries
+#	
+#	
+#	head NA12878.SVAs_and_HERVs_KWHE.e2e.all.positions.csv
+#	scf7180000017651,10921158,SVA_C:R
+#	scf7180000017651,10921158,SVA_D:R
+#	scf7180000017651,10921158,SVA_E:R
+#	scf7180000013207,614107,SVA_B:F
+#	scf7180000013207,614107,SVA_C:F
+#	scf7180000013207,614107,SVA_D:F
+#	scf7180000012954,2675056,SVA_C:F
+#	scf7180000012954,2675056,SVA_D:F
+#	scf7180000012871,1519577,SVA_A:R
+#	scf7180000012871,1619872,SVA_C:R
+#	
+#	head NA12878.28-36.U.e2e.all.positions.csv
+#	scf7180000017651,14140,TTTTGGAG_TTTGAG_AGATGG_1
+#	scf7180000017651,26777,CATTAGAA_TTGGCT_CGCCGT_1
+#	scf7180000017651,29913,AAATTTCG_CTCCTG_CCCAGC_1
+#	scf7180000017651,30018,TTTTGGAG_TTTGAG_AGATGG_1
+#	scf7180000017651,41416,TTTTGGAG_TTTGAG_AGATGG_1
+#	scf7180000017651,114818,TAAAGTTG_AGCGTG_CCCTGA_1
+#	scf7180000017651,120185,TTTTGGAG_TTTGAG_AGATGG_1
+#	scf7180000017651,137655,CCGGTAGT_CTGGCC_CCTCTT_1
+#	scf7180000017651,137701,TTTTGGAG_TTTGAG_AGATGG_1
+#	scf7180000017651,161124,CATTAGAA_TTGGCT_CGCCGT_1
 
 
 
@@ -220,8 +241,41 @@ done
 
 
 
-cat ${dir}/0[1-9].r?.fastq | paste - - - - | wc -l
-cat ${dir}/1[0-8].r1.fastq | paste - - - - | wc -l
-cat ${dir}/{19,2[0-7]}.r1.fastq | paste - - - - | wc -l
-cat ${dir}/{28,29,3?}.r1.fastq | paste - - - - | wc -l
+#	cat ${dir}/0[1-9].r?.fastq | paste - - - - | wc -l
+#	cat ${dir}/1[0-8].r1.fastq | paste - - - - | wc -l
+#	cat ${dir}/{19,2[0-7]}.r1.fastq | paste - - - - | wc -l
+#	cat ${dir}/{28,3?}.r1.fastq | paste - - - - | wc -l
+
+
+
+#	bowtie2 -f --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 sva_primers.1.fa -2 sva_primers.2.fa 2> NA12878.sva_primers.P.e2e.all.err.txt | samtools view -o NA12878.sva_primers.P.e2e.all.unsorted.bam -
+bowtie2.bash -f --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 sva_primers.1.fa -2 sva_primers.2.fa -o NA12878.sva_primers.P.e2e.all.unsorted.bam #	2> NA12878.sva_primers.P.e2e.all.err.txt 
+
+#	bowtie2 -f --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 hervk_primers.1.fa -2 hervk_primers.2.fa 2> NA12878.hervk_primers.P.e2e.all.err.txt | samtools view -o NA12878.hervk_primers.P.e2e.all.unsorted.bam -
+bowtie2.bash -f --no-mixed --no-discordant --threads 8 --all --xeq --very-sensitive -x NA12878 -1 hervk_primers.1.fa -2 hervk_primers.2.fa -o NA12878.hervk_primers.P.e2e.all.unsorted.bam #	2> NA12878.hervk_primers.P.e2e.all.err.txt 
+
+
+for f in NA12878.*primers.P.e2e.all.unsorted.bam ; do
+echo $f
+o=$( basename $f .unsorted.bam )
+samtools.bash sort -o ${o}.bam ${f}
+samtools index ${o}.bam
+done
+
+
+for f in NA12878.*primers.P.e2e.all.bam ; do
+echo $f
+o=$( basename $f .bam )
+samtools view -F 4 ${o}.bam | gawk 'BEGIN{OFS=","}{dir=(and($2,16))?"R":"F"; print $3,$4,$1":"dir }' > ${o}.positions.csv
+done
+
+sort -t, -k1,1 -k2n NA12878.*_primers.P.e2e.all.positions.csv > NA12878.primers.P.e2e.all.positions.csv
+
+
+
+
+./create_matrix.py
+
+
+#	29 files are empty so removed them.
 
