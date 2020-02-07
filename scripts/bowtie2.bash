@@ -27,7 +27,8 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	bowtie2 $SELECT_ARGS | samtools view -o ${f} - 
+	bowtie2 $SELECT_ARGS 2> ${f}.err.txt | samtools view -o ${f} - 
+	#bowtie2 $SELECT_ARGS | samtools view -o ${f} - 
 	chmod a-w $f
 fi
 
