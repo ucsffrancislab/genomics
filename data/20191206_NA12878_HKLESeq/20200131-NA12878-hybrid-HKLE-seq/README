@@ -225,3 +225,9 @@ cat ${dir}/1[0-8].r1.fastq | paste - - - - | wc -l
 cat ${dir}/{19,2[0-7]}.r1.fastq | paste - - - - | wc -l
 cat ${dir}/{28,29,3?}.r1.fastq | paste - - - - | wc -l
 
+
+29*.fastq were empty which causes bowtie2 to generate "Unable to read file magic number" messages.
+I don't think that it created any issues in the output though.
+
+
+
