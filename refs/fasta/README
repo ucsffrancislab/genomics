@@ -64,7 +64,7 @@ NOTE THAT THE UCSC VERSION CONTAINS chrEBV
 
 20200204
 
-wget ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz &
-wget ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nt.gz &
+wget -O 20200204-nr.fa.gz ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz &
+wget -O 20200204-nt.fa.gz ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nt.gz &
 
 

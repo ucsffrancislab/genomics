@@ -1,0 +1,37 @@
+
+
+http://www.diamondsearch.org/index.php
+
+
+diamond makedb --in ../fasta/20200204-nr.fa.gz -d nr
+
+diamond makedb --in ../fasta/viral.masked.fa.gz -d viral.masked
+
+diamond makedb --in ../fasta/viral.protein.faa.gz -d viral
+
+
+qsub -N 77.diamond -l nodes=1:ppn=8 -l vmem=16gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/77.h38au.bowtie2-loc.unmapped.diamond.nr.m8.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/77.h38au.bowtie2-loc.unmapped.diamond.nr.m8.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/nr -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/77.h38au.bowtie2-loc.unmapped.fasta.gz -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/77.h38au.bowtie2-loc.unmapped.diamond.nr.m8"
+
+
+for i in $( seq -w 1 77 ) ; do
+qsub -N ${i}.loc.d.vm -l nodes=1:ppn=8 -l vmem=8gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.viral.m8.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.viral.m8.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/viral -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.fasta.gz -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.viral.m8"
+qsub -N ${i}.e2e.d.vm -l nodes=1:ppn=8 -l vmem=8gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.viral.m8.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.viral.m8.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/viral -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.fasta.gz -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.viral.m8"
+done
+
+ll /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.h38au.bowtie2-*.unmapped.diamond.viral*.m8*
+
+ll /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/*.h38au.bowtie2-*.unmapped.diamond.nr.m8*
+
+
+
+
+
+for i in $( seq -w 1 77 ) ; do
+qsub -N ${i}.loc.d.vm -l nodes=1:ppn=8 -l vmem=8gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.viral.daa.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.viral.daa.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/viral -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.fasta.gz -f 100 -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.viral.daa"
+qsub -N ${i}.e2e.d.vm -l nodes=1:ppn=8 -l vmem=8gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.viral.daa.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.viral.daa.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/viral -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.fasta.gz -f 100 -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.viral.daa"
+done
+
+for i in $( seq -w 1 77 ) ; do
+qsub -N ${i}.loc.d.nr -l nodes=1:ppn=8 -l vmem=16gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.nr.daa.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.nr.daa.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/nr -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.fasta.gz -f 100 -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-loc.unmapped.diamond.nr.daa"
+qsub -N ${i}.e2e.d.nr -l nodes=1:ppn=8 -l vmem=16gb -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.nr.daa.out.txt -e /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.nr.daa.err.txt ~/.local/bin/diamond.bash -F "blastx -p 8 -d /francislab/data1/refs/diamond/nr -q /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.fasta.gz -f 100 -o /francislab/data1/raw/20191008_Stanford71/trimmed/unpaired/${i}.h38au.bowtie2-e2e.unmapped.diamond.nr.daa"
+done

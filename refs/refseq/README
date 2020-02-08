@@ -9,7 +9,7 @@ ls -1 $PWD/refseq/mRNA_Prot/human.*.rna.fna.gz | paste -sd ,
 ls -1 $PWD/refseq/RefSeqGene/refseqgene.*.genomic.fna.gz | paste -sd ,
 
 
-rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral/
+rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral/
 
 
 
