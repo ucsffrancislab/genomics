@@ -1,16 +1,25 @@
 
-for f in /francislab/data1/raw/20191008_Stanford71/??_R?.fastq.gz ; do ln -s $f ; done
-
-
-
 
 Trim adapters with quality
-
 Filter out read pairs of inequal length
+
+./pre_process.bash
+
 
 
 Dark Seq
-
 miRNA Seq
+
+./process.bash
+
+
+
+
+
+./post_process.bash
+
+
+
+
 
 
