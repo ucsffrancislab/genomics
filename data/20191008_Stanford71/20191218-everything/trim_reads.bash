@@ -9,7 +9,7 @@ if [ $# -eq 0 ] ; then
 	done
 else
 
-	BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361
+	BASE=/francislab/data1/working/20191008_Stanford71/20191218-everything
 	OUT=${BASE}/trimmed/${1}
 
 	/home/gwendt/.local/BBMap/bbduk.sh \

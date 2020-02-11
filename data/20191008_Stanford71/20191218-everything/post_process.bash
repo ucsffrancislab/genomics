@@ -3,7 +3,7 @@
 
 REFS=/francislab/data1/refs
 FASTA=${REFS}/fasta
-dir=/francislab/data1/raw/20191008_Stanford71/trimmed/unpaired
+dir=/francislab/data1/working/20191008_Stanford71/20191218-everything/trimmed/unpaired
 
 #threads=16
 #vmem=8

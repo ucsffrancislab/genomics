@@ -9,7 +9,8 @@ if [ $# -eq 0 ] ; then
 	done
 else
 	#	Merge / unpair data
-	BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed
+	#BASE=/data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed
+	BASE=/francislab/data1/working/20191008_Stanford71/20191218-everything/trimmed
 	out=${BASE}/unpaired/${1}.fastq.gz
 	zcat ${BASE}/${1}_*.fastq.gz | sed -E 's/ ([[:digit:]]):.*$/\/\1/' | gzip > ${out}
 	chmod -w ${out}

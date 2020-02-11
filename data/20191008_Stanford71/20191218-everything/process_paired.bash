@@ -6,8 +6,8 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 
 
-SUBREAD=/data/shared/francislab/refs/subread
-BOWTIE2=/data/shared/francislab/refs/bowtie2
+SUBREAD=/francislab/data1/refs/subread
+BOWTIE2=/francislab/data1/refs/bowtie2
 threads=8
 vmem=16
 
@@ -29,7 +29,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 #
 
 
-for r1 in /data/shared/francislab/data/raw/SFGF-Shaw-GS-13361/trimmed/*R1.fastq.gz ; do
+for r1 in /francislab/data1/working/20191008_Stanford71/20191218-everything/trimmed/*R1.fastq.gz ; do
 	r2=${r1/_R1/_R2}
 	echo $r1 $r2
 
