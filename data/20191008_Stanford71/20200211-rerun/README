@@ -7,6 +7,30 @@ Filter out read pairs of inequal length
 
 
 
+01_R1
+64147452
+128294904
+
+
+No real reason to separate pre processing and processing here.
+Not demultiplexing.
+Actually, need to evaluate the read lengths and stddev for kallisto
+
+
+
+echo "zcat /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/??_R?.fastq.gz | paste - - - - | cut -f 2 | awk '{ l=length; sum+=l; sumsq+=(l)^2; print \"Avg:\",sum/NR,\"\tStddev:\t\"sqrt((sumsq-sum^2/NR)/NR)}' > trimmed.avg_length.ssstdev.txt" | qsub -N length.stdev -l nodes=1:ppn=4 -l vmem=8gb
+
+Not sure how precise this needs to be.
+Been running for over 4 hours.
+Just fluctuates around 144 / 22
+
+Avg: 145.11 	Stddev:	20.175
+
+Should these numbers be sample specific???
+
+
+
+
 Dark Seq
 miRNA Seq
 
@@ -15,6 +39,9 @@ miRNA Seq
 
 
 
+
+
+Aggregation
 
 ./post_process.bash
 

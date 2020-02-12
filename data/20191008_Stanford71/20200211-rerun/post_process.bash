@@ -3,7 +3,7 @@
 
 REFS=/francislab/data1/refs
 FASTA=${REFS}/fasta
-dir=/francislab/data1/working/20191008_Stanford71/20191218-everything/trimmed/unpaired
+dir=/francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/unpaired
 
 #threads=16
 #vmem=8
@@ -13,85 +13,82 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-for k in 13 ; do
-
-	gwas_file="/francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
-
-#	f="hawk_${k}mers"
+#for k in 13 ; do
+#
+#	gwas_file="/francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
+#
+##	f="hawk_${k}mers"
+##	if [ -d $f ] && [ ! -w $f ] ; then
+##		echo "Write-protected $f exists. Skipping."
+##	else
+##		qsub -N ${f} -o ${dir}/hawk.${date}.out.txt -e ${dir}/hawk.${date}.err.txt \
+##			-d ${dir} -l nodes=1:ppn=64 -l vmem=64gb \
+##			~/.local/bin/hawk_run_hawk_analysis.bash -F \
+##				"--threads 64 --mer-length ${k} --gwas_file /francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
+##	fi
+#
+#	f="hawk_unmapped_${k}mers"
 #	if [ -d $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
-#		qsub -N ${f} -o ${dir}/hawk.${date}.out.txt -e ${dir}/hawk.${date}.err.txt \
-#			-d ${dir} -l nodes=1:ppn=64 -l vmem=64gb \
+#		counts_file="${dir}/${f}_total_kmer_counts.txt"
+#		sorted_file="${dir}/${f}_sorted_files.txt"
+#		cat ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.total_counts.txt > ${counts_file}
+#		ls -1 ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.sorted.txt.gz > ${sorted_file}
+#		qsub -N ${f} -o ${dir}/${f}.${date}.out.txt -e ${dir}/${f}.${date}.err.txt \
+#			-d ${dir} -l nodes=1:ppn=16 -l vmem=16gb \
 #			~/.local/bin/hawk_run_hawk_analysis.bash -F \
-#				"--threads 64 --mer-length ${k} --gwas_file /francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
+#				"--threads 16 --mer-length ${k} --outdir ${dir}/${f} \
+#				--gwas_file ${gwas_file} \
+#				--counts_file ${counts_file} \
+#				--sorted_file ${sorted_file}"
 #	fi
-
-	f="hawk_unmapped_${k}mers"
-	if [ -d $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		counts_file="${dir}/${f}_total_kmer_counts.txt"
-		sorted_file="${dir}/${f}_sorted_files.txt"
-		cat ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.total_counts.txt > ${counts_file}
-		ls -1 ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.sorted.txt.gz > ${sorted_file}
-		qsub -N ${f} -o ${dir}/${f}.${date}.out.txt -e ${dir}/${f}.${date}.err.txt \
-			-d ${dir} -l nodes=1:ppn=16 -l vmem=16gb \
-			~/.local/bin/hawk_run_hawk_analysis.bash -F \
-				"--threads 16 --mer-length ${k} --outdir ${dir}/${f} \
-				--gwas_file ${gwas_file} \
-				--counts_file ${counts_file} \
-				--sorted_file ${sorted_file}"
-	fi
-
-done
-exit
+#
+#done
 
 
 
 
 
+#function tablify_sample_uniq_counts {
+#
+#	primary=$1
+#	suffix=$2
+#	#max=.${3}
+#	[ -z ${3} ] || max=".${3}"
+#	core=h38au.${primary}.unmapped.${suffix}${max}.summary
+#	jobname=${primary}.${suffix}${max}
+#	jobname=${jobname/bowtie2-}
+#	jobname=${jobname/kraken2.standard/k2}
+#	jobname=${jobname/blastn.viral/v}
+#	outbase=${dir}/${core}
+#	f=${outbase}.csv
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		qsub -N ${jobname} -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			~/.local/bin/tablify_sample_uniq_counts.bash -F \
+#				"-o ${f} ${dir}/*.${core}.txt.gz"
+#	fi
+#
+#}
+#
+#tablify_sample_uniq_counts bowtie2-e2e kraken2.standard
+#tablify_sample_uniq_counts bowtie2-loc kraken2.standard
+#
+#for primary in bowtie2-e2e bowtie2-loc ; do
+#for suffix in blastn.viral.masked blastn.viral.raw blastn.viral ; do
+#for max in 10 1e-10 1e-20 1e-30 ; do
+#
+#	tablify_sample_uniq_counts ${primary} ${suffix} ${max}
+#
+#done ; done ; done
 
 
 
-function tablify_sample_uniq_counts {
-
-	primary=$1
-	suffix=$2
-	#max=.${3}
-	[ -z ${3} ] || max=".${3}"
-	core=h38au.${primary}.unmapped.${suffix}${max}.summary
-	jobname=${primary}.${suffix}${max}
-	jobname=${jobname/bowtie2-}
-	jobname=${jobname/kraken2.standard/k2}
-	jobname=${jobname/blastn.viral/v}
-	outbase=${dir}/${core}
-	f=${outbase}.csv
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		qsub -N ${jobname} -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			~/.local/bin/tablify_sample_uniq_counts.bash -F \
-				"-o ${f} ${dir}/*.${core}.txt.gz"
-	fi
-
-}
-
-tablify_sample_uniq_counts bowtie2-e2e kraken2.standard
-tablify_sample_uniq_counts bowtie2-loc kraken2.standard
-
-for primary in bowtie2-e2e bowtie2-loc ; do
-for suffix in blastn.viral.masked blastn.viral.raw blastn.viral ; do
-for max in 10 1e-10 1e-20 1e-30 ; do
-
-	tablify_sample_uniq_counts ${primary} ${suffix} ${max}
-
-done ; done ; done
-
-
-
-for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
+#for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
+for bambase in bowtie2-e2e ; do
 
 	for Q in 40 20 00 ; do
 
