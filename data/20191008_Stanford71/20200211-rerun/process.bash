@@ -137,7 +137,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
 					~/.local/bin/bowtie2.bash \
 					-F "--xeq --threads ${threads} ${opt} -x ${BOWTIE2}/${ref} \
-							-U ${r1} -o ${qoutbase}.bam" )
+							--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${qoutbase}.bam" )
 				echo "${bowtie2id}"
 			fi
 
@@ -377,6 +377,34 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 		#	Should these numbers be sample specific???
 
 
+	done
+
+
+	#	In light of previous nr alignments, explicitly align to the following ...
+
+	for ref in CP031704.1 CP048030.1 NC_000926.1 NC_001638.1 NC_023091.1 NC_027859.1 NC_028331.1 NC_033969.1 NC_039754.1 NC_039755.1 NC_041490.1 NC_042478.1 ; do
+
+		outbase=${base}.${ref}
+		#	bowtie2 really only uses a bit more memory than the reference.
+		#	4gb would probably be enough for hg38. Nope. Needs more than 4.
+		#	Ran well with 8gb.
+		vmem=8
+
+		for ali in e2e ; do
+			case $ali in 'loc') opt="--very-sensitive-local";; 'e2e') opt="--very-sensitive";; esac
+			qoutbase="${outbase}.bowtie2-${ali}"
+			f=${qoutbase}.bam
+			bowtie2bam=${f}
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				qsub -N ${jobbase}.${ref}.bt${ali} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					~/.local/bin/bowtie2.bash \
+					-F "--xeq --no-unal --threads ${threads} ${opt} -x ${BOWTIE2}/${ref} \
+							--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${qoutbase}.bam"
+			fi
+		done
 	done
 
 done	#	for r1 in /francislab/data1/working/20191008_Stanford71/20200211/trimmed/changed/unpaired/*.fastq.gz ; do
