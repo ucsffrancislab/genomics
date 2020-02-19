@@ -15,6 +15,7 @@ set -x
 
 threads=8
 kmersize=13
+size=5
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -26,6 +27,8 @@ while [ $# -gt 0 ] ; do
 			shift; canonical='--both-strands';;		#	in jellyfish 2, this is --canonical
 		-k|--k*|-m|--m*)
 			shift; kmersize=$1; shift ;;
+		-s|--s*)
+			shift; size=$1; shift ;;
 		*)
 			shift;;
 	esac
@@ -67,7 +70,7 @@ else
 		date
 		#	--matrix ${f}.Matrix 
 		hawk_jellyfish count ${canonical} --output ${OUTBASE}/tmp \
-			--mer-len ${kmersize} --threads ${threads} --size 5G \
+			--mer-len ${kmersize} --threads ${threads} --size ${size}G \
 			--timing ${f}.Timing --stats ${f}.Stats \
 			<( zcat ${file} )
 		date
