@@ -27,14 +27,35 @@ for k in 13 ; do
 #				"--threads 64 --mer-length ${k} --gwas_file /francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
 #	fi
 
-	f="hawk_unmapped_${k}mers"
+#	f="hawk_unmapped_${k}mers"
+#	if [ -d $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		counts_file="${dir}/${f}_total_kmer_counts.txt"
+#		sorted_file="${dir}/${f}_sorted_files.txt"
+#		cat ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.total_counts.txt > ${counts_file}
+#		ls -1 ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.sorted.txt.gz > ${sorted_file}
+#		qsub -N ${f} -o ${dir}/${f}.${date}.out.txt -e ${dir}/${f}.${date}.err.txt \
+#			-d ${dir} -l nodes=1:ppn=16 -l vmem=16gb \
+#			~/.local/bin/hawk_run_hawk_analysis.bash -F \
+#				"--threads 16 --mer-length ${k} --outdir ${dir}/${f} \
+#				--gwas_file ${gwas_file} \
+#				--counts_file ${counts_file} \
+#				--sorted_file ${sorted_file}"
+#	fi
+
+	f="hawk_unmapped_${k}mers_8"
 	if [ -d $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		counts_file="${dir}/${f}_total_kmer_counts.txt"
 		sorted_file="${dir}/${f}_sorted_files.txt"
-		cat ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.total_counts.txt > ${counts_file}
-		ls -1 ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.sorted.txt.gz > ${sorted_file}
+
+		cat ${dir}/0[1-8].h38au.bowtie2-e2e.unmapped.${k}mers.total_counts.txt > ${counts_file}
+		ls -1 ${dir}/0[1-8].h38au.bowtie2-e2e.unmapped.${k}mers.sorted.txt.gz > ${sorted_file}
+		head -8 ${gwas_file} > "${dir}/${f}_gwas_info.txt"
+		gwas_file="${dir}/${f}_gwas_info.txt"
+
 		qsub -N ${f} -o ${dir}/${f}.${date}.out.txt -e ${dir}/${f}.${date}.err.txt \
 			-d ${dir} -l nodes=1:ppn=16 -l vmem=16gb \
 			~/.local/bin/hawk_run_hawk_analysis.bash -F \
