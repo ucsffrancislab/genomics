@@ -13,7 +13,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-for k in 13 ; do
+for k in 21 ; do
 
 	gwas_file="/francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
 
@@ -57,9 +57,9 @@ for k in 13 ; do
 		gwas_file="${dir}/${f}_gwas_info.txt"
 
 		qsub -N ${f} -o ${dir}/${f}.${date}.out.txt -e ${dir}/${f}.${date}.err.txt \
-			-d ${dir} -l nodes=1:ppn=16 -l vmem=16gb \
+			-d ${dir} -l nodes=1:ppn=64 -l vmem=32gb \
 			~/.local/bin/hawk_run_hawk_analysis.bash -F \
-				"--threads 16 --mer-length ${k} --outdir ${dir}/${f} \
+				"--threads 64 --mer-length ${k} --outdir ${dir}/${f} \
 				--gwas_file ${gwas_file} \
 				--counts_file ${counts_file} \
 				--sorted_file ${sorted_file}"

@@ -185,24 +185,37 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 								-o ${qoutbase}.diamond.nr.daa"
 				fi
 
-#				for k in 13 ; do
-#					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.sorted"
-#					f="${qoutbase}.txt.gz"
-#					if [ -f $f ] && [ ! -w $f ] ; then
-#						echo "Write-protected $f exists. Skipping."
-#					else
-#						if [ ! -z ${bowtie2id} ] ; then
-#							depend="-W depend=afterok:${bowtie2id}"
-#						else
-#							depend=""
-#						fi
+				for k in 13 21 ; do
+					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.sorted"
+					f="${qoutbase}.txt.gz"
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${bowtie2id} ] ; then
+							depend="-W depend=afterok:${bowtie2id}"
+						else
+							depend=""
+						fi
 #						qsub ${depend} -N ${jobbase}.hjd.${k} -l nodes=1:ppn=8 -l vmem=8gb \
 #							-o ${qoutbase}.${date}.out.txt \
 #							-e ${qoutbase}.${date}.err.txt \
 #							~/.local/bin/hawk_jellyfish_count_and_dump.bash \
 #								-F "--threads 8 -c --mer-len ${k} --input ${infile}"
-#					fi
-#				done
+
+# 13 - 5 / 8
+# 21 = 10 / 64
+# 32 is no faster
+#           case $k in '13') size=5;vmem=8;threads=8;; '21') size=10;vmem=64;threads=32;; esac  # seems to work
+#           case $k in '13') size=5;vmem=8;threads=8;; '21') size=10;vmem=128;threads=32;; esac # seems to work
+						case $k in '13') size=5;vmem=8;threads=8;; '21') size=10;vmem=64;threads=16;; esac  # seems to work
+						qsub ${depend} -N ${jobbase}.hjd.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+							-l feature=nocommunal \
+							-o ${qoutbase}.${date}.out.txt \
+							-e ${qoutbase}.${date}.err.txt \
+							~/.local/bin/hawk_jellyfish_count_and_dump.bash \
+								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
+					fi
+				done
 			fi
 			#	RESET IT HERE
 			qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped"
