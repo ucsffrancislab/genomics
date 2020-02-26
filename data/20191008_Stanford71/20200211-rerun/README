@@ -39,6 +39,13 @@ miRNA Seq
 
 
 
+./merge_jellyfish.py -o 13mers-matrix.csv /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/unpaired/??.h38au.bowtie2-e2e.unmapped.13mers.jellyfish2.csv.gz
+
+./merge_jellyfish.py -o 21mers-matrix.csv /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/unpaired/??.h38au.bowtie2-e2e.unmapped.21mers.jellyfish2.csv.gz
+
+
+
+
 
 
 Aggregation

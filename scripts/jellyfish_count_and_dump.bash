@@ -153,7 +153,8 @@ else
 #		else
 #			echo "Creating $f3"
 #			#jellyfish dump --column --lower-count 2 ${OUTBASE}.jellyfish > ${f3}
-			jellyfish dump --column --lower-count 2 ${f1} > ${f2}
+#			jellyfish dump --column --lower-count 2 ${f1} > ${f2}
+			jellyfish dump --column ${f1} > ${f2}
 			chmod a-w $f2
 #		fi
 
