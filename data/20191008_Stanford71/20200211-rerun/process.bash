@@ -212,7 +212,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 
 				done
 
-				for k in 13 15 17 ; do
+				for k in 13 15 17 21 ; do
 
 					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.jellyfish2"
 					f="${qoutbase}.csv.gz"
@@ -229,9 +229,10 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						# 32 is no faster
 						case $k in 
 							'13') size=5;vmem=8;threads=8;;
-							'15') size=10;vmem=16;threads=16;;
-							'17') size=10;vmem=32;threads=16;;
-							'21') size=10;vmem=64;threads=16;;
+							'15') size=5;vmem=8;threads=8;;
+							'17') size=5;vmem=8;threads=8;;
+							#'21') size=10;vmem=64;threads=16;;
+							'21') size=10;vmem=32;threads=16;;
 						esac  # seems to work
 						qsub ${depend} -N ${jobbase}.jf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							-o ${qoutbase}.${date}.out.txt \
