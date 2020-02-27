@@ -36,6 +36,36 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 	echo $base
 	jobbase=$( basename ${base} )
 
+	for k in 13 ; do
+
+		infile="${r1}"
+
+		qoutbase="${base}.${k}mers.jellyfish2"
+		f="${qoutbase}.csv.gz"
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			unset size vmem threads
+			case $k in 
+				'13') size=5;vmem=8;threads=8;;
+				'15') size=5;vmem=8;threads=8;;
+				#'17') size=5;vmem=8;threads=8;; not working???
+				#'17') size=5;vmem=16;threads=8;; not working???
+				#'17') size=10;vmem=16;threads=8;; not working???
+				'17') size=10;vmem=32;threads=8;;	# works. Don't understand the jump.
+				#'19') size=10;vmem=32;threads=8;;
+				#'21') size=10;vmem=64;threads=16;;
+				'21') size=10;vmem=32;threads=16;;
+			esac  # seems to work
+			qsub -N ${jobbase}.rjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-o ${qoutbase}.${date}.out.txt \
+				-e ${qoutbase}.${date}.err.txt \
+				~/.local/bin/jellyfish_count_and_dump.bash \
+					-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
+		fi
+
+	done
+
 	#	for k in 13 ; do
 	#		qoutbase="${base}.${k}mers.sorted"
 	#		f="${qoutbase}.txt.gz"
@@ -141,6 +171,26 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 				echo "${bowtie2id}"
 			fi
 
+			qoutbase="${outbase}.bowtie2-${ali}.mapped"
+			mappedid=""
+			f=${qoutbase}.fasta.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${bowtie2id} ] ; then
+					depend="-W depend=afterok:${bowtie2id}"
+				else
+					depend=""
+				fi
+				mappedid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}m \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					~/.local/bin/samtools.bash -F \
+						"fasta -F 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${bowtie2bam}" )
+				echo "${mappedid}"
+			fi
+
+
 			qoutbase="${outbase}.bowtie2-${ali}.unmapped"
 			unmappedid=""
 			f=${qoutbase}.fasta.gz
@@ -185,16 +235,18 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 								-o ${qoutbase}.diamond.nr.daa"
 				fi
 
-				for k in 13 21 ; do
+				#for k in 13 21 ; do
+				for k in 13 ; do
 
+					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
 
 					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.sorted"
 					f="${qoutbase}.txt.gz"
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
-						if [ ! -z ${bowtie2id} ] ; then
-							depend="-W depend=afterok:${bowtie2id}"
+						if [ ! -z ${unmappedid} ] ; then
+							depend="-W depend=afterok:${unmappedid}"
 						else
 							depend=""
 						fi
@@ -212,35 +264,76 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 
 				done
 
-				for k in 13 15 17 21 ; do
+				#for k in 13 15 17 19 21 ; do
+				for k in 13 ; do
+
+					infile="${outbase}.bowtie2-${ali}.mapped.fasta.gz"
+
+					qoutbase="${base}.${ref}.bowtie2-${ali}.mapped.${k}mers.jellyfish2"
+					f="${qoutbase}.csv.gz"
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${mappedid} ] ; then
+							depend="-W depend=afterok:${mappedid}"
+						else
+							depend=""
+						fi
+						unset size vmem threads
+						case $k in 
+							'13') size=5;vmem=8;threads=8;;
+							'15') size=5;vmem=8;threads=8;;
+							#'17') size=5;vmem=8;threads=8;; not working???
+							#'17') size=5;vmem=16;threads=8;; not working???
+							#'17') size=10;vmem=16;threads=8;; not working???
+							'17') size=10;vmem=32;threads=8;;	# works. Don't understand the jump.
+							#'19') size=10;vmem=32;threads=8;;
+							#'21') size=10;vmem=64;threads=16;;
+							'21') size=10;vmem=32;threads=16;;
+						esac  # seems to work
+						mappedjfid=$( qsub ${depend} -N ${jobbase}.mjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+							-o ${qoutbase}.${date}.out.txt \
+							-e ${qoutbase}.${date}.err.txt \
+							~/.local/bin/jellyfish_count_and_dump.bash \
+								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
+						echo $mappedjfid
+						#	-l feature=nocommunal \
+					fi
+
+
+					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
 
 					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.jellyfish2"
 					f="${qoutbase}.csv.gz"
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
-						if [ ! -z ${bowtie2id} ] ; then
-							depend="-W depend=afterok:${bowtie2id}"
+						if [ ! -z ${unmappedid} ] ; then
+							depend="-W depend=afterok:${unmappedid}"
 						else
 							depend=""
 						fi
-						# 13 - 5 / 8
-						# 21 = 10 / 64
-						# 32 is no faster
+						unset size vmem threads
 						case $k in 
 							'13') size=5;vmem=8;threads=8;;
 							'15') size=5;vmem=8;threads=8;;
-							'17') size=5;vmem=8;threads=8;;
+							#'17') size=5;vmem=8;threads=8;; not working???
+							#'17') size=5;vmem=16;threads=8;; not working???
+							#'17') size=10;vmem=16;threads=8;; not working???
+							'17') size=10;vmem=32;threads=8;;	# works. Don't understand the jump.
+							#'19') size=10;vmem=32;threads=8;;
 							#'21') size=10;vmem=64;threads=16;;
 							'21') size=10;vmem=32;threads=16;;
 						esac  # seems to work
-						qsub ${depend} -N ${jobbase}.jf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						unmappedjfid=$( qsub ${depend} -N ${jobbase}.ujf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							-o ${qoutbase}.${date}.out.txt \
 							-e ${qoutbase}.${date}.err.txt \
 							~/.local/bin/jellyfish_count_and_dump.bash \
-								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
+								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
 						#	-l feature=nocommunal \
+						echo $unmappedjfid
 					fi
+
 
 
 				done
