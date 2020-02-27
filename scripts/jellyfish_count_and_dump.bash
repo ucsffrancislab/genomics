@@ -1,4 +1,4 @@
-m!/usr/bin/env bash
+!/usr/bin/env bash
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
