@@ -1,0 +1,22 @@
+
+
+samtools view -c HG00096.1.M_111124_6.bam
+53116228
+
+samtools view -f 4 -c HG00096.1.M_111124_6.bam
+761440
+
+
+
+qsub -N wget -l nodes=1:ppn=4 -l vmem=8gb \
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+dir=/francislab/data1/raw/Geuvadis
+qsub -N wget \
+	-o ${dir}/wget_files.${date}.out.txt \
+	-e ${dir}/wget_files.${date}.err.txt \
+	${dir}/wget_files.bash
+
+
+
