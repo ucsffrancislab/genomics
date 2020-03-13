@@ -258,7 +258,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20191218-everything/trim
 						qsub ${depend} -N ${jobbase}.${ref}.b${ali:0:1}u${abbrev}s${max:(-2):2} \
 							-l nodes=1:ppn=4 -l vmem=4gb \
 							-o ${core}.${date}.out.txt -e ${core}.${date}.err.txt \
-							~/.local/bin/blastn_summary.bash \
+							~/.local/bin/blastn_summary_with_title.bash \
 								-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref} -max ${max}"
 					fi
 
@@ -308,7 +308,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20191218-everything/trim
 				#-l nodes=1:ppn=${threads} -l vmem=8gb \
 				qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}unks \
 					-o ${qoutbase}.summary.${date}.out.txt -e ${qoutbase}.summary.${date}.err.txt \
-					~/.local/bin/kraken2_summary.bash -F "-input ${qoutbase}.txt.gz"
+					~/.local/bin/blastn_summary.bash -F "-input ${qoutbase}.txt.gz"
 			fi
 
 		done	#	for ali in e2e loc ; do
