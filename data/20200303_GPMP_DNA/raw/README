@@ -1,0 +1,32 @@
+
+
+Here is the path to these data, please see below. Currently, the RNA-Seq data for batch 1 and batch 2 are already on the cluster, and the WGS data will take a while.
+
+This is GBM DNA and RNA data that we can play with.
+
+Initially from Diaz Lab.
+
+
+
+N is normal samples (blood samples). Just for WGS, not available for rna-seq
+NE means non-enhancing.
+E means enhancing.
+
+Brain tissue.
+Case numbers are the prefixed with "SF" of each file name. eg  SF12210
+
+All this is whole genome sequencing data: so DNA. I will upload the bulk RNA now. 
+
+
+
+ 
+rsync -avz --progress /data/fcatalan/WGS_data/ ./WGS_data/
+
+
+mkdir fastq
+
+for f in WGS_data/batch1/*.fq.gz; do b=$( basename $f .fq.gz ); b=${b%%_val_?}; b=${b%%_001}; b=${b/_R/_L000_R}; echo $b $f; ln -s ../$f fastq/$b.fastq.gz; done
+
+for f in WGS_data/batch2/*/*.fastq.gz; do b=$( basename $f _001.fastq.gz ); b=${b#P???}; b=${b/N_/-N_}; echo $b $f; ln -s ../$f fastq/$b.fastq.gz; done
+
+
