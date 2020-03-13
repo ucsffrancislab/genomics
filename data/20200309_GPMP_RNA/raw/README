@@ -1,0 +1,11 @@
+
+
+/data/fcatalan/WGS_data
+
+
+rsync -avz --progress /data/fcatalan/WGS_data/ /francislab/data1/raw/20200309_GPMP_RNA/WGS_data/
+
+
+
+Thank you for making the directory. I will use it from now on to share data with you and the francis lab. I have uploaded the RNA bulk seq to /data/fcatalan/WGS. Please note that one sample (SF12888-NE) is trimmed while the rest are not. This too was trimmed using trimgalore.
+
