@@ -1,0 +1,42 @@
+
+You will need to load the latest sqlite so add this to you .bash_profile
+An older version is loaded by default, but will error "Error: file is encrypted or is not a database"
+
+module load sqlite
+
+
+I have created just the "gb" version as it included everything that I searched for. Should you ever need something and its accession number is not found, please let me know and I'll create a different one.
+
+
+A "simple" command like ...
+
+```
+sqlite3 /francislab/data1/refs/taxadb/taxadb_gb.sqlite  "select a.accession, t1.ncbi_taxid, t1.tax_name, t1.lineage_level, t2.ncbi_taxid, t2.tax_name, t2.lineage_level, t3.ncbi_taxid, t3.tax_name, t3.lineage_level, t4.ncbi_taxid, t4.tax_name, t4.lineage_level, t5.ncbi_taxid, t5.tax_name, t5.lineage_level, t6.ncbi_taxid, t6.tax_name, t6.lineage_level from accession a join taxa t1 on t1.ncbi_taxid = a.taxid_id join taxa t2 on t2.ncbi_taxid = t1.parent_taxid join taxa t3 on t3.ncbi_taxid = t2.parent_taxid join taxa t4 on t4.ncbi_taxid = t3.parent_taxid join taxa t5 on t5.ncbi_taxid = t4.parent_taxid join taxa t6 on t6.ncbi_taxid = t5.parent_taxid where a.accession = 'NC_006273'"
+
+sqlite3 /francislab/data1/refs/taxadb/taxadb_prot.sqlite  "select a.accession, t1.ncbi_taxid, t1.tax_name, t1.lineage_level, t2.ncbi_taxid, t2.tax_name, t2.lineage_level, t3.ncbi_taxid, t3.tax_name, t3.lineage_level, t4.ncbi_taxid, t4.tax_name, t4.lineage_level, t5.ncbi_taxid, t5.tax_name, t5.lineage_level, t6.ncbi_taxid, t6.tax_name, t6.lineage_level from accession a join taxa t1 on t1.ncbi_taxid = a.taxid_id join taxa t2 on t2.ncbi_taxid = t1.parent_taxid join taxa t3 on t3.ncbi_taxid = t2.parent_taxid join taxa t4 on t4.ncbi_taxid = t3.parent_taxid join taxa t5 on t5.ncbi_taxid = t4.parent_taxid join taxa t6 on t6.ncbi_taxid = t5.parent_taxid where a.accession = 'YP_001129440'"
+```
+
+Will output more info than you might need. Feel free to modify.
+
+NC_006273|10359|Human betaherpesvirus 5|species|10358|Cytomegalovirus|genus|10357|Betaherpesvirinae|subfamily|10292|Herpesviridae|family|548681|Herpesvirales|order|10239|Viruses|superkingdom
+
+
+
+I have now created 3 versions of this database.
+
+Small databases search faster than larger one so to optimize, choose the one that you need.
+
+Protein accession numbers won't be in taxadb_gb.
+
+NC accession numbers won't be in taxadb_prot.
+
+sqlite3 /francislab/data1/refs/taxadb/taxadb_gb.sqlite  "select * from accession where accession = 'NC_006273'"
+
+sqlite3 /francislab/data1/refs/taxadb/taxadb_prot.sqlite  "select * from accession where accession = 'YP_001129440'"
+
+sqlite3 /francislab/data1/refs/taxadb/taxadb_full.sqlite  "select * from accession where accession = 'NC_006273'"
+sqlite3 /francislab/data1/refs/taxadb/taxadb_full.sqlite  "select * from accession where accession = 'YP_001129440'"
+
+
+Note that accession numbers DO NOT include the version suffix.
+
