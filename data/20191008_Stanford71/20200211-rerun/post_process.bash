@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 
+#set -v
+
 REFS=/francislab/data1/refs
 FASTA=${REFS}/fasta
 dir=/francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/unpaired
@@ -13,8 +15,9 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-#for k in 13 ; do
-#
+#	for k in 13 15 17 19 21 ; do
+for k in 9 11 13 ; do
+
 #	gwas_file="/francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
 #
 ##	f="hawk_${k}mers"
@@ -44,9 +47,32 @@ date=$( date "+%Y%m%d%H%M%S" )
 #				--sorted_file ${sorted_file}"
 #	fi
 #
-#done
+
+	unset size vmem threads
+	case $k in
+		9 | 11 | 13 ) vmem=256;threads=8;;
+		#15 | 17 | 19 ) vmem=500;threads=8;;	# 500 not enough for 15
+		#	17) size=10;vmem=32;threads=8;; # works. Don't understand the jump.
+		#'19') size=10;vmem=32;threads=8;;
+		#'21') size=10;vmem=32;threads=16;;
+	esac  # seems to work
+	
+	f="${dir}/h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2-matrix.csv.gz"
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N merge${k} -o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
+			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			/francislab/data1/working/20191008_Stanford71/20200211-rerun/merge_jellyfish.py \
+				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2.csv.gz"
+		#chmod a-w ${f}
+	fi
+
+done
 
 
+threads=8
+vmem=8
 
 
 
@@ -87,113 +113,116 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-#for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
-for bambase in bowtie2-e2e ; do
+##for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
+#for bambase in bowtie2-e2e ; do
+#
+#	for Q in 40 20 00 ; do
+#
+#		for feature in miRNA miRNA_primary_transcript ; do
+#
+#			for tag in ID Alias Name ; do
+#
+#				jobname=${bambase}.${feature}.${tag}.${Q}
+#				jobname=${jobname/ubread-}
+#				jobname=${jobname/owtie2-}
+#				jobname=${jobname/iRNA}
+#				jobname=${jobname/mary_transcript}
+#
+#				outbase="${dir}/h38au.${bambase}.hsa.featureCounts.${feature}.${tag}.Q${Q}"
+#
+#				f="${outbase}.csv"
+#				fcid=''
+#				if [ -f $f ] && [ ! -w $f ] ; then
+#					echo "Write-protected $f exists. Skipping."
+#				else
+#					echo "Creating $f."
+#					fcid=$( qsub -N ${jobname} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#						-o ${outbase}.${date}.out.txt \
+#						-e ${outbase}.${date}.err.txt \
+#						~/.local/bin/featureCounts.bash -F \
+#							"-T ${threads} -t ${feature} -g ${tag} -a ${FASTA}/hg38.chr.hsa.gff3 \
+#							-Q ${Q} -o ${f} ${dir}/??.h38au.${bambase}.bam" )
+#					echo $fcid
+#				fi
+#
+#				#	counts=${f}
+#				#	outbase=${f}.deseq
+#				#	f=${outbase}.plots.pdf
+#				#	if [ -f $f ] && [ ! -w $f ] ; then
+#				#		echo "Write-protected $f exists. Skipping."
+#				#	else
+#				#		#echo "Creating $f"
+#				#		if [ ! -z ${fcid} ] ; then
+#				#			depend="-W depend=afterok:${fcid}"
+#				#		else
+#				#			depend=""
+#				#		fi
+#				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#				#			~/.local/bin/deseq.bash -F \
+#				#			"-f ${counts} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
+#				#	fi
+#
+#			done	#	for tag in ID Alias Name ; do
+#
+#		done	#	for feature in miRNA miRNA_primary_transcript ; do
+#
+#
+#		for feature in exon CDS start_codon stop_codon ; do
+#
+#			for tag in gene_id gene_name transcript_id tss_id ; do
+#
+#				jobname=${bambase}.${feature}.${tag}.${Q}
+#				jobname=${jobname/ubread-}
+#				jobname=${jobname/owtie2-}
+#				jobname=${jobname/ene_}
+#				jobname=${jobname/ranscript_}
+#				jobname=${jobname/_codon}
+#
+#				outbase="${dir}/h38au.${bambase}.genes.featureCounts.${feature}.${tag}.Q${Q}"
+#
+#				f="${outbase}.csv"
+#				fcid=''
+#				if [ -f $f ] && [ ! -w $f ] ; then
+#					echo "Write-protected $f exists. Skipping."
+#				else
+#					echo "Creating $f."
+#					fcid=$( qsub -N ${jobname} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#						-o ${outbase}.${date}.out.txt \
+#						-e ${outbase}.${date}.err.txt \
+#						~/.local/bin/featureCounts.bash -F \
+#							"-T ${threads} -t ${feature} -g ${tag} -Q ${Q} \
+#							-a ${REFS}/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf \
+#							-o ${f} ${dir}/??.h38au.${bambase}.bam" )
+#					echo $fcid
+#				fi
+#
+#				#	counts=${f}
+#				#	outbase=${f}.deseq
+#				#	f=${outbase}.plots.pdf
+#				#	if [ -f $f ] && [ ! -w $f ] ; then
+#				#		echo "Write-protected $f exists. Skipping."
+#				#	else
+#				#		#echo "Creating $f"
+#				#		if [ ! -z ${fcid} ] ; then
+#				#			depend="-W depend=afterok:${fcid}"
+#				#		else
+#				#			depend=""
+#				#		fi
+#				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#				#			~/.local/bin/deseq.bash -F \
+#				#			"-f ${counts} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
+#				#	fi
+#
+#			done	#	for tag in gene_id gene_name transcript_id tss_id ; do
+#
+#		done	#	for feature in exon CDS start_codon stop_codon ; do
+#
+#	done	#	for Q in 00 20 ; do
+#
+#done	#	for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
 
-	for Q in 40 20 00 ; do
-
-		for feature in miRNA miRNA_primary_transcript ; do
-
-			for tag in ID Alias Name ; do
-
-				jobname=${bambase}.${feature}.${tag}.${Q}
-				jobname=${jobname/ubread-}
-				jobname=${jobname/owtie2-}
-				jobname=${jobname/iRNA}
-				jobname=${jobname/mary_transcript}
-
-				outbase="${dir}/h38au.${bambase}.hsa.featureCounts.${feature}.${tag}.Q${Q}"
-
-				f="${outbase}.csv"
-				fcid=''
-				if [ -f $f ] && [ ! -w $f ] ; then
-					echo "Write-protected $f exists. Skipping."
-				else
-					echo "Creating $f."
-					fcid=$( qsub -N ${jobname} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-						-o ${outbase}.${date}.out.txt \
-						-e ${outbase}.${date}.err.txt \
-						~/.local/bin/featureCounts.bash -F \
-							"-T ${threads} -t ${feature} -g ${tag} -a ${FASTA}/hg38.chr.hsa.gff3 \
-							-Q ${Q} -o ${f} ${dir}/??.h38au.${bambase}.bam" )
-					echo $fcid
-				fi
-
-				#	counts=${f}
-				#	outbase=${f}.deseq
-				#	f=${outbase}.plots.pdf
-				#	if [ -f $f ] && [ ! -w $f ] ; then
-				#		echo "Write-protected $f exists. Skipping."
-				#	else
-				#		#echo "Creating $f"
-				#		if [ ! -z ${fcid} ] ; then
-				#			depend="-W depend=afterok:${fcid}"
-				#		else
-				#			depend=""
-				#		fi
-				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-				#			~/.local/bin/deseq.bash -F \
-				#			"-f ${counts} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
-				#	fi
-
-			done	#	for tag in ID Alias Name ; do
-
-		done	#	for feature in miRNA miRNA_primary_transcript ; do
 
 
-		for feature in exon CDS start_codon stop_codon ; do
-
-			for tag in gene_id gene_name transcript_id tss_id ; do
-
-				jobname=${bambase}.${feature}.${tag}.${Q}
-				jobname=${jobname/ubread-}
-				jobname=${jobname/owtie2-}
-				jobname=${jobname/ene_}
-				jobname=${jobname/ranscript_}
-				jobname=${jobname/_codon}
-
-				outbase="${dir}/h38au.${bambase}.genes.featureCounts.${feature}.${tag}.Q${Q}"
-
-				f="${outbase}.csv"
-				fcid=''
-				if [ -f $f ] && [ ! -w $f ] ; then
-					echo "Write-protected $f exists. Skipping."
-				else
-					echo "Creating $f."
-					fcid=$( qsub -N ${jobname} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-						-o ${outbase}.${date}.out.txt \
-						-e ${outbase}.${date}.err.txt \
-						~/.local/bin/featureCounts.bash -F \
-							"-T ${threads} -t ${feature} -g ${tag} -Q ${Q} \
-							-a ${REFS}/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf \
-							-o ${f} ${dir}/??.h38au.${bambase}.bam" )
-					echo $fcid
-				fi
-
-				#	counts=${f}
-				#	outbase=${f}.deseq
-				#	f=${outbase}.plots.pdf
-				#	if [ -f $f ] && [ ! -w $f ] ; then
-				#		echo "Write-protected $f exists. Skipping."
-				#	else
-				#		#echo "Creating $f"
-				#		if [ ! -z ${fcid} ] ; then
-				#			depend="-W depend=afterok:${fcid}"
-				#		else
-				#			depend=""
-				#		fi
-				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-				#			~/.local/bin/deseq.bash -F \
-				#			"-f ${counts} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
-				#	fi
-
-			done	#	for tag in gene_id gene_name transcript_id tss_id ; do
-
-		done	#	for feature in exon CDS start_codon stop_codon ; do
-
-	done	#	for Q in 00 20 ; do
-
-done	#	for bambase in subread-dna subread-rna bowtie2-e2e bowtie2-loc ; do
 
 #for ref in mi mt hp ami amt ahp ; do
 #	for size in 11 13 15 17 19 21 ; do

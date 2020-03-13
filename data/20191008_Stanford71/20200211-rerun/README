@@ -61,3 +61,24 @@ Aggregation
 
 
 
+sqlite3
+
+create table mercounts ( mer varchar(13), c01 int default 0, c02 int default 0 )
+
+.schema mercounts
+CREATE TABLE mercounts ( mer varchar(13), c01 int default 0, c02 int default 0 );
+
+.q
+
+sqlite3 mydata.db 'CREATE TABLE mercounts ( mer varchar(13), c01 int default 0, c02 int default 0 )'
+
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+dir=/francislab/data1/working/20191008_Stanford71/20200211-rerun
+qsub -N lengths -l nodes=1:ppn=4 -l vmem=8gb \
+	-o ${dir}/trimmed_length_unpaired_read_lengths.${date}.out.txt \
+	-e ${dir}/trimmed_length_unpaired_read_lengths.${date}.err.txt \
+	${dir}/read_lengths.bash
+
+

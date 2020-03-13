@@ -36,7 +36,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 	echo $base
 	jobbase=$( basename ${base} )
 
-	for k in 13 ; do
+	for k in 9 11 13 ; do
 
 		infile="${r1}"
 
@@ -47,15 +47,9 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 		else
 			unset size vmem threads
 			case $k in 
-				'13') size=5;vmem=8;threads=8;;
-				'15') size=5;vmem=8;threads=8;;
-				#'17') size=5;vmem=8;threads=8;; not working???
-				#'17') size=5;vmem=16;threads=8;; not working???
-				#'17') size=10;vmem=16;threads=8;; not working???
-				'17') size=10;vmem=32;threads=8;;	# works. Don't understand the jump.
-				#'19') size=10;vmem=32;threads=8;;
-				#'21') size=10;vmem=64;threads=16;;
-				'21') size=10;vmem=32;threads=16;;
+				9 | 11 | 13 | 15 ) size=5;vmem=8;threads=8;;
+				17) size=10;vmem=32;threads=8;;
+				21) size=10;vmem=32;threads=16;;
 			esac  # seems to work
 			qsub -N ${jobbase}.rjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 				-o ${qoutbase}.${date}.out.txt \
@@ -235,7 +229,6 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 								-o ${qoutbase}.diamond.nr.daa"
 				fi
 
-				#for k in 13 21 ; do
 				for k in 13 ; do
 
 					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
@@ -250,10 +243,11 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						else
 							depend=""
 						fi
-						# 13 - 5 / 8
-						# 21 = 10 / 64
-						# 32 is no faster
-						case $k in '13') size=5;vmem=8;threads=8;; '21') size=10;vmem=64;threads=16;; esac  # seems to work
+						unset size vmem threads
+						case $k in
+							13) size=5;vmem=8;threads=8;;
+							21) size=10;vmem=64;threads=16;;
+						esac
 						qsub ${depend} -N ${jobbase}.hjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							-o ${qoutbase}.${date}.out.txt \
 							-e ${qoutbase}.${date}.err.txt \
@@ -264,8 +258,9 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 
 				done
 
-				#for k in 13 15 17 19 21 ; do
-				for k in 13 ; do
+
+
+				for k in 9 11 13 15 ; do
 
 					infile="${outbase}.bowtie2-${ali}.mapped.fasta.gz"
 
@@ -281,16 +276,10 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						fi
 						unset size vmem threads
 						case $k in 
-							'13') size=5;vmem=8;threads=8;;
-							'15') size=5;vmem=8;threads=8;;
-							#'17') size=5;vmem=8;threads=8;; not working???
-							#'17') size=5;vmem=16;threads=8;; not working???
-							#'17') size=10;vmem=16;threads=8;; not working???
-							'17') size=10;vmem=32;threads=8;;	# works. Don't understand the jump.
-							#'19') size=10;vmem=32;threads=8;;
-							#'21') size=10;vmem=64;threads=16;;
-							'21') size=10;vmem=32;threads=16;;
-						esac  # seems to work
+							9 | 11 | 13 | 15 ) size=5;vmem=8;threads=8;;
+							17 | 19 ) size=10;vmem=32;threads=8;;
+							21) size=10;vmem=32;threads=16;;
+						esac 
 						mappedjfid=$( qsub ${depend} -N ${jobbase}.mjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							-o ${qoutbase}.${date}.out.txt \
 							-e ${qoutbase}.${date}.err.txt \
@@ -300,6 +289,9 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						#	-l feature=nocommunal \
 					fi
 
+				done
+
+				for k in 9 11 13 15 ; do
 
 					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
 
@@ -315,16 +307,10 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						fi
 						unset size vmem threads
 						case $k in 
-							'13') size=5;vmem=8;threads=8;;
-							'15') size=5;vmem=8;threads=8;;
-							#'17') size=5;vmem=8;threads=8;; not working???
-							#'17') size=5;vmem=16;threads=8;; not working???
-							#'17') size=10;vmem=16;threads=8;; not working???
-							'17') size=10;vmem=32;threads=8;;	# works. Don't understand the jump.
-							#'19') size=10;vmem=32;threads=8;;
-							#'21') size=10;vmem=64;threads=16;;
-							'21') size=10;vmem=32;threads=16;;
-						esac  # seems to work
+							9 | 11 | 13 | 15) size=5;vmem=8;threads=8;;
+							17 | 19 ) size=5;vmem=32;threads=8;;
+							21) size=10;vmem=32;threads=16;;
+						esac 
 						unmappedjfid=$( qsub ${depend} -N ${jobbase}.ujf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							-o ${qoutbase}.${date}.out.txt \
 							-e ${qoutbase}.${date}.err.txt \
@@ -333,8 +319,6 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						#	-l feature=nocommunal \
 						echo $unmappedjfid
 					fi
-
-
 
 				done
 			fi
@@ -400,7 +384,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 #						qsub ${depend} -N ${jobbase}.${ref}.b${ali:0:1}u${abbrev}s${max:(-2):2} \
 #							-l nodes=1:ppn=4 -l vmem=4gb \
 #							-o ${core}.${date}.out.txt -e ${core}.${date}.err.txt \
-#							~/.local/bin/blastn_summary.bash \
+#							~/.local/bin/blastn_summary_with_title.bash \
 #								-F "-input ${qoutbase}.${vref}.txt.gz -db ${BLASTDB}/${vref} -max ${max}"
 #					fi
 #
@@ -450,7 +434,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 #				#-l nodes=1:ppn=${threads} -l vmem=8gb \
 #				qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}unks \
 #					-o ${qoutbase}.summary.${date}.out.txt -e ${qoutbase}.summary.${date}.err.txt \
-#					~/.local/bin/kraken2_summary.bash -F "-input ${qoutbase}.txt.gz"
+#					~/.local/bin/blastn_summary.bash -F "-input ${qoutbase}.txt.gz"
 #			fi
 
 		done	#	for ali in e2e loc ; do
