@@ -1,0 +1,10 @@
+
+
+
+aws --profile gwendt s3 sync s3://viral-identification/ /francislab/data1/working/1000genomes/20200311-viral_identification/s3/
+
+
+
+
+./post_process.bash
+
