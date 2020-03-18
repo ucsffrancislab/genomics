@@ -33,7 +33,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 	r2=${r1/_R1/_R2}
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
-	base=${r1%.fastq.gz}
+	base=${r1%_R1.fastq.gz}
 
 	echo $base
 	jobbase=$( basename ${base} )

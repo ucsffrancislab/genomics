@@ -1,10 +1,27 @@
 
-
-
-aws --profile gwendt s3 sync s3://viral-identification/ /francislab/data1/working/1000genomes/20200311-viral_identification/s3/
+aws --profile gwendt s3 sync s3://viral-identification/1000genomes/ /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/
 
 
 
 
 ./post_process.bash
+
+
+
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.normalized.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.normalized.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-species.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-species.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-species.normalized.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-species.normalized.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-genus.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-genus.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-genus.normalized.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-genus.normalized.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-subfamily.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.normalized.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-subfamily.normalized.txt.gz
 

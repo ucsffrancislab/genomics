@@ -1,0 +1,8 @@
+
+aws --profile gwendt s3 sync s3://viral-identification/www.ebi.ac.uk/ /francislab/data1/working/Geuvadis/20200311-viral_identification/s3/www.ebi.ac.uk/
+
+
+
+
+./post_process.bash
+

@@ -1,0 +1,11 @@
+
+for f in /francislab/data1/raw/1000genomes/phase3/data/*/alignment/*.unmapped.*bam ; do
+echo $f
+ln -s $f
+done
+
+for f in /francislab/data1/raw/1000genomes/phase3/data/*/alignment/*.unmapped.*bam*count.txt ; do
+echo $f
+ln -s $f
+done
+

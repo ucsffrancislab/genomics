@@ -229,6 +229,33 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 								-o ${qoutbase}.diamond.nr.daa"
 				fi
 
+
+
+
+
+
+
+
+
+				#	convert .diamond.nr.daa to blast.txt
+				#	summarize blast.txt
+				#	sum summary to species, genus, subfamily 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 				for k in 13 ; do
 
 					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
