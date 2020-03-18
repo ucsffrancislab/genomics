@@ -6,6 +6,13 @@
 rsync -avz --progress /data/fcatalan/WGS_data/ /francislab/data1/raw/20200309_GPMP_RNA/WGS_data/
 
 
+date=$( date "+%Y%m%d%H%M%S" )
+dir=/francislab/data1/raw/20200309_GPMP_RNA/WGS_data/cohort2_rna-seq/
+f=${dir}/P484SF12288-NE_S2_L001_R2_001_val_2.fq
+echo "gzip ${f}" | qsub -N gzip -o ${f}.gzip.${date}.out.txt -e ${f}.gzip.${date}.err.txt
+
+
+
 
 Thank you for making the directory. I will use it from now on to share data with you and the francis lab. I have uploaded the RNA bulk seq to /data/fcatalan/WGS. Please note that one sample (SF12888-NE) is trimmed while the rest are not. This too was trimmed using trimgalore.
 
