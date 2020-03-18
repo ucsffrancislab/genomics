@@ -1,5 +1,10 @@
 
 
+https://www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/processed/
+https://www.ebi.ac.uk/ena/browser/view/PRJEB3366
+https://www.ebi.ac.uk/ena/browser/view/PRJEB3365
+
+
 samtools view -c HG00096.1.M_111124_6.bam
 53116228
 
