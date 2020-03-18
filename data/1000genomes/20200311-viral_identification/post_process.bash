@@ -69,6 +69,7 @@ for input in /francislab/data1/working/1000genomes/20200311-viral_identification
 	for level in species genus subfamily ; do
 		suffix=${level%%,*}
 
+		sumsummaryid=""
 		foutbase=${outbase}.summary.sum-${suffix}
 		f=${foutbase}.txt.gz
 		if [ -f $f ] && [ ! -w $f ] ; then
@@ -79,9 +80,10 @@ for input in /francislab/data1/working/1000genomes/20200311-viral_identification
 			else
 				depend=""
 			fi
-			qsub ${depend} -N ${jobbase}.${suffix:0:2} -l nodes=1:ppn=2 -l vmem=4gb \
+			sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2} -l nodes=1:ppn=2 -l vmem=4gb \
 				-o ${foutbase}.${date}.out.txt -e ${foutbase}.${date}.err.txt \
-				~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}"
+				~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
+			echo $sumsummaryid
 		fi
 	
 		foutbase=${outbase}.summary.sum-${suffix}.normalized
@@ -89,8 +91,8 @@ for input in /francislab/data1/working/1000genomes/20200311-viral_identification
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
-			if [ ! -z ${summaryid} ] ; then
-				depend="-W depend=afterok:${summaryid}"
+			if [ ! -z ${sumsummaryid} ] ; then
+				depend="-W depend=afterok:${sumsummaryid}"
 			else
 				depend=""
 			fi
