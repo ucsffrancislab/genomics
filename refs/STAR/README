@@ -1,0 +1,32 @@
+
+https://github.com/alexdobin/STAR
+
+
+If the reference fasta is small, or if you are getting seg faults during the alignment, you may wish to recreate the index with a lower the value for option --genomeSAindexNbases. Its default is 14, so try 5 or something. On a previous run, my index only had 2 sequences in it and this fixed it for me.
+
+echo "~/.local/bin/STAR --genomeFastaFiles /francislab/data1/refs/Homo_sapiens/UCSC/hg38/Sequence/WholeGenomeFasta/hg38.fa --runMode genomeGenerate --genomeDir /francislab/data1/refs/STAR/hg38/ --sjdbGTFfile /francislab/data1/refs/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf --runThreadN 32" | qsub -N STAR -l nodes=1:ppn=32 -l vmem=64gb
+
+
+
+
+
+
+echo "~/.local/bin/STAR --runMode alignReads --genomeDir /francislab/data1/refs/STAR/hg38/ --sjdbGTFfile /francislab/data1/refs/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf --runThreadN 32" | qsub -N STAR -l nodes=1:ppn=32 -l vmem=32gb
+
+
+--readFilesIn R1.fq R2.fq
+--outSAMtype BAM
+
+
+outFileNamePrefix               ./
+    string: output files name prefix (including full or relative path). Can only be defined on the command line.
+
+outSAMattrRGline        -
+    string(s): SAM/BAM read group line. The first word contains the read group identifier and must start with "ID:", e.g. --outSAMattrRGline ID:xxx CN:yy "DS:z z z".
+            xxx will be added as RG tag to each output alignment. Any spaces in the tag values have to be double quoted.
+            Comma separated RG lines correspons to different (comma separated) input files in --readFilesIn. Commas have to be surrounded by spaces, e.g.
+            --outSAMattrRGline ID:xxx , ID:zzz "DS:z z" , ID:yyy DS:yyyy
+
+
+
+

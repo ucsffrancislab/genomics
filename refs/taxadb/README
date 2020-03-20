@@ -8,6 +8,25 @@ module load sqlite
 I have created just the "gb" version as it included everything that I searched for. Should you ever need something and its accession number is not found, please let me know and I'll create a different one.
 
 
+
+
+
+
+Download everything and then make a several databases with subsets of everything.
+In general, smaller databases search faster.
+```
+nohup taxadb download --outdir taxadb_full --type full -f &
+
+nohup taxadb create --dbtype sqlite --fast -i taxadb_full --dbname taxadb_gb.sqlite   --division gb &
+nohup taxadb create --dbtype sqlite --fast -i taxadb_full --dbname taxadb_nucl.sqlite --division nucl &
+nohup taxadb create --dbtype sqlite --fast -i taxadb_full --dbname taxadb_prot.sqlite --division prot &
+nohup taxadb create --dbtype sqlite --fast -i taxadb_full --dbname taxadb_full.sqlite --division full &
+```
+
+
+
+
+
 A "simple" command like ...
 
 ```
