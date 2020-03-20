@@ -25,7 +25,21 @@ qsub -N wget \
 
 
 
+
+git clone https://github.com/chmille4/bamReadDepther.git
+cd bamReadDepther
+gcc -lstdc++ -o bamReadDepther bamReadDepther.cpp 
+
+
+count_bai_reads.bash /francislab/data1/raw/Geuvadis/bam/*bam.bai
+
+
 ./samtools_count.bash
+
 ...  WAIT ...
-./aggregate_unmapped_read_counts.bash
+
+
+
+./aggregate_read_counts.bash
+
 
