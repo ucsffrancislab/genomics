@@ -2,6 +2,18 @@
 
 aws s3 sync s3://1000genomes/phase3/ /francislab/data1/raw/1000genomes/phase3/ --exclude "*" --include "*/alignment/*.unmapped.ILLUMINA.bwa.*.*.*.bam"
 
+aws s3 sync s3://1000genomes/phase3/ /francislab/data1/raw/1000genomes/phase3/ --exclude "*" --include "*/alignment/*.ILLUMINA.bwa.*.*.*.bam.bai"
+
+
+
+I'm gonna try to get the total number of reads aligned by analyzing the bam index (.bam.bai) files.
+
+git clone https://github.com/chmille4/bamReadDepther.git
+cd bamReadDepther
+gcc -lstdc++ -o bamReadDepther bamReadDepther.cpp 
+
+
+
 
 
 Are all reads in unmapped, actually unmapped? 2 random checks say yes.
@@ -25,20 +37,15 @@ samtools view -f 4 -c /francislab/data1/raw/1000genomes/phase3/data/HG01286/alig
 
 
 
-date=$( date "+%Y%m%d%H%M%S" )
-dir=/francislab/data1/raw/1000genomes
-qsub -N count -l nodes=1:ppn=4 -l vmem=8gb \
-	-o ${dir}/count_unmapped_reads.${date}.out.txt \
-	-e ${dir}/count_unmapped_reads.${date}.err.txt \
-	${dir}/count_unmapped_reads.bash
-
-
-
-OR
+count_bai_reads.bash /francislab/data1/raw/1000genomes/phase3/data/*/alignment/*.bam.bai
 
 ./samtools_count.bash
+
+
 ...  WAIT ...
-./aggregate_unmapped_read_counts.bash
+
+
+./aggregate_read_counts.bash
 
 
 
