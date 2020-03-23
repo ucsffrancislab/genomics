@@ -1,0 +1,33 @@
+
+
+
+rsync -avz --progress /francislab/data1/inbox/Raleigh_fastq/ /francislab/data1/raw/20200320_Raleigh_Meningioma/fastq/
+
+
+RNA data to be analyzed for viral expression
+
+
+This is single ended (R1) only.
+
+
+mv fastq original_fastq
+
+
+
+mkdir fastq
+
+for f in original_fastq/*q.gz; do
+b=$( basename $f .fastq.gz );
+b=${b%%_001};
+b=${b/_L00?/};
+b=${b#MNG_Plt?_M}
+b=${b#CR_M}
+b=${b/_S*_R1/_R1};
+b=${b/_R1};
+b=$( printf '%03d' ${b} )
+echo $b;
+ln -s ../$f fastq/$b.fastq.gz;
+done
+
+
+

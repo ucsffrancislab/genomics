@@ -1,0 +1,40 @@
+
+
+
+Blind RNA viral analysis
+
+
+
+kallisto? can't really followup with sleuth without the metadata
+
+diamond doesn't align paired. Not paired data.
+
+
+
+
+
+hervQuant
+RNA-Seq Data
+STAR: Simultaneous alignment to hERV and hg19 transcriptome
+Total SAM 
+Filter: Remove hg19 aligned reads
+hERV only SAM 
+Salmon: Quantification of hERV expression, normalized to total read count per sample
+Expression Matrix
+DESeq2 ??? 
+
+
+
+STAR to combination of viral and hg38 ?
+STAR to just viral?
+
+
+
+./pre_process.bash
+
+
+
+
+
+
+

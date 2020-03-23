@@ -1,6 +1,0 @@
-
-
-
-rsync -avz --progress /francislab/data1/inbox/Raleigh_fastq/ /francislab/data1/raw/20200320_Raleigh_Meningioma/fastq/
-
-
