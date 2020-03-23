@@ -5,6 +5,7 @@
 
 rsync -avz --progress /data/fcatalan/WGS_data/ /francislab/data1/raw/20200309_GPMP_RNA/WGS_data/
 
+Thank you for making the directory. I will use it from now on to share data with you and the francis lab. I have uploaded the RNA bulk seq to /data/fcatalan/WGS. Please note that one sample (SF12888-NE) is trimmed while the rest are not. This too was trimmed using trimgalore.
 
 date=$( date "+%Y%m%d%H%M%S" )
 dir=/francislab/data1/raw/20200309_GPMP_RNA/WGS_data/cohort2_rna-seq/
@@ -14,5 +15,19 @@ echo "gzip ${f}" | qsub -N gzip -o ${f}.gzip.${date}.out.txt -e ${f}.gzip.${date
 
 
 
-Thank you for making the directory. I will use it from now on to share data with you and the francis lab. I have uploaded the RNA bulk seq to /data/fcatalan/WGS. Please note that one sample (SF12888-NE) is trimmed while the rest are not. This too was trimmed using trimgalore.
+mkdir fastq
+
+for f in WGS_data/cohort*/*q.gz; do
+b=$( basename $f .fq.gz );
+b=$( basename $b .fastq.gz );
+b=${b%%_val_?};
+b=${b%%_001};
+b=${b/_L00?/};
+b=${b/-*-/-};
+b=${b/E_S9/-E_S9};
+b=${b/_S*_/_};
+b=${b/P*SF/SF};
+echo $b;
+ln -s ../$f fastq/$b.fastq.gz;
+done
 
