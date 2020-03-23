@@ -42,4 +42,12 @@ count_bai_reads.bash /francislab/data1/raw/Geuvadis/bam/*bam.bai
 
 ./aggregate_read_counts.bash
 
+Check
+awk -F, '( $4 != $5 )' read_counts.csv
+awk -F, '( $7 != $8 )' read_counts.csv
+Nothing! BAM counts are the same as BAI counts.
+
+Remove bam counting and rerun.
+
+./aggregate_read_counts.bash
 
