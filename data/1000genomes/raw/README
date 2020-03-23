@@ -48,5 +48,18 @@ count_bai_reads.bash /francislab/data1/raw/1000genomes/phase3/data/*/alignment/*
 ./aggregate_read_counts.bash
 
 
+Check
+awk -F, '( $4 != $5 )' read_counts.csv
+awk -F, '( $4 != $6 )' read_counts.csv
+awk -F, '( $4 != $7 )' read_counts.csv
+Nothing! BAM counts are the same as BAI counts.
+
+Remove bam counting and rerun.
+
+./aggregate_read_counts.bash
+
+
+
+
 
 
