@@ -23,6 +23,10 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 	diamond $ARGS
+	if [ ${f:(-3)} == '.gz' ] ; then
+		mv ${f} ${f%.gz}
+		gzip --best ${f%.gz}
+	fi
 	chmod a-w $f
 fi
 
