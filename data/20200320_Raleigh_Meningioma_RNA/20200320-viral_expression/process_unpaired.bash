@@ -46,7 +46,7 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 
 		joutbase="${base}.STAR.${ref}"
 		starid=""
-		f=${joutbase}.bam
+		f="${joutbase}.Aligned.out.bam"
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
@@ -68,9 +68,9 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 		joutbase="${joutbase}.Unmapped.out"
 		infile="${joutbase}.R1.fastq.gz"
 
-		for d in nr viral viral.masked ; do
+		for d in nr viral ; do
 
-			f="${joutbase}.diamond.${d}.tsv.gz"
+			f="${joutbase}.diamond.${d}.tsv"
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
