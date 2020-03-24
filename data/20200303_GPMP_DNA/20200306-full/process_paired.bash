@@ -225,10 +225,10 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						-o ${qoutbase}.diamond.nr.daa.out.txt \
 						-e ${qoutbase}.diamond.nr.daa.err.txt \
 						~/.local/bin/diamond.bash \
-							-F "blastx -p 8 -d ${DIAMOND}/nr \
-								-q ${infile} \
-								-f 100 \
-								-o ${qoutbase}.diamond.nr.daa"
+							-F "blastx --threads 8 --db ${DIAMOND}/nr \
+								--query ${infile} \
+								--outfmt 100 \
+								--out ${qoutbase}.diamond.nr.daa"
 				fi
 
 #				for k in 13 ; do
