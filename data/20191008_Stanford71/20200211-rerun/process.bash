@@ -348,6 +348,63 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 					fi
 
 				done
+
+
+
+
+
+
+
+				for k in 11 21 31 ; do
+
+					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
+
+					unmappeddskid=''
+					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.dsk"
+					f="${qoutbase}.h5"
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${unmappedid} ] ; then
+							depend="-W depend=afterok:${unmappedid}"
+						else
+							depend=""
+						fi
+						vmem=8;threads=8;
+						#unset size vmem threads
+						#case $k in 
+						#	9 | 11 | 13 | 15) size=5;vmem=8;threads=8;;
+						#	17 | 19 ) size=5;vmem=32;threads=8;;
+						#	21) size=10;vmem=32;threads=16;;
+						#esac 
+						unmappeddskid=$( qsub ${depend} -N ${jobbase}.udsk.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+							-o ${qoutbase}.${date}.out.txt \
+							-e ${qoutbase}.${date}.err.txt \
+							~/.local/bin/dsk.bash \
+								-F "-nb-cores ${threads} -kmer-size ${k} -abundance-min 0 \
+									-max-memory ${vmem}000 -file ${infile} -out ${f}" )
+						echo $unmappeddskid
+					fi
+
+					f="${qoutbase}.txt.gz"
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${unmappeddskid} ] ; then
+							depend="-W depend=afterok:${unmappeddskid}"
+						else
+							depend=""
+						fi
+						vmem=8;threads=8;
+						qsub ${depend} -N ${jobbase}.ud2a.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+							-o ${qoutbase}.${date}.out.txt \
+							-e ${qoutbase}.${date}.err.txt \
+							~/.local/bin/dsk2ascii.bash \
+								-F "-nb-cores ${threads} -file ${infile} -out ${f}"
+					fi
+
+				done
+
 			fi
 			#	RESET IT HERE
 			qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped"
