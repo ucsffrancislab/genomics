@@ -15,5 +15,7 @@ This is a big collection
 https://support.illumina.com/sequencing/sequencing_software/igenome.html
 wget http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Homo_sapiens/UCSC/hg38/Homo_sapiens_UCSC_hg38.tar.gz
 
+For some reason, the genes.gtf includes alternate chromosomes that are not in the genome.fa???
 
 
+http://igenomes.illumina.com.s3-website-us-east-1.amazonaws.com/Homo_sapiens/NCBI/GRCh38/Homo_sapiens_NCBI_GRCh38.tar.gz
