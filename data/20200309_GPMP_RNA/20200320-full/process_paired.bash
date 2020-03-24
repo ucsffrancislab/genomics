@@ -92,7 +92,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 		infile="${base}.STAR.${ref}.unmapped.fasta.gz"
 
-		for d in nr viral viral.masked ; do
+		for d in nr viral ; do
 
 			outbase="${base}.STAR.${ref}.unmapped.diamond.${d}"
 			f="${outbase}.tsv.gz"
