@@ -32,7 +32,8 @@ date=$( date "+%Y%m%d%H%M%S" )
 BASEDIR=/francislab/data1/working/20200320_Raleigh_Meningioma_RNA/20200320-viral_expression/trimmed
 
 
-for r1 in ${BASEDIR}/???.fastq.gz ; do
+for r1 in ${BASEDIR}/00?.fastq.gz ; do
+#for r1 in ${BASEDIR}/001.fastq.gz ; do
 
 	#r2=${r1/_R1/_R2}
 
@@ -44,17 +45,17 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 
 	for ref in hg38  ; do
 
-		joutbase="${base}.STAR.${ref}"
+		outbase="${base}.STAR.${ref}"
 		starid=""
-		f="${joutbase}.Aligned.out.bam"
+		f="${outbase}.Aligned.out.bam"
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
 			starid=$( qsub -N ${jobbase}.${ref} -l nodes=1:ppn=${threads} -l vmem=32gb \
-				-o ${joutbase}.${date}.out.txt -e ${joutbase}.${date}.err.txt \
+				-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 				~/.local/bin/STAR.bash \
 				-F "--runMode alignReads \
-					--outFileNamePrefix ${joutbase}. \
+					--outFileNamePrefix ${outbase}. \
 					--outSAMtype BAM Unsorted \
 					--genomeDir ${STAR}/${ref} \
 					--runThreadN ${threads} \
@@ -65,12 +66,13 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 			echo "${starid}"
 		fi
 
-		joutbase="${joutbase}.Unmapped.out"
-		infile="${joutbase}.R1.fastq.gz"
+		outbase="${base}.STAR.${ref}.Unmapped.out"
+		infile="${outbase}.R1.fastq.gz"
 
 		for d in nr viral ; do
 
-			f="${joutbase}.diamond.${d}.tsv"
+			diamondid=""
+			f="${outbase}.diamond.${d}.csv.gz"
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
@@ -79,21 +81,133 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 				else
 					depend=""
 				fi
-				qsub ${depend} -N ${jobbase}.${ref}.d.${d} -l nodes=1:ppn=8 -l vmem=16gb \
-					-o ${joutbase}.diamond.${d}.out.txt \
-					-e ${joutbase}.diamond.${d}.err.txt \
+				diamondid=$( qsub ${depend} -N ${jobbase}.${ref}.d.${d} -l nodes=1:ppn=8 -l vmem=16gb \
+					-o ${outbase}.diamond.${d}.out.txt \
+					-e ${outbase}.diamond.${d}.err.txt \
 					~/.local/bin/diamond.bash \
 						-F "blastx --threads 8 --db ${DIAMOND}/${d} \
-							--query ${infile} --outfmt 6 --out ${f}"
+							--query ${infile} --outfmt 6 --out ${f}" )
+				echo $diamondid
+			fi
+			input=${f}
+
+			summaryid=""
+			outbase="${base}.STAR.${ref}.Unmapped.out.summary"
+			f=${outbase}.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${diamondid} ] ; then
+					depend="-W depend=afterok:${diamondid}"
+				else
+					depend=""
+				fi
+				size=$( stat -c %s $input )
+				if [ $size -gt 10000000 ] ; then
+					echo "Size $size gt 10000000"
+					vmem=8
+				elif [ $size -gt 8000000 ] ; then
+					echo "Size $size gt 8000000"
+					vmem=6
+				else
+					echo "Size $size NOT gt 8000000"
+					vmem=4
+				fi
+				summaryid=$( qsub ${depend} -N ${jobbase}.s -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
+				echo $summaryid
 			fi
 
+			summary=$f
+
+#			count_base=$( basename $input .diamond.viral.csv.gz )
+#			unmapped_read_count=$( cat /francislab/data1/raw/1000genomes/unmapped/${count_base}.unmapped_read_count.txt )
+
+#			
+
+#			normalize
+#
+#
+#			outbase="${base}.STAR.${ref}.Unmapped.out.summary.normalized"
+#			f=${outbase}.txt.gz
+#			if [ -f $f ] && [ ! -w $f ] ; then
+#				echo "Write-protected $f exists. Skipping."
+#			else
+#				if [ ! -z ${summaryid} ] ; then
+#					depend="-W depend=afterok:${summaryid}"
+#				else
+#					depend=""
+#				fi
+#				#-l nodes=1:ppn=2 -l vmem=4gb \
+#				qsub ${depend} -N ${jobbase}.norm \
+#					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#					~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
+#			fi
+#
+#
+
+
+
+
+
+#			sum summaries
+
+#			outbase="${base}.STAR.${ref}.Unmapped.out.summary"
+
+			for level in species genus subfamily ; do
+				suffix=${level%%,*}	#	in case a list of level's provided
+
+				sumsummaryid=""
+				outbase="${base}.STAR.${ref}.Unmapped.out.summary.sum-${suffix}"
+				f=${outbase}.txt.gz
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					if [ ! -z ${summaryid} ] ; then
+						depend="-W depend=afterok:${summaryid}"
+					else
+						depend=""
+					fi
+					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2} -l nodes=1:ppn=2 -l vmem=4gb \
+						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
+					echo $sumsummaryid
+				fi
+				sumsummary=${f}
+	
+
+
+#			normalize
+#
+#
+#				outbase="${base}.STAR.${ref}.Unmapped.out.summary.sum-${suffix}.normalized"
+#				f=${outbase}.txt.gz
+#				if [ -f $f ] && [ ! -w $f ] ; then
+#					echo "Write-protected $f exists. Skipping."
+#				else
+#					if [ ! -z ${sumsummaryid} ] ; then
+#						depend="-W depend=afterok:${sumsummaryid}"
+#					else
+#						depend=""
+#					fi
+#					#-l nodes=1:ppn=2 -l vmem=4gb \
+#					qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
+#						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#						~/.local/bin/normalize_summary.bash \
+#							-F "-input ${sumsummary} -d ${unmapped_read_count}"
+#				fi
+#
+
+
+
+			done	#	for level in species genus subfamily ; do
+	
 		done	#	for d in nr viral viral.masked ; do
 
 	done	#	for ref in hg38  ; do
 
-
-
-
+######################################################################
 
 
 
