@@ -25,3 +25,20 @@ merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.csv
 
 merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.normalized.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-subfamily.normalized.txt.gz
 
+
+
+
+
+
+
+
+
+GWAS
+
+date=$( date "+%Y%m%d%H%M%S" )
+dir=/francislab/data1/working/1000genomes/20200311-viral_identification
+qsub -N gwas -l nodes=1:ppn=32 -l vmem=400gb \
+	-o ${dir}/gwas.${date}.out.txt -e ${dir}/gwas.${date}.err.txt \
+	${dir}/gwas.bash
+
+
