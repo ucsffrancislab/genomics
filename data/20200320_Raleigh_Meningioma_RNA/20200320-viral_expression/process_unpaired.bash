@@ -32,7 +32,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 BASEDIR=/francislab/data1/working/20200320_Raleigh_Meningioma_RNA/20200320-viral_expression/trimmed
 
 
-for r1 in ${BASEDIR}/00?.fastq.gz ; do
+for r1 in ${BASEDIR}/???.fastq.gz ; do
 #for r1 in ${BASEDIR}/001.fastq.gz ; do
 
 	#r2=${r1/_R1/_R2}
@@ -66,13 +66,13 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 			echo "${starid}"
 		fi
 
-		outbase="${base}.STAR.${ref}.Unmapped.out"
-		infile="${outbase}.R1.fastq.gz"
+		infile="${base}.STAR.${ref}.Unmapped.out.R1.fastq.gz"
 
 		for d in nr viral ; do
 
 			diamondid=""
-			f="${outbase}.diamond.${d}.csv.gz"
+			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}"
+			f="${outbase}.csv.gz"
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
@@ -81,7 +81,7 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 				else
 					depend=""
 				fi
-				diamondid=$( qsub ${depend} -N ${jobbase}.${ref}.d.${d} -l nodes=1:ppn=8 -l vmem=16gb \
+				diamondid=$( qsub ${depend} -N ${jobbase}.${d} -l nodes=1:ppn=8 -l vmem=16gb \
 					-o ${outbase}.diamond.${d}.out.txt \
 					-e ${outbase}.diamond.${d}.err.txt \
 					~/.local/bin/diamond.bash \
@@ -92,7 +92,7 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 			input=${f}
 
 			summaryid=""
-			outbase="${base}.STAR.${ref}.Unmapped.out.summary"
+			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary"
 			f=${outbase}.txt.gz
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
@@ -102,18 +102,23 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 				else
 					depend=""
 				fi
-				size=$( stat -c %s $input )
-				if [ $size -gt 10000000 ] ; then
-					echo "Size $size gt 10000000"
-					vmem=8
-				elif [ $size -gt 8000000 ] ; then
-					echo "Size $size gt 8000000"
-					vmem=6
+				if [ -f $input ] ; then
+					#	On first run, this wouldn't work
+					size=$( stat -c %s $input )
+					if [ $size -gt 10000000 ] ; then
+						echo "Size $size gt 10000000"
+						vmem=8
+					elif [ $size -gt 8000000 ] ; then
+						echo "Size $size gt 8000000"
+						vmem=6
+					else
+						echo "Size $size NOT gt 8000000"
+						vmem=4
+					fi
 				else
-					echo "Size $size NOT gt 8000000"
 					vmem=4
 				fi
-				summaryid=$( qsub ${depend} -N ${jobbase}.s -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+				summaryid=$( qsub ${depend} -N ${jobbase}.s.${d} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
 					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
 				echo $summaryid
@@ -129,7 +134,7 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 #			normalize
 #
 #
-#			outbase="${base}.STAR.${ref}.Unmapped.out.summary.normalized"
+#			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary.normalized"
 #			f=${outbase}.txt.gz
 #			if [ -f $f ] && [ ! -w $f ] ; then
 #				echo "Write-protected $f exists. Skipping."
@@ -140,7 +145,7 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 #					depend=""
 #				fi
 #				#-l nodes=1:ppn=2 -l vmem=4gb \
-#				qsub ${depend} -N ${jobbase}.norm \
+#				qsub ${depend} -N ${jobbase}.norm.${d} \
 #					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 #					~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 #			fi
@@ -153,13 +158,13 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 
 #			sum summaries
 
-#			outbase="${base}.STAR.${ref}.Unmapped.out.summary"
+#			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary
 
 			for level in species genus subfamily ; do
 				suffix=${level%%,*}	#	in case a list of level's provided
 
 				sumsummaryid=""
-				outbase="${base}.STAR.${ref}.Unmapped.out.summary.sum-${suffix}"
+				outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary.sum-${suffix}"
 				f=${outbase}.txt.gz
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
@@ -169,7 +174,7 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 					else
 						depend=""
 					fi
-					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2} -l nodes=1:ppn=2 -l vmem=4gb \
+					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${d} -l nodes=1:ppn=2 -l vmem=4gb \
 						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 					echo $sumsummaryid
@@ -181,7 +186,7 @@ for r1 in ${BASEDIR}/00?.fastq.gz ; do
 #			normalize
 #
 #
-#				outbase="${base}.STAR.${ref}.Unmapped.out.summary.sum-${suffix}.normalized"
+#				outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary.sum-${suffix}.normalized"
 #				f=${outbase}.txt.gz
 #				if [ -f $f ] && [ ! -w $f ] ; then
 #					echo "Write-protected $f exists. Skipping."
