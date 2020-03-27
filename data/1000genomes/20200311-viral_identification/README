@@ -28,17 +28,114 @@ merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.nor
 
 
 
-
-
-
-
-
 GWAS
+
+./make_pheno_files.bash
+
+
+for f in pheno_files_1/eur/* ; do
+echo $f
+cat $f | awk '{print $3}' | sort | uniq -c
+done
+
+
+Test plink version output.
+plink1 is too old and takes many different options.
+plink2 is too new and the output file name and content are a bit different ( could use but need to adjust selected fields )
+plink2 1.90 is the version used when this post-run analysis was created.
+aws s3 cp s3://plink1-assets/plink_linux_x86_64_20200219.zip ./
+
+/francislab/data1/working/1000genomes/20200311-viral_identification/plink --snps-only \
+--allow-no-sex \
+--threads 32 \
+--logistic hide-covar \
+--covar-name C1,C2,C3,C4,C5,C6 \
+--bfile /francislab/data1/raw/1000genomes/gwas/pruned_vcfs/eur/ALL.chr6.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.eur.pruned \
+--pheno /francislab/data1/s3/herv/snp-20160701/pheno_files/hg19_alt/eur/chr6_69831346_R_PRE \
+--out /francislab/data1/working/1000genomes/20200311-viral_identification/test.no.covar \
+--covar /francislab/data1/raw/1000genomes/gwas/1kg_all_chroms_pruned_mds.mds
+
+plink2 --snps-only \
+--allow-no-sex \
+--threads 32 \
+--logistic hide-covar \
+--covar-name C1,C2,C3,C4,C5,C6 \
+--bfile /francislab/data1/raw/1000genomes/gwas/pruned_vcfs/eur/ALL.chr6.phase3_shapeit2_mvncall_integrated_v5a.20130502.genotypes.vcf.eur.pruned \
+--pheno /francislab/data1/s3/herv/snp-20160701/pheno_files/hg19_alt/eur/chr6_69831346_R_PRE \
+--covar-variance-standardize \
+--out /francislab/data1/working/1000genomes/20200311-viral_identification/test2.no.covar \
+--covar /francislab/data1/raw/1000genomes/gwas/1kg_all_chroms_pruned_mds.mds
+
+
+head  test.no.covar.assoc.logistic test2.no.covar.PHENO1.glm.logistic 
+==> test.no.covar.assoc.logistic <==
+ CHR                                             SNP         BP   A1       TEST    NMISS         OR         STAT            P 
+   6                                     rs561313667      63979    T        ADD      489      1.191       0.5024       0.6154
+   6                                     rs530120680      63980    G        ADD      489      1.191       0.5024       0.6154
+   6                                     rs540888038      73938    G        ADD      489  7.983e-07    -0.007017       0.9944
+   6                                     rs560786506      86839    A        ADD      489         NA           NA           NA
+   6                                     rs571306991      89339    T        ADD      489         NA           NA           NA
+   6                                     rs546455495     100112    A        ADD      489  5.776e-07     -0.01452       0.9884
+   6                                     rs566451461     100114    A        ADD      489  5.776e-07     -0.01452       0.9884
+   6                                     rs181241136     100116    A        ADD      489      2.302        1.565       0.1176
+   6                                     rs575691124     117396    G        ADD      489   1.06e-06    -0.006875       0.9945
+
+==> test2.no.covar.PHENO1.glm.logistic <==
+#CHROM	POS	ID	REF	ALT	A1	TEST	OBS_CT	OR	LOG(OR)_SE	Z_STAT	P
+6	63979	rs561313667	C	T	T	ADD	489	1.19108	0.348027	0.502444	0.615355
+6	63980	rs530120680	A	G	G	ADD	489	1.19108	0.348027	0.502444	0.615355
+6	73938	rs540888038	A	G	G	ADD	489	NA	NA	NA	NA
+6	86839	rs560786506	G	A	A	ADD	489	NA	NA	NA	NA
+6	89339	rs571306991	C	T	T	ADD	489	NA	NA	NA	NA
+6	100112	rs546455495	C	A	A	ADD	489	NA	NA	NA	NA
+6	100114	rs566451461	C	A	A	ADD	489	NA	NA	NA	NA
+6	100116	rs181241136	C	A	A	ADD	489	2.30177	0.532709	1.56498	0.117587
+6	117396	rs575691124	A	G	G	ADD	489	NA	NA	NA	NA
+
+
+Close. Looks like plink2 gets more NA instead of high P and low OR values
+
+To get CHR SNP BP P A1 OR ...
+
+Old columns awk '{print $1,$2,$3,$9,$4,$7}'
+
+New columns awk '{print $1,$3,$2,$12,$6,$9}'
+
+
+Could use either with these modifications
+
+
+
+
 
 date=$( date "+%Y%m%d%H%M%S" )
 dir=/francislab/data1/working/1000genomes/20200311-viral_identification
 qsub -N gwas -l nodes=1:ppn=32 -l vmem=400gb \
 	-o ${dir}/gwas.${date}.out.txt -e ${dir}/gwas.${date}.err.txt \
 	${dir}/gwas.bash
+
+
+
+
+
+
+for pheno_dir in pheno_files_* ; do
+
+
+for pheno_dir in pheno_files_10* ; do
+for m in gwas/eur/${pheno_dir}/*.for.manhattan.plot ; do
+echo $m
+if [ -s "${m}" ] ; then
+ echo "Processing ${m}"
+ q=${m/manhattan/qq}
+ manhattan_qq_plot.r -m ${m} -q ${q} -o manhattan_plots_${pheno_dir}
+else
+ echo "${m} is empty"
+fi
+done
+done
+
+
+
 
 

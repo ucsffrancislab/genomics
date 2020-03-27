@@ -53,7 +53,9 @@ options(warn=-1)
 #  no non-missing arguments to max; returning -Inf
 
 
-png(paste(opt$outpath, basename(opt$manhattan), '.png', sep=""))
+#	Added / to ensure png is put in dir and not just given a prefix
+png(paste(opt$outpath,'/', basename(opt$manhattan), '.png', sep=""))
+
 db<-read.table(opt$manhattan, sep=" ")
 dbgP<-data.frame(SNP=db$V2, CHR=db$V1, BP=db$V3, P=db$V4)
 dbgP$P<-ifelse(dbgP$P==0.000e+00,1.000e-302,dbgP$P)
