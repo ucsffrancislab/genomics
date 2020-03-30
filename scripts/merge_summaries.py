@@ -11,7 +11,8 @@ import argparse
 parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
 
 parser.add_argument('files', nargs='*', help='files help')
-parser.add_argument('-V', '--version', help='show program version', action='store_true')
+parser.add_argument('-V','--version', action='version', version='%(prog)s 1.1')
+
 parser.add_argument('-o', '--output', nargs=1, type=str, default='merged.csv.gz', help='output csv filename to %(prog)s (default: %(default)s)')
 parser.add_argument('-s', '--sep', nargs=1, type=str, default='\t', help='the separator to %(prog)s (default: %(default)s)')
 
@@ -21,13 +22,12 @@ parser.add_argument('-s', '--sep', nargs=1, type=str, default='\t', help='the se
 #parser.add_argument('-l', '--length', nargs=1, type=int, default=1000000, help='the length to %(prog)s (default: %(default)s)')
 #parser.add_argument('-e', '--expand', nargs=1, type=int, default=1000, help='the expand to %(prog)s (default: %(default)s)')
 
+#	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
+parser.add_argument('--int', action='store_true', help='convert values to ints to %(prog)s (default: %(default)s)')
+
 # read arguments from the command line
 args = parser.parse_args()
 
-# check for --version or -V
-if args.version:  
-	print(os.path.basename(__file__), " 1.0")
-	quit()
 
 
 #	Note that nargs=1 produces a list of one item. This is different from the default, in which the item is produced by itself.
@@ -121,11 +121,13 @@ if len(data_frames) > 0:
 	df.head()
 #	df.dtypes
 
-#	print("Converting all counts back to integers")
-#	df = pd.DataFrame(df, dtype=int)
-#	df.info(verbose=True)
-#	df.head()
-#	df.dtypes
+	
+	if args.int:
+		print("Converting all counts back to integers")
+		df = pd.DataFrame(df, dtype=int)
+	#	df.info(verbose=True)
+	#	df.head()
+	#	df.dtypes
 
 	print("Writing CSV")
 	df.to_csv(output,index_label="taxonomy")
