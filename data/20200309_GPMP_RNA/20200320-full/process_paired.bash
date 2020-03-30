@@ -33,6 +33,8 @@ BASEDIR=/francislab/data1/working/20200309_GPMP_RNA/20200320-full/trimmed/length
 
 
 for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
+#for r1 in ${BASEDIR}/SF12149*E_R1.fastq.gz ; do
+#for r1 in ${BASEDIR}/SF12[234]*E_R1.fastq.gz ; do
 
 	r2=${r1/_R1/_R2}
 
@@ -48,7 +50,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 		outbase="${base}.STAR.${ref}"
 		starid=""
-		f=${outbase}.bam
+		f=${outbase}.Aligned.out.bam
 		starbam=${f}
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
@@ -91,19 +93,34 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 		infile="${base}.STAR.${ref}.unmapped.fasta.gz"
 
+    # Count so can normalize
+    #   
+    # count_fasta_reads.bash *unmapped.fasta.gz
+    #   
+		unmapped_read_count=''
+    f="${base}.STAR.${ref}.unmapped.fasta.gz.read_count.txt"
+    if [ -f $f ] && [ ! -w $f ] ; then
+      unmapped_read_count=$( cat ${f} )
+      echo "Unmapped Count :${unmapped_read_count}:"
+    fi  
+
 		for d in nr viral ; do
 
 			diamondid=""
-			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}"
+			outbase="${base}.STAR.${ref}.unmapped.diamond.${d}"
 			f="${outbase}.csv.gz"
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
-				if [ ! -z ${starid} ] ; then
-					depend="-W depend=afterok:${starid}"
+				if [ ! -z ${unmappedid} ] ; then
+					depend="-W depend=afterok:${unmappedid}"
 				else
 					depend=""
 				fi
+				case $d in 
+					nr) vmem=32;;
+					viral) opt=16;;
+				esac
 				diamondid=$( qsub ${depend} -N ${jobbase}.${d} -l nodes=1:ppn=8 -l vmem=16gb \
 					-o ${outbase}.diamond.${d}.out.txt \
 					-e ${outbase}.diamond.${d}.err.txt \
@@ -115,7 +132,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 			input=${f}
 
 			summaryid=""
-			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary"
+			outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary"
 			f=${outbase}.txt.gz
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
@@ -149,45 +166,34 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 			summary=$f
 
-#			count_base=$( basename $input .diamond.viral.csv.gz )
-#			unmapped_read_count=$( cat /francislab/data1/raw/1000genomes/unmapped/${count_base}.unmapped_read_count.txt )
+			#			normalize
 
-#			
+			if [ -n "${unmapped_read_count}" ] ; then
+				echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
+				outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary.normalized"
+				f=${outbase}.txt.gz
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					if [ ! -z ${summaryid} ] ; then
+						depend="-W depend=afterok:${summaryid}"
+					else
+						depend=""
+					fi
+					#-l nodes=1:ppn=2 -l vmem=4gb \
+					qsub ${depend} -N ${jobbase}.norm.${d} \
+						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
+				fi
+			fi
 
-#			normalize
-#
-#
-#			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary.normalized"
-#			f=${outbase}.txt.gz
-#			if [ -f $f ] && [ ! -w $f ] ; then
-#				echo "Write-protected $f exists. Skipping."
-#			else
-#				if [ ! -z ${summaryid} ] ; then
-#					depend="-W depend=afterok:${summaryid}"
-#				else
-#					depend=""
-#				fi
-#				#-l nodes=1:ppn=2 -l vmem=4gb \
-#				qsub ${depend} -N ${jobbase}.norm.${d} \
-#					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#					~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
-#			fi
-#
-#
-
-
-
-
-
-#			sum summaries
-
-#			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary
+			#			sum summaries
 
 			for level in species genus subfamily ; do
 				suffix=${level%%,*}	#	in case a list of level's provided
 
 				sumsummaryid=""
-				outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary.sum-${suffix}"
+				outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary.sum-${suffix}"
 				f=${outbase}.txt.gz
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
@@ -204,30 +210,27 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 				fi
 				sumsummary=${f}
 	
+				#			normalize
 
-
-#			normalize
-#
-#
-#				outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${d}.summary.sum-${suffix}.normalized"
-#				f=${outbase}.txt.gz
-#				if [ -f $f ] && [ ! -w $f ] ; then
-#					echo "Write-protected $f exists. Skipping."
-#				else
-#					if [ ! -z ${sumsummaryid} ] ; then
-#						depend="-W depend=afterok:${sumsummaryid}"
-#					else
-#						depend=""
-#					fi
-#					#-l nodes=1:ppn=2 -l vmem=4gb \
-#					qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-#						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#						~/.local/bin/normalize_summary.bash \
-#							-F "-input ${sumsummary} -d ${unmapped_read_count}"
-#				fi
-#
-
-
+				if [ -n "${unmapped_read_count}" ] ; then
+					echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
+					outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary.sum-${suffix}.normalized"
+					f=${outbase}.txt.gz
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${sumsummaryid} ] ; then
+							depend="-W depend=afterok:${sumsummaryid}"
+						else
+							depend=""
+						fi
+						#-l nodes=1:ppn=2 -l vmem=4gb \
+						qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
+							-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+							~/.local/bin/normalize_summary.bash \
+								-F "-input ${sumsummary} -d ${unmapped_read_count}"
+					fi
+				fi
 
 			done	#	for level in species genus subfamily ; do
 	

@@ -17,3 +17,10 @@ echo "bowtie2-build --threads 8 /data/shared/francislab/refs/refseq/RefSeqGene/r
 
 for f in Archive/*.20200319*bt2 ; do l=$( basename $f ); l=${l/.20200319/}; ln -s $f $l; done
 
+
+
+bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001348.1.fasta /francislab/data1/refs/bowtie2/NC_001348
+bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001716.2.fasta /francislab/data1/refs/bowtie2/NC_001716
+
+
+

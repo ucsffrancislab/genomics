@@ -4,6 +4,7 @@
 date=$( date "+%Y%m%d%H%M%S" )
 
 
+#for input in /francislab/data1/working/Geuvadis/20200311-viral_identification/s3/www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/HG000*.bam.diamond.viral.csv.gz ; do
 for input in /francislab/data1/working/Geuvadis/20200311-viral_identification/s3/www.ebi.ac.uk/arrayexpress/files/E-GEUV-1/*.bam.diamond.viral.csv.gz ; do
 
 	echo $input
@@ -37,21 +38,26 @@ for input in /francislab/data1/working/Geuvadis/20200311-viral_identification/s3
 
 	summary=$f
 
-#	outbase=${base}.summary.normalized
-#	f=${outbase}.txt.gz
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		if [ ! -z ${summaryid} ] ; then
-#			depend="-W depend=afterok:${summaryid}"
-#		else
-#			depend=""
-#		fi
-#		#-l nodes=1:ppn=2 -l vmem=4gb \
-#		qsub ${depend} -N ${jobbase}.norm \
-#			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#			~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
-#	fi
+	count_base=$( basename $input .diamond.viral.csv.gz )
+	unmapped_read_count=$( cat /francislab/data1/raw/Geuvadis/bam/${count_base}.bai.unmapped_read_count.txt )
+
+	echo "Unmapped Count :${unmapped_read_count}:"
+
+	outbase=${base}.summary.normalized
+	f=${outbase}.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${summaryid} ] ; then
+			depend="-W depend=afterok:${summaryid}"
+		else
+			depend=""
+		fi
+		#-l nodes=1:ppn=2 -l vmem=4gb \
+		qsub ${depend} -N ${jobbase}.norm \
+			-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+			~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
+	fi
 
 	for level in species genus subfamily ; do
 		suffix=${level%%,*}
@@ -73,22 +79,22 @@ for input in /francislab/data1/working/Geuvadis/20200311-viral_identification/s3
 			echo $sumsummaryid
 		fi
 	
-#		outbase=${base}.summary.sum-${suffix}.normalized
-#		f=${outbase}.txt.gz
-#		if [ -f $f ] && [ ! -w $f ] ; then
-#			echo "Write-protected $f exists. Skipping."
-#		else
-#			if [ ! -z ${sumsummaryid} ] ; then
-#				depend="-W depend=afterok:${sumsummaryid}"
-#			else
-#				depend=""
-#			fi
-#			#-l nodes=1:ppn=2 -l vmem=4gb \
-#			qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-#				-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#				~/.local/bin/normalize_summary.bash \
-#					-F "-input ${base}.summary.sum-${suffix}.txt.gz -d ${unmapped_read_count}"
-#		fi
+		outbase=${base}.summary.sum-${suffix}.normalized
+		f=${outbase}.txt.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${sumsummaryid} ] ; then
+				depend="-W depend=afterok:${sumsummaryid}"
+			else
+				depend=""
+			fi
+			#-l nodes=1:ppn=2 -l vmem=4gb \
+			qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
+				-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+				~/.local/bin/normalize_summary.bash \
+					-F "-input ${base}.summary.sum-${suffix}.txt.gz -d ${unmapped_read_count}"
+		fi
 
 	done	#	for s in species genus subfamily ; do
 

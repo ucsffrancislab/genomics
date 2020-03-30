@@ -13,12 +13,6 @@ for input in /francislab/data1/working/1000genomes/20200311-viral_identification
 
 	jobbase=$( basename $outbase )
 	jobbase=${jobbase%%.*}
-#	separated Geuvadis to its own
-#	if [[ "$input" == *"GEUV"* ]]; then
-#		jobbase="r${jobbase}"
-#	else
-#		jobbase="d${jobbase}"
-#	fi
 	echo $jobbase
 
 	count_base=$( basename $input .diamond.viral.csv.gz )

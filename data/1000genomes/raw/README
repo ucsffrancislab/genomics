@@ -63,3 +63,40 @@ Remove bam counting and rerun.
 
 
 
+aws s3 sync s3://1000genomes/release/20130502/ /francislab/data1/raw/1000genomes/release/20130502/ --exclude "*supporting/*"
+
+
+
+
+Sample,Family ID,Population,Population Description,Gender,Relationship,Unexpected Parent/Child ,Non Paternity,Siblings,Grandparents,Avuncular,Half Siblings,Unknown Second Order,Third Order,Other Comments
+HG00096,HG00096,GBR,British in England and Scotland,male,,,,,,,,,,
+HG00097,HG00097,GBR,British in England and Scotland,female,,,,,,,,,,
+HG00098,HG00098,GBR,British in England and Scotland,male,,,,,,,,,,
+HG00099,HG00099,GBR,British in England and Scotland,female,,,,,,,,,,
+HG00100,HG00100,GBR,British in England and Scotland,female,,,,,,,,,,
+HG00101,HG00101,GBR,British in England and Scotland,male,,,,,,,,,,
+
+Population Description	Population Code	Super Population	DNA from Blood	Offspring available from trios	Pilot Samples	Phase1 Samples	Final Phase Samples	Total
+Chinese Dai in Xishuangbanna, China	CDX	EAS	no	yes	0	0	99	99
+Han Chinese in Bejing, China	CHB	EAS	no	no	91	97	103	106
+Japanese in Tokyo, Japan	JPT	EAS	no	no	94	89	104	105
+
+Description	Population Code
+East Asian	EAS
+South Asian	SAS
+African	AFR
+
+
+Create own metadata with Sample, Gender, Population, Population Description, Super Population, Super Population Description
+by merging 20130606_sample_info\ -\ Sample\ Info.csv, 20131219.populations.tsv and 20131219.superpopulations.tsv
+
+
+awk -F"\t" '( ARGIND == 1 ){FS="\t";s[$2]=$1} ( ARGIND == 2 ){FS="\t";p[$2]=$3; print($1,$2,$3,s[$3])}' 20131219.superpopulations.tsv 20131219.populations.tsv
+
+
+echo -e "Sample\tGender\tPopulation\tPopulation Description\tSuper Population\tSuper Population Description" > metadata.tsv
+awk '( ARGIND == 1 ){FS="\t";s[$2]=$1} ( ARGIND == 2 ){FS="\t";p[$2]=$3} ( ARGIND == 3 ){FPAT="([^,]*)|(\"[^\"]+\")";OFS="\t"; print( $1, $5, $3, $4, p[$3], s[p[$3]]) } ' 20131219.superpopulations.tsv 20131219.populations.tsv 20130606_sample_info\ -\ Sample\ Info.csv | tail -n +2 | sed 's/"//g' >> metadata.tsv
+
+
+
+

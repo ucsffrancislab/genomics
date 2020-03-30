@@ -33,8 +33,31 @@ STAR to just viral?
 ./pre_process.bash
 
 
+./process_unpaired.bash
+
+count_fastq_reads.bash *Unmapped.out.R1.fastq.gz
+
+./process_unpaired.bash
 
 
+
+
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.sum-species.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.sum-species.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-species.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.sum-species.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.sum-genus.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.sum-genus.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-genus.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.sum-genus.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.sum-subfamily.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.sum-subfamily.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.viral.summary.sum-subfamily.normalized.txt.gz
 
 
 
