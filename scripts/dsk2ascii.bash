@@ -26,7 +26,7 @@ else
 	dsk2ascii $ARGS
 	if [ ${f:(-3)} == '.gz' ] ; then
 		mv ${f} ${f%.gz}
-		gzip --best ${f%.gz}
+		gzip ${f%.gz}
 	fi
 	chmod a-w $f
 fi
