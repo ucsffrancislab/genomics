@@ -37,7 +37,7 @@ for filename in args.files:
 	if len(d) > 0:
 		#d.fillna(0).reset_index().plot(
 		d.plot(
-			title="Depth chart of "+basename,
-			logy=False,kind='scatter',x='position',y='depth',ylim=[1,10000])
+			title="log(Depth) chart of "+basename,
+			logy=True,kind='scatter',x='position',y='depth',ylim=[1,10000])
 		plt.savefig(basename+".png")
 
