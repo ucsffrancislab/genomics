@@ -1,0 +1,21 @@
+
+
+The subdirs contain collections of bed, bim and bam files created from subsets of the VCFs.
+
+Also, this 1kg_all_chroms_pruned_mds.mds was created by Amelia.
+
+This seems to be specific to her subset so I probably should learn how to create.
+
+
+#
+#	1=male, 2=female, 0=unknown
+#
+#	awk -F"\t" -vOFS="\t" '($6=="EUR"){s=($3=="male")?1:2;print $2,$1,s}' /francislab/data1/raw/1000genomes/metadata.tsv > EUR_IDS.txt
+
+
+awk 'BEGIN{FS=OFS="\t"}(NR>1){
+	s=($3=="male")?1:2;
+	print $2,$1,s >> $6"_ids.txt"
+}' /francislab/data1/raw/1000genomes/metadata.tsv
+
+
