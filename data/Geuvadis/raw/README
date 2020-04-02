@@ -24,6 +24,13 @@ qsub -N wget \
 	${dir}/wget_files.bash
 
 
+I am a bit concerned that files are incomplete cause their server can't handle the load.
+for b in bam/*bam ; do echo $b; samtools quickcheck ${b} && echo 'all ok' || echo 'fail!' ; done
+But all appears well.
+
+
+
+
 
 
 git clone https://github.com/chmille4/bamReadDepther.git
@@ -50,4 +57,10 @@ Nothing! BAM counts are the same as BAI counts.
 Remove bam counting and rerun.
 
 ./aggregate_read_counts.bash
+
+
+
+
+aws s3 sync --exclude \* --include \*bam /francislab/data1/raw/Geuvadis/bam/ s3://geuvadis-bam/
+
 
