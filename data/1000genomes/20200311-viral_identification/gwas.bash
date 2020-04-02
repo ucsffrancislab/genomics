@@ -4,14 +4,16 @@
 REFS=/francislab/data1/raw/1000genomes/gwas
 
 WORK=/francislab/data1/working/1000genomes/20200311-viral_identification
-OUT=${WORK}/gwas
+
+OUT=${WORK}/gwas_select
 mkdir -p $OUT
 cd $OUT
 
 #	in pheno files, 2 should be presence ( and 1 is absence )
 
+for pheno_dir in pheno_files_1 pheno_files_3 pheno_files_10 pheno_files_100 pheno_files_1000 ; do
 #for pheno_dir in pheno_files_1 pheno_files_3 ; do
-for pheno_dir in pheno_files_10 pheno_files_100 pheno_files_1000 ; do
+#for pheno_dir in pheno_files_10 pheno_files_100 pheno_files_1000 ; do
 	echo ${pheno_dir}
 #for population in afr amr eas eur sas ; do
 for population in eur ; do
@@ -19,17 +21,19 @@ for population in eur ; do
 for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 	pheno_name=$(basename $pheno_file)
 	echo ${pheno_name}
-	for bedfile in ${REFS}/pruned_vcfs/${population}/ALL.chr*.bed ; do
-	
+
+	#for bedfile in ${REFS}/pruned_vcfs/${population}/ALL.chr*.bed ; do
+	for bedfile in ${WORK}/select_eur_positions/chr*.bed ; do
+
 		echo $bedfile
-	
+
 		# drop the shortest suffix match to ".*" (the .bed extension)
 		bedfile_noext=${bedfile%.*}
-	
+
 		#	drop the longest prefix match to "*/" (the path)
 		bedfile_core=${bedfile_noext##*/}
-	
-		mkdir -p ${WORK}/gwas/${population}/${pheno_dir}
+
+		mkdir -p ${OUT}/${population}/${pheno_dir}
 
 		#	Initial run was with PLINK v1.90b3.38 64-bit (7 Jun 2016)
 		#	This output produced .no.covar.assoc.logistic
@@ -49,11 +53,11 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 		#	13	19020095	rs140871821	C	T	T	ADD	661	1.78567	0.259021	2.2384	0.0251947
 		#	13	19020165	rs550529448	T	A	A	ADD	661	1.25648	1.21356	0.188137	0.85077
 
-	
 
-		#/francislab/data1/working/1000genomes/20200311-viral_identification/plink --allow-no-sex \
 
-		plink2 --covar-variance-standardize \
+		#plink2 --covar-variance-standardize \
+
+		plink --allow-no-sex \
 					--snps-only \
 					--threads 32 \
 					--logistic hide-covar \
@@ -62,25 +66,25 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 					--pheno ${pheno_file} \
 					--out ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar \
 					--covar ${REFS}/1kg_all_chroms_pruned_mds.mds
-	
+
 					#	plink  produces .assoc.logistic and .log
 					#	plink2 produces .PHENO1.glm.logistic and .log
-	
+
 		#awk '{print $1,$2,$3,$9,$4,$7}' ${bedfile_core}.no.covar.assoc.logistic \
 		#	> ${bedfile_core}.for.plot.txt
 
 		#	PLINK v1.90b6.16 64-bit (19 Feb 2020)
-		#	awk '{print $1,$2,$3,$9,$4,$7}' \
-		#		${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic \
-		#		> ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.for.plot.txt
+		awk '{print $1,$2,$3,$9,$4,$7}' \
+			${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic \
+			> ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.for.plot.txt
 
 		#	plink2 output
 		#	PLINK v2.00a2LM 64-bit Intel (10 Aug 2019)
 		#	Newer version uses different columns in different file
-		awk '{print $1,$3,$2,$12,$6,$9}' \
-			${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar.PHENO1.glm.logistic \
-			> ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.for.plot.txt
-	
+		#	awk '{print $1,$3,$2,$12,$6,$9}' \
+		#		${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar.PHENO1.glm.logistic \
+		#		> ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.for.plot.txt
+
 	done	#	for bedfile in ${REFS}/pruned_vcfs/${population}/ALL.chr*.bed ; do
 
 	#	Not keeping for.plot.all.txt so doesn't need a header
@@ -105,7 +109,7 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 	awk '$4 < 0.10' ${OUT}/${population}/${pheno_dir}/${pheno_name}.for.plot.all.txt \
 		> ${OUT}/${population}/${pheno_dir}/${pheno_name}.for.manhattan.plot
 
-done	#	for pheno_dir in 
 done	#	for pheno_file in 
 done	#	for population in afr amr eas eur sas ; do
+done	#	for pheno_dir in 
 

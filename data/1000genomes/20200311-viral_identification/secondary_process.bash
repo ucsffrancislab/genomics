@@ -53,7 +53,7 @@ for bam in /francislab/data1/raw/1000genomes/unmapped/*.unmapped.*.bam ; do
 	fi
 	infasta=${f}
 
-	for ref in NC_001348 NC_001716  ; do
+	for ref in NC_001348 NC_001716 NC_001348.masked NC_001716.masked ; do
 
 		#outbase=${base}.${ref}
 		#	bowtie2 really only uses a bit more memory than the reference.

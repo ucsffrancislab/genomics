@@ -12,8 +12,9 @@ while read s; do
 	filename=$( echo ${s} | sed 's/ /_/g' )
 
 
-	
-for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.summary.sum-species.txt.gz ; do
+
+#for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.diamond.viral.summary.sum-species.txt.gz ; do
+for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.blastn.viral.masked.summary.sum-species.txt.gz ; do
 	subject=$(basename ${f})
 	subject=${subject%%.*}
 
@@ -22,28 +23,28 @@ for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.s
 	[ -z $c ] && c=0
 
 	pop=$( awk -F, -v s=$subject '( $1 == s ){print $3}' /francislab/data1/raw/1000genomes/20130606_sample_info\ -\ Sample\ Info.csv )
-	#echo $pop
+	echo $pop
 
 	spop=$( awk -F"\t" -v p=${pop} '( $2 == p ){print $3}' /francislab/data1/raw/1000genomes/20131219.populations.tsv )
-	#echo $spop
+	echo $spop
 
 
-#	#	past pheno files were space delimited so space delimited it is
-#	if [ $c -ge 1 ] ; then
-#		p_or_a=2
-#	else
-#		p_or_a=1
-#	fi
-#	mkdir -p pheno_files_1/${spop,,}
-#	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_1/${spop,,}/${filename}
-#	
-#	if [ $c -ge 3 ] ; then
-#		p_or_a=2
-#	else
-#		p_or_a=1
-#	fi
-#	mkdir -p pheno_files_3/${spop,,}
-#	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_3/${spop,,}/${filename}
+	#	past pheno files were space delimited so space delimited it is
+	if [ $c -ge 1 ] ; then
+		p_or_a=2
+	else
+		p_or_a=1
+	fi
+	mkdir -p pheno_files_1/${spop,,}
+	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_1/${spop,,}/${filename}
+
+	if [ $c -ge 3 ] ; then
+		p_or_a=2
+	else
+		p_or_a=1
+	fi
+	mkdir -p pheno_files_3/${spop,,}
+	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_3/${spop,,}/${filename}
 
 	if [ $c -ge 10 ] ; then
 		p_or_a=2
