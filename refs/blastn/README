@@ -10,3 +10,6 @@ zcat ../refseq/viral/viral.* | makeblastdb -dbtype nucl -out viral -title viral 
 Also, copied in a version from my mac and its masked couterpart.
 
 
+for f in Archive/viral.*.20190905.n?? ; do echo $f ; l=$( basename $f ); l=${l/20190905./}; echo $l; ln -s $f $l ; done
+
+
