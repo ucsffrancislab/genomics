@@ -94,8 +94,8 @@ by merging 20130606_sample_info\ -\ Sample\ Info.csv, 20131219.populations.tsv a
 awk -F"\t" '( ARGIND == 1 ){FS="\t";s[$2]=$1} ( ARGIND == 2 ){FS="\t";p[$2]=$3; print($1,$2,$3,s[$3])}' 20131219.superpopulations.tsv 20131219.populations.tsv
 
 
-echo -e "Sample\tGender\tPopulation\tPopulation Description\tSuper Population\tSuper Population Description" > metadata.tsv
-awk '( ARGIND == 1 ){FS="\t";s[$2]=$1} ( ARGIND == 2 ){FS="\t";p[$2]=$3} ( ARGIND == 3 ){FPAT="([^,]*)|(\"[^\"]+\")";OFS="\t"; print( $1, $5, $3, $4, p[$3], s[p[$3]]) } ' 20131219.superpopulations.tsv 20131219.populations.tsv 20130606_sample_info\ -\ Sample\ Info.csv | tail -n +2 | sed 's/"//g' >> metadata.tsv
+echo -e "Sample\tFamily\tGender\tPopulation\tPopulation Description\tSuper Population\tSuper Population Description" > metadata.tsv
+awk '( ARGIND == 1 ){FS="\t";s[$2]=$1} ( ARGIND == 2 ){FS="\t";p[$2]=$3} ( ARGIND == 3 ){FPAT="([^,]*)|(\"[^\"]+\")";OFS="\t"; print( $1, $2, $5, $3, $4, p[$3], s[p[$3]]) } ' 20131219.superpopulations.tsv 20131219.populations.tsv 20130606_sample_info\ -\ Sample\ Info.csv | tail -n +2 | sed 's/"//g' >> metadata.tsv
 
 
 
