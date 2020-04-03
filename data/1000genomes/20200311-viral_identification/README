@@ -122,20 +122,6 @@ qsub -N gwas -l nodes=1:ppn=32 -l vmem=400gb \
 for pheno_dir in pheno_files_* ; do
 
 
-for pheno_dir in pheno_files_10* ; do
-for m in gwas/eur/${pheno_dir}/*.for.manhattan.plot ; do
-echo $m
-if [ -s "${m}" ] ; then
- echo "Processing ${m}"
- q=${m/manhattan/qq}
- manhattan_qq_plot.r -m ${m} -q ${q} -o manhattan_plots_${pheno_dir}
-else
- echo "${m} is empty"
-fi
-done
-done
-
-
 
 
 
@@ -190,8 +176,6 @@ done ; done
 
 
 zcat UKB_GWAS_MAF01_INFO30.list.gz | awk -vOFS="\t" '(!/^#/){print $1,$2,$2,$3}' > extract_range.txt
-
-./make_plink_files.bash
 
 
 
@@ -248,25 +232,6 @@ qsub -N gwas -l nodes=1:ppn=64 -l vmem=500gb \
 	-e ${dir}/blastn.viral.masked/gwas.${date}.err.txt \
 	${dir}/gwas.bash
 
-
-for pheno_dir in blastn.viral.masked/gwas/eur/pheno_files_* ; do
-for m in ${pheno_dir}/*.for.manhattan.plot ; do
-echo $m
-if [ -s "${m}" ] ; then
- echo "Processing ${m}"
- q=${m/manhattan/qq}
- manhattan_qq_plot.r -m ${m} -q ${q} -o ${pheno_dir}
-else
- echo "${m} is empty"
-fi
-done
-done
-
-
-
-samtools depth secondary/EUR.NC_001348.masked.bowtie2-loc.bam | awk '(NR==1){s=e=$2}(NR>1){if($2>e+10){print(s,e);s=e=$2}else{e=$2}}END{print(s,e)}'
-
-samtools depth secondary/EUR.NC_001716.masked.bowtie2-loc.bam | awk '(NR==1){s=e=$2}(NR>1){if($2>e+10){print(s,e);s=e=$2}else{e=$2}}END{print(s,e)}'
 
 
 
