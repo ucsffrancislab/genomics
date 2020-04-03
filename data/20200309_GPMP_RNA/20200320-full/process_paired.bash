@@ -104,10 +104,12 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
       echo "Unmapped Count :${unmapped_read_count}:"
     fi  
 
-		for d in nr viral ; do
+
+
+		for dref in nr viral ; do
 
 			diamondid=""
-			outbase="${base}.STAR.${ref}.unmapped.diamond.${d}"
+			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}"
 			f="${outbase}.csv.gz"
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
@@ -117,22 +119,22 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 				else
 					depend=""
 				fi
-				case $d in 
+				case $dref in 
 					nr) vmem=32;;
 					viral) opt=16;;
 				esac
-				diamondid=$( qsub ${depend} -N ${jobbase}.${d} -l nodes=1:ppn=8 -l vmem=16gb \
-					-o ${outbase}.diamond.${d}.out.txt \
-					-e ${outbase}.diamond.${d}.err.txt \
+				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
+					-o ${outbase}.out.txt \
+					-e ${outbase}.err.txt \
 					~/.local/bin/diamond.bash \
-						-F "blastx --threads 8 --db ${DIAMOND}/${d} \
+						-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
 							--query ${infile} --outfmt 6 --out ${f}" )
 				echo $diamondid
 			fi
 			input=${f}
 
 			summaryid=""
-			outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary"
+			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary"
 			f=${outbase}.txt.gz
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
@@ -158,7 +160,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 				else
 					vmem=4
 				fi
-				summaryid=$( qsub ${depend} -N ${jobbase}.s.${d} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+				summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
 					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
 				echo $summaryid
@@ -170,7 +172,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 			if [ -n "${unmapped_read_count}" ] ; then
 				echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-				outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary.normalized"
+				outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.normalized"
 				f=${outbase}.txt.gz
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
@@ -181,7 +183,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 						depend=""
 					fi
 					#-l nodes=1:ppn=2 -l vmem=4gb \
-					qsub ${depend} -N ${jobbase}.norm.${d} \
+					qsub ${depend} -N ${jobbase}.norm.${dref} \
 						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 				fi
@@ -193,7 +195,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 				suffix=${level%%,*}	#	in case a list of level's provided
 
 				sumsummaryid=""
-				outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary.sum-${suffix}"
+				outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.sum-${suffix}"
 				f=${outbase}.txt.gz
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
@@ -203,7 +205,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 					else
 						depend=""
 					fi
-					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${d} -l nodes=1:ppn=2 -l vmem=4gb \
+					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=2 -l vmem=4gb \
 						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 					echo $sumsummaryid
@@ -214,7 +216,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 				if [ -n "${unmapped_read_count}" ] ; then
 					echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-					outbase="${base}.STAR.${ref}.unmapped.diamond.${d}.summary.sum-${suffix}.normalized"
+					outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.sum-${suffix}.normalized"
 					f=${outbase}.txt.gz
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
@@ -234,7 +236,22 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 			done	#	for level in species genus subfamily ; do
 	
-		done	#	for d in nr viral viral.masked ; do
+		done	#	for dref in nr viral ; do
+
+
+
+
+
+
+
+		for bref in viral.masked ; do
+
+
+
+		done	#	for bref in viral.masked ; do
+
+
+
 
 	done	#	for ref in hg38  ; do
 

@@ -140,12 +140,12 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 								--out ${f}"
 				fi
 
-				for d in nr viral ; do
+				for dref in nr viral ; do
 
 					#infile="${base}.${ref}.bowtie2-${ali}.unmapped.fasta.gz"
 
 					diamondid=""
-					outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${d}"
+					outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${dref}"
 					f="${outbase}.csv.gz"
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
@@ -155,18 +155,18 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						else
 							depend=""
 						fi
-						diamondid=$( qsub ${depend} -N ${jobbase}.${d} -l nodes=1:ppn=8 -l vmem=16gb \
+						diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
 							-o ${outbase}.out.txt \
 							-e ${outbase}.err.txt \
 							~/.local/bin/diamond.bash \
-								-F "blastx --threads 8 --db ${DIAMOND}/${d} \
+								-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
 									--query ${infile} --outfmt 6 --out ${f}" )
 						echo $diamondid
 					fi
 					input=${f}
 
 					summaryid=""
-					outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${d}.summary"
+					outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${dref}.summary"
 					f=${outbase}.txt.gz
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
@@ -192,7 +192,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						else
 							vmem=4
 						fi
-						summaryid=$( qsub ${depend} -N ${jobbase}.s.${d} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+						summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
 							-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 							~/.local/bin/blastn_summary.bash -F "-input ${input}" )
 						echo $summaryid
@@ -204,7 +204,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 
 		      if [ -n "${unmapped_read_count}" ] ; then
         		echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-						outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${d}.summary.normalized"
+						outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${dref}.summary.normalized"
 						f=${outbase}.txt.gz
 						if [ -f $f ] && [ ! -w $f ] ; then
 							echo "Write-protected $f exists. Skipping."
@@ -215,7 +215,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 								depend=""
 							fi
 							#-l nodes=1:ppn=2 -l vmem=4gb \
-							qsub ${depend} -N ${jobbase}.norm.${d} \
+							qsub ${depend} -N ${jobbase}.norm.${dref} \
 								-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 								~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 						fi
@@ -227,7 +227,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						suffix=${level%%,*}	#	in case a list of level's provided
 		
 						sumsummaryid=""
-						outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${d}.summary.sum-${suffix}"
+						outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${dref}.summary.sum-${suffix}"
 						f=${outbase}.txt.gz
 						if [ -f $f ] && [ ! -w $f ] ; then
 							echo "Write-protected $f exists. Skipping."
@@ -237,7 +237,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							else
 								depend=""
 							fi
-							sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${d} -l nodes=1:ppn=2 -l vmem=4gb \
+							sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=2 -l vmem=4gb \
 								-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 								~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 							echo $sumsummaryid
@@ -248,7 +248,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 
 		      	if [ -n "${unmapped_read_count}" ] ; then
         			echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-							outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${d}.summary.sum-${suffix}.normalized"
+							outbase="${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${dref}.summary.sum-${suffix}.normalized"
 							f=${outbase}.txt.gz
 							if [ -f $f ] && [ ! -w $f ] ; then
 								echo "Write-protected $f exists. Skipping."
@@ -270,10 +270,40 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 			
 				done	#	for d in viral nr
 
+
+
+
+
+
+
+				for bref in viral.masked ; do
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				done	#	for bref in viral.masked ; do
+
+
+
+
+
+
+
 			fi	#	if [ $ali == 'e2e' ] ; then
 
 			#	RESET IT HERE
-			outbase="${base}.${ref}.bowtie2-${ali}.unmapped"
+			#outbase="${base}.${ref}.bowtie2-${ali}.unmapped"
+
 
 		done	#	for ali in e2e loc ; do
 
