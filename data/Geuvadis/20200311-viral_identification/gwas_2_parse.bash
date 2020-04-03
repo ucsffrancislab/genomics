@@ -7,7 +7,7 @@ REFS=/francislab/data1/raw/1000genomes/gwas
 WORK=/francislab/data1/working/Geuvadis/20200311-viral_identification/diamond.viral
 #WORK=/francislab/data1/working/Geuvadis/20200311-viral_identification/blastn.viral.masked
 
-OUT=${WORK}/gwas
+OUT=${WORK}/gwas_all
 mkdir -p $OUT
 #cd $OUT
 #cd $WORK
@@ -27,7 +27,8 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 
 	#for bedfile in ${REFS}/pruned_vcfs/${population}/ALL.chr*.bed ; do
 	#for bedfile in ${WORK}/select_eur_positions/chr*.bed ; do
-	for bedfile in ${REFS}/20200401/eur/chr*.bed ; do
+	#for bedfile in ${REFS}/20200401/eur/chr*.bed ; do		#	Select SNPS
+	for bedfile in ${REFS}/20200402/eur/chr*.bed ; do			#	ALL SNPs
 
 		echo $bedfile
 
