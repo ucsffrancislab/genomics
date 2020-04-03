@@ -158,12 +158,12 @@ Create dirs with links to just those to be merged?
 
 
 
-awk -F"\t" '($5=="EUR"){print}' /francislab/data1/raw/1000genomes/metadata.tsv | wc -l
+awk -F"\t" '($6=="EUR"){print}' /francislab/data1/raw/1000genomes/metadata.tsv | wc -l
 
 
 mkdir secondary/EUR
 cd secondary/EUR
-awk -F"\t" '($5=="EUR"){ \
+awk -F"\t" '($6=="EUR"){ \
 print "[ -f ../"$1".unmapped.NC_001348.bowtie2-e2e.bam ] && ln -s ../"$1".unmapped.NC_001348.bowtie2-e2e.bam"; \
 print "[ -f ../"$1".unmapped.NC_001348.bowtie2-loc.bam ] && ln -s ../"$1".unmapped.NC_001348.bowtie2-loc.bam"; \
 print "[ -f ../"$1".unmapped.NC_001716.bowtie2-e2e.bam ] && ln -s ../"$1".unmapped.NC_001716.bowtie2-e2e.bam"; \
@@ -197,13 +197,34 @@ zcat UKB_GWAS_MAF01_INFO30.list.gz | awk -vOFS="\t" '(!/^#/){print $1,$2,$2,$3}'
 
 
 
-
 As soon as 1kg is done processing and downloaded again.
 
 aws --profile gwendt s3 sync s3://viral-identification/1000genomes/ /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/
 
-./post_process.bash
 
+./secondary_process.bash
+
+cd secondary/EUR
+awk -F"\t" '($6=="EUR"){ \
+print "[ -f ../"$1".unmapped.NC_001348.masked.bowtie2-e2e.bam ] && ln -s ../"$1".unmapped.NC_001348.masked.bowtie2-e2e.bam"; \
+print "[ -f ../"$1".unmapped.NC_001348.masked.bowtie2-loc.bam ] && ln -s ../"$1".unmapped.NC_001348.masked.bowtie2-loc.bam"; \
+print "[ -f ../"$1".unmapped.NC_001716.masked.bowtie2-e2e.bam ] && ln -s ../"$1".unmapped.NC_001716.masked.bowtie2-e2e.bam"; \
+print "[ -f ../"$1".unmapped.NC_001716.masked.bowtie2-loc.bam ] && ln -s ../"$1".unmapped.NC_001716.masked.bowtie2-loc.bam"; \
+}' /francislab/data1/raw/1000genomes/metadata.tsv
+
+for a in e2e loc ; do
+for v in NC_001348.masked NC_001716.masked ; do
+samtools merge EUR.${v}.bowtie2-${a}.bam secondary/EUR/*.unmapped.${v}.bowtie2-${a}.bam
+samtools index EUR.${v}.bowtie2-${a}.bam
+samtools depth -a EUR.${v}.bowtie2-${a}.bam | gzip > EUR.${v}.bowtie2-${a}.bam.depths.csv.gz
+done ; done
+
+samtools_depth_to_png.py EUR.*.masked.bowtie2-*.bam.depths.csv.gz
+
+
+
+
+./post_process.bash
 
 merge_summaries.py --int --output unmapped.bam.blastn.viral.masked.summary.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.blastn.viral.masked.summary.txt.gz
 
@@ -213,24 +234,28 @@ merge_summaries.py --int --output unmapped.bam.blastn.viral.masked.summary.sum-s
 
 merge_summaries.py --output unmapped.bam.blastn.viral.masked.summary.sum-species.normalized.csv.gz s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.blastn.viral.masked.summary.sum-species.normalized.txt.gz
 
-
 ./make_pheno_files.bash
 
 
+
+
+I don't think plink uses multithreading here.
+
 date=$( date "+%Y%m%d%H%M%S" )
 dir=/francislab/data1/working/1000genomes/20200311-viral_identification
-qsub -N gwas -l nodes=1:ppn=32 -l vmem=400gb \
-	-o ${dir}/gwas.${date}.out.txt -e ${dir}/gwas.${date}.err.txt \
+qsub -N gwas -l nodes=1:ppn=64 -l vmem=500gb \
+	-o ${dir}/blastn.viral.masked/gwas.${date}.out.txt \
+	-e ${dir}/blastn.viral.masked/gwas.${date}.err.txt \
 	${dir}/gwas.bash
 
 
-for pheno_dir in pheno_files_* ; do
-for m in gwas/eur/${pheno_dir}/*.for.manhattan.plot ; do
+for pheno_dir in blastn.viral.masked/gwas/eur/pheno_files_* ; do
+for m in ${pheno_dir}/*.for.manhattan.plot ; do
 echo $m
 if [ -s "${m}" ] ; then
  echo "Processing ${m}"
  q=${m/manhattan/qq}
- manhattan_qq_plot.r -m ${m} -q ${q} -o manhattan_plots_${pheno_dir}
+ manhattan_qq_plot.r -m ${m} -q ${q} -o ${pheno_dir}
 else
  echo "${m} is empty"
 fi

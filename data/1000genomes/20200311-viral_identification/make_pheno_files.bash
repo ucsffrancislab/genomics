@@ -1,16 +1,12 @@
 #!/usr/bin/env bash
 
-
-#	2 should be presence 
-
-
+dir="blastn.viral.masked"
 
 while read s; do
 #	s="10335 Human alphaherpesvirus 3"
 
   echo "${s}"
 	filename=$( echo ${s} | sed 's/ /_/g' )
-
 
 
 #for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.diamond.viral.summary.sum-species.txt.gz ; do
@@ -28,48 +24,25 @@ for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.blastn.viral.masked
 	spop=$( awk -F"\t" -v p=${pop} '( $2 == p ){print $3}' /francislab/data1/raw/1000genomes/20131219.populations.tsv )
 	echo $spop
 
-
-	#	past pheno files were space delimited so space delimited it is
-	if [ $c -ge 1 ] ; then
-		p_or_a=2
-	else
-		p_or_a=1
-	fi
-	mkdir -p pheno_files_1/${spop,,}
-	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_1/${spop,,}/${filename}
-
-	if [ $c -ge 3 ] ; then
-		p_or_a=2
-	else
-		p_or_a=1
-	fi
-	mkdir -p pheno_files_3/${spop,,}
-	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_3/${spop,,}/${filename}
-
-	if [ $c -ge 10 ] ; then
-		p_or_a=2
-	else
-		p_or_a=1
-	fi
-	mkdir -p pheno_files_10/${spop,,}
-	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_10/${spop,,}/${filename}
-
-	if [ $c -ge 100 ] ; then
-		p_or_a=2
-	else
-		p_or_a=1
-	fi
-	mkdir -p pheno_files_100/${spop,,}
-	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_100/${spop,,}/${filename}
-
-	if [ $c -ge 1000 ] ; then
-		p_or_a=2
-	else
-		p_or_a=1
-	fi
-	mkdir -p pheno_files_1000/${spop,,}
-	echo "${subject} ${subject} ${p_or_a}" >> pheno_files_1000/${spop,,}/${filename}
+	for i in 1 3 10 100 1000 ; do
+		#	past pheno files were space delimited so space delimited it is
+		#	2 should be presence 
+		if [ $c -ge $i ] ; then
+			p_or_a=2
+		else
+			p_or_a=1
+		fi
+		mkdir -p ${dir}/pheno_files_${i}/${spop,,}
+		echo "${subject} ${subject} ${p_or_a}" >> ${dir}/pheno_files_${i}/${spop,,}/${filename}
+	done
 
 done
 
 done < species.txt
+
+
+
+#	check the results
+#
+#	for f in blastn.viral.masked/pheno_files_?/eur/* ; do echo $f ; cat $f | awk '{print $3}' | sort | uniq -c ; done
+#

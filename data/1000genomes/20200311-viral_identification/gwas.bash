@@ -3,10 +3,10 @@
 
 REFS=/francislab/data1/raw/1000genomes/gwas
 
-WORK=/francislab/data1/working/1000genomes/20200311-viral_identification
+WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/blastn.viral.masked
 
-OUT=${WORK}/gwas_select
-mkdir -p $OUT
+OUT=${WORK}/gwas
+#mkdir -p $OUT
 cd $OUT
 
 #	in pheno files, 2 should be presence ( and 1 is absence )
@@ -59,7 +59,7 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 
 		plink --allow-no-sex \
 					--snps-only \
-					--threads 32 \
+					--threads 64 \
 					--logistic hide-covar \
 					--covar-name C1,C2,C3,C4,C5,C6 \
 					--bfile ${bedfile_noext} \
