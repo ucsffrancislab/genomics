@@ -264,3 +264,17 @@ done
 
 
 
+samtools depth secondary/EUR.NC_001348.masked.bowtie2-loc.bam | awk '(NR==1){s=e=$2}(NR>1){if($2>e+10){print(s,e);s=e=$2}else{e=$2}}END{print(s,e)}'
+
+samtools depth secondary/EUR.NC_001716.masked.bowtie2-loc.bam | awk '(NR==1){s=e=$2}(NR>1){if($2>e+10){print(s,e);s=e=$2}else{e=$2}}END{print(s,e)}'
+
+
+
+
+for a in e2e loc ; do
+for f in NC_001348 NC_001348.masked NC_001716 NC_001716.masked ; do
+samtools faidx /francislab/data1/refs/fasta/${f}.fasta -o secondary/EUR.${f}.bowtie2-${a}.peaks.fasta $( bam_peaks_to_regions.bash secondary/EUR.${f}.bowtie2-${a}.bam ) 
+done ; done
+
+
+
