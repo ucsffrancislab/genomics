@@ -12,10 +12,9 @@ This seems to be specific to her subset so I probably should learn how to create
 #
 #	awk -F"\t" -vOFS="\t" '($6=="EUR"){s=($3=="male")?1:2;print $2,$1,s}' /francislab/data1/raw/1000genomes/metadata.tsv > EUR_IDS.txt
 
+These files are all "FID,IID,Gender"
 
-awk 'BEGIN{FS=OFS="\t"}(NR>1){
-	s=($3=="male")?1:2;
-	print $2,$1,s >> $6"_ids.txt"
-}' /francislab/data1/raw/1000genomes/metadata.tsv
+awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $2,$1,s >> $6"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
 
+awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $2,$1,s >> $6"_"$4"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
 
