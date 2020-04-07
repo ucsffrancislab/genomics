@@ -78,3 +78,20 @@ echo "gffread -w /francislab/data1/refs/fasta/hg38_transcripts.fa -g /francislab
 
 
 
+zcat /francislab/data1/refs/fasta/viral.raw.fa.gz | grep "^>" | grep human | grep herpes
+>NC_001798.2 Human herpesvirus 2 strain HG52, complete genome
+>NC_007605.1 Human gammaherpesvirus 4, complete genome
+>NC_009334.1 Human herpesvirus 4, complete genome
+>NC_006273.2 Human herpesvirus 5 strain Merlin, complete genome
+>NC_000898.1 Human herpesvirus 6B, complete genome
+>NC_001716.2 Human herpesvirus 7, complete genome
+>NC_001806.2 Human herpesvirus 1 strain 17, complete genome
+>NC_001348.1 Human herpesvirus 3, complete genome
+>NC_001664.4 Human betaherpesvirus 6A, variant A DNA, complete virion genome, isolate U1102
+>NC_009333.1 Human herpesvirus 8 strain GK18, complete genome
+
+
+for f in viruses/*fasta ; do l=$(basename $f);l=${l/.?./.}; ln -s $f $l ; done
+
+
+
