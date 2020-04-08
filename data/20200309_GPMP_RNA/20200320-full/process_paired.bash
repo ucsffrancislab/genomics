@@ -55,8 +55,9 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
+				#-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 			starid=$( qsub -N ${jobbase}.${ref} -l nodes=1:ppn=${threads} -l vmem=32gb \
-				-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+				-j oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/STAR.bash \
 				-F "--runMode alignReads \
 					--outFileNamePrefix ${outbase}. \
@@ -83,9 +84,10 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 			else
 				depend=""
 			fi  
+			#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 			unmappedid=$( qsub ${depend} -N ${jobbase}.${ref}.un \
 				-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+				-oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/samtools.bash -F \
 					"fasta -f 4 --threads $[threads-1] -N -o ${f} ${starbam}" )
 			echo "${unmappedid}"
@@ -124,9 +126,9 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 					viral) vmem=16;;
 					*) vmem=8;;
 				esac
+				#	-e ${outbase}.err.txt \
 				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${outbase}.out.txt \
-					-e ${outbase}.err.txt \
+					-j oe -o ${outbase}.out.txt \
 					~/.local/bin/diamond.bash \
 						-F "blastx --threads ${threads} --db ${DIAMOND}/${dref} \
 							--query ${infile} --outfmt 6 --out ${f}" )
@@ -163,8 +165,9 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 #				fi
 				vmem=8
 				#summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+				#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 				summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
 				echo $summaryid
 			fi
@@ -187,9 +190,10 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 					fi
 					#threads=8
 					vmem=8	#	4
+					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 					qsub ${depend} -N ${jobbase}.norm.${dref} \
 						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+						-j oe -o ${outbase}.${date}.out.txt \
 						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 				fi
 			fi
@@ -210,8 +214,9 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 #					else
 #						depend=""
 #					fi
+#					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 #					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=2 -l vmem=4gb \
-#						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#						-j oe -o ${outbase}.${date}.out.txt \
 #						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 #					echo $sumsummaryid
 #				fi
@@ -232,8 +237,9 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 #							depend=""
 #						fi
 #						#-l nodes=1:ppn=2 -l vmem=4gb \
+#						#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 #						qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-#							-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#							-j oe -o ${outbase}.${date}.out.txt \
 #							~/.local/bin/normalize_summary.bash \
 #								-F "-input ${sumsummary} -d ${unmapped_read_count}"
 #					fi
