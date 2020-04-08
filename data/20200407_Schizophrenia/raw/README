@@ -1,0 +1,47 @@
+
+
+
+/home/gwendt/github/ucsffrancislab/genomics/data/20200407_Schizophrenia/raw/
+
+
+mkdir fastq
+for f in slimsdata.genomecenter.ucdavis.edu/Data/j3bf9otpgg/Unaligned2/Project_PPYL_L4_Pool1_60/SD*fastq.gz ; do
+l=$( basename $f )
+l=${l%_*}
+l=${l/_*_/_}
+r=${l#*_}
+l=${l/SD/}
+l=${l/_R?/}
+l=$( printf 'SD%02d_%s' ${l} ${r} )
+ln -s ../$f fastq/$l.fastq.gz
+done
+
+
+wget --recursive http://slimsdata.genomecenter.ucdavis.edu/Data/j3bf9otpgg/Unaligned2/Project_PPYL_L4_Pool1_60/  
+
+
+
+
+FYI we are also currently analyzing data through a collaborator at NIH who is using program called Cenote-taker2 which i understand is not K mer based.
+
+The dataset is a HiSeq run containing the reads from the different subjects which is located here:
+
+http://slimsdata.genomecenter.ucdavis.edu/Data/j3bf9otpgg/Unaligned2/Project_PPYL_L4_Pool1_60/  
+
+There are 60 samples (120 if you count R1 and R2) from 30 cases and 30 controls. The key to what library is from case or control is here:
+
+Because these are not my plasma samples would be nice if you can keep the data secure. 
+
+
+
+Hi Francis
+i have two dataset that you may find interesting.
+The first is a VLP virome study of plasma from onset schizophrenic patients and age gender matched healthy controls from Finland. We’ve already looked at the eukaryotic viruses and don’t see any different but your approach may be able to ferret out something interesting.
+
+There is also another set of Illumina data from macaques with and without chronic diarrhea. Lots more viral sequence including lots of phages as expected from feces. 
+
+Re long RNA we have not looked at that aspect of our data since most of the data if from feces or other non-sterile site from non-human species. Not quite sure how to do this unless there were a set of lncRNA sequences I could use as BLAST baits.
+
+Re COVID samples. Currently everyone scrambling to get plasma and sera for antibody detection. In terms of co-infections worsening outcome I’d kind of expect that but would need to get lots of nasal swabs from healthy versus sick and i understand most of that material being consumed for SARS2 RT-PCR assays. Indeed would be nice to have aliquots put aside for such studies. I’d kind of expect that if you have another nasty infection such as influenza, RSV etc quite likely outcome would be worse. 
+
+ 
