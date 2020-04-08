@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 
-#echo "subject,file,path,count,unmapped_index_count,unmapped_count,unmapped_unmapped_index_count,unmapped_mapped_index.count,mapped_index_count,mapped_unmapped_index_count,mapped_mapped_index_count" > /francislab/data1/raw/1000genomes/read_counts.csv
-echo "subject,file,unmapped_index_count,unmapped_unmapped_index_count,unmapped_mapped_index.count,mapped_index_count,mapped_unmapped_index_count,mapped_mapped_index_count" > /francislab/data1/raw/1000genomes/read_counts.csv
+#echo "subject,file,path,count,unmapped_index_count,unmapped_count,unmapped_unmapped_index_count,unmapped_mapped_index_count,mapped_index_count,mapped_unmapped_index_count,mapped_mapped_index_count" > /francislab/data1/raw/1000genomes/read_counts.csv
+echo "subject,file,unmapped_index_count,unmapped_unmapped_index_count,unmapped_mapped_index_count,mapped_index_count,mapped_unmapped_index_count,mapped_mapped_index_count" > /francislab/data1/raw/1000genomes/read_counts.csv
 
 for f in /francislab/data1/raw/1000genomes/phase3/data/*/alignment/*.unmapped.ILLUMINA.*bam ; do
 echo $f
