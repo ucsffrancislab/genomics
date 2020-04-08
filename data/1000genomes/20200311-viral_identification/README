@@ -243,3 +243,32 @@ done ; done
 
 
 
+
+
+
+#####		CHANGE TO INCLUDE ALL OF THE SELECT VIRUSES and SUB POPULATIONS
+
+
+awk -F"\t" 'BEGIN{ split("e2e loc",as," ");
+split("NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334",vs," ") }
+print "mkdir -p secondary/"$6"/"$4
+for( a in as ){
+for( v in vs ){
+  print "[ -f secondary/"$1".unmapped.fasta.gz ] && ln -s ../../"$1".unmapped."vs[v]".bowtie2-"as[a]".bam secondary/"$6"/"$4"/"
+} }' /francislab/data1/raw/1000genomes/metadata.tsv
+
+ 
+
+for a in e2e loc ; do
+for v in NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334 ; do
+for superpop in AFR AMR EAS EUR SAS ; do
+for subsuperpop in secondary/${superpop}/??? ; do
+pop=$( basename ${subsuperpop} )
+samtools merge secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam secondary/${superpop}/${pop}/*.unmapped.${v}.bowtie2-${a}.bam
+samtools index secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam
+samtools depth -a secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam | gzip > secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam.depths.csv.gz
+done ; done ; done ; done
+
+samtools_depth_to_png.py secondary/???.???.*.bowtie2-*.bam.depths.csv.gz
+
+
