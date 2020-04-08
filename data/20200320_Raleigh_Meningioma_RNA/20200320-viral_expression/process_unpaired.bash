@@ -51,8 +51,9 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
+			#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 			starid=$( qsub -N ${jobbase}.${ref} -l nodes=1:ppn=${threads} -l vmem=32gb \
-				-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+				-j oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/STAR.bash \
 				-F "--runMode alignReads \
 					--outFileNamePrefix ${outbase}. \
@@ -93,9 +94,9 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 				else
 					depend=""
 				fi
-				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
-					-o ${outbase}.out.txt \
-					-e ${outbase}.err.txt \
+				#	-e ${outbase}.err.txt \
+				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-j oe -o ${outbase}.out.txt \
 					~/.local/bin/diamond.bash \
 						-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
 							--query ${infile} --outfmt 6 --out ${f}" )
@@ -114,24 +115,27 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 				else
 					depend=""
 				fi
-				if [ -f $input ] ; then
-					#	On first run, this wouldn't work
-					size=$( stat -c %s $input )
-					if [ $size -gt 10000000 ] ; then
-						echo "Size $size gt 10000000"
-						vmem=8
-					elif [ $size -gt 8000000 ] ; then
-						echo "Size $size gt 8000000"
-						vmem=6
-					else
-						echo "Size $size NOT gt 8000000"
-						vmem=4
-					fi
-				else
-					vmem=4
-				fi
-				summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
-					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#				if [ -f $input ] ; then
+#					#	On first run, this wouldn't work
+#					size=$( stat -c %s $input )
+#					if [ $size -gt 10000000 ] ; then
+#						echo "Size $size gt 10000000"
+#						vmem=8
+#					elif [ $size -gt 8000000 ] ; then
+#						echo "Size $size gt 8000000"
+#						vmem=6
+#					else
+#						echo "Size $size NOT gt 8000000"
+#						vmem=4
+#					fi
+#				else
+#					vmem=4
+#				fi
+				#summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+				#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+				summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
 				echo $summaryid
 			fi
@@ -153,8 +157,10 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 						depend=""
 					fi
 					#-l nodes=1:ppn=2 -l vmem=4gb \
+					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 					qsub ${depend} -N ${jobbase}.norm.${dref} \
-						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						-j oe -o ${outbase}.${date}.out.txt \
 						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 				fi
 			fi
@@ -175,8 +181,11 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 					else
 						depend=""
 					fi
-					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=2 -l vmem=4gb \
-						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					#	-l nodes=1:ppn=2 -l vmem=4gb \
+					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} \
+						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						-j oe -o ${outbase}.${date}.out.txt \
 						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 					echo $sumsummaryid
 				fi
@@ -198,8 +207,10 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 							depend=""
 						fi
 						#-l nodes=1:ppn=2 -l vmem=4gb \
+						#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 						qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-							-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+							-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+							-j oe -o ${outbase}.${date}.out.txt \
 							~/.local/bin/normalize_summary.bash \
 								-F "-input ${sumsummary} -d ${unmapped_read_count}"
 					fi
@@ -210,41 +221,42 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 		done	#	for d in nr viral viral ; do
 
 
+		for bref in viral.masked ; do
 
-#		for bref in viral.masked ; do
-#
-#			blastnid=""
-#			outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}"
-#			f="${outbase}.csv.gz"
-#			if [ -f $f ] && [ ! -w $f ] ; then
-#				echo "Write-protected $f exists. Skipping."
-#			else
-#				if [ ! -z ${starid} ] ; then
-#					depend="-W depend=afterok:${starid}"
-#				else
-#					depend=""
-#				fi
-#				blastnid=$( qsub ${depend} -N ${jobbase}.${bref} -l nodes=1:ppn=8 -l vmem=16gb \
-#					-o ${outbase}.out.txt \
-#					-e ${outbase}.err.txt \
-#					~/.local/bin/blastn.bash \
-#						-F "-num_threads 8 -db ${BLASTDB}/${bref} \
-#							-query ${infile} -outfmt 6 -out ${f}" )
-#				echo $blastnid
-#			fi
-#			input=${f}
-#
-#			summaryid=""
-#			outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary"
-#			f=${outbase}.txt.gz
-#			if [ -f $f ] && [ ! -w $f ] ; then
-#				echo "Write-protected $f exists. Skipping."
-#			else
-#				if [ ! -z ${blastnid} ] ; then
-#					depend="-W depend=afterok:${blastnid}"
-#				else
-#					depend=""
-#				fi
+			blastnid=""
+			outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}"
+			f="${outbase}.csv.gz"
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${starid} ] ; then
+					depend="-W depend=afterok:${starid}"
+				else
+					depend=""
+				fi
+				#	-l nodes=1:ppn=${threads} -l vmem=16gb \
+				#	-e ${outbase}.err.txt \
+				blastnid=$( qsub ${depend} -N ${jobbase}.${bref} \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-j oe -o ${outbase}.out.txt \
+					~/.local/bin/blastn.bash \
+						-F "-num_threads ${threads} -db ${BLASTDB}/${bref} \
+							-query ${infile} -outfmt 6 -out ${f}" )
+				echo $blastnid
+			fi
+			input=${f}
+
+			summaryid=""
+			outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary"
+			f=${outbase}.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${blastnid} ] ; then
+					depend="-W depend=afterok:${blastnid}"
+				else
+					depend=""
+				fi
 #				if [ -f $input ] ; then
 #					#	On first run, this wouldn't work
 #					size=$( stat -c %s $input )
@@ -261,38 +273,46 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 #				else
 #					vmem=4
 #				fi
-#				summaryid=$( qsub ${depend} -N ${jobbase}.s.${bref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
-#					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
-#				echo $summaryid
-#			fi
-#
-#			summary=$f
-#
-#			#			normalize
-#
-#			if [ -n "${unmapped_read_count}" ] ; then
-#				echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-#				outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary.normalized"
-#				f=${outbase}.txt.gz
-#				if [ -f $f ] && [ ! -w $f ] ; then
-#					echo "Write-protected $f exists. Skipping."
-#				else
-#					if [ ! -z ${summaryid} ] ; then
-#						depend="-W depend=afterok:${summaryid}"
-#					else
-#						depend=""
-#					fi
-#					#-l nodes=1:ppn=2 -l vmem=4gb \
-#					qsub ${depend} -N ${jobbase}.norm.${bref} \
-#						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-#						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
-#				fi
-#			fi
+				#	-l nodes=1:ppn=2 -l vmem=${vmem}gb \
+				#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+				summaryid=$( qsub ${depend} -N ${jobbase}.s.${bref} \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-j oe -o ${outbase}.${date}.out.txt \
+					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
+				echo $summaryid
+			fi
+
+			summary=$f
+
+			#			normalize
+
+			if [ -n "${unmapped_read_count}" ] ; then
+				echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
+				outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary.normalized"
+				f=${outbase}.txt.gz
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					if [ ! -z ${summaryid} ] ; then
+						depend="-W depend=afterok:${summaryid}"
+					else
+						depend=""
+					fi
+					#-l nodes=1:ppn=2 -l vmem=4gb \
+					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					qsub ${depend} -N ${jobbase}.norm.${bref} \
+						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						-j oe -o ${outbase}.${date}.out.txt \
+						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
+				fi
+			fi
+
+#	viral is species so no need to sum to species
 #
 #			#			sum summaries
 #
-#			for level in species genus subfamily ; do
+#			#for level in species genus subfamily ; do
+#			for level in species ; do
 #				suffix=${level%%,*}	#	in case a list of level's provided
 #
 #				sumsummaryid=""
@@ -306,8 +326,11 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 #					else
 #						depend=""
 #					fi
-#					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${bref} -l nodes=1:ppn=2 -l vmem=4gb \
-#						-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#					#	-l nodes=1:ppn=2 -l vmem=4gb \
+#					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${bref} \
+#						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#						-j oe -o ${outbase}.${date}.out.txt \
 #						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 #					echo $sumsummaryid
 #				fi
@@ -329,16 +352,18 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 #							depend=""
 #						fi
 #						#-l nodes=1:ppn=2 -l vmem=4gb \
+#						#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
 #						qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-#							-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#							-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#							-j oe -o ${outbase}.${date}.out.txt \
 #							~/.local/bin/normalize_summary.bash \
 #								-F "-input ${sumsummary} -d ${unmapped_read_count}"
 #					fi
 #				fi
 #
 #			done	#	for level in species genus subfamily ; do
-#
-#		done	#	for bref in viral.masked ; do
+
+		done	#	for bref in viral.masked ; do
 
 	done	#	for ref in hg38  ; do
 
