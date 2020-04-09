@@ -30,6 +30,11 @@ base=$( basename ${base} )
 echo $base
 
 
+
+#	threads = ${PBS_NUM_PPN}
+#	vmem = ?????
+
+
 mkdir -p ${OUT}/trimmed/length/unpaired
 
 outbase="${OUT}/trimmed/${base}"
@@ -57,6 +62,10 @@ bbduk.bash \
 	maq=10 \
 	qtrim=w trimq=5 minavgquality=0
 
+read_length_hist.bash ${outbase}_R1.fastq.gz
+read_length_hist.bash ${outbase}_R2.fastq.gz
+read_length_hist.bash ${outbase}_S.fastq.gz
+
 inbase="${outbase}"
 outbase="${OUT}/trimmed/length/${base}"
 
@@ -67,6 +76,11 @@ filter_paired_fastq_on_equal_read_length.bash \
 	${outbase}_R2.fastq.gz \
 	${outbase}_diff_R1.fastq.gz \
 	${outbase}_diff_R2.fastq.gz
+
+read_length_hist.bash ${outbase}_R1.fastq.gz
+read_length_hist.bash ${outbase}_R2.fastq.gz
+read_length_hist.bash ${outbase}_diff_R1.fastq.gz
+read_length_hist.bash ${outbase}_diff_R2.fastq.gz
 
 inbase="${outbase}"
 outbase="${OUT}/trimmed/length/unpaired/${base}"
