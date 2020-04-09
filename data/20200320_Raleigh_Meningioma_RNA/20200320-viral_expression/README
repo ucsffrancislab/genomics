@@ -61,3 +61,18 @@ merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-subfamily.nor
 
 
 
+merge_summaries.py --int --output unmapped.bam.blastn.viral.masked.summary.csv.gz trimmed/*.STAR.hg38.Unmapped.out.blastn.viral.masked.summary.txt.gz
+
+merge_summaries.py --output unmapped.bam.blastn.viral.masked.summary.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.blastn.viral.masked.summary.normalized.txt.gz
+
+
+
+
+merge_summaries.py --int --output unmapped.bam.blastn.viral.masked.summary.sum-species.csv.gz trimmed/*.STAR.hg38.Unmapped.out.blastn.viral.masked.summary.sum-species.txt.gz
+
+merge_summaries.py --output unmapped.bam.blastn.viral.masked.summary.sum-species.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.blastn.viral.masked.summary.sum-species.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.blastn.viral.masked.summary.sum-genus.csv.gz trimmed/*.STAR.hg38.Unmapped.out.blastn.viral.masked.summary.sum-genus.txt.gz
+
+merge_summaries.py --output unmapped.bam.blastn.viral.masked.summary.sum-genus.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.blastn.viral.masked.summary.sum-genus.normalized.txt.gz
+
