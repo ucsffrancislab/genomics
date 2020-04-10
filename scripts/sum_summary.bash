@@ -6,7 +6,7 @@ set -o pipefail
 
 #set -x
 
-db=/francislab/data1/refs/taxadb/taxadb_prot.sqlite
+db=/francislab/data1/refs/taxadb/taxadb_full.sqlite
 level='species'
 
 while [ $# -gt 0 ] ; do
