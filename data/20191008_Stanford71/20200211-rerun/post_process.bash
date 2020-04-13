@@ -82,7 +82,7 @@ for k in 17 ; do
 		qsub -N merge${k} -o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			#/francislab/data1/working/20191008_Stanford71/20200211-rerun/merge_jellyfish.py \
-			~/.local/bin/merge_jellyfish.py \
+			~/.local/bin/merge_mer_counts.py \
 				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2.csv.gz"
 		#chmod a-w ${f}
 	fi
