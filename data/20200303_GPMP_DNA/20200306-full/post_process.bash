@@ -24,7 +24,7 @@ for k in 9 11 13 ; do
 ##	if [ -d $f ] && [ ! -w $f ] ; then
 ##		echo "Write-protected $f exists. Skipping."
 ##	else
-##		qsub -N ${f} -o ${dir}/hawk.${date}.out.txt -e ${dir}/hawk.${date}.err.txt \
+##		qsub -N ${f} -j oe -o ${dir}/hawk.${date}.out.txt \
 ##			-d ${dir} -l nodes=1:ppn=64 -l vmem=64gb \
 ##			~/.local/bin/hawk_run_hawk_analysis.bash -F \
 ##				"--threads 64 --mer-length ${k} --gwas_file /francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
@@ -38,7 +38,7 @@ for k in 9 11 13 ; do
 #		sorted_file="${dir}/${f}_sorted_files.txt"
 #		cat ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.total_counts.txt > ${counts_file}
 #		ls -1 ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.sorted.txt.gz > ${sorted_file}
-#		qsub -N ${f} -o ${dir}/${f}.${date}.out.txt -e ${dir}/${f}.${date}.err.txt \
+#		qsub -N ${f} -j oe -o ${dir}/${f}.${date}.out.txt \
 #			-d ${dir} -l nodes=1:ppn=16 -l vmem=16gb \
 #			~/.local/bin/hawk_run_hawk_analysis.bash -F \
 #				"--threads 16 --mer-length ${k} --outdir ${dir}/${f} \
@@ -61,7 +61,7 @@ for k in 9 11 13 ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub -N merge${k} -o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
+		qsub -N merge${k} -j oe -o ${f}.${date}.out.txt \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			/francislab/data1/working/20191008_Stanford71/20200211-rerun/merge_jellyfish.py \
 				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2.csv.gz"
@@ -92,7 +92,7 @@ vmem=8
 #	if [ -f $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
-#		qsub -N ${jobname} -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#		qsub -N ${jobname} -j oe -o ${outbase}.${date}.out.txt \
 #			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 #			~/.local/bin/tablify_sample_uniq_counts.bash -F \
 #				"-o ${f} ${dir}/*.${core}.txt.gz"
@@ -137,8 +137,7 @@ vmem=8
 #				else
 #					echo "Creating $f."
 #					fcid=$( qsub -N ${jobname} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#						-o ${outbase}.${date}.out.txt \
-#						-e ${outbase}.${date}.err.txt \
+#						-j oe -o ${outbase}.${date}.out.txt \
 #						~/.local/bin/featureCounts.bash -F \
 #							"-T ${threads} -t ${feature} -g ${tag} -a ${FASTA}/hg38.chr.hsa.gff3 \
 #							-Q ${Q} -o ${f} ${dir}/??.h38au.${bambase}.bam" )
@@ -157,7 +156,7 @@ vmem=8
 #				#		else
 #				#			depend=""
 #				#		fi
-#				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -j oe -o ${outbase}.${date}.out.txt \
 #				#			~/.local/bin/deseq.bash -F \
 #				#			"-f ${counts} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
 #				#	fi
@@ -187,8 +186,7 @@ vmem=8
 #				else
 #					echo "Creating $f."
 #					fcid=$( qsub -N ${jobname} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#						-o ${outbase}.${date}.out.txt \
-#						-e ${outbase}.${date}.err.txt \
+#						-j oe -o ${outbase}.${date}.out.txt \
 #						~/.local/bin/featureCounts.bash -F \
 #							"-T ${threads} -t ${feature} -g ${tag} -Q ${Q} \
 #							-a ${REFS}/Homo_sapiens/UCSC/hg38/Annotation/Genes/genes.gtf \
@@ -208,7 +206,7 @@ vmem=8
 #				#		else
 #				#			depend=""
 #				#		fi
-#				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#				#		qsub ${depend} -N deseq.${feature} -l vmem=4gb -j oe -o ${outbase}.${date}.out.txt \
 #				#			~/.local/bin/deseq.bash -F \
 #				#			"-f ${counts} -m /francislab/data1/raw/20191008_Stanford71/metadata.csv"
 #				#	fi
@@ -282,7 +280,7 @@ vmem=8
 ##		if [ -f $f ] && [ ! -w $f ] ; then
 ##			echo "Write-protected $f exists. Skipping."
 ##		else
-##			qsub -N sleuth.${ext} -l vmem=${vmem}gb -o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+##			qsub -N sleuth.${ext} -l vmem=${vmem}gb -j oe -o ${outbase}.${date}.out.txt \
 ##				~/.local/bin/sleuth.bash -F \
 ##					"--suffix ${suffix} --path ${dir} \
 ##					--metadata /francislab/data1/raw/20191008_Stanford71/metadata.csv"

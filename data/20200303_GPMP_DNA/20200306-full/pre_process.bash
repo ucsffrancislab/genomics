@@ -43,7 +43,7 @@ for r1 in ${IN}/*_R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		bbduk_id=$( qsub -N ${jobbase}.bbduk -l nodes=1:ppn=2 -l vmem=32gb \
-			-o ${outbase}.bbduk.${date}.out.txt -e ${outbase}.bbduk.${date}.err.txt \
+			-j oe -o ${outbase}.bbduk.${date}.out.txt \
 			~/.local/bin/bbduk.bash \
 				-F "-Xmx16g \
 					in1=${r1} \
@@ -86,7 +86,7 @@ for r1 in ${IN}/*_R1.fastq.gz ; do
 			depend=""
 		fi
 		length_id=$( qsub ${depend} -N ${jobbase}.length -l nodes=1:ppn=2 -l vmem=8gb \
-			-o ${outbase}.length.${date}.out.txt -e ${outbase}.length.${date}.err.txt \
+			-j oe -o ${outbase}.length.${date}.out.txt \
 			~/.local/bin/filter_paired_fastq_on_equal_read_length.bash \
 				-F "${base}_R1.fastq.gz \
 					${base}_R2.fastq.gz \
@@ -116,7 +116,7 @@ for r1 in ${IN}/*_R1.fastq.gz ; do
 #		fi
 #
 #		qsub ${depend} -N ${jobbase}.unpair -l nodes=1:ppn=2 -l vmem=8gb \
-#			-o ${outbase}.unpair.${date}.out.txt -e ${outbase}.unpair.${date}.err.txt \
+#			-j oe -o ${outbase}.unpair.${date}.out.txt \
 #			~/.local/bin/unpair_fastqs.bash -F "-o ${f} ${base}_R?.fastq.gz"
 #
 #	fi

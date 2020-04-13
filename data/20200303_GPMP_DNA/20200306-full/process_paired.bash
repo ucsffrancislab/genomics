@@ -59,7 +59,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 				echo "Write-protected $f exists. Skipping."
 			else
 				bowtie2id=$( qsub -N ${jobbase}.${ref}.bt${ali} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/bowtie2.bash \
 					-F "--xeq --threads ${threads} ${opt} -x ${BOWTIE2}/${ref} \
 							--rg-id ${jobbase} --rg "SM:${jobbase}" -1 ${r1} -2 ${r2} -o ${outbase}.bam" )
@@ -79,7 +79,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 #				fi
 #				mappedid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}m \
 #					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#					-j oe -o ${outbase}.${date}.out.txt \
 #					~/.local/bin/samtools.bash -F \
 #						"fasta -F 4 --threads $[threads-1] -N -o ${outbase}.fasta.gz ${bowtie2bam}" )
 #				echo "${mappedid}"
@@ -98,7 +98,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 				fi
 				unmappedid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un \
 					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/samtools.bash -F \
 						"fasta -f 4 --threads $[threads-1] -N -o ${outbase}.fasta.gz ${bowtie2bam}" )
 				echo "${unmappedid}"
@@ -131,8 +131,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						depend=""
 					fi
 					qsub ${depend} -N ${jobbase}.${ref}.d.nr -l nodes=1:ppn=8 -l vmem=16gb \
-						-o ${f}.out.txt \
-						-e ${f}.err.txt \
+						-j oe -o ${f}.out.txt \
 						~/.local/bin/diamond.bash \
 							-F "blastx --threads 8 --db ${DIAMOND}/nr \
 								--query ${infile} \
@@ -140,7 +139,8 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 								--out ${f}"
 				fi
 
-				for dref in nr viral ; do
+				#for dref in nr viral ; do
+				for dref in viral ; do
 
 					#infile="${base}.${ref}.bowtie2-${ali}.unmapped.fasta.gz"
 
@@ -156,8 +156,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							depend=""
 						fi
 						diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
-							-o ${outbase}.out.txt \
-							-e ${outbase}.err.txt \
+							-j oe -o ${outbase}.out.txt \
 							~/.local/bin/diamond.bash \
 								-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
 									--query ${infile} --outfmt 6 --out ${f}" )
@@ -176,24 +175,25 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						else
 							depend=""
 						fi
-						if [ -f $input ] ; then
-							#	On first run, this wouldn't work
-							size=$( stat -c %s $input )
-							if [ $size -gt 10000000 ] ; then
-								echo "Size $size gt 10000000"
-								vmem=8
-							elif [ $size -gt 8000000 ] ; then
-								echo "Size $size gt 8000000"
-								vmem=6
-							else
-								echo "Size $size NOT gt 8000000"
-								vmem=4
-							fi
-						else
-							vmem=4
-						fi
-						summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
-							-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+#						if [ -f $input ] ; then
+#							#	On first run, this wouldn't work
+#							size=$( stat -c %s $input )
+#							if [ $size -gt 10000000 ] ; then
+#								echo "Size $size gt 10000000"
+#								vmem=8
+#							elif [ $size -gt 8000000 ] ; then
+#								echo "Size $size gt 8000000"
+#								vmem=6
+#							else
+#								echo "Size $size NOT gt 8000000"
+#								vmem=4
+#							fi
+#						else
+#							vmem=4
+#						fi
+#						summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
+						summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=8 -l vmem=${vmem}gb \
+							-j oe -o ${outbase}.${date}.out.txt \
 							~/.local/bin/blastn_summary.bash -F "-input ${input}" )
 						echo $summaryid
 					fi
@@ -216,14 +216,14 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							fi
 							#-l nodes=1:ppn=2 -l vmem=4gb \
 							qsub ${depend} -N ${jobbase}.norm.${dref} \
-								-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+								-j oe -o ${outbase}.${date}.out.txt \
 								~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 						fi
 					fi
 		
 					#					sum summaries
 
-					for level in species genus subfamily ; do
+					for level in species genus ; do
 						suffix=${level%%,*}	#	in case a list of level's provided
 		
 						sumsummaryid=""
@@ -237,8 +237,9 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							else
 								depend=""
 							fi
-							sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=2 -l vmem=4gb \
-								-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+							#sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=2 -l vmem=4gb \
+							sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=8 -l vmem=${vmem}gb \
+								-j oe -o ${outbase}.${date}.out.txt \
 								~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
 							echo $sumsummaryid
 						fi
@@ -260,7 +261,8 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 								fi
 								#-l nodes=1:ppn=2 -l vmem=4gb \
 								qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-									-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
+									-l nodes=1:ppn=8 -l vmem=8gb \
+									-j oe -o ${outbase}.${date}.out.txt \
 									~/.local/bin/normalize_summary.bash \
 										-F "-input ${sumsummary} -d ${unmapped_read_count}"
 							fi
@@ -276,22 +278,8 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 
 
 
-				for bref in viral.masked ; do
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-				done	#	for bref in viral.masked ; do
+				#for bref in viral.masked ; do
+				#done	#	for bref in viral.masked ; do
 
 
 

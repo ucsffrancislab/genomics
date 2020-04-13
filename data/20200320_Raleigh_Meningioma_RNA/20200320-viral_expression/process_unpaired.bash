@@ -332,6 +332,10 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 						-j oe -o ${outbase}.${date}.out.txt \
 						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
+
+
+
+
 					echo $sumsummaryid
 				fi
 				sumsummary=${f}
