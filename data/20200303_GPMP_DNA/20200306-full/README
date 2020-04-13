@@ -1,6 +1,34 @@
 
 
 
+	
+N is normal samples (blood samples). Just for WGS, not available for rna-seq
+NE means non-enhancing.
+E means enhancing.
+
+Brain tissue.
+Case numbers are the prefixed with "SF" of each file name. eg  SF12210"
+
+All this is whole genome sequencing data: so DNA. I will upload the bulk RNA now. 
+
+
+
+Blood samples are normal (act as control), but they come from patients with brain cancer. It is my understanding their blood doesnt express the same tumor markers as the tumor specimens.
+
+No difference between batch 1 and two. Just batch 1 was sequenced first, batch 2 was second.
+
+P prefix is another reference to patient that was used by the sequencing facility. Please use SF number. (eg SF#####)
+
+To specify: batch 1 are trimmed samples. (I used trim galore under anaconda3)
+batch2 is untrimmed.
+
+
+
+Thank you for making the directory. I will use it from now on to share data with you and the francis lab. I have uploaded the RNA bulk seq to /data/fcatalan/WGS. Please note that one sample (SF12888-NE) is trimmed while the rest are not. This too was trimmed using trimgalore.
+
+	
+
+
 rename _R1.h38 .h38 SF12[12]*_R1.h38au*
 rename _R1.h38 .h38 SF124*_R1.h38au*
 rename _R1.h38 .h38 SF123*_R1.h38au*
