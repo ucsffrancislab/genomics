@@ -40,4 +40,5 @@ for filename in args.files:
 			title="log(Depth) chart of "+basename,
 			logy=True,kind='scatter',x='position',y='depth',ylim=[1,10000])
 		plt.savefig(basename+".png")
+		plt.close()
 
