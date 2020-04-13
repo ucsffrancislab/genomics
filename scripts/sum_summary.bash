@@ -40,7 +40,7 @@ else
 	echo "Creating $f"
 	#	"cmd | getline r" will return just the first line
 	zcat ${input} | awk -F"\t" -v db=$db -v level=$level '{ \
-			cmd="accession_to_taxid_and_name.bash -l "level" -d "db" -a "$2
+			cmd="accession_to_taxid_and_name.bash -l "level" -d "db" -a \""$2"\""
 			cmd | getline r
 			close(cmd)
 			sums[r]+=$1
