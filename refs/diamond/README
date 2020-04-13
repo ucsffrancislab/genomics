@@ -5,7 +5,8 @@ http://www.diamondsearch.org/index.php
 
 diamond makedb --in ../fasta/20200204-nr.fa.gz -d nr
 
-diamond makedb --in ../fasta/viral.masked.fa.gz -d viral.masked
+#	NO
+#	diamond makedb --in ../fasta/viral.masked.fa.gz -d viral.masked
 
 diamond makedb --in ../fasta/viral.protein.faa.gz -d viral
 
