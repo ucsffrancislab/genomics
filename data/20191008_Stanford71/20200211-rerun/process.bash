@@ -52,8 +52,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 				21) size=10;vmem=32;threads=16;;
 			esac  # seems to work
 			qsub -N ${jobbase}.rjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-o ${qoutbase}.${date}.out.txt \
-				-e ${qoutbase}.${date}.err.txt \
+				-j oe -o ${qoutbase}.${date}.out.txt \
 				~/.local/bin/jellyfish_count_and_dump.bash \
 					-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
 		fi
@@ -82,7 +81,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 				echo "Write-protected $f exists. Skipping."
 			else
 				bowtie2id=$( qsub -N ${jobbase}.${ref}.bt${ali} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					-j oe -o ${qoutbase}.${date}.out.txt \
 					~/.local/bin/bowtie2.bash \
 					-F "--xeq --threads ${threads} ${opt} -x ${BOWTIE2}/${ref} \
 							--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${qoutbase}.bam" )
@@ -102,7 +101,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 				fi
 				mappedid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}m \
 					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					-j oe -o ${qoutbase}.${date}.out.txt \
 					~/.local/bin/samtools.bash -F \
 						"fasta -F 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${bowtie2bam}" )
 				echo "${mappedid}"
@@ -122,7 +121,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 				fi
 				unmappedid=$( qsub ${depend} -N ${jobbase}.${ref}.bt${ali:0:1}un \
 					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+					-j oe -o ${qoutbase}.${date}.out.txt \
 					~/.local/bin/samtools.bash -F \
 						"fasta -f 4 --threads $[threads-1] -N -o ${qoutbase}.fasta.gz ${bowtie2bam}" )
 				echo "${unmappedid}"
@@ -144,8 +143,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						depend=""
 					fi
 					qsub ${depend} -N ${jobbase}.${ref}.d.nr -l nodes=1:ppn=8 -l vmem=16gb \
-						-o ${qoutbase}.diamond.nr.daa.out.txt \
-						-e ${qoutbase}.diamond.nr.daa.err.txt \
+						-j oe -o ${qoutbase}.diamond.nr.daa.out.txt \
 						~/.local/bin/diamond.bash \
 							-F "blastx -p 8 -d ${DIAMOND}/nr \
 								-q ${infile} \
@@ -200,8 +198,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 							21) size=10;vmem=64;threads=16;;
 						esac
 						qsub ${depend} -N ${jobbase}.hjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-o ${qoutbase}.${date}.out.txt \
-							-e ${qoutbase}.${date}.err.txt \
+							-j oe -o ${qoutbase}.${date}.out.txt \
 							~/.local/bin/hawk_jellyfish_count_and_dump.bash \
 								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
 						#	-l feature=nocommunal \
@@ -232,8 +229,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 							21) size=10;vmem=32;threads=16;;
 						esac 
 						mappedjfid=$( qsub ${depend} -N ${jobbase}.mjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-o ${qoutbase}.${date}.out.txt \
-							-e ${qoutbase}.${date}.err.txt \
+							-j oe -o ${qoutbase}.${date}.out.txt \
 							~/.local/bin/jellyfish_count_and_dump.bash \
 								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
 						echo $mappedjfid
@@ -263,8 +259,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 							21) size=10;vmem=32;threads=16;;
 						esac 
 						unmappedjfid=$( qsub ${depend} -N ${jobbase}.ujf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-o ${qoutbase}.${date}.out.txt \
-							-e ${qoutbase}.${date}.err.txt \
+							-j oe -o ${qoutbase}.${date}.out.txt \
 							~/.local/bin/jellyfish_count_and_dump.bash \
 								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
 						#	-l feature=nocommunal \
@@ -303,8 +298,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						#	21 | 31 ) vmem=16;threads=8;;
 						#esac 
 						unmappeddskid=$( qsub ${depend} -N ${jobbase}.udsk.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-o ${qoutbase}.${date}.out.txt \
-							-e ${qoutbase}.${date}.err.txt \
+							-j oe -o ${qoutbase}.${date}.out.txt \
 							~/.local/bin/dsk.bash \
 								-F "-nb-cores ${threads} -kmer-size ${k} -abundance-min 0 \
 									-max-memory $[vmem/2]000 -file ${infile} -out ${f}" )
@@ -323,8 +317,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						fi
 						vmem=8;threads=8;
 						qsub ${depend} -N ${jobbase}.ud2a.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-o ${qoutbase}2ascii.${date}.out.txt \
-							-e ${qoutbase}2ascii.${date}.err.txt \
+							-j oe -o ${qoutbase}2ascii.${date}.out.txt \
 							~/.local/bin/dsk2ascii.bash \
 								-F "-nb-cores ${threads} -file ${infile} -out ${f}"
 					fi
@@ -368,7 +361,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 			#-F "quant -b ${threads}0 --threads ${threads} --pseudobam \
 
 			qsub -N ${jobbase}.${basekref}.ks -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+				-j oe -o ${qoutbase}.${date}.out.txt \
 				~/.local/bin/kallisto.bash \
 				-F "quant -b ${threads}0 --threads ${threads} \
 					--single-overhang --single -l 145.11 -s 20.175 --index ${kref} \
@@ -409,7 +402,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 #				echo "Write-protected $f exists. Skipping."
 #			else
 #				qsub -N ${jobbase}.${ref}.bt${ali} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#					-o ${qoutbase}.${date}.out.txt -e ${qoutbase}.${date}.err.txt \
+#					-j oe -o ${qoutbase}.${date}.out.txt \
 #					~/.local/bin/bowtie2.bash \
 #					-F "--xeq --no-unal --threads ${threads} ${opt} -x ${BOWTIE2}/${ref} \
 #							--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${qoutbase}.bam"
