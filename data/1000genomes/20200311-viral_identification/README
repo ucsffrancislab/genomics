@@ -1,5 +1,6 @@
 
 aws --profile gwendt s3 sync s3://viral-identification/1000genomes/ /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/
+aws --profile gwendt s3 sync --exclude \*Running s3://viral-identification/1000genomes/ /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/
 
 
 
@@ -251,24 +252,25 @@ done ; done
 
 awk -F"\t" 'BEGIN{ split("e2e loc",as," ");
 split("NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334",vs," ") }
-print "mkdir -p secondary/"$6"/"$4
+{ print "mkdir -p secondary_merge/"$6"/"$4;
 for( a in as ){
 for( v in vs ){
-  print "[ -f secondary/"$1".unmapped.fasta.gz ] && ln -s ../../"$1".unmapped."vs[v]".bowtie2-"as[a]".bam secondary/"$6"/"$4"/"
-} }' /francislab/data1/raw/1000genomes/metadata.tsv
+  print "[ -f secondary/"$1".unmapped.fasta.gz ] && ln -s ../../../secondary/"$1".unmapped."vs[v]".bowtie2-"as[a]".bam secondary_merge/"$6"/"$4"/"
+} } }' /francislab/data1/raw/1000genomes/metadata.tsv
 
  
 
 for a in e2e loc ; do
 for v in NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334 ; do
 for superpop in AFR AMR EAS EUR SAS ; do
-for subsuperpop in secondary/${superpop}/??? ; do
+for subsuperpop in secondary_merge/${superpop}/??? ; do
 pop=$( basename ${subsuperpop} )
-samtools merge secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam secondary/${superpop}/${pop}/*.unmapped.${v}.bowtie2-${a}.bam
-samtools index secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam
-samtools depth -a secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam | gzip > secondary/${superpop}.${pop}.${v}.bowtie2-${a}.bam.depths.csv.gz
+echo $a $v $superpop $pop
+samtools merge secondary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam secondary_merge/${superpop}/${pop}/*.unmapped.${v}.bowtie2-${a}.bam
+samtools index secondary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam
+samtools depth -a secondary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam | gzip > secondary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam.depths.csv.gz
 done ; done ; done ; done
 
-samtools_depth_to_png.py secondary/???.???.*.bowtie2-*.bam.depths.csv.gz
+samtools_depth_to_png.py secondary_merge/???.???.*.bowtie2-*.bam.depths.csv.gz
 
 
