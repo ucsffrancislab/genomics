@@ -24,7 +24,8 @@ SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
 mkdir -p $SCRATCH_JOB
 ##    ... is automatically removed upon exit
 ##    (regardless of success or failure)
-trap "{ cd /scratch/ ; rm -rf $SCRATCH_JOB/ ; }" EXIT
+#trap "{ cd /scratch/ ; rm -rf $SCRATCH_JOB/ ; }" EXIT
+trap "{ \rm -rf $SCRATCH_JOB/ ; }" EXIT
 
 
 f="${outbase}.done"
@@ -76,7 +77,9 @@ else
 #	mv output.bam /data/$USER/
 
 	#mv --update ${scratch_outbase}* $( dirname ${outbase} )
-	mv --update ${scratch_outbase}-* $( dirname ${outbase} )
+	#mkdir -p ${outbase}
+	#mv --update ${scratch_outbase}-* ${outbase}/
+	mv --update ${scratch_outbase} $( dirname ${outbase} )
 
 fi
 
