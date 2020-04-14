@@ -274,3 +274,13 @@ done ; done ; done ; done
 samtools_depth_to_png.py secondary_merge/???.???.*.bowtie2-*.bam.depths.csv.gz
 
 
+
+rename NC_009334 HHV4 *NC_009334*
+rename NC_009333 HHV8 *NC_009333*
+rename NC_007605 HgHV4 *NC_007605*
+rename NC_001716 HHV7 *NC_001716*
+rename NC_001664 HbHV6A *NC_001664*
+rename NC_001348 HHV3 *NC_001348*
+rename NC_000898 HHV6B *NC_000898*
+
+
