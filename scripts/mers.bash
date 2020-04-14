@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+k=$1
+
+m=$2
+
+if [ $k -gt 0 ] ; then
+	$0 $[k-1] A$m
+	$0 $[k-1] C$m
+	$0 $[k-1] G$m
+	$0 $[k-1] T$m
+else
+	echo $m
+fi
+
