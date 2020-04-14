@@ -36,28 +36,28 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 	echo $base
 	jobbase=$( basename ${base} )
 
-	for k in 9 11 13 ; do
-
-		infile="${r1}"
-
-		qoutbase="${base}.${k}mers.jellyfish2"
-		f="${qoutbase}.csv.gz"
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			unset size vmem threads
-			case $k in 
-				9 | 11 | 13 | 15 ) size=5;vmem=8;threads=8;;
-				17) size=10;vmem=32;threads=8;;
-				21) size=10;vmem=32;threads=16;;
-			esac  # seems to work
-			qsub -N ${jobbase}.rjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-j oe -o ${qoutbase}.${date}.out.txt \
-				~/.local/bin/jellyfish_count_and_dump.bash \
-					-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
-		fi
-
-	done
+#	for k in 9 11 13 ; do
+#
+#		infile="${r1}"
+#
+#		qoutbase="${base}.${k}mers.jellyfish2"
+#		f="${qoutbase}.csv.gz"
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			unset size vmem threads
+#			case $k in 
+#				9 | 11 | 13 | 15 ) size=5;vmem=8;threads=8;;
+#				17) size=10;vmem=32;threads=8;;
+#				21) size=10;vmem=32;threads=16;;
+#			esac  # seems to work
+#			qsub -N ${jobbase}.rjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#				-j oe -o ${qoutbase}.${date}.out.txt \
+#				~/.local/bin/jellyfish_count_and_dump.bash \
+#					-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
+#		fi
+#
+#	done
 
 
 	for ref in h38au  ; do
@@ -178,97 +178,93 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 
 
 
-				for k in 13 ; do
-
-					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
-
-					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.sorted"
-					f="${qoutbase}.txt.gz"
-					if [ -f $f ] && [ ! -w $f ] ; then
-						echo "Write-protected $f exists. Skipping."
-					else
-						if [ ! -z ${unmappedid} ] ; then
-							depend="-W depend=afterok:${unmappedid}"
-						else
-							depend=""
-						fi
-						unset size vmem threads
-						case $k in
-							13) size=5;vmem=8;threads=8;;
-							21) size=10;vmem=64;threads=16;;
-						esac
-						qsub ${depend} -N ${jobbase}.hjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-j oe -o ${qoutbase}.${date}.out.txt \
-							~/.local/bin/hawk_jellyfish_count_and_dump.bash \
-								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
-						#	-l feature=nocommunal \
-					fi
-
-				done
-
-
-
-				for k in 9 11 13 15 ; do
-
-					infile="${outbase}.bowtie2-${ali}.mapped.fasta.gz"
-
-					qoutbase="${base}.${ref}.bowtie2-${ali}.mapped.${k}mers.jellyfish2"
-					f="${qoutbase}.csv.gz"
-					if [ -f $f ] && [ ! -w $f ] ; then
-						echo "Write-protected $f exists. Skipping."
-					else
-						if [ ! -z ${mappedid} ] ; then
-							depend="-W depend=afterok:${mappedid}"
-						else
-							depend=""
-						fi
-						unset size vmem threads
-						case $k in 
-							9 | 11 | 13 | 15 ) size=5;vmem=8;threads=8;;
-							17 | 19 ) size=10;vmem=32;threads=8;;
-							21) size=10;vmem=32;threads=16;;
-						esac 
-						mappedjfid=$( qsub ${depend} -N ${jobbase}.mjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-j oe -o ${qoutbase}.${date}.out.txt \
-							~/.local/bin/jellyfish_count_and_dump.bash \
-								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
-						echo $mappedjfid
-						#	-l feature=nocommunal \
-					fi
-
-				done
-
-				for k in 9 11 13 15 ; do
-
-					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
-
-					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.jellyfish2"
-					f="${qoutbase}.csv.gz"
-					if [ -f $f ] && [ ! -w $f ] ; then
-						echo "Write-protected $f exists. Skipping."
-					else
-						if [ ! -z ${unmappedid} ] ; then
-							depend="-W depend=afterok:${unmappedid}"
-						else
-							depend=""
-						fi
-						unset size vmem threads
-						case $k in 
-							9 | 11 | 13 | 15) size=5;vmem=8;threads=8;;
-							17 | 19 ) size=5;vmem=32;threads=8;;
-							21) size=10;vmem=32;threads=16;;
-						esac 
-						unmappedjfid=$( qsub ${depend} -N ${jobbase}.ujf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-j oe -o ${qoutbase}.${date}.out.txt \
-							~/.local/bin/jellyfish_count_and_dump.bash \
-								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
-						#	-l feature=nocommunal \
-						echo $unmappedjfid
-					fi
-
-				done
-
-
+#				for k in 13 ; do
+#
+#					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
+#
+#					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.sorted"
+#					f="${qoutbase}.txt.gz"
+#					if [ -f $f ] && [ ! -w $f ] ; then
+#						echo "Write-protected $f exists. Skipping."
+#					else
+#						if [ ! -z ${unmappedid} ] ; then
+#							depend="-W depend=afterok:${unmappedid}"
+#						else
+#							depend=""
+#						fi
+#						unset size vmem threads
+#						case $k in
+#							13) size=5;vmem=8;threads=8;;
+#							21) size=10;vmem=64;threads=16;;
+#						esac
+#						qsub ${depend} -N ${jobbase}.hjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#							-j oe -o ${qoutbase}.${date}.out.txt \
+#							~/.local/bin/hawk_jellyfish_count_and_dump.bash \
+#								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}"
+#						#	-l feature=nocommunal \
+#					fi
+#
+#				done
+#
+#				for k in 9 11 13 15 ; do
+#
+#					infile="${outbase}.bowtie2-${ali}.mapped.fasta.gz"
+#
+#					qoutbase="${base}.${ref}.bowtie2-${ali}.mapped.${k}mers.jellyfish2"
+#					f="${qoutbase}.csv.gz"
+#					if [ -f $f ] && [ ! -w $f ] ; then
+#						echo "Write-protected $f exists. Skipping."
+#					else
+#						if [ ! -z ${mappedid} ] ; then
+#							depend="-W depend=afterok:${mappedid}"
+#						else
+#							depend=""
+#						fi
+#						unset size vmem threads
+#						case $k in 
+#							9 | 11 | 13 | 15 ) size=5;vmem=8;threads=8;;
+#							17 | 19 ) size=10;vmem=32;threads=8;;
+#							21) size=10;vmem=32;threads=16;;
+#						esac 
+#						mappedjfid=$( qsub ${depend} -N ${jobbase}.mjf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#							-j oe -o ${qoutbase}.${date}.out.txt \
+#							~/.local/bin/jellyfish_count_and_dump.bash \
+#								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
+#						echo $mappedjfid
+#						#	-l feature=nocommunal \
+#					fi
+#
+#				done
+#
+#				for k in 9 11 13 15 ; do
+#
+#					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
+#
+#					qoutbase="${base}.${ref}.bowtie2-${ali}.unmapped.${k}mers.jellyfish2"
+#					f="${qoutbase}.csv.gz"
+#					if [ -f $f ] && [ ! -w $f ] ; then
+#						echo "Write-protected $f exists. Skipping."
+#					else
+#						if [ ! -z ${unmappedid} ] ; then
+#							depend="-W depend=afterok:${unmappedid}"
+#						else
+#							depend=""
+#						fi
+#						unset size vmem threads
+#						case $k in 
+#							9 | 11 | 13 | 15) size=5;vmem=8;threads=8;;
+#							17 | 19 ) size=5;vmem=32;threads=8;;
+#							21) size=10;vmem=32;threads=16;;
+#						esac 
+#						unmappedjfid=$( qsub ${depend} -N ${jobbase}.ujf.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#							-j oe -o ${qoutbase}.${date}.out.txt \
+#							~/.local/bin/jellyfish_count_and_dump.bash \
+#								-F "--threads ${threads} -c --mer-len ${k} --input ${infile} --size ${size}" )
+#						#	-l feature=nocommunal \
+#						echo $unmappedjfid
+#					fi
+#
+#				done
 
 
 
@@ -306,6 +302,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 					fi
 
 					infile="${f}"
+					dsk2asciiid=""
 					f="${qoutbase}.txt.gz"
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
@@ -316,10 +313,29 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 							depend=""
 						fi
 						vmem=8;threads=8;
-						qsub ${depend} -N ${jobbase}.ud2a.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						dsk2asciiid=$( qsub ${depend} -N ${jobbase}.ud2a.${k} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							-j oe -o ${qoutbase}2ascii.${date}.out.txt \
 							~/.local/bin/dsk2ascii.bash \
-								-F "-nb-cores ${threads} -file ${infile} -out ${f}"
+								-F "-nb-cores ${threads} -file ${infile} -out ${f}" )
+						echo $dsk2asciiid
+					fi
+
+					f="${qoutbase}.split"
+					if [ -f $f ] && [ ! -w $f ] ; then
+						echo "Write-protected $f exists. Skipping."
+					else
+						if [ ! -z ${dsk2asciiid} ] ; then
+							depend="-W depend=afterok:${dsk2asciiid}"
+						else
+							depend=""
+						fi
+						#vmem=8;threads=8;
+#-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						qsub ${depend} -N ${jobbase}.uslt.${k} \
+							-j oe -o ${qoutbase}.${date}.out.txt \
+							~/.local/bin/dsk_ascii_split_scratch.bash \
+								-F "-k ${k} -outbase ${qoutbase}"
+#								-F "-infile ${infile} -k ${k} -threads ${threads} -mem $[vmem/2]000 -outbase ${qoutbase}"
 					fi
 
 				done
