@@ -94,3 +94,10 @@ aws --profile gwendt s3 sync --exclude \* --include \?\?.h38au.bowtie2-e2e.unmap
 
 
 
+for s in $( seq -w 77 ) ; do
+echo $s
+mkdir trimmed/length/unpaired/${s}.h38au.bowtie2-e2e.unmapped.21mers.dsk
+mv trimmed/length/unpaired/${s}.h38au.bowtie2-e2e.unmapped.21mers.dsk-??????.txt.gz trimmed/length/unpaired/${s}.h38au.bowtie2-e2e.unmapped.21mers.dsk/
+done
+
+

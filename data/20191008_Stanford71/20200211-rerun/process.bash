@@ -270,7 +270,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 
 
 
-				for k in 11 21 31 ; do
+				for k in 11 21 ; do
 
 					infile="${outbase}.bowtie2-${ali}.unmapped.fasta.gz"
 
@@ -320,8 +320,8 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						echo $dsk2asciiid
 					fi
 
-					f="${qoutbase}.split"
-					if [ -f $f ] && [ ! -w $f ] ; then
+					f="${qoutbase}"	#	DIRECTORY
+					if [ -d $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
 						if [ ! -z ${dsk2asciiid} ] ; then

@@ -14,26 +14,36 @@ vmem=8
 date=$( date "+%Y%m%d%H%M%S" )
 
 
-#for k in 11 21 31 ; do
-#
-#	f="${dir}/h38au.bowtie2-e2e.unmapped.${k}mers.dsk-matrix.csv.gz"
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		qsub -N merge${k} -o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
-#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			/francislab/data1/working/20191008_Stanford71/20200211-rerun/merge_dsk.py \
-#				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.dsk.txt.gz"
-#		#chmod a-w ${f}
-#	fi
-#
-#done
+f="${dir}/h38au.bowtie2-e2e.unmapped.11mers.dsk-matrix.csv.gz"
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	qsub -N merge11 -j oe -o ${f}.${date}.out.txt \
+		-l nodes=1:ppn=${threads} -l vmem=128gb \
+		~/.local/bin/merge_mer_counts_scratch.bash \
+			-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.11mers.dsk.txt.gz"
+fi
+
+#for mer in $( mers.bash 6 ) ; do
+for mer in AAAAAA ; do
+
+	f="${dir}/h38au.bowtie2-e2e.unmapped.21mers-${mer}.dsk-matrix.csv.gz"
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N ${mer}-${k}merge -j oe -o ${f}.${date}.out.txt \
+			-l nodes=1:ppn=${threads} -l vmem=128gb \
+			~/.local/bin/merge_mer_counts_scratch.bash \
+				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.21mers.dsk/??.h38au.bowtie2-e2e.unmapped.21mers.dsk-${mer}.txt.gz"
+	fi
+
+done
 
 
 
 #	for k in 13 15 17 19 21 ; do
 #for k in 9 11 13 ; do
-for k in 17 ; do
+#for k in 17 ; do
 
 #	gwas_file="/francislab/data1/raw/20191008_Stanford71/gwas_info.txt"
 #
@@ -64,34 +74,33 @@ for k in 17 ; do
 #				--sorted_file ${sorted_file}"
 #	fi
 #
-
-	unset size vmem threads
-	case $k in
-		9 | 11 | 13 | 15 | 17 | 19 ) vmem=64;threads=32;;
-		#9 | 11 | 13 ) vmem=256;threads=8;;
-		#15 | 17 | 19 ) vmem=500;threads=8;;	# 500 not enough for 15
-		#	17) size=10;vmem=32;threads=8;; # works. Don't understand the jump.
-		#'19') size=10;vmem=32;threads=8;;
-		#'21') size=10;vmem=32;threads=16;;
-	esac  # seems to work
-	
-	f="${dir}/h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2-matrix.csv.gz"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		qsub -N merge${k} -o ${f}.${date}.out.txt -e ${f}.${date}.err.txt \
-			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			#/francislab/data1/working/20191008_Stanford71/20200211-rerun/merge_jellyfish.py \
-			~/.local/bin/merge_mer_counts.py \
-				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2.csv.gz"
-		#chmod a-w ${f}
-	fi
-
-done
-
-
-threads=8
-vmem=8
+#
+#	unset size vmem threads
+#	case $k in
+#		9 | 11 | 13 | 15 | 17 | 19 ) vmem=64;threads=32;;
+#		#9 | 11 | 13 ) vmem=256;threads=8;;
+#		#15 | 17 | 19 ) vmem=500;threads=8;;	# 500 not enough for 15
+#		#	17) size=10;vmem=32;threads=8;; # works. Don't understand the jump.
+#		#'19') size=10;vmem=32;threads=8;;
+#		#'21') size=10;vmem=32;threads=16;;
+#	esac  # seems to work
+#	
+#	f="${dir}/h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2-matrix.csv.gz"
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		qsub -N merge${k} -j oe -o ${f}.${date}.out.txt \
+#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			#/francislab/data1/working/20191008_Stanford71/20200211-rerun/merge_jellyfish.py \
+#			~/.local/bin/merge_mer_counts.py \
+#				-F "-o ${f} ${dir}/??.h38au.bowtie2-e2e.unmapped.${k}mers.jellyfish2.csv.gz"
+#	fi
+#
+#done
+#
+#
+#threads=8
+#vmem=8
 
 
 
