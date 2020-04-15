@@ -28,8 +28,10 @@ mkdir -p $SCRATCH_JOB
 trap "{ \rm -rf $SCRATCH_JOB/ ; }" EXIT
 
 
-f="${outbase}.done"
-if [ -f $f ] && [ ! -w $f ] ; then
+#f="${outbase}.done"
+#if [ -f $f ] && [ ! -w $f ] ; then
+f="${outbase}"	#	DIRECTORY
+if [ -d $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
