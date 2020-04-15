@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+#	NEEDED IN ORDER TO PLOT REMOTELY
 import matplotlib as mpl
 mpl.use('Agg')
 
