@@ -44,3 +44,44 @@ merge_summaries.py --int --output unmapped.bam.blastn.viral.masked.summary.sum-s
 
 merge_summaries.py --output unmapped.bam.blastn.viral.masked.summary.sum-species.normalized.csv.gz s3/geuvadis-bam/*.bam.blastn.viral.masked.summary.sum-species.normalized.txt.gz
 
+
+
+
+
+
+awk -F"\t" 'BEGIN{ split("e2e loc",as," ");
+split("NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334",vs," ") }
+(NR>1){ print "mkdir -p tertiary_merge/"$6"/"$4;
+for( a in as ){
+for( v in vs ){
+	command="ls s3/geuvadis-bam/"$1"*.bam.bowtie2-e2e.hg38.unmapped.bowtie2-"as[a]"."vs[v]".bam 2> /dev/null"
+	command | getline f
+	close(command)
+	if( length(f) > 1 ) print "ln -s ../../../"f" tertiary_merge/"$6"/"$4"/"
+	f=""
+} } }' /francislab/data1/raw/1000genomes/metadata.tsv
+
+
+
+for a in e2e loc ; do
+for v in NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334 ; do
+for superpop in AFR AMR EAS EUR SAS ; do
+for subsuperpop in tertiary_merge/${superpop}/??? ; do
+pop=$( basename ${subsuperpop} )
+echo $a $v $superpop $pop
+samtools merge tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam tertiary_merge/${superpop}/${pop}/*.unmapped.bowtie2-${a}.${v}.bam
+samtools index tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam
+samtools depth -a tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam | gzip > tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam.depths.csv.gz
+done ; done ; done ; done
+
+
+cd tertiary_merge
+rename NC_009334 HHV4 *NC_009334*
+rename NC_009333 HHV8 *NC_009333*
+rename NC_007605 HgHV4 *NC_007605*
+rename NC_001716 HHV7 *NC_001716*
+rename NC_001664 HbHV6A *NC_001664*
+rename NC_001348 HHV3 *NC_001348*
+rename NC_000898 HHV6B *NC_000898*
+samtools_depth_to_png.py ???.???.*.bowtie2-*.bam.depths.csv.gz
+
