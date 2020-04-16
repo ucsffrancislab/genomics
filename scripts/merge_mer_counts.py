@@ -3,6 +3,7 @@
 import os    
 import sys
 import pandas as pd
+from multiprocessing import Pool
 
 # include standard modules
 import argparse
@@ -13,6 +14,9 @@ parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
 parser.add_argument('files', nargs='*', help='files help')
 parser.add_argument('-V', '--version', help='show program version', action='store_true')
 parser.add_argument('-o', '--output', nargs=1, type=str, default='merged-jellyfish.csv', help='output csv filename to %(prog)s (default: %(default)s)')
+
+parser.add_argument('-p', '--threads', nargs=1, type=int, default=8, help='Pool threads to %(prog)s (default: %(default)s)')
+
 #parser.add_argument('-p', '--percentage', nargs=1, type=int, default=50, help='the percentage to %(prog)s (default: %(default)s)')
 #parser.add_argument('-d', '--depth', nargs=1, type=int, default=1, help='the depth to %(prog)s (default: %(default)s)')
 #parser.add_argument('-n', '--name', nargs=1, type=str, default='Reference', help='the name to %(prog)s (default: %(default)s)')
@@ -67,36 +71,73 @@ else:
 	output=args.output
 print( "Using output name: ", output )
 
+if isinstance(args.threads,list):
+	threads=args.threads[0]
+else:
+	threads=args.threads
+print( "Using threads: ", threads )
+
+
+
+# wrap your csv importer in a function that can be mapped
+def read_csv(filename):
+	'converts a filename to a pandas dataframe'
+	basename=os.path.basename(filename)
+	sample=basename.split(".")[0]	#	everything before the first "."
+	print("Reading "+filename+": Sample "+sample)
+	return pd.read_csv(filename,
+		sep=" ",
+		header=None,
+		usecols=[0,1],
+		names=["mer",sample],
+		dtype={sample: int},
+		index_col=["mer"] )
+
 
 
 
 
 data_frames = []
 
-for filename in args.files:  
-#for filename in sys.argv[1:]:
-	print(filename)
-	if os.path.isfile(filename) and os.path.getsize(filename) > 0:
-		basename=os.path.basename(filename)
-		sample=basename.split(".")[0]	#	everything before the first "."
-		print("Reading "+filename+": Sample "+sample)
-		d = pd.read_csv(filename,
-			sep=" ",
-			header=None,
-			usecols=[0,1],
-			names=["mer",sample],
-			dtype={sample: int},
-			index_col=["mer"] )
-		d.head()
-		d.dtypes
-		d.info(verbose=True)
-#		if( len(d.index) > 0 ):
-		print("Appending")
-		data_frames.append(d)
+#	for filename in args.files:  
+#		print(filename)
+#		if os.path.isfile(filename) and os.path.getsize(filename) > 0:
+#			basename=os.path.basename(filename)
+#			sample=basename.split(".")[0]	#	everything before the first "."
+#			print("Reading "+filename+": Sample "+sample)
+#			d = pd.read_csv(filename,
+#				sep=" ",
+#				header=None,
+#				usecols=[0,1],
+#				names=["mer",sample],
+#				dtype={sample: int},
+#				index_col=["mer"] )
+#			d.head()
+#			d.dtypes
+#			d.info(verbose=True)
+#	#		if( len(d.index) > 0 ):
+#			print("Appending")
+#			data_frames.append(d)
+#	#		else:
+#	#			print("Empty. Ignoring.")
 #		else:
-#			print("Empty. Ignoring.")
-	else:
-		print(filename + " is empty")
+#			print(filename + " is empty")
+
+
+
+#	python3
+# set up your pool
+#with Pool(processes=threads) as pool: # or whatever your hardware can support
+#
+#	# have your pool map the file names to dataframes
+#	data_frames = pool.map(read_csv, args.files)
+
+#	python2
+pool = Pool(threads)
+data_frames = pool.map(read_csv, args.files)
+
+
+
 
 
 
