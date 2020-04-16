@@ -11,6 +11,8 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 		-o)
 			shift; out=$1; shift;;
+		-p|--threads)
+			shift; threads="-p $1"; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -23,7 +25,7 @@ mkdir -p $SCRATCH_JOB
 ##    ... is automatically removed upon exit
 ##    (regardless of success or failure)
 #trap "{ cd /scratch/ ; rm -rf $SCRATCH_JOB/ ; }" EXIT
-trap "{ \rm -rf $SCRATCH_JOB/ ; }" EXIT
+trap "{ chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
 
 
 f="${out}"
@@ -48,7 +50,8 @@ else
 
 
 
-	merge_mer_counts.py -o ${scratch_out} ${SCRATCH_JOB}/input/*
+	merge_mer_counts.py ${threads} -o ${scratch_out} ${SCRATCH_JOB}/input/*
+
 
 
 
@@ -56,6 +59,7 @@ else
 #	mv output.bam /data/$USER/
 
 	mv --update ${scratch_out} $( dirname ${out} )
+	chmod a-w ${out}
 
 fi
 
