@@ -36,12 +36,19 @@ else
 				mv ${outprefix}Unmapped.out.${m} ${outprefix}Unmapped.out.${r}.fastq
 				gzip ${outprefix}Unmapped.out.${r}.fastq
 				chmod a-w ${outprefix}Unmapped.out.${r}.fastq.gz
+
+				count_fastq_reads.bash ${outprefix}Unmapped.out.${r}.fastq.gz
 			elif [ ${c} == '>' ] ; then
 				mv ${outprefix}Unmapped.out.${m} ${outprefix}Unmapped.out.${r}.fasta
 				gzip ${outprefix}Unmapped.out.${r}.fasta
 				chmod a-w ${outprefix}Unmapped.out.${r}.fasta.gz
+
+				count_fasta_reads.bash ${outprefix}Unmapped.out.${r}.fasta.gz
 			fi
 		fi
 	done
+
+	samtools.bash fasta -f 4 --threads $[PBS_NUM_PPN-1] -N -o ${f%.bam}.fasta.gz ${f}
+	count_fasta_reads.bash ${f%.bam}.fasta.gz
 fi
 
