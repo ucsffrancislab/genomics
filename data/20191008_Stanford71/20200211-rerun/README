@@ -101,3 +101,12 @@ mv trimmed/length/unpaired/${s}.h38au.bowtie2-e2e.unmapped.21mers.dsk-??????.txt
 done
 
 
+
+
+
+ll /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/unpaired/h38au.bowtie2-e2e.unmapped.21mers-??????.dsk-matrix.csv.gz | wc -l
+4096
+
+
+
+
