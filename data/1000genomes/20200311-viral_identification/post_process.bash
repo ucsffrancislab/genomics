@@ -4,6 +4,17 @@
 date=$( date "+%Y%m%d%H%M%S" )
 
 
+
+
+for input in /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/*/alignment/*.unmapped.blastn.viral.masked.csv.gz ; do
+
+done
+
+
+
+
+
+
 for input in /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.bam.diamond.viral.csv.gz ; do
 
 	echo $input
@@ -59,7 +70,7 @@ for input in /francislab/data1/working/1000genomes/20200311-viral_identification
 			~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
 	fi
 
-	for level in species genus subfamily ; do
+	for level in species genus ; do
 		suffix=${level%%,*}
 
 		sumsummaryid=""
@@ -99,11 +110,6 @@ for input in /francislab/data1/working/1000genomes/20200311-viral_identification
 	done	#	for s in species,genus genus,subfamily subfamily,family ; do
 
 done
-
-
-
-
-
 
 
 

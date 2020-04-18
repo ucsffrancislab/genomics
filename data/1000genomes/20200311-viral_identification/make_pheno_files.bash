@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-dir="blastn.viral.masked"
+dir="blastn.viral.masked.unmapped"
 
 while read s; do
 #	s="10335 Human alphaherpesvirus 3"
@@ -24,7 +24,7 @@ for f in s3/1000genomes/phase3/data/*/alignment/*.unmapped.*.blastn.viral.masked
 	spop=$( awk -F"\t" -v p=${pop} '( $2 == p ){print $3}' /francislab/data1/raw/1000genomes/20131219.populations.tsv )
 	echo $spop
 
-	for i in 1 3 10 100 1000 ; do
+	for i in 1 3 10 ; do
 		#	past pheno files were space delimited so space delimited it is
 		#	2 should be presence 
 		if [ $c -ge $i ] ; then

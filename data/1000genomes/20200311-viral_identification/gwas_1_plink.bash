@@ -4,8 +4,9 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 REFS=/francislab/data1/raw/1000genomes/gwas
 
-WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/diamond.viral
+#WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/diamond.viral
 #WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/blastn.viral.masked
+WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/blastn.viral.masked.unmapped
 
 OUT=${WORK}/gwas_all
 mkdir -p $OUT

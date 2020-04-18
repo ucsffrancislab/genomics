@@ -284,3 +284,90 @@ rename NC_001348 HHV3 *NC_001348*
 rename NC_000898 HHV6B *NC_000898*
 
 
+
+
+
+
+awk -F"\t" 'BEGIN{ split("e2e loc",as," ");
+split("NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334",vs," ") }
+(NR>1){ print "mkdir -p tertiary_merge/"$6"/"$4;
+for( a in as ){
+for( v in vs ){
+	command="ls s3/1000genomes/phase3/data/"$1"/alignment/"$1"*.hg38.unmapped.bowtie2-"as[a]"."vs[v]".bam 2> /dev/null"
+	command | getline f
+	close(command)
+	if( length(f) > 1 ) print "ln -s ../../../"f" tertiary_merge/"$6"/"$4"/"
+	f=""
+} } }' /francislab/data1/raw/1000genomes/metadata.tsv
+
+ 
+
+
+for a in e2e loc ; do
+for v in NC_000898.masked NC_000898 NC_001348.masked NC_001348 NC_001664.masked NC_001664 NC_001716.masked NC_001716 NC_007605.masked NC_007605 NC_009333.masked NC_009333 NC_009334.masked NC_009334 ; do
+for superpop in AFR AMR EAS EUR SAS ; do
+for subsuperpop in tertiary_merge/${superpop}/??? ; do
+pop=$( basename ${subsuperpop} )
+echo $a $v $superpop $pop
+samtools merge tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam tertiary_merge/${superpop}/${pop}/*.unmapped.bowtie2-${a}.${v}.bam
+samtools index tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam
+samtools depth -a tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam | gzip > tertiary_merge/${superpop}.${pop}.${v}.bowtie2-${a}.bam.depths.csv.gz
+done ; done ; done ; done
+
+
+cd tertiary_merge
+rename NC_009334 HHV4 *NC_009334*
+rename NC_009333 HHV8 *NC_009333*
+rename NC_007605 HgHV4 *NC_007605*
+rename NC_001716 HHV7 *NC_001716*
+rename NC_001664 HbHV6A *NC_001664*
+rename NC_001348 HHV3 *NC_001348*
+rename NC_000898 HHV6B *NC_000898*
+samtools_depth_to_png.py ???.???.*.bowtie2-*.bam.depths.csv.gz
+
+
+--------------------------------------------------
+
+Researching masking by aligning chopped virus to human reference (end to end here)
+
+ll /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/${s}*/alignment/*.unmapped.*.bam.bowtie2-e2e.hg38.unmapped.bowtie2-???.NC_001716.masked.e2e-masked.bam | wc -l
+5070
+
+mkdir bowtie2-e2e.hg38.unmapped.bowtie2.HHV7.masked.e2e-masked
+cd bowtie2-e2e.hg38.unmapped.bowtie2.HHV7.masked.e2e-masked
+
+for a in e2e loc ; do
+for s in HG00 HG01 HG02 HG03 HG04 NA0 NA1 NA2 ; do
+samtools merge bowtie2-e2e.hg38.unmapped.${s}.bowtie2-${a}.HHV7.masked.e2e-masked.bam /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/${s}*/alignment/*.unmapped.*.bam.bowtie2-e2e.hg38.unmapped.bowtie2-${a}.NC_001716.masked.e2e-masked.bam
+done
+samtools merge bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.e2e-masked.bam bowtie2-e2e.hg38.unmapped.*.bowtie2-${a}.HHV7.masked.e2e-masked.bam
+samtools index bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.e2e-masked.bam
+samtools depth -a bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.e2e-masked.bam | gzip > bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.e2e-masked.bam.depths.csv.gz
+done
+samtools_depth_to_png.py bowtie2-e2e.hg38.unmapped.bowtie2-*.HHV7.masked.e2e-masked.bam.depths.csv.gz
+
+
+
+--------------------------------------------------
+
+Researching masking by aligning chopped virus to human reference (local here)
+
+
+ll /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/${s}*/alignment/*.unmapped.*.bam.bowtie2-e2e.hg38.unmapped.bowtie2-???.NC_001716.masked.loc-masked.bam | wc -l
+5070
+
+mkdir bowtie2-e2e.hg38.unmapped.bowtie2.HHV7.masked.loc-masked
+cd bowtie2-e2e.hg38.unmapped.bowtie2.HHV7.masked.loc-masked
+
+for a in e2e loc ; do
+for s in HG00 HG01 HG02 HG03 HG04 NA0 NA1 NA2 ; do
+samtools merge bowtie2-e2e.hg38.unmapped.${s}.bowtie2-${a}.HHV7.masked.loc-masked.bam /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/${s}*/alignment/*.unmapped.*.bam.bowtie2-e2e.hg38.unmapped.bowtie2-${a}.NC_001716.masked.loc-masked.bam
+done
+samtools merge bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.loc-masked.bam bowtie2-e2e.hg38.unmapped.*.bowtie2-${a}.HHV7.masked.loc-masked.bam
+samtools index bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.loc-masked.bam
+samtools depth -a bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.loc-masked.bam | gzip > bowtie2-e2e.hg38.unmapped.bowtie2-${a}.HHV7.masked.loc-masked.bam.depths.csv.gz
+done
+samtools_depth_to_png.py bowtie2-e2e.hg38.unmapped.bowtie2-*.HHV7.masked.loc-masked.bam.depths.csv.gz
+
+
+
