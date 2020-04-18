@@ -9,6 +9,8 @@ Masking regions that align to human.
 
 Need to create a reference that does NOT include EBV
 
-./mask.bash
+
+
+./mask.bash > mask.out 2>&1 &
 
 

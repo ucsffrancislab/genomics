@@ -31,3 +31,12 @@ bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001716.masked.loc-mask
 
 bowtie2-build --threads 64 /francislab/data1/refs/fasta/hg38-noEBV.fa /francislab/data1/refs/bowtie2/hg38-noEBV
 
+
+for f in /francislab/data1/refs/fasta/viruses/*.masked.loc-masked.fasta ; do
+b=$( basename $f .fasta )
+b=${b/.?./.}
+echo $b
+bowtie2-build --threads 64 $f $b
+done
+
+

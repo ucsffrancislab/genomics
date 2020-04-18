@@ -2,7 +2,7 @@
 
 
 
-for f in *.masked.fasta ; do
+for f in NC_00????.?.masked.fasta ; do
 
 	echo $f
 
@@ -16,7 +16,7 @@ for f in *.masked.fasta ; do
 
 	bowtie2 -x hg38-noEBV -f -U ${b}.split.fa --very-sensitive-local --no-unal -S ${b}.split.loc.sam
 
-	samtools view ${b}.split.e2e.sam | awk -v ref=${b} '{
+	samtools view ${b}.split.e2e.sam | awk -v ref=${b%.masked} '{
 		sub(/^split/,"",$1);
 		a=1+25*$1
 		b=a+49
@@ -25,7 +25,7 @@ for f in *.masked.fasta ; do
 
 	#	Above and below NEED the complete reference (with its version number as it is in the fasta)
 
-	samtools view ${b}.split.loc.sam | awk -v ref=${b} '{
+	samtools view ${b}.split.loc.sam | awk -v ref=${b%.masked} '{
 		sub(/^split/,"",$1);
 		a=1+25*$1
 		b=a+49
@@ -35,6 +35,6 @@ for f in *.masked.fasta ; do
 
 	maskFastaFromBed -fi ${f} -fo ${b}.e2e-masked.fasta -bed ${b}.e2e.mask.bed -fullHeader
 
-	maskFastaFromBed -fi ${f} -fo ${b}.masked.loc-masked.fasta -bed ${b}.loc.mask.bed -fullHeader
+	maskFastaFromBed -fi ${f} -fo ${b}.loc-masked.fasta -bed ${b}.loc.mask.bed -fullHeader
 
 done
