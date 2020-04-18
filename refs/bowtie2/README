@@ -26,4 +26,8 @@ bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001348.1.fasta.masked 
 bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001716.2.fasta.masked /francislab/data1/refs/bowtie2/NC_001716.masked
 
 
+bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001716.masked.e2e-masked.fasta /francislab/data1/refs/bowtie2/NC_001716.masked.e2e-masked
+bowtie2-build --threads 8 /francislab/data1/refs/fasta/NC_001716.masked.loc-masked.fasta /francislab/data1/refs/bowtie2/NC_001716.masked.loc-masked
+
+bowtie2-build --threads 64 /francislab/data1/refs/fasta/hg38-noEBV.fa /francislab/data1/refs/bowtie2/hg38-noEBV
 
