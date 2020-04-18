@@ -74,13 +74,13 @@ filter_paired_fastq_on_equal_read_length.bash \
 	${inbase}_R2.fastq.gz \
 	${outbase}_R1.fastq.gz \
 	${outbase}_R2.fastq.gz \
-	${outbase}_diff_R1.fastq.gz \
-	${outbase}_diff_R2.fastq.gz
+	${outbase}_R1_diff.fastq.gz \
+	${outbase}_R2_diff.fastq.gz
 
 read_length_hist.bash ${outbase}_R1.fastq.gz
 read_length_hist.bash ${outbase}_R2.fastq.gz
-read_length_hist.bash ${outbase}_diff_R1.fastq.gz
-read_length_hist.bash ${outbase}_diff_R2.fastq.gz
+read_length_hist.bash ${outbase}_R1_diff.fastq.gz
+read_length_hist.bash ${outbase}_R2_diff.fastq.gz
 
 inbase="${outbase}"
 outbase="${OUT}/trimmed/length/unpaired/${base}"
