@@ -1,0 +1,14 @@
+
+
+All manually retrieved from https://www.ncbi.nlm.nih.gov/nuccore/
+
+Ran RepeatMasker on them. Still many spikes of alignment.
+
+Masking regions that align to human.
+
+
+Need to create a reference that does NOT include EBV
+
+./mask.bash
+
+
