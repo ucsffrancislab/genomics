@@ -39,11 +39,13 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 	#	"cmd | getline r" will return just the first line
+	#	Summaries are all unique lines. It is pointless to buffer.
 	zcat ${input} | awk -F"\t" -v db=$db -v level=$level '{ \
 			cmd="accession_to_taxid_and_name.bash -l "level" -d "db" -a \""$2"\""
 			cmd | getline r
 			close(cmd)
 			sums[r]+=$1
+			r=""
 		}
 		END{
 			for( s in sums ){
