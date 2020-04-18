@@ -37,7 +37,7 @@ for r1 in ${IN}/????_R1.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub ${depend} -N ${jobbase}.pre \
+		qsub -N ${jobbase}.pre \
 			-l nodes=1:ppn=8 -l vmem=32gb \
 			-j oe -o ${outbase}.pre_process.${date}.out.txt \
 			~/.local/bin/pre_process_paired.bash \

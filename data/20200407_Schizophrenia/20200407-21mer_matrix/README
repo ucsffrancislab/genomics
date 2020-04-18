@@ -5,3 +5,14 @@ Can you quality filter with bbduk and try to make a 21 mer table?
 
 
 
+
+
+./pre_process.bash
+
+
+
+rename _diff_R1 _R1_diff *_diff_R1*
+rename _diff_R2 _R2_diff *_diff_R2*
+
+
+
