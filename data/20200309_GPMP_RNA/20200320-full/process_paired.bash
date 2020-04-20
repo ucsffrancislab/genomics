@@ -32,9 +32,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 BASEDIR=/francislab/data1/working/20200309_GPMP_RNA/20200320-full/trimmed/length
 
 
-#for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
-for r1 in ${BASEDIR}/SF12149*E_R1.fastq.gz ; do
-#for r1 in ${BASEDIR}/SF12[234]*E_R1.fastq.gz ; do
+for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 	r2=${r1/_R1/_R2}
 
@@ -164,8 +162,6 @@ for r1 in ${BASEDIR}/SF12149*E_R1.fastq.gz ; do
 						--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
 						--levels species,genus \
 						--unmapped_read_count '${unmapped_read_count}'"
-					#~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
-					#	--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz"
 			fi
 
 
@@ -183,118 +179,6 @@ for r1 in ${BASEDIR}/SF12149*E_R1.fastq.gz ; do
 #					outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.sum-${suffix}.normalized"
 #					f=${outbase}.txt.gz
 
-
-
-
-#			summaryid=""
-#			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary"
-#			f=${outbase}.txt.gz
-#			if [ -f $f ] && [ ! -w $f ] ; then
-#				echo "Write-protected $f exists. Skipping."
-#			else
-#				if [ ! -z ${diamondid} ] ; then
-#					depend="-W depend=afterok:${diamondid}"
-#				else
-#					depend=""
-#				fi
-##				if [ -f $input ] ; then
-##					#	On first run, this wouldn't work
-##					size=$( stat -c %s $input )
-##					if [ $size -gt 10000000 ] ; then
-##						echo "Size $size gt 10000000"
-##						vmem=8
-##					elif [ $size -gt 8000000 ] ; then
-##						echo "Size $size gt 8000000"
-##						vmem=6
-##					else
-##						echo "Size $size NOT gt 8000000"
-##						vmem=4
-##					fi
-##				else
-##					vmem=4
-##				fi
-#				vmem=8
-#				#summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=2 -l vmem=${vmem}gb \
-#				summaryid=$( qsub ${depend} -N ${jobbase}.s.${dref} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#					-j oe -o ${outbase}.${date}.out.txt \
-#					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
-#				echo $summaryid
-#			fi
-#
-#			summary=$f
-#
-#			#			normalize
-#
-#			if [ -n "${unmapped_read_count}" ] ; then
-#				echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-#				outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.normalized"
-#				f=${outbase}.txt.gz
-#				if [ -f $f ] && [ ! -w $f ] ; then
-#					echo "Write-protected $f exists. Skipping."
-#				else
-#					if [ ! -z ${summaryid} ] ; then
-#						depend="-W depend=afterok:${summaryid}"
-#					else
-#						depend=""
-#					fi
-#					#threads=8
-#					vmem=8	#	4
-#					qsub ${depend} -N ${jobbase}.norm.${dref} \
-#						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#						-j oe -o ${outbase}.${date}.out.txt \
-#						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
-#				fi
-#			fi
-#
-#			#			sum summaries
-#
-#			#for level in species genus ; do
-#			for level in species ; do
-#				suffix=${level%%,*}	#	in case a list of level's provided
-#
-#				sumsummaryid=""
-#				outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.sum-${suffix}"
-#				f=${outbase}.txt.gz
-#				if [ -f $f ] && [ ! -w $f ] ; then
-#					echo "Write-protected $f exists. Skipping."
-#				else
-#					if [ ! -z ${summaryid} ] ; then
-#						depend="-W depend=afterok:${summaryid}"
-#					else
-#						depend=""
-#					fi
-#					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${dref} -l nodes=1:ppn=8 -l vmem=8gb \
-#						-j oe -o ${outbase}.${date}.out.txt \
-#						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
-#					echo $sumsummaryid
-#				fi
-#				sumsummary=${f}
-#	
-#				#			normalize
-#
-#				if [ -n "${unmapped_read_count}" ] ; then
-#					echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-#					outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.summary.sum-${suffix}.normalized"
-#					f=${outbase}.txt.gz
-#					if [ -f $f ] && [ ! -w $f ] ; then
-#						echo "Write-protected $f exists. Skipping."
-#					else
-#						if [ ! -z ${sumsummaryid} ] ; then
-#							depend="-W depend=afterok:${sumsummaryid}"
-#						else
-#							depend=""
-#						fi
-#						#-l nodes=1:ppn=2 -l vmem=4gb \
-#						qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-#							-l nodes=1:ppn=8 -l vmem=8gb \
-#							-j oe -o ${outbase}.${date}.out.txt \
-#							~/.local/bin/normalize_summary.bash \
-#								-F "-input ${sumsummary} -d ${unmapped_read_count}"
-#					fi
-#				fi
-#
-#			done	#	for level in species genus subfamily ; do
-	
 		done	#	for dref in nr viral ; do
 
 
