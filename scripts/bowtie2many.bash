@@ -33,7 +33,7 @@ for ali in e2e loc ; do
 		else
 			echo "Creating ${f}"
 
-			bowtie2.bash $SELECT_ARGS ${opt} --rg-id ${rgbase}.${ali} --rg SM:${rgbase} -o ${f}
+			bowtie2.bash $SELECT_ARGS ${opt} -x ${ref} --rg-id ${rgbase}.${ali} --rg SM:${rgbase} -o ${f}
 
 		fi
 
