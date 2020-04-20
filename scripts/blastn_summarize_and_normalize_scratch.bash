@@ -30,7 +30,7 @@ mkdir -p $SCRATCH_JOB
 cd $SCRATCH_JOB
 ##    ... is automatically removed upon exit
 ##    (regardless of success or failure)
-#trap "{ chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
+trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
 
 
 
@@ -137,29 +137,87 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 		if [ ! -f ${SCRATCH_JOB}/taxadb_full.sqlite ] ; then
 			#	takes about 3 minutes
 			cp /francislab/data1/refs/taxadb/taxadb_full.sqlite ${SCRATCH_JOB}/
+			chmod +w ${SCRATCH_JOB}/taxadb_full.sqlite
 		fi
 		db=${SCRATCH_JOB}/taxadb_full.sqlite
 
-		gunzip -c ${scratch_summary} > ${SCRATCH_JOB}/tmp_summary
 
-		# Summaries are all unique lines. It is pointless to buffer.
-		awk -F"\t" -v db=$db -v level=$level '{ \
-			cmd="accession_to_taxid_and_name.bash -l "level" -d "db" -a \""$2"\""
-			print cmd >> "debugging"
-			cmd | getline r
-			print r >> "debugging"
-			close(cmd)
-			sums[r]+=$1
-			r=""
-		}
-		END{
-			for( s in sums ){
-				print sums[s]"\t"s
-			}
-		}' ${SCRATCH_JOB}/tmp_summary > ${SCRATCH_JOB}/tmp_sumsummary
-		sort -k 2n ${SCRATCH_JOB}/tmp_sumsummary > ${SCRATCH_JOB}/tmp_sumsummary_sorted
-		gzip -c ${SCRATCH_JOB}/tmp_sumsummary_sorted > ${SCRATCH_JOB}/$( basename ${f} )
-		\rm ${SCRATCH_JOB}/{tmp_summary,tmp_sumsummary,tmp_sumsummary_sorted}
+#		# Summaries are all unique lines. It is pointless to buffer.
+#		awk -F"\t" -v db=$db -v level=$level '{ \
+#			cmd="accession_to_taxid_and_name.bash -l "level" -d "db" -a \""$2"\""
+#			print cmd >> "debugging"
+#			cmd | getline r
+#			print r >> "debugging"
+#			close(cmd)
+#			sums[r]+=$1
+#			r=""
+#		}
+#		END{
+#			for( s in sums ){
+#				print sums[s]"\t"s
+#			}
+#		}' ${SCRATCH_JOB}/tmp_summary > ${SCRATCH_JOB}/tmp_sumsummary
+#		sort -k 2n ${SCRATCH_JOB}/tmp_sumsummary > ${SCRATCH_JOB}/tmp_sumsummary_sorted
+#		gzip -c ${SCRATCH_JOB}/tmp_sumsummary_sorted > ${SCRATCH_JOB}/$( basename ${f} )
+#		\rm ${SCRATCH_JOB}/{tmp_summary,tmp_sumsummary,tmp_sumsummary_sorted}
+
+		table_exists=$( sqlite3 taxadb_full.sqlite "SELECT name FROM sqlite_master WHERE type='table' AND name='query'" )
+
+		#	No need to do this twice, but its kinda fast so could.
+		if [ -z "${table_exists}" ] ; then
+			sqlite3 taxadb_full.sqlite "
+				CREATE TABLE query ( count INTEGER, accession VARCHAR(255) NOT NULL );
+				CREATE UNIQUE INDEX ix ON query(accession);"
+			gunzip -c ${scratch_summary} > ${SCRATCH_JOB}/tmp_summary
+			sqlite3 taxadb_full.sqlite -cmd '.separator "\t"' ".import ${SCRATCH_JOB}/tmp_summary query"
+			\rm ${SCRATCH_JOB}/tmp_summary
+		fi
+
+#	Some taxomies contain : but not ;
+#	select * from taxa where tax_name LIKE '%:%';
+#	select * from taxa where tax_name LIKE '%;%';
+#	Also there are 3 which contain a single or double quote, so results will always be quoted.
+
+#	This query uses about 700MB memory so nothing special.
+#	And it only takes a couple minutes.
+
+
+sqlite3 -cmd '.mode csv' -cmd '.separator "\t" "\n"' -cmd ".output ${SCRATCH_JOB}/${level}.csv" taxadb_full.sqlite "
+SELECT SUM(count), ${level} FROM (
+SELECT count, CASE
+WHEN INSTR(${level},';')>0 THEN SUBSTR(${level}, 1, INSTR(${level},';')-1) 
+ELSE ${level} END AS ${level} FROM ( 
+SELECT count, 
+CASE WHEN lineage IS NULL OR lineage = '' THEN accession || ' not found'
+ELSE CASE WHEN INSTR(lineage,';${level};') > 0 THEN SUBSTR(lineage, INSTR(lineage,';${level};')+$[${#level}+2]) 
+ELSE accession || ' doesn''t have ${level}'
+END END as ${level} FROM ( 
+SELECT q.count, q.accession, ';' || 
+t1.lineage_level || ';' || t1.ncbi_taxid || ' ' || t1.tax_name || ';' || 
+t2.lineage_level || ';' || t2.ncbi_taxid || ' ' || t2.tax_name || ';' || 
+t3.lineage_level || ';' || t3.ncbi_taxid || ' ' || t3.tax_name || ';' || 
+t4.lineage_level || ';' || t4.ncbi_taxid || ' ' || t4.tax_name || ';' || 
+t5.lineage_level || ';' || t5.ncbi_taxid || ' ' || t5.tax_name || ';' || 
+t6.lineage_level || ';' || t6.ncbi_taxid || ' ' || t6.tax_name || ';' || 
+t7.lineage_level || ';' || t7.ncbi_taxid || ' ' || t7.tax_name || ';' || 
+t8.lineage_level || ';' || t8.ncbi_taxid || ' ' || t8.tax_name || ';' AS lineage
+FROM ( SELECT count, CASE
+WHEN INSTR(accession,'.')>0 THEN SUBSTR(accession,1,INSTR(accession,'.')-1) 
+ELSE accession END AS accession
+FROM query ) AS q LEFT JOIN accession a ON q.accession = a.accession
+LEFT JOIN taxa t1 ON t1.ncbi_taxid = a.taxid_id 
+LEFT JOIN taxa t2 ON t2.ncbi_taxid = t1.parent_taxid 
+LEFT JOIN taxa t3 ON t3.ncbi_taxid = t2.parent_taxid 
+LEFT JOIN taxa t4 ON t4.ncbi_taxid = t3.parent_taxid 
+LEFT JOIN taxa t5 ON t5.ncbi_taxid = t4.parent_taxid 
+LEFT JOIN taxa t6 ON t6.ncbi_taxid = t5.parent_taxid 
+LEFT JOIN taxa t7 ON t7.ncbi_taxid = t6.parent_taxid 
+LEFT JOIN taxa t8 ON t8.ncbi_taxid = t7.parent_taxid ) AS abc ) AS def ) AS ghi GROUP BY ${level}"
+
+		#	ORDER BY ${level}
+
+		gzip -c ${SCRATCH_JOB}/${level}.csv > ${SCRATCH_JOB}/$( basename ${f} )
+		\rm ${SCRATCH_JOB}/${level}.csv
 
 		chmod a-w ${SCRATCH_JOB}/$( basename ${f} )
 		cp --archive ${SCRATCH_JOB}/$( basename ${f} ) $( dirname ${input} )
