@@ -7,6 +7,9 @@ Also, this 1kg_all_chroms_pruned_mds.mds was created by Amelia.
 This seems to be specific to her subset so I probably should learn how to create.
 
 
+--keep accepts a space/tab-delimited text file with family IDs in the first column and within-family IDs in the second column, and removes all unlisted samples from the current analysis. --remove does the same for all listed samples.
+
+
 #
 #	1=male, 2=female, 0=unknown
 #
@@ -14,7 +17,23 @@ This seems to be specific to her subset so I probably should learn how to create
 
 These files are all "FID,IID,Gender"
 
-awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $2,$1,s >> $6"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
+awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $2,$1,s >> "old_ids/"$6"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
 
-awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $2,$1,s >> $6"_"$4"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
+awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $2,$1,s >> "old_ids/"$6"_"$4"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
+
+
+#	Use sample id as family id
+
+awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $1,$1,s >> $6"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
+
+awk 'BEGIN{FS=OFS="\t"}(NR>1){ s=($3=="male")?1:2; print $1,$1,s >> $6"_"$4"_ids.txt" }' /francislab/data1/raw/1000genomes/metadata.tsv
+
+
+
+
+Despite the definition of --keep, the family ids / within-family ids are odd.
+As in the 1kg spreadsheet, AMR results in none used in the bed file creation.
+
+Recreating with sample id in both columns
+
 
