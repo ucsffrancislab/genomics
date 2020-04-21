@@ -138,10 +138,8 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 			summaryid=""
 			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}"
-			#f1="${outbase}.summary.sum-species.normalized.txt.gz"
-			#f2="${outbase}.summary.sum-genus.normalized.txt.gz"
-			f1="${outbase}.summary.sum-species.txt.gz"
-			f2="${outbase}.summary.sum-genus.txt.gz"
+			f1="${outbase}.summary.sum-species.normalized.txt.gz"
+			f2="${outbase}.summary.sum-genus.normalized.txt.gz"
 			if [ -f $f1 ] && [ ! -w $f1 ] && [ -f $f2 ] && [ ! -w $f2 ] ; then
 				echo "Write-protected $f1 and $f2 exists. Skipping."
 			else
