@@ -4,3 +4,32 @@
 ./pre_process.bash
 
 
+
+
+
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.viral.summary.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.normalized.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.viral.summary.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.sum-species.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.viral.summary.sum-species.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-species.normalized.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.viral.summary.sum-species.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.viral.summary.sum-genus.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.viral.summary.sum-genus.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.viral.summary.sum-genus.normalized.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.viral.summary.sum-genus.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.nr.summary.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.nr.summary.normalized.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.nr.summary.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.sum-species.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.nr.summary.sum-species.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.nr.summary.sum-species.normalized.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.nr.summary.sum-species.normalized.txt.gz
+
+merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.sum-genus.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.nr.summary.sum-genus.txt.gz
+
+merge_summaries.py --output unmapped.bam.diamond.nr.summary.sum-genus.normalized.csv.gz trimmed/length/*.STAR.hg38.unmapped.diamond.nr.summary.sum-genus.normalized.txt.gz
+
+
