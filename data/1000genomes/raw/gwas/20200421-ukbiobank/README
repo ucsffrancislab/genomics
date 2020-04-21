@@ -1,0 +1,18 @@
+
+
+
+This is a subset of SNPs from Linda Kachuri's UK Biobank study.
+
+zcat UKB_GWAS_MAF01_INFO30.list.gz | awk -vOFS="\t" '(!/^#/){print $1,$2,$2,$3}' > extract_range.txt
+
+
+--extract MUST be unzipped. 
+
+Can use names, but not all of the names were in my VCF files, so using positions.
+Same position for start and end.
+
+
+Need to redo due to misundertanding of metadata used by plink
+
+This is that redo
+
