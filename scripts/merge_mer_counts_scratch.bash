@@ -24,8 +24,7 @@ SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
 mkdir -p $SCRATCH_JOB
 ##    ... is automatically removed upon exit
 ##    (regardless of success or failure)
-#trap "{ cd /scratch/ ; rm -rf $SCRATCH_JOB/ ; }" EXIT
-trap "{ chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
+trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
 
 
 f="${out}"
