@@ -42,7 +42,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	mkdir ${SCRATCH_JOB}/
+	#mkdir ${SCRATCH_JOB}/
 
 	cp --archive ${bfile}.{bed,bim,fam} ${SCRATCH_JOB}/
 	cp --archive ${pheno} ${SCRATCH_JOB}/
@@ -53,7 +53,7 @@ else
 	scratch_covar=${SCRATCH_JOB}/$( basename ${covar} )
 	scratch_out=${SCRATCH_JOB}/$( basename ${out} )
 
-	plink --check ${check} --out ${scratch_out} \
+	plink --out ${scratch_out} \
 		--bfile ${scratch_bfile} \
 		--pheno ${scratch_pheno} \
 		--covar ${scratch_covar} \
@@ -62,7 +62,4 @@ else
 	mv --update ${scratch_out}* $( dirname ${out} )
 	chmod a-w ${out}*	#	probably unnecessary
 fi
-
-
-
 
