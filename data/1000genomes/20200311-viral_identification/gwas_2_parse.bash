@@ -6,7 +6,8 @@ REFS=/francislab/data1/raw/1000genomes/gwas
 
 #WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/diamond.viral
 #WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/blastn.viral.masked
-WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/blastn.viral.masked.unmapped
+#WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/blastn.viral.masked.unmapped
+WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/bowtie2.hg38-masked-viruses
 
 OUT=${WORK}/gwas_all
 mkdir -p $OUT
@@ -15,9 +16,7 @@ mkdir -p $OUT
 
 #	in pheno files, 2 should be presence ( and 1 is absence )
 
-for pheno_dir in pheno_files_1 pheno_files_3 pheno_files_10 pheno_files_100 pheno_files_1000 ; do
-#for pheno_dir in pheno_files_1 pheno_files_3 ; do
-#for pheno_dir in pheno_files_10 pheno_files_100 pheno_files_1000 ; do
+for pheno_dir in pheno_files_1 pheno_files_3 pheno_files_10 ; do
 	echo ${pheno_dir}
 #for population in afr amr eas eur sas ; do
 for population in eur ; do
@@ -29,7 +28,7 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 	#for bedfile in ${REFS}/pruned_vcfs/${population}/ALL.chr*.bed ; do
 	#for bedfile in ${WORK}/select_eur_positions/chr*.bed ; do
 	#for bedfile in ${REFS}/20200401/eur/chr*.bed ; do		#	Select SNPS
-	for bedfile in ${REFS}/20200402/eur/chr*.bed ; do			#	ALL SNPs
+	for bedfile in ${REFS}/20200421-all/${population}/chr*.bed ; do			#	ALL SNPs
 
 		echo $bedfile
 
@@ -92,13 +91,15 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/* ; do
 					#	plink  produces .assoc.logistic and .log
 					#	plink2 produces .PHENO1.glm.logistic and .log
 
-		#awk '{print $1,$2,$3,$9,$4,$7}' ${bedfile_core}.no.covar.assoc.logistic \
-		#	> ${bedfile_core}.for.plot.txt
 
-		#	PLINK v1.90b6.16 64-bit (19 Feb 2020)
-		awk '{print $1,$2,$3,$9,$4,$7}' \
-			${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic \
-			> ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.for.plot.txt
+		if [ -f ${outbase}.no.covar.assoc.logistic ] ; then
+			#	PLINK v1.90b6.16 64-bit (19 Feb 2020)
+			awk '{print $1,$2,$3,$9,$4,$7}' \
+				${outbase}.no.covar.assoc.logistic \
+				> ${outbase}.for.plot.txt
+		fi
+#			${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic \
+#			> ${OUT}/${population}/${pheno_dir}/${pheno_name}.${bedfile_core}.for.plot.txt
 
 		#	plink2 output
 		#	PLINK v2.00a2LM 64-bit Intel (10 Aug 2019)
