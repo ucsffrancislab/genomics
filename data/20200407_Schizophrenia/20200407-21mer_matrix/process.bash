@@ -28,7 +28,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 for r1 in /francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length/????_R1.fastq.gz ; do
 
 	#	NEED FULL PATH HERE ON THE CLUSTER
-	base=${r1%.fastq.gz}
+	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
 
 	echo $base
@@ -64,9 +64,9 @@ for r1 in /francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix
 		qsub ${depend} -N ${jobbase}.uslt.21 \
 			-l feature=nocommunal \
 			-l gres=scratch:50 \
-			-j oe -o ${qoutbase}.${date}.out.txt \
+			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/dsk_ascii_split_scratch.bash \
-			-F "-k 21 -outbase ${outbase}"
+			-F "-k 21 -u 15 -outbase ${outbase}"
 	fi
 
 done	#	for r1 in 
