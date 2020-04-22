@@ -7,6 +7,8 @@
 library("optparse")
  
 option_list = list(
+	make_option(c("-p", "--plot_prefix"), type="character", default=NULL, 
+		help="plot title prefix", metavar="character"),
 	make_option(c("-m", "--manhattan"), type="character", default=NULL, 
 		help="manhattan.plot file name", metavar="character"),
 	make_option(c("-q", "--qq"), type="character", default=NULL, 
@@ -62,8 +64,10 @@ dbgP$P<-ifelse(dbgP$P==0.000e+00,1.000e-302,dbgP$P)
 dq<-read.table(opt$qq, sep=" ")
 dqgP<-data.frame(SNP=dq$V2, CHR=dq$V1, BP=dq$V3, P=dq$V4)
 par(mfrow=c(2,1)) 
-manhattan(dbgP, chr = "CHR", main=basename(opt$manhattan))
-qq(dqgP$P, main=basename(opt$qq))
+#manhattan(dbgP, chr = "CHR", main=basename(opt$manhattan))
+#qq(dqgP$P, main=basename(opt$qq))
+manhattan(dbgP, chr = "CHR", main=paste(opt$plot_prefix,basename(opt$manhattan),sep=" "))
+qq(dqgP$P, main=paste(opt$plot_prefix,basename(opt$qq),sep=" "))
 
 #	Why? This prints "null device\n 1". Seems to work when removed?
 dev.off()	

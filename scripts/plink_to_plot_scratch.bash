@@ -6,11 +6,17 @@ set -o pipefail
 
 set -x
 
+#echo "PBS_O_HOST:${PBS_O_HOST}:"
+#echo "PBS_SERVER:${PBS_SERVER}:"
+#echo "env:$(env):"
+echo "hostname:$(hostname):"
+
 #ARGS=$*
 
 #	No easily computable output file so pick custom argument, pass on the rest
 
 #SELECT_ARGS=""
+plot_prefix=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		--out)
@@ -21,6 +27,8 @@ while [ $# -gt 0 ] ; do
 			shift; covar=$1; shift;;
 		--beddir)
 			shift; beddir=$1; shift;;
+		--plot_prefix)
+			shift; plot_prefix=$1; shift;;
 #		*)
 #			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -55,7 +63,7 @@ else
 	scratch_out=${SCRATCH_JOB}/out
 	mkdir -p ${scratch_out}
 
-	for bedfile in ${scratch_beddir}/*2.bed ; do
+	for bedfile in ${scratch_beddir}/*.bed ; do
 
 		echo $bedfile
 
@@ -103,10 +111,14 @@ else
 					#	plink  produces .assoc.logistic and .log
 					#	plink2 produces .PHENO1.glm.logistic and .log
 
-		#	PLINK v1.90b6.16 64-bit (19 Feb 2020)
-		awk '{print $1,$2,$3,$9,$4,$7}' \
-			${scratch_out}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic \
-			> ${scratch_out}/${pheno_name}.${bedfile_core}.for.plot.txt
+		if [ -f ${scratch_out}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic ] ; then
+			#	PLINK v1.90b6.16 64-bit (19 Feb 2020)
+			awk '{print $1,$2,$3,$9,$4,$7}' \
+				${scratch_out}/${pheno_name}.${bedfile_core}.no.covar.assoc.logistic \
+				> ${scratch_out}/${pheno_name}.${bedfile_core}.for.plot.txt
+		else
+			touch ${scratch_out}/${pheno_name}.${bedfile_core}.for.plot.txt
+		fi
 
 		#	plink2 output
 		#	PLINK v2.00a2LM 64-bit Intel (10 Aug 2019)
@@ -141,9 +153,11 @@ else
 
 	if [ -s ${scratch_out}/${pheno_name}.for.manhattan.plot ] && \
 		[ -s ${scratch_out}/${pheno_name}.for.qq.plot ] ; then
-		manhattan_qq_plot.r -m ${scratch_out}/${pheno_name}.for.manhattan.plot \
-			-q ${scratch_out}/${pheno_name}.for.qq.plot \
-			-o ${scratch_out}
+		manhattan_qq_plot.r \
+			--plot_prefix "${plot_prefix}" \
+			--manhattan ${scratch_out}/${pheno_name}.for.manhattan.plot \
+			--qq ${scratch_out}/${pheno_name}.for.qq.plot \
+			--outpath ${scratch_out}
 		#	produces ${pheno_name}.for.manhattan.plot.png
 	fi
 
