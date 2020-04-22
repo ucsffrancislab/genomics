@@ -370,4 +370,77 @@ done
 samtools_depth_to_png.py bowtie2-e2e.hg38.unmapped.bowtie2-*.HHV7.masked.loc-masked.bam.depths.csv.gz
 
 
+--------------------------------------------------
+
+Re-plot with hg38-masked viruses
+
+awk -F"\t" 'BEGIN{ split("e2e loc",as," ");
+split("NC_000898 NC_001348 NC_001664 NC_001716 NC_007605 NC_009333 NC_009334",vs," ") }
+(NR>1){ print "mkdir -p hg38-masked/"$6"/"$4;
+for( a in as ){
+for( v in vs ){
+	command="ls s3/1000genomes/phase3/data/"$1"/alignment/"$1"*.hg38.unmapped."vs[v]".masked.loc-masked.bowtie2-"as[a]".bam 2> /dev/null"
+	command | getline f
+	close(command)
+	if( length(f) > 1 ) print "ln -s ../../../"f" hg38-masked/"$6"/"$4"/"
+	f=""
+} } }' /francislab/data1/raw/1000genomes/metadata.tsv > hg38-masked-linking-script &
+
+bash hg38-masked-linking-script.bash
+
+for a in e2e loc ; do
+for v in NC_000898 NC_001348 NC_001664 NC_001716 NC_007605 NC_009333 NC_009334 ; do
+for superpop in AFR AMR EAS EUR SAS ; do
+for subsuperpop in hg38-masked/${superpop}/??? ; do
+pop=$( basename ${subsuperpop} )
+echo $a $v $superpop $pop
+samtools merge hg38-masked/${superpop}.${pop}.${v}.bowtie2-${a}.bam hg38-masked/${superpop}/${pop}/*.hg38.unmapped.${v}.masked.loc-masked.bowtie2-${a}.bam
+samtools index hg38-masked/${superpop}.${pop}.${v}.bowtie2-${a}.bam
+samtools depth -a hg38-masked/${superpop}.${pop}.${v}.bowtie2-${a}.bam | gzip > hg38-masked/${superpop}.${pop}.${v}.bowtie2-${a}.bam.depths.csv.gz
+done ; done ; done ; done
+
+cd hg38-masked
+rename NC_009334 HHV4 *NC_009334*
+rename NC_009333 HHV8 *NC_009333*
+rename NC_007605 HgHV4 *NC_007605*
+rename NC_001716 HHV7 *NC_001716*
+rename NC_001664 HbHV6A *NC_001664*
+rename NC_001348 HHV3 *NC_001348*
+rename NC_000898 HHV6B *NC_000898*
+samtools_depth_to_png.py ???.???.*.bowtie2-*.bam.depths.csv.gz
+
+
+
+
+
+for a in e2e loc ; do
+for v in NC_000898 NC_001348 NC_001664 NC_001716 NC_007605 NC_009333 NC_009334 ; do
+for s in HG00 HG01 HG02 HG03 HG04 NA0 NA1 NA2 ; do
+samtools merge hg38-masked/${s}.${v}.masked.loc-masked.bowtie2-${a}.bam /francislab/data1/working/1000genomes/20200311-viral_identification/s3/1000genomes/phase3/data/${s}*/alignment/*.hg38.unmapped.${v}.masked.loc-masked.bowtie2-${a}.bam
+done
+samtools merge hg38-masked/${v}.masked.loc-masked.bowtie2-${a}.bam hg38-masked/*.${v}.masked.loc-masked.bowtie2-${a}.bam 
+samtools index hg38-masked/${v}.masked.loc-masked.bowtie2-${a}.bam
+samtools depth -a hg38-masked/${v}.masked.loc-masked.bowtie2-${a}.bam | gzip > hg38-masked/${v}.masked.loc-masked.bowtie2-${a}.bam.depths.csv.gz
+done
+done
+cd hg38-masked
+samtools_depth_to_png.py NC_*.masked.loc-masked.bowtie2-???.bam.depths.csv.gz
+
+
+
+Still spikes in 
+1664 - 132,000
+HbHV6A - 132,000
+9333 - 25,000 125,000
+HHV8 - 25,000 125,000
+9334 - 10,000, 171,000
+HHV4 - 10,000 171,000
+
+
+--------------------------------------------------
+
+Re-GWAS
+
+
+
 
