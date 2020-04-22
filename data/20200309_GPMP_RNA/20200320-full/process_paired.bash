@@ -132,11 +132,7 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 							--query ${infile} --outfmt 6 --out ${f}" )
 				echo $diamondid
 			fi
-			input=${f}
 
-
-
-			summaryid=""
 			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}"
 			f1="${outbase}.summary.sum-species.normalized.txt.gz"
 			f2="${outbase}.summary.sum-genus.normalized.txt.gz"
@@ -154,12 +150,15 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 
 				#	-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 
+#					-l feature=nocommunal \
+#					-l gres=scratch:50 \
 				qsub ${depend} -N ${jobbase}.s.${dref} \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
-						--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
+						--input ${outbase}.csv.gz \
 						--levels species,genus \
 						--unmapped_read_count '${unmapped_read_count}'"
+						#--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
 			fi
 
 
