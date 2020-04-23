@@ -1,21 +1,13 @@
 #!/usr/bin/env bash
 
+hostname
+
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
 
 set -x
 
-#echo "PBS_O_HOST:${PBS_O_HOST}:"
-#echo "PBS_SERVER:${PBS_SERVER}:"
-#echo "env:$(env):"
-echo "hostname:$(hostname):"
-
-#ARGS=$*
-
-#	No easily computable output file so pick custom argument, pass on the rest
-
-#SELECT_ARGS=""
 plot_prefix=""
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -29,8 +21,6 @@ while [ $# -gt 0 ] ; do
 			shift; beddir=$1; shift;;
 		--plot_prefix)
 			shift; plot_prefix=$1; shift;;
-#		*)
-#			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 

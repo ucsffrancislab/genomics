@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
+hostname
+
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
 
 set -x
 
+#threads=""
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-o)
 			shift; out=$1; shift;;
-		-p|--threads)
-			shift; threads="-p $1"; shift;;
+#		-p|--threads)
+#			shift; threads="-p $1"; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -49,7 +52,8 @@ else
 
 
 
-	merge_mer_counts.py ${threads} -o ${scratch_out} ${SCRATCH_JOB}/input/*
+	#merge_mer_counts.py ${threads} -o ${scratch_out} ${SCRATCH_JOB}/input/*
+	merge_mer_counts.py -p ${PBS_NUM_PPN} -o ${scratch_out} ${SCRATCH_JOB}/input/*
 
 
 

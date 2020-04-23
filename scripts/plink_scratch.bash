@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+hostname
+
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail

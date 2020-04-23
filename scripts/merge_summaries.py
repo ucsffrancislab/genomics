@@ -88,6 +88,7 @@ for filename in args.files:
 		sample=basename.split(".")[0]	#	everything before the first "."
 		print("Reading "+filename+": Sample "+sample)
 		d = pd.read_csv(filename,
+			skipinitialspace=True,
 			header=None,
 			usecols=[0,1],
 			names=[sample,"taxonomy"],

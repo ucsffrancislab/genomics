@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+hostname
+
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
@@ -9,7 +11,6 @@ set -x
 levels="species,genus"
 unmapped_read_count=""
 
-#SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-i|--input)
@@ -18,8 +19,6 @@ while [ $# -gt 0 ] ; do
 			shift; levels=$1; shift;;
 		-u|--unmapped_read_count)
 			shift; unmapped_read_count=$1; shift;;
-		#*)
-		#	SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 
