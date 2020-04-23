@@ -18,11 +18,16 @@ while [ $# -gt 0 ] ; do
 	else
 		echo "Creating $f"
 		if [ "${1: -3}" == ".gz" ] ; then
-			command="zcat "
+			command="zcat ${1} "
 		else
-			command="cat "
+			command="cat ${1} "
 		fi
-		command="${command} ${1} | paste - - | wc -l"
+		if [ "${1: -4}" == "q.gz" ] ; then
+			command="${command} | paste - - - - "
+		else
+			command="${command} | paste - - "
+		fi
+		command="${command} | wc -l"
 		eval $command > ${f}
 		chmod a-w $f
 	fi
