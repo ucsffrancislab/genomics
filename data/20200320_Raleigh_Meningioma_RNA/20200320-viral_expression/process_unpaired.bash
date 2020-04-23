@@ -269,4 +269,17 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 
 	done	#	for ref in hg38  ; do
 
-done	#	for r1 in /francislab/data1/working/20200303_GPMP/20200306-full/trimmed/length/*_R1.fastq.gz ; do
+
+	outbase="${base}.bowtie2-e2e.SVAs_and_HERVs_KWHE"
+	f=${outbase}.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N ${jobbase}.HKLE.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-j oe -o ${outbase}.${date}.out.txt \
+			~/.local/bin/bowtie2.bash \
+			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/SVAs_and_HERVs_KWHE \
+				--no-unal --rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${outbase}.bam"
+	fi
+
+done	#	for r1 in ${BASEDIR}/???.fastq.gz ; do
