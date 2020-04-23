@@ -110,3 +110,7 @@ ll /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/length/u
 
 
 
+
+for f in trimmed/length/unpaired/*lt30bp.fastq.gz.read_count.txt ; do b=$(basename $f .lt30bp.fastq.gz.read_count.txt); c=$( cat $f ); echo -e $b"\t"$c; done > lt30bp_read_counts.txt
+
+

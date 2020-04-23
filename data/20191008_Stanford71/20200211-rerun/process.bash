@@ -50,6 +50,7 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 		echo ${shortsid}
 	fi
 
+	bowtie2hmid=""
 	outbase="${base}.lt30bp.human_mature.bowtie2-e2e"
 	f=${outbase}.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -60,12 +61,31 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 		else
 			depend=""
 		fi
-		qsub ${depend} -N ${jobbase}.hm.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		bowtie2hmid=$( qsub ${depend} -N ${jobbase}.hm.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bowtie2.bash \
 			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/human_mature \
-					--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${base}.lt30bp.fastq.gz -o ${f}"
+					--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${base}.lt30bp.fastq.gz -o ${f}" )
+		echo $bowtie2hmid
 	fi
+
+	for q in 00 15 30 ; do
+		outbase="${base}.lt30bp.human_mature.bowtie2-e2e.q${q}.counts"
+		f="${outbase}.txt.gz"
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${bowtie2hmid} ] ; then
+				depend="-W depend=afterok:${bowtie2hmid}"
+			else
+				depend=""
+			fi
+			qsub -N ${jobbase}.${q} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-j oe -o ${outbase}.${date}.out.txt \
+				~/.local/bin/samtools_sequence_alignment_counts.bash \
+					-F "view -q ${q} -o ${f} ${base}.lt30bp.human_mature.bowtie2-e2e.bam"
+		fi
+	done
 
 
 
