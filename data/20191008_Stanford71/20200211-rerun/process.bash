@@ -19,6 +19,7 @@ DIAMOND=${REFS}/diamond
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
 threads=8
+vmem=8
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -35,6 +36,38 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 
 	echo $base
 	jobbase=$( basename ${base} )
+
+	shortsid=""
+	#	select reads less than 30bp
+	outbase="${base}.lt30bp"
+	f=${outbase}.fastq.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		shortsid=$(qsub -N ${jobbase}.short -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-j oe -o ${outbase}.${date}.out.txt \
+			~/.local/bin/fasta_length_filter.bash -F "-l 30 -o ${f} -i ${r1}" )
+		echo ${shortsid}
+	fi
+
+	outbase="${base}.lt30bp.human_mature.bowtie2-e2e"
+	f=${outbase}.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${shortsid} ] ; then
+			depend="-W depend=afterok:${shortsid}"
+		else
+			depend=""
+		fi
+		qsub ${depend} -N ${jobbase}.hm.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-j oe -o ${outbase}.${date}.out.txt \
+			~/.local/bin/bowtie2.bash \
+			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/human_mature \
+					--rg-id ${jobbase} --rg "SM:${jobbase}" -U ${base}.lt30bp.fastq.gz -o ${f}"
+	fi
+
+
 
 #	for k in 9 11 13 ; do
 #
@@ -329,13 +362,12 @@ for r1 in /francislab/data1/working/20191008_Stanford71/20200211-rerun/trimmed/l
 						else
 							depend=""
 						fi
-						#vmem=8;threads=8;
-#-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+						vmem=16;threads=8;
 						qsub ${depend} -N ${jobbase}.uslt.${k} \
 							-j oe -o ${qoutbase}.${date}.out.txt \
+							-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 							~/.local/bin/dsk_ascii_split_scratch.bash \
 								-F "-k ${k} -outbase ${qoutbase}"
-#								-F "-infile ${infile} -k ${k} -threads ${threads} -mem $[vmem/2]000 -outbase ${qoutbase}"
 					fi
 
 				done
