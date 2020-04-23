@@ -19,7 +19,7 @@ DIAMOND=${REFS}/diamond
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
 threads=8
-vmem=8
+vmem=16
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -40,8 +40,19 @@ for r1 in /francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		nonhuman_dskid=$( qsub -N ${jobbase}.unk -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		#	dsk crashes often on other machines. No idea why. Guessing its a compiled library thing.
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 348724 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 428386 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 428382 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 432574 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 440511 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 464722 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 495647 Illegal instruction     dsk $ARGS
+		#	/home/gwendt/.local/bin/dsk.bash: line 28: 488282 Illegal instruction     dsk $ARGS
+		#	So use -l feature=nocommunal
+		nonhuman_dskid=$( qsub -N ${jobbase}.unk -l nodes=1:ppn=${threads} -l vmem=16gb \
 			-j oe -o ${outbase}.${date}.out.txt \
+			-l feature=nocommunal \
 			~/.local/bin/nonhuman_dsk.bash \
 				-F "-r1 ${r1} -r2 ${r2}" )
 		echo $nonhuman_dskid
@@ -64,6 +75,7 @@ for r1 in /francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix
 		qsub ${depend} -N ${jobbase}.uslt.21 \
 			-l feature=nocommunal \
 			-l gres=scratch:50 \
+			-l nodes=1:ppn=8 -l vmem=16gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/dsk_ascii_split_scratch.bash \
 			-F "-k 21 -u 15 -outbase ${outbase}"
