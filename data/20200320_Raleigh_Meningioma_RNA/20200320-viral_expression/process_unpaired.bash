@@ -102,12 +102,11 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 							--query ${infile} --outfmt 6 --out ${f}" )
 				echo $diamondid
 			fi
-#			input=${f}
 
-#			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}"
-			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${dref}"
-			f1="${outbase}.summary.sum-species.normalized.txt.gz"
-			f2="${outbase}.summary.sum-genus.normalized.txt.gz"
+			input=${f}
+			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.${dref}.summary"
+			f1="${outbase}.sum-species.normalized.txt.gz"
+			f2="${outbase}.sum-genus.normalized.txt.gz"
 			if [ -f $f1 ] && [ ! -w $f1 ] && [ -f $f2 ] && [ ! -w $f2 ] ; then
 				echo "Write-protected $f1 and $f2 exists. Skipping."
 			else
@@ -125,9 +124,10 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 #					-l feature=nocommunal \
 #					-l gres=scratch:50 \
 				qsub ${depend} -N ${jobbase}.s.${dref} \
+					-l feature=nocommunal \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
-						--input ${outbase}.csv.gz \
+						--input ${input} \
 						--levels species,genus \
 						--unmapped_read_count '${unmapped_read_count}'"
 						#--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
@@ -160,126 +160,70 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 			fi
 			input=${f}
 
-			summaryid=""
 			outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary"
-			f=${outbase}.txt.gz
-			if [ -f $f ] && [ ! -w $f ] ; then
-				echo "Write-protected $f exists. Skipping."
+			f1="${outbase}.sum-species.normalized.txt.gz"
+			f2="${outbase}.sum-genus.normalized.txt.gz"
+			if [ -f $f1 ] && [ ! -w $f1 ] && [ -f $f2 ] && [ ! -w $f2 ] ; then
+				echo "Write-protected $f1 and $f2 exists. Skipping."
 			else
 				if [ ! -z ${blastnid} ] ; then
 					depend="-W depend=afterok:${blastnid}"
 				else
 					depend=""
 				fi
-				#	-l nodes=1:ppn=2 -l vmem=${vmem}gb \
-				#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-				summaryid=$( qsub ${depend} -N ${jobbase}.s.${bref} \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+
+				#		SUMMARIZE AND NORMALIZE IN ONE SCRIPT ON SCRATCH
+				#		MINIMIZE PIPING TO MINIMIZE MEMORY
+
+				#	-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+
+#					-l feature=nocommunal \
+#					-l gres=scratch:50 \
+				qsub ${depend} -N ${jobbase}.s.${bref} \
+					-l feature=nocommunal \
 					-j oe -o ${outbase}.${date}.out.txt \
-					~/.local/bin/blastn_summary.bash -F "-input ${input}" )
-				echo $summaryid
+					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
+						--input ${input} \
+						--levels species,genus \
+						--unmapped_read_count '${unmapped_read_count}'"
+						#--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
 			fi
-
-			summary=$f
-
-			#			normalize
-
-			if [ -n "${unmapped_read_count}" ] ; then
-				echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
-				outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary.normalized"
-				f=${outbase}.txt.gz
-				if [ -f $f ] && [ ! -w $f ] ; then
-					echo "Write-protected $f exists. Skipping."
-				else
-					if [ ! -z ${summaryid} ] ; then
-						depend="-W depend=afterok:${summaryid}"
-					else
-						depend=""
-					fi
-					#-l nodes=1:ppn=2 -l vmem=4gb \
-					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-					qsub ${depend} -N ${jobbase}.norm.${bref} \
-						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-						-j oe -o ${outbase}.${date}.out.txt \
-						~/.local/bin/normalize_summary.bash -F "-input ${summary} -d ${unmapped_read_count}"
-				fi
-			fi
-
-#	viral is species so no need to sum to species
-#
-#			#			sum summaries
-#
-#			#for level in species genus subfamily ; do
-			for level in species genus ; do
-				suffix=${level%%,*}	#	in case a list of level's provided
-
-				sumsummaryid=""
-				outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary.sum-${suffix}"
-				f=${outbase}.txt.gz
-				if [ -f $f ] && [ ! -w $f ] ; then
-					echo "Write-protected $f exists. Skipping."
-				else
-					if [ ! -z ${summaryid} ] ; then
-						depend="-W depend=afterok:${summaryid}"
-					else
-						depend=""
-					fi
-					#	-l nodes=1:ppn=2 -l vmem=4gb \
-					#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-					sumsummaryid=$( qsub ${depend} -N ${jobbase}.${suffix:0:2}.${bref} \
-						-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-						-j oe -o ${outbase}.${date}.out.txt \
-						~/.local/bin/sum_summary.bash -F "-input ${summary} -level ${level}" )
-
-
-
-
-					echo $sumsummaryid
-				fi
-				sumsummary=${f}
-
-				#			normalize
-
-				if [ -n "${unmapped_read_count}" ] ; then
-					echo "Unmapped Read Count ${unmapped_read_count} exists. Normalizing."
 	
-					outbase="${base}.STAR.${ref}.Unmapped.out.blastn.${bref}.summary.sum-${suffix}.normalized"
-					f=${outbase}.txt.gz
-					if [ -f $f ] && [ ! -w $f ] ; then
-						echo "Write-protected $f exists. Skipping."
-					else
-						if [ ! -z ${sumsummaryid} ] ; then
-							depend="-W depend=afterok:${sumsummaryid}"
-						else
-							depend=""
-						fi
-						#-l nodes=1:ppn=2 -l vmem=4gb \
-						#	-o ${outbase}.${date}.out.txt -e ${outbase}.${date}.err.txt \
-						qsub ${depend} -N ${jobbase}.${suffix:0:2}.norm \
-							-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-							-j oe -o ${outbase}.${date}.out.txt \
-							~/.local/bin/normalize_summary.bash \
-								-F "-input ${sumsummary} -d ${unmapped_read_count}"
-					fi
-				fi
-
-			done	#	for level in species genus subfamily ; do
-
 		done	#	for bref in viral.masked ; do
 
 	done	#	for ref in hg38  ; do
 
 
+	bowtie2hkleid=""
 	outbase="${base}.bowtie2-e2e.SVAs_and_HERVs_KWHE"
 	f=${outbase}.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub -N ${jobbase}.HKLE.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		bowtie2hkleid=$( qsub -N ${jobbase}.HKLE.bt -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bowtie2.bash \
 			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/SVAs_and_HERVs_KWHE \
-				--no-unal --rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${outbase}.bam"
+				--no-unal --rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${outbase}.bam")
+		echo $bowtie2hkleid
 	fi
+
+	for q in 00 15 30 ; do
+		outbase="${base}.bowtie2-e2e.SVAs_and_HERVs_KWHE.q${q}.counts"
+		f="${outbase}.txt.gz"
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${bowtie2hkleid} ] ; then
+				depend="-W depend=afterok:${bowtie2hkleid}"
+			else
+				depend=""
+			fi
+			qsub -N ${jobbase}.${q} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-j oe -o ${outbase}.${date}.out.txt \
+				~/.local/bin/samtools_sequence_alignment_counts.bash \
+					-F "view -q ${q} -o ${f} ${base}.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam"
+		fi
+	done
 
 done	#	for r1 in ${BASEDIR}/???.fastq.gz ; do

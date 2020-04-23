@@ -92,3 +92,10 @@ merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.sum-genus.csv.
 
 merge_summaries.py --output unmapped.bam.diamond.nr.summary.sum-genus.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.sum-genus.normalized.txt.gz
 
+
+
+
+
+
+for f in trimmed/???.fastq.gz.read_count.txt; do b=$(basename $f .fastq.gz.read_count.txt); c=$( cat $f ); echo -e $b"\t"$c; done > raw_read_counts.txt
+
