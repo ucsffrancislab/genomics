@@ -47,7 +47,7 @@ for k in 21 ; do
 	h5="${outbase}.h5"
 	dsk.bash \
 		-nb-cores ${PBS_NUM_PPN} -kmer-size ${k} -abundance-min 0 \
-		-max-memory $[vmem/2]000 -file ${infile} -out ${outbase}.h5
+		-max-memory $[vmem/2]000 -file ${unmapped_fasta} -out ${outbase}.h5
 
 	dsk2ascii.bash -nb-cores ${PBS_NUM_PPN} -file ${h5} -out ${outbase}.txt.gz
 
