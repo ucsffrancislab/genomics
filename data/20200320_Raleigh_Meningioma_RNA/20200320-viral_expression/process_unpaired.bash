@@ -204,7 +204,7 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bowtie2.bash \
 			-F "--xeq --threads ${threads} --very-sensitive -x ${BOWTIE2}/SVAs_and_HERVs_KWHE \
-				--no-unal --rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${outbase}.bam")
+				--no-unal --rg-id ${jobbase} --rg "SM:${jobbase}" -U ${r1} -o ${outbase}.bam --sort")
 		echo $bowtie2hkleid
 	fi
 
@@ -219,7 +219,7 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 			else
 				depend=""
 			fi
-			qsub -N ${jobbase}.${q} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			qsub ${depend} -N ${jobbase}.${q} -l nodes=1:ppn=4 -l vmem=4gb \
 				-j oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/samtools_sequence_alignment_counts.bash \
 					-F "view -q ${q} -o ${f} ${base}.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam"
