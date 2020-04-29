@@ -13,3 +13,10 @@ Also, copied in a version from my mac and its masked couterpart.
 for f in Archive/viral.*.20190905.n?? ; do echo $f ; l=$( basename $f ); l=${l/20190905./}; echo $l; ln -s $f $l ; done
 
 
+
+
+update_blastdb.pl --decompress nr
+
+blastdbcmd -db ${db} -entry_batch <( zcat ${input} | awk -F"\t" '( $11 < '${max}' ){print $1"\t"$2}' | sort | uniq | awk '{print $2}' ) -outfmt "%a %t" | sort | uniq -c | awk '{print $1"\t"$2}' | gzip > ${f}
+
+blastdbcmd -db nr -entry 6V22_E
