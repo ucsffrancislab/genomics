@@ -85,3 +85,12 @@ rename NC_001348 HHV3 *NC_001348*
 rename NC_000898 HHV6B *NC_000898*
 samtools_depth_to_png.py ???.???.*.bowtie2-*.bam.depths.csv.gz
 
+
+##################################################
+
+Redo GWAS with hg38 masked viral references
+
+for f in s3/geuvadis-bam/*bam.bowtie2-e2e.hg38.unmapped.fasta.gz.read_count.txt; do b=$(basename $f .bam.bowtie2-e2e.hg38.unmapped.fasta.gz.read_count.txt ); c=$( cat $f ); echo -e $b"\t"$c; done > unmapped_unmapped_read_counts.txt
+
+
+
