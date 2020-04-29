@@ -32,7 +32,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-for mer in $( mers.bash 3 AAC ) ; do
+for mer in $( mers.bash 6 ) ; do
 	echo $mer
 
 	#f="${dir}/h38au.bowtie2-e2e.unmapped.21mers-${mer}.dsk-matrix.csv.gz"
