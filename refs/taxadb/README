@@ -59,3 +59,33 @@ sqlite3 /francislab/data1/refs/taxadb/taxadb_full.sqlite  "select * from accessi
 
 Note that accession numbers DO NOT include the version suffix.
 
+
+
+
+
+
+
+##################################################
+#
+#	20200429 - Add data extracted from nr database
+#
+
+sqlite3 taxadb_full_nr.sqlite "CREATE TABLE nr ( accession VARCHAR NOT NULL, taxid_id INTEGER NOT NULL, sciname VARCHAR NOT NULL, blastname VARCHAR NOT NULL, superkingdon VARCHAR NOT NULL  FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid")); CREATE UNIQUE INDEX ix ON nr(accession);"
+
+
+#	sciname, blastname and superkingdom are unnecessary and could be removed if to large
+
+
+sqlite3 taxadb_full_nr.sqlite -cmd '.separator "---"' ".import nr.aTSBK.sorted.txt nr"
+Error: multi-character column separators not allowed for import
+
+NR data contained pipes, quotes and commas. 
+
+cat nr.aTSBK.sorted.txt | python -c "import sys; import pandas as pd; pd.read_csv(sys.stdin, header=None, sep='---',engine='python').to_csv(sys.stdout,header=False,index=False,sep=',')" > nr.aTSBK.sorted.csv
+
+nohup python -c "import pandas as pd; pd.read_csv('nr.aTSBK.sorted.txt', header=None, sep='---',engine='python').to_csv('nr.aTSBK.sorted.csv',header=False,index=False,sep=',')" &
+
+
+sqlite3 taxadb_full_nr.sqlite -cmd '.separator ", ".import nr.aTSBK.sorted.csv nr"
+
+
