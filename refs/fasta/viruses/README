@@ -7,10 +7,31 @@ Ran RepeatMasker on them. Still many spikes of alignment.
 Masking regions that align to human.
 
 
-Need to create a reference that does NOT include EBV
+Created hg38-noEBV that does NOT include EBV
 
 
 
 ./mask.bash > mask.out 2>&1 &
 
+
+Still spiking in regions ...
+
+NC_001664.4 131476 131576
+NC_001664.4 131658 131761
+
+NC_009333.1 24805 24827
+NC_009333.1 124972 125037
+
+
+NC_009334.1 1 77
+NC_009334.1 7452 7669
+NC_009334.1 7966 8048
+NC_009334.1 70486 70524
+NC_009334.1 78162 78197
+NC_009334.1 96763 96975
+NC_009334.1 171603 171677
+
+I guess I'll have to find out actually look at these?
+
+Perhaps align to hg19 too?
 
