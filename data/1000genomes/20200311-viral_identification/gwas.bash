@@ -6,7 +6,7 @@ REFS=/francislab/data1/raw/1000genomes/gwas
 
 WORK=/francislab/data1/working/1000genomes/20200311-viral_identification/bowtie2.hg38-masked-viruses
 
-OUT=${WORK}/gwas
+OUT=${WORK}/gwas.ukbiobank
 mkdir -p $OUT
 cd $OUT
 
@@ -56,10 +56,11 @@ for pheno_file in ${WORK}/${pheno_dir}/${population}/NC_0* ; do
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/plink_to_plot_scratch.bash \
 			-F "--plot_prefix '${population^^}-${pheno_dir/pheno_files_/}' \
-				--beddir ${REFS}/20200421-all/${population}/ \
+				--beddir ${REFS}/20200421-ukbiobank/${population}/ \
 				--pheno ${pheno_file} \
 				--out ${outdir} \
 				--covar ${REFS}/1kg_all_chroms_pruned_mds.mds"
+#				--beddir ${REFS}/20200421-all/${population}/ \
 
 	fi
 
