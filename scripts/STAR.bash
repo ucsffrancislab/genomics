@@ -48,7 +48,7 @@ else
 		fi
 	done
 
-	samtools.bash fasta -f 4 --threads $[PBS_NUM_PPN-1] -N -o ${f%.bam}.fasta.gz ${f}
+	samtools.bash fasta -f 4 --threads $[${PBS_NUM_PPN:-1}-1] -N -o ${f%.bam}.fasta.gz ${f}
 	count_fasta_reads.bash ${f%.bam}.fasta.gz
 fi
 

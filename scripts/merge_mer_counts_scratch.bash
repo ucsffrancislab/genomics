@@ -53,7 +53,7 @@ else
 
 
 	#merge_mer_counts.py ${threads} -o ${scratch_out} ${SCRATCH_JOB}/input/*
-	merge_mer_counts.py -p ${PBS_NUM_PPN} -o ${scratch_out} ${SCRATCH_JOB}/input/*
+	merge_mer_counts.py -p ${PBS_NUM_PPN:-1} -o ${scratch_out} ${SCRATCH_JOB}/input/*
 
 
 
