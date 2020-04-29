@@ -1,0 +1,44 @@
+
+
+
+All manually retrieved from https://www.ncbi.nlm.nih.gov/nuccore/
+
+Ran RepeatMasker on them. Still many spikes of alignment.
+
+Masking regions that align to human.
+
+
+Created hg38-noEBV that does NOT include EBV
+
+
+
+Still no RepeatMasker on the cluster. Downloading them to my laptop. Then...
+
+cat */*out
+   SW   perc perc perc  query        position in query    matching repeat          position in repeat
+score   div. del. ins.  sequence     begin end   (left)   repeat   class/family  begin  end    (left)  ID
+
+   22    0.0  0.0  0.0  NC_004718.3  29728 29751    (0) + (A)n     Simple_repeat      1     24    (0)   1  
+   SW   perc perc perc  query        position in query    matching  repeat          position in repeat
+score   div. del. ins.  sequence     begin end   (left)   repeat    class/family  begin  end    (left)  ID
+
+   11   17.4  0.0  5.9  NC_019843.3  23402 23437 (6682) + (CTGTTT)n Simple_repeat      1     34    (0)   1  
+   SW   perc perc perc  query        position in query     matching  repeat          position in repeat
+score   div. del. ins.  sequence     begin end    (left)   repeat    class/family  begin  end    (left)  ID
+
+   16   20.6  0.0  0.0  NC_045512.2   3046  3084 (26819) + (AGATGA)n Simple_repeat      1     39    (0)   1  
+   30    0.0  0.0  0.0  NC_045512.2  29871 29903     (0) + (A)n      Simple_repeat      1     33    (0)   2  
+
+Very little to mask.
+
+Also tried "slow" option with no difference.
+
+
+./mask.bash > mask.out 2>&1 &
+
+
+Almost no homology to human. Think only 1 read aligned.
+
+
+
+
