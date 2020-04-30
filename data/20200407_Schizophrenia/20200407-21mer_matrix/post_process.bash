@@ -32,6 +32,26 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
+for k in 13 15 17 ; do
+
+	f="${dir}/hg38.bowtie2-e2e.unmapped.${k}mers.dsk-matrix.csv.gz"
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		qsub -N merge${k} -j oe -o ${f}.${date}.out.txt \
+			-l nodes=1:ppn=60 -l vmem=448gb \
+			-l feature=nocommunal \
+			~/.local/bin/merge_mer_counts_scratch.bash \
+				-F "-o ${f} ${dir}/????.hg38.bowtie2-e2e.unmapped.${k}mers.dsk.txt.gz"
+	fi
+
+done
+
+
+exit
+
+
+
 for mer in $( mers.bash 6 ) ; do
 	echo $mer
 
