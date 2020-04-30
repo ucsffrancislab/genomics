@@ -10,6 +10,9 @@ set -x
 
 levels="species,genus"
 unmapped_read_count=""
+db="/francislab/data1/refs/taxadb/taxadb_full.sqlite"
+accession="accession"
+max=10
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -19,6 +22,12 @@ while [ $# -gt 0 ] ; do
 			shift; levels=$1; shift;;
 		-u|--unmapped_read_count)
 			shift; unmapped_read_count=$1; shift;;
+		-d|--db)
+			shift; db=$1; shift;;
+		-a|--accession)
+			shift; accession=$1; shift;;
+		-max)
+			shift; max=$1; shift;;
 	esac
 done
 
@@ -133,12 +142,12 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 
 		#	could create script to pipe to bash then sum output? ???
 
-		if [ ! -f ${SCRATCH_JOB}/taxadb_full.sqlite ] ; then
+		scratch_db=${SCRATCH_JOB}/$( basename ${db} )
+		if [ ! -f ${scratch_db} ] ; then
 			#	takes about 3 minutes
-			cp /francislab/data1/refs/taxadb/taxadb_full.sqlite ${SCRATCH_JOB}/
-			chmod +w ${SCRATCH_JOB}/taxadb_full.sqlite
+			cp ${db} ${SCRATCH_JOB}/
+			chmod +w ${scratch_db}
 		fi
-		db=${SCRATCH_JOB}/taxadb_full.sqlite
 
 
 #		# Summaries are all unique lines. It is pointless to buffer.
@@ -160,15 +169,15 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 #		gzip -c ${SCRATCH_JOB}/tmp_sumsummary_sorted > ${SCRATCH_JOB}/$( basename ${f} )
 #		\rm ${SCRATCH_JOB}/{tmp_summary,tmp_sumsummary,tmp_sumsummary_sorted}
 
-		table_exists=$( sqlite3 taxadb_full.sqlite "SELECT name FROM sqlite_master WHERE type='table' AND name='query'" )
+		table_exists=$( sqlite3 ${scratch_db} "SELECT name FROM sqlite_master WHERE type='table' AND name='query'" )
 
 		#	No need to do this twice, but its kinda fast so could.
 		if [ -z "${table_exists}" ] ; then
-			sqlite3 taxadb_full.sqlite "
+			sqlite3 ${scratch_db} "
 				CREATE TABLE query ( count INTEGER, accession VARCHAR(255) NOT NULL );
 				CREATE UNIQUE INDEX ix ON query(accession);"
 			gunzip -c ${scratch_summary} > ${SCRATCH_JOB}/tmp_summary
-			sqlite3 taxadb_full.sqlite -cmd '.separator "\t"' ".import ${SCRATCH_JOB}/tmp_summary query"
+			sqlite3 ${scratch_db} -cmd '.separator "\t"' ".import ${SCRATCH_JOB}/tmp_summary query"
 			\rm ${SCRATCH_JOB}/tmp_summary
 		fi
 
@@ -181,7 +190,7 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 #	And it only takes a couple minutes.
 
 
-sqlite3 -cmd '.mode csv' -cmd '.separator "\t" "\n"' -cmd ".output ${SCRATCH_JOB}/${level}.csv" taxadb_full.sqlite "
+sqlite3 -cmd '.mode csv' -cmd '.separator "\t" "\n"' -cmd ".output ${SCRATCH_JOB}/${level}.csv" ${scratch_db} "
 SELECT SUM(count), ${level} FROM (
 SELECT count, CASE
 WHEN INSTR(${level},';')>0 THEN SUBSTR(${level}, 1, INSTR(${level},';')-1) 
@@ -203,7 +212,7 @@ t8.lineage_level || ';' || t8.ncbi_taxid || ' ' || t8.tax_name || ';' AS lineage
 FROM ( SELECT count, CASE
 WHEN INSTR(accession,'.')>0 THEN SUBSTR(accession,1,INSTR(accession,'.')-1) 
 ELSE accession END AS accession
-FROM query ) AS q LEFT JOIN accession a ON q.accession = a.accession
+FROM query ) AS q LEFT JOIN ${accession} a ON q.accession = a.accession
 LEFT JOIN taxa t1 ON t1.ncbi_taxid = a.taxid_id 
 LEFT JOIN taxa t2 ON t2.ncbi_taxid = t1.parent_taxid 
 LEFT JOIN taxa t3 ON t3.ncbi_taxid = t2.parent_taxid 
