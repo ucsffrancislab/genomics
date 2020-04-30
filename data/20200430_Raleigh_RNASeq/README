@@ -1,0 +1,9 @@
+
+
+
+As David mentioned, we've run some immune deconvolution on these samples using SeSAMe (from methylation data) and xCell (from RNA-seq data). While the exact immune percentage values from the two methods don't have a linear correlation, they both show an enrichment of immune cells in our subgroup 2 tumors. I've attached that data.
+
+Also, should I upload our cell line RNAseq fastqs to the same data1/inbox folder on the cancer cluster? These are 3 replicates each for the conditions WT, NF2 knockdown, and NF2 knockdown with re-expression.
+
+
+
