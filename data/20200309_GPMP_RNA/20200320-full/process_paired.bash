@@ -32,7 +32,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 BASEDIR=/francislab/data1/working/20200309_GPMP_RNA/20200320-full/trimmed/length
 
 
-for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
+for r1 in ${BASEDIR}/*_R1.fastq.gz ; do
 
 	r2=${r1/_R1/_R2}
 
@@ -160,6 +160,53 @@ for r1 in ${BASEDIR}/*E_R1.fastq.gz ; do
 						--unmapped_read_count '${unmapped_read_count}'"
 						#--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
 			fi
+
+
+
+
+
+#	TESTING
+
+			if [ ${dref} == "nr" ] ; then
+
+			if [ ! -f ${base}.STAR.${ref}.unmapped.diamond.${dref}.nr.csv.gz ] ; then
+				cp ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz ${base}.STAR.${ref}.unmapped.diamond.${dref}.nr.csv.gz
+			fi
+
+			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.nr"
+			f1="${outbase}.summary.sum-species.normalized.txt.gz"
+			f2="${outbase}.summary.sum-genus.normalized.txt.gz"
+			if [ -f $f1 ] && [ ! -w $f1 ] && [ -f $f2 ] && [ ! -w $f2 ] ; then
+				echo "Write-protected $f1 and $f2 exists. Skipping."
+			else
+				if [ ! -z ${diamondid} ] ; then
+					depend="-W depend=afterok:${diamondid}"
+				else
+					depend=""
+				fi
+				qsub ${depend} -N ${jobbase}.s.${dref} \
+					-l feature=nocommunal \
+					-l gres=scratch:50 \
+					-j oe -o ${outbase}.${date}.out.txt \
+					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
+						--input ${outbase}.csv.gz \
+						--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite \
+						--accession nr \
+						--levels species,genus \
+						--unmapped_read_count '${unmapped_read_count}'"
+			fi
+
+			fi
+
+
+
+
+
+
+
+
+
+
 
 
 
