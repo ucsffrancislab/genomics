@@ -13,6 +13,7 @@ FASTA=${REFS}/fasta
 BOWTIE2=${REFS}/bowtie2
 date=$( date "+%Y%m%d%H%M%S" )
 
+k=21
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -20,6 +21,8 @@ while [ $# -gt 0 ] ; do
 			shift; R1=$1; shift;;
 		-r2)
 			shift; R2=$1; shift;;
+		-k)
+			shift; k=$1; shift;;
 	esac
 done
 
@@ -42,7 +45,7 @@ samtools.bash fasta -f 4 --threads $[${PBS_NUM_PPN:-1}-1] -N -o ${unmapped_fasta
 vmem=16
 
 #for k in 11 21 31 ; do
-for k in 21 ; do
+#for k in 21 ; do
 
 	outbase="${base}.hg38.bowtie2-e2e.unmapped.${k}mers.dsk"
 
@@ -53,5 +56,5 @@ for k in 21 ; do
 
 	dsk2ascii.bash -nb-cores ${PBS_NUM_PPN:-1} -file ${h5} -out ${outbase}.txt.gz
 
-done	#	for k in 21 ; do
+#done	#	for k in 21 ; do
 
