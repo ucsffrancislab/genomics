@@ -75,13 +75,13 @@ else
 	gunzip ${scratch_input}
 	awk -F"\t" '( $11 < '${max}' ){print $1"\t"$2}' ${scratch_input%.gz} \
 		> ${scratch_input%.gz}.read.acc.txt
-	sort ${scratch_input%.gz}.read.acc.txt \
+	sort --buffer-size 200M --parallel 4 ${scratch_input%.gz}.read.acc.txt \
 		> ${scratch_input%.gz}.read.acc.sorted.txt
 	uniq ${scratch_input%.gz}.read.acc.sorted.txt \
 		> ${scratch_input%.gz}.read.acc.sorted.uniq.txt
 	awk '{print $2}' ${scratch_input%.gz}.read.acc.sorted.uniq.txt \
 		> ${scratch_input%.gz}.read.acc.sorted.uniq.acc.txt
-	sort ${scratch_input%.gz}.read.acc.sorted.uniq.acc.txt \
+	sort --buffer-size 200M --parallel 4 ${scratch_input%.gz}.read.acc.sorted.uniq.acc.txt \
 		> ${scratch_input%.gz}.read.acc.sorted.uniq.acc.sorted.txt
 	uniq -c ${scratch_input%.gz}.read.acc.sorted.uniq.acc.sorted.txt \
 		> ${scratch_input%.gz}.read.acc.sorted.uniq.acc.sorted.uniqc.txt
@@ -175,7 +175,7 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 		if [ -z "${table_exists}" ] ; then
 			sqlite3 ${scratch_db} "
 				CREATE TABLE query ( count INTEGER, accession VARCHAR(255) NOT NULL );
-				CREATE UNIQUE INDEX ix ON query(accession);"
+				CREATE UNIQUE INDEX aix ON query(accession);"
 			gunzip -c ${scratch_summary} > ${SCRATCH_JOB}/tmp_summary
 			sqlite3 ${scratch_db} -cmd '.separator "\t"' ".import ${SCRATCH_JOB}/tmp_summary query"
 			\rm ${SCRATCH_JOB}/tmp_summary
