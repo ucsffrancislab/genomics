@@ -72,9 +72,7 @@ Note that accession numbers DO NOT include the version suffix.
 
 sqlite3 taxadb_full_nr.sqlite "CREATE TABLE nr ( accession VARCHAR NOT NULL, taxid_id INTEGER NOT NULL, sciname VARCHAR NOT NULL, blastname VARCHAR NOT NULL, superkingdon VARCHAR NOT NULL  FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid")); CREATE UNIQUE INDEX ix ON nr(accession);"
 
-
 #	sciname, blastname and superkingdom are unnecessary and could be removed if to large
-
 
 sqlite3 taxadb_full_nr.sqlite -cmd '.separator "---"' ".import nr.aTSBK.sorted.txt nr"
 Error: multi-character column separators not allowed for import
@@ -85,7 +83,140 @@ cat nr.aTSBK.sorted.txt | python -c "import sys; import pandas as pd; pd.read_cs
 
 nohup python -c "import pandas as pd; pd.read_csv('nr.aTSBK.sorted.txt', header=None, sep='---',engine='python').to_csv('nr.aTSBK.sorted.csv',header=False,index=False,sep=',')" &
 
+sqlite3 taxadb_full_nr.sqlite -cmd '.separator ","' ".import nr.aTSBK.sorted.csv nr"
 
-sqlite3 taxadb_full_nr.sqlite -cmd '.separator ", ".import nr.aTSBK.sorted.csv nr"
+
+
+Just going to use the accession and taxid. Could have just extracted those at the beginning.
+
+cat nr.aTSBK.sorted.txt | awk 'BEGIN{FS="---";OFS=","}{split($1,a,".");print a[1],$2}' > nr.aT.csv
+
+sqlite3 taxadb_full_nr.sqlite "CREATE TABLE nr ( accession VARCHAR NOT NULL, taxid_id INTEGER NOT NULL, FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid")); CREATE UNIQUE INDEX ix ON nr(accession);"
+sqlite3 taxadb_full_nr.sqlite -cmd '.separator ","' ".import nr.aT.csv nr"
+
+
+
+nr.aT.csv:230402316: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:230404842: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:278392676: expected 2 columns but found 3 - extras ignored
+nr.aT.csv:278394440: expected 2 columns but found 5 - extras ignored
+nr.aT.csv:278399807: expected 2 columns but found 3 - extras ignored
+nr.aT.csv:278401630: expected 2 columns but found 3 - extras ignored
+
+The UNIQUE failures are ok as they just stop a duplicate entry.
+The other 4 are due to commas in accession numbers.
+
+
+[gwendt@cclc01 /francislab/data1/refs/taxadb]$ tail -n +230402316 nr.aTSBK.sorted.txt | head -1
+NP_001148592.2---4577---Zea mays---monocots---Eukaryota
+
+[gwendt@n38 /scratch/gwendt]$ grep -n "^NP_001148592" nr.aTSBK.sorted.txt 
+230402315:NP_001148592.1---4577---Zea mays---monocots---Eukaryota
+230402316:NP_001148592.2---4577---Zea mays---monocots---Eukaryota
+
+[gwendt@n38 /scratch/gwendt]$ tail -n +278392676 nr.aTSBK.sorted.txt | head -1
+prf||0403181A:PDB=1BP2,2BPP---9913---Bos taurus---even-toed ungulates---Eukaryota
+
+[gwendt@n38 /scratch/gwendt]$ tail -n +278394440 nr.aTSBK.sorted.txt | head 
+prf||0706243A:PDB=1HOE,2AIT,3AIT,4AIT---1932---Streptomyces tendae---high GC Gram+---Bacteria
+
+[gwendt@n38 /scratch/gwendt]$ tail -n +278399807 nr.aTSBK.sorted.txt | head 
+prf||1309311A:PDB=1EMD,2CMD---562---Escherichia coli---enterobacteria---Bacteria
+
+[gwendt@n38 /scratch/gwendt]$ tail -n +278401630 nr.aTSBK.sorted.txt | head 
+prf||1513188A:PDB=1BBC,1POD---9606---Homo sapiens---primates---Eukaryota
+
+Just those 4
+awk -F"---" '{print $1}' nr.aTSBK.sorted.txt | grep ,
+prf||0403181A:PDB=1BP2,2BPP
+prf||0706243A:PDB=1HOE,2AIT,3AIT,4AIT
+prf||1309311A:PDB=1EMD,2CMD
+prf||1513188A:PDB=1BBC,1POD
+
+
+
+diff nr.aT*csv
+278392676c278392676
+< prf||0403181A,9913
+---
+> prf||0403181A:PDB=1BP2,2BPP,9913
+278392713c278392713
+< prf||0407244A,9606
+---
+> prf||0407244A:PDB=1GF2,9606
+278394440c278394440
+< prf||0706243A,1932
+---
+> prf||0706243A:PDB=1HOE,2AIT,3AIT,4AIT,1932
+278394454c278394454
+< prf||0707237A,9913
+---
+> prf||0707237A:PDB=3ICB,9913
+278394506c278394506
+< prf||0710290A,9825
+---
+> prf||0710290A:PDB=1CTS,9825
+278395065c278395065
+< prf||0801257A,12054
+---
+> prf||0801257A:PDB=2STV,12054
+278395179c278395179
+< prf||0807298A,4932
+---
+> prf||0807298A:PDB=3PGM,4932
+278395799c278395799
+< prf||0902204A,1917
+---
+> prf||0902204A:PDB=2MCM,1917
+278396704c278396704
+< prf||1004262A,9825
+---
+> prf||1004262A:PDB=1C5A,9825
+278398645c278398645
+< prf||1202232A,10116
+---
+> prf||1202232A:PDB=1IFC,10116
+278399807c278399807
+< prf||1309311A,562
+---
+> prf||1309311A:PDB=1EMD,2CMD,562
+278400768c278400768
+< prf||1411165A,3649
+---
+> prf||1411165A:PDB=1PPO,3649
+278401630c278401630
+< prf||1513188A,9606
+---
+> prf||1513188A:PDB=1BBC,1POD,9606
+
+
+
+
+Oddly, some accession numbers include ":PDB=....."? Create a better import file.
+cat nr.aTSBK.sorted.txt | awk 'BEGIN{FS="---";OFS=","}{split($1,a,".");split(a[1],b,":");print b[1],$2}' > nr.aT.csv
+
+sqlite3 taxadb_full_nr.sqlite "CREATE TABLE nr ( accession VARCHAR NOT NULL, taxid_id INTEGER NOT NULL, FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid")); CREATE UNIQUE INDEX ix ON nr(accession);"
+sqlite3 taxadb_full_nr.sqlite -cmd '.separator ","' ".import nr.aT.csv nr"
+
+nr.aT.csv:230402316: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:230404842: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:278394440: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:278395065: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:278395179: INSERT failed: UNIQUE constraint failed: nr.accession
+nr.aT.csv:278398645: INSERT failed: UNIQUE constraint failed: nr.accession
+
+
+
+sqlite3 taxadb_full_nr.sqlite "PRAGMA auto_vacuum = FULL; VACUUM"
+Error: database or disk is full
+
+Trying this a different way ...
+
+echo ".dump" | sqlite3 taxadb_full_nr_ORIG.sqlite | sqlite3 taxadb_full_nr_DUMP.sqlite
+
+New database is a bit smaller, but VACUUM failed the same way.
+
+Assuming taxadb_full_nr_DUMP.sqlite is good so renaming sqlite3 taxadb_full_nr.sqlite
+
 
 
