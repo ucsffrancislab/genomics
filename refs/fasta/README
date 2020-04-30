@@ -95,3 +95,9 @@ for f in viruses/*fasta ; do l=$(basename $f);l=${l/.?./.}; ln -s $f $l ; done
 
 
 
+
+wget -O 20200430-nr.fa.gz ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz &
+
+nohup blastdbcmd -db nr -dbtype prot -entry all | gzip > 20200430-nr.extracted.fa.gz &
+
+
