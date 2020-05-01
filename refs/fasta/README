@@ -95,9 +95,17 @@ for f in viruses/*fasta ; do l=$(basename $f);l=${l/.?./.}; ln -s $f $l ; done
 
 
 
+So, some reads are in the downloaded nr.fasta file,
 
-wget -O 20200430-nr.fa.gz ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz &
+[gwendt@n38 /scratch/gwendt]$ grep "^>XP_032035046" 20200204-nr.fa 
+>XP_032035046.1 LOW QUALITY PROTEIN: rho family-interacting cell polarization regulator 2-like [Hylobates moloch]
+
+But not in the download nr reference.
 
 nohup blastdbcmd -db nr -dbtype prot -entry all | gzip > 20200430-nr.extracted.fa.gz &
+
+[gwendt@n38 /francislab/data1/refs/fasta]$ zcat 20200430-nr.extracted.fa.gz | grep "^>XP_032035046"
+NOTHING
+
 
 
