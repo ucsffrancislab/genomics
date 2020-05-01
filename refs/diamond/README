@@ -39,7 +39,7 @@ done
 
 
 
-diamond makedb --in ../fasta/20200430-nr.extracted.fa.gz -d 20200430-nr
+diamond makedb --in ../fasta/20200430-nr.extracted.fa.gz --db 20200430-nr --threads 64 > 20200430-nr.out 2> 20200430-nr.err &
 ln -s 20200430-nr.dmnd nr.dmnd
 
 
