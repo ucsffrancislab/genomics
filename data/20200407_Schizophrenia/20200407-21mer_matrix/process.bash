@@ -81,7 +81,7 @@ for r1 in /francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix
 	fi
 
 
-	for k in 13 15 17 ; do
+	for k in 13 15 17 31 ; do
 
 		outbase="${base}.hg38.bowtie2-e2e.unmapped.${k}mers.dsk"
 		f="${outbase}.txt.gz"
@@ -94,7 +94,7 @@ for r1 in /francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix
 				depend=""
 			fi
 			#	So use -l feature=nocommunal
-			qsub ${depend} -N ${jobbase}.${k}unk -l nodes=1:ppn=${threads} -l vmem=16gb \
+			qsub ${depend} -N ${jobbase}.${k}unk -l nodes=1:ppn=${threads} -l vmem=64gb \
 				-j oe -o ${outbase}.${date}.out.txt \
 				-l feature=nocommunal \
 				~/.local/bin/nonhuman_dsk.bash \

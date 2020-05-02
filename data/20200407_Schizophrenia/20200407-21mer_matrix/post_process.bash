@@ -32,14 +32,16 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 
 
-for k in 13 15 17 ; do
+#for k in 13 15 17 ; do
+#for k in 15 ; do
+for k in 13 ; do
 
 	f="${dir}/hg38.bowtie2-e2e.unmapped.${k}mers.dsk-matrix.csv.gz"
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		qsub -N merge${k} -j oe -o ${f}.${date}.out.txt \
-			-l nodes=1:ppn=60 -l vmem=448gb \
+			-l nodes=1:ppn=64 -l vmem=500gb \
 			-l feature=nocommunal \
 			~/.local/bin/merge_mer_counts_scratch.bash \
 				-F "-o ${f} ${dir}/????.hg38.bowtie2-e2e.unmapped.${k}mers.dsk.txt.gz"
@@ -47,8 +49,27 @@ for k in 13 15 17 ; do
 
 done
 
+#	13kmers join easily with less than 500gb memory.
+#	15kmers and about do not.
+#	This is odd since the 21mers are chopped into 6mer prefix making them like 15kmers.
+#	However a chopped 21kmer into 6kmer prefixes is 40x smaller than a raw 15kmer file.
 
 exit
+
+
+
+#	zcat trimmed/length/SD01.hg38.bowtie2-e2e.unmapped.13mers.dsk.txt.gz | wc -l
+#	17462065
+#	zcat trimmed/length/SD01.hg38.bowtie2-e2e.unmapped.15mers.dsk.txt.gz | wc -l
+#	39270616
+#	zcat trimmed/length/SD01.hg38.bowtie2-e2e.unmapped.17mers.dsk.txt.gz | wc -l
+#	56494787
+#	zcat trimmed/length/SD01.hg38.bowtie2-e2e.unmapped.21mers.dsk.txt.gz | wc -l
+#	82364600
+#	zcat trimmed/length/SD01.hg38.bowtie2-e2e.unmapped.21mers.dsk/SD01.hg38.bowtie2-e2e.unmapped.21mers.dsk-ACACAC.txt.gz | wc -l
+#	1228662
+
+
 
 
 
