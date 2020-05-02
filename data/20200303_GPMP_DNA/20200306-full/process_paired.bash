@@ -154,10 +154,15 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 						else
 							depend=""
 						fi
-						diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
+						case $dref in
+							nr) vmem=32;;
+							viral) vmem=16;;
+							*) vmem=8;;
+						esac
+						diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=${vmem}gb \
 							-j oe -o ${outbase}.out.txt \
-							~/.local/bin/diamond.bash \
-								-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
+							~/.local/bin/diamond_scratch.bash \
+								-F "blastx --db ${DIAMOND}/${dref} \
 									--query ${infile} --outfmt 6 --out ${f}" )
 						echo $diamondid
 					fi
@@ -185,6 +190,7 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							-l gres=scratch:50 \
 							-j oe -o ${outbase}.${date}.out.txt \
 							~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
+								--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
 							  --input ${outbase}.csv.gz \
 								--levels species,genus \
 								--unmapped_read_count '${unmapped_read_count}'"

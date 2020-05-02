@@ -115,8 +115,10 @@ for r1 in ${BASEDIR}/*_R1.fastq.gz ; do
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
-				if [ ! -z ${unmappedid} ] ; then
-					depend="-W depend=afterok:${unmappedid}"
+#				if [ ! -z ${unmappedid} ] ; then
+#					depend="-W depend=afterok:${unmappedid}"
+				if [ ! -z ${starid} ] ; then
+					depend="-W depend=afterok:${starid}"
 				else
 					depend=""
 				fi
@@ -127,8 +129,8 @@ for r1 in ${BASEDIR}/*_R1.fastq.gz ; do
 				esac
 				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 					-j oe -o ${outbase}.out.txt \
-					~/.local/bin/diamond.bash \
-						-F "blastx --threads ${threads} --db ${DIAMOND}/${dref} \
+					~/.local/bin/diamond_scratch.bash \
+						-F "blastx --db ${DIAMOND}/${dref} \
 							--query ${infile} --outfmt 6 --out ${f}" )
 				echo $diamondid
 			fi
@@ -155,6 +157,7 @@ for r1 in ${BASEDIR}/*_R1.fastq.gz ; do
 				qsub ${depend} -N ${jobbase}.s.${dref} \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
+						--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
 						--input ${outbase}.csv.gz \
 						--levels species,genus \
 						--unmapped_read_count '${unmapped_read_count}'"
@@ -166,37 +169,37 @@ for r1 in ${BASEDIR}/*_R1.fastq.gz ; do
 
 
 #	TESTING
-
-			if [ ${dref} == "nr" ] ; then
-
-			if [ ! -f ${base}.STAR.${ref}.unmapped.diamond.${dref}.nr.csv.gz ] ; then
-				cp ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz ${base}.STAR.${ref}.unmapped.diamond.${dref}.nr.csv.gz
-			fi
-
-			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.nr"
-			f1="${outbase}.summary.sum-species.normalized.txt.gz"
-			f2="${outbase}.summary.sum-genus.normalized.txt.gz"
-			if [ -f $f1 ] && [ ! -w $f1 ] && [ -f $f2 ] && [ ! -w $f2 ] ; then
-				echo "Write-protected $f1 and $f2 exists. Skipping."
-			else
-				if [ ! -z ${diamondid} ] ; then
-					depend="-W depend=afterok:${diamondid}"
-				else
-					depend=""
-				fi
-				qsub ${depend} -N ${jobbase}.s.${dref} \
-					-l feature=nocommunal \
-					-l gres=scratch:50 \
-					-j oe -o ${outbase}.${date}.out.txt \
-					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
-						--input ${outbase}.csv.gz \
-						--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite \
-						--accession nr \
-						--levels species,genus \
-						--unmapped_read_count '${unmapped_read_count}'"
-			fi
-
-			fi
+#
+#			if [ ${dref} == "nr" ] ; then
+#
+#			if [ ! -f ${base}.STAR.${ref}.unmapped.diamond.${dref}.nr.csv.gz ] ; then
+#				cp ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz ${base}.STAR.${ref}.unmapped.diamond.${dref}.nr.csv.gz
+#			fi
+#
+#			outbase="${base}.STAR.${ref}.unmapped.diamond.${dref}.nr"
+#			f1="${outbase}.summary.sum-species.normalized.txt.gz"
+#			f2="${outbase}.summary.sum-genus.normalized.txt.gz"
+#			if [ -f $f1 ] && [ ! -w $f1 ] && [ -f $f2 ] && [ ! -w $f2 ] ; then
+#				echo "Write-protected $f1 and $f2 exists. Skipping."
+#			else
+#				if [ ! -z ${diamondid} ] ; then
+#					depend="-W depend=afterok:${diamondid}"
+#				else
+#					depend=""
+#				fi
+#				qsub ${depend} -N ${jobbase}.s.${dref} \
+#					-l feature=nocommunal \
+#					-l gres=scratch:50 \
+#					-j oe -o ${outbase}.${date}.out.txt \
+#					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
+#						--input ${outbase}.csv.gz \
+#						--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite \
+#						--accession nr \
+#						--levels species,genus \
+#						--unmapped_read_count '${unmapped_read_count}'"
+#			fi
+#
+#			fi
 
 
 

@@ -32,7 +32,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 BASEDIR=/francislab/data1/working/20200320_Raleigh_Meningioma_RNA/20200320-viral_expression/trimmed
 
 
-for r1 in ${BASEDIR}/???.fastq.gz ; do
+for r1 in ${BASEDIR}/020.fastq.gz ; do
 #for r1 in ${BASEDIR}/001.fastq.gz ; do
 
 	#r2=${r1/_R1/_R2}
@@ -95,11 +95,12 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 					depend=""
 				fi
 				#	-e ${outbase}.err.txt \
-				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-j oe -o ${outbase}.out.txt \
-					~/.local/bin/diamond.bash \
-						-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
+				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
+					-j oe -o ${outbase}.${date}.out.txt \
+					~/.local/bin/diamond_scratch.bash \
+						-F "blastx --db ${DIAMOND}/${dref} \
 							--query ${infile} --outfmt 6 --out ${f}" )
+						#-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
 				echo $diamondid
 			fi
 
@@ -127,6 +128,7 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 					-l feature=nocommunal \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
+						--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
 						--input ${input} \
 						--levels species,genus \
 						--unmapped_read_count '${unmapped_read_count}'"
@@ -152,7 +154,7 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 				#	-e ${outbase}.err.txt \
 				blastnid=$( qsub ${depend} -N ${jobbase}.${bref} \
 					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-					-j oe -o ${outbase}.out.txt \
+					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn.bash \
 						-F "-num_threads ${threads} -db ${BLASTDB}/${bref} \
 							-query ${infile} -outfmt 6 -out ${f}" )
