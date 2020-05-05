@@ -1,9 +1,6 @@
 #
-#	docker build -t metago --file MetaGO_Dockerfile .
+#	docker build -t metago --file docker/MetaGO_demo.Dockerfile ./
 #	docker run --rm -it metago
-#
-##	mkdir /root/MetaGO_Result
-##	cd /root/github/MetaGO/MetaGO_SourceCode/
 #
 #	bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh -I RAW -F /root/github/MetaGO/MetaGO_SourceCode/fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -A 0.65 -X 0.1 -L 0.5 -W ASS -O /root/MetaGO_Result -U -S
 #
@@ -70,6 +67,12 @@ ENV PATH="/root/.local/bin:/root/github/MetaGO/MetaGO_SourceCode:${PATH}"
 
 RUN ls -1 /root/github/TestData/testDATA/H*.fasta  > /root/github/MetaGO/MetaGO_SourceCode/fileList.txt
 RUN ls -1 /root/github/TestData/testDATA/P*.fasta >> /root/github/MetaGO/MetaGO_SourceCode/fileList.txt
+
+#	Each line is the complete path of raw data, such as the first line is '/home/user/MetaGO/testData/H1.fasta', and the second line is '/home/user/MetaGO/testData/H2.fasta' ... Furthermore, and the samples belong to same group must arrange togther(e.g. line1 to linek of the list belongs to group 1 (health) and linek+1 to lineN belongs to group 2 (patient) ).
+#	-N	--n1	The number of samples belong to group 1.
+#	-M	--n2	The number of samples belong to group 2.
+
+
 
 
 
