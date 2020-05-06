@@ -162,6 +162,8 @@ WORKDIR /root/github/MetaGO/MetaGO_SourceCode/
 
 
 #	so far this is only using about 8 threads and 2 GB memory
+#	once all loaded and counted, jumps a bit to a load of 20 and 3GB
+#	nothing in the results
 
 
 
