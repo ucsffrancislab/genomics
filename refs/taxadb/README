@@ -220,3 +220,32 @@ Assuming taxadb_full_nr_DUMP.sqlite is good so renaming sqlite3 taxadb_full_nr.s
 
 
 
+For some reason, taxadb does not include all of the data in taxdump?
+
+wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
+wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_wgs.accession2taxid.gz
+wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/pdb.accession2taxid.gz
+
+Not sure why so many missing, so I will try to create my own csv files for direct import to database.
+Gotta merge nodes.dmp and names.dmp to make the "taxa" table.
+The accessions tables is just all of the accession2taxid file.
+
+
+Found another cool tool. http://etetoolkit.org/
+
+
+
+sqlite3 taxadb_full.sqlite
+sqlite> .schema
+CREATE TABLE IF NOT EXISTS "taxa" ("ncbi_taxid" INTEGER NOT NULL PRIMARY KEY, "parent_taxid" INTEGER NOT NULL, "tax_name" VARCHAR(255) NOT NULL, "lineage_level" VARCHAR(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS "accession" ("id" INTEGER NOT NULL PRIMARY KEY, "taxid_id" INTEGER NOT NULL, "accession" VARCHAR(255) NOT NULL, FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid"));
+CREATE INDEX "accession_taxid_id" ON "accession" ("taxid_id");
+CREATE UNIQUE INDEX "accession_accession" ON "accession" ("accession");
+
+select * from taxa where ncbi_taxid = 2717128;
+
+
+
+
+
