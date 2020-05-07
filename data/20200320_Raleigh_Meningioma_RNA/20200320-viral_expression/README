@@ -80,20 +80,12 @@ merge_summaries.py --output unmapped.bam.blastn.viral.masked.summary.sum-genus.n
 
 
 
-merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.txt.gz
 
-merge_summaries.py --output unmapped.bam.diamond.nr.summary.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.normalized.txt.gz
-
-merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.sum-species.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.sum-species.txt.gz
-
-merge_summaries.py --output unmapped.bam.diamond.nr.summary.sum-species.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.sum-species.normalized.txt.gz
-
-merge_summaries.py --int --output unmapped.bam.diamond.nr.summary.sum-genus.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.sum-genus.txt.gz
-
-merge_summaries.py --output unmapped.bam.diamond.nr.summary.sum-genus.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.nr.summary.sum-genus.normalized.txt.gz
-
-
-
+for s in nr.summary nr.summary.sum-species nr.summary.sum-genus ; do
+echo $s
+merge_summaries.py --int --output unmapped.bam.diamond.${s}.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.${s}.txt.gz
+merge_summaries.py --output unmapped.bam.diamond.${s}.normalized.csv.gz trimmed/*.STAR.hg38.Unmapped.out.diamond.${s}.normalized.txt.gz
+done
 
 
 

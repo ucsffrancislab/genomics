@@ -32,7 +32,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 BASEDIR=/francislab/data1/working/20200320_Raleigh_Meningioma_RNA/20200320-viral_expression/trimmed
 
 
-for r1 in ${BASEDIR}/020.fastq.gz ; do
+for r1 in ${BASEDIR}/???.fastq.gz ; do
 #for r1 in ${BASEDIR}/001.fastq.gz ; do
 
 	#r2=${r1/_R1/_R2}
@@ -95,12 +95,13 @@ for r1 in ${BASEDIR}/020.fastq.gz ; do
 					depend=""
 				fi
 				#	-e ${outbase}.err.txt \
+				#	scratch about 150gb so 8gb * 20
 				diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
 					-j oe -o ${outbase}.${date}.out.txt \
+					-l gres=scratch:20 \
 					~/.local/bin/diamond_scratch.bash \
 						-F "blastx --db ${DIAMOND}/${dref} \
 							--query ${infile} --outfmt 6 --out ${f}" )
-						#-F "blastx --threads 8 --db ${DIAMOND}/${dref} \
 				echo $diamondid
 			fi
 
