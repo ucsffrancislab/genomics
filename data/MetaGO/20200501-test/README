@@ -1,0 +1,109 @@
+
+
+
+Modified from end of https://github.com/VVsmileyx/MetaGO README
+
+
+
+cd /francislab/data1/working/MetaGO/20200501-test
+
+
+
+4.1 Dataset
+25 healthy test samples and 25 patient test samples (download)
+
+These fasta files are clearly chopped. They all have 1000 lines.
+The last line of some is the read name. I have editted and removed this in a corrected version.
+
+
+
+4.2 Running steps:
+4.2.1 InputData is raw data
+Step1: download testData and MetaGO souce code
+
+Step2: get the fileList of test data
+
+$ cd testData
+$ pwd # get the absolute path of testData, e.g /home/usr/testDATA/
+$ ls /home/usr/testDATA/H*.fasta >> /home/usr/MetaGO/MetaGO_SoueceCode/fileList.txt # /home/usr/MetaGO/MetaGO_SoueceCode/ is the absolute path of sorce codes of MetaGO
+$ ls /home/usr/testDATA/P*.fasta >> /home/usr/MetaGO/MetaGO_SoueceCode/fileList.txt # get the fileList of test data  
+
+ls -1 /francislab/data1/raw/MetaGO/testDATA.corrected/*fasta > fileList.txt
+
+
+
+
+Step3: run MetaGO:
+
+$ cd home/usr/MetaGO/MetaGO_SoueceCode
+$ mkdir /home/usr/MetaGO_Result # creat a folder to save output files
+$ bash MetaGO.sh -I RAW -F fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -A 0.65 -X 0.1 -L 0.5 -W ASS -O /home/usr/MetaGO_Result -U -S # Filter with ASS
+$ bash MetaGO.sh -I RAW -F fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -C 0.1 -X 0.1 -L 0.5 -W chi2-test -O /home/usr/MetaGO_Result -U -S # Filter with chi2-test  
+
+
+
+cd /francislab/data1/working/MetaGO/20200501-test
+mkdir MetaGO_Result
+
+# Filter with ASS
+bash ~/github/VVsmileyx/MetaGO/MetaGO_SourceCode/MetaGO.sh -I RAW -F /francislab/data1/working/MetaGO/20200501-test/fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -A 0.65 -X 0.1 -L 0.5 -W ASS -O /francislab/data1/working/MetaGO/20200501-test/MetaGO_Result -U -S 
+
+
+# Filter with chi2-test  
+bash MetaGO.sh -I RAW -F /francislab/data1/working/MetaGO/20200501-test/fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -C 0.1 -X 0.1 -L 0.5 -W chi2-test -O /francislab/data1/working/MetaGO/20200501-test/MetaGO_Result -U -S
+
+
+
+
+
+
+Step4: Output files
+
+If you choose ASS to filtering,the output files:
+
+Output file1: single logical feature with ASS>=0.65. (download)
+Output file2: single numerical feature with p-value<=0.1 for Wilcoxon sum rank test and ASS>=0.5 for logistic regression.(download)  
+
+If you choose chi2-test to filtering, the output files:
+
+Output file1: single logical feature with p-value<=0.1 for chi2-test (download)
+Output file2: single numerical feature with p-value<=0.1 for Wilcoxon sum rank test and ASS>=0.5 for logistic regression.(download)  
+
+Output files for both AUC-test and chi2-test:
+
+Output file3: features without any filtering.(download)
+Output file4: feature matrix filtering out highly-sparse features.(download)
+Output file5: Number of features in every frequencing file.(download)
+
+Middle temporary files:(download)
+
+4.2.2 InputData is the feature matrix filtering out highly-sparse features
+Notice
+
+The matrix files are the files named 'filter_sparse_x' (x = 1,2,...,k, k is the number you choosed in option '-P') or 'filter_sparse' in the folder you choose in option '-O',which are the results of running the program last time with chooseing 'RAW' in option '-I'., and you should remove or change the path of the following folders: 'ASS_filtered_down_x', 'Chi2_filtered_down_x', 'WR_filtered_down_x'(x = 1,2,...,k, k is the number you choosed in option '-P' ) or 'ASS_filtered_down', 'Chi2_filtered_down', 'WR_filtered_down'
+
+Step1: run MetaGO with choosing 'RAW' in option '-I'
+$ bash MetaGO.sh -I RAW -F fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -A 0.65 -X 0.1 -L 0.5 -W ASS -O /home/usr/MetaGO_Result -U -S # Filter with AUC_test
+$ bash MetaGO.sh -I RAW -F fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -C 0.1 -X 0.1 -L 0.5 -W chi2-test -O /home/usr/MetaGO_Result -U -S # Filter with chi2-test  
+
+Step2: remove or change the path of the following folders: 'ASS_filtered_down_x', 'Chi2_filtered_down_x', 'WR_filtered_down_x'(x = 1,2,...,k, k is the number you choosed in option '-P') or 'ASS_filtered_down', 'Chi2_filtered_down', 'WR_filtered_down'.
+$ cd /home/usr/MetaGO_Result
+$ rm -r ASS_filtered_down* Chi2_filtered_down* WR_filtered_down* # remove all folders
+$ mv ASS_filtered_down* Chi2_filtered_down* WR_filtered_down* ../ # move all folders to parent directory
+$ cd home/usr/MetaGO/MetaGO_SoueceCode
+
+Step3: run MetaGO with choosing 'MATRIX' in option '-I'
+$ bash MetaGO.sh -I MATRIX -N 25 -M 25 -P 4 -A 0.6 -X 0.2 -L 0.5 -W ASS -O /home/usr/MetaGO_Result # Filter with ASS
+$ bash MetaGO.sh -I MATRIX -N 25 -M 25 -P 4 -C 0.2 -X 0.2 -L 0.5 -W chi2-test -O /home/usr/MetaGO_Result # Filter with chi2-test  
+
+Step4: Output files
+
+If you choose ASS to filtering,the output files:
+
+Output file1: single logical feature with ASS>=0.6. (download)
+Output file2: single numerical feature with p-value<=0.2 for Wilcoxon sum rank test and ASS>=0.5 for logistic regression.(download)  
+
+If you choose chi2-test to filtering, the output files:
+
+Output file1: single logical feature with p-value<=0.2 for chi2-test (download)
+Output file2: single numerical feature with p-value<=0.2 for Wilcoxon sum rank test and ASS>=0.5 for logistic regression.(download)  
