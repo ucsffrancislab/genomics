@@ -155,12 +155,14 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							depend=""
 						fi
 						case $dref in
-							nr) vmem=32;;
-							viral) vmem=16;;
-							*) vmem=8;;
+							nr) vmem=32; scratch=20;
+							viral) vmem=16; scratch=10;
+							*) vmem=8; scratch=5;
 						esac
+						# scratch about 150gb so 8gb * 20 for nr
 						diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=${vmem}gb \
 							-j oe -o ${outbase}.out.txt \
+							-l gres=scratch:${scratch} \
 							~/.local/bin/diamond_scratch.bash \
 								-F "blastx --db ${DIAMOND}/${dref} \
 									--query ${infile} --outfmt 6 --out ${f}" )

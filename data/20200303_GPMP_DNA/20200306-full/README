@@ -39,12 +39,10 @@ rename _R1.h38 .h38 SF123*_R1.h38au*
 
 
 
-for suffix in viral.summary viral.summary.sum-genus viral.summary.sum-species nr.summary nr.summary.sum-genus nr.summary.sum-species ; do
+#for suffix in viral.summary viral.summary.sum-genus viral.summary.sum-species nr.summary nr.summary.sum-genus nr.summary.sum-species ; do
+for suffix in nr.summary nr.summary.sum-genus nr.summary.sum-species ; do
 echo $suffix
-
 merge_summaries.py --int --output unmapped.bam.diamond.${suffix}.csv.gz trimmed/length/*.h38au.bowtie2-e2e.unmapped.diamond.${suffix}.txt.gz
-
 merge_summaries.py --output unmapped.bam.diamond.${suffix}.normalized.csv.gz trimmed/length/*.h38au.bowtie2-e2e.unmapped.diamond.${suffix}.normalized.txt.gz
-
 done
 
