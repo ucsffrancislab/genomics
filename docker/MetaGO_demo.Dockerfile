@@ -14,7 +14,7 @@ FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get -y update ; apt-get -y full-upgrade ; \
-	apt-get -y install git python r-base software-properties-common default-jdk wget curl ; \
+	apt-get -y install git python r-base software-properties-common default-jdk wget curl htop ; \
 	apt-get -y autoremove
 #	apt-get -y install git python3 python3-pip r-base software-properties-common default-jdk wget ; \
 
