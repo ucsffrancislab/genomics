@@ -64,7 +64,7 @@ memory do anything???
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Control* > /root/fileList.txt
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Case*   >> /root/fileList.txt
 
-bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt --n1 36 --n2 41 --kmer 21 --min 1 -P 16 --ASS 0.65 --WilcoxonTest 0.1 --LogicalRegress 0.5 --filterFuction ASS --outputPath /mnt/ssd1/MetaGO_Result --Union --sparse
+bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt --n1 36 --n2 41 --kMer 21 --min 1 -P 16 --ASS 0.65 --WilcoxonTest 0.1 --LogicalRegress 0.5 --filterFuction ASS --outputPath /mnt/ssd1/MetaGO_Result --Union --sparse
 
 
 
