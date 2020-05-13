@@ -16,3 +16,15 @@ rename _diff_R2 _R2_diff *_diff_R2*
 
 
 
+
+
+
+mkdir MetaGO_result-i3.8xlarge-20200509/
+aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_result-i3.8xlarge-20200509/ MetaGO_result-i3.8xlarge-20200509/
+
+mkdir MetaGO_result.incomplete
+aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_result.incomplete/ MetaGO_result.incomplete/
+
+mkdir MetaGO_result.incomplete2
+aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_result.incomplete2/ MetaGO_result.incomplete2/
+
