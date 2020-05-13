@@ -159,10 +159,11 @@ for r1 in ${BASEDIR}/*_R1.fastq.gz ; do
 				qsub ${depend} -N ${jobbase}.s.${dref} \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
-						--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
+						--db /francislab/data1/refs/taxonomy_tree/taxonomy.sqlite \
 						--input ${outbase}.csv.gz \
 						--levels species,genus \
 						--unmapped_read_count '${unmapped_read_count}'"
+						#--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
 						#--input ${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz \
 			fi
 
