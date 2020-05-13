@@ -91,3 +91,102 @@ done
 
 for f in trimmed/???.fastq.gz.read_count.txt; do b=$(basename $f .fastq.gz.read_count.txt); c=$( cat $f ); echo -e $b"\t"$c; done > raw_read_counts.txt
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+tail -n +2 /francislab/data1/raw/20200320_Raleigh_Meningioma_RNA/immune_purity.sorted.csv | awk '{a[$2]=a[$2]","$1}END{for(b in a){print b, a[b]}}'
+
+G1 ,005,012,013,019,023,044,049,051,057,061,065,067,070,072,079,080,087,096,100,102,110,116,120,125,127,128,129,130,133,135,137,141,142,144,147,153,155,161,165,166,168,173,174,175,178,179,181,182,183,185,186,187,190,191,192,193,194,199,200,201,203,205,207,208,212,213,215,224,226,230,233,234
+G2 ,001,006,015,020,026,027,028,040,052,053,054,056,063,068,077,083,090,092,093,094,103,106,112,113,114,115,119,134,139,143,145,150,152,156,157,158,160,163,164,167,169,171,176,180,184,188,197,198,202,204,206,214,216,218,221,222,227,235
+G3 ,002,004,007,008,010,018,024,025,046,048,059,060,062,064,071,074,095,097,098,099,104,108,122,132,146,162,189,209,217,219,225,228,232
+G4 ,003,009,014,017,021,029,033,034,036,037,038,041,043,045,047,055,058,069,073,075,076,086,089,091,101,105,107,111,117,123,124,126,151,159,170,210,231
+
+No 027
+
+samtools merge trimmed/G1.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam trimmed/{005,012,013,019,023,044,049,051,057,061,065,067,070,072,079,080,087,096,100,102,110,116,120,125,127,128,129,130,133,135,137,141,142,144,147,153,155,161,165,166,168,173,174,175,178,179,181,182,183,185,186,187,190,191,192,193,194,199,200,201,203,205,207,208,212,213,215,224,226,230,233,234}.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam
+samtools merge trimmed/G2.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam trimmed/{001,006,015,020,026,028,040,052,053,054,056,063,068,077,083,090,092,093,094,103,106,112,113,114,115,119,134,139,143,145,150,152,156,157,158,160,163,164,167,169,171,176,180,184,188,197,198,202,204,206,214,216,218,221,222,227,235}.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam
+samtools merge trimmed/G3.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam trimmed/{002,004,007,008,010,018,024,025,046,048,059,060,062,064,071,074,095,097,098,099,104,108,122,132,146,162,189,209,217,219,225,228,232}.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam
+samtools merge trimmed/G4.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam trimmed/{003,009,014,017,021,029,033,034,036,037,038,041,043,045,047,055,058,069,073,075,076,086,089,091,101,105,107,111,117,123,124,126,151,159,170,210,231}.bowtie2-e2e.SVAs_and_HERVs_KWHE.bam
+
+
+
+
+
+
+featureCounts -T 64 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.gtf -o LTR_features.csv trimmed/*.STAR.hg38.Aligned.out.bam > LTR_features.out.txt
+
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_features2
+qsub -N featureCount -l nodes=1:ppn=64 -l vmem=500gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts.bash \
+  -F "-T 64 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.jake.gtf \
+    -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_features3
+qsub -N featureCount -l nodes=1:ppn=16 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts.bash \
+  -F "-T 16 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.jake.gtf \
+    -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_features4
+qsub -N featureCount -l nodes=1:ppn=8 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts.bash \
+  -F "-T 8 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.jake.gtf \
+    -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_features5
+qsub -N featureCount -l nodes=1:ppn=8 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts_scratch.bash \
+  -F "-T 8 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.jake.gtf \
+    -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_features6
+qsub -N featureCount -l nodes=1:ppn=8 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts_scratch.bash \
+  -F "-T 8 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.jake.gtf \
+    -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_features7_q250
+qsub -N featureCount -l nodes=1:ppn=8 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts_scratch.bash \
+  -F "-T 8 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.jake.gtf \
+    -Q 250 -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
+
+
