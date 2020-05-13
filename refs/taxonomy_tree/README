@@ -81,8 +81,7 @@ Better choose columns. taxid,parent_taxid,tax_name,lineage_level and taxid,acces
 
 zcat *.accession2taxid.gz | awk 'BEGIN{FS="\t";OFS=","}($1!="accession"){print $3,$1}' > accession.unsorted.csv
 zcat /francislab/data1/refs/taxadb/nr.aT.csv.gz | awk 'BEGIN{FS=OFS=","}{print $2,$1}' >> accession.unsorted.csv
-
-#sort -k 2 accession.unsorted.csv > accession.sorted.csv
+#sort -t , -k 2 accession.unsorted.csv > accession.sorted.csv
 #uniq -d accession.sorted.csv
 
 Using tabs as separators for simplicity. Outputing pipes as separators as commas and quotes in data.
@@ -112,5 +111,67 @@ CREATE UNIQUE INDEX "taxa_taxid" ON "taxa" ("taxid");
 
 
 SELECT a.* FROM accession a LEFT JOIN taxa t ON a.taxid = t.taxid WHERE t.taxid IS NULL;
-SELECT t.* FROM taxa t LEFT JOIN accession a ON a.taxid = t.taxid WHERE a.taxid IS NULL;
+
+
+
+zcat *.accession2taxid.gz | awk 'BEGIN{FS="\t";OFS=","}($1!="accession"){print $3,$1}' > accession.working.unsorted.csv
+zcat /francislab/data1/refs/taxadb/nr.aT.csv.gz | awk 'BEGIN{FS=OFS=","}{print $2,$1}' >> accession.working.unsorted.csv
+sort -t , -k 2 accession.unsorted.csv > accession.working.sorted.csv
+uniq -d accession.working.sorted.csv > accession.working.sorted.dups.csv
+uniq accession.working.sorted.csv > accession.working.sorted.uniq.csv
+
+
+CREATE TABLE IF NOT EXISTS "accession" ("id" INTEGER NOT NULL PRIMARY KEY, "taxid_id" INTEGER NOT NULL, "accession" VARCHAR(255) NOT NULL, FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid"));
+Don't need "id" column, do we?
+Keep the old column names so no change needed in scripts
+NR and NCBI contain duplicates with differing data. Keep separate. NCBI seems newer. Load it first.
+NCBI has 3x NR, many of which will be duplicates. Try to load it anyway.
+
+
+
+
+zcat accession.ncbi.unsorted.csv.gz | sort --parallel=32 -t , -k 2 > accession.ncbi.sorted.csv
+uniq -d accession.ncbi.sorted.csv > accession.ncbi.sorted.dups.csv
+uniq accession.ncbi.sorted.csv > accession.ncbi.sorted.uniq.csv
+wc -l accession.ncbi.sorted.csv > accession.ncbi.sorted.csv.wc-l
+wc -l accession.ncbi.sorted.dups.csv > accession.ncbi.sorted.dups.csv.wc-l
+wc -l accession.ncbi.sorted.uniq.csv > accession.ncbi.sorted.uniq.csv.wc-l
+
+zcat /francislab/data1/refs/taxadb/nr.aT.csv.gz | awk 'BEGIN{FS=OFS=","}{print $2,$1}' > accession.nr.unsorted.csv
+sort --parallel=32 -t , -k 2 accession.nr.unsorted.csv > accession.nr.sorted.csv
+uniq -d accession.nr.sorted.csv > accession.nr.sorted.dups.csv
+uniq accession.nr.sorted.csv > accession.nr.sorted.uniq.csv
+wc -l accession.nr.sorted.csv > accession.nr.sorted.csv.wc-l
+wc -l accession.nr.sorted.dups.csv > accession.nr.sorted.dups.csv.wc-l
+wc -l accession.nr.sorted.uniq.csv > accession.nr.sorted.uniq.csv.wc-l
+
+chmod -w accession*
+gzip accession.n*.sorted.csv &
+gzip accession.n*.sorted.dups.csv &
+
+
+
+
+sqlite3 taxonomy.sqlite
+CREATE TABLE IF NOT EXISTS "taxa" ("ncbi_taxid" INTEGER NOT NULL PRIMARY KEY, "parent_taxid" INTEGER NOT NULL, "tax_name" VARCHAR(255) NOT NULL, "lineage_level" VARCHAR(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS "accession" ("taxid_id" INTEGER NOT NULL, "accession" VARCHAR(255) NOT NULL, FOREIGN KEY ("taxid_id") REFERENCES "taxa" ("ncbi_taxid"));
+CREATE INDEX "accession_taxid_id" ON "accession" ("taxid_id");
+CREATE UNIQUE INDEX "accession_accession" ON "accession" ("accession");
+.separator "|"
+.import taxa.csv taxa
+.separator ,
+.import accession.ncbi.sorted.uniq.csv accession
+#	select count(1) from accession;
+#	1586674699
+.import accession.nr.sorted.uniq.csv accession
+#	nearly all failed as not unique.
+#	select count(1) from accession;
+#	
+
+
+
+
+
+
+
 
