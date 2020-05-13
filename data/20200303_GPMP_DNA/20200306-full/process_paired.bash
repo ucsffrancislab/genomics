@@ -155,9 +155,9 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							depend=""
 						fi
 						case $dref in
-							nr) vmem=32; scratch=20;
-							viral) vmem=16; scratch=10;
-							*) vmem=8; scratch=5;
+							nr) vmem=32; scratch=20;;
+							viral) vmem=16; scratch=10;;
+							*) vmem=8; scratch=5;;
 						esac
 						# scratch about 150gb so 8gb * 20 for nr
 						diamondid=$( qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=${vmem}gb \
@@ -192,10 +192,11 @@ for r1 in /francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/leng
 							-l gres=scratch:50 \
 							-j oe -o ${outbase}.${date}.out.txt \
 							~/.local/bin/blastn_summarize_and_normalize_scratch.bash -F "\
-								--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
+								--db /francislab/data1/refs/taxonomy_tree/taxonomy.sqlite \
 							  --input ${outbase}.csv.gz \
 								--levels species,genus \
 								--unmapped_read_count '${unmapped_read_count}'"
+								#--db /francislab/data1/refs/taxadb/taxadb_full_nr.sqlite --accession nr \
 							  #--input ${base}.${ref}.bowtie2-${ali}.unmapped.diamond.${dref}.csv.gz |
 					fi
 
