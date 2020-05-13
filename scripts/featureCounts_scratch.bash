@@ -19,6 +19,8 @@ while [ $# -gt 0 ] ; do
 		-T)
 			shift; threads=$1; shift;;
 		*)
+			#	this is a tough one. I really only want the last files,
+			#	but I don't want to included every option above.
 			if [ -f "${1}" ] ; then
 				FILES="${FILES} $1"
 			else
@@ -50,13 +52,15 @@ else
 	scratch_anno=${SCRATCH_JOB}/$( basename ${anno} )
 	scratch_out=${SCRATCH_JOB}/$( basename ${out} )
 
-	featureCounts -a ${scratch_anno} \
+	#featureCounts -a ${scratch_anno} \
+	featureCounts.bash -a ${scratch_anno} \
 		-o ${scratch_out} \
 		-T ${PBS_NUM_PPN:-1} \
 		${SELECT_ARGS} \
 		${SCRATCH_JOB}/input/*
 
-	mv --update ${scratch_out} $( dirname ${out} )
+	#mv --update ${scratch_out} $( dirname ${out} )
+	mv --update ${scratch_out}* $( dirname ${out} )
 	chmod a-w ${out}
 
 fi
