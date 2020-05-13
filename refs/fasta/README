@@ -109,3 +109,12 @@ NOTHING
 
 
 
+
+
+http://s3.amazonaws.com/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.bed.gz
+bedToGenePred hg38_rmsk_LTR.bed.gz stdout | genePredToGtf file stdin hg38_rmsk_LTR.gtf
+
+featureCounts -T 64 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.gtf -o LTR_features.csv trimmed/*.STAR.hg38.Aligned.out.bam
+
+
+
