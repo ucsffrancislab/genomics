@@ -190,3 +190,13 @@ qsub -N featureCount -l nodes=1:ppn=8 -l vmem=16gb \
 
 
 
+
+date=$( date "+%Y%m%d%H%M%S" )
+outbase=${PWD}/LTR_SVA_features
+qsub -N featureCount -l nodes=1:ppn=16 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/featureCounts_scratch.bash \
+  -F "-T 16 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR_Retroposon.jake.gtf \
+    -t feature -g feature_name \
+    -o ${outbase}.csv $PWD/trimmed/*.STAR.hg38.Aligned.out.bam"
+
