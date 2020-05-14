@@ -118,3 +118,14 @@ featureCounts -T 64 -a /francislab/data1/refs/fasta/hg38_rmsk_LTR.gtf -o LTR_fea
 
 
 
+
+
+~/.local/RepeatMasker/util/queryRepeatDatabase.pl -species human > RepeatDatabase.fa
+queryRepeatDatabase
+===================
+RepeatMasker Database: RepeatMaskerLib.embl
+RepeatMasker Combined Database: Dfam_3.1, RepBase-20181026
+Species: human ( homo sapiens )
+
+
+
