@@ -19,3 +19,12 @@ done
 
  
 
+
+        $(SALMON_0.8.2_EXE) index -t genome.fasta -i $(SALMON_INDEX_DIR) --type 'quasi' -s 1    2> $(SALMON_INDEX_STDERR_WARNINGS)
+
+
+~/REdiscoverTE/rollup_annotation/genome.fasta
+
+
+echo "salmon index -t /home/gwendt/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE" | qsub -l vmem=500gb -N salmon -l nodes=1:ppn=64
+
