@@ -27,13 +27,11 @@ done
 
 exit
 
+
 DIR="/francislab/data1/working/20200320_Raleigh_Meningioma_RNA/20200320-viral_expression"
-echo -e "sample\tquant_sf_path" > ${DIR}/RepeatDatabase_21.tsv
-ls -1 ${DIR}/trimmed/*RepeatDatabase_21/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/RepeatDatabase_21.tsv
+echo -e "sample\tquant_sf_path" > ${DIR}/REdiscoverTE.tsv
+ls -1 ${DIR}/trimmed/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/REdiscoverTE.tsv
 
-echo -e "sample\tquant_sf_path" > ${DIR}/RepeatDatabase_31.tsv
-ls -1 ${DIR}/trimmed/*RepeatDatabase_31/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/RepeatDatabase_31.tsv
-
-echo "/home/gwendt/REdiscoverTE/rollup.R --metadata=${DIR}/RepeatDatabase_31.tsv --datadir=/home/gwendt/REdiscoverTE/rollup_annotation/ --nozero --threads=8 --assembly=hg38 --outdir=${DIR}/rollup_31/" | qsub -l vmem=500gb -N rollup -l nodes=1:ppn=64 -j oe -o ${DIR}/rollup_31.out.txt
+echo "/francislab/data1/refs/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ --nozero --threads=8 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup/" | qsub -l vmem=500gb -N rollup -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.out.txt
 
 
