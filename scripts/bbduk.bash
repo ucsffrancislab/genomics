@@ -8,6 +8,11 @@ set -x
 
 ARGS=$*
 
+#out1=""
+#	Not all samples are paired so avoid unbound variables by setting to nothing
+out2=""
+outs=""
+
 while [ $# -gt 0 ] ; do
 	case $1 in
 		out1=*)
