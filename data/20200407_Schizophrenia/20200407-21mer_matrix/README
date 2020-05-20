@@ -28,3 +28,28 @@ aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_result.incompl
 mkdir MetaGO_result.incomplete2
 aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_result.incomplete2/ MetaGO_result.incomplete2/
 
+
+
+Recreate read length hist data that is sorted.
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length/unpaired
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed
+for f in ${DIR}/*fastq.gz ; do
+read_length_hist.bash $f
+done
+
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length/unpaired
+zcat ${DIR}/*fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all.length_hist.csv.gz &
+
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length
+zcat ${DIR}/*fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all.length_hist.csv.gz &
+
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed
+zcat ${DIR}/*fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all.length_hist.csv.gz &
+
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length
+zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
+DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed
+zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
