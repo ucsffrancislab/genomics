@@ -36,7 +36,7 @@ for filename in args.files:
 		#,
 		#	index_col="position")
 
-	print(d.head())
+	#print(d.head())
 
 	if len(d) > 0:
 		#d.fillna(0).reset_index().plot(
