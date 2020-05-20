@@ -21,6 +21,7 @@ else
 			| awk '{print length($0)}' \
 			| sort \
 			| uniq -c \
+			| sort -k2n \
 			| gzip > ${f}
 	elif [ ${input: -4} == "a.gz" ] ; then
 		zcat ${input} \
@@ -29,6 +30,7 @@ else
 			| awk '{print length($0)}' \
 			| sort \
 			| uniq -c \
+			| sort -k2n \
 			| gzip > ${f}
 	elif [ ${input: -1} == "q" ] ; then
 		cat ${input} \
@@ -37,6 +39,7 @@ else
 			| awk '{print length($0)}' \
 			| sort \
 			| uniq -c \
+			| sort -k2n \
 			| gzip > ${f}
 	elif [ ${input: -1} == "a" ] ; then
 		cat ${input} \
@@ -45,6 +48,7 @@ else
 			| awk '{print length($0)}' \
 			| sort \
 			| uniq -c \
+			| sort -k2n \
 			| gzip > ${f}
 	fi
 
