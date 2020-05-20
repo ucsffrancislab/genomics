@@ -45,3 +45,43 @@ NC_001664 HbHV6A
 NC_001348 HHV3
 NC_000898 HHV6B
 
+
+
+
+
+
+
+
+
+Herpes Spikes
+
+zcat *.HHV8.bowtie2-loc.bam.depths.csv.gz | awk '($3>4){print $2,$3}' | sort -n | more
+NC_009333.1	24800-24836
+NC_009333.1	124928-125079
+
+zcat *.HHV4.bowtie2-loc.bam.depths.csv.gz | awk '($3>1000){print $2,$3}' | sort -n | more
+NC_009334.1
+10-51
+7461-7645
+7933-8055
+70486-70538
+96764-96975
+171583-171682
+
+zcat *.HgHV4.bowtie2-loc.bam.depths.csv.gz | awk '($3>1000){print $2,$3}' | sort -n | more
+HgHV4
+1-52
+7715-8073
+12046-12078
+70352-70404
+96601-96638
+170698-171796
+
+zcat *.HbHV6A.bowtie2-loc.bam.depths.csv.gz | awk '($3>100){print $2,$3}' | sort -n | more^C
+HbHV6A ( 132000 )
+131482-131575
+
+zcat *.HHV6B.bowtie2-loc.bam.depths.csv.gz | awk '($3>20){print $2,$3}' | sort -n | more
+HHV6B ( 141000 )
+140452-140683
+
