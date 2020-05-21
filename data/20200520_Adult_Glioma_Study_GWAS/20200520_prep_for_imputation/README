@@ -1,0 +1,102 @@
+
+
+No idea what I'm doing here so I'm following the instructions as closely as possible.
+
+https://imputationserver.readthedocs.io/en/latest/prepare-your-data/
+
+This mentions plink2.
+Both logs provided show ... PLINK v1.90b6.17 64-bit (28 Apr 2020)
+
+plink 1 and 2 are very different, so we shall see how this goes.
+
+I will try plink2 from this point on.
+
+
+
+--------------------------------------------------
+
+#	Data preparation
+
+Michigan Imputation Server accepts VCF files compressed with bgzip. Please make sure the following requirements are met:
+
+* Create a separate vcf.gz file for each chromosome.
+* Variations must be sorted by genomic position.
+* GRCh37 or GRCh38 coordinates are required.
+
+Note: Several *.vcf.gz files can be uploaded at once.
+
+##	Quality Control for HRC, 1000G and CAAPA imputation
+
+Will Rayner provides a great toolbox to prepare data: HRC or 1000G Pre-imputation Checks.
+
+The main steps for HRC are:
+
+###	Download tool and sites
+```
+wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip
+wget ftp://ngs.sanger.ac.uk/production/hrc/HRC.r1-1/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz
+```
+
+###	Convert ped/map to bed
+```
+plink --file <input-file> --make-bed --out <output-file>
+```
+
+###	Create a frequency file
+```
+plink --freq --bfile <input> --out <freq-file>
+```
+
+###	Execute script
+```
+perl HRC-1000G-check-bim.pl -b <bim file> -f <freq-file> -r HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
+sh Run-plink.sh
+```
+
+###	Create vcf using [VcfCooker](http://genome.sph.umich.edu/wiki/VcfCooker)
+
+
+Jake's addition. Won't compile on cluster. Even problematic on my mac.
+Will likely have to use Amazon, perhaps with a docker image for clarity.
+```
+wget https://github.com/statgen/gotcloud/archive/gotcloud.1.17.5.tar.gz
+tar xfvz gotcloud.1.17.5.tar.gz
+cd gotcloud-gotcloud.1.17.5/
+make
+cd gotcloud-gotcloud.1.17.5/src
+make
+```
+
+
+
+
+```
+vcfCooker --in-bfile <bim file> --ref <reference.fasta>  --out <output-vcf> --write-vcf
+bgzip <output-vcf>
+```
+
+##	Additional Tools
+
+###	Convert ped/map files to VCF files
+
+Several tools are available: [plink2](https://www.cog-genomics.org/plink2/), [BCFtools](https://samtools.github.io/bcftools) or [VcfCooker](http://genome.sph.umich.edu/wiki/VcfCooker).
+```
+plink --ped study_chr1.ped --map study_chr1.map --recode vcf --out study_chr1
+```
+
+Create a sorted vcf.gz file using [BCFtools](https://samtools.github.io/bcftools):
+```
+bcftools sort study_chr1.vcf -Oz -o study_chr1.vcf.gz
+```
+
+###	CheckVCF
+
+Use [checkVCF](https://github.com/zhanxw/checkVCF) to ensure that the VCF files are valid. checkVCF proposes "Action Items" (e.g. upload to sftp server), which can be ignored. Only the validity should be checked with this command.
+```
+checkVCF.py -r human_g1k_v37.fasta -o out mystudy_chr1.vcf.gz
+```
+
+
+
+
+
