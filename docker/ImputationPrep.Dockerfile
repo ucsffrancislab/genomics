@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y update \
 	&& apt-get -y full-upgrade \
 	&& apt-get -y install git python software-properties-common default-jdk wget curl htop make gcc \
-		zlib1g-dev libncurses5-dev g++ vim cmake unzip libbz2-dev liblzma-dev libcurl4-openssl-dev libssl-dev \
+		zlib1g-dev libncurses5-dev g++ vim cmake unzip libbz2-dev liblzma-dev libcurl4-openssl-dev libssl-dev openssl \
 	&& apt-get -y autoremove
 
 #
@@ -73,34 +73,34 @@ RUN cd / \
 	&& make install \
 	&& /bin/rm -rf /bcftools-${BCFTOOLS_VERSION}*
 
-RUN mkdir /work
+#RUN mkdir /home
 
 #
 #	The instructions link says plink2, but points to plink 1.9
 #	Using plink 1.9 for first try.
 #
-RUN cd /work && wget http://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20200428.zip \
+RUN cd /home && wget http://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20200428.zip \
 	&& unzip plink_linux_x86_64_20200428.zip \
 	&& rm plink_linux_x86_64_20200428.zip LICENSE prettify toy.map toy.ped
 
-RUN cd /work && wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip \
+RUN cd /home && wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip \
 	&& unzip HRC-1000G-check-bim-v4.2.7.zip \
 	&& rm HRC-1000G-check-bim-v4.2.7.zip LICENSE.txt
 
-RUN cd /work && wget ftp://ngs.sanger.ac.uk/production/hrc/HRC.r1-1/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz \
+RUN cd /home && wget ftp://ngs.sanger.ac.uk/production/hrc/HRC.r1-1/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz \
 	&& gunzip HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz
 
-RUN cd /work && git clone https://github.com/ucsffrancislab/gotcloud.git \
+RUN cd /home && git clone https://github.com/ucsffrancislab/gotcloud.git \
 	&& cd gotcloud/src \
 	&& make
 
 #RUN wget https://github.com/zhanxw/checkVCF/blob/master/checkVCF.py
 
-RUN cd /work && wget http://qbrc.swmed.edu/zhanxw/software/checkVCF/checkVCF-20140116.tar.gz \
+RUN cd /home && wget http://qbrc.swmed.edu/zhanxw/software/checkVCF/checkVCF-20140116.tar.gz \
 	&& tar xfvz checkVCF-20140116.tar.gz \
 	&& rm checkVCF-20140116.tar.gz README.md example.vcf.gz
 
-ENV PATH="/work:/gotcloud/bin:${PATH}"
+ENV PATH="/home:/home/gotcloud/bin:${PATH}"
 
-WORKDIR /work
+WORKDIR /home
 
