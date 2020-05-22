@@ -43,6 +43,7 @@ for filename in args.files:
 		d.plot(
 			title="log(count) chart of "+basename,
 			logy=True,kind='scatter',x='length',y='count')	#,ylim=[1,10000])
-		plt.savefig(basename+".png")
+		#plt.savefig(basename+".png")
+		plt.savefig(filename+".png")
 		plt.close()
 
