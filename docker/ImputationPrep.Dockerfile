@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y update \
 	&& apt-get -y full-upgrade \
 	&& apt-get -y install git python software-properties-common default-jdk wget curl htop make gcc \
-		zlib1g-dev libncurses5-dev g++ vim cmake unzip libbz2-dev liblzma-dev libcurl4-openssl-dev \
+		zlib1g-dev libncurses5-dev g++ vim cmake unzip libbz2-dev liblzma-dev libcurl4-openssl-dev libssl-dev \
 	&& apt-get -y autoremove
 
 #
