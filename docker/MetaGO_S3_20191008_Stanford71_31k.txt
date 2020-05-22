@@ -54,17 +54,20 @@ docker run -v /home/ec2-user/:/mnt -itd metago
 
 docker exec -it $( docker ps -aq ) bash
 
-
-
-
-
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Control* > /root/fileList.txt
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Case*   >> /root/fileList.txt
 
+nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt \
+	--n1 $( ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Control* | wc -l ) \
+	--n2 $( ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Case* | wc -l ) \
+	--kMer 31 --min 1 -P 8 --ASS 0.65 --WilcoxonTest 0.1 --LogicalRegress 0.5 \
+	--filterFuction ASS --outputPath /mnt/ssd0/MetaGO_Result --Union --sparse \
+	> /mnt/ssd0/MetaGO_Result/MetaGO.output.txt 2>&1 &
 
-nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt --n1 36 --n2 41 --kMer 31 --min 1 -P 8 --ASS 0.65 --WilcoxonTest 0.1 --LogicalRegress 0.5 --filterFuction ASS --outputPath /mnt/ssd0/MetaGO_Result --Union --sparse > /mnt/ssd0/MetaGO_Result/MetaGO.output.txt 2>&1 &
 
 
+Wait until completion
 
 
+aws s3 sync --delete ~/ssd0/MetaGO_Result/ s3://herv-unr/MetaGO_S3_20191008_Stanford71-MetaGO_Results_k31.$( date "+%Y%m%d" )
 
