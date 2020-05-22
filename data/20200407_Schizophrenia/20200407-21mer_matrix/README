@@ -30,11 +30,11 @@ aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_result.incompl
 
 
 
+All raw data reads are 151bp
+
 Recreate read length hist data that is sorted.
-DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length/unpaired
-DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length
 DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed
-for f in ${DIR}/*fastq.gz ; do
+for f in ${DIR}/*fastq.gz ${DIR}/length/*fastq.gz ${DIR}/length/unpaired/*fastq.gz ; do
 read_length_hist.bash $f
 done
 
@@ -52,4 +52,14 @@ zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' |
 
 DIR=/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed
 zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
+
+
+
+
+sort can take up a lot of tmp disk space. Next time just add up individual hist data
+
+
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
 

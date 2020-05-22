@@ -46,3 +46,32 @@ merge_summaries.py --int --output unmapped.bam.diamond.${suffix}.csv.gz trimmed/
 merge_summaries.py --output unmapped.bam.diamond.${suffix}.normalized.csv.gz trimmed/length/*.h38au.bowtie2-e2e.unmapped.diamond.${suffix}.normalized.txt.gz
 done
 
+
+
+
+
+
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/length
+zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed
+zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' | sort | uniq -c | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
+
+
+
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed
+for f in ${DIR}/*fastq.gz ${DIR}/length/*fastq.gz ; do
+read_length_hist.bash $f
+done
+
+Then sum up hist data counts. DON'T RE-READ RAW FILES
+
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/length
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
+
+
+

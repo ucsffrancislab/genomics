@@ -31,3 +31,24 @@ echo $b;
 ln -s ../$f fastq/$b.fastq.gz;
 done
 
+
+
+
+
+
+
+
+
+sort uses A LOT of tmp disk space which can run out.
+
+DIR=/francislab/data1/raw/20200309_GPMP_RNA/fastq
+for f in ${DIR}/*fastq.gz ; do
+read_length_hist.bash $f
+done
+
+Then sum up hist data counts. DON'T RE-READ RAW FILES
+
+DIR=/francislab/data1/raw/20200309_GPMP_RNA/fastq
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+
+
