@@ -60,6 +60,6 @@ zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' |
 sort can take up a lot of tmp disk space. Next time just add up individual hist data
 
 
-zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
 
 

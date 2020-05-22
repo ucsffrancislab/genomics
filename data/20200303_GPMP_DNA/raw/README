@@ -37,14 +37,16 @@ for f in WGS_data/batch2/*/*.fastq.gz; do b=$( basename $f _001.fastq.gz ); b=${
 
 
 
-DIR=/francislab/data1/raw/20200303_GPMP_DNA/fastq
-for f in ${DIR}/*fastq.gz ; do
-read_length_hist.bash $f
-done
+DIR=/francislab/data1/raw/20200303_GPMP_DNA
+for f in ${DIR}/fastq/*fastq.gz ; do
+echo read_length_hist.bash $f
+done | qsub -N 20200303raw -l nodes=1:ppn=8 -l vmem=16gb \
+-j oe -o ${DIR}/read_length_hist.bash.out 
+
 
 Then sum up hist data counts. DON'T RE-READ RAW FILES
 
 DIR=/francislab/data1/raw/20200303_GPMP_DNA/fastq
-zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz
 
 

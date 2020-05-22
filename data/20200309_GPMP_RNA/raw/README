@@ -41,14 +41,17 @@ done
 
 sort uses A LOT of tmp disk space which can run out.
 
-DIR=/francislab/data1/raw/20200309_GPMP_RNA/fastq
-for f in ${DIR}/*fastq.gz ; do
-read_length_hist.bash $f
-done
+DIR=/francislab/data1/raw/20200309_GPMP_RNA
+for f in ${DIR}/fastq/*fastq.gz ; do
+echo read_length_hist.bash $f
+done | qsub -N 20200309raw -l nodes=1:ppn=8 -l vmem=16gb \
+-j oe -o ${DIR}/read_length_hist.bash.out 
+
+
 
 Then sum up hist data counts. DON'T RE-READ RAW FILES
 
 DIR=/francislab/data1/raw/20200309_GPMP_RNA/fastq
-zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print n,c[n]}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
 
 
