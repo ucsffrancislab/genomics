@@ -83,9 +83,12 @@ RUN cd /home && wget http://s3.amazonaws.com/plink1-assets/plink_linux_x86_64_20
 	&& unzip plink_linux_x86_64_20200428.zip \
 	&& rm plink_linux_x86_64_20200428.zip LICENSE prettify toy.map toy.ped
 
-RUN cd /home && wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip \
-	&& unzip HRC-1000G-check-bim-v4.2.7.zip \
-	&& rm HRC-1000G-check-bim-v4.2.7.zip LICENSE.txt
+#RUN cd /home && wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip \
+#	&& unzip HRC-1000G-check-bim-v4.2.7.zip \
+#	&& rm HRC-1000G-check-bim-v4.2.7.zip LICENSE.txt
+RUN cd /home && wget https://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.3.0.zip \
+	&& unzip HRC-1000G-check-bim-v4.3.0.zip \
+	&& rm HRC-1000G-check-bim-v4.3.0.zip
 
 RUN cd /home && wget ftp://ngs.sanger.ac.uk/production/hrc/HRC.r1-1/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz \
 	&& gunzip HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz
