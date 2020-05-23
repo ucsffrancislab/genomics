@@ -1,16 +1,14 @@
 
-
-Update https://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.3.0.zip
-
-
-More info on https://www.well.ox.ac.uk/~wrayner/tools/
-
-
-
 #	ImputationPrep_AGS_GWAS
 
 Pipeline based on https://imputationserver.readthedocs.io/en/latest/prepare-your-data/
 
+Update https://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.3.0.zip
+
+More info on https://www.well.ox.ac.uk/~wrayner/tools/
+
+
+This takes less than an hour.
 
 
 
@@ -44,6 +42,11 @@ sudo yum -y install docker htop
 
 ##	Prepare attached ssd
 
+The instance only has 8GB by default which will be rather full already.
+This data will take up a couple GB.
+Docker related data will take up over 20GB.
+Use the SSD for data and docker. Its faster too.
+
 ```BASH
 lsblk
 sudo mkfs -t xfs /dev/nvme0n1
@@ -76,6 +79,9 @@ sudo usermod -a -G docker ec2-user
 
 ```BASH
 exit
+```
+
+```BASH
 ssh -i /Users/jakewendt/.aws/JakeHervUNR.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$ip
 ```
 
@@ -115,9 +121,10 @@ docker exec -it $( docker ps -aq ) bash
 
 ##	Move / Copy / Filter into /data/out directory
 
-JAKE ADDED - filter out chromosome 0 with --not-chr 0
-Nevermind. Filtering nnecessary. Use the -updated bed files.
-Do need to copy the files and remaking them cleans them up.
+JAKE ADDED - filter out chromosome 0 with `--not-chr 0`
+Nevermind. Filtering nnecessary. Use the `*-updated-chr*` bed files.
+
+Do need to copy the files and remaking them cleans them up a bit.
 
 
 ```BASH
@@ -137,7 +144,12 @@ plink --freq --bfile /data/out/onco_1347  --out /data/out/onco_1347.freq
 
 
 ##	Execute script ( failed on my laptop as ran out of memory (15GB) )
-#	loading tab goes up to 40400000 and uses about 22GB memory and create Run-plink.sh
+
+Original version, loading tab goes up to 40400000 and uses about 22GB memory and create Run-plink.sh
+
+New version goes up to 40405506 and uses less than 1 GB of memory!
+This could now be run on a laptop.
+
 
 ```BASH
 cd /data/out
@@ -159,12 +171,26 @@ Which reference? Does it really matter? Probably needs matching chomosome names?
 
 USE -updated file.
 
+Seems that the imputation server uses the individual chromosome files so NOT this ...
+
 ```BASH
 vcfCooker --in-bfile /data/out/il370_4677-updated --ref /home/hs37d5.fa --out /data/out/il370_4677.vcf --write-vcf
 bgzip /data/out/il370_4677.vcf
 
 vcfCooker --in-bfile /data/out/onco_1347-updated  --ref /home/hs37d5.fa --out /data/out/onco_1347.vcf  --write-vcf
 bgzip /data/out/onco_1347.vcf
+```
+
+But something more like this ...
+
+```BASH
+	for i in $( seq 1 23 ) ; do
+		vcfCooker --in-bfile /data/out/${s}-updated-chr${i} \
+			--ref /home/hs37d5.fa \
+			--out /data/out/${s}-updated-chr${i}.vcf \
+			--write-vcf
+		bgzip /data/out/${s}-updated-chr${i}.vcf
+	done
 ```
 
 
@@ -199,7 +225,11 @@ sudo shutdown now
 
 
 
-#	Additional Tools (Unused)
+#	Additional Tools
+
+While I don't use these tools, I do use the `checkVCF` provided reference.
+Although, since I haven't seen any results, this and anything could change.
+
 
 ##	Convert ped/map files to VCF files
 
@@ -231,43 +261,67 @@ checkVCF.py -r human_g1k_v37.fasta -o out mystudy_chr1.vcf.gz
 
 #	Imputation Server
 
-
-While UMich has an imputation server, we want to use TopMed's https://imputation.biodatacatalyst.nhlbi.nih.gov/
-
-Reference Panel: TOPMed r2
-Array build: GRCh37/hg19
-rsq Filter: 0.1 (To start, may bump this up to 0.3 later, we can post filter these ones later too.)
-Phasing: Eagle w/e
-Mode: Quality Control and Imputation
-
 Redo and process per chromosome.
 
 
 ```BASH
+set -v
 mkdir /data/out/
 for s in il370_4677 onco_1347 ; do
-	plink --bfile /data/${s} --make-bed --out /data/out/${s}
-	plink --freq --bfile /data/out/${s} --out /data/out/${s}.freq
+  plink --bfile /data/${s} --make-bed --out /data/out/${s}
+  plink --freq --bfile /data/out/${s} --out /data/out/${s}.freq
 
-	cd /data/out
+  cd /data/out
 
-	perl /home/HRC-1000G-check-bim.pl \
-		-b /data/out/${s}.bim \
-		-f /data/out/${s}.freq.frq \
-		-r /home/HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
+  perl /home/HRC-1000G-check-bim.pl \
+    -b /data/out/${s}.bim \
+    -f /data/out/${s}.freq.frq \
+    -r /home/HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
 
-	mv Run-plink.sh Run-plink-${s}.sh
-	sh Run-plink-${s}.sh
+  mv Run-plink.sh Run-plink-${s}.sh
+  sh Run-plink-${s}.sh
 
-	for i in $( seq 1 23 ) ; do
-		vcfCooker --in-bfile /data/out/${s}-updated-chr${i} \
-			--ref /home/hs37d5.fa \
-			--out /data/out/${s}-updated-chr${i}.vcf \
-			--write-vcf
-		bgzip /data/out/${s}-updated-chr${i}.vcf
-	done
+  for i in $( seq 1 23 ) ; do
+    vcfCooker --in-bfile /data/out/${s}-updated-chr${i} \
+      --ref /home/hs37d5.fa \
+      --out /data/out/${s}-updated-chr${i}.vcf \
+      --write-vcf
+    bgzip /data/out/${s}-updated-chr${i}.vcf
+  done
 
 done
-aws s3 sync /ssd0/data/out/ s3://herv-unr/20200520_Adult_Glioma_Study_GWAS_OUTPUT-$(date "+%Y%m%d")/
+aws s3 sync /ssd0/data/out/ s3://herv-unr/20200520_Adult_Glioma_Study_GWAS_OUTPUT_$(date "+%Y%m%d")/
 ```
+
+Apparently there is a way to load into imputation server from S3, but haven't figured it out yet.
+Download locally, then upload to server.
+
+Use [TopMed's Server](https://imputation.biodatacatalyst.nhlbi.nih.gov/)
+
+With these options
+
+* Reference Panel: TOPMed r2
+* Array build: GRCh37/hg19
+* rsq Filter: 0.1 (To start, may bump this up to 0.3 later, we can post filter these ones later too.)
+* Phasing: Eagle w/e
+* Mode: Quality Control & Imputation [ or Quality Control & Phasing Only or Quality Control Only 
+
+* Phasing: Eagle v2.4 (phased output) [or no phasing]
+* Population: All [or Mixed]
+
+* O : AES 256 encryption
+* X : I will not attempt to re-identify or contact research participants.
+* X : I will report any inadvertant data release, security breach or other data management incident of which I become aware.
+
+
+Data sets must be uploaded separately.
+
+Each file is validated.
+The reference panel is hg38 but the data is hg19 so it needs to be lifted over.
+This is taking a while.
+I would not be be surprised if this takes a day or so.
+
+
+
+
 
