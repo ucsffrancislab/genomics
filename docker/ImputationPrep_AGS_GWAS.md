@@ -1,4 +1,12 @@
 
+
+Update https://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.3.0.zip
+
+
+More info on https://www.well.ox.ac.uk/~wrayner/tools/
+
+
+
 #	ImputationPrep_AGS_GWAS
 
 Pipeline based on https://imputationserver.readthedocs.io/en/latest/prepare-your-data/
@@ -28,8 +36,8 @@ ssh -i /Users/jakewendt/.aws/JakeHervUNR.pem -o UserKnownHostsFile=/dev/null -o 
 ##	Update instance
 
 ```BASH
-sudo yum update
-sudo yum install docker htop
+sudo yum -y update
+sudo yum -y install docker htop
 ```
 
 
@@ -191,7 +199,7 @@ sudo shutdown now
 
 
 
-#	Additional Tools
+#	Additional Tools (Unused)
 
 ##	Convert ped/map files to VCF files
 
@@ -210,5 +218,56 @@ bcftools sort study_chr1.vcf -Oz -o study_chr1.vcf.gz
 Use [checkVCF](https://github.com/zhanxw/checkVCF) to ensure that the VCF files are valid. checkVCF proposes "Action Items" (e.g. upload to sftp server), which can be ignored. Only the validity should be checked with this command.
 ```BASH
 checkVCF.py -r human_g1k_v37.fasta -o out mystudy_chr1.vcf.gz
+```
+
+
+
+
+
+
+
+
+
+
+#	Imputation Server
+
+
+While UMich has an imputation server, we want to use TopMed's https://imputation.biodatacatalyst.nhlbi.nih.gov/
+
+Reference Panel: TOPMed r2
+Array build: GRCh37/hg19
+rsq Filter: 0.1 (To start, may bump this up to 0.3 later, we can post filter these ones later too.)
+Phasing: Eagle w/e
+Mode: Quality Control and Imputation
+
+Redo and process per chromosome.
+
+
+```BASH
+mkdir /data/out/
+for s in il370_4677 onco_1347 ; do
+	plink --bfile /data/${s} --make-bed --out /data/out/${s}
+	plink --freq --bfile /data/out/${s} --out /data/out/${s}.freq
+
+	cd /data/out
+
+	perl /home/HRC-1000G-check-bim.pl \
+		-b /data/out/${s}.bim \
+		-f /data/out/${s}.freq.frq \
+		-r /home/HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
+
+	mv Run-plink.sh Run-plink-${s}.sh
+	sh Run-plink-${s}.sh
+
+	for i in $( seq 1 23 ) ; do
+		vcfCooker --in-bfile /data/out/${s}-updated-chr${i} \
+			--ref /home/hs37d5.fa \
+			--out /data/out/${s}-updated-chr${i}.vcf \
+			--write-vcf
+		bgzip /data/out/${s}-updated-chr${i}.vcf
+	done
+
+done
+aws s3 sync /ssd0/data/out/ s3://herv-unr/20200520_Adult_Glioma_Study_GWAS_OUTPUT-$(date "+%Y%m%d")/
 ```
 
