@@ -14,42 +14,61 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
+#	sort can use a lot of tmp disk space on a hige list
+#	so counting the reads myself
+
 	if [ ${input: -4} == "q.gz" ] ; then
 		zcat ${input} \
 			| paste - - - - \
 			| cut -f 2 \
-			| awk '{print length($0)}' \
-			| sort \
-			| uniq -c \
+			| awk '{c[length($0)]++}END{for(n in c){print c[n],n}}' \
 			| sort -k2n \
 			| gzip > ${f}
+
+#			| awk '{print length($0)}' \
+#			| sort \
+#			| uniq -c \
+#			| sort -k2n \
+#			| gzip > ${f}
 	elif [ ${input: -4} == "a.gz" ] ; then
 		zcat ${input} \
 			| paste - - \
 			| cut -f 2 \
-			| awk '{print length($0)}' \
-			| sort \
-			| uniq -c \
+			| awk '{c[length($0)]++}END{for(n in c){print c[n],n}}' \
 			| sort -k2n \
 			| gzip > ${f}
+
+#			| awk '{print length($0)}' \
+#			| sort \
+#			| uniq -c \
+#			| sort -k2n \
+#			| gzip > ${f}
 	elif [ ${input: -1} == "q" ] ; then
 		cat ${input} \
 			| paste - - - - \
 			| cut -f 2 \
-			| awk '{print length($0)}' \
-			| sort \
-			| uniq -c \
+			| awk '{c[length($0)]++}END{for(n in c){print c[n],n}}' \
 			| sort -k2n \
 			| gzip > ${f}
+
+#			| awk '{print length($0)}' \
+#			| sort \
+#			| uniq -c \
+#			| sort -k2n \
+#			| gzip > ${f}
 	elif [ ${input: -1} == "a" ] ; then
 		cat ${input} \
 			| paste - - \
 			| cut -f 2 \
-			| awk '{print length($0)}' \
-			| sort \
-			| uniq -c \
+			| awk '{c[length($0)]++}END{for(n in c){print c[n],n}}' \
 			| sort -k2n \
 			| gzip > ${f}
+
+#			| awk '{print length($0)}' \
+#			| sort \
+#			| uniq -c \
+#			| sort -k2n \
+#			| gzip > ${f}
 	fi
 
 	chmod a-w $f
