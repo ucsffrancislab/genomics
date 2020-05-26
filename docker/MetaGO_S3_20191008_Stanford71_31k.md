@@ -13,6 +13,9 @@ ll Case-* | wc -l
 aws s3 sync ~/MetaGO_S3_20191008_Stanford71/ s3://herv-unr/MetaGO_S3_20191008_Stanford71/
 
 
+i3.2xlarge - 8/60GB 
+i3.8xlarge - 32/240GB 
+
 
 create_ec2_instance.bash --profile gwendt --image-id ami-0323c3dd2da7fb37d --instance-type i3.2xlarge --key-name ~/.aws/JakeHervUNR.pem --NOT-DRY-RUN
 ssh ...
@@ -57,10 +60,16 @@ docker exec -it $( docker ps -aq ) bash
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Control* > /root/fileList.txt
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Case*   >> /root/fileList.txt
 
+
+Let's move to --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --cleanUp   for the 31 mers
+
+
+
 nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt \
 	--n1 $( ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Control* | wc -l ) \
 	--n2 $( ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Case* | wc -l ) \
-	--kMer 31 --min 1 -P 8 --ASS 0.65 --WilcoxonTest 0.1 --LogicalRegress 0.5 \
+	--kMer 31 --min 1 -P 8 \
+	--ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --cleanUp \
 	--filterFuction ASS --outputPath /mnt/ssd0/MetaGO_Result --Union --sparse \
 	> /mnt/ssd0/MetaGO_Result/MetaGO.output.txt 2>&1 &
 

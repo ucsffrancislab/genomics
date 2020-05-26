@@ -15,6 +15,9 @@ ll Case-* | wc -l
 aws s3 sync ~/MetaGO_S3_20200407_Schizophrenia/ s3://herv-unr/MetaGO_S3_20200407_Schizophrenia/
 
 
+i3.2xlarge - 8/60GB
+i3.8xlarge - 32/240GB
+
 
 create_ec2_instance.bash --profile gwendt --image-id ami-0323c3dd2da7fb37d --instance-type i3.2xlarge --key-name ~/.aws/JakeHervUNR.pem --NOT-DRY-RUN
 ssh ...
@@ -59,10 +62,16 @@ Create filelist on docker instance so path is correct
 ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Control* > /root/fileList.txt
 ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Case*   >> /root/fileList.txt
 
+
+Let's move to --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --cleanUp   for the 31 mers
+
+
+
 nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt \
 	--n1 $( ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Control* | wc -l ) \
 	--n2 $( ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Case* | wc -l ) \
-	--kMer 31 --min 1 -P 8 --ASS 0.65 --WilcoxonTest 0.1 --LogicalRegress 0.5 \
+	--kMer 31 --min 1 -P 8 \
+	--ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --cleanUp \
 	--filterFuction ASS --outputPath /mnt/ssd0/MetaGO_Result --Union --sparse \
 	> /mnt/ssd0/MetaGO_Result/MetaGO.output.txt 2>&1 &
 
@@ -74,78 +83,4 @@ Wait until completion
 
 aws s3 sync --delete ~/ssd0/MetaGO_Result/ s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_Results_k31.$( date "+%Y%m%d" )
 
-
-
-
-
-
-
-
-dsk only using 8/32 processors. Why?
-
-
-Started about noon.
-
-
-last parts pegged all 8 processors and are using a lot of memory, currently 38.5/60 and rising
-actually holding around 38.5
-
-Much non-parallel processing happening. Wasted CPUs.
-Seems to max out at 8-12 CPUs. 32 is a huge waste.
-
-i3.2xlarge - 8/60GB - 14 hours
-i3.8xlarge - 32/240GB - I think took about 12 hours
-
-Just quit again. No idea why
-Rerunning on bigger machine next time. i3.4xlarge?
-
-
-
-
-
-
-
-
-
-
-
-----
-
-
-ll /mnt/ssd0/MetaGO_Result/ASS*/part*
-
-/home/ec2-user/ssd0/MetaGO_Result/ASS_filtered_down_*/part-?????
-/home/ec2-user/ssd0/MetaGO_Result/WR_filtered_down_*/part-?????
-
-Still ABSOLUTELY NOTHING?
-
-Possible naming issue. The MetaGO convention splits on / and . and I have extra .'s
-Actually not sure if that makes any difference
-
-
-Just stopped in the middle of a sample? No idea why? Need to try this again with corrected names
-
-
-Pegging 8CPUs, spiking to 3 or 4gb memory, storage will likely use 20GB
-Think could've used a c5d.2xlarge ( 0.384 ), c5d.4xlarge ( 0.768 ) or m5[ad,d,dn].2xlarge ( 0.412, 0.452, 0.544 ) instead of i3.2xlarge ( 0.624 )
-
-
-
-
-
-Could up parameters for memory and disk space
-
-dsk
-dsk: [d]isk [s]treaming of [k]-mers (constant-memory k-mer counting)
-usage:
- dsk input_file kmer_size [-t min_abundance] [-m max_memory] [-d max_disk_space] [-o out_prefix] [-histo] [-c]
-details:
- [-t min_abundance] filters out k-mers seen ( < min_abundance ) times, default: 1 (all kmers are returned)
- [-m max_memory] is in MB, default: min(total system memory / 2, 5 GB) 
- [-d max_disk_space] is in MB, default: min(available disk space / 2, reads file size)
- [-o out_prefix] saves results in [out_prefix].solid_kmers. default out_prefix = basename(input_file)
- [-histo] outputs histogram of kmers abundance
- Input file can be fasta, fastq, gzipped or not, or a file containing a list of file names.
- [-c] write a Minia-compatible output file, i.e. discard k-mer counts [-b] using existing binary converted reads
-Running dsk version 1.6066
 
