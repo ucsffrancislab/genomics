@@ -67,6 +67,19 @@ Let's move to --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --cleanUp   f
 
 
 
+root@bba8216cb4f2:~/github/MetaGO/MetaGO_SourceCode# more spark.conf 
+spark.master		local[*]
+spark.app.name		First Spark App
+spark.driver.memory	35G
+spark.executor.memory   7G
+spark.logConf		true
+spark.eventLog.enabled	false
+spark.driver.maxResultSize  1g
+spark.shuffle.consolidateFile true
+spark.driver.cores      8
+
+https://spark.apache.org/docs/latest/configuration.html
+
 nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt \
 	--n1 $( ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Control* | wc -l ) \
 	--n2 $( ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Case* | wc -l ) \
