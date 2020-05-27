@@ -1,10 +1,14 @@
 
 #	MetaGO Run on AWS Instance
 
+Each line is the complete path of raw data, such as the first line is `/home/user/MetaGO/testData/H1.fasta`, and the second line is `/home/user/MetaGO/testData/H2.fasta` ... Furthermore, and the samples belong to same group must arrange togther(e.g. line1 to linek of the list belongs to group 1 (health) and linek+1 to lineN belongs to group 2 (patient) ).
 
-Each line is the complete path of raw data, such as the first line is '/home/user/MetaGO/testData/H1.fasta', and the second line is '/home/user/MetaGO/testData/H2.fasta' ... Furthermore, and the samples belong to same group must arrange togther(e.g. line1 to linek of the list belongs to group 1 (health) and linek+1 to lineN belongs to group 2 (patient) ).
+```
 -N	--n1	The number of samples belong to group 1.
 -M	--n2	The number of samples belong to group 2.
+```
+
+
 
 
 ```BASH
@@ -21,6 +25,7 @@ aws s3 sync ~/MetaGO_S3_20200407_Schizophrenia/ s3://herv-unr/MetaGO_S3_20200407
 
 
 i3.2xlarge - 8/60GB
+
 i3.8xlarge - 32/240GB
 
 

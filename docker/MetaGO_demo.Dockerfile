@@ -13,6 +13,8 @@
 FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 
+#	Suddenly dsk doesn't work. Added libgomp1 fixes?
+
 RUN apt-get -y update ; apt-get -y full-upgrade ; \
 	apt-get -y install git python software-properties-common default-jdk wget curl htop unzip vim libgomp1 ; \
 	apt-get -y autoremove
