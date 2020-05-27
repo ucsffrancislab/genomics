@@ -99,4 +99,161 @@ checkVCF.py -r human_g1k_v37.fasta -o out mystudy_chr1.vcf.gz
 
 
 
+##################################################
+
+
+
+Imputation prep with docker and AWS
+
+aws s3 sync s3://herv-unr/20200520_Adult_Glioma_Study_GWAS_OUTPUT_20200523/ /francislab/data1/working/20200520_Adult_Glioma_Study_GWAS/20200520_prep_for_imputation/20200520_Adult_Glioma_Study_GWAS_OUTPUT_20200523/
+
+
+TOPMed Imputation output
+
+ONCO
+Input Validation
+23 valid VCF file(s) found.
+
+Samples: 1347
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 X 3 4 5 6 7 8 9
+SNPs: 479762
+Chunks: 308
+Datatype: unphased
+Build: hg19
+Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Population: all
+Phasing: eagle
+Mode: imputation
+Rsq filter: 0.1
+
+Quality Control
+Uploaded data is hg19 and reference is hg38.
+
+Lift Over
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 108,816
+Reference Overlap: 96.39 %
+Match: 459,899
+Allele switch: 1,238
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 58
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 12
+NonSNP sites: 0
+Monomorphic sites: 814
+Allele mismatch: 213
+SNPs call rate < 90%: 0
+
+Excluded sites in total: 1,039
+Remaining sites in total: 461,195
+See snps-excluded.txt for details
+Typed only sites: 17,294
+See typed-only.txt for details
+
+Warning: 2 Chunk(s) excluded: reference overlap < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 306
+
+
+Quality Control (Report)
+Execution successful.
+
+ Sat May 23 2020 09:39:30   9 h 52 min 36 sec   jakewendt   Genotype Imputation (Minimac4) 1.2.7
+
+
+
+mkdir onco_1347
+cd onco_1347
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66757/94e388fa82b272725197331012bf864b | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66761/8ca6f85b7869003b880b734d92c51d9c | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66763/417181b41bfd995bcf6e84cb35f0ceb4 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66764/6635cbef66b586b091951dadd0775870 | bash
+
+Data is password protected
+
+
+
+
+
+
+il370
+
+
+
+Input Validation
+23 valid VCF file(s) found.
+
+Samples: 4677
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 X 3 4 5 6 7 8 9
+SNPs: 300800
+Chunks: 307
+Datatype: unphased
+Build: hg19
+Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Population: all
+Phasing: eagle
+Mode: imputation
+Rsq filter: 0.1
+
+
+Quality Control
+Uploaded data is hg19 and reference is hg38.
+
+Lift Over
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 100,144
+Reference Overlap: 99.68 %
+Match: 298,685
+Allele switch: 935
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 0
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 82
+SNPs call rate < 90%: 0
+
+Excluded sites in total: 82
+Remaining sites in total: 299,620
+See snps-excluded.txt for details
+Typed only sites: 955
+See typed-only.txt for details
+
+Warning: 3 Chunk(s) excluded: < 3 SNPs (see chunks-excluded.txt for details).
+Warning: 1 Chunk(s) excluded: at least one sample has a call rate < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 304
+
+
+Quality Control (Report)
+Execution successful.
+
+
+
+mkdir il370_4677
+cd il370_4677
+
+ Sat May 23 2020 09:41:03   25 h 30 min 54 sec   jakewendt   Genotype Imputation (Minimac4) 1.2.7
+
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66778/e4045fdd7b03d7c8525b127a2d8f9d38 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66782/a9f3a00cdc24c80f4d23d29f392e437d | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66785/7a542f106a3fe70ca7f76522f95510af | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/66784/349c4bc17daee44ba7b1341fdf9cdd86 | bash
+
+
+
+
 
