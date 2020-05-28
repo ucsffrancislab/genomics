@@ -1,6 +1,6 @@
 #
-#	docker build -t metago --file docker/MetaGO_demo.Dockerfile ./
-#	docker run --rm -it metago
+#	docker build -t metago_demo --file docker/MetaGO_demo.Dockerfile ./
+#	docker run --rm -it metago_demo
 #
 #	bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh -I RAW -F /root/github/MetaGO/MetaGO_SourceCode/fileList.txt -N 25 -M 25 -K 10 -m 1 -P 4 -A 0.65 -X 0.1 -L 0.5 -W ASS -O /root/MetaGO_Result -U -S
 #
@@ -43,26 +43,33 @@ RUN pip install --upgrade awscli pip numpy scipy boto3 pyspark sklearn
 RUN mkdir ~/github/
 RUN mkdir -p ~/.local/bin
 
-RUN cd ~/github/; \
-	git clone https://github.com/VVsmileyx/MetaGO.git ; \
-	cd MetaGO ; tar xfvz MetaGO_SourceCode.tar.gz
 #RUN cd ~/github/; \
-#	git clone https://github.com/ucsffrancislab/MetaGO.git 
-##	; \ cd MetaGO ; tar xfvz MetaGO_SourceCode.tar.gz
+#	git clone https://github.com/VVsmileyx/MetaGO.git ; \
+#	cd MetaGO ; tar xfvz MetaGO_SourceCode.tar.gz
+RUN cd ~/github/; \
+	git clone https://github.com/ucsffrancislab/MetaGO.git 
+#	; \ cd MetaGO ; tar xfvz MetaGO_SourceCode.tar.gz
 
 RUN cd ~/github/; \
 	git clone https://github.com/VVsmileyx/TestData.git ; \
 	cd TestData ; unzip testDATA.zip
 
-RUN cd ~/github/; \
-	git clone https://github.com/VVsmileyx/Tools.git ; \
-	cd Tools ; tar xfvz dsk-1.6066.tar.gz ; \
-	cp /root/github/Tools/dsk-1.6066/dsk ~/.local/bin/ ; \
-	cp /root/github/Tools/dsk-1.6066/parse_results ~/.local/bin/
+#RUN cd ~/github/; \
+#	git clone https://github.com/VVsmileyx/Tools.git ; \
+#	cd Tools ; tar xfvz dsk-1.6066.tar.gz ; \
+#	cp /root/github/Tools/dsk-1.6066/dsk ~/.local/bin/ ; \
+#	cp /root/github/Tools/dsk-1.6066/parse_results ~/.local/bin/
+
+
+RUN cd /root/ ; \
+	wget https://github.com/GATB/dsk/releases/download/v2.3.3/dsk-v2.3.3-bin-Linux.tar.gz ; \
+	tar xfvz dsk-v2.3.3-bin-Linux.tar.gz ; \
+	/bin/rm -rf dsk-v2.3.3-bin-Linux.tar.gz
+	
 
 
 
-ENV PATH="/root/.local/bin:/root/github/MetaGO/MetaGO_SourceCode:${PATH}"
+ENV PATH="/root/.local/bin:/root/dsk-v2.3.3-bin-Linux/bin:/root/github/MetaGO/MetaGO_SourceCode:${PATH}"
 
 RUN ls -1 /root/github/TestData/testDATA/H*.fasta  > /root/github/MetaGO/MetaGO_SourceCode/fileList.txt
 RUN ls -1 /root/github/TestData/testDATA/P*.fasta >> /root/github/MetaGO/MetaGO_SourceCode/fileList.txt
