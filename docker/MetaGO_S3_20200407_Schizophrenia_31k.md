@@ -29,10 +29,18 @@ i3.2xlarge - 8/60GB
 i3.8xlarge - 32/240GB
 
 
+Started May 27, 7:40am
+
 ```BASH
 create_ec2_instance.bash --profile gwendt --image-id ami-0323c3dd2da7fb37d --instance-type i3.2xlarge --key-name ~/.aws/JakeHervUNR.pem --NOT-DRY-RUN
 
-ssh ...
+
+ip=$( aws --profile gwendt ec2 describe-instances --query 'Reservations[0].Instances[0].PublicIpAddress' --instance-ids i-035cd8d50cb395c2c | tr -d '"' )
+echo $ip
+ssh -i /Users/jakewendt/.aws/JakeHervUNR.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$ip
+
+
+
 
 sudo yum -y update
 sudo yum -y install docker htop
@@ -55,7 +63,8 @@ exit
 
 
 
-ssh ...
+
+ssh -i /Users/jakewendt/.aws/JakeHervUNR.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ec2-user@$ip
 
 
 
@@ -78,12 +87,24 @@ docker exec -it $( docker ps -aq ) bash
 Create filelist on docker instance so path is correct
 
 
+up memory in ~/github/MetaGO/MetaGO_SourceCode/spark.conf 
+spark.driver.memory	35G
+spark.executor.memory   7G
+
+spark.driver.memory	50G   <---- trying this now if conf file reread.
+OR
+spark.executor.memory   20G		<---- trying ... didn't make any diff still using around 38GB
+
+
+
+
 
 
 ```BASH
 ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Control* > /root/fileList.txt
 ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Case*   >> /root/fileList.txt
 
+sed -i '/^spark.driver.memory/s/35G/50G/' spark.conf 
 
 nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt \
 	--n1 $( ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Control* | wc -l ) \
