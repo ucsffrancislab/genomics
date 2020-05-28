@@ -16,12 +16,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 #	Suddenly dsk doesn't work. Added libgomp1 fixes?
 
 RUN apt-get -y update ; apt-get -y full-upgrade ; \
-	apt-get -y install git python software-properties-common default-jdk wget curl htop unzip vim libgomp1 ; \
+	apt-get -y install git python3 python3-pip software-properties-common default-jdk wget curl htop unzip vim libgomp1 ; \
 	apt-get -y autoremove
 #	apt-get -y install git python3 python3-pip r-base software-properties-common default-jdk wget ; \
 
 #	python-pip for python hard to find
-RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"; python get-pip.py
+#RUN curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"; python get-pip.py
 
 #	FROM amazonlinux:latest
 #	RUN yum -y install which unzip aws-cli tar gzip bzip2 gcc g++ zlib-devel bzip2-devel xz-devel make libcurl-devel ncurses-devel openssl-devel wget procps htop python3 boto3 perl
@@ -33,8 +33,8 @@ RUN cd /root/ ; \
 	/bin/rm -rf spark-2.4.5-bin-hadoop2.7.tgz
 	
 
-#RUN ln -s /usr/bin/python3 /usr/bin/python
-#RUN ln -s /usr/bin/pip3 /usr/bin/pip
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN pip install --upgrade awscli pip numpy scipy boto3 pyspark sklearn
 
