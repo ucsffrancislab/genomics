@@ -81,6 +81,43 @@ for r1 in ${BASEDIR}/???.fastq.gz ; do
 		fi
 
 
+
+		#	SPECIAL NR ALIGNMENT WITH HIGHER EVALUE!
+		for dref in nr ; do
+
+			#	blastx  -evalue <Real> Expectation value (E) threshold for saving hits Default = `10'
+			#	diamond --evalue (-e)            maximum e-value to report alignments (default=0.001)
+
+			outbase="${base}.STAR.${ref}.Unmapped.out.diamond.e10.${dref}"
+			f="${outbase}.csv.gz"
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${starid} ] ; then
+					depend="-W depend=afterok:${starid}"
+				else
+					depend=""
+				fi
+				#	-e ${outbase}.err.txt \
+				#	scratch about 150gb so 8gb * 20
+				qsub ${depend} -N ${jobbase}.${dref} -l nodes=1:ppn=8 -l vmem=16gb \
+					-j oe -o ${outbase}.${date}.out.txt \
+					-l gres=scratch:20 \
+					~/.local/bin/diamond_scratch.bash \
+						-F "blastx --db ${DIAMOND}/${dref} \
+							--evalue 10 \
+							--query ${infile} --outfmt 6 --out ${f}"
+			fi
+
+		done
+
+
+
+
+
+
+
+
 		for dref in nr viral ; do
 
 			diamondid=""
