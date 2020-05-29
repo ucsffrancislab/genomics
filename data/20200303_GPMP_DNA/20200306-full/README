@@ -62,9 +62,29 @@ zcat ${DIR}/*R?.fastq.gz | paste - - - - | cut -f 2 | awk '{print length($0)}' |
 
 DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full
 for f in ${DIR}/trimmed/*fastq.gz ${DIR}/trimmed/length/*fastq.gz ; do
-echo read_length_hist.bash $f
+echo read_length_hist_scratch.bash $f
 done | qsub -N 20200303work -l nodes=1:ppn=8 -l vmem=16gb \
 -j oe -o ${DIR}/read_length_hist.bash.out 
+
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full
+for f in ${DIR}/trimmed/*fastq.gz ${DIR}/trimmed/length/*fastq.gz ; do
+qsub -N $(basename $f) -l nodes=1:ppn=8 -l vmem=16gb \
+-j oe -o ${f}.length_hist.bash.out ~/.local/bin/read_length_hist_scratch.bash -F "$f"
+done
+
+
+
+
+
+
+
+
+
+DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full
+for f in ${DIR}/trimmed/length/SF124*fastq.gz ; do
+qsub -N $(basename $f) -l nodes=1:ppn=8 -l vmem=16gb -h \
+-j oe -o ${f}.length_hist.bash.out ~/.local/bin/read_length_hist_scratch.bash -F "$f"
+done
 
 
 
@@ -72,9 +92,9 @@ done | qsub -N 20200303work -l nodes=1:ppn=8 -l vmem=16gb \
 Then sum up hist data counts. DON'T RE-READ RAW FILES
 
 DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed
-zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz
 DIR=/francislab/data1/working/20200303_GPMP_DNA/20200306-full/trimmed/length
-zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
+zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz
 
 
 
