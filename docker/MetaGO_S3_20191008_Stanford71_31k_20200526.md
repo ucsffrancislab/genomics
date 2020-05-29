@@ -29,6 +29,10 @@ i3.2xlarge - 8/60GB
 
 i3.8xlarge - 32/240GB 
 
+
+
+Started May 26, 8:17pm
+
 ```BASH
 
 create_ec2_instance.bash --profile gwendt --image-id ami-0323c3dd2da7fb37d --instance-type i3.2xlarge --key-name ~/.aws/JakeHervUNR.pem --NOT-DRY-RUN
@@ -86,11 +90,26 @@ docker exec -it $( docker ps -aq ) bash
 
 Create filelist on docker instance so path is correct
 
+Could raise the memory usage to total 60GB.
+Currently seems to peak at about 38GB
+Probably in MetaGO_SourceCode/spark.conf
+spark.driver.memory	35G
+spark.executor.memory   7G
+
+
+upped driver memory to 50GB if conf file reread
+
+
+
+
 
 ```BASH
 
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Control* > /root/fileList.txt
 ls -1 /mnt/ssd0/MetaGO_S3_20191008_Stanford71/Case*   >> /root/fileList.txt
+
+
+sed -i '/^spark.driver.memory/s/35G/50G/' spark.conf 
 
 
 nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList /root/fileList.txt \
