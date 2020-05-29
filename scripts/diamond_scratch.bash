@@ -24,9 +24,6 @@ while [ $# -gt 0 ] ; do
 done
 
 
-#	F "blastx --threads 8 --db ${DIAMOND}/${dref} --query ${infile} --outfmt 6 --out ${f}"
-
-
 
 ## 0. Create job-specific scratch folder that ...
 SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
@@ -42,39 +39,16 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	## 1. Copy input files from global disk to local scratch
-	#cp /data/$USER/sample.fq $SCRATCH_JOB/
-	#cp /data/$USER/reference.fa $SCRATCH_JOB/
-
-	mkdir ${SCRATCH_JOB}/input
-	#cp --archive ${SELECT_ARGS} ${SCRATCH_JOB}/input/
 	cp ${query} ${SCRATCH_JOB}/
 	cp ${db}.dmnd ${SCRATCH_JOB}/
 
-	## 2. Process input files
-	#cd $SCRATCH_JOB
-	#/path/to/my_pipeline --cores=$PBS_NUM_PPN reference.fa sample.fq > output.bam
-
-#	scratch_infile=${SCRATCH_JOB}/$( basename ${infile} )
 	scratch_db=${SCRATCH_JOB}/$( basename ${db} )
 	scratch_query=${SCRATCH_JOB}/$( basename ${query} )
 	scratch_out=${SCRATCH_JOB}/$( basename ${out} )
 
-
-
-	#merge_mer_counts.py ${threads} -o ${scratch_out} ${SCRATCH_JOB}/input/*
-	#merge_mer_counts.py -p ${PBS_NUM_PPN:-1} -o ${scratch_out} ${SCRATCH_JOB}/input/*
-
 	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
 
-#	F "blastx --threads 8 --db ${DIAMOND}/${dref} --query ${infile} --outfmt 6 --out ${f}"
-
-
-#	## 3. Move output files back to global disk
-#	mv output.bam /data/$USER/
-
 	mv --update ${scratch_out} $( dirname ${out} )
 	chmod a-w ${out}
-
 fi
