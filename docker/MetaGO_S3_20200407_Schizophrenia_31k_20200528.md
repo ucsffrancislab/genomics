@@ -25,6 +25,7 @@ aws s3 sync ~/MetaGO_S3_20200407_Schizophrenia/ s3://herv-unr/MetaGO_S3_20200407
 
 
 i3.2xlarge - 8/60GB
+i3.4xlarge - 16/120GB
 i3.8xlarge - 32/240GB
 i3.16xlarge - 64/480GB
 
@@ -102,10 +103,12 @@ i3.8xlarge - 32/240GB
 i3.16xlarge - 64/480GB
 
 
+470 is too much.
+
 
 ```BASH
 
-sed -i '/^spark.driver.memory/s/35G/460G/' spark.conf 
+sed -i '/^spark.driver.memory/s/35G/450G/' spark.conf 
 sed -i '/^spark.driver.cores/s/8/64/' spark.conf 
 
 ls -1 /mnt/ssd0/MetaGO_S3_20200407_Schizophrenia/Control* > /root/fileList.txt
@@ -120,52 +123,19 @@ nohup bash /root/github/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fil
 	> /mnt/ssd0/MetaGO_Result/MetaGO.output.txt 2>&1 &
 ```
 
-Note that `dsk` only uses 8 threads with no option to change.
-Perhaps time to modify this to use a newer version of `dsk`.
-The ultimate goal is the test file. The binary files are tossed
-```
-                    dsk $iterm $KMER -t $MIN
-                    parse_results $sampleName".fasta.solid_kmers_binary" > G1_tupleFile/$sampleName"_k_"$KMER".txt"
-                    rm $sampleName".fasta.solid_kmers_binary" -rf
-                    rm $sampleName".fasta.reads_binary" -rf
 
-root@c3854462f26b:~/github/MetaGO/MetaGO_SourceCode# dsk
-dsk: [d]isk [s]treaming of [k]-mers (constant-memory k-mer counting)
-usage:
- dsk input_file kmer_size [-t min_abundance] [-m max_memory] [-d max_disk_space] [-o out_prefix] [-histo] [-c]
-details:
- [-t min_abundance] filters out k-mers seen ( < min_abundance ) times, default: 1 (all kmers are returned)
- [-m max_memory] is in MB, default: min(total system memory / 2, 5 GB) 
- [-d max_disk_space] is in MB, default: min(available disk space / 2, reads file size)
- [-o out_prefix] saves results in [out_prefix].solid_kmers. default out_prefix = basename(input_file)
- [-histo] outputs histogram of kmers abundance
- Input file can be fasta, fastq, gzipped or not, or a file containing a list of file names.
- [-c] write a Minia-compatible output file, i.e. discard k-mer counts [-b] using existing binary converted reads
-Running dsk version 1.6066
+Peaking at 14 load and 410GB memory
+4xlarge is likely the best option
 
-root@c3854462f26b:~/github/MetaGO/MetaGO_SourceCode# parse_results 
-parameters:
- dsk_solid_kmers_file [count threshold] [--dot]
-
-root@c3854462f26b:~/github/MetaGO/MetaGO_SourceCode# head G1_tupleFile/Control-SD02-unmapped_k_31.txt 
-TCATCCGATCGGCCTGCTTCCAGCCGACGGC 1
-CCTCACACCATTACTGTTTGTCCTTGTGCTC 1
-TCACAGTGAAATAAGAAGCAAGATTATCATC 1
-ACTCACACACACACACTCACATATATTTATA 1
-CCATCCTCACACTCTCTTCTCCTCCCTCACA 1
-CACACACACGACAAACAAACACACACACACC 1
-TCTTCGTCCACACACCCACATATGTATACAC 1
-CCCACGAGCCCGCACGAGAGCGCATACGCCG 1
-AAACGTGAAAAGGGAAACAACCCAGACCGTC 1
-GCGCCATGCCACGTAGCCGTTGGTGAACGCC 9
-root@c3854462f26b:~/github/MetaGO/MetaGO_SourceCode# file Control-SD14-unmapped.fasta*
-Control-SD14-unmapped.fasta.reads_binary:       data
-Control-SD14-unmapped.fasta.solid_kmers_binary: lif file
-Control-SD14-unmapped.fasta_temp:               directory
-```
+Seems that the job can only be parallelized so much. For some reason 11.
 
 Wait until completion
 
+Finished about 10PM
+About 10 hours
+8 times the computer, only about half the time.
+
+Will compare the output.
 
 
 
