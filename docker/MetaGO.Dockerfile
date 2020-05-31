@@ -54,6 +54,9 @@ RUN cd ~/github/; \
 	git clone https://github.com/VVsmileyx/TestData.git ; \
 	cd TestData ; unzip testDATA.zip
 
+RUN cd ~/github/; \
+	git clone https://github.com/VVsmileyx/Results-and-figures.git
+
 #RUN cd ~/github/; \
 #	git clone https://github.com/VVsmileyx/Tools.git ; \
 #	cd Tools ; tar xfvz dsk-1.6066.tar.gz ; \
