@@ -21,7 +21,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 #	python or python3?
 
 RUN apt-get -y update ; apt-get -y full-upgrade ; \
-	apt-get -y install git python software-properties-common wget curl htop unzip vim libgomp1 openjdk-8-jre openjdk-8-jdk parallel mhddfs ; \
+	apt-get -y install git python software-properties-common wget curl htop unzip vim libgomp1 openjdk-8-jre openjdk-8-jdk parallel ; \
 	apt-get -y autoremove
 
 #	apt-get -y install git python3 python3-pip r-base software-properties-common default-jdk wget ; \
