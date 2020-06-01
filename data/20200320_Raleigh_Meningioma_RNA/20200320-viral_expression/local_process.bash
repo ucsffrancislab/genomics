@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 
-for f in *.STAR.hg38.Unmapped.out.diamond.e10.nr.csv.gz ; do 
+for f in e10/*.STAR.hg38.Unmapped.out.diamond.e10.nr.csv.gz ; do 
 	echo $f
-	b=${f%.csv.gz}
-	#b=$( basename $f .csv.gz )
-	#csv=$( basename $f )
+	#b=${f%.csv.gz}
+	b=$( basename $f .csv.gz )
+	csv=$( basename $f )
 	echo $b
 
 	for e in 1 0.1 0.01 ; do
-		out=${f/e10/e${e}}
+		mkdir -p e${e}
+		out="e${e}/${csv/e10/e${e}}"
 		if [ -f $out ] && [ ! -w $out ] ; then
 			echo "$out done. Skipping"
 		else
@@ -19,8 +20,10 @@ for f in *.STAR.hg38.Unmapped.out.diamond.e10.nr.csv.gz ; do
 	done
 	
 	for e in 10 1 0.1 0.01 ; do
-		in=${f/e10/e${e}}
-		out=${b/e10/e${e}}.rma6
+		#in=${f/e10/e${e}}
+		#out=${b/e10/e${e}}.rma6
+		in="e${e}/${csv/e10/e${e}}"
+		out="e${e}/${b/e10/e${e}}.rma6"
 		if [ -f $out ] && [ ! -w $out ] ; then
 			echo "$out done. Skipping"
 		else
