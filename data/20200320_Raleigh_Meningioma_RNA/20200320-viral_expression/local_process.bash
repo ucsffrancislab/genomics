@@ -19,7 +19,7 @@ for f in e10/*.STAR.hg38.Unmapped.out.diamond.e10.nr.csv.gz ; do
 		fi
 	done
 	
-	for e in 10 ; do #1 0.1 0.01 ; do
+	for e in 10 1 0.1 0.01 ; do
 		#in=${f/e10/e${e}}
 		#out=${b/e10/e${e}}.rma6
 		in="e${e}/${csv/e10/e${e}}"
