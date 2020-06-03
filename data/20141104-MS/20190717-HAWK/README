@@ -1,0 +1,81 @@
+
+
+ls /raid/data/raw/MS/*bam | xargs -n 1 basename  | sed -e 's".bam""' | awk '{tn="Case";sex="U"}(/^K/){tn="Control"}{print $1"\t"sex"\t"tn }' > gwas_info.txt
+
+This is all expecting "Case" and "Control".
+
+
+bam files are unmapped RNA, so can't determine gender this way
+nohup ./find_gender.bash >> find_gender.out 2>&1 &
+
+nohup hawk_countKmers.bash --source_path /raid/data/raw/MS --unique_extension .bam >> countKmers.out 2>&1 &
+
+
+
+
+
+nohup hawk_runHawk.bash >> runHawk.out 2>&1 &
+
+ACTUALLY HAVE SOME KMERS!
+
+hawk_runAbyss.bash
+
+NOT ENOUGH KMERS TO ASSEMBLE INTO ANYTHING
+
+
+
+
+
+Let's see what's here ...
+
+blastn -db nt -query case_kmers.fasta -num_threads 40 -outfmt 6 -out case_kmers.blastn.nt.txt &
+
+blastn -db nt -query control_kmers.fasta -num_threads 40 -outfmt 6 -out control_kmers.blastn.nt.txt &
+
+blastn -db viral.masked -query case_kmers.fasta -num_threads 40 -outfmt 6 -out case_kmers.blastn.viral.masked.txt &
+
+blastn -db viral.masked -query control_kmers.fasta -num_threads 40 -outfmt 6 -out control_kmers.blastn.viral.masked.txt &
+
+blastn -db refseqgene -query case_kmers.fasta -num_threads 40 -outfmt 6 -out case_kmers.blastn.refseqgene.txt &
+
+blastn -db refseqgene -query control_kmers.fasta -num_threads 40 -outfmt 6 -out control_kmers.blastn.refseqgene.txt &
+
+blastn -db human.rna -query case_kmers.fasta -num_threads 40 -outfmt 6 -out case_kmers.blastn.human.rna.txt &
+
+blastn -db human.rna -query control_kmers.fasta -num_threads 40 -outfmt 6 -out control_kmers.blastn.human.rna.txt &
+
+
+
+awk '{print $2}' case_kmers.blastn.nt.txt | sort | uniq -c | sort -n | tail
+awk '{print $2}' control_kmers.blastn.nt.txt | sort | uniq -c | sort -n | tail
+
+awk '{print $2}' control_kmers.blastn.nt.txt | sort | uniq  > control_kmers.blastn.nt.uniqsaccvers.txt
+awk '{print $2}' case_kmers.blastn.nt.txt | sort | uniq  > case_kmers.blastn.nt.uniqsaccvers.txt
+comm *.blastn.nt.uniqsaccvers.txt
+
+blastdbcmd -db /raid/refs/blast/nt -entry_batch case_kmers.blastn.nt.uniqsaccvers.txt -outfmt '%a %t' -out case_kmers.blastn.nt.uniq_desc.txt
+blastdbcmd -db /raid/refs/blast/nt -entry_batch control_kmers.blastn.nt.uniqsaccvers.txt -outfmt '%a %t' -out control_kmers.blastn.nt.uniq_desc.txt
+
+
+blastn -db nt -gilist /raid/refs/blast/Bacteria.gilist -query case_kmers.fasta -num_threads 40 -outfmt 6 -out case_kmers.blastn.ntBacteria.txt &
+blastn -db nt -gilist /raid/refs/blast/Bacteria.gilist -query control_kmers.fasta -num_threads 40 -outfmt 6 -out control_kmers.blastn.ntBacteria.txt &
+
+awk '{print $2}' control_kmers.blastn.ntBacteria.txt | sort | uniq  > control_kmers.blastn.ntBacteria.uniqsaccvers.txt
+awk '{print $2}' case_kmers.blastn.ntBacteria.txt | sort | uniq  > case_kmers.blastn.ntBacteria.uniqsaccvers.txt
+comm *.blastn.ntBacteria.uniqsaccvers.txt
+
+blastdbcmd -db /raid/refs/blast/nt -entry_batch case_kmers.blastn.ntBacteria.uniqsaccvers.txt -outfmt '%a %t' -out case_kmers.blastn.ntBacteria.uniq_desc.txt
+blastdbcmd -db /raid/refs/blast/nt -entry_batch control_kmers.blastn.ntBacteria.uniqsaccvers.txt -outfmt '%a %t' -out control_kmers.blastn.ntBacteria.uniq_desc.txt
+
+
+blastn -db nt -gilist /raid/refs/blast/Viruses.gilist -query case_kmers.fasta -num_threads 40 -outfmt 6 -out case_kmers.blastn.ntViruses.txt &
+blastn -db nt -gilist /raid/refs/blast/Viruses.gilist -query control_kmers.fasta -num_threads 40 -outfmt 6 -out control_kmers.blastn.ntViruses.txt &
+
+awk '{print $2}' control_kmers.blastn.ntViruses.txt | sort | uniq  > control_kmers.blastn.ntViruses.uniqsaccvers.txt
+awk '{print $2}' case_kmers.blastn.ntViruses.txt | sort | uniq  > case_kmers.blastn.ntViruses.uniqsaccvers.txt
+comm *.blastn.ntViruses.uniqsaccvers.txt
+
+blastdbcmd -db /raid/refs/blast/nt -entry_batch case_kmers.blastn.ntViruses.uniqsaccvers.txt -outfmt '%a %t' -out case_kmers.blastn.ntViruses.uniq_desc.txt
+blastdbcmd -db /raid/refs/blast/nt -entry_batch control_kmers.blastn.ntViruses.uniqsaccvers.txt -outfmt '%a %t' -out control_kmers.blastn.ntViruses.uniq_desc.txt
+
+

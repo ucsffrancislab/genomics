@@ -1,0 +1,252 @@
+
+Missing complete RE38231_CAGATC_L001 pair so use lane 2 when looping
+
+
+
+for f in $( ls *R2_001.fastq.gz ); do
+m=${f%2_001.fastq.gz}
+n=${f%_??????_L001_R2_001.fastq.gz}
+echo $f $m $n
+bowtie2 --very-sensitive -x hg19 -1 ${m}1_001.fastq.gz -2 $f --threads 4 | samtools sort -o ${n}.hg19.bam -
+samtools index ${n}.hg19.bam
+done
+
+
+RE38227_CGATGT_L001_R2_001.fastq.gz RE38227_CGATGT_L001_R RE38227
+1285139 reads; of these:
+  1285139 (100.00%) were paired; of these:
+    252218 (19.63%) aligned concordantly 0 times
+    817775 (63.63%) aligned concordantly exactly 1 time
+    215146 (16.74%) aligned concordantly >1 times
+    ----
+    252218 pairs aligned concordantly 0 times; of these:
+      27565 (10.93%) aligned discordantly 1 time
+    ----
+    224653 pairs aligned 0 times concordantly or discordantly; of these:
+      449306 mates make up the pairs; of these:
+        222208 (49.46%) aligned 0 times
+        141152 (31.42%) aligned exactly 1 time
+        85946 (19.13%) aligned >1 times
+91.35% overall alignment rate
+
+RE38228_TGACCA_L001_R2_001.fastq.gz RE38228_TGACCA_L001_R RE38228
+1432920 reads; of these:
+  1432920 (100.00%) were paired; of these:
+    434858 (30.35%) aligned concordantly 0 times
+    911274 (63.60%) aligned concordantly exactly 1 time
+    86788 (6.06%) aligned concordantly >1 times
+    ----
+    434858 pairs aligned concordantly 0 times; of these:
+      35069 (8.06%) aligned discordantly 1 time
+    ----
+    399789 pairs aligned 0 times concordantly or discordantly; of these:
+      799578 mates make up the pairs; of these:
+        473836 (59.26%) aligned 0 times
+        254641 (31.85%) aligned exactly 1 time
+        71101 (8.89%) aligned >1 times
+83.47% overall alignment rate
+
+RE38229_ACAGTG_L001_R2_001.fastq.gz RE38229_ACAGTG_L001_R RE38229
+1421100 reads; of these:
+  1421100 (100.00%) were paired; of these:
+    314830 (22.15%) aligned concordantly 0 times
+    908214 (63.91%) aligned concordantly exactly 1 time
+    198056 (13.94%) aligned concordantly >1 times
+    ----
+    314830 pairs aligned concordantly 0 times; of these:
+      21064 (6.69%) aligned discordantly 1 time
+    ----
+    293766 pairs aligned 0 times concordantly or discordantly; of these:
+      587532 mates make up the pairs; of these:
+        340603 (57.97%) aligned 0 times
+        162421 (27.64%) aligned exactly 1 time
+        84508 (14.38%) aligned >1 times
+88.02% overall alignment rate
+
+RE38230_GCCAAT_L001_R2_001.fastq.gz RE38230_GCCAAT_L001_R RE38230
+1488801 reads; of these:
+  1488801 (100.00%) were paired; of these:
+    274969 (18.47%) aligned concordantly 0 times
+    1077968 (72.41%) aligned concordantly exactly 1 time
+    135864 (9.13%) aligned concordantly >1 times
+    ----
+    274969 pairs aligned concordantly 0 times; of these:
+      27384 (9.96%) aligned discordantly 1 time
+    ----
+    247585 pairs aligned 0 times concordantly or discordantly; of these:
+      495170 mates make up the pairs; of these:
+        261214 (52.75%) aligned 0 times
+        162883 (32.89%) aligned exactly 1 time
+        71073 (14.35%) aligned >1 times
+91.23% overall alignment rate
+[bam_sort_core] merging from 1 files and 1 in-memory blocks...
+
+RE38232_ACTTGA_L001_R2_001.fastq.gz RE38232_ACTTGA_L001_R RE38232
+1658630 reads; of these:
+  1658630 (100.00%) were paired; of these:
+    471031 (28.40%) aligned concordantly 0 times
+    919081 (55.41%) aligned concordantly exactly 1 time
+    268518 (16.19%) aligned concordantly >1 times
+    ----
+    471031 pairs aligned concordantly 0 times; of these:
+      28930 (6.14%) aligned discordantly 1 time
+    ----
+    442101 pairs aligned 0 times concordantly or discordantly; of these:
+      884202 mates make up the pairs; of these:
+        470157 (53.17%) aligned 0 times
+        258434 (29.23%) aligned exactly 1 time
+        155611 (17.60%) aligned >1 times
+85.83% overall alignment rate
+
+RE38234_CTTGTA_L001_R2_001.fastq.gz RE38234_CTTGTA_L001_R RE38234
+1297280 reads; of these:
+  1297280 (100.00%) were paired; of these:
+    881930 (67.98%) aligned concordantly 0 times
+    333562 (25.71%) aligned concordantly exactly 1 time
+    81788 (6.30%) aligned concordantly >1 times
+    ----
+    881930 pairs aligned concordantly 0 times; of these:
+      10143 (1.15%) aligned discordantly 1 time
+    ----
+    871787 pairs aligned 0 times concordantly or discordantly; of these:
+      1743574 mates make up the pairs; of these:
+        1425993 (81.79%) aligned 0 times
+        139774 (8.02%) aligned exactly 1 time
+        177807 (10.20%) aligned >1 times
+45.04% overall alignment rate
+
+RE38235_AGTCAA_L001_R2_001.fastq.gz RE38235_AGTCAA_L001_R RE38235
+1489566 reads; of these:
+  1489566 (100.00%) were paired; of these:
+    375032 (25.18%) aligned concordantly 0 times
+    555759 (37.31%) aligned concordantly exactly 1 time
+    558775 (37.51%) aligned concordantly >1 times
+    ----
+    375032 pairs aligned concordantly 0 times; of these:
+      12026 (3.21%) aligned discordantly 1 time
+    ----
+    363006 pairs aligned 0 times concordantly or discordantly; of these:
+      726012 mates make up the pairs; of these:
+        344569 (47.46%) aligned 0 times
+        109183 (15.04%) aligned exactly 1 time
+        272260 (37.50%) aligned >1 times
+88.43% overall alignment rate
+
+RE38236_AGTTCC_L001_R2_001.fastq.gz RE38236_AGTTCC_L001_R RE38236
+1330199 reads; of these:
+  1330199 (100.00%) were paired; of these:
+    303553 (22.82%) aligned concordantly 0 times
+    738464 (55.52%) aligned concordantly exactly 1 time
+    288182 (21.66%) aligned concordantly >1 times
+    ----
+    303553 pairs aligned concordantly 0 times; of these:
+      21709 (7.15%) aligned discordantly 1 time
+    ----
+    281844 pairs aligned 0 times concordantly or discordantly; of these:
+      563688 mates make up the pairs; of these:
+        289899 (51.43%) aligned 0 times
+        164090 (29.11%) aligned exactly 1 time
+        109699 (19.46%) aligned >1 times
+89.10% overall alignment rate
+
+RE38237_ATGTCA_L001_R2_001.fastq.gz RE38237_ATGTCA_L001_R RE38237
+1524217 reads; of these:
+  1524217 (100.00%) were paired; of these:
+    306331 (20.10%) aligned concordantly 0 times
+    923630 (60.60%) aligned concordantly exactly 1 time
+    294256 (19.31%) aligned concordantly >1 times
+    ----
+    306331 pairs aligned concordantly 0 times; of these:
+      31076 (10.14%) aligned discordantly 1 time
+    ----
+    275255 pairs aligned 0 times concordantly or discordantly; of these:
+      550510 mates make up the pairs; of these:
+        279918 (50.85%) aligned 0 times
+        185913 (33.77%) aligned exactly 1 time
+        84679 (15.38%) aligned >1 times
+90.82% overall alignment rate
+
+RE38238_GTGAAA_L001_R2_001.fastq.gz RE38238_GTGAAA_L001_R RE38238
+1364427 reads; of these:
+  1364427 (100.00%) were paired; of these:
+    285152 (20.90%) aligned concordantly 0 times
+    996551 (73.04%) aligned concordantly exactly 1 time
+    82724 (6.06%) aligned concordantly >1 times
+    ----
+    285152 pairs aligned concordantly 0 times; of these:
+      40410 (14.17%) aligned discordantly 1 time
+    ----
+    244742 pairs aligned 0 times concordantly or discordantly; of these:
+      489484 mates make up the pairs; of these:
+        258666 (52.84%) aligned 0 times
+        198774 (40.61%) aligned exactly 1 time
+        32044 (6.55%) aligned >1 times
+90.52% overall alignment rate
+
+
+
+
+
+for f in $( ls *.hg19.bam ); do
+n=${f%.hg19.bam}
+echo $f $n
+samtools depth -a $f | awk -F"\t" '( $3 > 1000 ){c=$1;p2=$2;if(p1=="")p1=$2;} ( $3 <= 1000 && c != "" ){ print c" : "p1"-"p2; c=p1=p2="";}' > ${n}.hg19.gt1000.txt
+samtools depth -a $f | awk -F"\t" '( $3 > 5000 ){c=$1;p2=$2;if(p1=="")p1=$2;} ( $3 <= 5000 && c != "" ){ print c" : "p1"-"p2; c=p1=p2="";}' > ${n}.hg19.gt5000.txt
+done
+
+The -a option really takes long
+It would be nice to add some better logic to check contiguouity.
+
+for f in $( ls *.hg19.bam ); do
+n=${f%.hg19.bam}
+echo $f $n
+samtools depth $f | awk -F"\t" '( $3 > 1000 ){c=$1;p2=$2;if(p1=="")p1=$2;next;}( ( $3 <= 1000 && c != "" ) || ( $3 != p1+1 && c != "" ) ){ print c" : "p1"-"p2; c=p1=p2="";}' > ${n}.hg19.gt1000.txt
+samtools depth $f | awk -F"\t" '( $3 > 5000 ){c=$1;p2=$2;if(p1=="")p1=$2;next;}( ( $3 <= 5000 && c != "" ) || ( $3 != p1+1 && c != "" ) ){ print c" : "p1"-"p2; c=p1=p2="";}' > ${n}.hg19.gt5000.txt
+done
+
+
+
+
+for f in $( ls *.hg19.bam ); do
+n=${f%.hg19.bam}
+echo $f $n
+samtools depth $f | awk -F"\t" '( $3 > 500 ){c=$1;p2=$2;if(p1=="")p1=$2;next;}( ( $3 <= 500 && c != "" ) || ( $3 != p1+1 && c != "" ) ){ print c" : "p1"-"p2; c=p1=p2="";}' > ${n}.hg19.gt500.txt
+done
+
+
+
+
+
+
+
+The following are not exclusive. Just a found select few.
+
+Several Regions of Interest
+
+chr1:33,625,566-33,626,578
+chr6:36,789,560-36,795,124
+chr9:3,827,464-3,828,611
+chr11:112,010,000
+
+
+Hervk113 exists in hg19
+
+chr1:155,593,882-155,610,093
+chr1:160,656,745-160,672,956
+chr3:112,742,244-112,755,123
+chr3:185,279,093-185,291,972
+chr3:125,607,507-125,620,386
+chr5:30,486,209-30,497,975
+chr5:156,084,355-156,096,121
+chr6:78,426,796-78,437,925
+chr7:4,622,646-4,632,996
+chr8:7,356,315-7,356,611
+chr11:101,561,051-101,578,613
+chr11:118,588,299-118,605,861
+chr12:58,722,304-58,731,009
+chr19:28,129,104-28,130,064
+chr21:19,931,978-19,944,499
+chr22:18,923,825-18,937,172
+
+
+

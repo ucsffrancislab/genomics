@@ -1,0 +1,27 @@
+
+
+nohup ./process.bash &
+
+nohup ./all_samples.bash &
+
+
+
+NOT ALL VIRII WERE USED IN THIS ANALYSIS
+
+for r1 in /raid/data/raw/USC-CHLA-NBL/2018????/*.R1.fastq.gz ; do basename $r1 .R1.fastq.gz ; done > subjects.txt
+for virus in /raid/refs/fasta/virii/{NC_000898.1,NC_001664.4,NC_001710.1,NC_001716.2,NC_008168.1}.fasta ; do basename $virus .fasta; done > virii_versions.txt
+head -1q /raid/refs/fasta/virii/{NC_000898.1,NC_001664.4,NC_001710.1,NC_001716.2,NC_008168.1}.fasta | sed 's/^>//' > virii_details.txt
+
+head -1q /raid/refs/fasta/virii/{NC_000898.1,NC_001664.4,NC_001710.1,NC_001716.2,NC_008168.1}.fasta | sed -e 's/^>//' -e 's/ /\t/' > virii_details.csv
+
+
+
+nohup ./virii_aligned_per_billion_unmapped.bash > virii_aligned_per_billion_unmapped.csv &
+
+
+
+for virus in NC_001710.1 NC_001716.2 NC_001664.4 NC_000898.1 NC_008168.1 ; do
+echo "common_depth_coverage_regions.py -e 2500 -p 1 -n ${virus} */*.${virus}.depth.csv > common_regions/common_regions.2500.1.${virus}.txt"
+done | parallel --no-notice --joblog ~/common_regions.log &
+
+

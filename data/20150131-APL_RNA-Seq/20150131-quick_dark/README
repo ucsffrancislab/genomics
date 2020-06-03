@@ -1,0 +1,149 @@
+
+
+Start using execdir with find rather then exec.
+
+
+
+
+mkdir `ls -1 /my/home/ccls/data/nobackup/APL_RNA-Seq/*_R1*q | awk -F/ '{print $NF}' | awk -F_ '{print $1}'`
+
+
+find . -type d -name P-\* -exec sh -c "cd {}; ../APL_run_quick_dark.part_1.sh" \;
+
+find . -type d -exec sh -c "cd {}; ../APL_run_quick_dark.part_2.sh" \;
+
+find . -type d -name B\* -exec sh -c "cd {}; ../APL_run_quick_dark.part_2.sh" \;
+
+
+
+find . -maxdepth 2 -type d -name raw_non_human.fastq -execdir sh -c "\
+	chmod -w raw_non_human.fastq;
+	md5sum raw_non_human.fastq > md5sums;
+	gzip --best raw_non_human.fastq;
+	md5sum raw_non_human.fastq.gz >> md5sums" \;
+
+find . -maxdepth 2 -name trinity_input_single.fasta -execdir sh -c "\
+	chmod -w trinity_input_single.fasta;
+	md5sum trinity_input_single.fasta >> md5sums;
+	gzip --best trinity_input_single.fasta;
+	md5sum trinity_input_single.fasta.gz >> md5sums;
+" \;
+
+
+
+
+
+
+find . -maxdepth 2 -name trinity_non_human_single.fasta -execdir sh -c "\
+	md5sum trinity_non_human_single.fasta >> md5sums;
+	gzip --best trinity_non_human_single.fasta;
+	md5sum trinity_non_human_single.fasta >> md5sums;
+	/bin/rm -rf trinity_output_single" \;
+
+
+
+
+
+head run_part2b | awk '{print "cd /my/home/ccls/data/working/APL_RNA-Seq/"$0"; ../APL_run_quick_dark.part_2b.sh"}' | sh
+
+
+
+
+#	
+scontrol hold `seq 14144 14172`
+scontrol release `seq 14144 14172`
+
+scontrol show job 29766
+
+
+ec_quick_dark.sh, a special version of quick_dark.sh for use on the cluster,
+needs to be run from the location where all of the output will be created.
+
+
+DATASET_DIR ] APL_run_quick_dark.sh
+
+This will create several files containing commands for blast jobs
+
+sh blastn.*
+#	ABOVE DOESN'T WORK! ONLY RUNS FIRST ONE.  USE BELOW...
+cat blastn.* | sh
+
+
+
+srun --chdir $PWD --cpus-per-task=8 --output=srun_output 
+
+pieces_check.sh --blast tblastx *pieces > pieces_check.out
+
+cat pieces_check.out | grep -avs "st line is good" | grep -avs "st line count : 1 :" | grep -avs "Query=  line count : 20000 :" | grep -avs "^Effective search space used: line count : 20000 :" | grep -avs " :  :$"| grep -avs "^\-\-\-" | grep -avs "Check"
+
+mmv -a "*pieces/*txt" `basename $PWD`.trinity.tblastx_viral.txt
+
+
+
+:bufdo :%s/FOO/BAR/g|:up
+
+
+find . -maxdepth 2 -name trinity_non_human_single.fasta -execdir sh -c "ls -l trinity_output_single.nobackup/Trinity.fasta" \;
+
+find P* -maxdepth 1 -name trinity_non_human_single.fasta -execdir sh -c "/bin/rm -rf trinity_output_single.nobackup" \;
+
+
+find . -maxdepth 2 -name trinity_input_single.presed.fasta -execdir sh -c "\
+	chmod +w md5sums
+	chmod -w trinity_input_single.presed.fasta
+	md5sum trinity_input_single.presed.fasta >> md5sums
+	gzip --best trinity_input_single.presed.fasta
+	md5sum trinity_input_single.presed.fasta.gz >> md5sums
+	chmod -w md5sums
+	" \;
+
+find . -maxdepth 2 -name trinity_input_single.uniq.fasta -execdir sh -c "\
+	chmod +w md5sums
+	chmod -w trinity_input_single.uniq.fasta
+	md5sum trinity_input_single.uniq.fasta >> md5sums
+	gzip --best trinity_input_single.uniq.fasta
+	md5sum trinity_input_single.uniq.fasta.gz >> md5sums
+	chmod -w md5sums
+	" \;
+
+
+
+find P-0?? -maxdepth 1 -name raw_non_human.fastq.gz -execdir ../APL_run_quick_dark.part_3.sh \;
+
+cat P-0*/blast*non_human_paired* | sh
+cat P-*/blast*non_human_single* | sh
+cat P-*/blast*input_single* | sh
+
+cat P-0[0-5]*/blast*viral_genomic | sh
+cat P-06*/blast*viral_genomic | sh
+cat P-0[7-9]*/blast*viral_genomic | sh
+cat P-[^0]*/blast*viral_genomic | sh
+
+
+#	when starting with an empty queue, it helps to have the processing
+#	offset so they aren't all trying to do the same thing at the same time.
+#	10 seconds is too short.  30 seconds is too long.  So's 15?  Try 10 again.
+cat P-00*/blast*nt | awk '{print $0; print "sleep 10";}' | sh
+
+# head -n 1000 P-067/blastn.trinity_input_single.uniq.fasta.nt | sh
+#	head -n 2000 P-067/blastn.trinity_input_single.uniq.fasta.nt | tail -n 1000 | sh
+#	head -n 3000 P-067/blastn.trinity_input_single.uniq.fasta.nt | tail -n 1000 | sh
+#	tail -n +3001 P-067/blastn.trinity_input_single.uniq.fasta.nt | sh
+
+
+\srun --job-name=pieces_check-`basename $PWD` --chdir=$PWD --cpus-per-task=8 --partition=bigmem --begin=23:00 pieces_check.sh *pieces.nobackup > pieces_check.out &
+
+srun --job-name=pieces_check-`basename $PWD` --chdir=$PWD --cpus-per-task=8 --partition=bigmem --begin=23:00 --output=pieces_check.out --error=pieces_check.error pieces_check.sh *pieces.nobackup &
+
+
+
+
+
+
+cat pieces_check.out | grep -avs "st line is good" | grep -avs "st line count : 1 :" | grep -avs "Query=  line count : 30000 :" | grep -avs "Query=  line count : 20000 :" | grep -avs "Query=  line count : 10000 :" | grep -avs "Query=  line count : 5000 :" | grep -avs "^Effective search space used: line count : 30000 :" | grep -avs "^Effective search space used: line count : 20000 :" | grep -avs "^Effective search space used: line count : 10000 :" | grep -avs "^Effective search space used: line count : 5000 :" | grep -avs " :  :$"| grep -avs "^\-\-\-" | grep -avs "Check"
+
+
+
+/bin/rm -rf trinity_*pieces.nobackup 2015*.pieces_merge.* pieces_check.out.nobackup blastn.*nobackup blast_check.log.nobackup
+
+

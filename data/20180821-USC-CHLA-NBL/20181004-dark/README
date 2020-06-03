@@ -1,0 +1,43 @@
+
+
+
+NOTE: SRR1559100's fastq.gz files are corrupt.
+
+
+
+nohup ./dark_wrapper.bash > dark_wrapper.1.out 2>&1 &
+nohup ./dark_wrapper.bash > dark_wrapper.2.out 2>&1 &
+nohup ./dark_wrapper.bash > dark_wrapper.3.out 2>&1 &
+nohup ./dark_wrapper.bash > dark_wrapper.4.out 2>&1 &
+nohup ./dark_wrapper.bash > dark_wrapper.5.out 2>&1 &
+
+
+
+
+
+
+
+
+nohup ./count_fasta_reads.bash > count_fasta_reads.out 2>&1 &
+
+nohup ./count_viral_hits.bash > count_viral_hits.out 2>&1 &
+
+
+
+head -q -n 25 *.nonhg38.blastn.viral_hits.txt | awk -F">" '{print $2}' | sort | uniq > virii.25.txt
+head -q -n 10 *.nonhg38.blastn.viral_hits.txt | awk -F">" '{print $2}' | sort | uniq > virii.10.txt
+head -q -n  5 *.nonhg38.blastn.viral_hits.txt | awk -F">" '{print $2}' | sort | uniq > virii.05.txt
+chmod a-w virii.*.txt
+
+
+nohup ./report.bash virii.10.txt > report.10.csv &
+nohup ./report.bash virii.25.txt > report.25.csv &
+nohup ./report.bash virii.05.txt > report.05.csv &
+chmod a-w report.*.csv
+
+
+
+
+
+rsync -avz herv:/raid/data/working/USC-CHLA-NBL/20181004-dark/ ~/20181004-USC-CHLA-NBL-dark/
+

@@ -1,0 +1,66 @@
+2013 (summer) ....
+
+
+Processing of all samples with either dark.rb or quick_dark.sh
+
+Basically, both lanes were combined and each read separately aligned to many dbs.
+
+Those that didn't align to any of the dbs were saved in trinity_input_single.fasta.
+
+Those reads in trinity_input_single.fasta were reunited with their mate if it
+also did not align to any of the dbs and were saved in trinity_input_paired_[12].fasta.
+
+
+...
+
+
+
+
+
+
+
+20141120 ...
+
+zcat trinity_non_human_paired.fasta.gz | sed "s;^>;>`basename $PWD`_;" > `basename $PWD`.trinity.fa
+
+chmod -w `basename $PWD`.trinity.fa 
+gzip -k `basename $PWD`.trinity.fa 
+md5sum *gz *fa >> md5sums
+chmod -w md5sums
+grep "^>" `basename $PWD`.trinity.fa | wc -l
+
+ec_fasta_split_and_blast.sh --command tblastx --dbs viral_genomic `basename $PWD`.trinity.fa
+
+
+
+#	And we wait ....
+
+
+
+
+
+
+
+
+
+
+pieces_check.sh --blast tblastx *pieces > pieces_check.out
+
+cat pieces_check.out | grep -vs "st line is good" | grep -vs "st line count : 1 :" | grep -vs "Query=  line count : 1000 :" | grep -vs "^Effective search space used: line count : 1000 :" | grep -vs " :  :$"| grep -vs "^\-\-\-" | grep -vs "Check"
+
+
+mmv -a "*pieces/*txt" `basename $PWD`.trinity.tblastx_viral.txt
+
+tail `basename $PWD`.trinity.tblastx_viral.txt
+chmod +w `basename $PWD`.md5sums
+md5sum `basename $PWD`.trinity.tblastx_viral.txt >> `basename $PWD`.md5sums
+gzip `basename $PWD`.trinity.tblastx_viral.txt
+md5sum `basename $PWD`.trinity.tblastx_viral.txt.gz >> `basename $PWD`.md5sums
+chmod -w `basename $PWD`.md5sums
+chmod -w `basename $PWD`.trinity.tblastx_viral.txt.gz
+
+
+
+
+
+

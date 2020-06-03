@@ -1,0 +1,25 @@
+
+
+From genepi /ccls/data/raw/APL_RNA-Seq/
+
+
+
+Several files have been renamed to fit our script expectations.
+
+rename fq fastq *.fq*
+rename .R _R *.R[12].f*
+
+
+Files expected to be named in the following format...
+
+	${BASENAME}_R[12].fastq.gz
+
+Not ...
+
+	${BASENAME}.R[12].fastq.gz
+
+... or ...
+
+	${BASENAME}_R[12].fq.gz
+
+

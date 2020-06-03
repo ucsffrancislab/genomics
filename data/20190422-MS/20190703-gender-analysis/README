@@ -1,0 +1,14 @@
+
+
+This was useless as the sequencing was targetted to chromosome 6
+
+
+
+These were somehow targetted to just chromosome 6.
+Not all align to 6 but because of this targetting, aligning to X and Y isn't as useful as in other data.
+These ratios are all between 4 and 9. Useless.
+
+Gender discovery
+
+nohup ./gender_discovery.bash >> ./gender_discovery.out 2>&1 &
+

@@ -1,0 +1,10 @@
+
+
+Align the raw data to hg38
+
+
+nohup ./process.bash &
+
+
+
+

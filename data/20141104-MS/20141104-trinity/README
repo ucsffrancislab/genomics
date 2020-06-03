@@ -1,0 +1,246 @@
+
+Lisa's MS data
+--------------------------------------------------
+
+With 2 exceptions, all fasta files processed with ...
+
+/my/home/ccls/data/working/MS/trinity_MS.sh
+
+K0001 was processed on n0 with a newer version of Trinity.  Rerun?
+
+K0222 was processed with both r2014_04_13p1 and r2013_11_10.  Compare the differing results?
+
+Should have tagged here.  From now on, add sample name as prefix to contigs
+so when multiple files openned in Megan, it will be obvious where it came from.
+
+The following datasets were blasted on a combinaion of both the old and new
+clusters which have different versions.
+K1259 MS1364 K1365 MS1365 K1372 MS1372 K1204 MS1373 MS1258
+
+
+/my/home/ccls/data/working/MS/blastn_bfv_MS.sh  
+/my/home/ccls/data/working/MS/extract_no_hits_from_MS_blast_bfv.sh  
+
+/my/home/ccls/data/working/MS/tblastx_viral_MS.sh  (WAY TOO SLOW, DOING OLD WAY)
+
+
+
+
+
+gunzip -k `basename $PWD`.trinity.fa
+ec_fasta_split_and_blast.sh --command tblastx --dbs viral_genomic `basename $PWD`.trinity.fa
+\rm `basename $PWD`.trinity.fa
+
+mv `basename $PWD`.trinity.fa.*.pieces /my/home/ccls/data/nobackup/MS/
+ln -s /my/home/ccls/data/nobackup/MS/`basename $PWD`.trinity.fa.*.pieces
+
+
+pieces_check.sh --blast tblastx *pieces > pieces_check.out
+
+cat pieces_check.out | grep -avs "st line is good" | grep -avs "st line count : 1 :" | grep -avs "Query=  line count : 1000 :" | grep -avs "^Effective search space used: line count : 1000 :" | grep -avs " :  :$"| grep -avs "^\-\-\-" | grep -avs "Check"
+
+mmv -a "*pieces/*txt" `basename $PWD`.trinity.tblastx_viral.txt
+
+tail `basename $PWD`.trinity.tblastx_viral.txt
+chmod +w `basename $PWD`.md5sums
+md5sum `basename $PWD`.trinity.tblastx_viral.txt >> `basename $PWD`.md5sums
+gzip `basename $PWD`.trinity.tblastx_viral.txt
+md5sum `basename $PWD`.trinity.tblastx_viral.txt.gz >> `basename $PWD`.md5sums
+chmod -w `basename $PWD`.md5sums
+chmod -w `basename $PWD`.trinity.tblastx_viral.txt.gz
+
+ls $PWD/`basename $PWD`.trinity.tblastx_viral.txt.gz
+
+ll -tr /my/home/ccls/data/nobackup/MS/ | tail
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Intended todos ....
+	Combine all into a blast database, "ms_no_bfv_hits".
+	Blast all datasets against the newly-created MS no-hits database.
+	(using fastx_collapse and counting the counts doesn't make sense on assembled data)
+
+	Assemble ALL OF THE NO HITS READS TOGETHER?  
+	Then blast each no hits to that?
+	Assemble ALL OF THE CONTROL NO HITS READS TOGETHER?  
+	Assemble ALL OF THE CONTROL ASSEMBLED READS TOGETHER?  
+	Assemble ALL OF THE CONTROL RAW READS TOGETHER?  
+	Assemble ALL OF THE MS NO HITS READS TOGETHER?  
+	Assemble ALL OF THE MS ASSEMBLED READS TOGETHER?  
+	Assemble ALL OF THE MS RAW READS TOGETHER?  
+
+cat /my/home/ccls/data/working/MS/*/*.trinity.blastn_bfv.no_hits.fa | makeblastdb -parse_seqids -dbtype nucl -out ms_no_bfv_hits_found -title "MS Data No BFV Hits Found"
+
+makeblastdb -parse_seqids -dbtype nucl -in ms.blastn_bfv.no_hits.fa -out ms_no_bfv_hits_found -title "MS Data No BFV Hits Found"
+
+blastn -db ms_no_bfv_hits_found -num_alignments 20 -evalue 0.05 -outfmt 10 \
+	-query MeSF001_SF1.no_nt_hits_found.fasta \
+	-out MeSF001_SF1.no_nt_hits_found.blastn_no_nt_hits_found.txt 
+
+
+
+
+
+
+
+NOT QUITE
+
+Assembling all Kontrol No BFV Hits into blast db then
+	blasting Case No BFV Hits to it. (also Kontrols)
+	without an evalue restriction
+
+
+cat /my/home/ccls/data/working/MS/K*/*trinity.blastn_bfv.no_hits.fa | makeblastdb -parse_seqids -dbtype nucl -out ms_kontrol_no_bfv_hits_found -title "MS Kontrol Data No BFV Hits Found"
+
+Building a new DB, current time: 01/15/2015 13:48:11
+New DB name:   ms_kontrol_no_bfv_hits_found
+New DB title:  MS Kontrol Data No BFV Hits Found
+Sequence type: Nucleotide
+Keep Linkouts: T
+Keep MBits: T
+Maximum file size: 1000000000B
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1008 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1193 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1134 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1199 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1306 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1351 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1181 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1037 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1142 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1096 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1094 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1110 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1052 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1482 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1416 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1485 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1404 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1204 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1049 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1188 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1019 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1083 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1080 characters (max is 1000)
+Error: (1431.1) FASTA-Reader: Warning: FASTA-Reader: Title is very long: 1037 characters (max is 1000)
+Adding sequences from FASTA; added 3176021 sequences in 349.689 seconds.
+
+
+
+
+
+
+gunzip -vk */*.trinity.blastn_bfv.no_hits.fa.gz
+
+#	tried 10000, but some crashed, probably due to memory
+#	with 4 cpus, each blast takes about 30 seconds!!!!
+
+ec_fasta_split_and_blast.sh --prefix "srun --cpus-per-task=4" --suffix " &" --options "-num_threads 4 -dust no" --std_out_only --max_reads 5000 --dbs ms_kontrol_no_bfv_hits_found --evalue 10 --num_alignments 10 --num_descriptions 10 */*.trinity.blastn_bfv.no_hits.fa | tee cluster
+
+
+find . -name "MS????" -exec sh -c "cd {} ; mmv -a '*pieces/*txt' `basename {}`.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt" \;
+
+find . -name \*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt -exec sh -c "select_no_hits_from_blast.sh {} > {}.no_hits.names" \;
+
+bioruby_extract_sequences_from_fasta.rb
+
+
+find . -name \*.trinity.blastn_bfv.no_hits.fa -exec sh -c 'x="{}"; y=${x%%.fa}; bioruby_extract_sequences_from_fasta.rb $y.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names {}' \;
+
+
+
+
+
+cat MS*/*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa | makeblastdb -parse_seqids -dbtype nucl -out ms_case_no_kontrol_bfv_hits_found -title "MS Case No Kontrol BFV Hits Found"
+
+
+
+
+IGNORE AS UNDESIREABLE OUTFMT HERE ec_fasta_split_and_blast.sh --prefix "srun --cpus-per-task=4" --suffix " &" --options "-num_threads 4 -dust no" --std_out_only --max_reads 5000 --dbs ms_case_no_kontrol_bfv_hits_found --evalue 10 --num_alignments 10 --num_descriptions 10 MS*/*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa | tee cluster2
+
+IGNORE AS UNDESIREABLE OUTFMT HERE ec_fasta_split_and_blast.sh --prefix "srun --cpus-per-task=2" --suffix " &" --options "-num_threads 2" --std_out_only --max_reads 5000 --dbs ms_case_no_kontrol_bfv_hits_found --evalue 10 --num_alignments 10 --num_descriptions 10 MS*/*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa | tee cluster3
+
+
+
+#	Blast the case data that had no hits on bfv or on the kontrol databases
+
+
+ec_fasta_split_and_blast.sh --prefix "srun --cpus-per-task=2" --suffix " &" --options "-num_threads 2" --std_out_only --max_reads 5000 --dbs ms_case_no_kontrol_bfv_hits_found --evalue 10 --num_alignments 10 --num_descriptions 10 --outfmt 10 MS*/*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa | tee cluster4
+
+cat MS*/MS*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa.*.pieces/MS*.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.*.fasta.blastn_ms_case_no_kontrol_bfv_hits_found.txt | awk -F, '($1!=$2){print $0}' > MS.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa.matches.csv
+
+cat MS.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa.matches | awk -F, '{print $1}' | uniq -c | sort -n > MS.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.txt.no_hits.names.fa.matches.sorted_and_counted_non_self_matches
+
+
+
+
+find . -name "MS????" -exec sh -c "cd {} ; mmv -a '*pieces/*txt' `basename {}`.trinity.blastn_bfv.no_hits.blastn_ms_kontrol_no_bfv_hits_found.no_hits.blastn_ms_case_no_kontrol_bfv_hits_found.csv" \;
+
+
+
+blastn_ms_case_no_kontrol_or_bfv_hits_found_to_nt.sh
+
+rename .names. . */*.names.fa
+rename .names. . */*.names.blastn_nt.txt
+
+
+
+
+
+
+
+Doing inverse.  Finding Control contigs that are not in BFV or Cases.
+
+zcat /my/home/ccls/data/working/MS/MS*/*trinity.blastn_bfv.no_hits.fa.gz | makeblastdb -parse_seqids -dbtype nucl -out ms_case_no_bfv_hits_found -title "MS Case Data No BFV Hits Found"
+
+
+Use -dust no to ..... um
+Don't use -dust no as is unnecessary.
+I think that I used -dust no because I was going to be a database of both cases and controls.
+Kinda unnecesary, but keeping to be consistent.
+
+ec_fasta_split_and_blast.sh --prefix "srun --share --nice --exclude=n[0000-0029] --begin=23:00 --cpus-per-task=8" --suffix " &" --options "-num_threads 8 -dust no" --std_out_only --max_reads 10000 --dbs ms_case_no_bfv_hits_found --evalue 10 --num_alignments 10 --num_descriptions 10 *.trinity.blastn_bfv.no_hits.fa | tee cluster5
+
+MS_run_pieces_check.sh
+MS_run_pieces_merge.sh
+
+
+find . -name \*.trinity.blastn_bfv.no_hits.blastn_ms_case_no_bfv_hits_found.txt -exec sh -c "select_no_hits_from_blast.sh {} > {}.no_hits.names" \;
+
+find . -name \*.trinity.blastn_bfv.no_hits.fa -exec sh -c 'x="{}"; y=${x%%.fa}; bioruby_extract_sequences_from_fasta.rb $y.blastn_ms_case_no_bfv_hits_found.txt.no_hits.names {}' \;
+
+cat *.trinity.blastn_bfv.no_hits.blastn_ms_case_no_bfv_hits_found.no_hits.fa | makeblastdb -parse_seqids -dbtype nucl -out ms_kontrol_no_case_or_bfv_hits_found -title "MS Kontrol No Case or BFV Hits Found"
+
+MS_run_blastn_no_hits_to_ms_kontrol_no_case_or_bfv.sh
+
+
+

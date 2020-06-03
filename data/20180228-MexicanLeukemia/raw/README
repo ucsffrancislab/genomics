@@ -1,0 +1,49 @@
+
+I think that this is RNA
+
+
+
+Jan 30, 2018
+
+OK First stab at a mexico plan... let me know wha you think. 
+
+
+
+1- Upload raw data to amazon
+
+2- Create .bam file while filtering to hg38
+
+3- Download BAM files and remove from Amazon 
+
+4- BALSTn for non human
+
+5- Diamond protein homology for reads with bad BLASTn hits
+
+
+6- Chop out ERG section of BAM files (Maybe done locally?)
+
+
+----
+
+
+
+Please, It is possible that you open an account in Basespace (https://basespace.illumina.com/home/index) , it is very easy to transfer the data. Just need the email that you used to open the account.
+
+
+
+
+
+I just transfer the project MEX_LEUK_2018.
+
+This project contains 20 of the 30 samples. I highlight them in yellow in the list
+
+The samples 99 and 99_2 are the same
+
+Additionally, there are 2 samples made with mouse germ cell RNA used for another project but I believe that they could be used as a negative control for human virus. If it is not possible, please do not consider them
+
+The other 10 samples will be transferred in a few days
+
+
+
+
+

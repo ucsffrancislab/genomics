@@ -1,0 +1,38 @@
+
+
+https://elifesciences.org/articles/32920
+
+https://github.com/atifrahman/HAWK
+
+
+ls /raid/data/raw/CCLS/bam/*bam | xargs -n 1 basename | sed -e 's".recaled.bam""' > gwas_info.txt
+
+ls /raid/data/raw/CCLS/bam/{GM_,}{983899,63185,268325,439338,634370}.recaled.bam | xargs -n 1 basename | sed -e 's".recaled.bam""' | awk '{tn="Case";sex="M"}(/^GM_/){tn="Control"}(/[80]$/){sex="F"}{print $1"\t"sex"\t"tn }' > gwas_info.txt
+
+
+439338 and 634370 appear to be female
+63185, 268325 and 983899 appear to be male
+Change U to M or F in gwas_info.txt (sample ends in 8 or 0)
+
+This is all expecting "Case" and "Control".
+
+
+
+
+
+
+
+
+nohup hawk_countKmers.bash --canonical --source_path /raid/data/raw/MS-20190422/ --unique_extension _R1.fastq.gz --extension fastq.gz >> countKmers.out 2>&1 &
+
+
+
+
+
+gwas_info.txt
+
+nohup hawk_runHawk.bash >> runHawk.out 2>&1 &
+
+
+
+

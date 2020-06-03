@@ -1,0 +1,28 @@
+
+
+
+RNA or DNA?
+
+
+
+
+Use a ~/.netrc with username and password
+
+wget --no-clobber --recursive ftp://gslserver.qb3.berkeley.edu/190412_150PE_HS4K2A/L78/
+
+
+
+
+
+
+
+
+
+
+for r1 in gslserver.qb3.berkeley.edu/190412_150PE_HS4K2A/L78/SF_Caps/SF*R1_001.fastq.gz ; do
+r2=${r1/_R1_001/_R2_001}
+base=$(basename $r1 _R1_001.fastq.gz) 
+echo "sickle pe -g -t sanger -f ${r1} -r ${r2} -o ${base}_R1.fastq.gz -p ${base}_R2.fastq.gz -s /dev/null > ${base}.sickle.log 2> ${base}.sickle.err"
+done | parallel --no-notice --joblog parallel.log -j40 &
+
+

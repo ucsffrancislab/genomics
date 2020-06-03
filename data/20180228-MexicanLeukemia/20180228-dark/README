@@ -1,0 +1,78 @@
+
+
+
+-Yes, same general approach. First alignment shovel really get rid of most. Lets skip hg18 and 19 and just use 38. Maybe try one with 38 then see if the other databases really remove more. 
+
+
+-I think local will remove too much, so end to end. 
+
+
+-We aren't really looking for integration here, so lets do paired only. If we want to look for integrated we can go back if needed. 
+
+
+- It was suggested by eric del wart that we use Diamond instead of tBlastx. he says it is faster and almost as sensitive. He knows what he is talking about so lets look into it. 
+
+
+I didn't think there were this many samples in this set?
+
+
+We need that server!!!!!! I'm login to make sure they order it first thing tomorrow, this is absurd. 
+
+
+
+
+
+
+
+
+
+I think that I ran this on my laptop before we had a server
+
+$ cat /raid/data/raw/MexicanLeukemia/dark_wrapper.bash 
+
+#!/usr/bin/env bash
+
+for subject in $( ls *_L001_R1_001.fastq.gz ) ; do
+	echo $subject
+	base=${subject%%1_R1_001.fastq.gz}
+	dark.bash $base
+done
+
+
+
+
+dark.bash --human hg38 --blastn_viral /raid/refs/blast/viral .....
+
+
+I no longer have a diamond database. Likely took way too long.
+
+
+Generate some reports?
+Compile counts
+
+
+nohup ./count_fasta_reads.bash > count_fasta_reads.out 2>&1 &
+
+nohup ./count_viral_hits.bash > count_viral_hits.out 2>&1 &
+
+#	the awk '{$1=$1};1' is to trim some odd trailing spaces (its kinda moot as the space exists in the other files)
+head -q -n 25 *.nonhg38.blastn.viral_hits.txt | awk -F">" '{print $2}' | sort | uniq | awk '{$1=$1};1' > virii.txt
+
+head -q -n 25 *.nonhg38.blastn.viral_hits.txt | awk -F">" '{print $2}' | sort | uniq > virii.txt
+
+
+Generate a grid like ...
+
+       ,C179_S2,H74_S6, ...
+nonhg38,      #,     #, ...
+virus 1,      #,     #, ...
+virus 2,      #,     #, ...
+virus 3,      #,     #, ...
+virus 4,      #,     #, ...
+
+
+
+./report.bash > report.csv
+
+
+

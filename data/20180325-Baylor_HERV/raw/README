@@ -1,0 +1,15 @@
+
+
+Downloaded from box
+
+Missing complete RE38231_CAGATC_L001 pair
+
+
+for f in $( ls RE382*_L001_R?_001.fastq.gz ) ; do
+  n=${f%_001.fastq.gz}
+  l=${n: -1:1}
+  n=${n%_??????_L001_R?}
+  echo $f ${n}.R${l}.fastq.gz
+done
+
+

@@ -1,0 +1,293 @@
+
+
+Downloaded from box
+
+Missing complete RE38231_CAGATC_L001 pair
+
+
+
+CGTCGACTTGTCCTCAATGACCACGCT
+
+CTGATCTCTCTTGCTTTTCC
+
+
+
+
+
+Bowtie2 alignments to HERV are missing some that we believe match.
+
+So...
+
+Defaults
+
+	--very-sensitive-local = -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+
+	-D <int>           give up extending after <int> failed extends in a row (15)
+	-R <int>           for reads w/ repetitive seeds, try <int> sets of seeds (2)
+	-N <int>           max # mismatches in seed alignment; can be 0 or 1 (0)
+	-L <int>           length of seed substrings; must be >3, <32 (22)
+	-i <func>          interval between seed substrings w/r/t read len (S,1,1.15)
+	--ma <int>         match bonus (0 for --end-to-end, 2 for --local) 
+	--mp <int>         max penalty for mismatch; lower qual = lower penalty (6)
+	--gbar <int>       disallow gaps within <int> nucs of read extremes (4)
+
+
+
+	(S,1,1.15) - f(L) = 1 + 1.15 L ^ 0.5
+		L = 3 ... 
+		
+	(S,1,0.50) : 1 + 0.5 ( L ^ 0.5 )  : default vsl
+		f(L) = 1 + 0.50 L ^ 0.5
+		f(75) = 1 + 0.50 ( 75 ^ 0.5 )
+		f(75) = 1 + 0.50 ( 8.66 )
+		f(75) = 1 + 0.50 ( 8.66 )
+		f(75) = 5.33
+
+	(S,1,0.25) -
+		f(L) = 1 + 0.25 L ^ 0.5
+		f(75) = 1 + 0.25 ( 75 ^ 0.5 )
+		f(75) = 1 + 0.25 ( 8.66 )
+		f(75) = 1 + 0.25 ( 8.66 )
+		f(75) = 3.16
+
+	C,3
+
+
+	--score-min <func> min acceptable alignment score w/r/t read length
+	                   (G,20,8 for local, L,-0.6,-0.6 for end-to-end)
+
+		f(L) = 20 + 8 * ln(L) : default local
+		f(75)= 20 + 8 * 4.3
+		     = 55
+		f(L) = 10 + 8 * ln(L)
+		f(75)= 10 + 8 * 4.3
+		     = 45
+
+
+	funcs
+L,0,-0.6 sets the minimum-score function f to f(x) = 0 + -0.6 * x
+
+S,1,2.5 sets the interval function f to f(x) = 1 + 2.5 * sqrt(x)
+
+
+In these cases the user specifies three parameters: (a) a function type F, (b) a constant term B, and (c) a coefficient A. The available function types are constant (C), linear (L), square-root (S), and natural log (G).
+
+	F,B,A
+
+	C = ....
+	L = B + A( length )
+	S = B + A( length ^ 0.5 )
+	G = B + A( ln ( length ) )
+
+
+
+
+
+https://samnicholls.net/2016/12/24/bowtie2-metagenomes/
+
+Trying changes
+
+	-D 25
+	-R 4
+	-N 1
+	-L 3
+	-i S,1,0.50
+	--ma 3
+	--mp 4
+	--gbar 1
+
+
+for f in $( ls RE382*_L001_R?_001.fastq.gz ) ; do
+	n=${f%_001.fastq.gz}
+	l=${n: -1:1}
+	n=${n%_??????_L001_R?}
+	mv $f ${n}.R${l}.fastq.gz
+done
+
+
+20180325.working_dir.mp6_ma2_D20_R3_iS1050_L20_N0
+
+20180330.working_dir.mp4_ma3_D25_R4_iS1050_L3_N1
+
+20180402.working_dir.mp4_ma3_D25_R4_iS1025_L3_N1
+
+20180402.working_dir.mp4_ma4_D25_R4_iS1025_L3_N1
+
+   
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 4 --ma 4 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 --gbar 1 --score-min G,10,8' RE382*.fastq.gz &
+
+20180403.working_dir.mp4_ma4_D20_R3_iS1025_L3_N1_gbar1_score_minG108
+
+
+
+
+
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 4 --ma 3 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 -q --gbar 1 --score-min G,10,8  -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp4-ma3-D20-R3-iS1025-L3-N1-gbar1-scoreminG108.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 5 --ma 3 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 -q --gbar 1 --score-min G,10,8  -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp5-ma3-D20-R3-iS1025-L3-N1-gbar1-scoreminG108.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 3 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 -q --gbar 1 --score-min G,10,8  -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma3-D20-R3-iS1025-L3-N1-gbar1-scoreminG108.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 4 --ma 4 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 -q --gbar 1 --score-min G,10,8  -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp4-ma4-D20-R3-iS1025-L3-N1-gbar1-scoreminG108.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 5 --ma 4 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 -q --gbar 1 --score-min G,10,8  -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp5-ma4-D20-R3-iS1025-L3-N1-gbar1-scoreminG108.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i S,1,0.25 -L 3 -N 1 -q --gbar 1 --score-min G,10,8  -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iS1025-L3-N1-gbar1-scoreminG108.bam &
+
+
+
+
+
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,5 -L 3 -N 1 -q --gbar 1 --score-min C,40 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC5-L3-N1-gbar1-scoreminC40.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,5 -L 3 -N 1 -q --gbar 1 --score-min C,44 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC5-L3-N1-gbar1-scoreminC44.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,6 -L 3 -N 1 -q --gbar 1 --score-min C,44 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC6-L3-N1-gbar1-scoreminC44.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,3 -L 3 -N 1 -q --gbar 1 --score-min C,44 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC3-L3-N1-gbar1-scoreminC44.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,4 -L 3 -N 1 -q --gbar 1 --score-min C,44 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC4-L3-N1-gbar1-scoreminC44.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,3 -L 3 -N 1 -q --gbar 1 --score-min C,45 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC3-L3-N1-gbar1-scoreminC45.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,4 -L 3 -N 1 -q --gbar 1 --score-min C,45 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC4-L3-N1-gbar1-scoreminC45.bam &
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 20 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,45 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D20-R3-iC1-L3-N1-gbar1-scoreminC45.bam &
+
+
+
+#	NOTHING!!!!
+for f in $( ls *bam ) ; do
+	base=${f%.bam}
+	echo $f $base
+	samtools view $f | awk -v base=$base -f ~/.local/bin/chimera_paired_trim_aligned_to_fastas.awk
+done
+
+CGTCGACTTGTCCTCAATGACCACGCT
+AGCGTGGTCATTGAGGACAAGTCGACG
+
+CTGATCTCTCTTGCTTTTCC
+GGAAAAGCAAGAGAGATCAG
+
+for f in $( ls *.fastq.gz ) ; do
+	base=${f%.fastq.gz}
+	echo $f $base
+
+	wc -l <( zcat $f ) | awk '{print "total_reads\t"$1/4}' > $base.counts.txt
+	grep -c CGTCGACTTGTCCTCAATGACCACGCT <( zcat $f ) | awk '{print "CGTCGACTTGTCCTCAATGACCACGCT\t"$1}' >> $base.counts.txt
+	grep -c CTGATCTCTCTTGCTTTTCC <( zcat $f ) | awk '{print "CTGATCTCTCTTGCTTTTCC\t"$1}' >> $base.counts.txt
+	grep -c AGCGTGGTCATTGAGGACAAGTCGACG <( zcat $f ) | awk '{print "AGCGTGGTCATTGAGGACAAGTCGACG\t"$1}' >> $base.counts.txt
+	grep -c GGAAAAGCAAGAGAGATCAG <( zcat $f ) | awk '{print "GGAAAAGCAAGAGAGATCAG\t"$1}' >> $base.counts.txt
+done
+
+echo -e "file\ttotal_reads\tCGTCGACTTGTCCTCAATGACCACGCT\tCTGATCTCTCTTGCTTTTCC\tAGCGTGGTCATTGAGGACAAGTCGACG\tGGAAAAGCAAGAGAGATCAG" > 20180403a.counts.tsv
+
+for file in $( ls *.fastq.gz ) ; do
+	base=${file%.fastq.gz}
+	echo $file $base
+
+	total_counts=$( wc -l <( zcat $file ) | awk '{print $1/4}' )
+	a=$( grep -c CGTCGACTTGTCCTCAATGACCACGCT <( zcat $file ) )
+	b=$( grep -c CTGATCTCTCTTGCTTTTCC <( zcat $file ) )
+	c=$( grep -c AGCGTGGTCATTGAGGACAAGTCGACG <( zcat $file ) )
+	d=$( grep -c GGAAAAGCAAGAGAGATCAG <( zcat $file ) )
+	echo -e "${base}\t${total_counts}\t${a}\t${b}\t${c}\t${d}" >> 20180403a.counts.tsv
+done
+
+CTGATCTCTCTTGCTTTTCCCCACA
+CCACA
+
+TGTGGGGAAAAGCAAGAGAGATCAG
+TGTGG
+
+
+
+echo -e "file\ttotal_reads\tCGTCGACTTGTCCTCAATGACCACGCT\tCTGATCTCTCTTGCTTTTCC\tAGCGTGGTCATTGAGGACAAGTCGACG\tGGAAAAGCAAGAGAGATCAG\tCTGATCTCTCTTGCTTTTCCCCACA\tCCACA\tTGTGGGGAAAAGCAAGAGAGATCAG\tTGTGG" > 20180403b.counts.tsv
+
+for file in $( ls *.fastq.gz ) ; do
+	base=${file%.fastq.gz}
+	echo $file $base
+
+	total_counts=$( wc -l <( zcat $file ) | awk '{print $1/4}' )
+	a=$( grep -c CGTCGACTTGTCCTCAATGACCACGCT <( zcat $file ) )
+	b=$( grep -c CTGATCTCTCTTGCTTTTCC <( zcat $file ) )
+	c=$( grep -c AGCGTGGTCATTGAGGACAAGTCGACG <( zcat $file ) )
+	d=$( grep -c GGAAAAGCAAGAGAGATCAG <( zcat $file ) )
+	e=$( grep -c CTGATCTCTCTTGCTTTTCCCCACA <( zcat $file ) )
+	f=$( grep -c CCACA <( zcat $file ) )
+	g=$( grep -c TGTGGGGAAAAGCAAGAGAGATCAG <( zcat $file ) )
+	h=$( grep -c TGTGG <( zcat $file ) )
+	echo -e "${base}\t${total_counts}\t${a}\t${b}\t${c}\t${d}\t${e}\t${f}\t${g}\t${h}" >> 20180403b.counts.tsv
+done
+
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 6 --ma 4 -D 40 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,44' RE382*.fastq.gz
+
+20180403.working_dir.mp6_ma4_D40_R3_iC1_L3_N1_gbar1_scoreminC44
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 4 --ma 4 -D 50 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,44' RE382*.fastq.gz
+
+20180404.working_dir.mp4_ma4_D50_R3_iC1_L3_N1_gbar1_scoreminC44
+
+
+
+
+
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 3 -D 40 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,45 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma3-D40-R3-iC1-L3-N1-gbar1-scoreminC45.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 3 -D 50 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,45 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma3-D50-R3-iC1-L3-N1-gbar1-scoreminC45.bam &
+
+bowtie2 --threads 8 -x herv_k113 --local --mp 6 --ma 4 -D 50 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,45 -1 RE38232.R1.fastq.gz -2 RE38232.R2.fastq.gz | samtools view -h -F 4 -o RE38232-mp6-ma4-D50-R3-iC1-L3-N1-gbar1-scoreminC45.bam &
+
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 5 --ma 3 -D 50 -R 3 -i C,2 -L 3 -N 1 -q --gbar 1 --score-min C,40' RE382*.fastq.gz
+
+20180405.working_dir.mp5_ma3_D50_R3_iC2_L3_N1_gbar1_scoreminC40
+
+aws s3 cp --recursive 20180405.working_dir.mp5_ma3_D50_R3_iC2_L3_N1_gbar1_scoreminC40 s3://herv/Baylor_HERV/20180405.working_dir.mp5_ma3_D50_R3_iC2_L3_N1_gbar1_scoreminC40
+
+
+
+
+
+
+
+
+
+
+
+
+
+-------
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 5 --ma 3 -D 50 -R 3 -i C,1 -L 3 -N 1 -q --gbar 1 --score-min C,44' RE382*.fastq.gz
+
+20180404.working_dir.mp5_ma3_D50_R3_iC1_L3_N1_gbar1_scoreminC44
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 4 --ma 3 -D 25 -R 3 -i S,1,0.25 -L 3 -N 1 --gbar 1' RE382*.fastq.gz
+
+20180402.working_dir.mp4_ma3_D25_R3_iS1025_L3_N1_gbar1
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 4 --ma 3 -D 25 -R 3 -i S,1,0.25 -L 3 -N 1 --gbar 1 --score-min G,10,8' RE382*.fastq.gz
+
+20180402.working_dir.mp4_ma3_D25_R3_iS1025_L3_N1_gbar1_score_minG108
+
+
+
+chimera.bash --threads 8 --human hg19 --bowtie_viral_params '--local --mp 4 --ma 5 -D 25 -R 4 -i S,1,0.25 -L 3 -N 1' RE382*.fastq.gz
+
+20180402.working_dir.mp4_ma5_D25_R4_iS1025_L3_N1
+
+
+

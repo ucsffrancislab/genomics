@@ -1,0 +1,13 @@
+
+
+
+using hg38.chr6 only
+
+cd /raid/refs/fasta
+bwa index hg38.chr6.fa
+
+bwa index SVAs.fasta
+
+nohup ./erv_caller.bash >> erv_caller.out 2>&1 &
+
+

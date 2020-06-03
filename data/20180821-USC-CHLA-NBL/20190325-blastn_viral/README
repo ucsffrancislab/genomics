@@ -1,0 +1,27 @@
+
+
+nohup ls /raid/data/raw/USC-CHLA-NBL/2018*/*fastq.gz | parallel --no-notice --joblog ./parallel.joblog -j40 ./process.bash > ./parallel.out 2> ./parallel.err &
+
+nohup ./post_process.bash &
+
+
+
+source	molecule	sample	subject	read_count	blast_err_count	qaccver	saccver	pident	length	mismatch	gapopen	qstart	qend	sstart	send	evalue	bitscore
+
+
+nohup zcat USC-CHLA-NBL.viral.masked.csv.gz | tail -n +2 | awk 'BEGIN{FS=OFS="\t"}{print $4,$3,$7,$5-$6,$8}' | uniq | awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$4,$5}' | sort | uniq -c > USC-CHLA-NBL.viral.masked.csv.counts &
+
+
+count	subject	sample_file	corrected_read_count	virus
+     12 NA06994	NA06994.1.M_120209_4_2	12642080	NC_026927.1
+
+
+Assume that the counts files is sorted properly, aggregate by subject ...
+
+subject	virus	summed_count	summed_corrected_read_count
+
+
+
+nohup ./report.py > report.out &
+
+

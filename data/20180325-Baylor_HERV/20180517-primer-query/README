@@ -1,0 +1,20 @@
+
+
+align primers to hg19 or hg38
+
+
+
+THIS IS TAKING HOURS.
+
+bowtie2 --threads 40 -x hg19 --all -f -U primers.fasta | samtools view -h -o primers.bam
+
+
+DON'T DO IT THIS WAY! It includes STDERR, likely from nohup
+
+nohup bowtie2 --threads 4 -x hg19 --all -f -U primers.fasta > primers.sam & 
+
+
+Do it this way
+
+nohup bowtie2 --threads 4 -x hg19 --all -f -U primers.fasta -S primers.sam & 
+

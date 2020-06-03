@@ -1,0 +1,106 @@
+
+I had previously placed this in "USC", but I am adding the "-CHLA" suffix. And maybe "-NBL".
+Also, rather than move the files, I am linking them with modified file names.
+
+
+This is "unmapped" RNA data.
+
+
+Use a ~/.netrc with username and password
+
+Cleaned out with
+git clone https://github.com/unreno/genomics.git
+git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch scripts/data_sets/USC-CHLA-NBL/raw/README' --prune-empty --tag-name-filter cat -- --all
+git push origin --force --all
+
+git rebase
+
+
+
+
+20180821
+
+wget --no-clobber --recursive hemonc02.saban-chla.usc.edu/NBL/080217/fastq/
+wget --no-clobber --recursive hemonc02.saban-chla.usc.edu/NBL/120516/fastq/
+
+
+20181003
+
+wget --no-clobber --recursive hemonc02.saban-chla.usc.edu/NBL/SEQC_NBL/fastq/
+wget --no-clobber --recursive hemonc02.saban-chla.usc.edu/NBL/dbGaP-2729/fastq/
+
+
+
+
+Actually, wget seems to ignore the path completely so ...
+
+wget --no-clobber --recursive hemonc02.saban-chla.usc.edu/NBL
+
+Perhaps curl would have been a more precise choice, but the above works well.
+
+
+
+#mv hemonc02.saban-chla.usc.edu/NBL/080217/fastq/*gz ./
+#mv hemonc02.saban-chla.usc.edu/NBL/120516/fastq/*gz ./
+#/bin/rm -rf hemonc02.saban-chla.usc.edu
+#
+#rename 's/\.unmapped//' *gz
+#rename 's/\.trimmed//' *gz
+#rename 's/_001././' *gz
+#rename 's/_R/.R/' *gz
+#rename 's/_SA_\d+_/_/' 080217_SA_*
+#chmod 444 *gz
+
+#l=${l/080217_SA_?_/080217_}
+#l=${l/080217_SA_??_/080217_}
+#d=$(basename $(dirname $(dirname $f)))
+
+Link fastq data files to more user friendly and consistent naming formats.
+
+
+for f in hemonc02.saban-chla.usc.edu/NBL/{080217,120516}/fastq/*gz ; do
+l=$(basename $f)
+l=${l/.unmapped/}
+l=${l/.trimmed/}
+l=${l/_001./.}
+l=${l/_R/.R}
+l=${l/080217_SA_*_S/080217_S}
+l=${l/080217_SA_*_S/S}
+echo $f $l
+ln -s ../$f 20180821/$l
+done
+
+
+for f in hemonc02.saban-chla.usc.edu/NBL/{SEQC_NBL,dbGaP-2729}/fastq/*gz ; do
+l=$(basename $f)
+l=${l/.unmapped/}
+l=${l/.trimmed/}
+l=${l/_1.fastq/.R1.fastq}
+l=${l/_2.fastq/.R2.fastq}
+echo $f $l
+ln -s ../$f 20181003/$l
+done
+
+
+
+
+
+
+
+for f in hemonc02.saban-chla.usc.edu/NBL/NovaSeq/fastq/*gz ; do
+l=$(basename $f) 
+l=${l/.unmapped/}
+l=${l/.trimmed/}
+l=${l/_1.fastq/.R1.fastq}
+l=${l/_2.fastq/.R2.fastq}
+echo $f $l
+ln -s ../$f 20181204/$l
+done
+
+
+
+Both of these are corrupt. Cut short.
+/raid/data/raw/USC-CHLA-NBL/hemonc02.saban-chla.usc.edu/NBL/dbGaP-2729/fastq/SRR1559100_?.trimmed.unmapped.fastq.gz
+
+
+

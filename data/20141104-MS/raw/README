@@ -1,0 +1,12 @@
+
+
+RNA or DNA?
+
+I'm pretty sure that this is unmapped RNA.
+None of the reads in the bam have alignment info.
+
+
+From one of the bam headers ...
+@PG	ID:TopHat	VN:2.0.11	CL:/global/home/groups/software/modules/tophat/2.0.11/bin/tophat -r 300 -p 20 -o BosHaugen-RNA-MS1373_Mapped -G /global/referenceData/igenomes/Homo_sapiens/UCSC/hg19/Annotation/Genes/genes.gtf /global/referenceData/databases/bowtie2/hg19/hg19 BosHaugen-RNA-MS1373_GCCAAT_L005_R1_001.fastq BosHaugen-RNA-MS1373_GCCAAT_L005_R2_001.fastq
+
+

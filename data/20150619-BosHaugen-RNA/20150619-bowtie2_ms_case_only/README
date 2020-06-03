@@ -1,0 +1,55 @@
+
+
+
+Data copied from Netherlands HDD
+
+
+Shortening names from ...
+BosHaugen-RNA-MS1373_GCCAAT_L005_R2_001.fastq
+... to MS1373_R2.fastq
+
+rename BosHaugen-RNA- "" *
+rename _001. . *
+for f in *fastq; do mv $f ${f/_??????_L00?/} ; done
+
+
+
+srun_bowtie2.sh --paired --db ms_case_only *fastq
+
+
+srun_sam_to_bam.sh *sam
+
+
+rename the errors*nobackup
+
+
+
+
+
+remove output
+
+
+
+
+
+
+
+
+
+reference .....
+
+
+
+
+
+
+rename with regex
+
+for f in *err*up; do mv $f ${f%%.error*}log; done
+... yields ...
+mv G2144.TCGA-06-0145-01A.bowtie2.herv_k113..errors.20150615172109.nobackup G2144.TCGA-06-0145-01A.bowtie2.herv_k113.log
+
+
+for f in G*; do mv $f ${f#*.} ; done
+for f in TCGA-*/G*; do mv $f  ${f/\/G*.TCGA/\/TCGA} ; done
+

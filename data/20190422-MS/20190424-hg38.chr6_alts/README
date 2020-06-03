@@ -1,0 +1,19 @@
+
+
+Align the raw data to hg38.chr6_alts
+
+
+nohup ./process.bash &
+
+
+
+
+
+
+#cat *proper_pair.counts | awk '{print $2}' | sort | uniq > chr6_sequences.txt
+
+./process.py
+
+
+
+

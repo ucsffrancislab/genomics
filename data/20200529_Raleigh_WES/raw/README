@@ -1,0 +1,18 @@
+
+
+
+Paired-end WES sequencing for 16 meningiomas as well as paired normal tissue
+
+The fastq files are labeled with the patient number followed by either T (for tumor) or N (for normal)
+
+
+mkdir fastq
+for f in original/*z ; do
+	b=$(basename $f)
+	b=${b/_001/}
+	b=${b/_S??_L00?/}
+	ln -s ../$f fastq/$b
+done
+
+
+

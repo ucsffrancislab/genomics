@@ -1,0 +1,15 @@
+
+
+/raid/data/working/20180802-chimera.bash MS-20190422
+
+
+
+
+
+cat 20180802-chimera-*-hg38_no_alts/working_dir/*/*Q20*ts | sed 's/^chr//' | sort -t\| -k1,1 -k2n,2 > Q20.insertion_points.txt
+
+
+
+./plot_insertion_points.py 
+
+

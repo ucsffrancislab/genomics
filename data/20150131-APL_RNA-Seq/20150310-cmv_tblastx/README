@@ -1,0 +1,14 @@
+
+Todo ...
+
+gunzip -vk P-0[5-9]*gz P-[15N]*gz
+
+
+fastq to fasta
+
+
+
+
+find *up -name \*fasta -execdir srun_blast.sh --command tblastx --db cmv_variants --evalue 0.0005 --outfmt 10 {} \;
+
+find *up -name \*fasta -execdir srun_blast.sh --command tblastx --db cmv_variants --evalue 0.0005 --outfmt 10 {} \;
