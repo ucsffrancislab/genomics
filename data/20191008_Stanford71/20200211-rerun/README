@@ -141,3 +141,9 @@ read_length_hist_to_png.py trimmed/length/all_R.length_hist.csv.gz
 
 
 
+
+
+
+aws s3 sync s3://herv-unr/MetaGO_S3_20191008_Stanford71-MetaGO_Results_k31.20200602/ ./MetaGO_Results_k31.20200602/
+
+
