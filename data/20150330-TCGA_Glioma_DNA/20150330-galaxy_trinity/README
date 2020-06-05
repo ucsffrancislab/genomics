@@ -1,0 +1,19 @@
+
+These data sets are HUGE.
+
+Needed to fastx_collapse or use --normalize_reads option for Trinity
+to assemble.  I am unsure of the repercussions of using this option.
+Nevertheless, without it we had nothing.
+
+Only worked for the smallest data set.
+
+Now trying --min_kmer_cov 2 option.
+
+Collapsing is bad as you lose laning.
+
+Using the NCGAS Galaxy Portal at IU for the assembly.
+https://galaxy.ncgas-trinity.indiana.edu/
+I has worked on all data sets so far, including the largest set!
+
+Normalization is also used on the NCGAS Galaxy Portal at IU
+

@@ -1,0 +1,100 @@
+
+
+From genepi /ccls/data/raw/TCGA_Glioma_DNA/
+
+
+Its public data from the cancer genome atlas 
+
+DNA Data
+
+
+
+https://costellolab.ucsf.edu/steve/G2144.TCGA-06-0145-01A-01D.13_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26378.TCGA-02-2483-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26383.TCGA-02-2485-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0125-01A-01D-1490-08.2_unmapped.bam
+
+38, 8.4, 7.1, 13 GB
+
+wget took 6, 7, 11 and 30 mins
+
+
+https://costellolab.ucsf.edu/steve/G2144.TCGA-06-0145-01A-01D.13_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26378.TCGA-02-2483-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26383.TCGA-02-2485-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0125-01A-01D-1490-08.2_unmapped.bam
+
+
+https://costellolab.ucsf.edu/steve/G2145.TCGA-06-0152-01A-02D.12_unmapped.bam
+https://costellolab.ucsf.edu/steve/G2146.TCGA-06-0185-01A-01D.9_unmapped.bam
+https://costellolab.ucsf.edu/steve/G2147.TCGA-06-0648-01A-01D.7_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26360.TCGA-32-1970-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26362.TCGA-06-0157-01A-01D-1491-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26363.TCGA-19-2624-01A-01D-1495-08.2_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26366.TCGA-06-0686-01A-01D-1492-08.2_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26368.TCGA-19-2629-01A-01D-1495-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26370.TCGA-27-1831-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26374.TCGA-06-5415-01A-01D-1486-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26375.TCGA-27-2528-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26376.TCGA-27-2523-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26380.TCGA-06-0744-01A-01D-1492-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26381.TCGA-14-1823-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26382.TCGA-06-2557-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26386.TCGA-06-0745-01A-01D-1492-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26387.TCGA-19-2620-01A-01D-1495-08.2_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26391.TCGA-26-5135-01A-01D-1486-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26396.TCGA-41-5651-01A-01D-1696-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26397.TCGA-19-5960-01A-11D-1696-08.2_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26398.TCGA-06-5411-01A-01D-1696-08.2_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26401.TCGA-15-1444-01A-02D-1696-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26402.TCGA-06-2570-01A-01D-1495-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G26405.TCGA-14-2554-01A-01D-1494-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0190-01A-01D-1491-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0210-01A-01D-1491-08.1_unmapped.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-14-1034-01A-01D-1492-08.3_unmapped.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-14-1402-01A-01D-1493-08.3_unmapped.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0214-01A-02D-0512-09_unmapped.bam
+
+
+
+
+bam2fastx --fasta --all -N  .....
+
+
+While these bam files can produce fasta files that do contain
+paired reads, some have an odd number of reads so they are not
+perfectly paired.
+
+
+
+../srun_trinity.sh G26383.fasta
+
+
+Need paired fastq for best performance using NCGAS' Galaxy Trinity.
+
+bam2fastx --fastq --all -N --paired -o G26396.fastq  G26396.TCGA-41-5651-01A-01D-1696-08.1_unmapped.sorted.bam & 
+
+Failed to find mate of given read as probably not sorted .
+
+samtools sort -n G26396.TCGA-41-5651-01A-01D-1696-08.1_unmapped.bam G26396.TCGA-41-5651-01A-01D-1696-08.1_unmapped_sorted
+
+Still failed to find mate of given read.
+
+No option to generate anyway.  Looking for different tool....
+
+
+
+
+
+
+
+
+There is a problem with ...
+
+TCGA-06-0214-01A-02D-0512-09_unmapped.bam
+G2146.TCGA-06-0185-01A-01D.9_unmapped.bam
+
+This file contains both laned and unlaned reads?
+Unsure how and why.
+
+

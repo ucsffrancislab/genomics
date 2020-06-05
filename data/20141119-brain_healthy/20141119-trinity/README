@@ -1,0 +1,48 @@
+
+
+bam2fastx --fasta --all -N /Volumes/box/projects/brain/healthy/UNCID_2403320.sorted_genome_alignments.bam.gz
+
+
+
+
+/my/home/ccls/data/working/MS/trinity_MS.sh
+
+cat trinity_working*/Trinity.fasta | sed "s;^>;>`basename $PWD`_;" > `basename $PWD`.trinity.fa
+
+gzip -k `basename $PWD`.trinity.fa
+
+md5sum `basename $PWD`.trinity.fa >> `basename $PWD`.md5sums
+md5sum `basename $PWD`.trinity.fa.gz >> `basename $PWD`.md5sums
+
+chmod -w `basename $PWD`.*
+
+
+#	this depends on the size of the fasta file
+	/my/home/ccls/data/working/MS/blastn_nt_MS.sh
+	md5sum `basename $PWD`.trinity.blastn_nt.txt >> `basename $PWD`.md5sums
+	md5sum `basename $PWD`.trinity.blastn_nt.txt.gz >> `basename $PWD`.md5sums
+
+
+
+#	this doesn't exist yet
+	/my/home/ccls/data/working/MS/extract_no_hits_from_MS_blast_nt.sh  
+
+
+
+
+ec_fasta_split_and_blast.sh --command tblastx --dbs viral_genomic `basename $PWD`.trinity.fa
+
+pieces_check.sh --blast tblastx *pieces > pieces_check.out &
+
+cat pieces_check.out | grep -vs "st line is good" | grep -vs "st line count : 1 :" | grep -vs "Query=  line count : 1000 :" | grep -vs "^Effective search space used: line count : 1000 :" | grep -vs " :  :$"| grep -vs "^\-\-\-" | grep -vs "Check"
+
+mmv -a "*pieces/*txt" `basename $PWD`.trinity.tblastx_viral.txt &
+
+gzip -k `basename $PWD`.trinity.tblastx_viral.txt
+
+chmod +w `basename $PWD`.md5sums
+md5sum `basename $PWD`.trinity.tblastx_viral.txt >> `basename $PWD`.md5sums
+md5sum `basename $PWD`.trinity.tblastx_viral.txt.gz >> `basename $PWD`.md5sums
+chmod -w `basename $PWD`.md5sums
+chmod -w `basename $PWD`.trinity.tblastx_viral.txt.gz
+

@@ -1,0 +1,281 @@
+
+These data are from Ivan.  
+Due to the size of WGS data, we had him only provide us with data that 
+partially matched to a number of HERV sequences that we acquired from GIRI.
+Due to this filtering, we may have missed something.  Nevertheless,
+processing time will be much faster.
+
+
+
+#    MUST be sorted by sequence name so bowtie2 can process paired later
+samtools sort -n -@ 8 -m 5G HUGEFILE.bam HUGEFILE.sortedbyname
+
+samtools bam2fq HUGEFILE.sortedbyname.bam > HUGEFILE.sortedbyname.fastq
+
+#    Split into laned/mated fastq files.  They MUST be the same size and in the same order.
+awk '{
+     if( ( (NR-1) % 4 ) == 0 ){
+         if( match($0,/\/[12]$/) ){
+             f=sprintf("%s_R%i.fastq",
+                 substr(FILENAME,1,index(FILENAME,".fastq")-1),
+                 substr($0,RSTART+1,1))
+         }else{
+             f=sprintf("%s.unlaned.fastq",
+                 substr(FILENAME,1,index(FILENAME,".fastq")-1))
+         }
+     }
+     print >> f
+ }'  HUGEFILE.sortedbyname.fastq
+
+#	The above ONLY WORKS if the source was perfectly paired, which it may not have been.
+
+#	The above can create a HUGEFILE.unlaned.fastq if the sequence names are mucked up
+
+bowtie2 -q -x herv_k113  --very-sensitive-local -1 HUGEFILE.sortedbyname_R1.fastq -2 HUGEFILE.sortedbyname_R2.fastq -S HUGEFILE.sortedbyname.herv_k113.sam 
+
+#    F4 = NOT unmapped = mapped
+samtools view -S -b -F 4 -o HUGEFILE.sortedbyname.herv_k113.mapped.bam HUGEFILE.sortedbyname.herv_k113.sam
+
+#    f4 = unmapped
+#    F8 = mate NOT unmapped = mate mapped
+samtools view -S -b -f 4 -F 8 -o HUGEFILE.sortedbyname.herv_k113.mappedmate.bam HUGEFILE.sortedbyname.herv_k113.sam
+
+samtools merge -n HUGEFILE.sortedbyname.herv_k113.MERGED.bam HUGEFILE.sortedbyname.herv_k113.mapped.bam HUGEFILE.sortedbyname.herv_k113.mappedmate.bam
+
+samtools sort -n MERGED > MERGEDANDSORTED
+
+Shouldn’t be huge anymore, but the above process will probably take several days
+HUGEFILE.sortedbyname.herv_k113.MERGEDANDSORTED.bam
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://wiki.nci.nih.gov/display/TCGA/TCGA+barcode
+
+TCGA-(Tissue Source Site)-(Participant ID)-(Sample Type)(Vial)-(Portion)(Analyte)-(Plate)-(Center)
+
+TSS - 06 - Henry Ford Hospital
+TSS - 14 - Emory University
+TSS - 26 - University of Florida
+
+ST - 01 - Primary Solid Tumor
+ST - 10 - Blood Derived Normal
+
+Analyte - D - DNA
+
+
+
+https://costellolab.ucsf.edu/steve/G2147.TCGA-06-0648-01A-01D.7.HERV52.bam
+https://costellolab.ucsf.edu/steve/G2147.TCGA-06-0648-10A-01D.9.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0171-01A-02D-A33C-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0171-10A-01D-A33C-08.2.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0125-01A-01D-1490-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0125-10A-01D-1490-08.2.HERV52.bam
+
+wget --limit-rate=100m 
+
+Ivan
+
+
+
+These files are previously whole genome, but due to storage space, Ivan has
+selected only those paired end reads that have at least some partial 
+match to one of the many HERV virii genomes that we have acquired.
+
+
+For some reason, about 1 million of the 20 million reads from the G2147 samples 
+have different lengths in the different lanes.  Not sure why, but they have 
+the same number so ok?
+
+Same with  ...
+G2147.TCGA-06-0648-01A
+G2147.TCGA-06-0648-10A
+G2146.TCGA-06-0185-01A
+G26390.TCGA-06-0214-01A
+
+
+
+
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0211-01A-01D-1491-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0211-10A-01D-1491-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-14-1034-01A-01D-1492-08.3.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-14-1034-10A-01D-1492-08.3.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G2145.TCGA-06-0152-01A-02D.12.HERV52.bam
+https://costellolab.ucsf.edu/steve/G2145.TCGA-06-0152-10A-01D.13.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G2146.TCGA-06-0185-01A-01D.9.HERV52.bam
+https://costellolab.ucsf.edu/steve/G2146.TCGA-06-0185-10B-01D.8.HERV52.bam
+https://costellolab.ucsf.edu/steve/G2146.TCGA-06-0185-01A-01D.9.sortedbyname.unlaned.fastq
+https://costellolab.ucsf.edu/steve/G2146.TCGA-06-0185-10B-01D.8.sortedbyname.unlaned.fastq
+https://costellolab.ucsf.edu/steve/G49538.TCGA-14-1402-01A-01D-1493-08.3.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-14-1402-10A-01D-1493-08.3.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G26390.TCGA-06-0214-01A-01D-1491-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26390.TCGA-06-0214-10A-01D-1491-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26390.TCGA-06-0214-01A-01D-1491-08.1.sortedbyname.unlaned.fastq
+
+https://costellolab.ucsf.edu/steve/G26368.TCGA-19-2629-01A-01D-1495-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26368.TCGA-19-2629-10A-01D-1495-08.1.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G26363.TCGA-19-2624-01A-01D-1495-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26363.TCGA-19-2624-10A-01D-1495-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26382.TCGA-06-2557-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26382.TCGA-06-2557-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26391.TCGA-26-5135-01A-01D-1486-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26391.TCGA-26-5135-10A-01D-1486-08.1.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G26360.TCGA-32-1970-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26360.TCGA-32-1970-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26380.TCGA-06-0744-01A-01D-1492-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26380.TCGA-06-0744-10A-01D-1492-08.1.HERV52.bam
+
+
+https://costellolab.ucsf.edu/steve/G26372.TCGA-26-5132-01A-01D-1486-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26372.TCGA-26-5132-10A-01D-1486-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26387.TCGA-19-2620-01A-01D-1495-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26387.TCGA-19-2620-10A-01D-1495-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26397.TCGA-19-5960-01A-11D-1696-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26397.TCGA-19-5960-10A-01D-1696-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26401.TCGA-15-1444-01A-02D-1696-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26401.TCGA-15-1444-10A-01D-1696-08.1.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G26366.TCGA-06-0686-01A-01D-1492-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26366.TCGA-06-0686-10A-01D-1492-08.2.HERV52.bam
+
+--- Above is with just HERV52 index.  
+--- Below ORIGINALLY included partial chr7 in index.
+--- It has been removed.
+
+TCGA-14-1401-*
+G26396.TCGA-41-5651-*
+G26362.TCGA-06-0157-*
+
+--- Reverting back to just HERV52 index.
+
+
+https://costellolab.ucsf.edu/steve/G26378.TCGA-02-2483-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26378.TCGA-02-2483-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26383.TCGA-02-2485-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26383.TCGA-02-2485-10A-01D-1494-08.1.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G26381.TCGA-14-1823-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26381.TCGA-14-1823-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26402.TCGA-06-2570-01A-01D-1495-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26402.TCGA-06-2570-10A-01D-1495-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0210-01A-01D-1491-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0210-10A-01D-1491-08.1.HERV52.bam
+
+
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0190-01A-01D-1491-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0190-10B-01D-A32W-08.1.HERV52.bam
+
+
+https://costellolab.ucsf.edu/steve/G49538.TCGA-19-1389-01A-01D-2319-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-19-1389-10D-01D-2364-08.1.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/G26376.TCGA-27-2523-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26376.TCGA-27-2523-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26398.TCGA-06-5411-01A-01D-1696-08.2.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26398.TCGA-06-5411-10A-01D-1696-08.2.HERV52.bam
+
+
+
+
+https://costellolab.ucsf.edu/steve/G26374.TCGA-06-5415-01A-01D-1486-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26374.TCGA-06-5415-10A-01D-1486-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26405.TCGA-14-2554-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26405.TCGA-14-2554-10A-01D-1494-08.1.HERV52.bam
+
+
+https://costellolab.ucsf.edu/steve/G26370.TCGA-27-1831-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26370.TCGA-27-1831-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0221-01A-01D-A32W-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G49538.TCGA-06-0221-10A-01D-A35R-08.1.HERV52.bam
+
+
+https://costellolab.ucsf.edu/steve/G26375.TCGA-27-2528-01A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26375.TCGA-27-2528-10A-01D-1494-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0124-01A-01D-0375-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0124-10A-01D-0375-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0124-01A-01D-0375-09.sortedbyname.unlaned.fastq.gz
+https://costellolab.ucsf.edu/steve/TCGA-06-0124-10A-01D-0375-09.sortedbyname.unlaned.fastq.gz
+
+https://costellolab.ucsf.edu/steve/G26386.TCGA-06-0745-01A-01D-1492-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/G26386.TCGA-06-0745-10A-01D-1492-08.1.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0208-01A-01D-0512-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0208-10A-01D-0512-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0877-01A-01D-0512-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0877-10A-01D-0512-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0208-10A-01D-0512-09.sortedbyname.unlaned.fastq.gz
+
+https://costellolab.ucsf.edu/steve/TCGA-06-0881-01A-02D-0512-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0881-10A-01D-0512-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-14-0786-01B-01D-0703-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-14-0786-10A-01D-0703-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-14-1459-01A-01D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-14-1459-10A-01D-0703-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0881-10A-01D-0512-09.sortedbyname.unlaned.fastq.gz
+
+https://costellolab.ucsf.edu/steve/TCGA-14-1454-01A-01D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-14-1454-10A-01D-0703-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-26-1438-01A-01D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-26-1438-10A-01D-0703-09.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/TCGA-06-0128-01A-01D-0572-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0128-10A-01D-0572-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-1086-01A-02D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-1086-10A-01D-0703-09.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/TCGA-16-1460-10A-01D-0703-09.sortedbyname.unlaned.fastq.gz
+
+
+
+
+
+------ STILL UNPROCESSED ... PROCESSING
+
+wget --limit-rate=100m 
+
+
+wget --limit-rate=100m https://costellolab.ucsf.edu/steve/TCGA-16-1460-01A-01D-0932-09.HERV52.bam https://costellolab.ucsf.edu/steve/TCGA-16-1460-10A-01D-0703-09.HERV52.bam
+
+https://costellolab.ucsf.edu/steve/TCGA-06-0155-01B-01D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-06-0155-10A-01D-0703-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-16-1063-10A-01D-0703-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-16-1063-01B-01D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-16-1460-01A-01D-0932-09.HERV52.bam
+https://costellolab.ucsf.edu/steve/TCGA-16-1460-10A-01D-0703-09.HERV52.bam
+
+
+
+
+
+
+
+
+
+for f in *HERV52_R?.fastq; do o=$f; f=${f/*.TCGA/TCGA}; f=${f/-???-????-??.HERV52/}; echo mv $o ${f/-???-????-??.?.HERV52/} ; done
+
+
+
+
+These bam files are aligned to our old herv database. Essentially useless. Extracting fastqs.
+
+for bam in *bam.gz ; do
+base=${bam%.bam.gz}
+echo $bam $base
+nohup zcat ${bam} | samtools fastq -N -1 ${base}.1.fastq.gz -2 ${base}.2.fastq.gz - &
+done
+

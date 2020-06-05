@@ -1,0 +1,37 @@
+
+
+https://scilifelab.github.io/courses/rnaseq/labs/kallisto
+
+https://github.com/griffithlab/rnaseq_tutorial/wiki/Kallisto
+
+https://pachterlab.github.io/sleuth_walkthroughs/pval_agg/analysis.html
+
+
+nohup kallisto quant --threads 40 --index /raid/refs/refseq/mRNA_Prot/human.rna --output-dir /raid/data/working/TCGA_GBM_RNAseq/20180928-kallisto/human.rna /raid/data/raw/TCGA_GBM_RNAseq/TCGA-06-2564-01A.?.fastq.gz &
+
+nohup kallisto quant --threads 40 --index /raid/refs/refseq/RefSeqGene/refseqgene.genomic --output-dir /raid/data/working/TCGA_GBM_RNAseq/20180928-kallisto/refseqgene.genomic /raid/data/raw/TCGA_GBM_RNAseq/TCGA-06-2564-01A.?.fastq.gz &
+
+
+nohup ./kallisto.bash &
+
+
+#for d in TCGA*.human.rna ; do
+#l=${d%.human.rna}
+#for d in TCGA*Homo_sapiens.GRCh38 ; do
+#l=${d%.Homo_sapiens.GRCh38}
+for d in TCGA*Homo_sapiens.GRCh38.rna ; do
+l=${d%.Homo_sapiens.GRCh38.rna}
+rm $l
+ln -s $d $l
+done
+
+
+
+
+Think that I need to do this a bit differently. I created my own index which doesn't have a gtf
+
+ftp://ftp.ensembl.org/pub/grch37/release-86/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh37.cdna.all.fa.gz
+ftp://ftp.ensembl.org/pub/release-93/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+
+
+

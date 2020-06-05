@@ -1,0 +1,94 @@
+#!/usr/bin/env Rscript
+
+
+#	https://pachterlab.github.io/sleuth_walkthroughs/pval_agg/analysis.html
+#	https://github.com/griffithlab/rnaseq_tutorial/wiki/Kallisto
+#	http://chagall.med.cornell.edu/RNASEQcourse/Intro2RNAseq.pdf	
+
+suppressMessages({
+	library('cowplot')
+	library('sleuth')
+})
+
+
+metadata <- read.table('sample_table.txt', sep='\t', header=TRUE, stringsAsFactors = FALSE)
+metadata <- dplyr::select(metadata, c('Run_s','gender_s'))
+
+head(metadata, n = 20)
+
+metadata <- dplyr::mutate(metadata,
+	path = file.path(Run_s , 'abundance.h5'))
+
+head(metadata, n = 20)
+
+metadata <- dplyr::rename(metadata, sample = Run_s)
+head(metadata)
+
+
+#> library("biomaRt")
+#> listMarts()
+#> ensembl=useMart("ensembl")
+#> listDatasets(ensembl)
+
+mart <- biomaRt::useMart(biomart = "ensembl",
+	dataset = "hsapiens_gene_ensembl")
+#mart <- biomaRt::useMart(biomart = "ENSEMBL_MART_ENSEMBL",
+#	dataset = "mmusculus_gene_ensembl",
+#	host = "dec2015.archive.ensembl.org")
+#	# host = "ensembl.org")
+#ttg <- biomaRt::getBM(
+#	attributes = c("ensembl_transcript_id", "transcript_version",
+#	"ensembl_gene_id", "external_gene_name", "description",
+#	"transcript_biotype"),
+#	mart = mart)
+ttg <- biomaRt::getBM(attributes = c("ensembl_transcript_id",
+	"ensembl_gene_id", "external_gene_name"), mart = mart)
+ttg <- dplyr::rename(ttg, target_id = ensembl_transcript_id,
+	ens_gene = ensembl_gene_id, ext_gene = external_gene_name)
+ttg <- dplyr::select(ttg, c('target_id', 'ens_gene', 'ext_gene'))
+head(ttg)
+
+
+
+so <- sleuth_prep(metadata, target_mapping = ttg,
+	aggregation_column = 'ens_gene', extra_bootstrap_summary = TRUE)
+
+#	aggregation_column = 'ens_gene', extra_bootstrap_summary = FALSE)
+#	aggregation_column = 'ens_gene')
+#	aggregation_column = 'ens_gene', extra_bootstrap_summary = TRUE)
+
+head(so)
+
+
+
+#	https://pachterlab.github.io/sleuth/docs/sleuth_fit.html
+so <- sleuth_fit(so, ~gender_s, 'full')
+
+#	https://pachterlab.github.io/sleuth/docs/sleuth_wt.html
+so <- sleuth_wt(so, 'gender_smale')
+
+models(so)
+
+tests(so)
+
+#	https://pachterlab.github.io/sleuth/docs/sleuth_results.html
+
+sleuth_table_gene <- sleuth_results(so, 'gender_smale', show_all = FALSE)
+#sleuth_table_gene <- sleuth_results(so, 'reduced:full', 'lrt', show_all = FALSE)
+
+sleuth_table_gene <- dplyr::filter(sleuth_table_gene, qval <= 0.05)
+
+head(sleuth_table_gene, 20)
+
+
+sleuth_table_tx <- sleuth_results(so, 'gender_smale', show_all = FALSE, pval_aggregate = FALSE)
+
+sleuth_table_tx <- dplyr::filter(sleuth_table_tx, qval <= 0.05)
+
+head(sleuth_table_tx, 20)
+
+
+#	So it runs. Not exactly sure what each of these have done.
+#	Perhaps clearer with bigger data set and more metadata to group.
+
+

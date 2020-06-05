@@ -1,0 +1,53 @@
+
+
+
+trinity
+
+blast (n,x,t.x,?)
+
+
+
+
+
+
+
+jakewendt@fxdgroup-169-229-196-233 : MS 446> cd  /Volumes/box/projects/brain/healthy/
+jakewendt@fxdgroup-169-229-196-233 : healthy 447> ll
+total 465034976
+-rw-r--r--  1 jakewendt  staff  28263220240 Oct 24 13:20 UNCID_2402903.sorted_genome_alignments.bam
+-rw-r--r--  1 jakewendt  staff  29295435261 Nov  5 15:05 UNCID_2402904.sorted_genome_alignments.bam
+-rw-r--r--  1 jakewendt  staff   6005412692 Oct 24 13:20 UNCID_2402904.sorted_genome_alignments.bam.gz
+-rw-r--r--  1 jakewendt  staff  13161070148 Nov  5 16:05 UNCID_2402904.sorted_genome_alignments.bam.gz.fa
+-rw-r--r--  1 jakewendt  staff  31182416409 Nov  5 15:10 UNCID_2402947.sorted_genome_alignments.bam
+-rw-r--r--  1 jakewendt  staff   6302913881 Oct 24 13:21 UNCID_2402947.sorted_genome_alignments.bam.gz
+-rw-r--r--  1 jakewendt  staff  13998840713 Nov  5 16:20 UNCID_2402947.sorted_genome_alignments.bam.gz.fa
+-rw-r--r--  1 jakewendt  staff  33898231033 Nov  5 15:14 UNCID_2403059.sorted_genome_alignments.bam
+-rw-r--r--  1 jakewendt  staff   7078424945 Oct 24 13:22 UNCID_2403059.sorted_genome_alignments.bam.gz
+-rw-r--r--  1 jakewendt  staff  15210952553 Nov  5 16:37 UNCID_2403059.sorted_genome_alignments.bam.gz.fa
+-rw-r--r--  1 jakewendt  staff  32408157950 Nov  5 15:13 UNCID_2403320.sorted_genome_alignments.bam
+-rw-r--r--  1 jakewendt  staff   6723105590 Oct 24 13:23 UNCID_2403320.sorted_genome_alignments.bam.gz
+-rw-r--r--  1 jakewendt  staff  14569629096 Nov  5 16:54 UNCID_2403320.sorted_genome_alignments.bam.gz.fa
+-rw-r--r--  1 jakewendt  staff   1779694018 Nov  5 16:54 UNCID_2403320.sorted_genome_alignments.bam.gz.fa.gz
+-rwxr-xr-x@ 1 jakewendt  staff          249 Nov  5 15:50 bam_to_fa.sh
+
+
+
+Very short reads (only 50)
+
+Also has double trailing lane markers in the sequence name.  Will try to process as is.
+
+jakewendt@fxdgroup-169-229-196-225 : ~ 509> head /Volumes/box/projects/brain/healthy/UNCID_2403320.sorted_genome_alignments.bam.gz.fa 
+>UNC11-SN627:349:C3KB8ACXX:5:2311:13757:85181/1/1
+CCGGAGAGCACCGCGAGGGCGGAGCTACGTTCTCCTCTGCACAGATTT
+>UNC11-SN627:349:C3KB8ACXX:5:1306:11748:85222/2/2
+CACAGACCCGGAGAGCACCGCGTGGGCGGAGCTGCGTTCTCCTCTGCA
+>UNC11-SN627:349:C3KB8ACXX:5:2313:10700:35867/2/2
+CACAGACCCGGAGAGCACCGCGAGGGCGGAGCTGCGTTCTCCTCTGCA
+>UNC11-SN627:349:C3KB8ACXX:5:2202:12492:15560/1/1
+
+
+
+
+These fasta files contain both lanes.
+
+

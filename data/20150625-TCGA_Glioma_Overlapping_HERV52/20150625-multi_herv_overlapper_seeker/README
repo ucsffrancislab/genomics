@@ -1,0 +1,11 @@
+
+
+
+
+for f in /my/home/ccls/data/nobackup/TCGA_Glioma_HERV52/fastq/*R1.fastq; do b=`basename $f`; mkdir ${b%%_*} ; done
+
+for f in T*; do cd $f; ln -s /my/home/ccls/data/nobackup/TCGA_Glioma_HERV52/fastq/${f}_R1.fastq; ln -s /my/home/ccls/data/nobackup/TCGA_Glioma_HERV52/fastq/${f}_R2.fastq; cd ..; done
+
+for f in T*; do cd $f; srun_overlapper_seeker.sh $f*q; cd .. ; done
+
+

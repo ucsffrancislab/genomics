@@ -1,0 +1,22 @@
+
+https://costellolab.ucsf.edu/steve/rnaseq/G17482.TCGA-06-2570-01A-01R-1849-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17505.TCGA-06-2564-01A-01R-1849-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17506.TCGA-27-1835-01A-01R-1850-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17508.TCGA-16-0846-01A-01R-1850-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17636.TCGA-32-4213-01A-01R-1850-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17638.TCGA-28-2499-01A-01R-1850-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17651.TCGA-19-1390-01A-01R-1850-01.2.bam
+
+
+
+https://costellolab.ucsf.edu/steve/rnaseq/G17188.TCGA-02-0047-01A-01R-1849-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17194.TCGA-02-0055-01A-01R-1849-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17212.TCGA-06-0129-01A-01R-1849-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17678.TCGA-06-5417-01A-01R-1849-01.2.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17795.TCGA-06-5858-01A-01R-1849-01.4.bam
+https://costellolab.ucsf.edu/steve/rnaseq/G17810.TCGA-15-1444-01A-02R-1850-01.4.bam
+
+wget --limit-rate=100m https://costellolab.ucsf.edu/steve/rnaseq/G17188.TCGA-02-0047-01A-01R-1849-01.2.bam https://costellolab.ucsf.edu/steve/rnaseq/G17194.TCGA-02-0055-01A-01R-1849-01.2.bam https://costellolab.ucsf.edu/steve/rnaseq/G17212.TCGA-06-0129-01A-01R-1849-01.2.bam https://costellolab.ucsf.edu/steve/rnaseq/G17678.TCGA-06-5417-01A-01R-1849-01.2.bam https://costellolab.ucsf.edu/steve/rnaseq/G17795.TCGA-06-5858-01A-01R-1849-01.4.bam https://costellolab.ucsf.edu/steve/rnaseq/G17810.TCGA-15-1444-01A-02R-1850-01.4.bam
+
+
+
