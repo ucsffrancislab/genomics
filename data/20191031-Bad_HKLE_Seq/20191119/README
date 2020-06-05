@@ -1,0 +1,113 @@
+
+
+sickle pe -f SFSP002_S1_L001_R1_001.fastq.gz -r SFSP002_S1_L001_R2_001.fastq.gz -t illumina -o SFSP002_S1_L001_R1_001.sickle.fastq -p SFSP002_S1_L001_R2_001.sickle.fastq -s SFSP002_S1_L001_SI_001.sickle.fastq
+
+Harsh trimmer. Skipping
+
+
+
+
+
+
+
+
+
+
+
+bowtie2 --threads 40 -x herv_k113 -1 SFSP002_S1_L001_R1_001.fastq.gz -2 SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o herv_k113.bam -
+bowtie2 --threads 40 -x SVAs_and_HERVKs -1 SFSP002_S1_L001_R1_001.fastq.gz -2 SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o SVAs_and_HERVKs.bam -
+bowtie2 --threads 40 -x NA12878 -1 SFSP002_S1_L001_R1_001.fastq.gz -2 SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o NA12878.bam -
+bowtie2 --threads 40 -x NA12878.masked -1 SFSP002_S1_L001_R1_001.fastq.gz -2 SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o NA12878.masked.bam -
+bowtie2 --threads 40 -x hg38 -1 SFSP002_S1_L001_R1_001.fastq.gz -2 SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o hg38.bam -
+
+
+
+bowtie2 --threads 40 -x herv_k113 -U SFSP002_S1_L001_R1_001.fastq.gz --very-sensitive-local | samtools view -o herv_k113.R1.bam -
+bowtie2 --threads 40 -x herv_k113 -U SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o herv_k113.R2.bam -
+bowtie2 --threads 40 -x SVAs_and_HERVKs -U SFSP002_S1_L001_R1_001.fastq.gz --very-sensitive-local | samtools view -o SVAs_and_HERVKs.R1.bam -
+bowtie2 --threads 40 -x SVAs_and_HERVKs -U SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o SVAs_and_HERVKs.R2.bam -
+bowtie2 --threads 40 -x NA12878 -U SFSP002_S1_L001_R1_001.fastq.gz --very-sensitive-local | samtools view -o NA12878.R1.bam -
+bowtie2 --threads 40 -x NA12878 -U SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o NA12878.R2.bam -
+bowtie2 --threads 40 -x NA12878.masked -U SFSP002_S1_L001_R1_001.fastq.gz --very-sensitive-local | samtools view -o NA12878.masked.R1.bam -
+bowtie2 --threads 40 -x NA12878.masked -U SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o NA12878.masked.R2.bam -
+bowtie2 --threads 40 -x hg38 -U SFSP002_S1_L001_R1_001.fastq.gz --very-sensitive-local | samtools view -o hg38.R1.bam -
+bowtie2 --threads 40 -x hg38 -U SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o hg38.R2.bam -
+
+
+
+
+
+Waiting on reference
+
+bowtie2 --threads 40 -x hg38.masked -1 SFSP002_S1_L001_R1_001.fastq.gz -2 SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o hg38.masked.bam -
+bowtie2 --threads 40 -x hg38.masked -U SFSP002_S1_L001_R1_001.fastq.gz --very-sensitive-local | samtools view -o hg38.masked.R1.bam -
+bowtie2 --threads 40 -x hg38.masked -U SFSP002_S1_L001_R2_001.fastq.gz --very-sensitive-local | samtools view -o hg38.masked.R2.bam -
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+mkdir deML
+cd deML
+~/.github/grenaud/deML/src/deML -i ../deML.indexes.tsv -f ../SFSP002_S1_L001_R1_001.fastq.gz -r ../SFSP002_S1_L001_R2_001.fastq.gz -if1 ../SFSP002_S1_L001_I1_001.fastq.gz -if2 ../SFSP002_S1_L001_I2_001.fastq.gz -s ../deML.summary.txt -o deML
+cd ..
+
+mkdir aryeelab.1
+cd aryeelab.1
+python2 ../demultiplex.py --min_reads 1 --read1 ../SFSP002_S1_L001_R1_001.fastq --read2 ../SFSP002_S1_L001_R2_001.fastq --index1 ../SFSP002_S1_L001_I1_001.fastq --index2 ../SFSP002_S1_L001_I2_001.fastq --sample_barcodes ../sampleindexes.txt
+cd ..
+
+mkdir aryeelab.10
+cd aryeelab.10
+python2 ../demultiplex.py --min_reads 10 --read1 ../SFSP002_S1_L001_R1_001.fastq --read2 ../SFSP002_S1_L001_R2_001.fastq --index1 ../SFSP002_S1_L001_I1_001.fastq --index2 ../SFSP002_S1_L001_I2_001.fastq --sample_barcodes ../sampleindexes.txt
+cd ..
+
+mkdir aryeelab.100
+cd aryeelab.100
+python2 ../demultiplex.py --min_reads 100 --read1 ../SFSP002_S1_L001_R1_001.fastq --read2 ../SFSP002_S1_L001_R2_001.fastq --index1 ../SFSP002_S1_L001_I1_001.fastq --index2 ../SFSP002_S1_L001_I2_001.fastq --sample_barcodes ../sampleindexes.txt
+cd ..
+
+
+
+
+chimera.bash --human hg19 --viral HERVK113 SFSP002_S1_L001_R1_001.fastq SFSP002_S1_L001_R2_001.fastq
+mv working_dir chimera_hg19_HERVK113
+chimera.bash --human hg19 --viral SVAs_and_HERVs_KWHE SFSP002_S1_L001_R1_001.fastq SFSP002_S1_L001_R2_001.fastq
+mv working_dir chimera_hg19_SVAs_and_HERVs_KWHE
+chimera.bash --human hg38 --viral SVAs_and_HERVs_KWHE SFSP002_S1_L001_R1_001.fastq SFSP002_S1_L001_R2_001.fastq
+mv working_dir chimera_hg38_SVAs_and_HERVs_KWHE
+
+
+Extracted table from our paper to create hg19-herv-insertions.list.csv
+tail -n +5 hg19-herv-insertions.csv | awk '{print $1; print $4}' | sort > hg19-herv-insertions.list.csv
+
+tail -n +2 chimera_hg19_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg19.Q20.sorted.csv | awk -F\| '{print $1":"$2}' > chimera_hg19_SVAs_and_HERVs_KWHE.insertion_points
+
+tail -n +2 chimera_hg38_SVAs_and_HERVs_KWHE/unpaired_insertion_points_table.hg38.Q20.sorted.csv | awk -F\| '{print $1":"$2}' > chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points
+
+Instead, using positions extracted from aligning SVAs_and_HERVs_KWHE to hg38
+samtools view SVAs_and_HERVs_KWHE.hg38.vsl.bam | awk '{print $3":"$4}' | sort | uniq > SVAs_and_HERVs_KWHE.hg38.vsl.positions
+samtools view SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.bam | awk '{print $3":"$4}' | sort | uniq > SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions
+
+
+
+sed -E 's/[[:digit:]]{3}$/000/' SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions | uniq | sort > SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions.1k
+sed -E 's/[[:digit:]]{3}$/000/' chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points  | uniq | sort > chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.1k
+comm -12 *1k | wc -l
+comm -12 *1k
+
+sed -E 's/[[:digit:]]{4}$/0000/' SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions | uniq | sort > SVAs_and_HERVs_KWHE.hg38_no_alts.vsl.positions.10k
+sed -E 's/[[:digit:]]{4}$/0000/' chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points  | uniq | sort > chimera_hg38_SVAs_and_HERVs_KWHE.insertion_points.10k
+comm -12 *10k | wc -l
+comm -12 *10k
+

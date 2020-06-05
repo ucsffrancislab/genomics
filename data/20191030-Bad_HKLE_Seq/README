@@ -1,0 +1,11 @@
+
+
+
+
+lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true; open -u username,password -e "mirror -c; quit" ftp://gslanalyzer.qb3.berkeley.edu:990'
+
+
+lftp -u username,password -e 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true' ftp://gslanalyzer.qb3.berkeley.edu:990
+
+
+
