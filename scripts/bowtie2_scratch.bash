@@ -10,6 +10,9 @@ set -x
 
 #threads=""
 SELECT_ARGS=""
+r1=""
+r2=""
+u=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-1)
@@ -18,8 +21,7 @@ while [ $# -gt 0 ] ; do
 			shift; r2=$1; shift;;
 		-U)
 			shift; u=$1; shift;;
-		#-o)
-		-b)
+		-o)
 			shift; f=$1; shift;;
 		-x)
 			shift; x=$1; shift;;
@@ -65,9 +67,8 @@ else
 #	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
 
-#	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${scratch_out} ${scratch_input}
-	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -b ${scratch_out} ${scratch_inputs}
+	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${scratch_out} ${scratch_inputs}
 
 	mv --update ${scratch_out} $( dirname ${f} )
-	chmod a-w ${out}
+	chmod a-w ${f}
 fi

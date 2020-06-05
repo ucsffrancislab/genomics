@@ -16,13 +16,8 @@ threads=0
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
-		#-o)
-		#	new versions of bowtie2 take the -b option which will return a bam file
-		-b)
-			SELECT_ARGS="${SELECT_ARGS} $1";
-			shift; output=$1;
-			SELECT_ARGS="${SELECT_ARGS} $1";
-			shift;;
+		-o)
+			shift; output=$1; shift;;
 		--sort)
 			shift; sortbam=true;;
 		-@|--threads)
@@ -41,9 +36,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	#	The latest version of bowtie2 will write bam output if given the -b options
-	bowtie2 $SELECT_ARGS 2> ${f}.err.txt
-	#bowtie2 $SELECT_ARGS 2> ${f}.err.txt | samtools view -o ${f} -
+	bowtie2 $SELECT_ARGS 2> ${f}.err.txt | samtools view -o ${f} -
 	#bowtie2 $SELECT_ARGS | samtools view -o ${f} -
 	if $sortbam; then
 		mv ${f} ${f/%.bam/.unsorted.bam}

@@ -66,7 +66,7 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/bowtie2_scratch.bash \
 					-F "--threads ${threads} ${opt} -x ${BOWTIE2}/${ref} --sort \
-							--rg-id ${jobbase} --rg "SM:${jobbase}" -1 ${r1} -2 ${r2} -b ${outbase}.bam" )
+							--rg-id ${jobbase} --rg "SM:${jobbase}" -1 ${r1} -2 ${r2} -o ${outbase}.bam" )
 				echo "${bowtie2id}"
 			fi
 
