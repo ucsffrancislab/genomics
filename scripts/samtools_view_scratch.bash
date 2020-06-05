@@ -52,5 +52,5 @@ else
 	samtools_view.bash ${SELECT_ARGS} -o ${scratch_out} ${scratch_input}
 
 	mv --update ${scratch_out} $( dirname ${f} )
-	chmod a-w ${out}
+	chmod a-w ${f}
 fi

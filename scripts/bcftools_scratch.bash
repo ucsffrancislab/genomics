@@ -56,5 +56,5 @@ else
 	bcftools.bash ${SELECT_ARGS} ${scratch_fasta_option} -o ${scratch_out} ${scratch_input}
 
 	mv --update ${scratch_out} $( dirname ${f} )
-	chmod a-w ${out}
+	chmod a-w ${f}
 fi
