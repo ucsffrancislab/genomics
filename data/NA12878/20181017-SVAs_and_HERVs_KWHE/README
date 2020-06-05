@@ -1,0 +1,10 @@
+
+
+nohup ./process.bash &
+
+
+
+awk '( FNR == NR ){hkles[$1]++}( FNR != NR ){ file[FILENAME][$2]=$1 }( FNR == 1 && NR != 1){files[i++]=FILENAME}END{ printf("hkle");for(f in files){printf(",%s",files[f])};printf("\n");asorti(hkles);for(hkle in hkles){printf("%s",hkles[hkle]);  for(f in files){printf(",%s",file[files[f]][hkles[hkle]])}printf("\n");} }' HKLEs.txt *endtoend.bam.txt *local.bam.txt > NA12878-SVAs_and_HERVs_KWHE-counts.csv 
+
+
+
