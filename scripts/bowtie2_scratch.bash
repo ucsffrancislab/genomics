@@ -70,5 +70,6 @@ else
 	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${scratch_out} ${scratch_inputs}
 
 	mv --update ${scratch_out} $( dirname ${f} )
+	mv --update ${SCRATCH_JOB}/*.err.txt $( dirname ${f} )
 	chmod a-w ${f}
 fi
