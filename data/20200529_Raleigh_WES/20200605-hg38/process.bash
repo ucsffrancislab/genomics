@@ -82,7 +82,7 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 					depend=""
 				fi
 				ppid=$( qsub ${depend} -N ${jobbase}.${ref}.PP \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/samtools_view_scratch.bash \
 					-F "-f2 --threads ${threads} -o ${f} ${bowtie2bam}" )
@@ -126,7 +126,7 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 					depend=""
 				fi
 				pileupid=$( qsub ${depend} -N ${jobbase}.${ref}.pileup \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
 					-j oe -o ${outbase}.pileup.${date}.out.txt \
 					~/.local/bin/bcftools_scratch.bash \
 					-F "mpileup --output-type b --output ${f} \
@@ -147,7 +147,7 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 					depend=""
 				fi
 				callid=$( qsub ${depend} -N ${jobbase}.${ref}.call \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
 					-j oe -o ${outbase}.call.${date}.out.txt \
 					~/.local/bin/bcftools_scratch.bash \
 					-F "call --multiallelic-caller --variants-only --threads ${threads} \
