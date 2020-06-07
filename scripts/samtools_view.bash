@@ -20,14 +20,14 @@ ARGS=$*
 
 #	No easily computable output file so pick custom argument, pass on the rest
 
-#SELECT_ARGS=""
+SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-o)
 			shift; output=$1; shift;;
 #			SELECT_ARGS="${SELECT_ARGS} -o $1"; shift;;
-#		*)
-#			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
+		*)		#	NEEEEEEED THIS!
+			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 
