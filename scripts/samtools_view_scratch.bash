@@ -14,8 +14,8 @@ while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
 	case $1 in
 		-o)
 			shift; f=$1; shift;;
-		-x)
-			shift; x=$1; shift;;
+#		-x)
+#			shift; x=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -39,12 +39,12 @@ else
 
 	cp ${input} ${SCRATCH_JOB}/
 
-	#	Quick test script so assuming that ${x} includes FULL PATH
-	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${SCRATCH_JOB}/
+#	#	Quick test script so assuming that ${x} includes FULL PATH
+#	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${SCRATCH_JOB}/
 
 	scratch_input=${SCRATCH_JOB}/$( basename ${input} )
 	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
-	scratch_x=${SCRATCH_JOB}/$( basename ${x} )
+#	scratch_x=${SCRATCH_JOB}/$( basename ${x} )
 
 #	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
