@@ -42,6 +42,8 @@ else
 		mv ${f} ${f/%.bam/.unsorted.bam}
 		samtools sort --threads ${threads} -o ${f} ${f/%.bam/.unsorted.bam}
 		\rm ${f/%.bam/.unsorted.bam}
+		samtools index ${f}
+		chmod a-w $f.bai
 	fi
 	chmod a-w $f
 fi

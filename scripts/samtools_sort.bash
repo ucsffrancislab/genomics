@@ -44,6 +44,7 @@ else
 #	cmd="${cmd} > ${f}"
 #	eval "${cmd}"
 	samtools sort $ARGS
-	chmod a-w $f
+	samtools index $f
+	chmod a-w $f $f.bai
 fi
 
