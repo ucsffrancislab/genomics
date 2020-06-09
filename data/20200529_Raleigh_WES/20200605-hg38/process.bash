@@ -19,7 +19,7 @@ DIAMOND=${REFS}/diamond
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
 threads=8
-vmem=8
+vmem=64
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -47,7 +47,8 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 		#	bowtie2 really only uses a bit more memory than the reference.
 		#	4gb would probably be enough for hg38. Nope. Needs more than 4.
 		#	Ran well with 8gb.
-		vmem=8
+		#vmem=8
+		#	with the --sort option, needs much more memory.
 
 		for ali in e2e ; do
 
@@ -61,8 +62,9 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 				echo "Write-protected $f exists. Skipping."
 			else
 				#	gres=scratch should be about total needed divided by num threads
+					#~/.local/bin/bowtie2_scratch.bash \
 				bowtie2id=$( qsub -N ${jobbase}.${ref}.bt${ali} \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
+					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:100 \
 					-j oe -o ${outbase}.${date}.out.txt \
 					~/.local/bin/bowtie2_scratch.bash \
 					-F "--threads ${threads} ${opt} -x ${BOWTIE2}/${ref} --sort \
@@ -89,82 +91,59 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 				echo "${ppid}"
 			fi
 
-###			outbase="${base}.${ref}.bowtie2-${ali}.PP.sorted"
-###			sortid=""
-###			f=${outbase}.bam
-###			if [ -f $f ] && [ ! -w $f ] ; then
-###				echo "Write-protected $f exists. Skipping."
-###			else
-###				if [ ! -z ${ppid} ] ; then
-###					depend="-W depend=afterok:${ppid}"
-###				else
-###					depend=""
-###				fi
-###				sortid=$( qsub ${depend} -N ${jobbase}.${ref}.sort \
-###					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-###					-j oe -o ${outbase}.${date}.out.txt \
-###					~/.local/bin/samtools_sort.bash \
-###					-F "sort --threads ${threads} -o ${f} ${base}.${ref}.bowtie2-${ali}.PP.bam" )
-###				echo "${sortid}"
-###			fi
-#				echo "Sorting ${sam} creating ${bam}"
-#				gatk SortSam --INPUT ${sam} --OUTPUT ${bam} \
-#					--SORT_ORDER coordinate > ${bam}.out 2> ${bam}.err
-#				chmod a-w ${bam}
-#	PREVIOUSLY “samtools sort” and “gatk SortSam” did not cooperate with my first attempts to sort these large files, however, “sambamba” worked quite well.
-#	sambamba sort --uncompressed-chunks --sort-by-name  --compression-level=9 --nthreads 40 -m 50GB --show-progress -o GM_983899.sorted_by_name.bam GM_983899.recaled.bam
 
-			outbase="${base}.${ref}.bowtie2-${ali}.PP"
-			pileupid=""
-			f=${outbase}.bcf.gz
-			if [ -f $f ] && [ ! -w $f ] ; then
-				echo "Write-protected $f exists. Skipping."
-			else
-				if [ ! -z ${ppid} ] ; then
-					depend="-W depend=afterok:${ppid}"
-				else
-					depend=""
-				fi
-				pileupid=$( qsub ${depend} -N ${jobbase}.${ref}.pileup \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
-					-j oe -o ${outbase}.pileup.${date}.out.txt \
-					~/.local/bin/bcftools_scratch.bash \
-					-F "mpileup --output-type b --output ${f} \
-						--fasta-ref /francislab/data1/refs/fasta/${ref}.fa \
-						--threads ${threads} ${outbase}.bam" )
-				echo "${pileupid}"
-			fi
+#			outbase="${base}.${ref}.bowtie2-${ali}.PP"
+#			pileupid=""
+#			f=${outbase}.bcf.gz
+#			if [ -f $f ] && [ ! -w $f ] ; then
+#				echo "Write-protected $f exists. Skipping."
+#			else
+#				if [ ! -z ${ppid} ] ; then
+#					depend="-W depend=afterok:${ppid}"
+#				else
+#					depend=""
+#				fi
+#				pileupid=$( qsub ${depend} -N ${jobbase}.${ref}.pileup \
+#					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
+#					-j oe -o ${outbase}.pileup.${date}.out.txt \
+#					~/.local/bin/bcftools_scratch.bash \
+#					-F "mpileup --output-type b --output ${f} \
+#						--fasta-ref /francislab/data1/refs/fasta/${ref}.fa \
+#						--threads ${threads} ${outbase}.bam" )
+#				echo "${pileupid}"
+#			fi
+#
+#			outbase="${base}.${ref}.bowtie2-${ali}.PP"
+#			callid=""
+#			f=${outbase}.vcf.gz
+#			if [ -f $f ] && [ ! -w $f ] ; then
+#				echo "Write-protected $f exists. Skipping."
+#			else
+#				if [ ! -z ${pileupid} ] ; then
+#					depend="-W depend=afterok:${pileupid}"
+#				else
+#					depend=""
+#				fi
+#				callid=$( qsub ${depend} -N ${jobbase}.${ref}.call \
+#					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
+#					-j oe -o ${outbase}.call.${date}.out.txt \
+#					~/.local/bin/bcftools_scratch.bash \
+#					-F "call --multiallelic-caller --variants-only --threads ${threads} \
+#						--output-type z -o ${f} ${outbase}.bcf.gz" )
+#				echo "${callid}"
+#			fi
 
-			outbase="${base}.${ref}.bowtie2-${ali}.PP"
-			callid=""
-			f=${outbase}.vcf.gz
-			if [ -f $f ] && [ ! -w $f ] ; then
-				echo "Write-protected $f exists. Skipping."
-			else
-				if [ ! -z ${pileupid} ] ; then
-					depend="-W depend=afterok:${pileupid}"
-				else
-					depend=""
-				fi
-				callid=$( qsub ${depend} -N ${jobbase}.${ref}.call \
-					-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:50 \
-					-j oe -o ${outbase}.call.${date}.out.txt \
-					~/.local/bin/bcftools_scratch.bash \
-					-F "call --multiallelic-caller --variants-only --threads ${threads} \
-						--output-type z -o ${f} ${outbase}.bcf" )
-				echo "${callid}"
-			fi
+#	bcftools annotate -a /raid/refs/vcf/gnomad.genomes.r2.0.2.sites.liftover.b38/gnomad.genomes.r2.0.2.sites.chr${chr}.liftover.b38.vcf.gz --columns ID,GNOMAD_AC:=    AC,GNOMAD_AN:=AN,GNOMAD_AF:=AF --output-type z \
+#   --output $f ${sample}.recaled.${chr}.mpileup.MQ60.call.SNP.DP200.vcf.gz
 
 
-
+#	Not sure if needed to make own vcfs
 
 #	strelka
 
 
 
 
-#	bcftools annotate -a /raid/refs/vcf/gnomad.genomes.r2.0.2.sites.liftover.b38/gnomad.genomes.r2.0.2.sites.chr${chr}.liftover.b38.vcf.gz --columns ID,GNOMAD_AC:=    AC,GNOMAD_AN:=AN,GNOMAD_AF:=AF --output-type z \
-#   --output $f ${sample}.recaled.${chr}.mpileup.MQ60.call.SNP.DP200.vcf.gz
 
 
 		done	#	for ali in
