@@ -53,6 +53,7 @@ else
 	cp ${reference} ${SCRATCH_JOB}/
 	cp ${reference}.fai ${SCRATCH_JOB}/
 	cp ${indels} ${SCRATCH_JOB}/
+	cp ${indels}.tbi ${SCRATCH_JOB}/
 
 	scratch_normal=${SCRATCH_JOB}/$( basename ${normal} )
 	scratch_tumor=${SCRATCH_JOB}/$( basename ${tumor} )
@@ -73,6 +74,7 @@ else
 
 	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
-	mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
-	chmod -R a-w ${dir}
+	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+	mv --update ${SCRATCH_JOB}/runDir ${f}
+	chmod -R a-w ${f}
 fi
