@@ -1,0 +1,113 @@
+
+
+./process.bash
+
+
+
+Filter/select and merge out/*.strelka/results/variants/somatic.snvs.vcf.gz
+
+
+---
+From https://qcb.ucla.edu/wp-content/uploads/sites/14/2017/08/gatkDay3.pdf
+
+suggested filtering SNPs with ...
+
+* QD < 2.0
+* FS > 60.0
+* MQ < 40.0
+* MQRankSum < -12.5
+* ReadPosRankSum < -8.0
+
+For our(their) data set we’ll use somewhat stringent filtering, SNPs:
+
+* QD < 10.0
+* ReadPosRankSum < -4.0
+* MQRankSum < -5.0
+---
+
+
+I believe that these filters tag these conditions for removal.
+
+So when I query, I am selecting to keep the opposite of these, I think.
+
+bcftools query -i 'TYPE="SNP" && FILTER="PASS" && MQ>40 && ReadPosRankSum>-4 && MQRankSum>-5 && FS<60 && QD>10' -f '%CHROM\t%POS\n' $vcf | wc -l )
+
+No MQRankSum, FS or QD in strelka output
+
+
+
+Strelka VCF header
+```
+##INFO=<ID=QSS,Number=1,Type=Integer,Description="Quality score for any somatic snv, ie. for the ALT allele to be pre
+sent at a significantly different frequency in the tumor and normal">
+##INFO=<ID=TQSS,Number=1,Type=Integer,Description="Data tier used to compute QSS">
+##INFO=<ID=NT,Number=1,Type=String,Description="Genotype of the normal in all data tiers, as used to classify somatic variants. One of {ref,het,hom,conflict}.">
+##INFO=<ID=QSS_NT,Number=1,Type=Integer,Description="Quality score reflecting the joint probability of a somatic variant and NT">
+##INFO=<ID=TQSS_NT,Number=1,Type=Integer,Description="Data tier used to compute QSS_NT">
+##INFO=<ID=SGT,Number=1,Type=String,Description="Most likely somatic genotype excluding normal noise states">
+##INFO=<ID=SOMATIC,Number=0,Type=Flag,Description="Somatic mutation">
+##INFO=<ID=DP,Number=1,Type=Integer,Description="Combined depth across samples">
+##INFO=<ID=MQ,Number=1,Type=Float,Description="RMS Mapping Quality">
+##INFO=<ID=MQ0,Number=1,Type=Integer,Description="Total Mapping Quality Zero Reads">
+##INFO=<ID=ReadPosRankSum,Number=1,Type=Float,Description="Z-score from Wilcoxon rank sum test of Alt Vs. Ref read-position in the tumor">
+##INFO=<ID=SNVSB,Number=1,Type=Float,Description="Somatic SNV site strand bias">
+##INFO=<ID=PNOISE,Number=1,Type=Float,Description="Fraction of panel containing non-reference noise at this site">
+##INFO=<ID=PNOISE2,Number=1,Type=Float,Description="Fraction of panel containing more than one non-reference noise obs at this site">
+##INFO=<ID=SomaticEVS,Number=1,Type=Float,Description="Somatic Empirical Variant Score (EVS) expressing the phred-scaled probability of the call being a false positive observation.">
+##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Read depth for tier1 (used+filtered)">
+##FORMAT=<ID=FDP,Number=1,Type=Integer,Description="Number of basecalls filtered from original read depth for tier1">
+##FORMAT=<ID=SDP,Number=1,Type=Integer,Description="Number of reads with deletions spanning this site at tier1">
+##FORMAT=<ID=SUBDP,Number=1,Type=Integer,Description="Number of reads below tier1 mapping quality threshold aligned across this site">
+##FORMAT=<ID=AU,Number=2,Type=Integer,Description="Number of 'A' alleles used in tiers 1,2">
+##FORMAT=<ID=CU,Number=2,Type=Integer,Description="Number of 'C' alleles used in tiers 1,2">
+##FORMAT=<ID=GU,Number=2,Type=Integer,Description="Number of 'G' alleles used in tiers 1,2">
+##FORMAT=<ID=TU,Number=2,Type=Integer,Description="Number of 'T' alleles used in tiers 1,2">
+##FILTER=<ID=LowEVS,Description="Somatic Empirical Variant Score (SomaticEVS) is below threshold">
+##FILTER=<ID=LowDepth,Description="Tumor or normal sample read depth at this locus is below 2">
+```
+
+
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-4' out/31.strelka/results/variants/somatic.snvs.vcf.gz | wc -l
+1759
+
+bcftools query -f "%CHROM\t%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-4' out/31.strelka/results/variants/somatic.snvs.vcf.gz | wc -l
+1759
+
+for f in out/*.strelka/results/variants/somatic.snvs.vcf.gz; do
+c=${f%.strelka/results/variants/somatic.snvs.vcf.gz}
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-4' ${f} > ${c}.strelka_positions.txt
+echo $c
+done
+
+
+for f in out/*.strelka/results/variants/somatic.snvs.vcf.gz ; do
+s=${f%.strelka/results/variants/somatic.snvs.vcf.gz}
+s=$( basename $s )
+echo $f $s
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-8' ${f} | awk -v s=$s 'BEGIN{FS=OFS="\t"}{
+split($10,normal,":")
+split(normal[5],na,",")
+split(normal[6],nc,",")
+split(normal[7],ng,",")
+split(normal[8],nt,",")
+split($11,tumor,":")
+split(tumor[5],ta,",")
+split(tumor[6],tc,",")
+split(tumor[7],tg,",")
+split(tumor[8],tt,",")
+if(normal[1] > 5 && tumor[1] > 5 ){
+n["A"]=na[1];n["C"]=nc[1];n["G"]=ng[1];n["T"]=nt[1]
+t["A"]=ta[1];t["C"]=tc[1];t["G"]=tg[1];t["T"]=tt[1]
+maxin=0;for(i in n){maxin=(n[i]>n[maxin] ? i : maxin)}
+delete t[maxin]
+maxit=0;for(i in t){maxit=(t[i]>t[maxit] ? i : maxit)}
+print $1,$2,maxin,maxit,s >> "mut.txt"
+print $1,$2,maxin,maxit,"+",s >> "count_trinuc_input.csv"
+}else{#DP TOO LOW FOR ONE
+print s,$0 >> "TooLowDP"
+} }'
+done
+
+
+~/github/jakewendt/Mutation-Signatures/count_trinuc_muts_v8.pl pvcf /francislab/data1/refs/fasta/hg38.fa count_trinuc_input.csv > mut_all_sort.txt
+
