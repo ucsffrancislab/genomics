@@ -74,7 +74,7 @@ else
 
 	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
-	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
-	mv --update ${SCRATCH_JOB}/runDir ${f}
-	chmod -R a-w ${f}
+	mkdir -p $( dirname ${dir} )	#	just in case
+	mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+	chmod -R a-w ${dir}
 fi
