@@ -12,6 +12,8 @@ SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
 	case $1 in
+		-base|--base)
+			shift; base=$1; shift;;
 		-1)
 			shift; r1=$1; shift;;
 		-2)
@@ -48,7 +50,8 @@ else
 	cp ${r1} ${SCRATCH_JOB}/
 	cp ${r2} ${SCRATCH_JOB}/
 	cp -r ${index_dir} ${SCRATCH_JOB}/
-	cp ${human}*bt2 ${SCRATCH_JOB}/
+	cp ${human}.?.bt2 ${SCRATCH_JOB}/
+	cp ${human}.rev.?.bt2 ${SCRATCH_JOB}/
 
 	scratch_r1=${SCRATCH_JOB}/$( basename ${r1} )
 	scratch_r2=${SCRATCH_JOB}/$( basename ${r2} )
@@ -56,14 +59,18 @@ else
 	scratch_out=${SCRATCH_JOB}/outdir
 	scratch_human=${SCRATCH_JOB}/$( basename ${human} )
 
+	mkdir -p ${scratch_out}/${base}
+	cd ${scratch_out}/${base}
+
 	for hkle in ${scratch_index_dir}/*.rev.1.bt2 ; do
 		hkle=${hkle%.rev.1.bt2}
 		echo $hkle
-		mkdir ${hkle}
-		cd ${hkle}
+
 		chimera_paired_local.bash --human ${scratch_human} --threads ${PBS_NUM_PPN} \
 			--viral ${hkle} -1 ${r1} -2 ${r2}
-		cd ..
+
+		chimera_unpaired_local.bash --human ${scratch_human} --threads ${PBS_NUM_PPN} \
+			--viral ${hkle} ${r1},${r2}
 
 
 #		bowtie2 --very-sensitive-local --threads ${PBS_NUM_PPN} \
