@@ -72,31 +72,6 @@ else
 		chimera_unpaired_local.bash --human ${scratch_human} --threads ${PBS_NUM_PPN} \
 			--viral ${hkle} ${r1},${r2}
 
-
-#		bowtie2 --very-sensitive-local --threads ${PBS_NUM_PPN} \
-#			-x ${hkle} \
-#			-1 ${r1} -2 ${r2} | samtools view -G 12 - 
-# 
-# #   Select end aligned reads that are soft clipped
-# 
-# #   Trim off the aligned region
-# 
-# #   Align the soft clipped sequences to hg38
-# 
-# #   Extract positions of alignments
-
-
-#	~/.local/strelka/bin/configureStrelkaSomaticWorkflow.py \
-#		--normalBam ${scratch_normal} \
-#		--tumorBam ${scratch_tumor} \
-#		--referenceFasta ${scratch_reference} \
-#		--indelCandidates ${scratch_indels} \
-#		--runDir ${SCRATCH_JOB}/runDir \
-#		${SELECT_ARGS}
-#
-#	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
-
-
 	done
 
 	#	GOTTA move an existing dir or we'll move this INTO it.
@@ -104,7 +79,7 @@ else
 		date=$( date "+%Y%m%d%H%M%S" --date="$( stat --printf '%z' ${f} )" )
 		mv ${f} ${f}.${date}
 	fi
-	mv --update ${scratch_out} ${f}
+	mv --update ${scratch_out}/${base} ${f}
 #	mkdir -p $( dirname ${f} )	#	just in case
 #	mv --update ${SCRATCH_JOB}/outdir/* $( dirname ${f} )
 	chmod -R a-w ${f}
