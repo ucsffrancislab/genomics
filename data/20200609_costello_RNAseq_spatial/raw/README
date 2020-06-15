@@ -1,0 +1,56 @@
+
+
+Names are a little inconsistent so moved all to original/
+
+I will cleanup and link in fastq/
+
+
+for f in original/*.fastq.gz ; do
+l=$( basename $f _001.fastq.gz )
+l=${l/#?p/p}
+l=${l/_SF/SF}
+l=${l/_S*_R/_R}
+l=${l^^}
+v=${l%_R*}
+v=${v#*V}
+v=$( echo ${v} | awk '{if($0~/P/)$0=0;printf("%02d",$0)}' )
+r=${l#*_R}
+s=${l%_R*}
+s=${s%V*}
+echo $s 
+c=$( grep $s sample_codes.txt | awk '{print $2}' )
+echo $c s:$s v:$v r:$r
+ln -s ../$f fastq/${c}v${v}_R${r}.fastq.gz
+done 
+
+#| sort | uniq > sample_codes.txt 
+
+
+
+
+
+
+Note that there is a transposition of numbers ....
+
+Hi Chibo,
+
+Hope you are having a great time – we miss you!
+
+Just for quality control purposes (in case helpful to trace back where the error might have come from + correct in your lab notebook), I wanted to let you know that the SF number used for P413 in the sample IDs for Batch19 submission was incorrect. The number used was 11137, but the actual SF# should be 11173.
+
+I am going to make sure we switch back to the correct SF for all downstream processing, so it won’t have an impact on anything else.
+
+Thanks!
+
+Stephanie
+
+
+
+
+
+
+11137 was changed to 11173 after linking.
+
+
+
+
