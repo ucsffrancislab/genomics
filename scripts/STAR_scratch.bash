@@ -52,14 +52,16 @@ else
 	echo "Creating $f"
 
 	cp ${r1} ${SCRATCH_JOB}/
+	scratch_r1=${SCRATCH_JOB}/$( basename ${r1} )
+
 	if [ -n "${r2}" ] ; then
 		cp ${r2} ${SCRATCH_JOB}/
 		scratch_r2=${SCRATCH_JOB}/$( basename ${r2} )
 	fi
-	cp -r ${genomeDir} ${SCRATCH_JOB}/
 
-	scratch_r1=${SCRATCH_JOB}/$( basename ${r1} )
+	cp -r ${genomeDir} ${SCRATCH_JOB}/
 	scratch_genomeDir=${SCRATCH_JOB}/$( basename ${genomeDir} )
+
 	scratch_out=${SCRATCH_JOB}/outdir
 
 	mkdir -p ${scratch_out}/
