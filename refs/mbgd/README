@@ -1,0 +1,58 @@
+
+
+Microbial Genome Database for Comparative Analysis
+
+
+
+http://mbgd.genome.ad.jp/htbin/view_arch.cgi
+
+
+
+wget http://mbgd.genome.ad.jp/dist/mbgd_2018-01/mbgd_2018-01_dnaseq.tar.gz &
+
+wget http://mbgd.genome.ad.jp/dist/mbgd_2018-01/mbgd_2018-01_gene.gz &
+
+wget http://mbgd.genome.ad.jp/dist/mbgd_2018-01/mbgd_2018-01_geneseq.tar.gz &
+
+wget http://mbgd.genome.ad.jp/dist/mbgd_2018-01/mbgd_2018-01_proteinseq.tar.gz &
+
+
+/dist/mbgd_2018-01/mbgd_2018-01.seqxml.xml.gz">mbgd_2018-01.seqxml.xml.gz</a> (3146.0 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_default.dclst.gz">mbgd_2018-01_default.dclst.gz</a> (49.0 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_default.tab.gz">mbgd_2018-01_default.tab.gz</a> (26.4 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_default.xml.gz">mbgd_2018-01_default.xml.gz</a> (32.5 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_extended.dclst.gz">mbgd_2018-01_extended.dclst.gz</a> (251.0 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_extended.tab.gz">mbgd_2018-01_extended.tab.gz</a> (230.2 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_extended.xml.gz">mbgd_2018-01_extended.xml.gz</a> (240.7 MB)</td>
+/dist/mbgd_2018-01/mbgd_2018-01_gene.gz">gene</a> (800.7 MB)
+/dist/mbgd_2018-01/mbgd_2018-01_dnaseq.tar.gz">dnaseq</a> (8269.8 MB)
+/dist/mbgd_2018-01/mbgd_2018-01_geneseq.tar.gz">geneseq</a> (6499.0 MB)
+/dist/mbgd_2018-01/mbgd_2018-01_proteinseq.tar.gz">proteinseq</a> (4201.8 MB)
+
+
+
+
+tar xfvz mbgd_2018-01_dnaseq.tar.gz 
+
+[gwendt@n38 /francislab/data1/refs/mbgd/tmp]$ grep "^>" *dnaseq
+aaa.dnaseq:>aaa:chromosome-1-1
+aac.dnaseq:>aac:chromosome-1-1
+aac.dnaseq:>aac:plasmid-pAACI02-2
+aac.dnaseq:>aac:plasmid-pAACI01-3
+aac.dnaseq:>aac:plasmid-pAACI03-4
+aad.dnaseq:>aad:chromosome-1-1
+aae.dnaseq:>aae:chromosome-1-1
+aae.dnaseq:>aae:plasmid-ece1-2
+aah.dnaseq:>aah:chromosome-1-1
+aai.dnaseq:>aai:chromosome-1-1
+aai.dnaseq:>aai:plasmid-pRE117-1-2
+aai.dnaseq:>aai:plasmid-pRE117-2-3
+
+These are fasta files, but I don't understand the naming convention
+
+
+
+Not using these. At least not until I understand what it is.
+
+
+
