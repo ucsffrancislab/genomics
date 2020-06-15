@@ -14,3 +14,6 @@ rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsy
 
 rsync -avz --progress --exclude archive/ rsync://ftp.ncbi.nih.gov/refseq/release/release-catalog/ release-catalog/
 
+
+rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/bacteria/ /francislab/data1/refs/refseq/bacteria/
+
