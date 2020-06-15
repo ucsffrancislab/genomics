@@ -8,3 +8,19 @@
 
 First run, mv sub directory from directory
 
+mkdir out/hkle
+mv out/*.hkle out/hkle/
+for f in out/hkle/*.hkle/* ; do
+b=$( basename $f )
+mv $f out/${b}.hkle
+done
+
+
+
+./merge.py --output hkle.insertion_points.1.csv out/*.hkle.insertion_points/*.insertions_point_counts.1.txt
+./merge.py --output hkle.insertion_points.10.csv out/*.hkle.insertion_points/*.insertions_point_counts.10.txt
+./merge.py --output hkle.insertion_points.100.csv out/*.hkle.insertion_points/*.insertions_point_counts.100.txt
+./merge.py --output hkle.insertion_points.1000.csv out/*.hkle.insertion_points/*.insertions_point_counts.1000.txt
+
+
+

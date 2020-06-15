@@ -23,6 +23,10 @@ if args.version:
 #	Note that nargs=1 produces a list of one item. This is different from the default, in which the item is produced by itself.
 #	THAT IS JUST STUPID! And now I have to check it manually. Am I the only one?
 
+
+#	perhaps I can set the default as a list of one item instead?
+
+
 if isinstance(args.output,list):
 	output=args.output[0]
 else:
@@ -36,16 +40,23 @@ for filename in args.files:
 	print(filename)
 	if os.path.isfile(filename) and os.path.getsize(filename) > 0:
 		basename=os.path.basename(filename)
-		sample=basename.split(".")[0]	#	everything before the first "."
+		namepieces=basename.split(".")
+		sample=namepieces[0]
+		hkle=namepieces[1]
+		pstatus=namepieces[2]
+		mapq=namepieces[3]
+		rounding=namepieces[5]
 		print("Reading "+filename+": Sample "+sample)
 		#	sep=" ",
 		d = pd.read_csv(filename,
 			header=None,
+			sep='\s+',
 			usecols=[0,1],
-			names=["position",sample],
+			names=[sample,"position"],
 			dtype={sample: int},
 			index_col=["position"] )
-		d.head()
+		print(d.head())
+		d.columns=[[sample],[hkle],[pstatus],[mapq],[rounding]]
 		d.dtypes
 		d.info(verbose=True)
 		print("Appending")
