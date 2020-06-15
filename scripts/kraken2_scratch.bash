@@ -14,13 +14,13 @@ scratch_r2=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
 	case $1 in
-		--r1)
+		-1|--r1)
 			shift; r1=$1; shift;;
-		--r2)
+		-2|--r2)
 			shift; r2=$1; shift;;
-		--db)
+		-d|--db)
 			shift; db=$1; shift;;
-		--output)
+		-o|--output)
 			shift; f=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
