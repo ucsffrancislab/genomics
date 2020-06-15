@@ -31,3 +31,26 @@ nohup kraken2-build --build --threads 16 --db standard > kraken2-build.build5.ou
 Done!
 
 
+echo "kraken2-build --build --threads 64 --db standard" | qsub -j oe -o /francislab/data1/refs/kraken2/standard.build.txt -N kraken -l vmem=240gb -l nodes=1:ppn=32
+
+
+
+
+nohup kraken2-build --build --threads 64 --db standard > kraken2-build.build.out.txt 2>&1 &
+
+nohup kraken2-build --threads 64 --db standard > kraken2-build.build.out.txt 2>&1 &
+
+
+
+
+
+
+
+
+
+----REDO
+
+nohup kraken2-build --standard --db standard --threads 32 &
+
+
+
