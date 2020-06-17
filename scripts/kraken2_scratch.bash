@@ -55,17 +55,18 @@ else
 	fi
 	cp --recursive --dereference ${db} ${SCRATCH_JOB}/
 	scratch_db=${SCRATCH_JOB}/$( basename ${db} )
-	report_option=""
-	if [ -n "${report}" ] ; then
-		cp ${report} ${SCRATCH_JOB}/
-		scratch_report=${SCRATCH_JOB}/$( basename ${report} )
-		report_option="--report ${scratch_report}"
+
+	if [ -z "${report}" ] ; then
+		report=${f%.gz}
+		report=${report%.txt}
+		report=${report}.report.txt.gz
 	fi
+	scratch_report=${SCRATCH_JOB}/$( basename ${report} )
 
 	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
 
 	kraken2.bash ${SELECT_ARGS} --db ${scratch_db} \
-		${report_option} \
+		--report ${scratch_report} \
 		--output ${scratch_out} ${scratch_r1} ${scratch_r2}
 
 	mv --update ${scratch_out} ${f}
