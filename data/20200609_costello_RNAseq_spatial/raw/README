@@ -5,6 +5,7 @@ Names are a little inconsistent so moved all to original/
 I will cleanup and link in fastq/
 
 
+mkdir fastq
 for f in original/*.fastq.gz ; do
 l=$( basename $f _001.fastq.gz )
 l=${l/#?p/p}
@@ -17,10 +18,13 @@ v=$( echo ${v} | awk '{if($0~/P/)$0=0;printf("%02d",$0)}' )
 r=${l#*_R}
 s=${l%_R*}
 s=${s%V*}
-echo $s 
-c=$( grep $s sample_codes.txt | awk '{print $2}' )
-echo $c s:$s v:$v r:$r
-ln -s ../$f fastq/${c}v${v}_R${r}.fastq.gz
+#echo $s 
+#c=$( grep $s sample_codes.txt | awk '{print $2}' )
+#echo $c s:$s v:$v r:$r
+p=${l%S*}
+p=${p#P}
+echo p:$p s:$s v:$v r:$r
+ln -s ../$f fastq/${p}v${v}_R${r}.fastq.gz
 done 
 
 #| sort | uniq > sample_codes.txt 
@@ -51,6 +55,33 @@ Stephanie
 
 11137 was changed to 11173 after linking.
 
+
+
+
+
+
+
+
+
+
+rename 01v 260v 01v*
+rename 02v 300v 02v*
+rename 03v 302v 03v*
+rename 04v 303v 04v*
+rename 05v 327v 05v*
+rename 06v 340v 06v*
+rename 07v 375v 07v*
+rename 08v 413v 08v*
+rename 09v 450v 09v*
+rename 10v 452v 10v*
+rename 11v 453v 11v*
+rename 12v 454v 12v*
+rename 13v 455v 13v*
+rename 14v 457v 14v*
+rename 15v 475v 15v*
+rename 16v 481v 16v*
+rename 17v 482v 17v*
+rename 18v 485v 18v*
 
 
 
