@@ -11,6 +11,7 @@ set -x
 SELECT_ARGS=""
 r2=""
 scratch_r2=""
+report=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
 	case $1 in
@@ -22,6 +23,8 @@ while [ $# -gt 0 ] ; do
 			shift; db=$1; shift;;
 		-o|--output)
 			shift; f=$1; shift;;
+		--report)
+			shift; report=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -50,14 +53,25 @@ else
 		cp ${r2} ${SCRATCH_JOB}/
 		scratch_r2=${SCRATCH_JOB}/$( basename ${r2} )
 	fi
-	cp -r ${db} ${SCRATCH_JOB}/
+	cp --recursive --dereference ${db} ${SCRATCH_JOB}/
 	scratch_db=${SCRATCH_JOB}/$( basename ${db} )
+	report_option=""
+	if [ -n "${report}" ] ; then
+		cp ${report} ${SCRATCH_JOB}/
+		scratch_report=${SCRATCH_JOB}/$( basename ${report} )
+		report_option="--report ${scratch_report}"
+	fi
 
 	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
 
-	kraken2.bash ${SELECT_ARGS} --db ${scratch_db} --output ${scratch_out} ${scratch_input}
+	kraken2.bash ${SELECT_ARGS} --db ${scratch_db} \
+		${report_option} \
+		--output ${scratch_out} ${scratch_r1} ${scratch_r2}
 
 	mv --update ${scratch_out} ${f}
+	if [ -n "${report}" ] ; then
+		mv --update ${scratch_report} ${report}
+	fi
 	# unnecessary as kraken2.bash will chmod files if successfull
 	#chmod -R a-w ${f}
 fi
