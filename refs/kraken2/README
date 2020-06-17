@@ -52,5 +52,57 @@ nohup kraken2-build --threads 64 --db standard > kraken2-build.build.out.txt 2>&
 
 nohup kraken2-build --standard --db standard --threads 32 &
 
+This keeps intermittently failing downloading so I may do this step by step.
+rsync: failed to connect to ftp.ncbi.nlm.nih.gov: Connection refused (111)
+rsync error: error in socket IO (code 10) at clientserver.c(124) [receiver=3.0.6]
+Error downloading assembly summary file for viral, exiting.
+
+kraken2-build --db standard-20200615 --download-taxonomy --skip-maps
+kraken2-build --db standard-20200615 --download-library archaea
+kraken2-build --db standard-20200615 --download-library bacteria
+kraken2-build --db standard-20200615 --download-library viral
+kraken2-build --db standard-20200615 --download-library human --no-mask
+kraken2-build --db standard-20200615 --download-library UniVec_Core
+kraken2-build --db standard-20200615 --build --threads 32
+
+ kraken2-build --db standard-20200615 --build --threads 32
+Creating sequence ID to taxonomy ID map (step 1)...
+Sequence ID to taxonomy ID map complete. [0.839s]
+Estimating required capacity (step 2)...
+
+
+
+
+Estimated hash table requirement: 47791943680 bytes
+Capacity estimation complete. [22m56.314s]
+Building database files (step 3)...
+Taxonomy parsed and converted.
+CHT created with 15 bits reserved for taxid.
+Completed processing of 572 sequences, 962729872 bp
+Writing data to disk...  complete.
+Taxonomy parsed and converted.
+CHT created with 15 bits reserved for taxid.
+Processed 2251 sequences (4491665704 bp)...
+Processed 8756 sequences (16107465711 bp)...
+Processed 12468 sequences (22996414007 bp)...
+Processed 14113 sequences (26034533520 bp)...
+Processed 14122 sequences (26047568035 bp)...
+Completed processing of 43596 sequences, 81249228269 bp
+Writing data to disk...  complete.
+Taxonomy parsed and converted.
+CHT created with 15 bits reserved for taxid.
+Completed processing of 12483 sequences, 349491080 bp
+Writing data to disk...  complete.
+Taxonomy parsed and converted.
+CHT created with 15 bits reserved for taxid.
+Completed processing of 3137 sequences, 687518 bp
+Writing data to disk...  complete.
+Taxonomy parsed and converted.
+CHT created with 15 bits reserved for taxid.
+Processed 44 sequences (2494231342 bp)...
+Completed processing of 639 sequences, 3272089205 bp
+Writing data to disk...  complete.
+Database files completed. [5h9m0.260s]
+Database construction complete. [Total: 5h31m57.473s]
 
 
