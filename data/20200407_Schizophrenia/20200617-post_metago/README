@@ -1,0 +1,9 @@
+
+
+
+cat /francislab/data1/working/20200407_Schizophrenia/20200529-MetaGO_Results_k31/ASS_filtered_down/part-* | awk '{print $1}' > ASS_filtered_down_kmers.txt
+cat /francislab/data1/working/20200407_Schizophrenia/20200529-MetaGO_Results_k31/ASS_filtered_down/part-* | awk '{print $1}' | tr "[ATGCatgc]" "[TACGtacg]" | rev>> ASS_filtered_down_kmers.txt
+
+
+./select_and_split.bash
+
