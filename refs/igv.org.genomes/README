@@ -1,0 +1,53 @@
+
+
+
+aws s3 sync s3://igv.org.genomes/hg38/rmsk/ /francislab/data1/refs/igv.org.genomes/hg38/rmsk/
+
+for bed in hg38/rmsk/*bed.gz ; do
+echo $bed
+gtf=${bed/bed.gz/gtf}
+zcat ${bed} | awk 'BEGIN{FS=OFS="\t"}{print $1,"source","feature",1+$2,$3,".",$6,".","feature_name \""$4"\""}' > ${gtf}
+done
+
+#chr1	source	feature	21949	22075	.	+	.	feature_name "MLT1K"
+#	This is noisy. Adds extra lines and suffixes to genes
+#bedToGenePred ${bed} stdout | genePredToGtf file stdin ${gtf}
+
+chr1	21948	22075	MLT1K	254	+
+
+chr1	stdin	exon	21949	22075	.	+	.	gene_id "MLT1K"; transcript_id "MLT1K"; exon_number "1"; exon_id "MLT1K.1";
+
+
+
+
+aws s3 ls s3://igv.org.genomes/
+
+                           PRE C.reinhardtii_CC-503_v5.6 /
+                           PRE Creinhardtii_CC-503_v5.0/
+                           PRE Creinhardtii_CC-503_v5.6/
+                           PRE SARS-CoV-2/
+                           PRE b37/
+                           PRE bosTau8/
+                           PRE canFam3/
+                           PRE ce11/
+                           PRE covid_ASM985889v3/
+                           PRE danRer10/
+                           PRE danRer11/
+                           PRE dm6/
+                           PRE equCab3/
+                           PRE gorGor4/
+                           PRE hg18/
+                           PRE hg19/
+                           PRE hg38/
+                           PRE mm10/
+                           PRE mm9/
+                           PRE panPan2/
+                           PRE panTro4/
+                           PRE rn6/
+                           PRE sacCer3/
+                           PRE susScr11/
+                           PRE test/
+                           PRE tick/
+                           PRE zeaMays_v4/
+2018-12-15 20:32:07      11733 genomes.json
+2020-04-14 12:44:28      16737 genomes.txt
