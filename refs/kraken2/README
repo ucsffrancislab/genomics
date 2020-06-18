@@ -65,7 +65,7 @@ kraken2-build --db standard-20200615 --download-library human --no-mask
 kraken2-build --db standard-20200615 --download-library UniVec_Core
 kraken2-build --db standard-20200615 --build --threads 32
 
- kraken2-build --db standard-20200615 --build --threads 32
+kraken2-build --db standard-20200615 --build --threads 32
 Creating sequence ID to taxonomy ID map (step 1)...
 Sequence ID to taxonomy ID map complete. [0.839s]
 Estimating required capacity (step 2)...
@@ -105,4 +105,6 @@ Writing data to disk...  complete.
 Database files completed. [5h9m0.260s]
 Database construction complete. [Total: 5h31m57.473s]
 
+
+nohup kraken2-build --db abv-20200615 --build --threads 32 &
 
