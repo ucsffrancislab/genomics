@@ -63,3 +63,7 @@ sort can take up a lot of tmp disk space. Next time just add up individual hist 
 zcat ${DIR}/*_R?.fastq.gz.length_hist.csv.gz | awk '{c[$2]+=$1}END{for(n in c){print c[n],n}}' | sort -k2n | gzip > ${DIR}/all_R.length_hist.csv.gz &
 
 
+aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_Results_k31.20200528/ 20200528-MetaGO_Results_k31/
+aws s3 sync s3://herv-unr/MetaGO_S3_20200407_Schizophrenia-MetaGO_Results_k31.20200529/ 20200529-MetaGO_Results_k31/
+
+
