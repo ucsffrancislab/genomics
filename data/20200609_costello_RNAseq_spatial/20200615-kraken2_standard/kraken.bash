@@ -31,6 +31,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 INDIR="/francislab/data1/working/20200609_costello_RNAseq_spatial/20200612-prepare/trimmed/length"
 DIR="/francislab/data1/working/20200609_costello_RNAseq_spatial/20200615-kraken2_standard/out"
+mkdir -p ${DIR}
 
 for r1 in ${INDIR}/*_R1.fastq.gz ; do
 
@@ -46,7 +47,9 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub -N ${base}.kraken -l nodes=1:ppn=${threads} -l vmem=32gb \
+		qsub -N ${base}.kraken -l nodes=1:ppn=${threads} -l vmem=64gb \
+			-l feature=nocommunal \
+			-l gres=scratch:10 \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/kraken2_scratch.bash \
 			-F "--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --paired --use-names -1 ${r1} -2 ${r2}"
