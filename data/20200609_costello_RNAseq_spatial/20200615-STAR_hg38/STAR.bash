@@ -49,6 +49,8 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		starid=$( qsub -N ${base}.STAR -l nodes=1:ppn=${threads} -l vmem=32gb \
+			-l feature=nocommunal \
+			-l gres=scratch:10 \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/STAR_scratch.bash \
 			-F "--runMode alignReads \
