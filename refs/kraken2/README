@@ -106,5 +106,32 @@ Database files completed. [5h9m0.260s]
 Database construction complete. [Total: 5h31m57.473s]
 
 
+
+
+
+made directory structure and linked all files except those human
 nohup kraken2-build --db abv-20200615 --build --threads 32 &
+
+
+
+
+bracken-build -d ${KRAKEN_DB} -t ${THREADS} -k ${KMER_LEN} -l ${READ_LEN}
+
+
+nohup bracken-build -d standard -t 32 -l 150 > bracken.standard.150.out 2>&1 &
+nohup bracken-build -d abv -t 32 -l 150 > bracken.abv.150.out 2>&1 &
+
+once complete
+
+nohup bracken-build -d standard -t 32 -l 100 > bracken.standard.100.out 2>&1 &
+nohup bracken-build -d abv -t 32 -l 100 > bracken.abv.100.out 2>&1 &
+
+
+
+bracken -d ${KRAKEN_DB} -i ${SAMPLE}.kreport -o ${SAMPLE}.bracken -r ${READ_LEN} -l ${LEVEL} -t ${THRESHOLD}
+
+
+
+
+
 
