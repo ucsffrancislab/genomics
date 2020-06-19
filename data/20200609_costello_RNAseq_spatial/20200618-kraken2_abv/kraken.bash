@@ -41,18 +41,26 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 	base=$( basename $r1 _R1.fastq.gz )
 	echo $base
 
-	outbase="${DIR}/${base}.kraken2_abv"
+#
+#				kracken2_bracken_scratch_array_handler.bash
+#
 
-	f=${outbase}.txt.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		qsub -N ${base}.kraken -l nodes=1:ppn=${threads} -l vmem=64gb \
-			-l feature=nocommunal \
-			-l gres=scratch:10 \
-			-j oe -o ${outbase}.${date}.out.txt \
-			~/.local/bin/kraken2_scratch.bash \
-			-F "--db ${KRAKEN2}/abv --threads ${threads} --output ${f} --paired --use-names -1 ${r1} -2 ${r2}"
-	fi
-
+#	outbase="${DIR}/${base}.kraken2_abv"
+#
+#	f=${outbase}.txt.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		qsub -N ${base}.abv -l nodes=1:ppn=${threads} -l vmem=64gb \
+#			-l feature=nocommunal \
+#			-l gres=scratch:10 \
+#			-j oe -o ${outbase}.${date}.out.txt \
+#			~/.local/bin/kraken2_scratch.bash \
+#			-F "--db ${KRAKEN2}/abv --threads ${threads} --output ${f} --paired --use-names -1 ${r1} -2 ${r2}"
+#	fi
+#
+#
+##	bracken
+#	bracken -d ${KRAKEN_DB} -i ${SAMPLE}.kreport -o ${SAMPLE}.bracken -r ${READ_LEN} -l ${LEVEL} -t ${THRESHOLD}
+#
 done
