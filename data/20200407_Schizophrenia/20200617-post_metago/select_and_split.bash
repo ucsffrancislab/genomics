@@ -4,7 +4,11 @@
 #--no-group-separator gets rid of the -- between matches, but is undocumented (not in my man page)
 #Could grep parse out in following awk statement
 
-DIR="/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length"
+#DIR="/francislab/data1/working/20200407_Schizophrenia/20200407-21mer_matrix/trimmed/length"
+
+#	playing in scratch
+DIR="/francislab/data1/working/20200407_Schizophrenia/20200617-post_metago/tmp"
+
 mkdir out
 
 for r1 in ${DIR}/????_R1.fastq.gz ; do
