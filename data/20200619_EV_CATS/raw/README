@@ -1,0 +1,37 @@
+
+
+This is the EV-CATS sequencing data.
+
+
+username and password added to ~/.netrc
+
+wget --no-remove-listing --recursive --no-clobber ftp://52.7.5.48/
+
+
+
+md5sum --check md5.txt 
+SPSF004A_S1_L001_R1_001.fastq.gz: OK
+SPSF004A_S1_L001_R2_001.fastq.gz: OK
+SPSF004B_S2_L001_R1_001.fastq.gz: OK
+SPSF004B_S2_L001_R2_001.fastq.gz: OK
+SPSF004C_S3_L001_R1_001.fastq.gz: OK
+SPSF004C_S3_L001_R2_001.fastq.gz: OK
+SPSF004D_S4_L001_R1_001.fastq.gz: OK
+SPSF004D_S4_L001_R2_001.fastq.gz: OK
+
+
+SPSF004B_S2_L001_R1_001
+
+
+mkdir fastq
+for f in original/*.fastq.gz ; do
+l=$( basename $f _001.fastq.gz )
+l=${l/_S*_R/_R}
+l=${l/SPSF004/}
+echo $l
+ln -s ../$f fastq/${l}.fastq.gz
+done 
+
+
+
+
