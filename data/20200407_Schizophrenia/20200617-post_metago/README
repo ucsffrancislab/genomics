@@ -1,9 +1,59 @@
 
-
-
 cat /francislab/data1/working/20200407_Schizophrenia/20200529-MetaGO_Results_k31/ASS_filtered_down/part-* | awk '{print $1}' > ASS_filtered_down_kmers.txt
 cat /francislab/data1/working/20200407_Schizophrenia/20200529-MetaGO_Results_k31/ASS_filtered_down/part-* | awk '{print $1}' | tr "[ATGCatgc]" "[TACGtacg]" | rev>> ASS_filtered_down_kmers.txt
 
 
 ./select_and_split.bash
+
+
+Count number of reads containing these kmers (and rc complements).
+
+for f in out/*R1* ; do echo $f ; cat $f | paste - - - - | wc -l ; done
+
+Identify them with blast or bowtie2?
+
+
+
+
+
+for r1 in out/*R1* ; do 
+echo $r1
+r2=${r1/_R1/_R2}
+base=${r1%_R1.fastq}
+s=$( basename $base )
+echo $base
+bowtie2.bash --sort -x hg38 -1 ${r1} -2 ${r2} --very-sensitive -o ${base}.bam --rg-id ${s} --rg "SM:${s}"
+done
+
+
+featureCounts.bash -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA -g Name -o featureCounts.miRNA.csv out/??.bam
+featureCounts.bash -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA_primary_transcript -g Name -o featureCounts.miRNA_primary_transcript.csv out/??.bam
+
+featureCounts.bash -a /francislab/data1/refs/fasta/hg38.gtf -t exon -g gene_name -o featureCounts.exon.csv out/??.bam
+
+
+featureCounts.bash -a /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.gtf -t feature -g feature_name -o featureCounts.LTR.csv out/??.bam
+
+featureCounts.bash -a /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_Retroposon.gtf -t feature -g feature_name -o featureCounts.Retroposon.csv out/??.bam
+
+
+
+for gtf in /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk*gtf ; do
+echo $gtf
+feature=$( basename $gtf .gtf )
+feature=${feature#hg38_rmsk_}
+featureCounts.bash -a $gtf -t feature -g feature_name -o featureCounts.${feature}.csv out/??.bam
+awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' featureCounts.${feature}.csv > featureCounts.${feature}.morethan0.csv
+done
+
+
+awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' featureCounts.exon.csv > featureCounts.exon.morethan0.csv
+
+
+
+Assemble them with velvet?
+
+
+
+
 
