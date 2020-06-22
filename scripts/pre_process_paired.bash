@@ -87,3 +87,6 @@ outbase="${OUT}/trimmed/length/unpaired/${base}"
 
 unpair_fastqs.bash -o ${outbase}.fastq.gz ${inbase}_R?.fastq.gz
 
+read_length_hist.bash ${outbase}.fastq.gz
+
+
