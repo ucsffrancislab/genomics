@@ -24,5 +24,6 @@ ll */*bam | wc -l
 119
 
 
+nohup gdc-client download --debug --latest -t ~/gdc/gdc-user-token.2020-05-29T20_51_19.324Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt &
 
 
