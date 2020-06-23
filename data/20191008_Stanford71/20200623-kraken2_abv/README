@@ -1,0 +1,21 @@
+
+
+
+kraken2 (with --report) and then bracken
+
+
+
+INDIR=/francislab/data1/working/20191008_Stanford71/20200623-kraken2_abv/out
+for input in ${INDIR}/*.kraken2_abv.report.txt.gz ; do
+echo ${input}
+outbase=${input%report.txt.gz}
+for level in P C O F G S ; do
+bracken -d /francislab/data1/refs/kraken2/abv -r 150 -l ${level} \
+	-i ${input} \
+	-o ${outbase}.bracken.S.txt \
+	-w ${outbase}.bracken.S.report.txt
+done ; done
+
+
+
+
