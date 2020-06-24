@@ -32,12 +32,13 @@ done
 
 
 ## 0. Create job-specific scratch folder that ...
-SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-mkdir -p $SCRATCH_JOB
+#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
+#mkdir -p $SCRATCH_JOB
 ##    ... is automatically removed upon exit
 ##    (regardless of success or failure)
-trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
+#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
 
+SCRATCH_JOB=$TMPDIR
 
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
