@@ -26,4 +26,25 @@ ll */*bam | wc -l
 
 nohup gdc-client download --debug --latest -t ~/gdc/gdc-user-token.2020-05-29T20_51_19.324Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt &
 
+20200623 8am
+ll */*bam | wc -l
+119
+
+
+
+Using manifest files are just too "mysterious". No idea what is downloading.
+All the hash filenames are just so undesireable.
+Unclear why the previous run crashed.
+Unclear what has been happening overnight since no new files exist.
+Still only 119 bam files and expecting 279.
+
+
+
+
+Trying to speed things up
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-05-29T20_51_19.324Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt --no-segment-md5sums --no-file-md5sum  --no-related-files --no-annotations &
+
+
 
