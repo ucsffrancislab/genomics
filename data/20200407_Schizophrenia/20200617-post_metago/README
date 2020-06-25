@@ -5,6 +5,20 @@ cat /francislab/data1/working/20200407_Schizophrenia/20200529-MetaGO_Results_k31
 
 ./select_and_split.bash
 
+DIR="/francislab/data1/working/20200407_Schizophrenia/20200617-post_metago"
+for i in $( seq -w 17 60 ) ; do
+qsub -N ${i} -l feature=nocommunal -j oe -o ${DIR}/out/SD${i}.out.txt ${DIR}/select_and_split.bash -F /scratch/gwendt/tmp/SD${i}_R1.fastq.gz
+done
+
+
+
+
+
+
+
+
+
+
 
 Count number of reads containing these kmers (and rc complements).
 
@@ -26,34 +40,29 @@ bowtie2.bash --sort -x hg38 -1 ${r1} -2 ${r2} --very-sensitive -o ${base}.bam --
 done
 
 
-featureCounts.bash -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA -g Name -o featureCounts.miRNA.csv out/??.bam
-featureCounts.bash -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA_primary_transcript -g Name -o featureCounts.miRNA_primary_transcript.csv out/??.bam
-
-featureCounts.bash -a /francislab/data1/refs/fasta/hg38.gtf -t exon -g gene_name -o featureCounts.exon.csv out/??.bam
-
-
-featureCounts.bash -a /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.gtf -t feature -g feature_name -o featureCounts.LTR.csv out/??.bam
-
-featureCounts.bash -a /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_Retroposon.gtf -t feature -g feature_name -o featureCounts.Retroposon.csv out/??.bam
-
-
+featureCounts.bash -T 64 -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA -g Name -o featureCounts.miRNA.csv out/*.bam
+featureCounts.bash -T 64 -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA_primary_transcript -g Name -o featureCounts.miRNA_primary_transcript.csv out/*.bam
+featureCounts.bash -T 64 -a /francislab/data1/refs/fasta/hg38.gtf -t exon -g gene_name -o featureCounts.exon.csv out/*.bam
 
 for gtf in /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk*gtf ; do
 echo $gtf
 feature=$( basename $gtf .gtf )
 feature=${feature#hg38_rmsk_}
-featureCounts.bash -a $gtf -t feature -g feature_name -o featureCounts.${feature}.csv out/??.bam
-awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' featureCounts.${feature}.csv > featureCounts.${feature}.morethan0.csv
+featureCounts.bash -T 64 -a $gtf -t feature -g feature_name -o featureCounts.${feature}.csv out/*.bam
+done
+
+for f in featureCounts.*.csv ; do
+o=$(basename $f .csv)
+awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' ${f} > ${o}.morethan0.csv
+done
+
+for f in featureCounts.*.csv ; do
+o=$(basename $f .csv)
+awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>100)print}' ${f} > ${o}.morethan100.csv
 done
 
 
-awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' featureCounts.exon.csv > featureCounts.exon.morethan0.csv
 
-
-
-Assemble them with velvet?
-
-
-
+Assemble them with velvet? Or abyss?
 
 
