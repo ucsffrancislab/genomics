@@ -11,12 +11,18 @@ featureCounts.bash -T 64 -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t mi
 featureCounts.bash -T 64 -a /francislab/data1/refs/fasta/hg38.chr.hsa.gff3 -t miRNA_primary_transcript -g Name -o featureCounts.miRNA_primary_transcript.csv out/*.bam
 featureCounts.bash -T 64 -a /francislab/data1/refs/fasta/hg38.gtf -t exon -g gene_name -o featureCounts.exon.csv out/*.bam
 
+
+
+date=$( date "+%Y%m%d%H%M%S" )
 for gtf in /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk*gtf ; do
 echo $gtf
 feature=$( basename $gtf .gtf )
 feature=${feature#hg38_rmsk_}
-featureCounts.bash -t 64 -a $gtf -t feature -g feature_name -o featureCounts.${feature}.csv out/*.bam
+outbase=/francislab/data1/working/20200609_costello_RNAseq_spatial/20200615-STAR_hg38/featureCounts.${feature}
+qsub -N ${feature} -l nodes=1:ppn=8 -l vmem=60gb -l feature=nocommunal -j oe -o ${outbase}.${date}.out.txt ~/.local/bin/featureCounts.bash -F "-T 8 -a $gtf -t feature -g feature_name -o ${outbase}.csv /scratch/gwendt/tmp/*.bam"
 done
+
+
 
 for f in featureCounts.*.csv ; do
 o=$(basename $f .csv)
