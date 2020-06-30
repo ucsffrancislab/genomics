@@ -2,18 +2,29 @@
 
 bowtie2 bam files are likely incompatible with this
 
-Need to be indexed
+Source bam files need to be indexed
 
 
 
-~/github/ucsffrancislab/HLA/bin/run.py 
-[29/Jun/2020 15:59:17] INFO - Xie Chao's HLA typing algorithm
-usage: run.py [-h] --sample_id SAMPLE_ID --input_bam_path INPUT_BAM_PATH
-              --output_path OUTPUT_PATH [--delete] [--full]
+
+Some of these need a lot of memory, so up memory and rerun failures
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+for f in /francislab/data1/working/20200529_Raleigh_WES/20200605-hg38/out/*.h38au.bowtie2-e2e.bam ; do
+echo $f
+s=$( basename $f .h38au.bowtie2-e2e.bam )
+echo $s
+outbase=/francislab/data1/working/20200529_Raleigh_WES/20200629-HLA/out
+if [ ! -f "${outbase}/report-${s}-hla.json" ] ; then
+echo "~/github/ucsffrancislab/HLA/bin/run.py --input_bam_path $f --sample_id $s --output_path ${outbase}" | qsub -N $s -j oe -o ${outbase}/${s}.${date}.out.txt -l nodes=1:ppn=60 -l vmem=450gb -l feature=nocommunal
+fi
+done
 
 
 
-~/github/ucsffrancislab/HLA/bin/run.py --input_bam_path /francislab/data1/working/20200529_Raleigh_WES/20200605-hg38/out/30N.h38au.bowtie2-e2e.bam --sample_id 30N --output_path /francislab/data1/working/20200529_Raleigh_WES/20200629-HLA/out
+
+./merge_json.py --int --output merged_hla.csv.gz out/report-*
 
 
 
