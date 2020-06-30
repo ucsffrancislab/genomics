@@ -175,8 +175,8 @@ done > kraken.abv.out 2>&1 &
 
 
 for s in A B C D ; do
-zcat ${s}_150_name_nounderscore_R1.fastq.gz ${s}_150_name_nounderscore_R2.fastq.gz | sed -n '1~4s/^@/>/p;2~4p' > ${s}_150_name_nounderscore.fa
-blastn -num_threads 8 -db nt -outfmt 6 -query ${s}_150_name_nounderscore.fa -out ${s}_150_name_nounderscore.blast.txt &
+zcat ${s}_150_name_nounderscore_T_R1.fastq.gz ${s}_150_name_nounderscore_T_R2.fastq.gz | sed -n '1~4s/^@/>/p;2~4p' > ${s}_150_name_nounderscore_T.fa
+blastn -num_threads 8 -db nt -outfmt 6 -query ${s}_150_name_nounderscore_T.fa -out ${s}_150_name_nounderscore_T.blast.txt &
 done
 
 
