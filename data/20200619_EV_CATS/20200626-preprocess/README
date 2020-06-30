@@ -1,0 +1,182 @@
+
+
+Created new adapter file
+
+/francislab/data1/refs/fasta/shahil_adapters.fa
+
+
+
+Count reads in raw file
+Count reads that match either of these
+Count reads that match THE REVERSE COMPLEMENT of either of these
+
+
+
+
+
+
+Exosome should be - Umi is first 9bp of read 2 - also about 30 Ts
+Demultiplex again?
+A = dna
+B = neg dna (nothing)
+C = rna
+D = neg rna (nothing)
+Read 1 has 3 random bases to start so trim
+
+Trim quality on ends
+
+Then trim again to keep above 30
+
+
+
+
+
+Somewhere in here the reads get reordered?
+would ftm=150 do the same as ftm=5?
+
+
+
+> Trim 151st base od read 1 (low quality) if not already trimmed
+bbduk.sh ftm=5 in=SPSF004A_S1_L001_R1_001.fastq out=SPSF004A_R1_151clip.fastq
+> Move first 3 bases of read 1 (template switch motif) into read name
+umi_tools extract --stdin=SPSF004A_R1_151clip.fastq --bc-pattern=NNN --stdout SPSF004A_R1_151clip_UMImoved.fastq
+> Trim 151st base of read 2 (low quality) if not already trimmed
+bbduk.sh ftm=5 in=SPSF004A_S1_L001_R2_001.fastq out=SPSF004A_R2_151clip.fastq
+> Move first 9 bases of read 1 (template switch motif) into read name
+umi_tools extract --stdin=SPSF004A_R2_151clip.fastq --bc-pattern=NNNNNNNNN --stdout SPSF004A_R2_151clip_UMImoved.fastq
+> Interleave read1 and read2
+reformat.sh in1=SPSF004A_R1_151clip_UMImoved.fastq in2=SPSF004A_R2_151clip_UMImoved.fastq out=SPSF004A_R1_R2_151clip_UMImoved.fastq
+> Correct errors based on overlapping reads with short inserts
+bbmerge.sh in=SPSF004A_R1_R2_151clip_UMImoved.fastq out=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected.fastq ecco mix
+> Trim adapters and remove residual PhiX contamination
+bbduk.sh in=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected.fastq out=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected_adaptrimmed.fastq ref=adapters.fa ktrim=r k=21 mink=11 hdist=2 hdist2=1 tbo
+> Trim dT
+bbduk.sh in=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected_adaptrimmed.fastq out=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected_adaptrimmed_Ttrimmed.fastq ref=dt.fa ktrim=l k=30 hdist=3 rcomp=f
+*Does this trim from first match or leftmost match?
+>Trim to minimum of Q10
+bbduk.sh in=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected_adaptrimmed_Ttrimmed.fastq out=SPSF004A_R1_R2_151clip_UMImoved_mergecorrected_adaptrimmed_Ttrimmed_Qtrimmed.fastq qtrim=r trimq=10
+
+
+These should be good. Let me know if anything looks weird. Could you try aligning the result? Here's what I ended up with for Sample A.
+
+
+
+
+R1=
+#!/bin/sh
+cutadapt --trim-n -a GATCGGAAGAGCACACGTCTG -a AGAGCACACGTCTG $1 | cutadapt -u 3 -a A{100} --no-indels -e 0.16666666666666666 - | cutadapt -O 8 --match-read-wildcards -g GTTCAGAGTTCTACAGTCCGACGATCSSS -m 18 -o trimmed_$1 -
+ (edited) 
+
+R2=
+#!/bin/sh
+cutadapt --trim-n --match-read-wildcards -n 2 -g T{100} -a SSSGATCGTCGG -m 18 -o trimmed_$1 $1
+
+  -a ADAPTER, --adapter ADAPTER
+                        Sequence of an adapter ligated to the 3' end (paired
+                        data: of the first read). The adapter and subsequent
+                        bases are trimmed. If a '$' character is appended
+                        ('anchoring'), the adapter is only found if it is a
+                        suffix of the read.
+  --trim-n              Trim N's on ends of reads.
+  --match-read-wildcards
+                        Interpret IUPAC wildcards in reads. Default: False
+  -u LENGTH, --cut LENGTH
+                        Remove bases from each read (first read only if
+                        paired). If LENGTH is positive, remove bases from the
+                        beginning. If LENGTH is negative, remove bases from
+                        the end. Can be used twice if LENGTHs have different
+                        signs. This is applied *before* adapter trimming.
+  --no-indels           Allow only mismatches in alignments. Default: allow
+                        both mismatches and indels
+  -e RATE, --error-rate RATE
+                        Maximum allowed error rate as value between 0 and 1
+                        (no. of errors divided by length of matching region).
+                        Default: 0.1 (=10%)
+  -O MINLENGTH, --overlap MINLENGTH
+                        Require MINLENGTH overlap between read and adapter for
+                        an adapter to be found. Default: 3
+  -g ADAPTER, --front ADAPTER
+                        Sequence of an adapter ligated to the 5' end (paired
+                        data: of the first read). The adapter and any
+                        preceding bases are trimmed. Partial matches at the 5'
+                        end are allowed. If a '^' character is prepended
+                        ('anchoring'), the adapter is only found if it is a
+                        prefix of the read.
+  -m LEN[:LEN2], --minimum-length LEN[:LEN2]
+                        Discard reads shorter than LEN. Default: 0
+  -n COUNT, --times COUNT
+                        Remove up to COUNT adapters from each read. Default: 1
+
+
+
+
+cutadapt --trim-n --match-read-wildcards -n 2 -g T{100} -a SSSGATCGTCGG -m 18 -o trimmed_$1 $1
+
+
+
+
+how would you filter out all reads in the read 2 file that don't have T{30} with hdist=3 in the first 30 bases after the 9bp UMI is removed.
+you'd also want to get rid of the paired read 1 entry
+
+
+cutadapt
+	-A T{30}
+	--untrimmed-output=Untrimmed.R1.fastq
+	--untrimmed-paired-output=Untrimmed.R2.fastq
+	R1 R2
+
+
+DO NOT RUN bbduk separately. The read pairs get out or order
+
+for python 2.7
+pip install --upgrade --user umi_tools==0.5.5
+
+
+
+for s in A B C D ; do
+
+~/.local/BBMap/bbduk.sh ftm=5 in=${s}_R1.fastq.gz out=${s}_150_R1.fastq.gz in2=${s}_R2.fastq.gz out2=${s}_150_R2.fastq.gz
+
+umi_tools extract --stdin ${s}_150_R1.fastq.gz --bc-pattern NNN --stdout ${s}_150_name_R1.fastq.gz
+
+umi_tools extract --stdin ${s}_150_R2.fastq.gz --bc-pattern NNNNNNNNN --stdout ${s}_150_name_R2.fastq.gz
+
+zcat ${s}_150_name_R1.fastq.gz | sed '1~4s/_/ /' | gzip > ${s}_150_name_nounderscore_R1.fastq.gz
+
+zcat ${s}_150_name_R2.fastq.gz | sed '1~4s/_/ /' | gzip > ${s}_150_name_nounderscore_R2.fastq.gz
+
+cutadapt --pair-filter=both -G T{30} --error-rate=0.10 --untrimmed-output=${s}_150_name_nounderscore_noT_R1.fastq.gz --untrimmed-paired-output=${s}_150_name_nounderscore_noT_R2.fastq.gz --output=${s}_150_name_nounderscore_T_R1.fastq.gz --paired-output=${s}_150_name_nounderscore_T_R2.fastq.gz ${s}_150_name_nounderscore_R1.fastq.gz ${s}_150_name_nounderscore_R2.fastq.gz
+
+bowtie2.bash -p 16 -x hg38 --very-sensitive -1 ${s}_150_name_nounderscore_T_R1.fastq.gz -2 ${s}_150_name_nounderscore_T_R2.fastq.gz -o ${s}_150_name_nounderscore_T.bam &
+
+bowtie2.bash -p 16 -x hg38 --very-sensitive-local -1 ${s}_150_name_nounderscore_T_R1.fastq.gz -2 ${s}_150_name_nounderscore_T_R2.fastq.gz -o ${s}_150_name_nounderscore_T_local.bam &
+
+done
+
+
+for r1 in ?_150_name_nounderscore_T_R1.fastq.gz ; do
+echo $r1
+r2=${r1/_R1/_R2}
+base=${r1%_150_name_nounderscore_T_R1.fastq.gz}
+echo $base
+kraken2 --db /francislab/data1/refs/kraken2/standard --threads 64 --paired --output $base.kraken.standard.txt --report $base.kraken.standard.report.txt $r1 $r2
+done > kraken.standard.out 2>&1 &
+
+
+
+for r1 in ?_150_name_nounderscore_T_R1.fastq.gz ; do
+echo $r1
+r2=${r1/_R1/_R2}
+base=${r1%_150_name_nounderscore_T_R1.fastq.gz}
+echo $base
+kraken2 --db /francislab/data1/refs/kraken2/abv --threads 64 --paired --output $base.kraken.abv.txt --report $base.kraken.abv.report.txt $r1 $r2
+done > kraken.abv.out 2>&1 &
+
+
+
+for s in A B C D ; do
+zcat ${s}_150_name_nounderscore_R1.fastq.gz ${s}_150_name_nounderscore_R2.fastq.gz | sed -n '1~4s/^@/>/p;2~4p' > ${s}_150_name_nounderscore.fa
+blastn -num_threads 8 -db nt -outfmt 6 -query ${s}_150_name_nounderscore.fa -out ${s}_150_name_nounderscore.blast.txt &
+done
+
+
