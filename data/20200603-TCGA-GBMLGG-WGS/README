@@ -46,5 +46,17 @@ Trying to speed things up
 
 nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-05-29T20_51_19.324Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt --no-segment-md5sums --no-file-md5sum  --no-related-files --no-annotations &
 
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-06-29T14_06_30.398Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt --no-segment-md5sums --no-file-md5sum  --no-related-files --no-annotations &
+
+
+This takes entirely too long simply to evaluate downloaded files.
+I highly recommend manually looping through the manifest file, checking if the downloaded file exists and downloading individually.
+No idea what it is doing that takes so long when it isn't actually downloading anything.
+Been running for hours now and hasn't downloaded anything new.
+
+
+awk -F"\t" '{if(system("[ ! -f "$1"/"$2" ]") == 0) {print $0}}' gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt > gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt.20200629.txt
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-06-29T14_06_30.398Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt.20200629.txt --no-segment-md5sums --no-file-md5sum  --no-related-files --no-annotations &
 
 
