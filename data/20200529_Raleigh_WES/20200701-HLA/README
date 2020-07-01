@@ -18,9 +18,11 @@ s=$( basename $f .hg38_chr6.bwa.bam )
 echo $s
 outbase=${PWD}/out
 if [ ! -f "${outbase}/report-${s}-hla.json" ] ; then
-echo "~/github/ucsffrancislab/HLA/bin/run.py --input_bam_path $f --sample_id $s --output_path ${outbase}" | qsub -N $s -j oe -o ${outbase}/${s}.${date}.out.txt -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal
+echo "~/github/ucsffrancislab/HLA/bin/run.py --input_bam_path $f --sample_id $s --output_path ${outbase}" | qsub -N $s -j oe -o ${outbase}/${s}.${date}.out.txt -l nodes=1:ppn=32 -l vmem=500gb -l feature=nocommunal
 fi
 done
+
+I don't get the memory issues. Never seems to get above 30-40GB, yet I need over 500GB for one of these samples?
 
 
 
