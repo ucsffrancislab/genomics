@@ -25,7 +25,7 @@ vmem=64
 date=$( date "+%Y%m%d%H%M%S" )
 
 INDIR="/francislab/data1/working/20200529_Raleigh_WES/20200604-prepare/trimmed/length"
-OUTDIR="/francislab/data1/working/20200529_Raleigh_WES/20200630-bwa_hg38/out"
+OUTDIR="/francislab/data1/working/20200529_Raleigh_WES/20200630-bwa_hg38_chr6/out"
 mkdir -p ${OUTDIR}
 
 #	NEED FULL PATH HERE ON THE CLUSTER
