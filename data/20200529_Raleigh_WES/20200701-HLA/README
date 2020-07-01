@@ -1,0 +1,31 @@
+
+
+bowtie2 bam files are likely incompatible with this but they appear to have run succesfully.
+Realigned with bwa on just hg38 chr6 for this check.
+
+Source bam files need to be indexed
+
+
+
+
+Some of these need a lot of memory, so up memory and rerun failures
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+for f in /francislab/data1/working/20200529_Raleigh_WES/20200630-bwa_hg38_chr6/out/*.hg38_chr6.bwa.bam ; do
+echo $f
+s=$( basename $f .hg38_chr6.bwa.bam )
+echo $s
+outbase=${PWD}/out
+if [ ! -f "${outbase}/report-${s}-hla.json" ] ; then
+echo "~/github/ucsffrancislab/HLA/bin/run.py --input_bam_path $f --sample_id $s --output_path ${outbase}" | qsub -N $s -j oe -o ${outbase}/${s}.${date}.out.txt -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal
+fi
+done
+
+
+
+
+./merge_json.py --int --output merged_hla.csv.gz out/report-*
+
+
+
