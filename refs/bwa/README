@@ -1,0 +1,8 @@
+
+
+
+
+bwa index -p hg38_chr6 /francislab/data1/refs/Homo_sapiens/UCSC/hg38/Sequence/Chromosomes/chr6.fa
+
+
+
