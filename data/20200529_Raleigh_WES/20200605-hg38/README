@@ -42,3 +42,49 @@ done
 
 
 
+
+
+for f in out/*.h38au.bowtie2-e2e.bam ; do
+out=${f%.bam}.chr11.bam
+samtools view -o $out $f chr11:309,218-351,926 
+samtools index $out
+done
+
+
+
+
+
+for f in out/*.h38au.bowtie2-e2e.PP.bam ; do
+out=${f%.bam}.chr11.bam
+samtools view -o $out $f chr11:309,218-351,926 
+samtools index $out
+done
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+for gtf in /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.gtf ; do
+echo $gtf
+feature=$( basename $gtf .gtf )
+feature=${feature#hg38_rmsk_}
+outbase=${PWD}/featureCounts.${feature}.PP
+qsub -N ${feature} -l nodes=1:ppn=60 -l vmem=500gb -l feature=nocommunal -j oe -o ${outbase}.${date}.out.txt ~/.local/bin/featureCounts.bash -F "-T 60 -a $gtf -t feature -g feature_name -o ${outbase}.csv ${PWD}/out/*.h38au.bowtie2-e2e.PP.bam"
+done
+
+for f in out/*e.bam out/*P.bam ; do
+samtools view -c $f > $f.count
+done
+
+
+for f in out/*.h38au.bowtie2-e2e.bam.count ; do
+s=$( basename $f .h38au.bowtie2-e2e.bam.count )
+c=$( cat $f )
+echo $s,$c
+done > read_counts.csv
+
+for f in out/*.h38au.bowtie2-e2e.PP.bam.count ; do
+s=$( basename $f .h38au.bowtie2-e2e.PP.bam.count )
+c=$( cat $f )
+echo $s,$c
+done > read_counts.PP.csv
+
+
