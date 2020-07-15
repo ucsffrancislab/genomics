@@ -51,3 +51,48 @@ aws s3 ls s3://igv.org.genomes/
                            PRE zeaMays_v4/
 2018-12-15 20:32:07      11733 genomes.json
 2020-04-14 12:44:28      16737 genomes.txt
+
+
+
+
+
+
+
+
+
+
+
+Split bed files into files all with the same feature name.
+And then assemble into single sequence.
+Or simply generate a consensus sequence.
+
+for f in hg38/rmsk/hg38_rmsk_LTR.bed.gz ; do
+echo $f
+b=${f%.bed.gz}
+echo $b
+mkdir -p $b
+zcat $f | awk -v out=$b 'BEGIN{FS=OFS="\t"}{print $0 > out"/"$4".bed"}'
+done
+
+
+bedtools getfasta -fi /francislab/data1/refs/fasta/hg38.fa -bed /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR/MLT1-int.bed -s -fo hg38.LTR.MLT1-int.fa
+
+bedtools getfasta -fi /francislab/data1/refs/fasta/hg38.fa -bed /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR/MLT1I-int.bed -s -fo hg38.LTR.MLT1I-int.fa
+
+for bed in /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR/*.bed ; do
+fasta=${bed%.bed}.fa
+bedtools getfasta -fi /francislab/data1/refs/fasta/hg38.fa -bed $bed -s -fo $fasta
+gzip $fasta
+done
+
+
+velveth test 31 -short hg38.LTR.MLT1-int.fa 
+velvetg test/
+
+ABYSS -k31 -ooutput.fa tmp.fa 
+
+~/.sources/transabyss-2.0.1/transabyss --se tmp.fa
+
+
+
+
