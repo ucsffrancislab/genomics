@@ -1,5 +1,13 @@
 
 
+What's the difference between gnomAD v2 and v3?
+
+The gnomAD v2 data set contains data from 125,748 exomes and 15,708 whole genomes, all mapped to the GRCh37/hg19 reference sequence. The gnomAD v3 data set contains 71,702 whole genomes (and no exomes), all mapped to the GRCh38 reference sequence. Most of the genomes from v2 are included in v3.
+
+
+
+
+
 
 
 mkdir -p gnomad-public/release/3.0/coverage/genomes/
@@ -18,4 +26,11 @@ chr1:10008	2.6925e+01	25	0.5244484	0.52269113	0.5067641	0.45548242	0.3697247	0.2
 chr1:10009	2.8383e+01	27	0.5147555	0.51330507	0.5025801	0.4634041	0.38831553	0.3027391	0.20677248	0.02634515	5.857577E-4
 
 Not sure what use that is.
+
+
+mkdir -p gnomad-public/release/3.0/vcf/genomes/
+gsutil rsync gs://gnomad-public/release/3.0/vcf/genomes/ gnomad-public/release/3.0/vcf/genomes/
+
+
+
 
