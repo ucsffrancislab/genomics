@@ -35,3 +35,16 @@ done
 
 
 
+
+Exosome should be - Umi is first 9bp of read 2 - also about 30 Ts
+Demultiplex again?
+A = dna
+B = neg dna (nothing)
+C = rna
+D = neg rna (nothing)
+Read 1 has 3 random bases to start so trim
+
+Trim quality on ends	
+
+Then trim again to keep above 30
+
