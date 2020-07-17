@@ -1,0 +1,48 @@
+
+
+miRNA BAM
+756 files
+517 cases
+206.88 GB
+
+
+
+
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-06-29T14_06_30.398Z.txt -m gdc_manifest.TCGA.GBM-LGG.miRNA.bam.2020-06-04.txt &
+
+
+
+
+
+
+
+
+for f in /francislab/data1/raw/20200715-TCGA-GBMLGG-miRNA/*-*/*bam* ; do
+echo $f
+l=$( basename $f )
+l=${l#TCGA-}
+h=$( basename $( dirname $f ) )
+h=${h%%-*}
+l=${l/13_mirna/${h}}
+echo $l
+ln -s $f $l
+done
+
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+for t in miRNA miRNA_primary_transcript ; do
+echo $t
+outbase=/francislab/data1/raw/20200715-TCGA-GBMLGG-miRNA/featureCounts.${t}
+qsub -N $t -l nodes=1:ppn=60 -l vmem=450gb -l feature=nocommunal -j oe -o ${outbase}.${date}.out.txt ~/.local/bin/featureCounts.bash -F "-T 60 -a /francislab/data1/refs/mirbase/hsa.v20.hg19.gff3 -t ${t} -g Name -o ${outbase}.csv /francislab/data1/raw/20200715-TCGA-GBMLGG-miRNA/bam/*bam"
+done
+
+
+
+for f in featureCounts.*.csv ; do
+o=$(basename $f .csv)
+awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' ${f} > ${o}.morethan0.csv
+done
+
