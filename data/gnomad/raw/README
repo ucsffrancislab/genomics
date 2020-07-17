@@ -31,6 +31,9 @@ Not sure what use that is.
 mkdir -p gnomad-public/release/3.0/vcf/genomes/
 gsutil rsync gs://gnomad-public/release/3.0/vcf/genomes/ gnomad-public/release/3.0/vcf/genomes/
 
+mkdir -p gnomad-public/release/2.1.1/liftover_grch38/vcf/genomes
+
+gsutil rsync gs://gnomad-public/release/2.1.1/liftover_grch38/vcf/genomes/ gnomad-public/release/2.1.1/liftover_grch38/vcf/genomes/
 
 
 
