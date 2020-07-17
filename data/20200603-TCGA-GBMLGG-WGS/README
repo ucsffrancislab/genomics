@@ -6,6 +6,30 @@ Program Name IS TCGA AND Project Id IN TCGA-GBM ,TCGA-LGG  AND Data Format IS BA
 125 cases 
 38.02 TB
 
+miRNA BAM
+756 files
+517 cases
+206.88 GB
+
+RNA FASTQ
+709 files
+683 cases
+4.63 TB
+
+RNA BAM
+895 files
+700 cases
+6.92 TB
+
+WXM BAM
+2822 files
+946 cases
+51.09 TB
+
+WXM BAM (Illumina HiSeq)
+2238 files
+819 cases
+37.32 TB
 
 Also downloaded manifests for RNA, miRNA, WXS bam files and RNA fastq files.
 
@@ -59,4 +83,31 @@ awk -F"\t" '{if(system("[ ! -f "$1"/"$2" ]") == 0) {print $0}}' gdc_manifest.TCG
 
 nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-06-29T14_06_30.398Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt.20200629.txt --no-segment-md5sums --no-file-md5sum  --no-related-files --no-annotations &
 
+
+Nothing for 4 days. Restarting.
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-06-29T14_06_30.398Z.txt -m gdc_manifest.TCGA.GBM-LGG.WGS.bam.2020-06-04.txt &
+
+
+
+
+https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/DNA_Seq_Variant_Calling_Pipeline/
+Suggested conversion from bam to paired fastqs
+
+bamtofastq \
+collate=1 \
+exclude=QCFAIL,SECONDARY,SUPPLEMENTARY \
+filename= <input.bam> \
+gz=1 \
+inputformat=bam \
+level=5 \
+outputdir= <output_path> \
+outputperreadgroup=1 \
+outputperreadgroupsuffixF=_1.fq.gz \
+outputperreadgroupsuffixF2=_2.fq.gz \
+outputperreadgroupsuffixO=_o1.fq.gz \
+outputperreadgroupsuffixO2=_o2.fq.gz \
+outputperreadgroupsuffixS=_s.fq.gz \
+tryoq=1 \
 
