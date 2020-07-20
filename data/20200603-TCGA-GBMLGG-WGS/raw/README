@@ -131,3 +131,11 @@ ln -s $f $l
 done
 
 
+
+01 - Primary Tumor
+02 - Recurring Tumor
+10 - Blood Derived Normal
+11 - Solid Tissue Derived Normal
+
+
+
