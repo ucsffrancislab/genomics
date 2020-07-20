@@ -129,3 +129,7 @@ Species: human ( homo sapiens )
 
 
 
+
+wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz
+
+
