@@ -111,3 +111,23 @@ outputperreadgroupsuffixO2=_o2.fq.gz \
 outputperreadgroupsuffixS=_s.fq.gz \
 tryoq=1 \
 
+
+
+
+
+#l=${l/13_mirna/${h}}
+
+echo $f
+h=$( basename $( dirname $f ) )
+h=${h%%-*}
+
+for f in /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/*-*/*bam* ; do
+l=$( basename $f )
+l=${l#*TCGA-}
+l=${l/_*bam/.bam}
+l=${l/-??.?.bam/.bam}
+echo $l
+ln -s $f $l
+done
+
+
