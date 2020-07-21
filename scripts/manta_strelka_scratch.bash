@@ -68,7 +68,7 @@ else
 		--runDir ${SCRATCH_JOB}/runDir/manta \
 		${SELECT_ARGS}
 
-	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${SCRATCH_JOB}/runDir/manta/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
 	scratch_indels=${SCRATCH_JOB}/runDir/manta/results/variants/candidateSmallIndels.vcf.gz
 
@@ -80,7 +80,7 @@ else
 		--runDir ${SCRATCH_JOB}/runDir/strelka \
 		${SELECT_ARGS}
 
-	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${SCRATCH_JOB}/runDir/strelka/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
 	mkdir -p $( dirname ${dir} )	#	just in case
 	mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
