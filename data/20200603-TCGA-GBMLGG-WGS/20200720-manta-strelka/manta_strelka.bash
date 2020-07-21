@@ -33,9 +33,16 @@ mkdir -p ${OUTDIR}
 #	NEED FULL PATH HERE ON THE CLUSTER
 
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam
-#for normal in ${INDIR}/??-????-01?-???-????.bam ; do
-for normal in ${INDIR}/02-2483-01?-???-????.bam ; do
+for normal in ${INDIR}/??-????-01?-???-????.bam ; do
+#for normal in ${INDIR}/02-2483-01?-???-????.bam ; do
+
 	echo ${normal}
+
+	if [ $normal == "/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" ] ; then
+		echo skipping $normal
+		continue
+	fi
+
 
 #	tumor=${normal/N./T.}
 #	echo ${tumor}
