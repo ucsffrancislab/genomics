@@ -18,9 +18,14 @@ DIAMOND=${REFS}/diamond
 #	do exported variables get passed to submitted jobs? No
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
-threads=8
-vmem=64
-scratch=16
+
+#threads=8
+#vmem=64
+#scratch=16
+#	running out of space so doubling all resources
+threads=16
+vmem=120
+scratch=32
 
 #	don't really need that much thread and mem
 
@@ -38,10 +43,10 @@ for normal in ${INDIR}/??-????-01?-???-????.bam ; do
 
 	echo ${normal}
 
-	if [ $normal == "/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" ] ; then
-		echo skipping $normal
-		continue
-	fi
+#	if [ $normal == "/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" ] ; then
+#		echo skipping $normal
+#		continue
+#	fi
 
 
 #	tumor=${normal/N./T.}

@@ -19,7 +19,7 @@ while [ $# -gt 0 ] ; do
 		--referenceFasta)
 			shift; reference=$1; shift;;
 		--dir)
-			shift; f=$1; shift;;
+			shift; dir=$1; shift;;
 		--memGb)
 			shift; memGb=$1; shift;;
     --indelCandidates)
@@ -42,10 +42,10 @@ done
 SCRATCH_JOB=$TMPDIR
 
 #if [ -f $f ] && [ ! -w $f ] ; then
-if [ -d $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
+if [ -d $dir ] && [ ! -w $dir ] ; then
+	echo "Write-protected $dir exists. Skipping."
 else
-	echo "Creating $f"
+	echo "Creating $dir"
 
 	cp ${normal} ${SCRATCH_JOB}/
 	cp ${normal}.bai ${SCRATCH_JOB}/
@@ -75,7 +75,9 @@ else
 
 	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
-	mkdir -p $( dirname ${dir} )	#	just in case
-	mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+	#mkdir -p $( dirname ${dir} )	#	just in case
+	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+	mkdir -p ${dir}
+	mv --update ${SCRATCH_JOB}/runDir/* ${dir}/
 	chmod -R a-w ${dir}
 fi
