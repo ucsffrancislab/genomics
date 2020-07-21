@@ -33,4 +33,13 @@ done
 
 Assemble them with velvet? Or abyss?
 
+date=$( date "+%Y%m%d%H%M%S" )
+for gtf in /francislab/data1/refs/igv.org.genomes/hg38/rmsk/hg38_rmsk*ind.gtf ; do
+echo $gtf
+feature=$( basename $gtf .gtf )
+feature=${feature#hg38_rmsk_}
+outbase=/francislab/data1/working/20200609_costello_RNAseq_spatial/20200615-STAR_hg38/featureCounts.individual/featureCounts.${feature}
+qsub -N ${feature} -l nodes=1:ppn=8 -l vmem=60gb -l feature=nocommunal -j oe -o ${outbase}.${date}.out.txt ~/.local/bin/featureCounts.bash -F "-T 8 -a $gtf -t feature -g feature_name -o ${outbase}.csv /scratch/gwendt/tmp/*.bam"
+done
+
 

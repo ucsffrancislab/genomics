@@ -88,3 +88,12 @@ echo $s,$c
 done > read_counts.PP.csv
 
 
+
+
+
+../normalize_feature_counts.py -r ../read_counts.csv -f featureCounts.MLT1I-int.morethan0.csv 
+../normalize_feature_counts.py -r ../read_counts.PP.csv -f featureCounts.PP.MLT1I-int.morethan0.csv 
+
+
+
+
