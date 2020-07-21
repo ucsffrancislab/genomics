@@ -96,3 +96,11 @@ ABYSS -k31 -ooutput.fa tmp.fa
 
 
 
+for bed in hg38/rmsk/*bed.gz ; do
+echo $bed
+gtf=${bed/bed.gz/ind.gtf}
+zcat ${bed} | awk 'BEGIN{FS=OFS="\t"}{i[$4]++;print $1,"source","feature",1+$2,$3,".",$6,".","feature_name \""$4"."i[$4]"\""}' > ${gtf}
+done
+
+
+
