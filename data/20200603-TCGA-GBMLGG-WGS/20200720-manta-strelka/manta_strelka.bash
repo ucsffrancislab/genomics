@@ -20,6 +20,7 @@ DIAMOND=${REFS}/diamond
 #export BLASTDB=/francislab/data1/refs/blastn
 threads=8
 vmem=64
+scratch=16
 
 #	don't really need that much thread and mem
 
@@ -69,74 +70,94 @@ for normal in ${INDIR}/02-2483-01?-???-????.bam ; do
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/FG-5963-11A-01D-1703.bam
 
 	tumor=${normal/-01?-???-????.bam/-1\?\?-\?\?\?-\?\?\?\?.bam}
-	echo ${tumor}
+	#echo ${tumor}
 	tumor=$( ls $tumor | head -1 )
-	echo ${tumor}
+	#echo ${tumor}
 
-	echo
+	#echo
 
 	normal_base=$( basename $normal )
 	normal_base=${normal_base%-01?-???-????.bam}
-	echo ${normal_base}
+	#echo ${normal_base}
 
 	base=${OUTDIR}/${normal_base}
-	echo ${base}
+	#echo ${base}
 
 	#jobbase=$( basename ${base} )
 	jobbase=${normal_base}
 	echo ${jobbase}
 
-	outbase="${base}.manta"
-	mantaid=""
-	f="${outbase}/results/variants/candidateSmallIndels.vcf.gz"
-	indelCandidates="${f}"
+#	outbase="${base}.manta"
+#	mantaid=""
+#	f="${outbase}/results/variants/candidateSmallIndels.vcf.gz"
+#	indelCandidates="${f}"
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		#	gres=scratch should be about total needed divided by num threads
+#	##			--referenceFasta /francislab/data1/refs/fasta/h38au.fa \
+#	##			--exome \
+#		mantaid=$( qsub -N ${jobbase}.manta \
+#			-l feature=nocommunal \
+#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:${scratch} \
+#			-j oe -o ${outbase}.${date}.out.txt \
+#			~/.local/bin/manta_scratch.bash \
+#			-F "--normalBam ${normal} \
+#				--tumorBam ${tumor} \
+#				--memGb ${vmem} \
+#				--dir ${outbase}" )
+#		echo "${mantaid}"
+#	fi
+#
+#	outbase="${base}.strelka"
+#	depend=""
+#	f=${outbase}/results/variants/somatic.snvs.vcf.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		if [ ! -z ${mantaid} ] ; then
+#			depend="-W depend=afterok:${mantaid}"
+#		else
+#			depend=""
+#		fi
+#		#	gres=scratch should be about total needed divided by num threads
+#	##	I think that the reference NEEDs to be unzipped and have an index
+#	##	Do I need it at all?
+#	##			--referenceFasta /francislab/data1/refs/fasta/h38au.fa \
+#	##			--exome \
+#		strelkaid=$( qsub ${depend} -N ${jobbase}.strelka -l gres=scratch:${scratch} \
+#			-l feature=nocommunal \
+#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#			-j oe -o ${outbase}.${date}.out.txt \
+#			~/.local/bin/strelka_scratch.bash \
+#			-F "--normalBam ${normal} \
+#				--tumorBam ${tumor} \
+#				--indelCandidates ${indelCandidates} \
+#				--memGb ${vmem} \
+#				--dir ${outbase}" )
+#		echo "${strelkaid}"
+#	fi
 
 
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		#	gres=scratch should be about total needed divided by num threads
-	##			--referenceFasta /francislab/data1/refs/fasta/h38au.fa \
-	##			--exome \
-		mantaid=$( qsub -N ${jobbase}.manta \
-			-l feature=nocommunal \
-			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:10 \
-			-j oe -o ${outbase}.${date}.out.txt \
-			~/.local/bin/manta_scratch.bash \
-			-F "--normalBam ${normal} \
-				--tumorBam ${tumor} \
-				--memGb ${vmem} \
-				--dir ${outbase}" )
-		echo "${mantaid}"
-	fi
-
-	outbase="${base}.strelka"
-	depend=""
+	outbase="${base}.manta_strelka"
 	f=${outbase}/results/variants/somatic.snvs.vcf.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${mantaid} ] ; then
-			depend="-W depend=afterok:${mantaid}"
-		else
-			depend=""
-		fi
 		#	gres=scratch should be about total needed divided by num threads
 	##	I think that the reference NEEDs to be unzipped and have an index
 	##	Do I need it at all?
-	##			--referenceFasta /francislab/data1/refs/fasta/h38au.fa \
 	##			--exome \
-		strelkaid=$( qsub ${depend} -N ${jobbase}.strelka -l gres=scratch:10 \
+		qsub -N ${jobbase}.mantastrelka -l gres=scratch:${scratch} \
 			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
-			~/.local/bin/strelka_scratch.bash \
+			~/.local/bin/manta_strelka_scratch.bash \
 			-F "--normalBam ${normal} \
 				--tumorBam ${tumor} \
-				--indelCandidates ${indelCandidates} \
+				--referenceFasta /francislab/data1/refs/fasta/Homo_sapiens_assembly19.fasta \
 				--memGb ${vmem} \
-				--dir ${outbase}" )
-		echo "${strelkaid}"
+				--dir ${outbase}"
 	fi
 
 done	#	for normal in
