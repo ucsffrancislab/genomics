@@ -19,13 +19,12 @@ DIAMOND=${REFS}/diamond
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
 
+#	gonna use about 400-500GB of disk space
+#	could check filesize before running to be more precise
+
 threads=4
 vmem=32
-scratch=16
-#	running out of space so doubling all resources
-#threads=16
-#vmem=120
-#scratch=32
+scratch=125
 
 #	don't really need that much thread and mem
 

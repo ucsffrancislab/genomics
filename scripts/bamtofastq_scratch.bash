@@ -43,8 +43,9 @@ SCRATCH_JOB=$TMPDIR
 	#cp ${normal}.bai ${SCRATCH_JOB}/
 
 	scratch_filename=${SCRATCH_JOB}/$( basename ${filename} )
-	scratch_outputdir=${SCRATCH_JOB}/$( basename ${outputdir} )/out
 
+#	scratch_outputdir=${SCRATCH_JOB}/$( basename ${outputdir} )/out
+	scratch_outputdir=${SCRATCH_JOB}/out
 	mkdir -p ${scratch_outputdir}
 
 	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} outputdir=${scratch_outputdir}
@@ -55,3 +56,5 @@ SCRATCH_JOB=$TMPDIR
 	mv --update ${scratch_outputdir}/* ${outputdir}/
 	#chmod -R a-w ${outputdir}
 #fi
+
+
