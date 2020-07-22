@@ -31,3 +31,11 @@ done
 
 
 
+for f in /francislab/data1/raw/20200320_Raleigh_Meningioma_RNA/fastq/???.fastq.gz ; do
+s=$( basename $f .fastq.gz )
+c=$( zcat $f | paste - - - - | wc -l )
+echo $s,$c
+done > read_counts.csv
+
+
+
