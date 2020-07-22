@@ -1,2 +1,39 @@
 
 
+https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/DNA_Seq_Variant_Calling_Pipeline/
+
+bamtofastq \
+collate=1 \
+exclude=QCFAIL,SECONDARY,SUPPLEMENTARY \
+filename= <input.bam> \
+gz=1 \
+inputformat=bam \
+level=5 \
+outputdir= <output_path> \
+outputperreadgroup=1 \
+outputperreadgroupsuffixF=_1.fq.gz \
+outputperreadgroupsuffixF2=_2.fq.gz \
+outputperreadgroupsuffixO=_o1.fq.gz \
+outputperreadgroupsuffixO2=_o2.fq.gz \
+outputperreadgroupsuffixS=_s.fq.gz \
+tryoq=1 \
+
+
+
+
+I don't think that this is the way to go.
+I think that I should explicitly name the output files using
+
+F=<stdout>: output file for the first mates of pairs if collation is active.
+
+F2=<stdout>: output file for the second mates of pairs if collation is active.
+
+S=<stdout>: output file for single end reads if collation is active.
+
+O=<stdout>: output file for unmatched (orphan) first mates if collation is active.
+
+O2=<stdout>: output file for unmatched (orphan) second mates if collation is active.
+
+
+
+
