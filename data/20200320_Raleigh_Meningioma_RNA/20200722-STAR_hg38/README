@@ -1,0 +1,19 @@
+
+
+STAR
+
+
+See 20200609_costello_RNAseq_spatial/20200615-STAR_hg38/
+
+
+STAR.bash 
+
+featureCounts.bash
+
+
+
+See 20200430_Raleigh_RNASeq/20200722-STAR_hg38
+
+normalize_feature_counts.py
+
+
