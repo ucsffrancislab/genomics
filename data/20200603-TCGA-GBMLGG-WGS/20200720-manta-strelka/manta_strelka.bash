@@ -37,20 +37,29 @@ mkdir -p ${OUTDIR}
 
 #	NEED FULL PATH HERE ON THE CLUSTER
 
+
+
+
+#	01 - Primary Tumor
+#	02 - Recurring Tumor
+#	10 - Blood Derived Normal
+#	11 - Solid Tissue Derived Normal
+
+
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam
-for normal in ${INDIR}/??-????-01?-???-????.bam ; do
-#for normal in ${INDIR}/02-2483-01?-???-????.bam ; do
+for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
+#for tumor in ${INDIR}/02-2483-01?-???-????.bam ; do
 
-	echo ${normal}
+	echo ${tumor}
 
-#	if [ $normal == "/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" ] ; then
-#		echo skipping $normal
+#	if [ $tumor == "/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" ] ; then
+#		echo skipping $tumor
 #		continue
 #	fi
 
 
-#	tumor=${normal/N./T.}
-#	echo ${tumor}
+#	normal=${tumor/N./T.}
+#	echo ${normal}
 
 
 #
@@ -81,74 +90,23 @@ for normal in ${INDIR}/??-????-01?-???-????.bam ; do
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/FG-5963-11A-01D-1703.bam
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/FG-5963-11A-01D-1703.bam
 
-	tumor=${normal/-01?-???-????.bam/-1\?\?-\?\?\?-\?\?\?\?.bam}
-	#echo ${tumor}
-	tumor=$( ls $tumor | head -1 )
-	#echo ${tumor}
+	normal=${tumor/-01?-???-????.bam/-1\?\?-\?\?\?-\?\?\?\?.bam}
+	#echo ${normal}
+	normal=$( ls $normal | head -1 )
+	#echo ${normal}
 
 	#echo
 
-	normal_base=$( basename $normal )
-	normal_base=${normal_base%-01?-???-????.bam}
-	#echo ${normal_base}
+	tumor_base=$( basename $tumor )
+	tumor_base=${tumor_base%-01?-???-????.bam}
+	#echo ${tumor_base}
 
-	base=${OUTDIR}/${normal_base}
+	base=${OUTDIR}/${tumor_base}
 	#echo ${base}
 
 	#jobbase=$( basename ${base} )
-	jobbase=${normal_base}
+	jobbase=${tumor_base}
 	echo ${jobbase}
-
-#	outbase="${base}.manta"
-#	mantaid=""
-#	f="${outbase}/results/variants/candidateSmallIndels.vcf.gz"
-#	indelCandidates="${f}"
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		#	gres=scratch should be about total needed divided by num threads
-#	##			--referenceFasta /francislab/data1/refs/fasta/h38au.fa \
-#	##			--exome \
-#		mantaid=$( qsub -N ${jobbase}.manta \
-#			-l feature=nocommunal \
-#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb -l gres=scratch:${scratch} \
-#			-j oe -o ${outbase}.${date}.out.txt \
-#			~/.local/bin/manta_scratch.bash \
-#			-F "--normalBam ${normal} \
-#				--tumorBam ${tumor} \
-#				--memGb ${vmem} \
-#				--dir ${outbase}" )
-#		echo "${mantaid}"
-#	fi
-#
-#	outbase="${base}.strelka"
-#	depend=""
-#	f=${outbase}/results/variants/somatic.snvs.vcf.gz
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		if [ ! -z ${mantaid} ] ; then
-#			depend="-W depend=afterok:${mantaid}"
-#		else
-#			depend=""
-#		fi
-#		#	gres=scratch should be about total needed divided by num threads
-#	##	I think that the reference NEEDs to be unzipped and have an index
-#	##	Do I need it at all?
-#	##			--referenceFasta /francislab/data1/refs/fasta/h38au.fa \
-#	##			--exome \
-#		strelkaid=$( qsub ${depend} -N ${jobbase}.strelka -l gres=scratch:${scratch} \
-#			-l feature=nocommunal \
-#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-j oe -o ${outbase}.${date}.out.txt \
-#			~/.local/bin/strelka_scratch.bash \
-#			-F "--normalBam ${normal} \
-#				--tumorBam ${tumor} \
-#				--indelCandidates ${indelCandidates} \
-#				--memGb ${vmem} \
-#				--dir ${outbase}" )
-#		echo "${strelkaid}"
-#	fi
 
 
 	outbase="${base}.manta_strelka"
@@ -157,9 +115,7 @@ for normal in ${INDIR}/??-????-01?-???-????.bam ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		#	gres=scratch should be about total needed divided by num threads
-	##	I think that the reference NEEDs to be unzipped and have an index
-	##	Do I need it at all?
-	##			--exome \
+		#	I think that the reference NEEDs to be unzipped and have an index
 		qsub -N ${jobbase}.mantastrelka -l gres=scratch:${scratch} \
 			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
@@ -172,4 +128,5 @@ for normal in ${INDIR}/??-????-01?-???-????.bam ; do
 				--dir ${outbase}"
 	fi
 
-done	#	for normal in
+done	#	for tumor in
+
