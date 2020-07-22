@@ -45,6 +45,8 @@ SCRATCH_JOB=$TMPDIR
 	scratch_filename=${SCRATCH_JOB}/$( basename ${filename} )
 	scratch_outputdir=${SCRATCH_JOB}/$( basename ${outputdir} )/out
 
+	mkdir -p ${scratch_outputdir}
+
 	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} outputdir=${scratch_outputdir}
 
 	#mkdir -p $( dirname ${dir} )	#	just in case
