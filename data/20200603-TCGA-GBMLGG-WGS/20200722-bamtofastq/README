@@ -20,6 +20,11 @@ tryoq=1 \
 
 
 
+Un-recalibrate TCGA's recalibration? NO
+
+Remove DUPs as well? YES
+
+
 
 I don't think that this is the way to go.
 I think that I should explicitly name the output files using

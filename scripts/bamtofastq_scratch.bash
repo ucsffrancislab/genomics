@@ -14,8 +14,18 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 		filename=*)
 			filename=${1#filename=}; shift;;
-		outputdir=*)
-			outputdir=${1#outputdir=}; shift;;
+		F=*)
+			F=${1#F=}; shift;;
+		F2=*)
+			F2=${1#F2=}; shift;;
+		S=*)
+			S=${1#S=}; shift;;
+		O=*)
+			O=${1#O=}; shift;;
+		O2=*)
+			O2=${1#O2=}; shift;;
+#		outputdir=*)
+#			outputdir=${1#outputdir=}; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -33,28 +43,45 @@ done
 
 SCRATCH_JOB=$TMPDIR
 
-#if [ -f $f ] && [ ! -w $f ] ; then
+if [ -f $F ] && [ ! -w $F ] ; then
+	echo "Write-protected $F exists. Skipping."
 #if [ -d $dir ] && [ ! -w $dir ] ; then
 #	echo "Write-protected $dir exists. Skipping."
-#else
-#	echo "Creating $dir"
+else
+	echo "Creating $F"
 
 	cp ${filename} ${SCRATCH_JOB}/
 	#cp ${normal}.bai ${SCRATCH_JOB}/
 
 	scratch_filename=${SCRATCH_JOB}/$( basename ${filename} )
 
-#	scratch_outputdir=${SCRATCH_JOB}/$( basename ${outputdir} )/out
-	scratch_outputdir=${SCRATCH_JOB}/out
-	mkdir -p ${scratch_outputdir}
+##	scratch_outputdir=${SCRATCH_JOB}/$( basename ${outputdir} )/out
+#	scratch_outputdir=${SCRATCH_JOB}/out
+#	mkdir -p ${scratch_outputdir}
 
-	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} outputdir=${scratch_outputdir}
+#	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} outputdir=${scratch_outputdir}
 
-	#mkdir -p $( dirname ${dir} )	#	just in case
-	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
-	mkdir -p ${outputdir}
-	mv --update ${scratch_outputdir}/* ${outputdir}/
-	#chmod -R a-w ${outputdir}
-#fi
+#	#mkdir -p $( dirname ${dir} )	#	just in case
+#	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+#	mkdir -p ${outputdir}
+#	mv --update ${scratch_outputdir}/* ${outputdir}/
+#	#chmod -R a-w ${outputdir}
+
+
+	scratch_out=${SCRATCH_JOB}/out
+	mkdir -p ${scratch_out}
+
+	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
+		F=${scratch_out}/$( basename $F ) \
+		F2=${scratch_out}/$( basename $F2 ) \
+		S=${scratch_out}/$( basename $S ) \
+		O=${scratch_out}/$( basename $O ) \
+		O2=${scratch_out}/$( basename $O2 )
+
+	outdir=$( dirname $F )
+	mkdir -p ${outdir}
+	chmod -R a-w ${scratch_outdir}/*
+	mv --update ${scratch_outputdir}/* ${outdir}/
+fi
 
 

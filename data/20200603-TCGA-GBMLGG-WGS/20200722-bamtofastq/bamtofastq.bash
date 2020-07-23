@@ -54,7 +54,8 @@ for bam in ${INDIR}/02-2483-0*.bam ; do
 	#echo ${base}
 
 	outbase="${base}"
-	f=${outbase}/results/variants/somatic.snvs.vcf.gz
+	#f=${outbase}/results/variants/somatic.snvs.vcf.gz
+	f=${outbase}_R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -65,20 +66,30 @@ for bam in ${INDIR}/02-2483-0*.bam ; do
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bamtofastq_scratch.bash \
 			-F "collate=1 \
-				exclude=QCFAIL,SECONDARY,SUPPLEMENTARY \
+				exclude=DUP,QCFAIL,SECONDARY,SUPPLEMENTARY \
 				filename=${bam} \
-				gz=1 \
 				inputformat=bam \
+				gz=1 \
 				level=5 \
-				outputdir=${OUTDIR} \
-				outputperreadgroup=1 \
-				outputperreadgroupsuffixF=_1.fq.gz \
-				outputperreadgroupsuffixF2=_2.fq.gz \
-				outputperreadgroupsuffixO=_o1.fq.gz \
-				outputperreadgroupsuffixO2=_o2.fq.gz \
-				outputperreadgroupsuffixS=_s.fq.gz \
-				tryoq=1"
+				F=${outbase}_R1.fastq.gz \
+				F2=${outbase}_R2.fastq.gz \
+				S=${outbase}_S1.fastq.gz \
+				O=${outbase}_O1.fastq.gz \
+				O2=${outbase}_O2.fastq.gz"
+#
+#	Let’s use the GSC base qualities and remove the dups. We want this to be directly comparable to previous tcga work
+#
+#				exclude=QCFAIL,SECONDARY,SUPPLEMENTARY \
+#				outputdir=${OUTDIR} \
+#				outputperreadgroup=1 \
+#				outputperreadgroupsuffixF=_1.fq.gz \
+#				outputperreadgroupsuffixF2=_2.fq.gz \
+#				outputperreadgroupsuffixO=_o1.fq.gz \
+#				outputperreadgroupsuffixO2=_o2.fq.gz \
+#				outputperreadgroupsuffixS=_s.fq.gz \
+#				tryoq=1"
 	fi
 
 done	#	for bam in
+
 
