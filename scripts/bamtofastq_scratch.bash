@@ -80,8 +80,7 @@ else
 
 	outdir=$( dirname $F )
 	mkdir -p ${outdir}
-	chmod -R a-w ${scratch_outdir}/*
-	mv --update ${scratch_outputdir}/* ${outdir}/
+	chmod -R a-w ${scratch_out}/*
+	mv --update ${scratch_out}/* ${outdir}/
 fi
-
 
