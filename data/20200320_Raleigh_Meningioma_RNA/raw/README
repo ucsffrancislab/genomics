@@ -35,7 +35,26 @@ for f in /francislab/data1/raw/20200320_Raleigh_Meningioma_RNA/fastq/???.fastq.g
 s=$( basename $f .fastq.gz )
 c=$( zcat $f | paste - - - - | wc -l )
 echo $s,$c
-done > read_counts.csv
+done > fastq_read_counts.csv
+
+for f in /francislab/data1/raw/20200320_Raleigh_Meningioma_RNA/bam/???.bam ; do
+s=$( basename $f .bam )
+c=$( samtools view -c $f )
+echo $s,$c
+done > bam_read_counts.csv
 
 
+
+for f in original_bam/*bam; do
+b=$( basename $f .bam )
+b=${b%%_001}
+b=${b/_L00?/}
+b=${b#MNG_Plt?_M}
+b=${b#CR_M}
+b=${b/_S*_R1/_R1}
+b=${b/_R1}
+b=$( printf '%03d' ${b} )
+echo $b
+ln -s ../$f bam/$b.bam
+done
 
