@@ -66,8 +66,19 @@ d = pd.read_csv(read_counts,
 	skipinitialspace=True,
 	header=None,
 	names=['sample','count'],
-	sep=',',
-	index_col=['sample'] )
+	dtype={'sample': str, 'count': int},
+	sep=',')
+#	index_col='sample' )
+
+#d.set_index('sample')
+#d.index = d.index.map(unicode) 
+
+#	To force a column of just numbers to stay strings, particularly with leading zeroes.
+d.set_index('sample', inplace=True)
+#d.index
+
+
+
 
 print(d.head())
 
