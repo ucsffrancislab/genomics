@@ -42,3 +42,12 @@ O2=<stdout>: output file for unmatched (orphan) second mates if collation is act
 
 
 
+
+Check read order
+
+for f in 0*R?.fastq.gz ; do
+echo $f
+zcat $f | sed -n '1~4s/\/[[:digit:]]$//p' > ${f}.read_names &
+done
+
+

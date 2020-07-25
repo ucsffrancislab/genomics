@@ -24,7 +24,11 @@ DIAMOND=${REFS}/diamond
 
 threads=4
 vmem=32
-scratch=125
+scratch=100
+
+#threads=2
+#vmem=16
+#scratch=150
 
 #	don't really need that much thread and mem
 
@@ -43,7 +47,8 @@ mkdir -p ${OUTDIR}
 
 
 #for bam in ${INDIR}/02-2485*.bam ; do
-for bam in ${INDIR}/02-2483-*.bam ; do
+#for bam in ${INDIR}/02-2483-*.bam ; do
+for bam in ${INDIR}/0*.bam ; do
 
 	echo ${bam}
 
