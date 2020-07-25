@@ -1,0 +1,35 @@
+
+
+http://software.broadinstitute.org/mpg/snp2hla/
+
+http://software.broadinstitute.org/mpg/snp2hla/snp2hla_manual.html
+
+
+
+wget http://zzz.bwh.harvard.edu/plink/dist/plink-1.07-x86_64.zip
+wget http://faculty.washington.edu/browning/beagle_utilities/beagle2linkage.jar
+wget http://faculty.washington.edu/browning/beagle/beagle.jar
+wget http://faculty.washington.edu/browning/beagle/recent.versions/beagle_3.0.4_05May09.zip
+wget http://software.broadinstitute.org/mpg/snp2hla/data/SNP2HLA_package_v1.0.3.tar.gz
+
+
+
+
+
+
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.bgl.phased
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.markers
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.bed
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.bim
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.fam
+
+cd /home/gwendt/.local/SNP2HLA_package_v1.0.3/SNP2HLA/
+ln -s ../beagle.3.0.4/beagle.jar 
+ln -s ../beagle.3.0.4/utility/linkage2beagle.jar 
+ln -s ../beagle2linkage.jar 
+
+
+
+./snp2hla.bash
+
+
