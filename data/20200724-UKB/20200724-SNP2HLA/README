@@ -28,8 +28,29 @@ ln -s ../beagle.3.0.4/beagle.jar
 ln -s ../beagle.3.0.4/utility/linkage2beagle.jar 
 ln -s ../beagle2linkage.jar 
 
+Use the right version (1.07) of plink too
+
+
+
+plink --noweb --bfile ukb.antigen.chr6 --exclude snplist.txt --make-bed --out ukb.antigen.chr6.filtered
 
 
 ./snp2hla.bash
 
+
+
+
+
+
+[4] Performing HLA imputation (see ukb.antigen.chr6.imputed.10000.bgl.log for progress).
+Exception in thread "main" java.lang.IllegalArgumentException: AlleleCoder.code() ERROR: Allele in data file but not in marker file: G for marker rs3134783
+	at phaser.X.a(Unknown Source)
+	at phaser.X.a(Unknown Source)
+	at phaser.X.a(Unknown Source)
+	at phaser.ag.<init>(Unknown Source)
+	at phaser.ag.<init>(Unknown Source)
+	at phaser.K.a(Unknown Source)
+	at phaser.q.<init>(Unknown Source)
+	at phaser.PhaseMain.<init>(Unknown Source)
+	at phaser.PhaseMain.main(Unknown Source)
 
