@@ -1,11 +1,39 @@
 
-/home/gwendt/github/ucsffrancislab/genomics/data/20200529_Raleigh_WES/20200607-manta-strelka/README
+See /home/gwendt/github/ucsffrancislab/genomics/data/20200529_Raleigh_WES/20200607-manta-strelka/README
 
 
 ./manta_strelka.bash
 
 
-Filter/select and merge out/*.strelka/results/variants/somatic.snvs.vcf.gz
+Filter/select and merge out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz
+
+
+for f in out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz ; do
+sample=${f%.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz}
+sample=$( basename $sample )
+echo $f $sample
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-8' ${f} | awk -v sample=$sample -f ~/.local/bin/tumor_normal_vcf_prep_for_mutation_signatures.awk
+done
+
+
+
+~/github/jakewendt/Mutation-Signatures/count_trinuc_muts_v8.pl pvcf /francislab/data1/refs/fasta/Homo_sapiens_assembly19.fasta count_trinuc_input.csv > mut_all_sort.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ---

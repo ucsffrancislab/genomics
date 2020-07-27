@@ -110,7 +110,8 @@ for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
 
 
 	outbase="${base}.manta_strelka"
-	f=${outbase}/results/variants/somatic.snvs.vcf.gz
+	#out/TQ-A8XE.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz
+	f=${outbase}/strelka/results/variants/somatic.snvs.vcf.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
