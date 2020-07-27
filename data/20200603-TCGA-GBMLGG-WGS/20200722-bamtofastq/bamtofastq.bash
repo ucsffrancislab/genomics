@@ -22,9 +22,10 @@ DIAMOND=${REFS}/diamond
 #	gonna use about 400-500GB of disk space
 #	could check filesize before running to be more precise
 
+
 threads=4
 vmem=32
-scratch=100
+scratch=125
 
 #threads=2
 #vmem=16
@@ -48,7 +49,7 @@ mkdir -p ${OUTDIR}
 
 #for bam in ${INDIR}/02-2485*.bam ; do
 #for bam in ${INDIR}/02-2483-*.bam ; do
-for bam in ${INDIR}/0*.bam ; do
+for bam in ${INDIR}/1*.bam ; do
 
 	echo ${bam}
 
@@ -65,8 +66,8 @@ for bam in ${INDIR}/0*.bam ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		#	gres=scratch should be about total needed divided by num threads
-		#	-l feature=nocommunal \
 		qsub -N ${jobbase}.tofastq -l gres=scratch:${scratch} \
+			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bamtofastq_scratch.bash \
