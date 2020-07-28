@@ -38,19 +38,8 @@ plink --noweb --bfile ukb.antigen.chr6 --exclude snplist.txt --make-bed --out uk
 ./snp2hla.bash
 
 
+[4] Performing HLA imputation
 
+Can take about 8 hours.
 
-
-
-[4] Performing HLA imputation (see ukb.antigen.chr6.imputed.10000.bgl.log for progress).
-Exception in thread "main" java.lang.IllegalArgumentException: AlleleCoder.code() ERROR: Allele in data file but not in marker file: G for marker rs3134783
-	at phaser.X.a(Unknown Source)
-	at phaser.X.a(Unknown Source)
-	at phaser.X.a(Unknown Source)
-	at phaser.ag.<init>(Unknown Source)
-	at phaser.ag.<init>(Unknown Source)
-	at phaser.K.a(Unknown Source)
-	at phaser.q.<init>(Unknown Source)
-	at phaser.PhaseMain.<init>(Unknown Source)
-	at phaser.PhaseMain.main(Unknown Source)
 
