@@ -49,7 +49,7 @@ mkdir -p ${OUTDIR}
 
 #for bam in ${INDIR}/02-2485*.bam ; do
 #for bam in ${INDIR}/02-2483-*.bam ; do
-for bam in ${INDIR}/1*.bam ; do
+for bam in ${INDIR}/[2-9]*.bam ; do
 
 	echo ${bam}
 
