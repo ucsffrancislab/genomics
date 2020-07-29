@@ -24,6 +24,8 @@ while [ $# -gt 0 ] ; do
 			O=${1#O=}; shift;;
 		O2=*)
 			O2=${1#O2=}; shift;;
+		T=*)
+			T=${1#T=}; shift;;
 #		outputdir=*)
 #			outputdir=${1#outputdir=}; shift;;
 		*)
@@ -72,6 +74,7 @@ else
 	mkdir -p ${scratch_out}
 
 	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
+		T=${SCRATCH_JOB}/$( basename $T ) \
 		F=${scratch_out}/$( basename $F ) \
 		F2=${scratch_out}/$( basename $F2 ) \
 		S=${scratch_out}/$( basename $S ) \
