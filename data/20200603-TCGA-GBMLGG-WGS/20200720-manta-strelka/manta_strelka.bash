@@ -46,11 +46,19 @@ mkdir -p ${OUTDIR}
 #	11 - Solid Tissue Derived Normal
 
 
-#	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam
-for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
-#for tumor in ${INDIR}/02-2483-01?-???-????.bam ; do
+#	#	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam
+#	for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
+#	#for tumor in ${INDIR}/02-2483-01?-???-????.bam ; do
 
-	echo ${tumor}
+
+#	New way
+while IFS=, read -r tumor normal ; do
+
+#	echo ${tumor}
+	tumor=${INDIR}/${tumor}.bam
+
+#	echo ${normal}
+	normal=${INDIR}/${normal}.bam
 
 #	if [ $tumor == "/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" ] ; then
 #		echo skipping $tumor
@@ -88,18 +96,18 @@ for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
 #
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/FG-5963-01A-11D-1703.bam
 #	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/FG-5963-11A-01D-1703.bam
-#	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/FG-5963-11A-01D-1703.bam
 
-	normal=${tumor/-01?-???-????.bam/-1\?\?-\?\?\?-\?\?\?\?.bam}
-	#echo ${normal}
-	normal=$( ls $normal | head -1 )
-	#echo ${normal}
-
-	#echo
-
-	tumor_base=$( basename $tumor )
-	tumor_base=${tumor_base%-01?-???-????.bam}
-	#echo ${tumor_base}
+#	normal=${tumor/-01?-???-????.bam/-1\?\?-\?\?\?-\?\?\?\?.bam}
+#	#echo ${normal}
+#	#ls -1 $normal | wc -l
+#	normal=$( ls -1 $normal | head -1 )
+#	#echo ${normal}
+#
+#	#echo
+#
+	tumor_base=$( basename $tumor .bam )
+#	tumor_base=${tumor_base%-01?-???-????.bam}			#	shouldn't've done this. 2 duplicates.
+#	#echo ${tumor_base}
 
 	base=${OUTDIR}/${tumor_base}
 	#echo ${base}
@@ -129,5 +137,5 @@ for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
 				--dir ${outbase}"
 	fi
 
-done	#	for tumor in
-
+###done	#	for tumor in
+done < /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/tumor_normal_pairs.csv
