@@ -8,6 +8,38 @@ See /home/gwendt/github/ucsffrancislab/genomics/data/20200529_Raleigh_WES/202006
 Filter/select and merge out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz
 
 
+mkdir position_analysis
+for f in out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz ; do
+sample=${f%.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz}
+sample=$( basename $sample )
+echo $sample
+bcftools query -f "%CHROM:%POS\n" -i 'TYPE="SNP"' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.txt
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.txt
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>30 && ReadPosRankSum>-10' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.30.-10.txt
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>60 && ReadPosRankSum>-8' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.60.-8.txt
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-8' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.40.-8.txt
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && ReadPosRankSum>-4' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.40.-4.txt
+done
+
+
+for x in SNP SNP.PASS SNP.PASS.30.-10 SNP.PASS.40.-4 SNP.PASS.40.-8 SNP.PASS.60.-8 ; do
+echo $x
+./merge_position_lists.py --output mutation_positions.${x}.csv.gz position_analysis/*.manta_strelka_positions.${x}.txt
+done
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 for f in out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz ; do
 sample=${f%.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz}
 sample=$( basename $sample )
