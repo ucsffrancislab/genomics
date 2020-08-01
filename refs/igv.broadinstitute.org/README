@@ -1,0 +1,12 @@
+
+
+
+
+aws s3 sync s3://igv.broadinstitute.org/annotations/hg38/rmsk/ /francislab/data1/refs/igv.broadinstitute.org/annotations/hg38/rmsk/
+
+aws s3 sync s3://igv.broadinstitute.org/annotations/hg19/variations/ /francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/ 
+
+
+
+
+
