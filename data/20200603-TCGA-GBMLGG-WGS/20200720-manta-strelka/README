@@ -13,7 +13,7 @@ for f in out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz ; do
 sample=${f%.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz}
 sample=$( basename $sample )
 echo $sample
-bcftools query -f "%CHROM:%POS\n" -i 'TYPE="SNP"' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.txt
+#bcftools query -f "%CHROM:%POS\n" -i 'TYPE="SNP"' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.txt
 bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.txt
 bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>30 && ReadPosRankSum>-10' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.30.-10.txt
 bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>60 && ReadPosRankSum>-8' ${f} > position_analysis/${sample}.manta_strelka_positions.SNP.PASS.60.-8.txt
@@ -22,9 +22,21 @@ bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP" && MQ>40 && Re
 done
 
 
-for x in SNP SNP.PASS SNP.PASS.30.-10 SNP.PASS.40.-4 SNP.PASS.40.-8 SNP.PASS.60.-8 ; do
+for x in SNP.PASS SNP.PASS.30.-10 SNP.PASS.40.-4 SNP.PASS.40.-8 SNP.PASS.60.-8 ; do
 echo $x
 ./merge_position_lists.py --output mutation_positions.${x}.csv.gz position_analysis/*.manta_strelka_positions.${x}.txt
+done
+
+
+zcat mutation_positions.40.-8.csv.gz | awk 'BEGIN{FS=OFS=","}(NR==1){print "chromosome,position,sum"}(NR>1){s=0;for(i=3;i<=NF;i++){s+=$i}if(s>5)print $1,$2,s}'
+
+
+
+for f in mutation_positions.SNP.PASS* ; do
+echo $f
+o=$( basename $f .csv.gz )
+o=${o/mutation_positions/mutation_positions.interested}
+zcat $f | grep -f interested.csv > ${o}.csv
 done
 
 
@@ -38,6 +50,12 @@ done
 
 
 
+
+
+
+
+
+REDO with updated version of awk script
 
 
 for f in out/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz ; do
