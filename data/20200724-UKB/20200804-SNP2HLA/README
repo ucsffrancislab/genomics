@@ -1,0 +1,83 @@
+
+
+http://software.broadinstitute.org/mpg/snp2hla/
+
+http://software.broadinstitute.org/mpg/snp2hla/snp2hla_manual.html
+
+
+
+wget http://zzz.bwh.harvard.edu/plink/dist/plink-1.07-x86_64.zip
+wget http://faculty.washington.edu/browning/beagle_utilities/beagle2linkage.jar
+wget http://faculty.washington.edu/browning/beagle/beagle.jar
+wget http://faculty.washington.edu/browning/beagle/recent.versions/beagle_3.0.4_05May09.zip
+wget http://software.broadinstitute.org/mpg/snp2hla/data/SNP2HLA_package_v1.0.3.tar.gz
+
+
+
+
+
+
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.bgl.phased
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.markers
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.bed
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.bim
+ln -s ~/.local/SNP2HLA_package_v1.0.3/SNP2HLA/HM_CEU_REF.fam
+
+ln -s /francislab/data1/refs/snp2hla/T1DGC/T1DGC_REF.bed
+ln -s /francislab/data1/refs/snp2hla/T1DGC/T1DGC_REF.bgl.phased
+ln -s /francislab/data1/refs/snp2hla/T1DGC/T1DGC_REF.bim
+ln -s /francislab/data1/refs/snp2hla/T1DGC/T1DGC_REF.fam
+ln -s /francislab/data1/refs/snp2hla/T1DGC/T1DGC_REF.FRQ.frq
+ln -s /francislab/data1/refs/snp2hla/T1DGC/T1DGC_REF.markers
+
+
+
+ln -s ../20200724-SNP2HLA/ukb.antigen.chr6.bed
+ln -s ../20200724-SNP2HLA/ukb.antigen.chr6.bim
+ln -s ../20200724-SNP2HLA/ukb.antigen.chr6.fam
+
+
+
+cd /home/gwendt/.local/SNP2HLA_package_v1.0.3/SNP2HLA/
+ln -s ../beagle.3.0.4/beagle.jar 
+ln -s ../beagle.3.0.4/utility/linkage2beagle.jar 
+ln -s ../beagle2linkage.jar 
+
+Use the right version (1.07) of plink too
+
+
+Trying unfiltered
+
+
+NOTE THAT PLINK SWAPS THE LAST 2 COLUMNS!  REF AND ALT I THINK! WHY?
+
+head -2 /francislab/data1/working/20200724-UKB/20200804-SNP2HLA/ukb.antigen.chr6.bim 
+6	rs538515352	0	169759	A	G
+6	rs35322738	0	171649	C	A
+
+head -2 /francislab/data1/working/20200724-UKB/20200804-SNP2HLA/ukb.antigen.chr6.filtered.bim 
+6	rs538515352	0	169759	G	A
+6	rs35322738	0	171649	A	C
+
+
+
+
+Exception in thread "main" java.lang.IllegalArgumentException: AlleleCoder.code() ERROR: Allele in data file but not in marker file: T for marker rs9261281
+Exception in thread "main" java.lang.IllegalArgumentException: AlleleCoder.code() ERROR: Allele in data file but not in marker file: C for marker rs3095229
+
+
+
+
+Different snp problems.
+
+plink --noweb --bfile ukb.antigen.chr6 --exclude snplist.txt --make-bed --out ukb.antigen.chr6.filtered
+
+
+./snp2hla.bash
+
+
+[4] Performing HLA imputation
+
+Can take about 8 hours.
+
+
