@@ -26,6 +26,8 @@ while [ $# -gt 0 ] ; do
 			O2=${1#O2=}; shift;;
 		T=*)
 			T=${1#T=}; shift;;
+		inputformat=*)
+			shift;;	#	replacing this with sam
 #		outputdir=*)
 #			outputdir=${1#outputdir=}; shift;;
 		*)
@@ -73,7 +75,18 @@ else
 	scratch_out=${SCRATCH_JOB}/out
 	mkdir -p ${scratch_out}
 
-	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
+	#bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
+
+#samtools view -h /francislab/data1/raw/20200720-TCGA-GBMLGG-RNA_bam/bam/08-0386-01A-01R-1849-01+2.bam | awk 'BEGIN{FS=OFS="\t"}(/^@/){print}(!/^@/){sub(/\/[12]$/, "", $1); print}' | head -100
+
+	#	about half of the TCGA RNA-seq bam files include the /1 and /2 in the read name.
+	#	biobambam's bamtofastq does not remove this so it never finds paired reads.
+	#	removing the suffix and feeding bamtofastq through stdin. Testing.
+
+	samtools view -h ${scratch_filename} \
+	| awk 'BEGIN{FS=OFS="\t"}(/^@/){print}(!/^@/){sub(/\/[12]$/, "", $1); print}' \
+	| bamtofastq ${SELECT_ARGS} \
+		inputformat=sam \
 		T=${SCRATCH_JOB}/$( basename $T ) \
 		F=${scratch_out}/$( basename $F ) \
 		F2=${scratch_out}/$( basename $F2 ) \
