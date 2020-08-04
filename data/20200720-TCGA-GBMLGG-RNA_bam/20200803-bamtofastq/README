@@ -5,3 +5,17 @@ Remove DUPs as well? YES
 
 
 
+
+
+for f in out/*_R1.fastq.gz ; do
+echo $f
+size=$( stat --format %s ${f} )
+echo $size
+if [ $size -eq 40 ] ; then
+f=${f%_R1.fastq.gz}
+echo "MOVING ${f}*"
+mv ${f}* out_bad_lane/
+fi
+done
+
+
