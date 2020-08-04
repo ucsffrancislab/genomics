@@ -7,3 +7,29 @@ nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-07-28T02_56_55.6
 
 
 
+
+mkdir bam
+cd bam
+while IFS=, read -r file_id barcode ; do
+key=${barcode//-/}
+let "${key}=0"
+done < gdc_manifest.TCGA.GBM-LGG.RNA.bam.2020-06-04.barcodes.txt
+while IFS=, read -r file_id barcode ; do
+echo $file_id
+echo $barcode
+key=${barcode//-/}
+barcode=${barcode#TCGA-}
+let "${key}=${key}+1"
+suffix=$( eval echo \$$key )
+echo ${barcode}+${suffix}
+ln -s ../${file_id}/*bam ${barcode}+${suffix}.bam
+ln -s ../${file_id}/*bam.bai ${barcode}+${suffix}.bam.bai
+done < gdc_manifest.TCGA.GBM-LGG.RNA.bam.2020-06-04.barcodes.txt
+cd ..
+
+Need to add a suffix as there are many duplicates
+
+
+
+
+
