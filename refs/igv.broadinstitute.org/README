@@ -9,4 +9,46 @@ aws s3 sync s3://igv.broadinstitute.org/annotations/hg19/variations/ /francislab
 
 
 
+zcat ../igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.bed.gz | head
+chr1	21948	22075	MLT1K	254	+
+chr1	30693	30848	MLT1A	741	+
+chr1	30952	31131	MLT1A	741	+
+chr1	34564	34921	MLT1J2	850	-
+
+head ../igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.gtf 
+chr1	source	feature	21949	22075	.	+	.	feature_name "MLT1K"
+chr1	source	feature	30694	30848	.	+	.	feature_name "MLT1A"
+chr1	source	feature	30953	31131	.	+	.	feature_name "MLT1A"
+chr1	source	feature	34565	34921	.	-	.	feature_name "MLT1J2"
+
+head ../fasta/hg38.gtf 
+chr1	unknown	exon	11874	12227	.	+	.	gene_id "DDX11L1"; gene_name "DDX11L1"; transcript_id "NR_046018"; tss_id "TSS18303";
+chr1	unknown	exon	12613	12721	.	+	.	gene_id "DDX11L1"; gene_name "DDX11L1"; transcript_id "NR_046018"; tss_id "TSS18303";
+chr1	unknown	exon	13221	14409	.	+	.	gene_id "DDX11L1"; gene_name "DDX11L1"; transcript_id "NR_046018"; tss_id "TSS18303";
+
+
+zcat annotations/hg38/rmsk/LTR.bed.gz | head
+track name="LTR" gffTags="on"
+chr1	21948	22075	Name=MLT1K;Class=LTR;Family=ERVL-MaLR	+
+chr1	30693	30848	Name=MLT1A;Class=LTR;Family=ERVL-MaLR	+
+chr1	30952	31131	Name=MLT1A;Class=LTR;Family=ERVL-MaLR	+
+chr1	34564	34921	Name=MLT1J2;Class=LTR;Family=ERVL-MaLR	-
+
+
+zcat annotations/hg19/variations/LTR.rmask.gz | head
+585	254	279	47	39	chr1	21948	22075	-249228546	+	MLT1K	LTR	ERVL-MaLR	15	142	-453	1
+585	741	187	45	0	chr1	30693	30848	-249219773	+	MLT1A	LTR	ERVL-MaLR	162	-212	2
+585	741	249	0	11	chr1	30952	31131	-249219490	+	MLT1A	LTR	ERVL-MaLR	173	349	-25	2
+585	850	249	151	8	chr1	34564	34921	-249215700	-	MLT1J2	LTR	ERVL-MaLR	448	41	3
+
+
+
+
+for rmask in annotations/hg19/variations/*.rmask.gz ; do
+echo $rmask
+gtf=${rmask/rmask.gz/gtf}
+zcat ${rmask} | awk 'BEGIN{FS=OFS="\t"}{i[$11]++;print $6,"source","feature",1+$7,$8,".",$10,".","feature_name \""$11"."i[$11]"\""}' > ${gtf}
+done
+
+
 
