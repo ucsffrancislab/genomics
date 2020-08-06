@@ -49,7 +49,7 @@ mkdir -p ${OUTDIR}
 
 #for bam in ${INDIR}/02-2485*.bam ; do
 #for bam in ${INDIR}/02-2483-*.bam ; do
-for bam in ${INDIR}/0*.bam ; do
+for bam in ${INDIR}/*.bam ; do
 
 	echo ${bam}
 
@@ -68,8 +68,8 @@ for bam in ${INDIR}/0*.bam ; do
 		myscratch=$( stat --dereference --format %s ${bam} | awk -v p=${threads} '{print int(1.7*$1/p/1000000000)}' )
 		echo "Requesting ${myscratch} scratch"
 		#	gres=scratch should be about total needed divided by num threads
+		#	-l feature=nocommunal \
 		qsub -N ${jobbase}.tofastq -l gres=scratch:${myscratch} \
-			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bamtofastq_scratch.bash \
