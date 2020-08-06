@@ -139,3 +139,29 @@ done
 
 
 
+
+
+for b in 02-2483 02-2485 19-2620 19-2629 E1-5318 E1-5319 HW-7486 HW-7489 ; do
+echo $b
+for bam in bam/${b}*bam ; do
+o=$( basename $bam .bam )
+samtools view -o chr2/${o}.chr2.bam $bam 2:209,111,400-209,114,516 
+done
+done
+
+for bam in bam/*bam ; do
+o=$( basename $bam .bam )
+echo $o
+samtools view -o chr2/${o}.chr2.bam $bam 2:209,111,400-209,114,516 
+samtools index chr2/${o}.chr2.bam
+done
+
+
+for bam in bam/*bam ; do
+o=$( basename $bam .bam )
+echo $o
+samtools view -o chr5/${o}.chr5.bam $bam 5:1,294,000-1,297,000
+samtools index chr5/${o}.chr5.bam
+done
+
+
