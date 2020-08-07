@@ -9,6 +9,7 @@ set -o pipefail
 set -x
 
 SELECT_ARGS=""
+sorted=false
 r2=""
 scratch_r2=""
 while [ $# -gt 0 ] ; do
@@ -25,7 +26,11 @@ while [ $# -gt 0 ] ; do
 			shift; genomeDir=$1; shift;;
 		--outSAMtype)
 			shift; outSAMtype=$1;
-			SELECT_ARGS="${SELECT_ARGS} --outSAMtype $1"; shift;;
+			if [ $2 == "SortedByCoordinate" ] ; then
+				sorted=true
+			fi
+			SELECT_ARGS="${SELECT_ARGS} --outSAMtype $1";
+			shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -44,7 +49,11 @@ done
 SCRATCH_JOB=$TMPDIR
 
 
-f="${outFileNamePrefix}Aligned.out.${outSAMtype,,}"
+if $sorted; then
+	f="${outFileNamePrefix}Aligned.sortedByCoord.out.${outSAMtype,,}"
+else
+	f="${outFileNamePrefix}Aligned.out.${outSAMtype,,}"
+fi
 
 if [ -f $f ] && [ ! -w $f ] ; then
 #if [ -d $f ] && [ ! -w $f ] ; then

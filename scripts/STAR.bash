@@ -8,19 +8,30 @@ set -x
 
 ARGS=$*
 
+sorted=false
+
 #	Search for the output file
 while [ $# -gt 0 ] ; do
 	case $1 in
 		--outFileNamePrefix)
 			shift; outprefix=$1; shift;;
 		--outSAMtype)
-			shift; outtype=$1; shift;;
+			shift; outtype=$1; 
+			if [ $2 == "SortedByCoordinate" ] ; then
+				sorted=true
+			fi
+			shift;;
 		*)
 			shift;;
 	esac
 done
 
-f="${outprefix}Aligned.out.${outtype,,}"
+if $sorted; then
+	f="${outprefix}Aligned.sortedByCoord.out.${outtype,,}"
+else
+	f="${outprefix}Aligned.out.${outtype,,}"
+fi
+
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
