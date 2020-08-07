@@ -1,0 +1,31 @@
+
+
+STAR
+
+
+cp /home/gwendt/github/ucsffrancislab/genomics/data/20200320_Raleigh_Meningioma_RNA/20200722-STAR_hg38/* ~/github/ucsffrancislab/genomics/data/20200720-TCGA-GBMLGG-RNA_bam/20200805-STAR_hg38/
+
+
+See 20200609_costello_RNAseq_spatial/20200615-STAR_hg38/
+
+
+STAR.bash 
+
+featureCounts.bash
+
+
+
+for f in featureCounts.*.csv ; do
+o=$(basename $f .csv)
+awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' ${f} > ${o}.morethan0.csv
+done
+
+
+See 20200430_Raleigh_RNASeq/20200722-STAR_hg38
+
+normalize_feature_counts.py
+
+
+
+
+
