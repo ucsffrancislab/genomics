@@ -33,7 +33,7 @@ INDIR="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofast
 DIR="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200805-STAR_hg38/out"
 mkdir -p ${DIR}
 
-for r1 in ${INDIR}/1*_R1.fastq.gz ; do
+for r1 in ${INDIR}/*_R1.fastq.gz ; do
 
 	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
@@ -50,9 +50,9 @@ for r1 in ${INDIR}/1*_R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		#starid=$( 
-		#	-l feature=nocommunal \
-		qsub -N ${base}.STAR -l nodes=1:ppn=${threads} -l vmem=32gb \
-			-l gres=scratch:10 \
+		qsub -N ${base}.STAR -l nodes=1:ppn=${threads} -l vmem=64gb \
+			-l feature=nocommunal \
+			-l gres=scratch:5 \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/STAR_scratch.bash \
 			-F "--runMode alignReads \
