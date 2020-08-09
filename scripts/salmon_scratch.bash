@@ -65,7 +65,17 @@ else
 		date=$( date "+%Y%m%d%H%M%S" --date="$( stat --printf '%z' ${f} )" )
 		mv ${f} ${f}.${date}
 	fi
+	chmod +w ${scratch_out}	#	so script can move and delete the contents (not crucial but stops error messages)
+	
+	#	+ mv --update /scratch/1834101.cclc01.som.ucsf.edu/outdir /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/out/02-0047-01A-01R-1849-01+1.salmon.REdiscoverTE
+	#	mv: cannot remove `/scratch/1834101.cclc01.som.ucsf.edu/outdir/aux_info': Permission denied
+	#	mv: cannot remove `/scratch/1834101.cclc01.som.ucsf.edu/outdir/lib_format_counts.json': Permission denied
+	#	mv: cannot remove `/scratch/1834101.cclc01.som.ucsf.edu/outdir/cmd_info.json': Permission denied
+	#	mv: cannot remove `/scratch/1834101.cclc01.som.ucsf.edu/outdir/libParams': Permission denied
+	#	mv: cannot remove `/scratch/1834101.cclc01.som.ucsf.edu/outdir/quant.sf': Permission denied
+	#	mv: cannot remove `/scratch/1834101.cclc01.som.ucsf.edu/outdir/logs': Permission denied
+
 	mv --update ${scratch_out} ${f}
-	# unnecessary as salmon.bash will chmod files if successfull
-	#chmod -R a-w ${f}
+	# unnecessary as salmon.bash will chmod files if successful (which I just undid)
+	chmod -R a-w ${f}
 fi
