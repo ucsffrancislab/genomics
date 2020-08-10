@@ -20,7 +20,7 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 	if [ -d $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub -l vmem=64gb -N ${base}.salmon \
+		qsub -l vmem=62gb -N R${base}.salmon \
 			-l feature=nocommunal \
 			-l nodes=1:ppn=8 \
 			-l gres=scratch:10 \
