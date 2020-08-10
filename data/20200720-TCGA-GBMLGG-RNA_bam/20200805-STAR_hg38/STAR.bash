@@ -50,7 +50,7 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		#starid=$( 
-		qsub -N ${base}.STAR -l nodes=1:ppn=${threads} -l vmem=64gb \
+		qsub -N S${base}.STAR -l nodes=1:ppn=${threads} -l vmem=120gb \
 			-l feature=nocommunal \
 			-l gres=scratch:5 \
 			-j oe -o ${outbase}.${date}.out.txt \
