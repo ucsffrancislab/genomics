@@ -17,7 +17,7 @@ featureCounts.bash
 
 for f in featureCounts.*.csv ; do
 o=$(basename $f .csv)
-awk '(NR==2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' ${f} > ${o}.morethan0.csv
+awk '(NR<=2){print}(NR>2){s=0;for(i=7;i<=NF;i++){s+=$i};if(s>0)print}' ${f} > ${o}.morethan0.csv
 done
 
 
