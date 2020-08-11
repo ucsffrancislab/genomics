@@ -5,9 +5,13 @@ INDIR="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofast
 DIR="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/out"
 mkdir -p ${DIR}
 
+#	remember 64 cores and ~504GB mem
+threads=8
+vmem=62
+
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/02*_R1.fastq.gz ; do
+for r1 in ${INDIR}/[EFG]*_R1.fastq.gz ; do
 
 	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
@@ -20,16 +24,16 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 	if [ -d $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		qsub -l vmem=62gb -N R${base}.salmon \
+		qsub -l vmem=${vmem}gb -N ${base}.salmon \
 			-l feature=nocommunal \
-			-l nodes=1:ppn=8 \
+			-l nodes=1:ppn=${threads} \
 			-l gres=scratch:10 \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/salmon_scratch.bash \
 			-F "quant --seqBias --gcBias --index ${SALMON}/REdiscoverTE \
 				--libType A --validateMappings \
 				-1 ${r1} -2 ${r2} \
-				-o ${outbase} --threads 8"
+				-o ${outbase} --threads ${threads}"
 			#	--unmatedReads ${f} 
 	fi
 
