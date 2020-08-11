@@ -129,3 +129,19 @@ echo ${base},${a:-0},${b:-0},${c:-0},${d:-0}
 done >> all_strelka_mutations.csv
 
 
+
+
+
+
+
+
+
+
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP"' out/TQ-A8XE-01A-11D-A36O.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz > SNP.PASS
+bcftools query -f "%LINE" -i 'MIN(FMT/DP)>2 && TYPE="SNP" && SomaticEVS>=7' out/TQ-A8XE-01A-11D-A36O.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz > SNP.gt2.gte7
+bcftools query -f "%LINE" -i 'MIN(FMT/DP)>2 && TYPE="SNP" && SomaticEVS>7' out/TQ-A8XE-01A-11D-A36O.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz > SNP.gt2.gt7
+bcftools query -f "%LINE" -i 'MIN(FMT/DP)>=2 && TYPE="SNP" && SomaticEVS>7' out/TQ-A8XE-01A-11D-A36O.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz > SNP.gte2.gt7
+bcftools query -f "%LINE" -i 'MIN(FMT/DP)>=2 && TYPE="SNP" && SomaticEVS>=7' out/TQ-A8XE-01A-11D-A36O.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz > SNP.gte2.gte7
+
+
+
