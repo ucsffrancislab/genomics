@@ -19,8 +19,12 @@ STAR=${REFS}/STAR
 #	do exported variables get passed to submitted jobs? No
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
-vmem=8
-threads=8
+
+#	remember 64 cores and ~504GB mem
+vmem=125
+threads=16
+#vmem=62
+#threads=8
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -50,7 +54,10 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		#starid=$( 
-		qsub -N S${base}.STAR -l nodes=1:ppn=${threads} -l vmem=120gb \
+				#--limitBAMsortRAM 30689759852 \
+#SOLUTION: re-run STAR with at least --limitBAMsortRAM 82622493495
+		sortRAM=$((vmem*1000000000*9/10))
+		qsub -N S${base}.STAR -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-l feature=nocommunal \
 			-l gres=scratch:5 \
 			-j oe -o ${outbase}.${date}.out.txt \
@@ -58,6 +65,7 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 			-F "--runMode alignReads \
 				--outFileNamePrefix ${outbase}. \
 				--outSAMtype BAM SortedByCoordinate \
+				--limitBAMsortRAM ${sortRAM} \
 				--genomeDir ${STAR}/hg38 \
 				--runThreadN ${threads} \
 				--outSAMattrRGline ID:${base} SM:${base} \
