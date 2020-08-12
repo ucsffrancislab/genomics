@@ -11,7 +11,7 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/[EFG]*_R1.fastq.gz ; do
+for r1 in ${INDIR}/*_R1.fastq.gz ; do
 
 	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
