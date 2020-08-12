@@ -1,3 +1,13 @@
 
 
 
+Wow. This is SLOW!
+
+1 tumor / normal pair (about 180GB bam files each)
+8 core / 62 GB memory
+
+5 hours and just finishing chromosome 2.
+
+To process all 125 samples would take about 3 weeks.
+
+

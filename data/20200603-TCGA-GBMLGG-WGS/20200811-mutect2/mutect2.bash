@@ -36,7 +36,8 @@ scratch=25
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-INDIR="/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam"
+#	NOTE that these links are different than before because I had trimmed too far
+INDIR="/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam-long"
 OUTDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200811-mutect2/out"
 mkdir -p ${OUTDIR}
 
@@ -54,6 +55,9 @@ mkdir -p ${OUTDIR}
 #	#	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam
 #	for tumor in ${INDIR}/??-????-01?-???-????.bam ; do
 #	#for tumor in ${INDIR}/02-2483-01?-???-????.bam ; do
+
+
+reference=/francislab/data1/refs/fasta/Homo_sapiens_assembly19.fasta
 
 
 #	New way
@@ -132,7 +136,8 @@ while IFS=, read -r tumor normal ; do
 
 		normal_size=$( stat --dereference --format %s ${normal} )
 		tumor_size=$( stat --dereference --format %s ${tumor} )
-		myscratch=$( echo $(((${normal_size}+${tumor_size})/${threads}/1000000000*12/10)) )
+		ref_size=$( stat --dereference --format %s ${reference} )
+		myscratch=$( echo $(((${ref_size}+${normal_size}+${tumor_size})/${threads}/1000000000*12/10)) )
 		echo "Requesting ${myscratch} scratch"
 
 		#	echo $(((185258413619+184213132523)/8/1000000000))
@@ -151,7 +156,7 @@ while IFS=, read -r tumor normal ; do
 				--input ${tumor} \
 				--normal-sample TCGA-${normal_base} \
 				--tumor-sample TCGA-${tumor_base} \
-				--reference /francislab/data1/refs/fasta/Homo_sapiens_assembly19.fasta \
+				--reference ${reference} \
 				-A MappingQuality -A MappingQualityRankSumTest -A ReadPosRankSumTest \
 				-A FisherStrand -A StrandOddsRatio -A DepthPerSampleHC -A InbreedingCoeff \
 				-A QualByDepth -A RMSMappingQuality -A Coverage \
@@ -160,4 +165,10 @@ while IFS=, read -r tumor normal ; do
 
 done < /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200811-mutect2/test_tumor_normal_pairs.csv
 #done < /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/tumor_normal_pairs.csv
+
+
+
+#A USER ERROR has occurred: Bad input: BAM header sample names [TCGA-02-2483-01A-01D-1494-08, TCGA-02-2483-10A-01D-1494-08]does not contain given tumor sample name TCGA-02-2483-01A-01D-1494
+
+
 

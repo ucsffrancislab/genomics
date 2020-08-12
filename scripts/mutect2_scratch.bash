@@ -55,14 +55,17 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
+	cp ${reference} ${TMPDIR}/
+	cp ${reference}.fai ${TMPDIR}/
+	cp ${reference%.*}.dict ${TMPDIR}/
+	scratch_reference=${TMPDIR}/$( basename ${reference} )
+
 	scratch_inputs=""
 	for input in "${inputs[@]}" ; do
 		cp ${input} ${TMPDIR}/
+		cp ${input}.bai ${TMPDIR}/
 		scratch_inputs="${scratch_inputs} --input ${TMPDIR}/$( basename ${input} )"
 	done
-
-	cp ${reference} ${TMPDIR}/
-	scratch_reference=${TMPDIR}/$( basename ${reference} )
 
 	scratch_output=${TMPDIR}/$( basename ${output} )
 
@@ -70,7 +73,15 @@ else
 
 	gatk Mutect2 ${SELECT_ARGS} ${scratch_inputs} --reference ${scratch_reference} --output ${scratch_output}
 
+	ls -l ${TMPDIR}
+
+#	gatk FilterMutectCalls 
+#--output,-O:String            The output filtered VCF file  Required. 
+#--variant,-V:String           A VCF file containing variants  Required. 
+
 
 	mv --update ${scratch_output} ${f}
-	chmod -R a-w ${f}
+	chmod a-w ${f}
+	mv --update ${scratch_output}.tbi ${f}.tbi
+	chmod a-w ${f}.tbi
 fi
