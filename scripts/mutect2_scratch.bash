@@ -8,11 +8,22 @@ set -o pipefail
 
 set -x
 
+raw_inputs=""
+scratch_inputs=""
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
 	case $1 in
 		-I|--input)
+			#	This is tricky as multiple --input's are used.
+			#	I could copy them here, but that would be too early as don't know if output exists already.
+			#	Creating new array which I'm not sure is the best way, but it seems to work.
+			#	I think that I should've prepared a command string to copy all here
+			#		and set scratch_inputs values
+			#	raw_inputs="${raw_inputs} ${1} ${1}.bai"
+			#	scratch_inputs="${scratch_inputs} --input ${TMPDIR}/$( basename ${1} )"
+			#	...
+			#	cp ${raw_inputs} ${TMPDIR}/
 			shift; inputs+=("${1}"); shift;;
 		-O|--output)
 			shift; output=$1; shift;;
@@ -47,7 +58,6 @@ done
 #${arr[@]:s:n}	Retrieve n elements starting at index s
 
 
-
 f=$output
 if [ -f $f ] && [ ! -w $f ] ; then
 #if [ -d $f ] && [ ! -w $f ] ; then
@@ -60,28 +70,30 @@ else
 	cp ${reference%.*}.dict ${TMPDIR}/
 	scratch_reference=${TMPDIR}/$( basename ${reference} )
 
-	scratch_inputs=""
 	for input in "${inputs[@]}" ; do
 		cp ${input} ${TMPDIR}/
 		cp ${input}.bai ${TMPDIR}/
 		scratch_inputs="${scratch_inputs} --input ${TMPDIR}/$( basename ${input} )"
 	done
 
-	scratch_output=${TMPDIR}/$( basename ${output} )
+	scratch_outdir=${TMPDIR}/out
+	mkdir -p ${scratch_outdir}
+	scratch_output=${scratch_outdir}/$( basename ${output} )
 
-	echo gatk Mutect2 ${SELECT_ARGS} ${scratch_inputs} --reference ${scratch_reference} --output ${scratch_output}
+	#	Not keeping
+	scratch_unfiltered=${TMPDIR}/unfiltered.vcf.gz
 
-	gatk Mutect2 ${SELECT_ARGS} ${scratch_inputs} --reference ${scratch_reference} --output ${scratch_output}
+	gatk Mutect2 ${SELECT_ARGS} ${scratch_inputs} --reference ${scratch_reference} --output ${scratch_unfiltered}
 
 	ls -l ${TMPDIR}
 
-#	gatk FilterMutectCalls 
-#--output,-O:String            The output filtered VCF file  Required. 
-#--variant,-V:String           A VCF file containing variants  Required. 
+	gatk FilterMutectCalls --variant ${scratch_unfiltered} --output ${scratch_output}
 
+	ls -l ${TMPDIR}
 
-	mv --update ${scratch_output} ${f}
-	chmod a-w ${f}
-	mv --update ${scratch_output}.tbi ${f}.tbi
-	chmod a-w ${f}.tbi
+	chmod -R a-w ${scratch_outdir}
+	mv --update ${scratch_outdir}/* $( dirname ${f} )/
+
+	#	Too often files are left behind that are write-protected so ...
+	chmod -R a+w ${TMPDIR}
 fi
