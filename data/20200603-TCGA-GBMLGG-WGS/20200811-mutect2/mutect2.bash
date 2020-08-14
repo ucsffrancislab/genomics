@@ -19,9 +19,11 @@ DIAMOND=${REFS}/diamond
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
 
-threads=8
-vmem=62
-scratch=25
+#threads=8
+#vmem=62
+threads=4
+vmem=31
+#scratch=25
 
 #	should try to compute this need
 
@@ -137,8 +139,8 @@ while IFS=, read -r tumor normal ; do
 		normal_size=$( stat --dereference --format %s ${normal} )
 		tumor_size=$( stat --dereference --format %s ${tumor} )
 		ref_size=$( stat --dereference --format %s ${reference} )
-		myscratch=$( echo $(((${ref_size}+${normal_size}+${tumor_size})/${threads}/1000000000*12/10)) )
-		echo "Requesting ${myscratch} scratch"
+		scratch=$( echo $(((${ref_size}+${normal_size}+${tumor_size})/${threads}/1000000000*11/10)) )
+		echo "Requesting ${scratch} scratch"
 
 		#	echo $(((185258413619+184213132523)/8/1000000000))
 		#	46
@@ -146,9 +148,9 @@ while IFS=, read -r tumor normal ; do
 		#	55
 
 		#	gres=scratch should be about total needed divided by num threads
-		#	I think that the reference NEEDs to be unzipped and have an index
+		#	I think that the reference NEEDs to be unzipped and have an index and a dict
+		#	-l feature=nocommunal \
 		qsub -N ${jobbase}.mutect2 -l gres=scratch:${scratch} \
-			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/mutect2_scratch.bash \

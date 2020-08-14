@@ -8,6 +8,66 @@ Wow. This is SLOW!
 
 5 hours and just finishing chromosome 2.
 
-To process all 125 samples would take about 3 weeks.
+Took about 25 hours to complete
+
+To process all 125 samples would take about 2-3 weeks.
+
+
+
+
+
+MDIR=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200811-mutect2/out
+SDIR=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200720-manta-strelka/out
+
+mvcf=${MDIR}/02-2483-01A-01D-1494-08.mutect2.vcf.gz
+bcftools query -f "%LINE" -i 'TYPE="SNP"' ${mvcf} | wc -l
+104925
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP"' ${mvcf} | wc -l
+6246
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${mvcf} | sort > mutectlist
+
+svcf=${SDIR}/02-2483-01A-01D-1494.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz
+bcftools query -f "%LINE" -i 'TYPE="SNP"' ${svcf} | wc -l
+704472
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP"' ${svcf} | wc -l
+6636
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${svcf} | sort > strelkalist
+
+comm -12 strelkalist mutectlist > sharedlist
+
+wc -l *list
+  6246 mutectlist
+  6636 strelkalist
+  4233 sharedlist
+
+
+
+
+
+MDIR=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200811-mutect2/out
+SDIR=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200720-manta-strelka/out-long
+
+s="02-2485-01A-01D-1494-08"
+
+mvcf=${MDIR}/${s}.mutect2.vcf.gz
+bcftools query -f "%LINE" -i 'TYPE="SNP"' ${mvcf} | wc -l
+102975
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP"' ${mvcf} | wc -l
+7410
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${mvcf} | sort > mutectlist
+
+svcf=${SDIR}/${s}.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz
+bcftools query -f "%LINE" -i 'TYPE="SNP"' ${svcf} | wc -l
+673989
+bcftools query -f "%LINE" -i 'FILTER="PASS" && TYPE="SNP"' ${svcf} | wc -l
+8967
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${svcf} | sort > strelkalist
+
+comm -12 strelkalist mutectlist > sharedlist
+
+wc -l *list
+  7410 mutectlist
+  8967 strelkalist
+  6172 sharedlist
 
 
