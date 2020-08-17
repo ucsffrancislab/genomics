@@ -145,3 +145,53 @@ bcftools query -f "%LINE" -i 'MIN(FMT/DP)>=2 && TYPE="SNP" && SomaticEVS>=7' out
 
 
 
+
+'s/.\{'${#x}'\}$/'${x}'/' 
+Round each list to 100, 1000, 10000, then uniq -c to get counts ( or is 1 enough then just uniq -d? )
+cat $f | sed "s/\d\{${#x}\}$/${x}/" | uniq > ${f%.txt}.${x}.txt
+
+echo "123" | awk '{print int(($1/1000)000)}'
+
+for x in 0 00 000 0000  ; do
+echo $x
+for f in position_analysis/*.manta_strelka_positions.SNP.PASS.txt ; do
+echo $f
+awk -v v=$x -F: '{d=int("1"v); print $1":"int(int($2/d)v)}' $f | uniq > ${f%.txt}.${x}.txt
+done
+echo merging
+./merge_position_lists.py --output mutation_positions.SNP.PASS.${x}.csv.gz position_analysis/*.manta_strelka_positions.SNP.PASS.${x}.txt
+done
+
+zcat mutation_positions.SNP.PASS.csv.gz | wc -l
+621422
+zcat mutation_positions.SNP.PASS.0.csv.gz | wc -l
+610866
+zcat mutation_positions.SNP.PASS.00.csv.gz | wc -l
+583481
+zcat mutation_positions.SNP.PASS.000.csv.gz | wc -l
+500205
+zcat mutation_positions.SNP.PASS.0000.csv.gz | wc -l
+229524
+
+
+for x in . .0. .00. .000. .0000.  ; do
+echo $x
+zcat mutation_positions.SNP.PASS${x}csv.gz | awk 'BEGIN{FS=OFS=","}(NR==1){print "chromosome,position,sum"}(NR>1){s=0;for(i=3;i<=NF;i++){s+=$i}if(s>20)print $1,$2,s}'
+done
+
+
+
+
+
+
+mkdir out-long; cd out-long
+while IFS=, read -r tumor normal ; do
+#echo $tumor
+trimmed=${tumor%-??}
+#echo $trimmed
+ln -s ../out/${trimmed}.manta_strelka ${tumor}.manta_strelka
+done < /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/tumor_normal_pairs_long.csv 
+
+
+
+
