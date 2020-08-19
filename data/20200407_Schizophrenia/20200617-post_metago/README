@@ -66,3 +66,54 @@ done
 Assemble them with velvet? Or abyss?
 
 
+
+
+
+
+select_case_and_control_reads.bash
+
+
+bowtie2.bash --threads 16 --sort -x hg38 -U Case.fastq --very-sensitive -o Case.unpaired.bam &
+bowtie2.bash --threads 16 --sort -x hg38 -U Control.fastq --very-sensitive -o Control.unpaired.bam &
+
+bowtie2.bash --threads 16 --sort -x hg38 -1 Case_R1.fastq -2 Case_R2.fastq --very-sensitive -o Case.paired.bam &
+bowtie2.bash --threads 16 --sort -x hg38 -1 Control_R1.fastq -2 Control_R2.fastq --very-sensitive -o Control.paired.bam &
+
+
+samtools depth Case.paired.bam | awk '( $3 > 100 ){if($1==c && $2<p+10){p=$2}else{print c":"s"-"p;c=$1;p=$2;s=$2}}END{print c":"s"-"p;}' 
+:-
+chr3:62776294-62776623
+chr7:99544431-99544544
+chr10:77945175-77945264
+chr22:48332186-48332634
+
+samtools depth Control.paired.bam | awk '( $3 > 100 ){if($1==c && $2<p+10){p=$2}else{print c":"s"-"p;c=$1;p=$2;s=$2}}END{print c":"s"-"p;}' 
+:-
+chr1:145787391-145787588
+chr1:205752858-205753031
+chr2:238561515-238561635
+chr3:52255018-52255140
+chr3:156102045-156102140
+chr4:31006706-31006823
+chr7:4812484-4812625
+chr7:41576926-41577077
+chr11:73780640-73780955
+chr19:9771894-9771921
+chr19:14925366-14925468
+chr19:55434724-55435080
+chrX:11153396-11153472
+
+
+
+blastn -db nt -query Case_Assembly_Consensus_Sequences.fasta -outfmt 6 -out Case_Assembly_Consensus_Sequences.blastn.txt &
+
+blastn -db nt -query Control_Assembly_Consensus_Sequences.fasta -outfmt 6 -out Control_Assembly_Consensus_Sequences.blastn.txt &
+
+blastx -db nr -query Case_Assembly_Consensus_Sequences.fasta -outfmt 6 -out Case_Assembly_Consensus_Sequences.blastx.txt &
+
+blastx -db nr -query Control_Assembly_Consensus_Sequences.fasta -outfmt 6 -out Control_Assembly_Consensus_Sequences.blastx.txt &
+
+
+
+
+
