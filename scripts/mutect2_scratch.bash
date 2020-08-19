@@ -92,7 +92,8 @@ else
 	ls -l ${TMPDIR}
 
 	chmod -R a-w ${scratch_outdir}
-	mv --update ${scratch_outdir}/* $( dirname ${f} )/
+	#mv --update ${scratch_outdir}/* $( dirname ${f} )/
+	cp ${scratch_outdir}/* $( dirname ${f} )/
 
 	#	Too often files are left behind that are write-protected so ...
 	chmod -R a+w ${TMPDIR}
