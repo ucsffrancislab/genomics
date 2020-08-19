@@ -81,3 +81,36 @@ plink --noweb --bfile ukb.antigen.chr6 --exclude snplist.txt --make-bed --out uk
 Can take about 8 hours.
 
 
+
+
+
+
+
+
+
+LiftOver from hg18 to hg19
+
+
+wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64.v369/liftOver
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg18/liftOver/hg18ToHg19.over.chain.gz
+wget https://raw.githubusercontent.com/sritchie73/liftOverPlink/master/liftOverPlink.py
+( change shebang line to /usr/bin/env python )
+
+
+plink --bfile ukb.antigen.chr6.filtered.imputed.100 --recode --tab --out hg18tohg19/ukb.antigen.chr6.filtered.imputed.100
+
+./liftOverPlink.py -m hg18tohg19/ukb.antigen.chr6.filtered.imputed.100.map -p hg18tohg19/ukb.antigen.chr6.filtered.imputed.100.ped -o hg18tohg19/ukb.antigen.chr6.filtered.imputed.100.hg19 -c hg18ToHg19.over.chain.gz -e ./liftOver
+
+plink --file hg18tohg19/ukb.antigen.chr6.filtered.imputed.100.hg19 --make-bed --out hg18tohg19/ukb.antigen.chr6.filtered.imputed.100.hg19
+
+
+plink --bfile ukb.antigen.chr6.filtered.imputed.1000 --recode --tab --out hg18tohg19/ukb.antigen.chr6.filtered.imputed.1000
+
+./liftOverPlink.py -m hg18tohg19/ukb.antigen.chr6.filtered.imputed.1000.map -p hg18tohg19/ukb.antigen.chr6.filtered.imputed.1000.ped -o hg18tohg19/ukb.antigen.chr6.filtered.imputed.1000.hg19 -c hg18ToHg19.over.chain.gz -e ./liftOver
+ 
+plink --file hg18tohg19/ukb.antigen.chr6.filtered.imputed.1000.hg19 --make-bed --out hg18tohg19/ukb.antigen.chr6.filtered.imputed.1000.hg19
+
+
+
+
+
