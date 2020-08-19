@@ -195,3 +195,11 @@ done < /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/tumor_normal_pairs_long.cs
 
 
 
+mkdir position_analysis-long
+for f in out-long/*.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz ; do
+sample=${f%.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz}
+sample=$( basename $sample )
+echo $sample
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > position_analysis-long/${sample}.manta_strelka_positions.SNP.PASS.txt
+done
+
