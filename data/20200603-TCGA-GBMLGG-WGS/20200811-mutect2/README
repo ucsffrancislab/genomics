@@ -71,3 +71,16 @@ wc -l *list
   6172 sharedlist
 
 
+
+
+
+
+
+mkdir position_analysis-long
+for f in out-long/*.mutect2.vcf.gz ; do
+sample=$( basename $f .mutect2.vcf.gz )
+echo $sample
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > position_analysis-long/${sample}.mutect2_positions.SNP.PASS.txt
+done
+
+
