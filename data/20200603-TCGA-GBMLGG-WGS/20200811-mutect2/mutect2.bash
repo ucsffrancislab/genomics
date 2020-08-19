@@ -149,8 +149,8 @@ while IFS=, read -r tumor normal ; do
 
 		#	gres=scratch should be about total needed divided by num threads
 		#	I think that the reference NEEDs to be unzipped and have an index and a dict
-		#	-l feature=nocommunal \
 		qsub -N ${jobbase}.mutect2 -l gres=scratch:${scratch} \
+			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/mutect2_scratch.bash \
