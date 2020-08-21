@@ -117,3 +117,6 @@ blastx -db nr -query Control_Assembly_Consensus_Sequences.fasta -outfmt 6 -out C
 
 
 
+nohup diamond blastx --threads 16 --db /francislab/data1/refs/diamond/nr --query Case_Assembly_Consensus_Sequences.fasta --outfmt 100 --out Case_Assembly_Consensus_Sequences.nr.daa > Case_Assembly_Consensus_Sequences.nr.daa.out.txt 2> Case_Assembly_Consensus_Sequences.nr.daa.err.txt &
+nohup diamond blastx --threads 16 --db /francislab/data1/refs/diamond/nr --query Control_Assembly_Consensus_Sequences.fasta --outfmt 100 --out Control_Assembly_Consensus_Sequences.nr.daa > Control_Assembly_Consensus_Sequences.nr.daa.out.txt 2> Control_Assembly_Consensus_Sequences.nr.daa.err.txt &
+
