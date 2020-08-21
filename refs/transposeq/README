@@ -1,0 +1,60 @@
+
+
+https://software.broadinstitute.org/cancer/cga/transposeq
+
+
+wget https://software.broadinstitute.org/cancer/cga/sites/default/files/data/tools/transposeq/TranspoSeq_reference_files.tar.gz
+
+wget https://software.broadinstitute.org/cancer/cga/sites/default/files/data/tools/transposeq/TranspoSeq_v2.0.tar_.gz
+
+
+
+Make sure 
+## use R-2.10
+## use LSF
+## use BLAST
+
+## TranspoSeq takes in 
+"tumorbam": Path to tumor BAM file, filename must not contain any internal
+periods
+"normalbam": Path to normal BAM file, filename must not contain any internal
+periods
+"tumorname": Tumor type name
+"samplename": Name of sample
+"hgnum": Genome reference BAM files are aligned to, for example, "18"
+"dir": Directory where folders will be created
+"readsfold": Directory where files with reads will be written
+"nalign": Minimum alignment parameter for BLAST - number of aligned bp necessary to count as 'aligned' to db, e.g., 27
+"percentident": Minimum percent identity parameter for BLAST, e.g., 90
+"nreads": Minimum reads necessary to support candidate event
+"fasta": Name of retrotransposon db, e.g., "L1s"
+"fastafile": File path to retrotransposon db fastafile, e.g., "/home/L1s.fasta"
+"queue": LSF queue to send jobs to
+
+## To run
+
+
+./TranspoSeq/RUN_TRANSPOSEQ.sh tumorbam normalbam tumorname samplename hgnum dir readsfold nalign percentident fasta fastafile queue &
+
+missing stuff
+
+./TranspoSeq/RUN_TRANSPOSEQ.sh /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-10A-01D-1494.bam tumorname samplename 19 dir readsfold 1 27 90 1 LTR /francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.fasta queue
+
+
+
+
+
+
+
+R CMD BATCH --no-save --no-restore '--args tum="tumorname" samp="samplename" fastafile="/francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.fasta" tumorbam="/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-01A-01D-1494.bam" normalbam="/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-10A-01D-1494.bam" hgnum="19" fasta="LTR" dir="dir" readsfold="readsfold" queue="queue" evalue="1" nalign="27" nreads="1" percentident="90"' Run_TranspoSeq.R
+
+
+
+R CMD BATCH --no-save --no-restore '--args tum="tumorname" samp="samplename" fasta="/francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.fasta" bam="/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/bam/02-2483-10A-01D-1494.bam" blacklist="/francislab/data1/refs/transposeq/TranspoSeq/reffiles/lane_blacklist.txt" c="22q" startpos="14500000" stoppos="300000000" fastafile="/francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.fasta" refdir="/francislab/data1/refs/transposeq/TranspoSeq/reffiles/hg19" readsdir="readsfoldsamplename/" lsfdir="dirlsf/samplename/" outstem="dirsamplename/samplename_LTR/samplename-Normal" t="Normal" queue="queue" evalue="1" nalign="27" percentident="90"' /francislab/data1/refs/transposeq/TranspoSeq/GetReads.R
+
+
+this is written for a very specific environment and will be tough to incorporate
+
+
+
+
