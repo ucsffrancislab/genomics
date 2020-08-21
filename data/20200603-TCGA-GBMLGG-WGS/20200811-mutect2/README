@@ -84,3 +84,7 @@ bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > positi
 done
 
 
+./compare_strelka_and_mutect.py --output compare_strelka_and_mutect.csv.gz
+
+
+
