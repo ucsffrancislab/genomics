@@ -52,3 +52,11 @@ done
 
 
 
+
+
+
+bedtools getfasta -fi /francislab/data1/refs/fasta/hg19/hg19.fa -bed /francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.gtf -fo /francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.fasta
+
+
+
+
