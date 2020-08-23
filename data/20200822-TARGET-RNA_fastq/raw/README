@@ -1,0 +1,7 @@
+
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-08-21T19_15_34-07_00.txt -m gdc_manifest.TARGET.RNA.tar.20200823_023543.txt &
+
+
+
