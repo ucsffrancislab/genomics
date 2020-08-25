@@ -5,3 +5,49 @@ nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-08-21T19_15_34-0
 
 
 
+UUID_to_TARGET_barcode.Rscript
+
+
+
+for tar in  */*tar ; do
+echo $tar
+tar -C $( dirname $tar ) -xvf $tar
+done
+
+
+untar the */*fastq.tar files and gzip them IN THE DOWNLOADED FOLDER (for the file_id)
+
+Some create subdirs
+Some show as fasta.tar suggesting not gzipped, but they appear to be.
+
+
+link them
+
+
+
+
+mkdir fastq
+cd fastq
+while IFS=, read -r file_id barcode ; do
+key=${barcode//-/}
+let "${key}=0"
+done < gdc_manifest.TARGET.RNA.tar.20200823_023543.barcodes.txt
+while IFS=, read -r file_id barcode ; do
+echo $file_id
+echo $barcode
+key=${barcode//-/}
+barcode=${barcode#TCGA-}
+let "${key}=${key}+1"
+suffix=$( eval echo \$$key )
+echo ${barcode}+${suffix}
+r1=$( find ${file_id} -name *1.fastq.gz )
+ln -s ${r1} ${barcode}+${suffix}_R1.fastq.gz
+r2=$( find ${file_id} -name *2.fastq.gz )
+ln -s ${r2} ${barcode}+${suffix}_R2.fastq.gz
+done < gdc_manifest.TARGET.RNA.tar.20200823_023543.barcodes.txt
+cd ..
+
+
+
+
+
