@@ -88,3 +88,33 @@ done
 
 
 
+
+
+MDIR=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200811-mutect2/out
+SDIR=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200720-manta-strelka/out-long
+s="02-2485-01A-01D-1494-08"
+mvcf=${MDIR}/${s}.mutect2.vcf.gz
+svcf=${SDIR}/${s}.manta_strelka/strelka/results/variants/somatic.snvs.vcf.gz
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${mvcf} | sort > mutectlist
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${svcf} | sort > strelkalist
+comm -12 strelkalist mutectlist > sharedlist
+comm -23 strelkalist mutectlist > juststrelkalist
+comm -13 strelkalist mutectlist > justmutectlist
+
+while IFS=: read -r chr position ; do
+bcftools query -f "%LINE" -r ${chr}:${position} ${mvcf}
+done < juststrelkalist > mutectfails
+
+
+while IFS=: read -r chr position ; do
+bcftools query -f "%LINE" -r ${chr}:${position} ${svcf}
+done < justmutectlist > strelkafails
+
+
+mkdir position_analysis-notannotated
+for f in out-long/*.mutect2.vcf.gz ; do
+sample=$( basename $f .mutect2.vcf.gz )
+echo $sample
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > position_analysis-notannotated/${sample}.mutect2_positions.SNP.PASS.txt
+done
+
