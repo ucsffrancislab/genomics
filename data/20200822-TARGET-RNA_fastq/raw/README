@@ -3,7 +3,13 @@
 
 nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-08-21T19_15_34-07_00.txt -m gdc_manifest.TARGET.RNA.tar.20200823_023543.txt &
 
+1048 entries
 36 failures. Redacted.
+Not really sure exactly what this means as there are 1042 tar files.???
+ll */*tar | wc -l
+1042
+
+
 
 
 
@@ -14,7 +20,7 @@ UUID_to_TARGET_barcode.Rscript
 for tar in  */*tar ; do
 echo $tar
 tar -C $( dirname $tar ) -xvf $tar
-done
+done > untarring_log.txt
 
 
 untar the */*fastq.tar files and gzip them IN THE DOWNLOADED FOLDER (for the file_id)
