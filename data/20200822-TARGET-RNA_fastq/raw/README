@@ -11,8 +11,6 @@ ll */*tar | wc -l
 
 
 
-
-
 UUID_to_TARGET_barcode.Rscript
 
 
@@ -23,37 +21,67 @@ tar -C $( dirname $tar ) -xvf $tar
 done > untarring_log.txt
 
 
-untar the */*fastq.tar files and gzip them IN THE DOWNLOADED FOLDER (for the file_id)
-
 Some create subdirs
 Some show as fasta.tar suggesting not gzipped, but they appear to be.
 
 
-link them
 
 
 
+
+UPDATE THIS. SOME TAR FILES CONTAIN MULTIPLE PAIRS.
+
+4 contain 2 pairs of fastq files.
+5493deb9-3206-43d0-ab09-3006170e8cbe
+5d1503d1-0ff5-461e-ae2d-cce25f0d2509
+5f0a5ab0-2b68-49ed-bbde-a8206dc608c0
+e348d8e0-3f0f-426d-8da5-f6bb57e2b051
 
 mkdir fastq
 cd fastq
 while IFS=, read -r file_id barcode ; do
 key=${barcode//-/}
+key=${key//./}
 let "${key}=0"
-done < gdc_manifest.TARGET.RNA.tar.20200823_023543.barcodes.txt
+done < <( tail -n +2 /francislab/data1/raw/20200822-TARGET-RNA_fastq/gdc_manifest.TARGET.RNA.tar.20200823_023543.barcodes.txt )
+
 while IFS=, read -r file_id barcode ; do
 echo $file_id
 echo $barcode
 key=${barcode//-/}
-barcode=${barcode#TCGA-}
+key=${key//./}
+barcode=${barcode#TARGET-}
+for r1 in $( find ../${file_id} -name \*1.fastq.gz 2> /dev/null | sort ) ; do
 let "${key}=${key}+1"
 suffix=$( eval echo \$$key )
 echo ${barcode}+${suffix}
-r1=$( find ${file_id} -name *1.fastq.gz )
+echo $r1
 ln -s ${r1} ${barcode}+${suffix}_R1.fastq.gz
-r2=$( find ${file_id} -name *2.fastq.gz )
+r2=${r1/1.fastq.gz/2.fastq.gz}
+echo $r2
 ln -s ${r2} ${barcode}+${suffix}_R2.fastq.gz
-done < gdc_manifest.TARGET.RNA.tar.20200823_023543.barcodes.txt
+done
+done < <( tail -n +2 /francislab/data1/raw/20200822-TARGET-RNA_fastq/gdc_manifest.TARGET.RNA.tar.20200823_023543.barcodes.txt ) > linking_log.txt
+
 cd ..
+
+
+
+nohup replace_dots_with_Ns.bash &
+
+
+----
+
+Document missing files?
+d7fb6886-7df1-4908-955a-783b84c15d7e
+9eb4c3f9-36c5-400c-b17c-11c229e33362
+4e9fac39-d80f-464e-a91c-cd6e8087e401
+91e93fdd-e73a-4010-91e8-b4c1c5a67bec
+63a6538f-8359-4969-9cde-277eef451072
+
+
+Which file ids are in manifest, but not downloaded?
+
 
 
 
