@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 SALMON="/francislab/data1/refs/salmon"
-INDIR="/francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq"
+#INDIR="/francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq"
+INDIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200827-preprocess/trimmed/length"
 DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200824-REdiscoverTE/out"
 mkdir -p ${DIR}
 
@@ -35,16 +36,16 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 
 		echo "Using scratch:${scratch}"
 
-#		qsub -l vmem=${vmem}gb -N ${base}.salmon \
-#			-l feature=nocommunal \
-#			-l nodes=1:ppn=${threads} \
-#			-l gres=scratch:${scratch} \
-#			-j oe -o ${outbase}.${date}.out.txt \
-#			~/.local/bin/salmon_scratch.bash \
-#			-F "quant --seqBias --gcBias --index ${index} \
-#				--libType A --validateMappings \
-#				-1 ${r1} -2 ${r2} \
-#				-o ${outbase} --threads ${threads}"
+		qsub -l vmem=${vmem}gb -N ${base}.salmon \
+			-l feature=nocommunal \
+			-l nodes=1:ppn=${threads} \
+			-l gres=scratch:${scratch} \
+			-j oe -o ${outbase}.${date}.out.txt \
+			~/.local/bin/salmon_scratch.bash \
+			-F "quant --seqBias --gcBias --index ${index} \
+				--libType A --validateMappings \
+				-1 ${r1} -2 ${r2} \
+				-o ${outbase} --threads ${threads}"
 			#	--unmatedReads ${f} 
 	fi
 
