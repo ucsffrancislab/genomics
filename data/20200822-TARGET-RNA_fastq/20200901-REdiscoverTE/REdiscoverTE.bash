@@ -3,7 +3,7 @@
 SALMON="/francislab/data1/refs/salmon"
 #INDIR="/francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq"
 INDIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200827-preprocess/trimmed/length"
-DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200824-REdiscoverTE/out"
+DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200901-REdiscoverTE/out"
 mkdir -p ${DIR}
 
 #	remember 64 cores and ~504GB mem
@@ -12,7 +12,11 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/*_R1.fastq.gz ; do
+#for r1 in ${INDIR}/*_R1.fastq.gz ; do
+
+#	Only want to process the ALL files at the moment so ...
+while IFS=, read -r r1 ; do
+
 
 	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
@@ -49,14 +53,16 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 			#	--unmatedReads ${f} 
 	fi
 
-done
+done < ALL-P2.fastq_files.txt
+
+#done
 
 
 exit
 
 
 
-DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200824-REdiscoverTE/out"
+DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200901-REdiscoverTE/out"
 
 echo -e "sample\tquant_sf_path" > ${DIR}/REdiscoverTE.tsv
 ls -1 ${DIR}/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/REdiscoverTE.tsv

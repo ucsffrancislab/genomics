@@ -2,3 +2,18 @@
 
 /francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq/*
 
+
+Clinical data downloaded from ... https://portal.gdc.cancer.gov/projects/TARGET-ALL-P2
+
+
+awk -F"\t" '{print $2}' /francislab/data1/raw/20200822-TARGET-RNA_fastq/clinical.project-TARGET/clinical.project-TARGET-ALL-P*/clinical.tsv | awk 'BEGIN{FS=OFS="-"}{print $2,$3}' | sort | uniq | grep -vs "^-$" > ALL_ids.txt
+
+awk -F"\t" '{print $2}' /francislab/data1/raw/20200822-TARGET-RNA_fastq/clinical.project-TARGET/clinical.project-TARGET-ALL-P2*/clinical.tsv | awk 'BEGIN{FS=OFS="-"}{print $2,$3}' | sort | uniq | grep -vs "^-$" > ALL-P2_ids.txt
+
+
+Only ALL-P2 files available anyway
+
+while IFS=, read -r id ; do
+ls -1 /francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq/${id}*_R1.fastq.gz 2> /dev/null
+done < ALL-P2_ids.txt > ALL-P2.fastq_files.txt
+

@@ -27,7 +27,11 @@ IN="/francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq"
 OUT="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200827-preprocess"
 mkdir -p ${OUT}
 
-for r1 in ${IN}/*_R1.fastq.gz ; do
+#for r1 in ${IN}/10-PA[A-N]*_R1.fastq.gz ; do
+#for r1 in ${IN}/10-PA*_R1.fastq.gz ; do
+
+#	Only want to process the ALL files at the moment so ...
+while IFS=, read -r r1 ; do
 
 	base=${r1%_R1.fastq.gz}
 
@@ -40,11 +44,14 @@ for r1 in ${IN}/*_R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		qsub -N ${jobbase}.pre \
+			-l feature=nocommunal \
 			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-j oe -o ${outbase}.pre_process.${date}.out.txt \
 			~/.local/bin/pre_process_paired.bash \
 				-F "-out ${OUT} -r1 ${r1}"
 	fi
 
-done
+done < ALL-P2.fastq_files.txt
+
+#done
 

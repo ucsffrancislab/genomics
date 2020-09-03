@@ -1,5 +1,11 @@
 
 
+while IFS=, read -r id ; do
+ls -1 /francislab/data1/working/20200822-TARGET-RNA_fastq/20200827-preprocess/trimmed/length/${id}*_R1.fastq.gz 2> /dev/null
+done < ALL-P2_ids.txt > ALL-P2.fastq_files.txt
+
+
+
 ./REdiscoverTE.bash
 
 
