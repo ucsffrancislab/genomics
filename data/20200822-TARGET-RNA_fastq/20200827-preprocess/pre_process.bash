@@ -29,17 +29,21 @@ mkdir -p ${OUT}
 
 #for r1 in ${IN}/10-PA[A-N]*_R1.fastq.gz ; do
 #for r1 in ${IN}/10-PA*_R1.fastq.gz ; do
+for r1 in ${IN}/20-PA[A-N]*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
-while IFS=, read -r r1 ; do
+#while IFS=, read -r r1 ; do
 
 	base=${r1%_R1.fastq.gz}
 
 	echo $base
 	jobbase=$( basename ${base} )
 
-	outbase="${OUT}/trimmed/length/unpaired/${jobbase}"
-	f=${outbase}.fastq.gz
+	#	No unpairing needed.
+	outbase="${OUT}/trimmed/length/${jobbase}"
+	f=${outbase}_R1.fastq.gz
+	#outbase="${OUT}/trimmed/length/unpaired/${jobbase}"
+	#f=${outbase}.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -51,7 +55,7 @@ while IFS=, read -r r1 ; do
 				-F "-out ${OUT} -r1 ${r1}"
 	fi
 
-done < ALL-P2.fastq_files.txt
+#done < ALL-P2.fastq_files.txt
 
-#done
+done
 
