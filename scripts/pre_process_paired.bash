@@ -9,9 +9,11 @@ REFS=/francislab/data1/refs
 FASTA=${REFS}/fasta
 date=$( date "+%Y%m%d%H%M%S" )
 
-
+unpair=false
 while [ $# -gt 0 ] ; do
 	case $1 in
+		--unpair)
+			shift; unpair=true;;
 		-out)
 			shift; OUT=$1; shift;;
 		-r1)
@@ -35,7 +37,6 @@ echo $base
 #	vmem = ?????
 
 
-mkdir -p ${OUT}/trimmed/length/unpaired
 
 
 
@@ -56,6 +57,7 @@ R2=${newR2}
 
 
 
+mkdir -p ${OUT}/trimmed
 outbase="${OUT}/trimmed/${base}"
 
 bbduk.bash \
@@ -89,6 +91,7 @@ read_length_hist.bash ${outbase}_R2.fastq.gz
 read_length_hist.bash ${outbase}_S.fastq.gz
 
 inbase="${outbase}"
+mkdir -p ${OUT}/trimmed/length
 outbase="${OUT}/trimmed/length/${base}"
 
 filter_paired_fastq_on_equal_read_length.bash \
@@ -104,11 +107,15 @@ read_length_hist.bash ${outbase}_R2.fastq.gz
 read_length_hist.bash ${outbase}_R1_diff.fastq.gz
 read_length_hist.bash ${outbase}_R2_diff.fastq.gz
 
-inbase="${outbase}"
-outbase="${OUT}/trimmed/length/unpaired/${base}"
-
-unpair_fastqs.bash -o ${outbase}.fastq.gz ${inbase}_R?.fastq.gz
-
-read_length_hist.bash ${outbase}.fastq.gz
+#
+#	Unpair only if investigating miRNA, Exosomes, Extracellular Vessicles, ...
+#
+if $unpair; then
+	inbase="${outbase}"
+	mkdir -p ${OUT}/trimmed/length/unpaired
+	outbase="${OUT}/trimmed/length/unpaired/${base}"
+	unpair_fastqs.bash -o ${outbase}.fastq.gz ${inbase}_R?.fastq.gz
+	read_length_hist.bash ${outbase}.fastq.gz
+fi
 
 
