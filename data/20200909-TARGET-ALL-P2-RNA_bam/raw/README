@@ -1,0 +1,6 @@
+
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-09-09T23_18_27.402Z.txt -m gdc_manifest.TARGET.ALL-P2.RNA.Genome.2020-09-09.txt &
+
+
