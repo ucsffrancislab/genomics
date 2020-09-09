@@ -62,12 +62,15 @@ exit
 
 
 
-DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200901-REdiscoverTE/out"
+DIR="/francislab/data1/working/20200822-TARGET-RNA_fastq/20200901-REdiscoverTE"
 
 echo -e "sample\tquant_sf_path" > ${DIR}/REdiscoverTE.tsv
-ls -1 ${DIR}/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/REdiscoverTE.tsv
+ls -1 ${DIR}/out/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/REdiscoverTE.tsv
 
 
-echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/home/gwendt/github/ucsffrancislab/REdiscoverTE/original/REdiscoverTE/rollup_annotation/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup/" | qsub -l vmem=500gb -N rollup -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.out.txt
+echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.original/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup.original/" | qsub -l vmem=500gb -N rollup.orig -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.original.out.txt
+
+echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup.noquestion/" | qsub -l vmem=500gb -N rollup.noq -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.noquestion.out.txt
+
 
 
