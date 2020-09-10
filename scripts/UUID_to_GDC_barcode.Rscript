@@ -1,9 +1,35 @@
 #!/usr/bin/env Rscript
 
+
+#	if (!requireNamespace("BiocManager", quietly = TRUE))
+#		install.packages("BiocManager")
+#	BiocManager::install(c("GenomicDataCommons"),update = TRUE, ask = FALSE)
 library(GenomicDataCommons)
 
+#files = commandArgs(trailingOnly=TRUE)
 
-args = commandArgs(trailingOnly=TRUE)
+library("optparse")
+#suppressPackageStartupMessages(library("optparse"))
+
+option_list <- list( 
+    make_option(c("-l", "--legacy"), action="store_true", default=FALSE, help="Print extra output [default]")
+)
+parser <- OptionParser(usage = "%prog [options] file", option_list=option_list)
+
+#print("Arguments")
+arguments <- parse_args(parser, positional_arguments = c(1, Inf) )
+#print(arguments)
+#print("Options")
+opt <- arguments$options
+#print(opt)
+#print("Args")
+files <- arguments$args
+#print(file)
+#print("Legacy")
+#print(opt$legacy)
+#print("Files")
+#for(f in files){print(f)}
+#quit()
 
 #	many duplicate submitters 
 
@@ -11,7 +37,8 @@ args = commandArgs(trailingOnly=TRUE)
 #
 #	legacy is whether downloaded from legacy archive (or updated version)
 #
-TCGAtranslateID = function(file_ids, legacy = FALSE) {
+#TCGAtranslateID = function(file_ids, legacy = FALSE) {
+TCGAtranslateID = function(file_ids, legacy = opt$legacy) {
 	info = files(legacy = legacy) %>%
 		filter( ~ file_id %in% file_ids) %>%
 		select('cases.samples.portions.analytes.aliquots.submitter_id') %>%
@@ -30,11 +57,10 @@ TCGAtranslateID = function(file_ids, legacy = FALSE) {
 }
 
 
+for( file in files ){
+	print(paste0("Reading ",file))
 
-for( arg in args ){
-	print(paste0("Reading ",arg))
-
-	manifest <- read.table(arg,header=1)
+	manifest <- read.table(file,header=1)
 	print(head(manifest))
 
 	file_uuids <- manifest$id
@@ -45,7 +71,7 @@ for( arg in args ){
 
 	print(colnames(res))
 
-	print(paste0("Writing ",tools::file_path_sans_ext(arg),".barcodes.txt"))
-	write.csv(res, paste0(tools::file_path_sans_ext(arg),".barcodes.txt"), row.names=FALSE, quote=FALSE)
+	print(paste0("Writing ",tools::file_path_sans_ext(file),".barcodes.txt"))
+	write.csv(res, paste0(tools::file_path_sans_ext(file),".barcodes.txt"), row.names=FALSE, quote=FALSE)
 }
 
