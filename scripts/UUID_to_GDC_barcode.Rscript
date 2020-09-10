@@ -1,0 +1,51 @@
+#!/usr/bin/env Rscript
+
+library(GenomicDataCommons)
+
+
+args = commandArgs(trailingOnly=TRUE)
+
+#	many duplicate submitters 
+
+#TCGAtranslateID = function(file_ids, legacy = TRUE) {
+#
+#	legacy is whether downloaded from legacy archive (or updated version)
+#
+TCGAtranslateID = function(file_ids, legacy = FALSE) {
+	info = files(legacy = legacy) %>%
+		filter( ~ file_id %in% file_ids) %>%
+		select('cases.samples.portions.analytes.aliquots.submitter_id') %>%
+		results_all()
+	#	select('cases.samples.submitter_id') %>%
+	# The mess of code below is to extract TCGA barcodes
+	# id_list will contain a list (one item for each file_id)
+	# of TCGA barcodes of the form 'TCGA-XX-YYYY-ZZZ'
+	id_list = lapply(info$cases,function(a) {
+		a[[1]][[1]][[1]]})
+	# so we can later expand to a data.frame of the right size
+	barcodes_per_file = sapply(id_list,length)
+	# And build the data.frame
+	return(data.frame(file_id = rep(ids(info),barcodes_per_file),
+		submitter_id = unlist(id_list)))
+}
+
+
+
+for( arg in args ){
+	print(paste0("Reading ",arg))
+
+	manifest <- read.table(arg,header=1)
+	print(head(manifest))
+
+	file_uuids <- manifest$id
+	print(head(file_uuids))
+
+	res = TCGAtranslateID(file_uuids)
+	print(head(res))
+
+	print(colnames(res))
+
+	print(paste0("Writing ",tools::file_path_sans_ext(arg),".barcodes.txt"))
+	write.csv(res, paste0(tools::file_path_sans_ext(arg),".barcodes.txt"), row.names=FALSE, quote=FALSE)
+}
+
