@@ -4,6 +4,7 @@
 
 #	install.packages('optparse')
 #	http://tuxette.nathalievilla.org/?p=1696
+#	http://tuxette.nathalievilla.org/2015/09/passing-arguments-to-a-r-script-from-command-lines/
 library("optparse")
  
 option_list = list(
