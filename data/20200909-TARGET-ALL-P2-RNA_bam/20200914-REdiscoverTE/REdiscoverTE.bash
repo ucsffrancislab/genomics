@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e	#	exit if any command fails
+set -u	#	Error on usage of unset variables
+set -o pipefail
+
 SALMON="/francislab/data1/refs/salmon"
 INDIR="/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20200910-bamtofastq/subject"
 DIR="/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20200914-REdiscoverTE/out"
