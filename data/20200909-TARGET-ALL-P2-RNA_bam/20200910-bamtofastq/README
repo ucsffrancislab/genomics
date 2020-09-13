@@ -1,4 +1,9 @@
 
 
 
+./bamtofastq.bash
+
+
+./link_or_concat.bash
+
 
