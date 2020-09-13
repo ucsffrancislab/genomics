@@ -5,7 +5,7 @@ set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
 
-mkdir subject/
+mkdir -p subject/
 
 ls -1 out/*R?.fastq.gz | awk -F/ '{print $2}' | awk -F- '{print $1"-"$2}' | uniq | while read -r subject ; do
 	echo $subject
@@ -13,14 +13,19 @@ ls -1 out/*R?.fastq.gz | awk -F/ '{print $2}' | awk -F- '{print $1"-"$2}' | uniq
 		files=( $( \ls -1 out/${subject}*${r}.fastq.gz ) )
 		file_count=${#files[@]}
 
-		if [ $file_count -eq 1 ] ; then
-			echo "Linking"
-			echo "ln -s ${files[0]} subject/${subject}_${r}.fastq.gz"
-			ln -s ../${files[0]} subject/${subject}_${r}.fastq.gz
+		if [ -f "subject/${subject}_${r}.fastq.gz" ] ; then
+			echo "Skipping"
+			echo "subject/${subject}_${r}.fastq.gz exists"
 		else
-			echo "Concatting"
-			echo "cat ${files[@]} > subject/${subject}_${r}.fastq.gz"
-			cat ${files[@]} > subject/${subject}_${r}.fastq.gz
+			if [ $file_count -eq 1 ] ; then
+				echo "Linking"
+				echo "ln -s ${files[0]} subject/${subject}_${r}.fastq.gz"
+				ln -s ../${files[0]} subject/${subject}_${r}.fastq.gz
+			else
+				echo "Concatting"
+				echo "cat ${files[@]} > subject/${subject}_${r}.fastq.gz"
+				cat ${files[@]} > subject/${subject}_${r}.fastq.gz
+			fi
 		fi
 
 	done
