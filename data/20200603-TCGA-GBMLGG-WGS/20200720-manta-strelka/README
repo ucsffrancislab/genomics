@@ -203,3 +203,33 @@ echo $sample
 bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="SNP"' ${f} > position_analysis-long/${sample}.manta_strelka_positions.SNP.PASS.txt
 done
 
+
+
+mkdir position_analysis-long
+for f in out-long/*.manta_strelka/strelka/results/variants/somatic.indels.vcf.gz ; do
+sample=${f%.manta_strelka/strelka/results/variants/somatic.indels.vcf.gz}
+sample=$( basename $sample )
+echo $sample
+bcftools query -f "%CHROM:%POS\n" -i 'FILTER="PASS" && TYPE="INDEL"' ${f} | uniq > position_analysis-long/${sample}.manta_strelka_positions.INDEL.PASS.txt
+done
+
+X:17081930 not unique in ...
+out-long/DU-5872-01A-11D-A465-08.manta_strelka/strelka/results/variants/somatic.indels.vcf.gz | more
+could be others. Adding uniq to creation of position lists
+
+
+./merge_position_lists.py --output mutation_positions.INDEL.PASS.csv.gz position_analysis-long/*.manta_strelka_positions.INDEL.PASS.txt
+
+
+for x in 0 00 000 0000  ; do
+echo $x
+for f in position_analysis-long/*.manta_strelka_positions.INDEL.PASS.txt ; do
+echo $f
+awk -v v=$x -F: '{d=int("1"v); print $1":"int(int($2/d)v)}' $f | uniq > ${f%.txt}.${x}.txt
+done
+echo merging
+./merge_position_lists.py --output mutation_positions.INDEL.PASS.${x}.csv.gz position_analysis-long/*.manta_strelka_positions.INDEL.PASS.${x}.txt
+done
+
+
+

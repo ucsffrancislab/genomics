@@ -57,6 +57,9 @@ for filename in args.files:
 			names=["chromosome","position"],
 			index_col=["chromosome","position"] )
 		print(d.head())
+		if not d.index.is_unique:
+			quit()
+
 		#d.columns=[[sample],[hkle],[pstatus],[mapq],[rounding]]
 		#d.dtypes
 		d[sample]=1
