@@ -133,5 +133,3 @@ Species: human ( homo sapiens )
 wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz
 
 
-wget ftp://ftp.broadinstitute.org/pub/seq/references/Homo_sapiens_assembly19.fasta
-

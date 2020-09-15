@@ -178,3 +178,9 @@ samtools index chr5/${o}.chr5.bam
 done
 
 
+
+for bam in bam/*bam ; do
+echo $bam
+samtools mpileup --excl-flags UNMAP,SECONDARY,QCFAIL,DUP --min-MQ 40 --region 2:209113112-209113112 ${bam} 2> /dev/null | awk '{print toupper($5)}' |  sed -e 's/\^\]\$//g' -e 's/\(.\)/\1\n/g' | grep -v "^$" | sort | uniq -c
+done
+
