@@ -40,3 +40,17 @@ No need is this subset.
 
 
 
+
+These bam files appear to have been aligned to some version of hg38
+
+
+for f in bam/*bam; do samtools view -H $f  | grep "^@CO" | awk 'BEGIN{FS="genomeDir "}{print $2}' | awk '{print $1}' | awk -F/ '{print $NF}' ; done
+star2.7.0f-GRCh38.d1.vd1-gtfv22
+
+It contains many additional sequences.
+
+samtools view -H bam/10-PAUBLL-09A-01R.bam | grep -c "^@SQ"
+2779
+
+
+
