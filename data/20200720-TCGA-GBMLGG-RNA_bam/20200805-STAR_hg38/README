@@ -27,5 +27,27 @@ normalize_feature_counts.py
 
 
 
+echo "samtools view -f 4 -c ${bam} > ${bam}.f4.count.txt"
+
+for bam in out/*bam ; do
+echo "samtools view -c ${bam} > ${bam}..count.txt"
+echo "samtools view -F 4 -c ${bam} > ${bam}.F4.count.txt"
+done | parallel -J 16 &
+
+
+
+echo "sample,total_read_count,star_hg38_aligned,unaligned" > read_matrix.csv
+ls -1 out/*.STAR.hg38.Aligned.sortedByCoord.out.bam..read_count.txt | awk -F. '{print $1}' | sort | uniq | while read -r sample ; do
+echo $sample
+total=$( cat ${sample}.STAR.hg38.Aligned.sortedByCoord.out.bam..read_count.txt )
+aligned=$( cat ${sample}.STAR.hg38.Aligned.sortedByCoord.out.bam.F4.read_count.txt )
+unaligned=$( cat ${sample}.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt )
+echo $(basename ${sample}),${total},${aligned},${unaligned} >> read_matrix.csv
+done
+
+
+
+
+
 
 
