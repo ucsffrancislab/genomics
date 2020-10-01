@@ -23,29 +23,21 @@ done
 
 input=$1
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
 
-	cp ${input} ${SCRATCH_JOB}/
+	cp ${input} ${TMPDIR}/
 
 #	#	Quick test script so assuming that ${x} includes FULL PATH
-#	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${SCRATCH_JOB}/
+#	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${TMPDIR}/
 
-	scratch_input=${SCRATCH_JOB}/$( basename ${input} )
-	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
-#	scratch_x=${SCRATCH_JOB}/$( basename ${x} )
+	scratch_input=${TMPDIR}/$( basename ${input} )
+	scratch_out=${TMPDIR}/$( basename ${f} )
+#	scratch_x=${TMPDIR}/$( basename ${x} )
 
 #	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}

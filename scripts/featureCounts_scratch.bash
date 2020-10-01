@@ -30,15 +30,7 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 f="${out}"
 if [ -f $f ] && [ ! -w $f ] ; then
@@ -46,19 +38,19 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	mkdir ${SCRATCH_JOB}/input
-	cp ${FILES} ${SCRATCH_JOB}/input/
-	cp ${anno} ${SCRATCH_JOB}/
+	mkdir ${TMPDIR}/input
+	cp ${FILES} ${TMPDIR}/input/
+	cp ${anno} ${TMPDIR}/
 
-	scratch_anno=${SCRATCH_JOB}/$( basename ${anno} )
-	scratch_out=${SCRATCH_JOB}/$( basename ${out} )
+	scratch_anno=${TMPDIR}/$( basename ${anno} )
+	scratch_out=${TMPDIR}/$( basename ${out} )
 
 	#featureCounts -a ${scratch_anno} \
 	featureCounts.bash -a ${scratch_anno} \
 		-o ${scratch_out} \
 		-T ${PBS_NUM_PPN:-1} \
 		${SELECT_ARGS} \
-		${SCRATCH_JOB}/input/*
+		${TMPDIR}/input/*
 
 	#mv --update ${scratch_out} $( dirname ${out} )
 	mv --update ${scratch_out}* $( dirname ${out} )

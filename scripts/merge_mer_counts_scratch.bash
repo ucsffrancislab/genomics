@@ -21,15 +21,7 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 f="${out}"
 if [ -f $f ] && [ ! -w $f ] ; then
@@ -38,23 +30,23 @@ else
 	echo "Creating $f"
 
 	## 1. Copy input files from global disk to local scratch
-	#cp /data/$USER/sample.fq $SCRATCH_JOB/
-	#cp /data/$USER/reference.fa $SCRATCH_JOB/
+	#cp /data/$USER/sample.fq $TMPDIR/
+	#cp /data/$USER/reference.fa $TMPDIR/
 
-	mkdir ${SCRATCH_JOB}/input
-	cp --archive ${SELECT_ARGS} ${SCRATCH_JOB}/input/
+	mkdir ${TMPDIR}/input
+	cp --archive ${SELECT_ARGS} ${TMPDIR}/input/
 
 	## 2. Process input files
-	#cd $SCRATCH_JOB
+	#cd $TMPDIR
 	#/path/to/my_pipeline --cores=$PBS_NUM_PPN reference.fa sample.fq > output.bam
 
-#	scratch_infile=${SCRATCH_JOB}/$( basename ${infile} )
-	scratch_out=${SCRATCH_JOB}/$( basename ${out} )
+#	scratch_infile=${TMPDIR}/$( basename ${infile} )
+	scratch_out=${TMPDIR}/$( basename ${out} )
 
 
 
-	#merge_mer_counts.py ${threads} -o ${scratch_out} ${SCRATCH_JOB}/input/*
-	merge_mer_counts.py -p ${PBS_NUM_PPN:-1} -o ${scratch_out} ${SCRATCH_JOB}/input/*
+	#merge_mer_counts.py ${threads} -o ${scratch_out} ${TMPDIR}/input/*
+	merge_mer_counts.py -p ${PBS_NUM_PPN:-1} -o ${scratch_out} ${TMPDIR}/input/*
 
 
 

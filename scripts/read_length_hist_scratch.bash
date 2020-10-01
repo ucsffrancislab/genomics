@@ -10,14 +10,7 @@ set -x
 
 input=$1
 
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 f=${input}.length_hist.csv.gz
 if [ -f $f ] && [ ! -w $f ] ; then
@@ -25,10 +18,10 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	cp ${input} ${SCRATCH_JOB}/
+	cp ${input} ${TMPDIR}/
 
-	scratch_input=${SCRATCH_JOB}/$( basename ${input} )
-	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
+	scratch_input=${TMPDIR}/$( basename ${input} )
+	scratch_out=${TMPDIR}/$( basename ${f} )
 
 	read_length_hist.bash ${scratch_input}
 

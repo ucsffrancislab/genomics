@@ -30,15 +30,7 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
@@ -47,23 +39,23 @@ else
 
 	scratch_inputs=""
 	if [ -n "${r1}" ] ; then
-		cp ${r1} ${SCRATCH_JOB}/
-		scratch_inputs="${scratch_inputs} -1 ${SCRATCH_JOB}/$( basename ${r1} )"
+		cp ${r1} ${TMPDIR}/
+		scratch_inputs="${scratch_inputs} -1 ${TMPDIR}/$( basename ${r1} )"
 	fi
 	if [ -n "${r2}" ] ; then
-		cp ${r2} ${SCRATCH_JOB}/
-		scratch_inputs="${scratch_inputs} -2 ${SCRATCH_JOB}/$( basename ${r2} )"
+		cp ${r2} ${TMPDIR}/
+		scratch_inputs="${scratch_inputs} -2 ${TMPDIR}/$( basename ${r2} )"
 	fi
 	if [ -n "${u}" ] ; then
-		cp ${u} ${SCRATCH_JOB}/
-		scratch_inputs="${scratch_inputs} -U ${SCRATCH_JOB}/$( basename ${u} )"
+		cp ${u} ${TMPDIR}/
+		scratch_inputs="${scratch_inputs} -U ${TMPDIR}/$( basename ${u} )"
 	fi
 
 	#	Quick test script so assuming that ${x} includes FULL PATH
-	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${SCRATCH_JOB}/
+	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${TMPDIR}/
 
-	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
-	scratch_x=${SCRATCH_JOB}/$( basename ${x} )
+	scratch_out=${TMPDIR}/$( basename ${f} )
+	scratch_x=${TMPDIR}/$( basename ${x} )
 
 #	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
@@ -72,6 +64,6 @@ else
 
 	mv --update ${scratch_out}* $( dirname ${f} )
 #	mv --update ${scratch_out} $( dirname ${f} )
-#	mv --update ${SCRATCH_JOB}/*.err.txt $( dirname ${f} )
+#	mv --update ${TMPDIR}/*.err.txt $( dirname ${f} )
 	chmod a-w ${f}
 fi

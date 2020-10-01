@@ -30,15 +30,7 @@ done
 
 #input=$1
 
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
-
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 if [ -f $f ] && [ ! -w $f ] ; then
 #if [ -d $f ] && [ ! -w $f ] ; then
@@ -46,20 +38,20 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	cp ${input} ${SCRATCH_JOB}/
-	scratch_input=${SCRATCH_JOB}/$( basename ${input} )
+	cp ${input} ${TMPDIR}/
+	scratch_input=${TMPDIR}/$( basename ${input} )
 
-	cp --recursive --dereference ${db} ${SCRATCH_JOB}/
-	scratch_db=${SCRATCH_JOB}/$( basename ${db} )
+	cp --recursive --dereference ${db} ${TMPDIR}/
+	scratch_db=${TMPDIR}/$( basename ${db} )
 
 	if [ -z "${report}" ] ; then
 		report=${f%.gz}
 		report=${report%.txt}
 		report=${report}.report.txt.gz
 	fi
-	scratch_report=${SCRATCH_JOB}/$( basename ${report} )
+	scratch_report=${TMPDIR}/$( basename ${report} )
 
-	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
+	scratch_out=${TMPDIR}/$( basename ${f} )
 
 	bracken.bash ${SELECT_ARGS} -d ${scratch_db} \
 		-w ${scratch_report} \

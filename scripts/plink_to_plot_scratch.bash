@@ -24,14 +24,7 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 pheno_name=$(basename ${pheno} )
 
@@ -41,17 +34,17 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	mkdir -p ${SCRATCH_JOB}/bed
-	cp --archive ${beddir}/*.{bed,bim,fam} ${SCRATCH_JOB}/bed/
-	scratch_beddir=${SCRATCH_JOB}/bed/
+	mkdir -p ${TMPDIR}/bed
+	cp --archive ${beddir}/*.{bed,bim,fam} ${TMPDIR}/bed/
+	scratch_beddir=${TMPDIR}/bed/
 
-	cp --archive ${pheno} ${SCRATCH_JOB}/
-	scratch_pheno=${SCRATCH_JOB}/${pheno_name}
+	cp --archive ${pheno} ${TMPDIR}/
+	scratch_pheno=${TMPDIR}/${pheno_name}
 
-	cp --archive ${covar} ${SCRATCH_JOB}/
-	scratch_covar=${SCRATCH_JOB}/$( basename ${covar} )
+	cp --archive ${covar} ${TMPDIR}/
+	scratch_covar=${TMPDIR}/$( basename ${covar} )
 
-	scratch_out=${SCRATCH_JOB}/out
+	scratch_out=${TMPDIR}/out
 	mkdir -p ${scratch_out}
 
 	for bedfile in ${scratch_beddir}/*.bed ; do

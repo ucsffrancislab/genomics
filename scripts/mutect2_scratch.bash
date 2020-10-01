@@ -57,6 +57,7 @@ done
 #arr=( $(ls) )	Save ls output as an array of files
 #${arr[@]:s:n}	Retrieve n elements starting at index s
 
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 f=$output
 if [ -f $f ] && [ ! -w $f ] ; then

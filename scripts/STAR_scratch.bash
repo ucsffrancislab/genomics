@@ -38,16 +38,7 @@ done
 
 #input=$1
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
-
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 if $sorted; then
 	f="${outFileNamePrefix}Aligned.sortedByCoord.out.${outSAMtype,,}"
@@ -61,18 +52,18 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	cp ${r1} ${SCRATCH_JOB}/
-	scratch_r1=${SCRATCH_JOB}/$( basename ${r1} )
+	cp ${r1} ${TMPDIR}/
+	scratch_r1=${TMPDIR}/$( basename ${r1} )
 
 	if [ -n "${r2}" ] ; then
-		cp ${r2} ${SCRATCH_JOB}/
-		scratch_r2=${SCRATCH_JOB}/$( basename ${r2} )
+		cp ${r2} ${TMPDIR}/
+		scratch_r2=${TMPDIR}/$( basename ${r2} )
 	fi
 
-	cp -r ${genomeDir} ${SCRATCH_JOB}/
-	scratch_genomeDir=${SCRATCH_JOB}/$( basename ${genomeDir} )
+	cp -r ${genomeDir} ${TMPDIR}/
+	scratch_genomeDir=${TMPDIR}/$( basename ${genomeDir} )
 
-	scratch_out=${SCRATCH_JOB}/outdir
+	scratch_out=${TMPDIR}/outdir
 
 	mkdir -p ${scratch_out}/
 	cd ${scratch_out}/

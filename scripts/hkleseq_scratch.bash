@@ -31,16 +31,7 @@ done
 
 #input=$1
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
-
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 #if [ -f $f ] && [ ! -w $f ] ; then
 if [ -d $f ] && [ ! -w $f ] ; then
@@ -48,17 +39,17 @@ if [ -d $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	cp ${r1} ${SCRATCH_JOB}/
-	cp ${r2} ${SCRATCH_JOB}/
-	cp -r ${index_dir} ${SCRATCH_JOB}/
-	cp ${human}.?.bt2 ${SCRATCH_JOB}/
-	cp ${human}.rev.?.bt2 ${SCRATCH_JOB}/
+	cp ${r1} ${TMPDIR}/
+	cp ${r2} ${TMPDIR}/
+	cp -r ${index_dir} ${TMPDIR}/
+	cp ${human}.?.bt2 ${TMPDIR}/
+	cp ${human}.rev.?.bt2 ${TMPDIR}/
 
-	scratch_r1=${SCRATCH_JOB}/$( basename ${r1} )
-	scratch_r2=${SCRATCH_JOB}/$( basename ${r2} )
-	scratch_index_dir=${SCRATCH_JOB}/$( basename ${index_dir} )
-	scratch_out=${SCRATCH_JOB}/outdir
-	scratch_human=${SCRATCH_JOB}/$( basename ${human} )
+	scratch_r1=${TMPDIR}/$( basename ${r1} )
+	scratch_r2=${TMPDIR}/$( basename ${r2} )
+	scratch_index_dir=${TMPDIR}/$( basename ${index_dir} )
+	scratch_out=${TMPDIR}/outdir
+	scratch_human=${TMPDIR}/$( basename ${human} )
 
 	mkdir -p ${scratch_out}/${base}
 	cd ${scratch_out}/${base}
@@ -82,6 +73,6 @@ else
 	fi
 	mv --update ${scratch_out}/${base} ${f}
 #	mkdir -p $( dirname ${f} )	#	just in case
-#	mv --update ${SCRATCH_JOB}/outdir/* $( dirname ${f} )
+#	mv --update ${TMPDIR}/outdir/* $( dirname ${f} )
 	chmod -R a-w ${f}
 fi

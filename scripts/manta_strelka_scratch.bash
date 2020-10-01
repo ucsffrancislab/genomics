@@ -31,15 +31,7 @@ done
 
 #input=$1
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 #if [ -f $f ] && [ ! -w $f ] ; then
 if [ -d $dir ] && [ ! -w $dir ] ; then
@@ -47,42 +39,42 @@ if [ -d $dir ] && [ ! -w $dir ] ; then
 else
 	echo "Creating $dir"
 
-	cp ${normal} ${SCRATCH_JOB}/
-	cp ${normal}.bai ${SCRATCH_JOB}/
-	cp ${tumor} ${SCRATCH_JOB}/
-	cp ${tumor}.bai ${SCRATCH_JOB}/
+	cp ${normal} ${TMPDIR}/
+	cp ${normal}.bai ${TMPDIR}/
+	cp ${tumor} ${TMPDIR}/
+	cp ${tumor}.bai ${TMPDIR}/
 
-	cp ${reference} ${SCRATCH_JOB}/
-	cp ${reference}.fai ${SCRATCH_JOB}/
-	scratch_reference=${SCRATCH_JOB}/$( basename ${reference} )
+	cp ${reference} ${TMPDIR}/
+	cp ${reference}.fai ${TMPDIR}/
+	scratch_reference=${TMPDIR}/$( basename ${reference} )
 
-	scratch_normal=${SCRATCH_JOB}/$( basename ${normal} )
-	scratch_tumor=${SCRATCH_JOB}/$( basename ${tumor} )
+	scratch_normal=${TMPDIR}/$( basename ${normal} )
+	scratch_tumor=${TMPDIR}/$( basename ${tumor} )
 
-	mkdir -p ${SCRATCH_JOB}/runDir	#	just in case
+	mkdir -p ${TMPDIR}/runDir	#	just in case
 
 	~/.local/manta/bin/configManta.py \
 		--referenceFasta ${scratch_reference} \
 		--normalBam ${scratch_normal} \
 		--tumorBam ${scratch_tumor} \
-		--runDir ${SCRATCH_JOB}/runDir/manta \
+		--runDir ${TMPDIR}/runDir/manta \
 		${SELECT_ARGS}
 
-	${SCRATCH_JOB}/runDir/manta/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
-	scratch_indels=${SCRATCH_JOB}/runDir/manta/results/variants/candidateSmallIndels.vcf.gz
+	scratch_indels=${TMPDIR}/runDir/manta/results/variants/candidateSmallIndels.vcf.gz
 
 	~/.local/strelka/bin/configureStrelkaSomaticWorkflow.py \
 		--referenceFasta ${scratch_reference} \
 		--normalBam ${scratch_normal} \
 		--tumorBam ${scratch_tumor} \
 		--indelCandidates ${scratch_indels} \
-		--runDir ${SCRATCH_JOB}/runDir/strelka \
+		--runDir ${TMPDIR}/runDir/strelka \
 		${SELECT_ARGS}
 
-	${SCRATCH_JOB}/runDir/strelka/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
 	mkdir -p ${dir}
-	mv --update ${SCRATCH_JOB}/runDir/* ${dir}/
+	mv --update ${TMPDIR}/runDir/* ${dir}/
 	chmod -R a-w ${dir}
 fi

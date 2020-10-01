@@ -23,16 +23,7 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 f="${out}"
 if [ -f $f ] && [ ! -w $f ] ; then
@@ -40,12 +31,12 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	cp ${query} ${SCRATCH_JOB}/
-	cp ${db}.dmnd ${SCRATCH_JOB}/
+	cp ${query} ${TMPDIR}/
+	cp ${db}.dmnd ${TMPDIR}/
 
-	scratch_db=${SCRATCH_JOB}/$( basename ${db} )
-	scratch_query=${SCRATCH_JOB}/$( basename ${query} )
-	scratch_out=${SCRATCH_JOB}/$( basename ${out} )
+	scratch_db=${TMPDIR}/$( basename ${db} )
+	scratch_query=${TMPDIR}/$( basename ${query} )
+	scratch_out=${TMPDIR}/$( basename ${out} )
 
 	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}

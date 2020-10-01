@@ -37,15 +37,7 @@ done
 
 #input=$1
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 if [ -f $F ] && [ ! -w $F ] ; then
 	echo "Write-protected $F exists. Skipping."
@@ -54,25 +46,25 @@ if [ -f $F ] && [ ! -w $F ] ; then
 else
 	echo "Creating $F"
 
-	cp ${filename} ${SCRATCH_JOB}/
-	#cp ${normal}.bai ${SCRATCH_JOB}/
+	cp ${filename} ${TMPDIR}/
+	#cp ${normal}.bai ${TMPDIR}/
 
-	scratch_filename=${SCRATCH_JOB}/$( basename ${filename} )
+	scratch_filename=${TMPDIR}/$( basename ${filename} )
 
-##	scratch_outputdir=${SCRATCH_JOB}/$( basename ${outputdir} )/out
-#	scratch_outputdir=${SCRATCH_JOB}/out
+##	scratch_outputdir=${TMPDIR}/$( basename ${outputdir} )/out
+#	scratch_outputdir=${TMPDIR}/out
 #	mkdir -p ${scratch_outputdir}
 
 #	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} outputdir=${scratch_outputdir}
 
 #	#mkdir -p $( dirname ${dir} )	#	just in case
-#	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+#	#mv --update ${TMPDIR}/runDir/* $( dirname ${dir} )
 #	mkdir -p ${outputdir}
 #	mv --update ${scratch_outputdir}/* ${outputdir}/
 #	#chmod -R a-w ${outputdir}
 
 
-	scratch_out=${SCRATCH_JOB}/out
+	scratch_out=${TMPDIR}/out
 	mkdir -p ${scratch_out}
 
 	#bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
@@ -87,7 +79,7 @@ else
 	| awk 'BEGIN{FS=OFS="\t"}(/^@/){print}(!/^@/){sub(/\/[12]$/, "", $1); print}' \
 	| bamtofastq ${SELECT_ARGS} \
 		inputformat=sam \
-		T=${SCRATCH_JOB}/$( basename $T ) \
+		T=${TMPDIR}/$( basename $T ) \
 		F=${scratch_out}/$( basename $F ) \
 		F2=${scratch_out}/$( basename $F2 ) \
 		S=${scratch_out}/$( basename $S ) \

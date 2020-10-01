@@ -29,15 +29,7 @@ done
 
 #input=$1
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 #if [ -f $f ] && [ ! -w $f ] ; then
 if [ -d $dir ] && [ ! -w $dir ] ; then
@@ -45,16 +37,16 @@ if [ -d $dir ] && [ ! -w $dir ] ; then
 else
 	echo "Creating $dir"
 
-	cp ${normal} ${SCRATCH_JOB}/
-	cp ${normal}.bai ${SCRATCH_JOB}/
-	cp ${tumor} ${SCRATCH_JOB}/
-	cp ${tumor}.bai ${SCRATCH_JOB}/
-	cp ${reference} ${SCRATCH_JOB}/
-	cp ${reference}.fai ${SCRATCH_JOB}/
+	cp ${normal} ${TMPDIR}/
+	cp ${normal}.bai ${TMPDIR}/
+	cp ${tumor} ${TMPDIR}/
+	cp ${tumor}.bai ${TMPDIR}/
+	cp ${reference} ${TMPDIR}/
+	cp ${reference}.fai ${TMPDIR}/
 
-	scratch_normal=${SCRATCH_JOB}/$( basename ${normal} )
-	scratch_tumor=${SCRATCH_JOB}/$( basename ${tumor} )
-	scratch_reference=${SCRATCH_JOB}/$( basename ${reference} )
+	scratch_normal=${TMPDIR}/$( basename ${normal} )
+	scratch_tumor=${TMPDIR}/$( basename ${tumor} )
+	scratch_reference=${TMPDIR}/$( basename ${reference} )
 
 #	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
@@ -64,14 +56,14 @@ else
 		--normalBam ${scratch_normal} \
 		--tumorBam ${scratch_tumor} \
 		--referenceFasta ${scratch_reference} \
-		--runDir ${SCRATCH_JOB}/runDir \
+		--runDir ${TMPDIR}/runDir \
 		${SELECT_ARGS}
 
-	${SCRATCH_JOB}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${TMPDIR}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
 
 	#mkdir -p $( dirname ${dir} )	#	just in case
-	#mv --update ${SCRATCH_JOB}/runDir/* $( dirname ${dir} )
+	#mv --update ${TMPDIR}/runDir/* $( dirname ${dir} )
 	mkdir -p ${dir}
-	mv --update ${SCRATCH_JOB}/runDir/* ${dir}/
+	mv --update ${TMPDIR}/runDir/* ${dir}/
 	chmod -R a-w ${dir}
 fi

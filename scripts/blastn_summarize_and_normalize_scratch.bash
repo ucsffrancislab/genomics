@@ -31,47 +31,21 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-#cd $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
-
-
-## 1. Copy input files from global disk to local scratch
-#	mkdir ${SCRATCH_JOB}/input
-#	cp --archive ${SELECT_ARGS} ${SCRATCH_JOB}/input/
-
-
-
-## 2. Process input files
-#cd $SCRATCH_JOB
-#/path/to/my_pipeline --cores=$PBS_NUM_PPN reference.fa sample.fq > output.bam
-
-#scratch_input=${SCRATCH_JOB}/$( basename ${input} )
-#scratch_out=${SCRATCH_JOB}/$( basename ${out} )
-
-
-
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 #	Ex.
 #	input="${base}.STAR.${ref}.unmapped.diamond.${dref}.csv.gz"
 
 inbase=${input%.csv.gz}
-scratch_inbase=${SCRATCH_JOB}/$( basename ${inbase} )
+scratch_inbase=${TMPDIR}/$( basename ${inbase} )
 
 f="${inbase}.summary.txt.gz"
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
-	cp --archive ${input} ${SCRATCH_JOB}/
-	scratch_input=${SCRATCH_JOB}/$( basename ${input} )
-	#~/.local/bin/blastn_summary.bash -input ${SCRATCH_JOB}/$( basename ${input} )
+	cp --archive ${input} ${TMPDIR}/
+	scratch_input=${TMPDIR}/$( basename ${input} )
+	#~/.local/bin/blastn_summary.bash -input ${TMPDIR}/$( basename ${input} )
 
 	gunzip ${scratch_input}
 	awk -F"\t" '( $11 < '${max}' ){print $1"\t"$2}' ${scratch_input%.gz} \
@@ -96,7 +70,7 @@ else
 fi
 
 summary=$f
-scratch_summary=${SCRATCH_JOB}/$( basename ${summary} )
+scratch_summary=${TMPDIR}/$( basename ${summary} )
 
 #			normalize
 
@@ -109,19 +83,19 @@ if [ -n "${unmapped_read_count}" ] ; then
 	else
 
 		if [ ! -f ${scratch_summary} ] ; then
-			cp --archive ${inbase}.summary.txt.gz ${SCRATCH_JOB}/
+			cp --archive ${inbase}.summary.txt.gz ${TMPDIR}/
 		fi
 
 		#	~/.local/bin/normalize_summary.bash -input ${scratch_summary} -d ${unmapped_read_count}
 
-		gunzip -c ${scratch_summary} > ${SCRATCH_JOB}/tmp_summary
+		gunzip -c ${scratch_summary} > ${TMPDIR}/tmp_summary
 		awk -F"\t" -v n=1000000 -v d=${unmapped_read_count} '{ print $1*n/d"\t"$2 }' \
-			${SCRATCH_JOB}/tmp_summary > ${SCRATCH_JOB}/tmp_normal
-		gzip -c ${SCRATCH_JOB}/tmp_normal > ${SCRATCH_JOB}/$( basename ${f} )
-		\rm ${SCRATCH_JOB}/{tmp_summary,tmp_normal}
+			${TMPDIR}/tmp_summary > ${TMPDIR}/tmp_normal
+		gzip -c ${TMPDIR}/tmp_normal > ${TMPDIR}/$( basename ${f} )
+		\rm ${TMPDIR}/{tmp_summary,tmp_normal}
 
-		chmod a-w ${SCRATCH_JOB}/$( basename ${f} )
-		cp --archive ${SCRATCH_JOB}/$( basename ${f} ) $( dirname ${input} )
+		chmod a-w ${TMPDIR}/$( basename ${f} )
+		cp --archive ${TMPDIR}/$( basename ${f} ) $( dirname ${input} )
 	fi
 
 fi
@@ -136,17 +110,17 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 	else
 
 		if [ ! -f ${scratch_summary} ] ; then
-			cp --archive ${summary} ${SCRATCH_JOB}/
+			cp --archive ${summary} ${TMPDIR}/
 		fi
 
 		#~/.local/bin/sum_summary.bash -input ${scratch_summary} -level ${level}
 
 		#	could create script to pipe to bash then sum output? ???
 
-		scratch_db=${SCRATCH_JOB}/$( basename ${db} )
+		scratch_db=${TMPDIR}/$( basename ${db} )
 		if [ ! -f ${scratch_db} ] ; then
 			#	takes about 3 minutes
-			cp ${db} ${SCRATCH_JOB}/
+			cp ${db} ${TMPDIR}/
 			chmod +w ${scratch_db}
 		fi
 
@@ -165,10 +139,10 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 #			for( s in sums ){
 #				print sums[s]"\t"s
 #			}
-#		}' ${SCRATCH_JOB}/tmp_summary > ${SCRATCH_JOB}/tmp_sumsummary
-#		sort -k 2n ${SCRATCH_JOB}/tmp_sumsummary > ${SCRATCH_JOB}/tmp_sumsummary_sorted
-#		gzip -c ${SCRATCH_JOB}/tmp_sumsummary_sorted > ${SCRATCH_JOB}/$( basename ${f} )
-#		\rm ${SCRATCH_JOB}/{tmp_summary,tmp_sumsummary,tmp_sumsummary_sorted}
+#		}' ${TMPDIR}/tmp_summary > ${TMPDIR}/tmp_sumsummary
+#		sort -k 2n ${TMPDIR}/tmp_sumsummary > ${TMPDIR}/tmp_sumsummary_sorted
+#		gzip -c ${TMPDIR}/tmp_sumsummary_sorted > ${TMPDIR}/$( basename ${f} )
+#		\rm ${TMPDIR}/{tmp_summary,tmp_sumsummary,tmp_sumsummary_sorted}
 
 		table_exists=$( sqlite3 ${scratch_db} "SELECT name FROM sqlite_master WHERE type='table' AND name='query'" )
 
@@ -177,9 +151,9 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 			sqlite3 ${scratch_db} "
 				CREATE TABLE query ( count INTEGER, accession VARCHAR(255) NOT NULL );
 				CREATE UNIQUE INDEX aix ON query(accession);"
-			gunzip -c ${scratch_summary} > ${SCRATCH_JOB}/tmp_summary
-			sqlite3 ${scratch_db} -cmd '.separator "\t"' ".import ${SCRATCH_JOB}/tmp_summary query"
-			\rm ${SCRATCH_JOB}/tmp_summary
+			gunzip -c ${scratch_summary} > ${TMPDIR}/tmp_summary
+			sqlite3 ${scratch_db} -cmd '.separator "\t"' ".import ${TMPDIR}/tmp_summary query"
+			\rm ${TMPDIR}/tmp_summary
 		fi
 
 #	Some taxomies contain : but not ;
@@ -191,7 +165,7 @@ for level in $( echo ${levels} | tr ',' ' ' ) ; do
 #	And it only takes a couple minutes.
 
 
-sqlite3 -cmd '.mode csv' -cmd '.separator "\t" "\n"' -cmd ".output ${SCRATCH_JOB}/${level}.csv" ${scratch_db} "
+sqlite3 -cmd '.mode csv' -cmd '.separator "\t" "\n"' -cmd ".output ${TMPDIR}/${level}.csv" ${scratch_db} "
 SELECT SUM(count), ${level} FROM (
 SELECT count, CASE
 WHEN INSTR(${level},';')>0 THEN SUBSTR(${level}, 1, INSTR(${level},';')-1) 
@@ -225,14 +199,14 @@ LEFT JOIN taxa t8 ON t8.ncbi_taxid = t7.parent_taxid ) AS abc ) AS def ) AS ghi 
 
 		#	ORDER BY ${level}
 
-		gzip -c ${SCRATCH_JOB}/${level}.csv > ${SCRATCH_JOB}/$( basename ${f} )
-		\rm ${SCRATCH_JOB}/${level}.csv
+		gzip -c ${TMPDIR}/${level}.csv > ${TMPDIR}/$( basename ${f} )
+		\rm ${TMPDIR}/${level}.csv
 
-		chmod a-w ${SCRATCH_JOB}/$( basename ${f} )
-		cp --archive ${SCRATCH_JOB}/$( basename ${f} ) $( dirname ${input} )
+		chmod a-w ${TMPDIR}/$( basename ${f} )
+		cp --archive ${TMPDIR}/$( basename ${f} ) $( dirname ${input} )
 	fi
 	sumsummary=${f}
-	scratch_sumsummary=${SCRATCH_JOB}/$( basename ${sumsummary} )
+	scratch_sumsummary=${TMPDIR}/$( basename ${sumsummary} )
 
 	#			normalize
 
@@ -245,19 +219,19 @@ LEFT JOIN taxa t8 ON t8.ncbi_taxid = t7.parent_taxid ) AS abc ) AS def ) AS ghi 
 		else
 
 			if [ ! -f ${scratch_sumsummary} ] ; then
-				cp --archive ${sumsummary} ${SCRATCH_JOB}/
+				cp --archive ${sumsummary} ${TMPDIR}/
 			fi
 
 			#~/.local/bin/normalize_summary.bash -input ${scratch_sumsummary} -d ${unmapped_read_count}
 
-			gunzip -c ${scratch_sumsummary} > ${SCRATCH_JOB}/tmp_summary
+			gunzip -c ${scratch_sumsummary} > ${TMPDIR}/tmp_summary
 			awk -F"\t" -v n=1000000 -v d=${unmapped_read_count} '{ print $1*n/d"\t"$2 }' \
-				${SCRATCH_JOB}/tmp_summary > ${SCRATCH_JOB}/tmp_normal
-			gzip -c ${SCRATCH_JOB}/tmp_normal > ${SCRATCH_JOB}/$( basename ${f} )
-			\rm ${SCRATCH_JOB}/{tmp_summary,tmp_normal}
+				${TMPDIR}/tmp_summary > ${TMPDIR}/tmp_normal
+			gzip -c ${TMPDIR}/tmp_normal > ${TMPDIR}/$( basename ${f} )
+			\rm ${TMPDIR}/{tmp_summary,tmp_normal}
 
-			chmod a-w ${SCRATCH_JOB}/$( basename ${f} )
-			cp --archive ${SCRATCH_JOB}/$( basename ${f} ) $( dirname ${input} )
+			chmod a-w ${TMPDIR}/$( basename ${f} )
+			cp --archive ${TMPDIR}/$( basename ${f} ) $( dirname ${input} )
 		fi
 	fi
 

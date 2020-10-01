@@ -32,15 +32,7 @@ done
 
 #input=$1
 
-## 0. Create job-specific scratch folder that ...
-#SCRATCH_JOB=/scratch/$USER/job/$PBS_JOBID
-#mkdir -p $SCRATCH_JOB
-##    ... is automatically removed upon exit
-##    (regardless of success or failure)
-#trap "{ cd /scratch/; chmod -R +w $SCRATCH_JOB/; \rm -rf $SCRATCH_JOB/ ; }" EXIT
-
-SCRATCH_JOB=$TMPDIR
-
+trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 if [ -f $f ] && [ ! -w $f ] ; then
 #if [ -d $f ] && [ ! -w $f ] ; then
@@ -48,23 +40,23 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	cp ${r1} ${SCRATCH_JOB}/
-	scratch_r1=${SCRATCH_JOB}/$( basename ${r1} )
+	cp ${r1} ${TMPDIR}/
+	scratch_r1=${TMPDIR}/$( basename ${r1} )
 	if [ -n "${r2}" ] ; then
-		cp ${r2} ${SCRATCH_JOB}/
-		scratch_r2=${SCRATCH_JOB}/$( basename ${r2} )
+		cp ${r2} ${TMPDIR}/
+		scratch_r2=${TMPDIR}/$( basename ${r2} )
 	fi
-	cp --recursive --dereference ${db} ${SCRATCH_JOB}/
-	scratch_db=${SCRATCH_JOB}/$( basename ${db} )
+	cp --recursive --dereference ${db} ${TMPDIR}/
+	scratch_db=${TMPDIR}/$( basename ${db} )
 
 	if [ -z "${report}" ] ; then
 		report=${f%.gz}
 		report=${report%.txt}
 		report=${report}.report.txt.gz
 	fi
-	scratch_report=${SCRATCH_JOB}/$( basename ${report} )
+	scratch_report=${TMPDIR}/$( basename ${report} )
 
-	scratch_out=${SCRATCH_JOB}/$( basename ${f} )
+	scratch_out=${TMPDIR}/$( basename ${f} )
 
 	kraken2.bash ${SELECT_ARGS} --db ${scratch_db} \
 		--report ${scratch_report} \
