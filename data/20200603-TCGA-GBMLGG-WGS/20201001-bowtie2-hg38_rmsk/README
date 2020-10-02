@@ -1,0 +1,18 @@
+
+./bowtie2-hg38_rmsk.bash
+
+
+
+	0x4	UNMAP         .. segment unmapped
+	0x8	MUNMAP        .. next segment in the template unmapped
+
+
+samtools view /scratch/1968740.cclc01.som.ucsf.edu/02-2483-01A-01D-1494.bowtie2.hg38_rmsk.bam | awk '( ( and($2,4) && !and($2,8) ) || ( !and($2,4) && and($2,8) ) ){print}'
+
+
+samtools view /scratch/1968740.cclc01.som.ucsf.edu/02-2483-01A-01D-1494.bowtie2.hg38_rmsk.bam | awk '( and($2,4) && !and($2,8) ){print}'
+
+samtools view /scratch/1968740.cclc01.som.ucsf.edu/02-2483-01A-01D-1494.bowtie2.hg38_rmsk.bam | awk -F"\t" '( and($2,4) && !and($2,8) ){print ">"$1"-"$3; print $10}' 
+
+
+
