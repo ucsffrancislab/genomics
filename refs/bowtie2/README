@@ -42,3 +42,8 @@ done
 
 bowtie2-build --threads 8 /francislab/data1/refs/fasta/human_mature.ACTG.fa.gz /francislab/data1/refs/bowtie2/human_mature
 
+
+20201001
+bowtie2-build --threads 64 /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk/rmsk.fa.gz hg38_rmsk
+
+
