@@ -1,2 +1,9 @@
 
 
+for bed in ./igv.broadinstitute.org/annotations/hg38/rmsk/rmsk.bed.gz ; do
+echo $bed
+fasta=${bed%.bed.gz}.fa
+bedtools getfasta -fi /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa -bed $bed -name+ -fo $fasta
+gzip $fasta
+done
+
