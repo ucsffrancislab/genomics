@@ -1,2 +1,15 @@
 
 
+./kraken2.bash
+
+The output of kraken-report is tab-delimited, with one line per taxon. The fields of the output, from left-to-right, are as follows:
+
+Percentage of reads covered by the clade rooted at this taxon
+Number of reads covered by the clade rooted at this taxon
+Number of reads assigned directly to this taxon
+A rank code, indicating (U)nclassified, (D)omain, (K)ingdom, (P)hylum, (C)lass, (O)rder, (F)amily, (G)enus, or (S)pecies. All other ranks are simply '-'.
+NCBI taxonomy ID
+indented scientific name
+
+
+

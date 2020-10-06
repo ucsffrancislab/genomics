@@ -25,7 +25,7 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/[1-9]*_R1.fastq.gz ; do
+for r1 in ${INDIR}/*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
