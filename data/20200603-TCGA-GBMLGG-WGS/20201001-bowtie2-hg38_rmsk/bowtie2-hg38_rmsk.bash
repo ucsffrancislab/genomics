@@ -39,6 +39,7 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 
 	outbase="${DIR}/${base}.bowtie2.hg38_rmsk"
 	f=${outbase}.bam
+#	f=${outbase}.fa.gz
 	#if [ -d $f ] && [ ! -w $f ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -56,13 +57,16 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 
 		echo "Using scratch:${scratch}"
 
+#	discordant_unmapped_mates_scratch.bash
+
 		qsub -N ${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 			-l feature=nocommunal \
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/bowtie2_scratch.bash \
-			-F "--sort --very-sensitive --xeq --threads ${threads} -x ${index} \
+			-F "--very-sensitive --threads ${threads} -x ${index} \
 					--rg-id ${base} --rg "SM:${base}" -1 ${r1} -2 ${r2} -o ${f}"
+			#-F "--sort --very-sensitive --xeq --threads ${threads} -x ${index} \
 	fi
 
 #done < ALL-P2.fastq_files.txt

@@ -14,5 +14,38 @@ samtools view /scratch/1968740.cclc01.som.ucsf.edu/02-2483-01A-01D-1494.bowtie2.
 
 samtools view /scratch/1968740.cclc01.som.ucsf.edu/02-2483-01A-01D-1494.bowtie2.hg38_rmsk.bam | awk -F"\t" '( and($2,4) && !and($2,8) ){print ">"$1"-"$3; print $10}' 
 
+for bam in out/*bam ; do
+echo $bam
+fasta=${bam%.bam}.fa.gz
+echo $fasta
+samtools view $bam | awk -F"\t" '( and($2,4) && !and($2,8) ){print ">"$1"-"$3; print $10}' | gzip > ${fasta}
+done
+
+
+	dsk.bash \
+		-nb-cores ${PBS_NUM_PPN:-1} -kmer-size ${k} -abundance-min 0 \
+		-max-memory $[vmem/2]000 -file ${unmapped_fasta} -out ${outbase}.h5
+
+	dsk2ascii.bash -nb-cores ${PBS_NUM_PPN:-1} -file ${h5} -out ${outbase}.txt.gz
+
+
+
+for fasta in out/*fa.gz; do
+#echo $fasta
+outbase=${fasta%.fa.gz}.dsk
+#echo $outbase
+h5="${outbase}.h5"
+echo "dsk.bash -max-memory 100000 -nb-cores 16 -kmer-size 31 -abundance-min 0 -file ${fasta} -out ${outbase}.h5 > ${outbase}.h5.out 2> ${outbase}.h5.err"
+done | parallel &
+
+
+for h5 in out/*h5; do
+outbase=${h5%.h5}2ascii
+echo "dsk2ascii.bash -nb-cores 16 -file ${h5} -out ${outbase}.txt.gz > ${outbase}.out 2> ${outbase}.err"
+done | parallel &
+
+
+
+
 
 
