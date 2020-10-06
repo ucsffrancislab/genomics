@@ -44,6 +44,13 @@ print( "Using separator :", sep, ":" )
 
 
 
+
+#	some taxonomy level names are the same so need to merge level and name
+
+
+
+
+
 data_frames = []
 
 for filename in args.files:  
