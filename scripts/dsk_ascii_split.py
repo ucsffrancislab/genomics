@@ -1,13 +1,48 @@
 #!/usr/bin/env python
 
-import pandas as pd
+import os    
 import sys
+import pandas as pd
+
+# include standard modules
+import argparse
+
+# initiate the parser
+parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
+
+parser.add_argument('files', nargs='*', help='files help')
+parser.add_argument('-V','--version', action='version', version='%(prog)s 1.1')
+parser.add_argument('-l', '--prefix_length', nargs=1, type=int, default=2,
+	help='prefix length when grouping mers to %(prog)s (default: %(default)s)')
+
+#parser.add_argument('-o', '--output', nargs=1, type=str, default='merged.csv.gz',
+#	help='output csv filename to %(prog)s (default: %(default)s)')
+#parser.add_argument('-s', '--sep', nargs=1, type=str, default='\t',
+#	help='the separator to %(prog)s (default: %(default)s)')
+
+#	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
+#parser.add_argument('--int', action='store_true',
+#	help='convert values to ints to %(prog)s (default: %(default)s)')
+
+# read arguments from the command line
+args = parser.parse_args()
 
 
+#	Note that nargs=1 produces a list of one item. This is different from the default, in which the item is produced by itself.
+#	THAT IS JUST STUPID! And now I have to check it manually. Am I the only one?
 
 
+#if isinstance(args.output,list):
+#	output=args.output[0]
+#else:
+#	output=args.output
+#print( "Using output name: ", output )
 
-
+if isinstance(args.prefix_length,list):
+	prefix_length=args.prefix_length[0]
+else:
+	prefix_length=args.prefix_length
+print( "Using prefix_length :", prefix_length, ":" )
 
 
 
@@ -77,20 +112,33 @@ def num2dna(dnanumstr):
       if n==0:
          return dnastart+dnastring
 
-input_filename = sys.argv[1]
-base_filename = input_filename.rstrip('.txt.gz')
 
-df = pd.read_csv( input_filename,
-	sep=" ",
-	header=None,
-	names=["mer","count"],
-	dtype={"count": int},
-	index_col=["mer"] )
-#	usecols=[0,1],
+for filename in args.files:  
+	print(filename)
+	if os.path.isfile(filename) and os.path.getsize(filename) > 0:
+		#basename=os.path.basename(filename)
+		#sample=basename.split(".")[0]	#	everything before the first "."
+		#print("Reading "+filename+": Sample "+sample)
+		print("Reading "+filename)
 
-for i in range(4**2):
-	prefix=num2dna(fromb10tob4("%02d" % i))
-	outfile=base_filename+"-"+prefix+".txt.gz"
-	print("Creating "+outfile)
-	df[df.index.str.startswith(prefix)].to_csv(filename,header=False,sep=" ")
+		basedir = filename.rstrip('.txt.gz')
+		if not os.path.exists(basedir):
+			os.mkdir(basedir)
+		basefile=os.path.basename(basedir)
+
+		df = pd.read_csv( filename,
+			sep=" ",
+			header=None,
+			names=["mer","count"],
+			dtype={"count": int},
+			index_col=["mer"] )
+		#	usecols=[0,1],
+		
+		for i in range(4**prefix_length):
+			prefix=num2dna(fromb10tob4(("%0"+str(prefix_length)+"d") % i))
+			outfile=basedir+"/"+basefile+"-"+prefix+".txt.gz"
+			print("Creating "+outfile)
+			df[df.index.str.startswith(prefix)].to_csv(outfile,header=False,sep=" ")
+	else:
+		print(filename+" not found or of 0 size")
 

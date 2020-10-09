@@ -42,7 +42,9 @@ else
 #		gzip ${filebase}-*.txt
 
 		#	assuming k=31 and u=15
-		dsk_ascii_split.py ${outbase}.txt.gz
+		#dsk_ascii_split.py ${outbase}.txt.gz
+		
+		dsk_ascii_split.py --prefix_length=$[k-u] ${outbase}.txt.gz
 
 	fi
 

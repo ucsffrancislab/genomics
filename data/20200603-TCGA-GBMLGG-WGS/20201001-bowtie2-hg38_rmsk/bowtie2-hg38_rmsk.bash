@@ -25,7 +25,9 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/02*_R1.fastq.gz ; do
+#for r1 in ${INDIR}/02*_R1.fastq.gz ; do
+#for r1 in ${INDIR}/06-0125*_R1.fastq.gz ; do
+for r1 in ${INDIR}/02-2485*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
@@ -59,8 +61,8 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 
 		#	dev discordant_unmapped_mates_scratch.bash?
 
+		#	-l feature=nocommunal \
 		bowtie2id=$( qsub -N ${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-			-l feature=nocommunal \
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/discordant_unmapped_mates_scratch.bash \
@@ -70,7 +72,6 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 	fi
 	all_reads=${f}
 
-	#	subset fasta based on Name, Class or Family
 
 	for g in ';Family=Alu:' ';Class=LINE;' ; do
 		n=${g#*=}
@@ -92,8 +93,8 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 				depend=""
 			fi
 #				-l gres=scratch:${scratch} \
+#				-l feature=nocommunal \
 			fsid=$( qsub ${depend} -N fs${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-l feature=nocommunal \
 				-j oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/fasta_select.bash \
 				-F "-i ${all_reads} -p '${g}' -o ${f}" )
@@ -115,8 +116,8 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 				depend=""
 			fi
 #				-l gres=scratch:${scratch} \
+#				-l feature=nocommunal \
 			dskid=$( qsub ${depend} -N dsk${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-l feature=nocommunal \
 				-j oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/dsk.bash \
 				-F "-max-memory ${vmem} -nb-cores ${threads} -kmer-size ${k} \
@@ -135,16 +136,16 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 				depend=""
 			fi
 #				-l gres=scratch:${scratch} \
+#				-l feature=nocommunal \
 			asciiid=$( qsub ${depend} -N d2a${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-l feature=nocommunal \
-				-j oe -o ${outbase}.${date}.out.txt \
+				-j oe -o ${outbase}.dsk2ascii.${date}.out.txt \
 				~/.local/bin/dsk2ascii.bash \
 				-F "-nb-cores ${threads} -file ${outbase}.h5 -out ${f}" )
 			echo "${asciiid}"
 		fi
 
 		splitid=''
-		d=${outbase}
+		f=${outbase}	#	DIRECTORY HERE
 		#if [ -f $f ] && [ ! -w $f ] ; then
 		if [ -d $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
@@ -164,23 +165,17 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 			scratch=$( echo $(( ((2*${input_size})/${threads}/1000000000)+1 )) )
 			echo "Using scratch:${scratch}"
 
-			splitid=$( qsub ${depend} -N split${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-l feature=nocommunal \
+#				-l feature=nocommunal \
+			#	Very serial process. Could be 2 and 15. Not true anymore.
+			#splitid=$( qsub ${depend} -N split${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			splitid=$( qsub ${depend} -N split${base} \
+				-l nodes=1:ppn=${threads} -l vmem=250gb \
 				-l gres=scratch:${scratch} \
-				-j oe -o ${outbase}.${date}.out.txt \
+				-j oe -o ${outbase}.split.${date}.out.txt \
 				~/.local/bin/dsk_ascii_split_scratch.bash \
-				-F "-k 31 -u 15 -outbase ${outbase}" )
+				-F "-k 31 -u 15 -outbase ${f}" )
 			echo "${splitid}"
 		fi
-
-
-#qsub -N ${jobbase}.uslt.21 \
-#  -l feature=nocommunal \
-#  -l gres=scratch:50 \
-#  -l nodes=1:ppn=8 -l vmem=16gb \
-#  -j oe -o ${outbase}.${date}.out.txt \
-#done
-
 
 	done
 
