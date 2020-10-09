@@ -35,11 +35,14 @@ else
 
 	if [ ${k} -gt ${u} ] ; then
 
-		filebase="${outbase}/$( basename ${outbase} )"
-		zcat ${outbase}.txt.gz | awk -v l=$[k-u] -v filebase=${filebase} \
-			'{print $0 > filebase"-"substr($1,0,l)".txt" }' 
-			#'{print $0 | "gzip > "outbase"-"substr($1,0,l)".txt.gz" }' 
-		gzip ${filebase}-*.txt
+#		filebase="${outbase}/$( basename ${outbase} )"
+#		zcat ${outbase}.txt.gz | awk -v l=$[k-u] -v filebase=${filebase} \
+#			'{print $0 > filebase"-"substr($1,0,l)".txt" }' 
+#			#'{print $0 | "gzip > "outbase"-"substr($1,0,l)".txt.gz" }' 
+#		gzip ${filebase}-*.txt
+
+		#	assuming k=31 and u=15
+		dsk_ascii_split.py ${outbase}.txt.gz
 
 	fi
 
