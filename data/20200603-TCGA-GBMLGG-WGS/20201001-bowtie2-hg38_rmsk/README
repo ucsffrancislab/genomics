@@ -29,23 +29,65 @@ done
 	dsk2ascii.bash -nb-cores ${PBS_NUM_PPN:-1} -file ${h5} -out ${outbase}.txt.gz
 
 
-
+k=31
 for fasta in out/*fa.gz; do
 #echo $fasta
-outbase=${fasta%.fa.gz}.dsk
+outbase=${fasta%.fa.gz}.${k}.dsk
 #echo $outbase
 h5="${outbase}.h5"
-echo "dsk.bash -max-memory 100000 -nb-cores 16 -kmer-size 31 -abundance-min 0 -file ${fasta} -out ${outbase}.h5 > ${outbase}.h5.out 2> ${outbase}.h5.err"
+echo "dsk.bash -max-memory 100000 -nb-cores 16 -kmer-size ${k} -abundance-min 0 -file ${fasta} -out ${outbase}.h5 > ${outbase}.h5.out 2> ${outbase}.h5.err"
 done | parallel &
 
 
-for h5 in out/*h5; do
+for h5 in out/*.${k}.dsk.h5; do
 outbase=${h5%.h5}2ascii
 echo "dsk2ascii.bash -nb-cores 16 -file ${h5} -out ${outbase}.txt.gz > ${outbase}.out 2> ${outbase}.err"
 done | parallel &
 
 
+for f in out/*.dsk2ascii.txt.gz ; do
+echo $f
+base=${f%.txt.gz}
+zcat $f | wc -l > ${base}.wc-l &
+zcat $f | awk '($2>1)' | wc -l > ${base}.gt1.wc-l &
+zcat $f | awk '($2>2)' | wc -l > ${base}.gt2.wc-l &
+zcat $f | awk '($2>3)' | wc -l > ${base}.gt3.wc-l &
+done
+
+
+for f in out/*.${k}.dsk2ascii.txt.gz ; do
+echo $f
+base=${f%.txt.gz}
+zcat $f | awk '($2>1)' | gzip > ${base}.gt1.txt.gz &
+done
+
+
+merge_mer_counts.py -o merged.bowtie2.hg38_rmsk.${k}.dsk2ascii.csv.gz out/*.bowtie2.hg38_rmsk.${k}.dsk2ascii.txt.gz &
+
+merge_mer_counts.py -o merged.bowtie2.hg38_rmsk.${k}.dsk2ascii.gt1.csv.gz out/*.bowtie2.hg38_rmsk.${k}.dsk2ascii.gt1.txt.gz &
 
 
 
+
+nohup zcat out/02-248*.21.dsk2ascii.txt.gz | awk '{print $1}' | sort | uniq | gzip > k21.txt.gz &
+
+for f in out/02-248*.21.dsk2ascii.txt.gz ; do
+base=${f%.txt.gz}
+nohup zcat $f | sort | gzip > ${base}.sorted.txt.gz &
+done
+
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+for f in $PWD/out/02-248*.21.dsk2ascii.txt.gz ; do
+jobbase=$( basename $f .bowtie2.hg38_rmsk.21.dsk2ascii.txt.gz )
+outbase=${f%.txt.gz}
+qsub -N ${jobbase}.uslt.21 \
+  -l feature=nocommunal \
+  -l gres=scratch:50 \
+  -l nodes=1:ppn=8 -l vmem=16gb \
+  -j oe -o ${outbase}.${date}.out.txt \
+  ~/.local/bin/dsk_ascii_split_scratch.bash \
+  -F "-k 21 -u 15 -outbase ${outbase}"
+done
 
