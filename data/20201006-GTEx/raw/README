@@ -1,0 +1,49 @@
+
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print NF}' SraRunTable.txt | uniq
+78
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print}' SraRunTable.txt | wc -l
+24456
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($21=="Brain"){print}' SraRunTable.txt | wc -l
+3297
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($21=="Brain" && $25=="PAIRED"){print}' SraRunTable.txt | wc -l
+3292
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($16~/bam/ && $21=="Brain" && $25=="PAIRED"){print}' SraRunTable.txt | wc -l
+1404
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16~/bam/ && $21=="Brain" && $25=="PAIRED"){print $1}' SraRunTable.txt | wc -l
+1404
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16~/bam/ && $21=="Brain" && $25=="PAIRED"){print $1}' SraRunTable.txt | sort | uniq > PairedBrainRNABamAccessions.txt
+
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16=="sra" && $21=="Brain" && $25=="PAIRED"){print $1}' SraRunTable.txt | sort | uniq > PairedBrainRNABamAccessionsJUSTSRA.txt
+
+
+
+
+can't figure out how to download a bam.
+only sra "files" and only individually.
+
+get those that are just sra as well since can't download bam files.
+
+
+
+prefetch --progress --ngc prj_20942_D10852.ngc SRR1098761
+
+Not sure if that's needed?
+vdb-decrypt --ngc prj_20942_D10852.ngc --decrypt-sra-files SRR1098761
+
+fastq-dump --split-e --ngc prj_20942_D10852.ngc SRR1098761/SRR1098761_dbGaP-20942.sra
+
+gzip ...
+
+
+
+
+
+
