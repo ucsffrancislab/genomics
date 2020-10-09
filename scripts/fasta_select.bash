@@ -11,13 +11,14 @@ set -x
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
-#		-i)
-#			shift; input=$1; shift;;
-#		-l)
-#			shift; length=$1; shift;;
-		-o)
+		-i|--input)
+			shift; input=$1; shift;;
+		-p|--pattern)
+			shift; pattern=$1; shift;;
+		-o|--output)
 			shift; output=$1; shift;;
-#		*)
+		*)
+			shift;;
 #			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;	#	really should just be a single fasta file, maybe gzipped
 	esac
 done
@@ -29,24 +30,24 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-#	if [ "${input: -3}" == ".gz" ] ; then
-#		command="zcat ${input} "
-#	else
-#		command="cat ${input} "
-#	fi
-#	if [ "${input: -4}" == "q.gz" ] ; then
-#		command="${command} | paste - - - - "
-#	else
-#		command="${command} | paste - - "
-#	fi
-#	command="${command} | awk -F'\t' -v l=${length} '( length(\$2) < l )' | tr '\t' '\n' "
-#	if [ ${output: -3} == '.gz' ] ; then
-#		command="${command} | gzip"
-#	fi
-#
-#	eval $command > ${f}
-#
-#	chmod a-w $f
+	if [ "${input: -3}" == ".gz" ] ; then
+		command="zcat ${input} "
+	else
+		command="cat ${input} "
+	fi
 
+	if [ "${input: -4}" == "q.gz" ] ; then
+		command="${command} | grep -A 3 \"${pattern}\" "
+	else
+		command="${command} | grep -A 1 \"${pattern}\" "
+	fi
+
+	if [ ${output: -3} == '.gz' ] ; then
+		command="${command} | gzip"
+	fi
+
+	eval $command > ${f}
+
+	chmod a-w $f
 fi
 
