@@ -59,14 +59,14 @@ else
 
 
 	#	Obviously, this requires that the outfile ends with .fa.gz
-	scratch_bam=${scratch_out%.fa.gz}.bam
+	#scratch_bam=${scratch_out%.fa.gz}.bam
 
-	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${scratch_bam} ${scratch_inputs}
+	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${TMPDIR}/tmp.bam ${scratch_inputs}
 
 	samtools view ${TMPDIR}/tmp.bam | awk -F"\t" '( and($2,4) && !and($2,8) ){print ">"$1"-"$3; print $10}' | gzip > ${scratch_out}
 
 	mv --update ${scratch_out} $( dirname ${f} )
-	mv --update ${scratch_out}.err.txt $( dirname ${f} )
+#	mv --update ${scratch_out}.err.txt $( dirname ${f} )
 
 	chmod a-w ${f}
 fi
