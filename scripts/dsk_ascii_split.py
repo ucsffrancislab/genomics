@@ -97,7 +97,7 @@ def num2dna(dnanumstr):
    dnastart=''
    dnanumstr=checkb4(dnanumstr)
    n=int(dnanumstr)
-   print( "input string translates to (padded) base-4 integer: ", "%0*d" % (len(dnanumstr),n) )
+   #print( "input string translates to (padded) base-4 integer: ", "%0*d" % (len(dnanumstr),n) )
    s=str(n) # will need this to check if input string is padded with zeroes
    if len(s)!=len(dnanumstr):              # in that case, we should
       dnastart='A'*(len(dnanumstr)-len(s)) # intialize dnastring with
@@ -139,6 +139,7 @@ for filename in args.files:
 			outfile=basedir+"/"+basefile+"-"+prefix+".txt.gz"
 			print("Creating "+outfile)
 			df[df.index.str.startswith(prefix)].to_csv(outfile,header=False,sep=" ")
+			df.drop(df[df.index.str.startswith(prefix)].index,inplace=True)
 	else:
 		print(filename+" not found or of 0 size")
 

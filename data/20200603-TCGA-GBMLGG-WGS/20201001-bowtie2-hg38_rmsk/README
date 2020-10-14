@@ -91,3 +91,45 @@ qsub -N ${jobbase}.uslt.21 \
   -F "-k 21 -u 15 -outbase ${outbase}"
 done
 
+
+date=$( date "+%Y%m%d%H%M%S" )
+for x in Alu LINE ; do
+outbase=$PWD/merged.bowtie2.hg38_rmsk.${x}.15
+qsub -N $x \
+-l feature=nocommunal \
+-l nodes=1:ppn=64 -l vmem=500gb \
+-j oe -o ${outbase}.${date}.out.txt \
+$PWD/merge_mer_counts.py \
+-F "-o ${outbase}.csv.gz $PWD/out/*.bowtie2.hg38_rmsk.${x}.15.dsk.txt.gz"
+done
+
+
+ls -1 $PWD/out/??-????-0*.Alu.fa.gz  > $PWD/MetaGO.Alu.fileList.txt
+ls -1 $PWD/out/??-????-1*.Alu.fa.gz >> $PWD/MetaGO.Alu.fileList.txt
+ls -1 $PWD/out/??-????-0*.LINE.fa.gz  > $PWD/MetaGO.LINE.fileList.txt
+ls -1 $PWD/out/??-????-1*.LINE.fa.gz >> $PWD/MetaGO.LINE.fileList.txt
+
+pip install --upgrade --user pyspark==2.4.5
+
+for k in 15 17 21 31 ; do
+
+date=$( date "+%Y%m%d%H%M%S" )
+for x in Alu LINE ; do
+for k in 15 ; do
+outbase=$PWD/MetaGO.${k}.${x}
+out=${outbase}.Result
+mkdir -p ${out}
+qsub -N ${x}.${k} \
+-l feature=nocommunal \
+-l nodes=1:ppn=64 -l vmem=500gb \
+-j oe -o ${outbase}.${date}.out.txt \
+~/github/ucsffrancislab/MetaGO/MetaGO_SourceCode/MetaGO.sh \
+-F "--inputData RAW --fileList $PWD/MetaGO.${x}.fileList.txt \
+  --n1 2 --n2 2 --kMer ${k} --min 1 -P 1 \
+  --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 \
+  --filterFuction ASS --outputPath ${out} --Union --sparse"
+done ; done
+#--cleanUp \
+
+
+
