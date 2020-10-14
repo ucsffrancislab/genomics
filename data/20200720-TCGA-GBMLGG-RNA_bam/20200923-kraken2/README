@@ -13,3 +13,5 @@ indented scientific name
 
 
 
+merge_kraken_reports.py --int /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200923-kraken2/out/*.kraken2_abv.txt.gz.kreport.txt
+

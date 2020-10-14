@@ -47,8 +47,13 @@ print( "Using separator :", sep, ":" )
 
 #	some taxonomy level names are the same so need to merge level and name
 
+#	I don't think that this was ever used
 
-
+#	    [%]     [reads] [lreads][lvl]   [tid]       [name]
+# 99.38	69334821	69334821	U	0	unclassified
+#  0.62	429459	0	R	1	root
+#  0.62	429459	5	D	10239	  Viruses
+#  0.42	291631	0	D1	2731341	    Duplodnaviria
 
 
 data_frames = []
@@ -63,11 +68,11 @@ for filename in args.files:
 		d = pd.read_csv(filename,
 			skipinitialspace=True,
 			header=0,	#	None,
-			usecols=[0,5],
-			names=['taxonomy',sample],
+			usecols=[1,3,4,5],
+			names=[sample,'lvl','tid','taxname'],
 			dtype={sample: float},
 			sep=sep,	#"\t",	#initially a space, then a tab
-			index_col=["taxonomy"] )
+			index_col=['lvl','tid','taxname'] )
 #			delim_whitespace=True,
 		d.head()
 #		d.dtypes
@@ -104,7 +109,8 @@ if len(data_frames) > 0:
 	#	df.dtypes
 
 	print("Writing CSV")
-	df.to_csv(output,index_label="taxonomy")
+	#df.to_csv(output,index_label="taxonomy")
+	df.to_csv(output,index_label=['lvl','tid','taxname'] )
 
 else:
 	print("No data.")
