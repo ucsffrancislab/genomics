@@ -46,10 +46,10 @@ else
 		cp ${r2} ${TMPDIR}/
 		scratch_inputs="${scratch_inputs} -2 ${TMPDIR}/$( basename ${r2} )"
 	fi
-	if [ -n "${u}" ] ; then
-		cp ${u} ${TMPDIR}/
-		scratch_inputs="${scratch_inputs} -U ${TMPDIR}/$( basename ${u} )"
-	fi
+#	if [ -n "${u}" ] ; then
+#		cp ${u} ${TMPDIR}/
+#		scratch_inputs="${scratch_inputs} -U ${TMPDIR}/$( basename ${u} )"
+#	fi
 
 	#	Quick test script so assuming that ${x} includes FULL PATH
 	cp ${x}.?.bt2 ${x}.rev.?.bt2 ${TMPDIR}/
