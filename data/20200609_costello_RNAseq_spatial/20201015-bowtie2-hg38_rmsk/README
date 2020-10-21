@@ -1,0 +1,36 @@
+
+./bowtie2-hg38_rmsk.bash
+
+
+455v01.bowtie2.hg38_rmsk.Alu.fa.gz
+ls -1 $PWD/out/*.Alu.fa.gz  > $PWD/MetaGO.Alu.fileList.txt
+ls -1 $PWD/out/*.LINE.fa.gz  > $PWD/MetaGO.LINE.fileList.txt
+
+Not sure if MetaGO actually requires 2 groups. Let's see.
+
+
+k=31
+x=Alu
+n1=$( ls -1 $PWD/out/*.${x}.fa.gz | wc -l )
+outbase=$PWD/MetaGO.${k}.${x}
+out=${outbase}.Result
+mkdir -p ${out}
+nohup ~/github/ucsffrancislab/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList $PWD/MetaGO.${x}.fileList.txt --n1 ${n1} --n2 0 --kMer ${k} --min 1 -P 1 --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --filterFuction ASS --outputPath ${out} --Union --sparse > ${out}.log 2> ${out}.err &
+
+
+nohup cat tuple_union/part-0* | gzip > tuple_union.csv.gz &
+
+ln -s MetaGO.31.Alu.Result/TupleFileList.txt MetaGO.31.Alu.Result_TupleFileList.txt
+ln -s MetaGO.31.Alu.Result/tuple_union.csv.gz MetaGO.31.Alu.Result_tuple_union.csv.gz
+
+ln -s MetaGO.31.LINE.Result/TupleFileList.txt MetaGO.31.LINE.Result_TupleFileList.txt
+ln -s MetaGO.31.LINE.Result/tuple_union.csv.gz MetaGO.31.LINE.Result_tuple_union.csv.gz
+
+curl -netrc -X MKCOL "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200609_costello_RNAseq_spatial 20201015-bowtie2-hg38_rmsk/"
+
+nohup curl -netrc -T MetaGO.31.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200609_costello_RNAseq_spatial 20201015-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.Alu.Result_TupleFileList.txt "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200609_costello_RNAseq_spatial 20201015-bowtie2-hg38_rmsk/" &
+
+nohup curl -netrc -T MetaGO.31.LINE.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200609_costello_RNAseq_spatial 20201015-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.LINE.Result_TupleFileList.txt "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200609_costello_RNAseq_spatial 20201015-bowtie2-hg38_rmsk/" &
+
