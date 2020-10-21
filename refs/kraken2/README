@@ -134,4 +134,9 @@ bracken -d ${KRAKEN_DB} -i ${SAMPLE}.kreport -o ${SAMPLE}.bracken -r ${READ_LEN}
 
 
 
+nohup bracken-build -d viral_masked -t 32 -l 150 > bracken.viral_masked.150.out 2>&1 &
+nohup bracken-build -d viral_masked -t 32 -l 100 > bracken.viral_masked.100.out 2>&1 &
+nohup bracken-build -d viral_masked -t 32 -l 75  > bracken.viral_masked.75.out 2>&1 &
+
+
 

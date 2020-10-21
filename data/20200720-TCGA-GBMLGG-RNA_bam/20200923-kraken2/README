@@ -15,3 +15,11 @@ indented scientific name
 
 merge_kraken_reports.py --int /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200923-kraken2/out/*.kraken2_abv.txt.gz.kreport.txt
 
+
+
+kraken2.bash --threads 64 --paired --use-names --db /francislab/data1/refs/kraken2/viral_masked --report out/02-0047.kraken2_viral_masked.kreport.txt.gz --output out/02-0047.kraken2_viral_masked.txt.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/subject/02-0047_R1.fastq.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/subject/02-0047_R2.fastq.gz 
+
+bracken.bash -d /francislab/data1/refs/kraken2/viral_masked -i out/02-0047.kraken2_viral_masked.kreport.txt.gz -o out/02-0047.kraken2_viral_masked.75.breport.txt.gz -r 75
+
+
+

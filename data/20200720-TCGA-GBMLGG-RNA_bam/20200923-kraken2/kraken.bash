@@ -25,11 +25,10 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/*_R1.fastq.gz ; do
+for r1 in ${INDIR}/02-*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
-
 
 	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
@@ -37,13 +36,15 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 	base=$( basename $r1 _R1.fastq.gz )
 	echo $base
 
-	outbase="${DIR}/${base}.kraken2_abv"
+	db="viral_masked"
+
+	outbase="${DIR}/${base}.kraken2_${db}"
 	f=${outbase}.txt.gz
 	#if [ -d $f ] && [ ! -w $f ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		index=${KRAKEN2}/abv
+		index=${KRAKEN2}/${db}
 		r1_size=$( stat --dereference --format %s ${r1} )
 		r2_size=$( stat --dereference --format %s ${r2} )
 		index_size=$( du -sb ${index} | awk '{print $1}' )
@@ -58,8 +59,10 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 			-l feature=nocommunal \
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
-			~/.local/bin/kraken2_scratch.bash \
-			-F "--db ${index} --threads ${threads} --output ${f} --paired --use-names --report ${f}.kreport.txt -1 ${r1} -2 ${r2}"
+			~/.local/bin/kraken2_bracken_scratch.bash \
+			-F "--db ${index} --threads ${threads} --output ${f} --paired --use-names -1 ${r1} -2 ${r2}"
+
+			#-F "--db ${index} --threads ${threads} --output ${f} --paired --use-names --report ${f}.kreport.txt -1 ${r1} -2 ${r2}"
 			#-F "--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --paired --use-names --report ${f}.kreport.txt -1 ${r1} -2 ${r2}"
 	fi
 

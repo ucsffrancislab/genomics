@@ -11,7 +11,7 @@ set -x
 SELECT_ARGS=""
 r2=""
 scratch_r2=""
-report=""
+#report=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
 	case $1 in
@@ -23,8 +23,10 @@ while [ $# -gt 0 ] ; do
 			shift; db=$1; shift;;
 		-o|--output)
 			shift; f=$1; shift;;
-		--report)
-			shift; report=$1; shift;;
+		-r|--read_len)
+			shift; r=$1; shift;;
+#		--report)
+#			shift; report=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -49,36 +51,40 @@ else
 	cp --recursive --dereference ${db} ${TMPDIR}/
 	scratch_db=${TMPDIR}/$( basename ${db} )
 
-	if [ -z "${report}" ] ; then
-		report=${f%.gz}
-		report=${report%.txt}
-		report=${report}.report.txt.gz
-	fi
-	scratch_report=${TMPDIR}/$( basename ${report} )
+#	if [ -z "${report}" ] ; then
+		#fbase=${f%.gz}
+		#fbase=${fbase%.txt}
+		fbase=$( basename $f .txt.gz )
+		#kreport=${fbase}.kreport.txt.gz
+		kreport=${fbase}.kreport.txt
+		#	Don't gzip kraken report. Bracken doesn't know how to deal with it.
+#	fi
+	scratch_kreport=${TMPDIR}/$( basename ${kreport} )
 
 	scratch_out=${TMPDIR}/$( basename ${f} )
 
 	kraken2.bash ${SELECT_ARGS} --db ${scratch_db} \
-		--report ${scratch_report} \
+		--report ${scratch_kreport} \
 		--output ${scratch_out} ${scratch_r1} ${scratch_r2}
 
-
-
-
-
-
-#	bracken.bash ....
-
-
-
-
-
-
+#  LEVEL          level to estimate abundance at [options: D,P,C,O,F,G,S] (default: S)
+	for len in 75 100 150 ; do
+		for lvl in D P C O F G S ; do
+			scratch_bracken=${TMPDIR}/$( basename ${fbase} ).${len}.${lvl}.bracken.txt
+			scratch_breport=${TMPDIR}/$( basename ${fbase} ).${len}.${lvl}.breport.txt
+			bracken.bash -d ${scratch_db} -i ${scratch_kreport} \
+				-o ${scratch_bracken} -w ${scratch_breport} -r ${len} -l ${lvl}
+			mv --update ${scratch_breport} $( dirname ${f} )
+			mv --update ${scratch_bracken} $( dirname ${f} )
+		done
+	done
 
 	mv --update ${scratch_out} ${f}
-	if [ -n "${report}" ] ; then
-		mv --update ${scratch_report} ${report}
-	fi
+	mv --update ${scratch_kreport} $( dirname ${f} )
+
+#	if [ -n "${report}" ] ; then
+#		mv --update ${scratch_report} ${report}
+#	fi
 	# unnecessary as kraken2.bash will chmod files if successfull
 	#chmod -R a-w ${f}
 fi
