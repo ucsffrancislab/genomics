@@ -62,6 +62,9 @@ zcat $f | awk '($2>1)' | gzip > ${base}.gt1.txt.gz &
 done
 
 
+merge_mer_counts.py copied and modified locally to not use Pool. Why?
+
+
 merge_mer_counts.py -o merged.bowtie2.hg38_rmsk.${k}.dsk2ascii.csv.gz out/*.bowtie2.hg38_rmsk.${k}.dsk2ascii.txt.gz &
 
 merge_mer_counts.py -o merged.bowtie2.hg38_rmsk.${k}.dsk2ascii.gt1.csv.gz out/*.bowtie2.hg38_rmsk.${k}.dsk2ascii.gt1.txt.gz &
@@ -104,6 +107,17 @@ $PWD/merge_mer_counts.py \
 done
 
 
+
+
+
+Manually merging or splitting and merging does not seem feasible.
+MetaGO uses java and spark and seems to work for the moment.
+
+
+
+
+
+
 ls -1 $PWD/out/??-????-0*.Alu.fa.gz  > $PWD/MetaGO.Alu.fileList.txt
 ls -1 $PWD/out/??-????-1*.Alu.fa.gz >> $PWD/MetaGO.Alu.fileList.txt
 ls -1 $PWD/out/??-????-0*.LINE.fa.gz  > $PWD/MetaGO.LINE.fileList.txt
@@ -130,6 +144,162 @@ qsub -N ${x}.${k} \
   --filterFuction ASS --outputPath ${out} --Union --sparse"
 done ; done
 #--cleanUp \
+
+
+
+
+k=15
+x=Alu
+p=4
+outbase=$PWD/MetaGO.${k}.${x}.${p}
+out=${outbase}.Result
+mkdir -p ${out}
+~/github/ucsffrancislab/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList $PWD/MetaGO.${x}.fileList.txt --n1 2 --n2 2 --kMer ${k} --min 1 -P ${p} --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --filterFuction ASS --outputPath ${out} --Union --sparse > ${out}.log 2> ${out}.err &
+
+
+cluster job gets killed for using too much memory. can't figure out how to stop.
+
+directly on n38
+
+k=15 works
+
+k=21 and pieces=1 ran out of space on device. (guessing this is memory space)
+
+Piece=16 eventually results in 
+20/10/15 05:14:53 ERROR DiskBlockObjectWriter: Uncaught exception while reverting partial writes to file /tmp/blockmgr-fea342bb-c112-4546-abd2-4c35a9a10b9e/31/temp_shuffle_854ca2c2-9a28-4499-bcff-fbf4282200f9
+java.io.FileNotFoundException: /tmp/blockmgr-fea342bb-c112-4546-abd2-4c35a9a10b9e/31/temp_shuffle_854ca2c2-9a28-4499-bcff-fbf4282200f9 (Too many open files)
+	at java.io.FileOutputStream.open0(Native Method)
+	at java.io.FileOutputStream.open(FileOutputStream.java:270)
+	at java.io.FileOutputStream.<init>(FileOutputStream.java:213)
+	at org.apache.spark.storage.DiskBlockObjectWriter$$anonfun$revertPartialWritesAndClose$2.apply$mcV$sp(DiskBlockObjectWriter.scala:217)
+	at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:1369)
+	at org.apache.spark.storage.DiskBlockObjectWriter.revertPartialWritesAndClose(DiskBlockObjectWriter.scala:214)
+	at org.apache.spark.shuffle.sort.BypassMergeSortShuffleWriter.stop(BypassMergeSortShuffleWriter.java:237)
+	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:105)
+	at org.apache.spark.scheduler.ShuffleMapTask.runTask(ShuffleMapTask.scala:55)
+	at org.apache.spark.scheduler.Task.run(Task.scala:123)
+	at org.apache.spark.executor.Executor$TaskRunner$$anonfun$10.apply(Executor.scala:408)
+	at org.apache.spark.util.Utils$.tryWithSafeFinally(Utils.scala:1360)
+	at org.apache.spark.executor.Executor$TaskRunner.run(Executor.scala:414)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+
+
+Trying 8
+
+
+
+Seeing ... but it seems to keep running?
+
+20/10/15 15:49:07 WARN Executor: Issue communicating with driver in heartbeater
+org.apache.spark.rpc.RpcTimeoutException: Futures timed out after [10000 milliseconds]. This timeout is controlled by spark.executor.heartbeatInterval
+	at org.apache.spark.rpc.RpcTimeout.org$apache$spark$rpc$RpcTimeout$$createRpcTimeoutException(RpcTimeout.scala:47)
+	at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:62)
+	at org.apache.spark.rpc.RpcTimeout$$anonfun$addMessageIfTimeout$1.applyOrElse(RpcTimeout.scala:58)
+	at scala.runtime.AbstractPartialFunction.apply(AbstractPartialFunction.scala:36)
+	at org.apache.spark.rpc.RpcTimeout.awaitResult(RpcTimeout.scala:76)
+	at org.apache.spark.rpc.RpcEndpointRef.askSync(RpcEndpointRef.scala:92)
+	at org.apache.spark.executor.Executor.org$apache$spark$executor$Executor$$reportHeartBeat(Executor.scala:846)
+	at org.apache.spark.executor.Executor$$anon$2$$anonfun$run$1.apply$mcV$sp(Executor.scala:875)
+	at org.apache.spark.executor.Executor$$anon$2$$anonfun$run$1.apply(Executor.scala:875)
+	at org.apache.spark.executor.Executor$$anon$2$$anonfun$run$1.apply(Executor.scala:875)
+	at org.apache.spark.util.Utils$.logUncaughtExceptions(Utils.scala:1945)
+	at org.apache.spark.executor.Executor$$anon$2.run(Executor.scala:875)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.runAndReset(FutureTask.java:308)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.access$301(ScheduledThreadPoolExecutor.java:180)
+	at java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask.run(ScheduledThreadPoolExecutor.java:294)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.util.concurrent.TimeoutException: Futures timed out after [10000 milliseconds]
+	at scala.concurrent.impl.Promise$DefaultPromise.ready(Promise.scala:223)
+	at scala.concurrent.impl.Promise$DefaultPromise.result(Promise.scala:227)
+	at org.apache.spark.util.ThreadUtils$.awaitResult(ThreadUtils.scala:220)
+	at org.apache.spark.rpc.RpcTimeout.awaitResult(RpcTimeout.scala:75)
+	... 14 more
+20/10/15 15:49:10 INFO Executor: Finished task 327.0 in stage 0.0 (TID 327). 2292 bytes result sent to driver
+20/10/15 15:49:10 INFO TaskSetManager: Starting task 398.0 in stage 0.0 (TID 398, local
+
+
+
+
+
+Always use 1 piece (others result in too many files opened error)
+
+
+curl -u George.Wendt@ucsf.edu:XXXXXXXXXXXXX -T MetaGO.15.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
+curl -u George.Wendt@ucsf.edu:XXXXXXXXXXXXX -T MetaGO.15.LINE.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
+curl -u George.Wendt@ucsf.edu:XXXXXXXXXXXXX -T MetaGO.17.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
+
+
+
+ls -1 $PWD/out/??-????-0*.Alu.fa.gz  > $PWD/MetaGO.Alu.fileList.txt
+ls -1 $PWD/out/??-????-1*.Alu.fa.gz >> $PWD/MetaGO.Alu.fileList.txt
+ls -1 $PWD/out/??-????-0*.LINE.fa.gz  > $PWD/MetaGO.LINE.fileList.txt
+ls -1 $PWD/out/??-????-1*.LINE.fa.gz >> $PWD/MetaGO.LINE.fileList.txt
+
+k=21
+x=Alu
+n1=$( ls -1 $PWD/out/??-????-0*.${x}.fa.gz | wc -l )
+n2=$( ls -1 $PWD/out/??-????-1*.${x}.fa.gz | wc -l )
+outbase=$PWD/MetaGO.${k}.${x}
+out=${outbase}.Result
+mkdir -p ${out}
+nohup ~/github/ucsffrancislab/MetaGO/MetaGO_SourceCode/MetaGO.sh --inputData RAW --fileList $PWD/MetaGO.${x}.fileList.txt --n1 ${n1} --n2 ${n2} --kMer ${k} --min 1 -P 1 --ASS 0.75 --WilcoxonTest 0.05 --LogicalRegress 0.75 --filterFuction ASS --outputPath ${out} --Union --sparse > ${out}.log 2> ${out}.err &
+
+
+curl -netrc -X MKCOL "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/"
+
+curl -netrc -T MetaGO.21.Alu.Result_TupleFileList.txt "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+curl -netrc -T MetaGO.21.Alu.Result_ASS_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+curl -netrc -T MetaGO.21.Alu.Result_WR_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+curl -netrc -T MetaGO.21.Alu.Result_filter_sparse.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
+nohup curl -netrc -T MetaGO.21.LINE.Result_TupleFileList.txt "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.21.LINE.Result_ASS_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.21.LINE.Result_WR_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.21.LINE.Result_filter_sparse.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
+
+tuple_union files too long
+
+nohup cat filter_sparse/part-0* | gzip > filter_sparse.csv.gz &
+nohup cat WR_filtered_down/part-0* | gzip > WR_filtered_down.csv.gz &
+nohup cat ASS_filtered_down/part-0* | gzip > ASS_filtered_down.csv.gz &
+nohup cat tuple_union/part-0* | gzip > tuple_union.csv.gz &
+
+ln -s MetaGO.31.Alu.Result/TupleFileList.txt MetaGO.31.Alu.Result_TupleFileList.txt
+ln -s MetaGO.31.Alu.Result/ASS_filtered_down.csv.gz MetaGO.31.Alu.Result_ASS_filtered_down.csv.gz
+ln -s MetaGO.31.Alu.Result/WR_filtered_down.csv.gz MetaGO.31.Alu.Result_WR_filtered_down.csv.gz
+ln -s MetaGO.31.Alu.Result/filter_sparse.csv.gz MetaGO.31.Alu.Result_filter_sparse.csv.gz
+
+nohup curl -netrc -T MetaGO.31.Alu.Result_TupleFileList.txt "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.Alu.Result_ASS_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.Alu.Result_WR_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.Alu.Result_filter_sparse.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
+
+
+
+
+
+
+ln -s MetaGO.31.LINE.Result/TupleFileList.txt MetaGO.31.LINE.Result_TupleFileList.txt
+ln -s MetaGO.31.LINE.Result/ASS_filtered_down.csv.gz MetaGO.31.LINE.Result_ASS_filtered_down.csv.gz
+ln -s MetaGO.31.LINE.Result/WR_filtered_down.csv.gz MetaGO.31.LINE.Result_WR_filtered_down.csv.gz
+ln -s MetaGO.31.LINE.Result/filter_sparse.csv.gz MetaGO.31.LINE.Result_filter_sparse.csv.gz
+
+
+nohup curl -netrc -T MetaGO.31.LINE.Result_TupleFileList.txt "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.LINE.Result_ASS_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.LINE.Result_WR_filtered_down.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+nohup curl -netrc -T MetaGO.31.LINE.Result_filter_sparse.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+
 
 
 

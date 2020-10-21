@@ -25,9 +25,7 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/02*_R1.fastq.gz ; do
-#for r1 in ${INDIR}/06-0125*_R1.fastq.gz ; do
-#for r1 in ${INDIR}/02-2485*_R1.fastq.gz ; do
+for r1 in ${INDIR}/{02,CS-6668,HT-7468,HT-7481}*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
@@ -61,8 +59,8 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 
 		#	dev discordant_unmapped_mates_scratch.bash?
 
-		#	-l feature=nocommunal \
 		bowtie2id=$( qsub -N ${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-l feature=nocommunal \
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/discordant_unmapped_mates_scratch.bash \
@@ -93,8 +91,8 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 				depend=""
 			fi
 #				-l gres=scratch:${scratch} \
-#				-l feature=nocommunal \
 			fsid=$( qsub ${depend} -N fs${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+				-l feature=nocommunal \
 				-j oe -o ${outbase}.${date}.out.txt \
 				~/.local/bin/fasta_select.bash \
 				-F "-i ${all_reads} -p '${g}' -o ${f}" )
@@ -102,49 +100,53 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 		fi
 		selected=${f}
 		
-		dskid=''
-		#k=31
-		k=15
-		outbase="${DIR}/${base}.bowtie2.hg38_rmsk.${n}.${k}.dsk"
-		f=${outbase}.h5
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			echo "Running dsk ${base} ${n} ${k}"
-			if [ ! -z ${fsid} ] ; then
-				depend="-W depend=afterok:${fsid}"
-			else
-				depend=""
-			fi
-#				-l gres=scratch:${scratch} \
+#		dskid=''
+#		#k=31
+#		k=15
+#		outbase="${DIR}/${base}.bowtie2.hg38_rmsk.${n}.${k}.dsk"
+#		f=${outbase}.h5
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			echo "Running dsk ${base} ${n} ${k}"
+#			if [ ! -z ${fsid} ] ; then
+#				depend="-W depend=afterok:${fsid}"
+#			else
+#				depend=""
+#			fi
+##				-l gres=scratch:${scratch} \
+#				#-F "-max-memory ${vmem} -nb-cores ${threads} -kmer-size ${k} \
+##       -max-memory                             (1 arg) :    max memory (in MBytes)  [default '5000']
+##			using max-memory of just vmem, say 62, will cause the large results (~>100000) to be different
+##		subtracting 2 from vmem to allow room for other stuff. not sure if needed
+#			dskid=$( qsub ${depend} -N dsk${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+#				-j oe -o ${outbase}.${date}.out.txt \
 #				-l feature=nocommunal \
-			dskid=$( qsub ${depend} -N dsk${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-j oe -o ${outbase}.${date}.out.txt \
-				~/.local/bin/dsk.bash \
-				-F "-max-memory ${vmem} -nb-cores ${threads} -kmer-size ${k} \
-					-abundance-min 0 -file ${selected} -out ${f}" )
-			echo "${dskid}"
-		fi
-		asciiid=''
-		f=${outbase}.txt.gz
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			echo "Running dsk2ascii ${base} ${n} ${k}"
-			if [ ! -z ${dskid} ] ; then
-				depend="-W depend=afterok:${dskid}"
-			else
-				depend=""
-			fi
-#				-l gres=scratch:${scratch} \
+#				~/.local/bin/dsk.bash \
+#				-F "-max-memory $((vmem-2))000 -nb-cores ${threads} -kmer-size ${k} \
+#					-abundance-min 0 -file ${selected} -out ${f}" )
+#			echo "${dskid}"
+#		fi
+#		asciiid=''
+#		f=${outbase}.txt.gz
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			echo "Running dsk2ascii ${base} ${n} ${k}"
+#			if [ ! -z ${dskid} ] ; then
+#				depend="-W depend=afterok:${dskid}"
+#			else
+#				depend=""
+#			fi
+##				-l gres=scratch:${scratch} \
+#			asciiid=$( qsub ${depend} -N d2a${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 #				-l feature=nocommunal \
-			asciiid=$( qsub ${depend} -N d2a${base} -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-				-j oe -o ${outbase}.dsk2ascii.${date}.out.txt \
-				~/.local/bin/dsk2ascii.bash \
-				-F "-nb-cores ${threads} -file ${outbase}.h5 -out ${f}" )
-			echo "${asciiid}"
-		fi
-
+#				-j oe -o ${outbase}.dsk2ascii.${date}.out.txt \
+#				~/.local/bin/dsk2ascii.bash \
+#				-F "-nb-cores ${threads} -file ${outbase}.h5 -out ${f}" )
+#			echo "${asciiid}"
+#		fi
+#
 #		splitid=''
 #		f=${outbase}	#	DIRECTORY HERE
 #		#if [ -f $f ] && [ ! -w $f ] ; then
