@@ -46,4 +46,10 @@ gzip ...
 
 
 
+nohup ./download.bash &
+
+ll data/*/*sra | wc -l
+448
+
+
 
