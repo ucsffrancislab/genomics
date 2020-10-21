@@ -1,0 +1,25 @@
+
+
+~/github/kepbod/rampage_alu/rampage_alu/rm_pcr.py -o 02-0047-01-rampage_peak /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200805-STAR_hg38/out/02-0047-01*.STAR.hg38.Aligned.sortedByCoord.out.bam
+
+
+~/github/kepbod/rampage_alu/rampage_alu/call_peak.py 02-0047-01-rampage_peak
+
+~/github/kepbod/rampage_alu/rampage_alu/entropy.py 02-0047-01-rampage_peak
+
+~/github/kepbod/rampage_alu/rampage_alu/annotate_alu.py -f ref.txt -a alu.bed -o alu_peak.txt 02-0047-01-rampage_peak
+
+
+
+
+curl -netrc -X MKCOL "https://dav.box.com/dav/Francis _Lab_Share/20201020 20200720-TCGA-GBMLGG-RNA_bam 20201020-rampage_alu/"
+
+curl -netrc -X MKCOL "https://dav.box.com/dav/Francis _Lab_Share/20201020 20200720-TCGA-GBMLGG-RNA_bam 20201020-rampage_alu/02-0047-01-rampage_peak/"
+
+for f in 02-0047-01-rampage_peak/* ; do
+nohup curl -netrc -T $f "https://dav.box.com/dav/Francis _Lab_Share/20201020 20200720-TCGA-GBMLGG-RNA_bam 20201020-rampage_alu/02-0047-01-rampage_peak/" &
+done
+
+
+
+
