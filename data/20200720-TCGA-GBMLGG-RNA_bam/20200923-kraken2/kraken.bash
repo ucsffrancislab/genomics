@@ -25,7 +25,7 @@ vmem=62
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/02-*_R1.fastq.gz ; do
+for r1 in ${INDIR}/1*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
@@ -62,6 +62,18 @@ for r1 in ${INDIR}/02-*_R1.fastq.gz ; do
 			~/.local/bin/kraken2_bracken_scratch.bash \
 			-F "--db ${index} --threads ${threads} --output ${f} --paired --use-names -1 ${r1} -2 ${r2}"
 
+#	bracken depends on read length and many samples are different
+#	If bracken is run with different read lengths the results are different?
+#	can I mix runs made with different read lengths? 
+#	Author recommends minimum read length in a sample with varied lengths
+#	https://github.com/jenniferlu717/Bracken/issues/30
+#	computing minimum length of first 100,000 reads
+#	then creating the bracken db on the fly
+#	Bracken can use these probabilities for any metagenomics data set, including data with
+#	different read lengths, although the estimates might be slightly improved by re-computing
+#	with a read length that matches the experimental data.
+
+			#~/.local/bin/kraken2_bracken_scratch.bash \
 			#-F "--db ${index} --threads ${threads} --output ${f} --paired --use-names --report ${f}.kreport.txt -1 ${r1} -2 ${r2}"
 			#-F "--db ${KRAKEN2}/standard --threads ${threads} --output ${f} --paired --use-names --report ${f}.kreport.txt -1 ${r1} -2 ${r2}"
 	fi
