@@ -58,5 +58,26 @@ done
 bedtools getfasta -fi /francislab/data1/refs/fasta/hg19/hg19.fa -bed /francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.gtf -fo /francislab/data1/refs/igv.broadinstitute.org/annotations/hg19/variations/LTR.fasta
 
 
+Missing many alternates ...
+bedtools getfasta -fi /francislab/data1/refs/Homo_sapiens/UCSC/hg38/Sequence/WholeGenomeFasta/genome.fa -bed ${bed} -fo ${fasta}
+Using ...
+/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa
+
+
+for bed in /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk/SINE.Alu*bed.gz ; do
+echo $bed
+fasta=${bed%.bed.gz}.fasta
+echo $fasta
+bedtools getfasta -fi /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa -bed ${bed} -fo ${fasta} -name+
+done
+
+
+
+for bed in hg38/rmsk/*bed.gz ; do
+echo $bed
+gtf=${bed/bed.gz/ind.gtf}
+zcat ${bed} | awk 'BEGIN{FS=OFS="\t"}{i[$4]++;print $1,"source","feature",1+$2,$3,".",$6,".","feature_name \""$4"."i[$4]"\""}' > ${gtf}
+done
+
 
 
