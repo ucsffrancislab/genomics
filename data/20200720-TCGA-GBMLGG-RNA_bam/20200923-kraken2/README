@@ -23,3 +23,5 @@ bracken.bash -d /francislab/data1/refs/kraken2/viral_masked -i out/02-0047.krake
 
 
 
+merge_kraken_reports.py --int --output merged.kraken2_viral_masked.kreport.csv.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200923-kraken2/out/*.kraken2_viral_masked.kreport.txt
+
