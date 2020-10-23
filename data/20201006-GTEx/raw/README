@@ -51,5 +51,7 @@ nohup ./download.bash &
 ll data/*/*sra | wc -l
 448
 
-
+20201023
+ll data/*/*sra | wc -l
+590    
 
