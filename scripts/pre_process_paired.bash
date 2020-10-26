@@ -42,17 +42,19 @@ echo $base
 
 
 
-#	This is necessary only for some TARGET data.
-#	Commenting out once done.
-mkdir -p ${OUT}/fastq-nodots/
-newR1=${OUT}/fastq-nodots/$( basename ${R1} )
-newR2=${OUT}/fastq-nodots/$( basename ${R2} )
-echo "Replacing dots with Ns in R1"
-zcat ${R1} | sed -n '2~4s/\./N/g;p' | gzip > ${newR1}
-echo "Replacing dots with Ns in R2"
-zcat ${R2} | sed -n '2~4s/\./N/g;p' | gzip > ${newR2}
-R1=${newR1}
-R2=${newR2}
+#	#	This is necessary only for some TARGET data.
+#	#	Commenting out once done.
+#	mkdir -p ${OUT}/fastq-nodots/
+#	newR1=${OUT}/fastq-nodots/$( basename ${R1} )
+#	newR2=${OUT}/fastq-nodots/$( basename ${R2} )
+#	echo "Replacing dots with Ns in R1"
+#	zcat ${R1} | sed -n '2~4s/\./N/g;p' | gzip > ${newR1}
+#	echo "Replacing dots with Ns in R2"
+#	zcat ${R2} | sed -n '2~4s/\./N/g;p' | gzip > ${newR2}
+#	R1=${newR1}
+#	R2=${newR2}
+
+
 
 
 
