@@ -9,7 +9,7 @@ while read -r accession ; do
 		echo "SRA exists. Skipping"
 	else
 		echo "Downloading ${accession}"
-		prefetch --progress --resume yes --max-size 100G \
+		prefetch --progress --resume yes --max-size 1000G \
 			--ngc prj_20942_D10852.ngc \
 			--output-directory data/ ${accession}
 	fi

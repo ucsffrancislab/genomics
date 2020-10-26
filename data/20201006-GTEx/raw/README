@@ -55,3 +55,7 @@ ll data/*/*sra | wc -l
 ll data/*/*sra | wc -l
 590    
 
+20201026 9am
+ll data/*/*sra | wc -l
+699
+
