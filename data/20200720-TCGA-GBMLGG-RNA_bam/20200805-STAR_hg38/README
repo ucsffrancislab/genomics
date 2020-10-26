@@ -60,3 +60,10 @@ curl -netrc -T out/06-0178-01A-01R-1849-01+1.STAR.hg38.Aligned.sortedByCoord.out
 curl -netrc -T out/06-0178-01A-01R-1849-01+2.STAR.hg38.Aligned.sortedByCoord.out.bam.bai "https://dav.box.com/dav/Francis _Lab_Share/20201019 20200720-TCGA-GBMLGG-RNA_bam 20200805-STAR_hg38/" &
 
 
+
+for f in featureCounts/featureCounts.SINE.Alu*.csv.gz ; do
+curl -netrc -T ${f} "https://dav.box.com/dav/Francis _Lab_Share/20201023 20200720-TCGA-GBMLGG-RNA_bam 20200805-STAR_hg38/" &
+done
+
+
+
