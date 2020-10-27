@@ -66,14 +66,15 @@ exit
 
 
 DIR="/francislab/data1/working/20200407_Schizophrenia/20201026-REdiscoverTE/out"
+mkdir -p ${DIR}/../rollup
 
-echo -e "sample\tquant_sf_path" > ${DIR}/REdiscoverTE.tsv
-ls -1 ${DIR}/out/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/REdiscoverTE.tsv
+echo -e "sample\tquant_sf_path" > ${DIR}/../rollup/REdiscoverTE.tsv
+ls -1 ${DIR}/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/../rollup/REdiscoverTE.tsv
 
 
-echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.original/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup.original/" | qsub -l vmem=500gb -N rollup.orig -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.original.out.txt
+echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/../rollup/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.original/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/../rollup/REdiscoverTE_rollup.original/" | qsub -l vmem=500gb -N rollup.orig -l nodes=1:ppn=64 -j oe -o ${DIR}/../rollup/REdiscoverTE_rollup.original.out.txt
 
-echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup.noquestion/" | qsub -l vmem=500gb -N rollup.noq -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.noquestion.out.txt
+echo "~/github/ucsffrancislab/REdiscoverTE/rollup.R --metadata=${DIR}/../rollup/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/../rollup/REdiscoverTE_rollup.noquestion/" | qsub -l vmem=500gb -N rollup.noq -l nodes=1:ppn=64 -j oe -o ${DIR}/../rollup/REdiscoverTE_rollup.noquestion.out.txt
 
 
 

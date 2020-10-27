@@ -3,3 +3,8 @@
 ./REdiscoverTE.bash
 
 
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201026 20200407_Schizophrenia 20201026-REdiscoverTE"
+curl -netrc -X MKCOL "${BOX}/"
+find rollup -type d -ls -exec curl -netrc -X MKCOL "${BOX}/{}" \;
+find rollup -type f -ls -exec curl -netrc -T "{}" "${BOX}/{}" \;
+
