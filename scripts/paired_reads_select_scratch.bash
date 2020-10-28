@@ -87,10 +87,15 @@ else
 #		2048 0x800 SUPPLEMENTARY .. supplementary alignment
 #
 
-	samtools view ${TMPDIR}/tmp.bam | gawk -F"\t" '
+	samtools view -h ${TMPDIR}/tmp.bam | gawk -F"\t" '
 			( /^@/ ){ print; next; }
 			( !and($2,4) || !and($2,8) ){ print }' | \
 		samtools sort --threads $((threads-1)) -n -o ${scratch_bam} -
+
+
+#			( !and($2,4) || !and($2,8) ){ print }' > ${TMPDIR}/select.sam
+
+#	samtools sort --threads $((threads-1)) -n -o ${scratch_bam} select.sam
 #			( or ( !and($2,4), !and($2,8) ) ){ print }' | \
 
 	#	Assuming output file is a .bam file
