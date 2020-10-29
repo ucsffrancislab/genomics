@@ -67,3 +67,13 @@ done
 
 
 
+
+
+samtools view out/02-0047-01A-01R-1849-01+1.STAR.hg38.Aligned.sortedByCoord.out.bam | awk -F"\t" '{print $5}' | sort | uniq -c
+30914588 0
+1952532 1
+87091756 255
+3910924 3
+
+
+

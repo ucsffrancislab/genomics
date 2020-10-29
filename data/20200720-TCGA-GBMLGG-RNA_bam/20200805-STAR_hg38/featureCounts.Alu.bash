@@ -10,7 +10,7 @@ for gtf in ${REF}/SINE.Alu{.,.Abox.,.Bbox.}sync.gtf ; do
 	echo $gtf
 	feature=$( basename $gtf .gtf )
 
-	outbase=${DIR}/featureCounts/featureCounts.${feature}
+	outbase=${DIR}/featureCounts.20201028/featureCounts.${feature}
 
 	mkdir -p $( dirname ${outbase} )
 
@@ -18,7 +18,23 @@ for gtf in ${REF}/SINE.Alu{.,.Abox.,.Bbox.}sync.gtf ; do
 		-l feature=nocommunal \
 		-j oe -o ${outbase}.${date}.out.txt \
 		~/.local/bin/featureCounts.bash \
-		-F "-T 64 -a $gtf -t feature -g feature_name -o ${outbase}.csv ${DIR}/out/*.STAR.hg38.Aligned.sortedByCoord.out.bam"
+		-F "-B -P -Q 255 -T 64 -a $gtf -t feature -g feature_name -o ${outbase}.csv ${DIR}/out/*.STAR.hg38.Aligned.sortedByCoord.out.bam"
+
+
+#  -B                  Only count read pairs that have both ends aligned.
+#
+#  -P                  Check validity of paired-end distance when counting read 
+#                      pairs. Use -d and -D to set thresholds.
+#
+#  -d <int>            Minimum fragment/template length, 50 by default.
+#
+#  -D <int>            Maximum fragment/template length, 600 by default.
+#
+#	samtools view out/02-0047-01A-01R-1849-01+1.STAR.hg38.Aligned.sortedByCoord.out.bam | awk -F"\t" '{print $5}' | sort | uniq -c
+#	30914588 0
+#	1952532 1
+#	87091756 255
+#	3910924 3
 
 done
 
