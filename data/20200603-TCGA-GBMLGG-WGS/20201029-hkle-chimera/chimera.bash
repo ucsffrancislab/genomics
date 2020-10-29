@@ -25,14 +25,14 @@ vmem=62
 date=$( date "+%Y%m%d%H%M%S" )
 
 INDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201027-hkle-select/out"
-OUTDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201027-hkle-chimera/out"
+OUTDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/out"
 mkdir -p ${OUTDIR}
 
 #	NEED FULL PATH HERE ON THE CLUSTER
 
 #while IFS=, read -r r1 ; do
 
-for r1 in ${INDIR}/02*_R1.fastq.gz ; do
+for r1 in ${INDIR}/02*.R1.fastq.gz ; do
 	echo ${r1}
 
 	r2=${r1/R1/R2}
