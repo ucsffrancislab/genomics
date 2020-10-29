@@ -67,3 +67,13 @@ ll data/*/*sra | wc -l
 ll data/*/*sra | wc -l
 842
 
+date ; ll data/*/*sra | wc -l
+Thu Oct 29 07:57:27 PDT 2020
+853
+
+Seems to have stopped
+
+
+
+
+

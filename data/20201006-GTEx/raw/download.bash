@@ -5,7 +5,7 @@ while read -r accession ; do
 
 	echo ${accession}
 
-	if [ -e ${accession}/${accession}*sra ] ; then
+	if [ -e data/${accession}/${accession}*sra ] ; then
 		echo "SRA exists. Skipping"
 	else
 		echo "Downloading ${accession}"
