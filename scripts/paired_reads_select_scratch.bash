@@ -98,8 +98,8 @@ else
 	#	Assuming output file is a .bam file
 	scratch_base=${scratch_bam%.bam}
 
-	samtools fastq -1 ${scratch_base}_R1.fastq.gz -2 ${scratch_base}_R2.fastq.gz \
-		-0 ${scratch_base}_RO.fastq.gz -s ${scratch_base}_SI.fastq.gz -N ${scratch_bam}
+	samtools fastq -1 ${scratch_base}.R1.fastq.gz -2 ${scratch_base}.R2.fastq.gz \
+		-0 ${scratch_base}.RO.fastq.gz -s ${scratch_base}.SI.fastq.gz -N ${scratch_bam}
 
 	mv --update ${scratch_out}/* $( dirname ${f} )
 #	mv --update ${scratch_out}.err.txt $( dirname ${f} )
