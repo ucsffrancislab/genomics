@@ -22,10 +22,12 @@ mkdir -p ${DIR}
 #	remember 64 cores and ~504GB mem
 threads=8
 vmem=62
+#threads=16
+#vmem=125
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/02*_R1.fastq.gz ; do
+for r1 in ${INDIR}/06*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
