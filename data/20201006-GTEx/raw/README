@@ -74,6 +74,16 @@ Thu Oct 29 07:57:27 PDT 2020
 Seems to have stopped
 
 
+date ; ll data/*/*sra | wc -l
+Thu Oct 29 18:22:53 PDT 2020
+878
+
+
+date ; ll data/*/*sra | wc -l
+Fri Oct 30 08:02:21 PDT 2020
+917
+
+
 
 
 
