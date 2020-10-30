@@ -76,4 +76,28 @@ samtools view out/02-0047-01A-01R-1849-01+1.STAR.hg38.Aligned.sortedByCoord.out.
 3910924 3
 
 
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201023 20200720-TCGA-GBMLGG-RNA_bam 20200805-STAR_hg38/featureCounts.BPQ255"
+curl -netrc -X MKCOL "${BOX}"
+curl -netrc -T featureCounts.BPQ255/featureCounts.SINE.Alu.sync.csv.gz "${BOX}/"
+
+
+
+
+region="chr1:3737000-3738000"
+for bam in out/*bam ; do
+base=${bam%.STAR.hg38.Aligned.sortedByCoord.out.bam}
+echo $base
+samtools depth -a -r ${region} ${bam} > ${base}.${region}.depth.txt
+done
+
+merge_samtools_depths.py -o merged_${region}.csv.gz out/*.${region}.depth.txt
+
+mv merged_chr1\:3737000-3738000.csv.gz merged_chr1-3737000-3738000.csv.gz
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201023 20200720-TCGA-GBMLGG-RNA_bam 20200805-STAR_hg38"
+curl -netrc -T merged_chr1-3737000-3738000.csv.gz "${BOX}/"
+
+
+
+
 
