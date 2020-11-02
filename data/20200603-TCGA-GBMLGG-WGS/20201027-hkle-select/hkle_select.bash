@@ -20,14 +20,14 @@ DIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201027-hkle-select/out
 mkdir -p ${DIR}
 
 #	remember 64 cores and ~504GB mem
-threads=8
-vmem=62
-#threads=16
-#vmem=125
+#threads=8
+#vmem=62
+threads=16
+vmem=125
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/06*_R1.fastq.gz ; do
+for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
@@ -54,7 +54,7 @@ for r1 in ${INDIR}/06*_R1.fastq.gz ; do
 
 		index_size=$( stat --dereference --format %s ${index}.?.bt2 ${index}.rev.?.bt2 | awk '{s+=$1}END{print s}' )
 
-		scratch=$( echo $(( ((4*(${r1_size}+${r2_size})+${index_size})/${threads}/1000000000)+1 )) )
+		scratch=$( echo $(( ((2*(${r1_size}+${r2_size})+${index_size})/${threads}/1000000000)+1 )) )
 		#	Add 1 in case files are small so scratch will be 1 instead of 0.
 		#	11/10 adds 10% to account for the output
 
@@ -65,7 +65,13 @@ for r1 in ${INDIR}/06*_R1.fastq.gz ; do
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/paired_reads_select_scratch.bash \
-				-F "-r ${index} -1 ${r1} -2 ${r2} -o ${f}"
+				-F "--score-min G,20,5 -r ${index} -1 ${r1} -2 ${r2} -o ${f}"
+
+#	Running chimera on the raw data set finds more than on select.
+#	Missing some matches? Lower min score threshold?
+#	Default --score-min G,20,8 ( if read length = 100, min score is 56.8 )
+#	Testing --score-min G,20,6 ( if read length = 100, min score is 47.6 )
+#	Testing --score-min G,20,5 ( if read length = 100, min score is 43.0 )
 
 	fi
 
