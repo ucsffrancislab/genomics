@@ -15,11 +15,12 @@ for gtf in ${REF}/SINE.Alu{.Abox.,.Bbox.}sync.gtf ; do
 
 	mkdir -p $( dirname ${outbase} )
 
-	qsub -N $feature -l nodes=1:ppn=64 -l vmem=500gb \
+	#qsub -N $feature -l nodes=1:ppn=64 -l vmem=500gb \
+	qsub -N $feature -l nodes=1:ppn=32 -l vmem=250gb \
 		-l feature=nocommunal \
 		-j oe -o ${outbase}.${date}.out.txt \
 		~/.local/bin/featureCounts.bash \
-		-F "-B -P -Q 255 -T 64 -a $gtf -t feature -g feature_name -o ${outbase}.csv ${DIR}/out/*.STAR.hg38.Aligned.sortedByCoord.out.bam"
+		-F "-B -P -Q 255 -T 32 -a $gtf -t feature -g feature_name -o ${outbase}.csv ${DIR}/out/*.STAR.hg38.Aligned.sortedByCoord.out.bam"
 
 
 #  -B                  Only count read pairs that have both ends aligned.
