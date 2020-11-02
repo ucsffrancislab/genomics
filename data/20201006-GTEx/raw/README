@@ -73,17 +73,19 @@ Thu Oct 29 07:57:27 PDT 2020
 
 Seems to have stopped
 
-
 date ; ll data/*/*sra | wc -l
 Thu Oct 29 18:22:53 PDT 2020
 878
-
 
 date ; ll data/*/*sra | wc -l
 Fri Oct 30 08:02:21 PDT 2020
 917
 
+date ; ll data/*/*sra | wc -l
+Sun Nov  1 19:12:50 PST 2020
+1131
 
-
-
+date ; ll data/*/*sra | wc -l
+Mon Nov  2 07:34:01 PST 2020
+1178
 
