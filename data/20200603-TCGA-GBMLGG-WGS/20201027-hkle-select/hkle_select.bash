@@ -15,15 +15,17 @@ DIAMOND=${REFS}/diamond
 STAR=${REFS}/STAR
 SALMON=${REFS}/salmon
 
-INDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out"
+INDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/sample"
 DIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201027-hkle-select/out"
 mkdir -p ${DIR}
 
 #	remember 64 cores and ~504GB mem
-#threads=8
-#vmem=62
 threads=16
 vmem=125
+#threads=8
+#vmem=62
+#threads=4
+#vmem=30
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -39,6 +41,7 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 	echo $base
 
 	index=${BOWTIE2}/SVAs_and_HERVs_KWHE
+	#index=${BOWTIE2}/SVAs_and_HERVK113
 
 	outbase="${DIR}/${base}.$( basename ${index} )"
 
@@ -65,13 +68,19 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/paired_reads_select_scratch.bash \
-				-F "--score-min G,20,5 -r ${index} -1 ${r1} -2 ${r2} -o ${f}"
+				-F "--score-min G,1,4 -r ${index} -1 ${r1} -2 ${r2} -o ${f}"
 
 #	Running chimera on the raw data set finds more than on select.
 #	Missing some matches? Lower min score threshold?
 #	Default --score-min G,20,8 ( if read length = 100, min score is 56.8 )
 #	Testing --score-min G,20,6 ( if read length = 100, min score is 47.6 )
 #	Testing --score-min G,20,5 ( if read length = 100, min score is 43.0 )
+#		Still misses UNPAIRED alignments
+#	Testing --score-min G,20,4 ( if read length = 100, min score is 38.4 )
+#	Testing --score-min G,20,3 ( if read length = 100, min score is 33.8 )
+#	Testing --score-min G,10,4 ( if read length = 100, min score is 28.4 )
+#		STILL MISSES UNPAIRED ALIGNMENTS!
+#	Testing --score-min G,1,4 ( if read length = 100, min score is      )
 
 	fi
 
