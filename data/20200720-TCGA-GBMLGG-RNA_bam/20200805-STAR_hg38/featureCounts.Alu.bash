@@ -7,7 +7,8 @@ REF="/francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk
 DIR="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200805-STAR_hg38"
 
 #for gtf in ${REF}/SINE.Alu{.,.Abox.,.Bbox.}sync.gtf ; do
-for gtf in ${REF}/SINE.Alu{.Abox.,.Bbox.}sync.gtf ; do
+#for gtf in ${REF}/SINE.Alu{.Abox.,.Bbox.}sync.gtf ; do
+for gtf in ${REF}/SINE.Alu.Bbox.sync.gtf ; do
 	echo $gtf
 	feature=$( basename $gtf .gtf )
 
