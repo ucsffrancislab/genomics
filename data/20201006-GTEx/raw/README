@@ -89,3 +89,38 @@ date ; ll data/*/*sra | wc -l
 Mon Nov  2 07:34:01 PST 2020
 1178
 
+date ; ll data/*/*sra | wc -l
+Tue Nov  3 09:25:57 PST 2020
+1199
+
+
+nohup ./download.bash &
+
+date ; ll data/*/*sra | wc -l
+Tue Nov  3 16:00:20 PST 2020
+1211
+
+date ; ll data/*/*sra | wc -l
+Wed Nov  4 06:50:04 PST 2020
+1252
+
+date ; ll data/*/*sra | wc -l
+Wed Nov  4 11:26:05 PST 2020
+1266
+
+date ; ll data/*/*sra | wc -l
+Wed Nov  4 15:14:21 PST 2020
+1276
+
+date ; ll data/*/*sra | wc -l
+Wed Nov  4 19:17:51 PST 2020
+1288
+
+date ; ll data/*/*sra | wc -l
+Thu Nov  5 07:40:10 PST 2020
+1321
+
+date ; ll data/*/*sra | wc -l
+Thu Nov  5 18:01:38 PST 2020
+1330
+

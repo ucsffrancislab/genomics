@@ -10,7 +10,7 @@ while read -r accession ; do
 	else
 		echo "Downloading ${accession}"
 		prefetch --progress --resume yes --max-size 1000G \
-			--ngc prj_20942_D10852.ngc \
+			--type sra --ngc prj_20942_D10852.ngc \
 			--output-directory data/ ${accession}
 	fi
 
