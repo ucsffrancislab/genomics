@@ -19,10 +19,12 @@ DIAMOND=${REFS}/diamond
 #export BLASTDB=/francislab/data1/refs/blastn
 
 #	remember 64 cores and ~504GB mem
+threads=4
+vmem=30
 #threads=8
 #vmem=62
-threads=16
-vmem=125
+#threads=16
+#vmem=125
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -34,7 +36,7 @@ mkdir -p ${OUTDIR}
 
 #while IFS=, read -r r1 ; do
 
-for r1 in ${INDIR}/0*.R1.fastq.gz ; do
+for r1 in ${INDIR}/*.R1.fastq.gz ; do
 	echo ${r1}
 
 	r2=${r1/R1/R2}
