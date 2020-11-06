@@ -118,3 +118,9 @@ curl -netrc -T merged_${safe_region}.csv.gz "${BOX}/"
 
 
 
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201023 20200720-TCGA-GBMLGG-RNA_bam 20200805-STAR_hg38/featureCounts.BPQ255"
+curl -netrc -T featureCounts.BPQ255/featureCounts.SINE.Alu.Abox.sync.csv.gz "${BOX}/"
+curl -netrc -T featureCounts.BPQ255/featureCounts.SINE.Alu.Bbox.sync.csv.gz "${BOX}/"
+
+
+
