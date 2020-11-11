@@ -144,6 +144,36 @@ date ; ll data/*/*sra | wc -l
 Fri Nov  6 15:17:53 PST 2020
 1388
 
+date ; ll data/*/*sra | wc -l
+Sat Nov  7 07:48:56 PST 2020
+1397
 
+date ; ll data/*/*sra | wc -l
+Sat Nov  7 20:22:47 PST 2020
+1397
+
+date ; ll data/*/*sra | wc -l
+Sun Nov  8 06:09:31 PST 2020
+1417
+
+date ; ll data/*/*sra | wc -l
+Sun Nov  8 18:03:51 PST 2020
+1429
+
+date ; ll data/*/*sra | wc -l
+Mon Nov  9 08:22:20 PST 2020
+1433
+
+date ; ll data/*/*sra | wc -l
+Mon Nov  9 12:39:43 PST 2020
+1437
+
+date ; ll data/*/*sra | wc -l
+Mon Nov  9 19:19:47 PST 2020
+1438
+
+Done. All of them. Many required multiple attempts.
+
+nohup fastq-dump.bash &
 
 
