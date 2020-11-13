@@ -1,0 +1,30 @@
+
+https://portal.gdc.cancer.gov
+
+Primary Site
+IS
+
+brain
+AND
+
+Program Name
+IS
+
+TCGA
+AND
+
+Project Id
+IN
+(
+
+TCGA-GBM
+
+TCGA-LGG
+)
+AND
+
+Experimental Strategy
+IS
+
+Genotyping Array
+
