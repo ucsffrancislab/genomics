@@ -29,7 +29,9 @@ vmem=30
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/06*_R1.fastq.gz ; do
+#for r1 in ${INDIR}/[0-9A-F]*_R1.fastq.gz ; do
+#for r1 in ${INDIR}/F*_R1.fastq.gz ; do
+for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
@@ -63,12 +65,15 @@ for r1 in ${INDIR}/06*_R1.fastq.gz ; do
 
 		echo "Using scratch:${scratch}"
 
-		#	-l feature=nocommunal \
-		qsub -N "${base}select" -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+		qsub -N "${base}.select" -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
+			-l feature=nocommunal \
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/paired_reads_select_scratch.bash \
 				-F "--score-min G,1,3 -r ${index} -1 ${r1} -2 ${r2} -o ${f}"
+
+#Some Bowtie 2 options specify a function rather than an individual number or setting. In these cases the user specifies three parameters: (a) a function type F, (b) a constant term B, and (c) a coefficient A. The available function types are constant (C), linear (L), square-root (S), and natural log (G). The parameters are specified as F,B,A - that is, the function type, the constant term, and the coefficient are separated by commas with no whitespace. The constant term and coefficient may be negative and/or floating-point numbers.
+
 
 #	Running chimera on the raw data set finds more than on select.
 #	Missing some matches? Lower min score threshold?
