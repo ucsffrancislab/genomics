@@ -1,0 +1,31 @@
+
+
+20201116-TCGA-GBMLGG-SNV-Affy6
+
+https://portal.gdc.cancer.gov/legacy-archive/search/f?filters=%7B%22op%22:%22and%22,%22content%22:%5B%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.project.program.name%22,%22value%22:%5B%22TCGA%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.project.primary_site%22,%22value%22:%5B%22Brain%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22cases.project.project_id%22,%22value%22:%5B%22TCGA-GBM%22,%22TCGA-LGG%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22files.platform%22,%22value%22:%5B%22Affymetrix%20SNP%20Array%206.0%22%5D%7D%7D,%7B%22op%22:%22in%22,%22content%22:%7B%22field%22:%22files.data_category%22,%22value%22:%5B%22Simple%20nucleotide%20variation%22%5D%7D%7D%5D%7D
+
+
+ Primary Site IS Brain ANDProgram Name IS TCGA ANDProject Id IN TCGA-GBM ,TCGA-LGG  ANDData Category IS Simple nucleotide variation ANDPlatform IS Affymetrix SNP Array 6.0
+
+
+Showing 1 - 20 of 2,221 files
+
+
+FILES
+2,221
+CASES
+1,114
+FILE SIZE
+46.31 GB
+
+
+Legacy data
+
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-11-13T14_29_08.353Z.txt -m gdc_manifest_20201116_232745.txt &
+
+
+
+
+
