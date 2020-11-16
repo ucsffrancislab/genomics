@@ -7,3 +7,33 @@ See ../../20200529_Raleigh_WES/20200610-HKLE_chimera
 
 
 
+
+
+import pandas as pd
+df=pd.read_csv("out/02-2483-01A.SVAs_and_HERVs_KWHE.hkle/02-2483-01A.SVAs_and_HERVs_KWHE.bowtie2.SVA_F.very_sensitive_local.unpaired.aligned.pre.bowtie2.hg38.Q20.rc_insertion_points", sep='|', header=None, names=['chromosome','position'])
+df['rp']='pre'
+df['dir']='rc'
+df['pup']='u'
+df['hkle']='SVA_F'
+udf=df.groupby(df.columns.tolist(),as_index=False).size().to_frame('samplename')
+
+#	as_index=False seems to have no impact on output
+
+
+udf.columns=pd.MultiIndex.from_product([['u'],['20'],['SVA_F']])
+
+
+
+
+df=pd.read_csv('merge2.csv.gz',header=[0,1,2,3,4,5],index_col=[0,1])
+
+
+
+
+
+./merge_insertion_points.py -o merged.0-D.csv.gz out/*.SVAs_and_HERVs_KWHE.hkle/*.SVAs_and_HERVs_KWHE.bowtie2.*.very_sensitive_local.*.aligned.*.bowtie2.hg38.*.*ts
+
+
+
+nohup ./merge_insertion_points.py -o merged.0-D.csv.gz -p 'out/[0-D]*.SVAs_and_HERVs_KWHE.hkle/*.SVAs_and_HERVs_KWHE.bowtie2.*.very_sensitive_local.*.aligned.*.bowtie2.hg38.*.*ts' &
+
