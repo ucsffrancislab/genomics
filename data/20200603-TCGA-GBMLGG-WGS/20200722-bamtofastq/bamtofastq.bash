@@ -24,7 +24,7 @@ DIAMOND=${REFS}/diamond
 
 
 threads=4
-vmem=32
+vmem=30
 scratch=125
 
 #threads=2
@@ -45,6 +45,7 @@ mkdir -p ${OUTDIR}
 #	02 - Recurring Tumor
 #	10 - Blood Derived Normal
 #	11 - Solid Tissue Derived Normal
+
 
 
 #for bam in ${INDIR}/02-2485*.bam ; do

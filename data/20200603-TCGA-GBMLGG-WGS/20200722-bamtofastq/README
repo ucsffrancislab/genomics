@@ -51,3 +51,10 @@ zcat $f | sed -n '1~4s/\/[[:digit:]]$//p' > ${f}.read_names &
 done
 
 
+
+link_or_concat.bash
+
+cd sample/
+nohup count_fasta_reads.bash *_R1.fastq.gz &
+
+
