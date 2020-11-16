@@ -1,30 +1,17 @@
 
+
 https://portal.gdc.cancer.gov
 
-Primary Site
-IS
+Primary Site IS brain AND Program Name IS TCGA AND Project Id IN ( TCGA-GBM TCGA-LGG) AND Experimental Strategy IS Simple Nucleotide Variation
 
-brain
-AND
+8240
 
-Program Name
-IS
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-11-13T14_29_08.353Z.txt -m gdc_manifest_20201114_002001.txt &
 
-TCGA
-AND
 
-Project Id
-IN
-(
 
-TCGA-GBM
+Project  Cases ( n=909 )  Files ( n=8,240 )  File Size ( ∑=5.45 GB )
+TCGA-LGG  513             4,248              1.89 GB
+TCGA-GBM  396             3,992              3.56 GB
 
-TCGA-LGG
-)
-AND
-
-Experimental Strategy
-IS
-
-Genotyping Array
 
