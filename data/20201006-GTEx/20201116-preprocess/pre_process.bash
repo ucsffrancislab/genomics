@@ -39,10 +39,10 @@ for r1 in ${IN}/SRR*_R1.fastq.gz ; do
 
 	#	No unpairing needed so keep lane in final file check.
 	outbase="${OUT}/trimmed/length/${jobbase}"
-	#f=${outbase}_R1.fastq.gz
+	f=${outbase}_R1.fastq.gz
 	#	Unpairing needed so lose lane in final file check.
 	#outbase="${OUT}/trimmed/length/unpaired/${jobbase}"
-	f=${outbase}.fastq.gz
+	#f=${outbase}.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
