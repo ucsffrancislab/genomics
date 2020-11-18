@@ -1,0 +1,54 @@
+
+
+Find unpaired reads matched during normal run, but missed during selection.
+
+Find reads with different outcomes
+
+mkdir chimera_output
+cd chimera_output
+cp ../2020102?-hkle-chimera/out/02-2483-01A*.hkle/*HERVK113*unpaired*post*bam ./
+samtools view 02-2483-01A.SVAs_and_HERVs_KWHE.bowtie2.HERVK113.very_sensitive_local.unpaired.aligned.post.bowtie2.hg38.position.bam | awk -F/ '{print "^@"$1"/"}' | sort > 02-2483-01A.SVAs_and_HERVs_KWHE.bowtie2.HERVK113.very_sensitive_local.unpaired.aligned.post.bowtie2.hg38.position.bam.read_names
+samtools view 02-2483-01A-01D-1494.bowtie2.HERVK113.very_sensitive_local.unpaired.aligned.post.bowtie2.hg38.position.bam | awk -F/ '{print "^@"$1"/"}' | sort > 02-2483-01A-01D-1494.bowtie2.HERVK113.very_sensitive_local.unpaired.aligned.post.bowtie2.hg38.position.bam.read_names
+comm -3 *.read_names > unique_read_names
+cd ..
+
+Used comm to find unique reads, but the uniqueness is one sided.
+
+mkdir fastq
+cd fastq
+cp ../20201027-hkle-select/out/02-2483-01A.SVAs_and_HERVs_KWHE.R* ./
+cp ../20200722-bamtofastq/sample/02-2483-01A_R* ./
+cd ..
+
+for f in fastq/0*fastq.gz ; do
+zcat $f | grep --no-group-separator -A 3 -f chimera_output/unique_read_names > ${f}.matched2.fastq  2> ${f}.error2 &
+done
+
+:g/^--$/d
+
+The above could take a while, depending on the size of the raw file and the number of read names.
+
+As a pair these reads don't align. But unpaired one of them does.
+How to get the pair alignment to match?
+
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R1.fastq.gz.matched.fastq,fastq/02-2483-01A_R2.fastq.gz.matched.fastq > unpaired.sam 
+
+samtools view -c unpaired.sam
+samtools view unpaired.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+Both 1180
+
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.sam 
+
+samtools view -c paired.sam
+samtools view paired.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+1180 and 0
+
+
+bowtie2 --score-min G,1,3 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired2.sam 
+
+samtools view -c paired2.sam
+samtools view paired2.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+
