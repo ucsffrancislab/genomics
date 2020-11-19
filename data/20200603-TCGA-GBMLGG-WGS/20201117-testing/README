@@ -38,17 +38,82 @@ samtools view unpaired.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' 
 
 Both 1180
 
-bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.sam 
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.vsl.sam 
 
-samtools view -c paired.sam
-samtools view paired.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+samtools view -c paired.vsl.sam
+samtools view paired.vsl.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
 
 1180 and 0
 
 
-bowtie2 --score-min G,1,3 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired2.sam 
+--very-sensitive-local Same as: -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
 
-samtools view -c paired2.sam
-samtools view paired2.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+bowtie2 --local -D 25 -R 5 -N 1 -L 15 -i S,1,0.25 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.test.sam 
+
+samtools view -c paired.test.sam
+samtools view paired.test.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+Better
+
+
+
+
+bowtie2 --local -D 30 -R 5 -N 0 -L 10 -i S,1,0.15 --score-min G,1,1 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.test.sam 
+
+samtools view -c paired.test.sam
+samtools view paired.test.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+That goes too far
+
+
+
+bowtie2 --local -D 25 -R 4 -N 0 -L 10 -i S,1,0.15 --score-min G,1,4 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.test.sam 
+
+samtools view paired.test.sam | awk -F"\t" '( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+Still 100%!
+
+samtools view paired.test.sam | grep -o "AS:i:[[:digit:]]*" | sort | uniq -c
+
+Minimum is 19
+
+
+
+
+
+bowtie2 --ma 5 --local -D 25 -R 4 -N 0 -L 10 -i S,1,0.15 --score-min G,1,6 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.test.sam 
+
+Gonna try not to mess with scoring.
+
+bowtie2 --local -D 100 -R 10 -N 0 -L 10 -i S,1,0 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > paired.test.sam
+
+Upping D and R and lower i works. 	It may take longer.
+
+
+Why does the default work unpaired?
+
+bowtie2 --local -D 85 -R 5 -N 0 -L 10 -i S,1,0 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq  > paired.test.sam
+
+Gets all.
+
+
+Still don't understand how bowtie2 aligns differently paired vs unpaired.
+
+
+
+
+
+
+
+nohup bowtie2 --threads 60 --local -D 85 -R 5 -N 0 -L 10 -i S,1,0 -x SVAs_and_HERVs_KWHE -1 fastq/02-2483-01A_R1.fastq.gz -2 fastq/02-2483-01A_R2.fastq.gz  > raw.test.sam 2> raw.test.err &
+
+nohup samtools view -h raw.test.sam | gawk -F"\t" '( /^@/ ){ print; next; }( !and($2,4) || !and($2,8) ){ print }' > select.sam 2> select.err &
+
+samtools sort --threads 16 -n -o select.bam select.sam
+
+samtools fastq -1 select.R1.fastq.gz -2 select.R2.fastq.gz -0 select.RO.fastq.gz -s select.SI.fastq.gz -N select.bam
+
+
 
 
