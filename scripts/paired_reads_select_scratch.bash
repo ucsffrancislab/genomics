@@ -98,6 +98,8 @@ else
 	#	Assuming output file is a .bam file
 	scratch_base=${scratch_bam%.bam}
 
+	mv ${TMPDIR}/tmp.bam.err.txt ${scratch_base}.bowtie2.err.txt
+
 	samtools fastq -1 ${scratch_base}.R1.fastq.gz -2 ${scratch_base}.R2.fastq.gz \
 		-0 ${scratch_base}.RO.fastq.gz -s ${scratch_base}.SI.fastq.gz -N ${scratch_bam}
 
