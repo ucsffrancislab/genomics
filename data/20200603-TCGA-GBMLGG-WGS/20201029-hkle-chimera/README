@@ -31,9 +31,33 @@ df=pd.read_csv('merge2.csv.gz',header=[0,1,2,3,4,5],index_col=[0,1])
 
 
 
-./merge_insertion_points.py -o merged.0-D.csv.gz out/*.SVAs_and_HERVs_KWHE.hkle/*.SVAs_and_HERVs_KWHE.bowtie2.*.very_sensitive_local.*.aligned.*.bowtie2.hg38.*.*ts
-
-
+Argument list is long so created -p option for script.
 
 nohup ./merge_insertion_points.py -o merged.0-D.csv.gz -p 'out/[0-D]*.SVAs_and_HERVs_KWHE.hkle/*.SVAs_and_HERVs_KWHE.bowtie2.*.very_sensitive_local.*.aligned.*.bowtie2.hg38.*.*ts' &
+
+
+
+
+
+
+Merge pre/post and forward/reverse and round 1000
+
+
+mkdir premerge
+for dir in out/*.SVAs_and_HERVs_KWHE.hkle ; do
+sample=$( basename $dir )
+sample=${sample%%.*}
+for hkle in SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F HERVK113 ; do
+for pup in paired unpaired ; do
+for mapq in Q00 Q10 Q20 ; do
+echo "${sample}-${hkle}-${pup}-${mapq}"
+sort ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,$2,int($2/1000)*1000}' > premerge/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
+done ; done ; done ; done
+
+
+
+
+nohup ./merge_insertion_points.py -o merged.0-D.rounded.csv.gz -p 'premerge/*ts' > merge.out 2> merge.err &
+
+
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os    
+import os
 import sys
 import pandas as pd
 import glob
@@ -64,15 +64,21 @@ for filename in glob.glob(pattern) + args.files:
 #	0 - 02-2483-01A
 #	1 - SVAs_and_HERVs_KWHE
 #	2 - bowtie2
-# 3 - SVA_F
+#	3 - SVA_F
 #	4 - very_sensitive_local
 #	5 - unpaired
 #	6 - aligned
-# 7 - pre
-# 8 - bowtie2
+#	7 - pre
+#	8 - bowtie2
 #	9 - hg38
-# 10 - Q20
-# 11 - rc_insertion_points
+#	10 - Q20
+#	11 - rc_insertion_points
+
+#	premerge/02-2483-01A.HERVK113.unpaired.Q00.all_insertion_points
+#	0 - 02-2483-01A
+#	1 - SVA_F
+#	2 - unpaired
+#	3 - Q20
 
 		filenameparts=basename.split(".")	#[0]	#	everything before the first "."
 		sample=filenameparts[0]
@@ -97,13 +103,25 @@ for filename in glob.glob(pattern) + args.files:
 		#	pup
 		#	hkle
 		#	mapq
+		#d.columns=pd.MultiIndex.from_product([
+		#	[sample],
+		#	[filenameparts[7]],
+		#	['reverse' if filenameparts[11][0]=='r' else 'forward'],
+		#	[sample],
+		#	[filenameparts[5]],
+		#	[filenameparts[3]],
+		#	[filenameparts[10]]
+		#])
+
+		#	sample
+		#	pup
+		#	hkle
+		#	mapq
 		d.columns=pd.MultiIndex.from_product([
-			[sample],
-			[filenameparts[7]],
-			['reverse' if filenameparts[11][0]=='r' else 'forward'],
-			[filenameparts[5]],
-			[filenameparts[3]],
-			[filenameparts[10]]
+			[filenameparts[0]],
+			[filenameparts[2]],
+			[filenameparts[1]],
+			[filenameparts[3]]
 		])
 
 		print("Appending")
@@ -124,7 +142,7 @@ if len(data_frames) > 0:
 #	df.head()
 ##	df.dtypes
 #
-#	
+#
 #	if args.int:
 	print("Converting all counts back to integers")
 	df = pd.DataFrame(df, dtype=int)
@@ -134,14 +152,16 @@ if len(data_frames) > 0:
 
 	print("Writing CSV")
 	df.to_csv(output,index_label=['chromosome','position'])
-		#	sample
-		#	relpos
-		#	direction
-		#	pup
-		#	hkle
-		#	mapq
+
+	#	sample
+	#	#	relpos
+	#	#	direction
+	#	pup
+	#	hkle
+	#	mapq
 	print("Writing transposed CSV")
-	df.T.to_csv(output.replace('csv', 'T.csv', 1),index_label=['sample','relpos','direction','pup','hkle','mapq'])
+	#df.T.to_csv(output.replace('csv', 'T.csv', 1),index_label=['sample','relpos','direction','pup','hkle','mapq'])
+	df.T.to_csv(output.replace('csv', 'T.csv', 1),index_label=['sample','pup','hkle','mapq'])
 
 else:
 	print("No data.")
