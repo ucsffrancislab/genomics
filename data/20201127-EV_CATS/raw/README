@@ -1,0 +1,16 @@
+
+
+This is CATS sequencing data.
+
+
+username and password added to ~/.netrc
+
+wget --no-remove-listing --recursive --no-clobber ftp://52.7.5.48/
+
+
+
+
+bcl2fastq --runfolder-dir 201123_M01519_0360_000000000-D9RV4 --output-dir output
+
+
+
