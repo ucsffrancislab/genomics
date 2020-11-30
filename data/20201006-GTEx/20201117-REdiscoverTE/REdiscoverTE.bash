@@ -20,6 +20,10 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
 
+#while read -r accession ; do
+#	echo ${accession}
+#	r1=${INDIR}/${accession}_R1.fastq.gz
+#	ls $r1
 
 	base=${r1%_R1.fastq.gz}
 	r2=${r1/_R1/_R2}
@@ -57,8 +61,11 @@ for r1 in ${INDIR}/*_R1.fastq.gz ; do
 	fi
 
 #done < ALL-P2.fastq_files.txt
-
 done
+
+#done < <( head -n 500 /francislab/data1/raw/20201006-GTEx/PairedBrainRNASRAAccessions.txt )
+
+
 
 
 exit
