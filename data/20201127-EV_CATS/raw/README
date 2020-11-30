@@ -9,8 +9,41 @@ wget --no-remove-listing --recursive --no-clobber ftp://52.7.5.48/
 
 
 
+Create 201123_M01519_0360_000000000-D9RV4/SampleSheet.csv
+
 
 bcl2fastq --runfolder-dir 201123_M01519_0360_000000000-D9RV4 --output-dir output
+tar cf - Reports/ | gzip > Reports.tar.gz
+tar cf - Stats/ | gzip > Stats.tar.gz
 
+
+cd output
+../CATS_trimming_r1.sh L6_S1_L001_R1_001.fastq.gz 
+../CATS_trimming_r2.sh L6_S1_L001_R2_001.fastq.gz 
+../CATS_trimming_r1.sh L8_S2_L001_R1_001.fastq.gz 
+../CATS_trimming_r2.sh L8_S2_L001_R2_001.fastq.gz 
+
+
+
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201130 20201127-EV_CATS Test Trimming"
+
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in output/*gz* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+
+
+bowtie2.bash --very-sensitive -x human_mirna -U $f -o ${base}.vs_mirna.bam
+
+for f in output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+echo $f
+bowtie2.bash --very-sensitive-local -x human_mirna -U $f -o ${base}.vsl_mirna.bam
+done
 
 
