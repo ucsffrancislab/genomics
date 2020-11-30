@@ -20,6 +20,9 @@ parser.add_argument('-s', '--sep', nargs=1, type=str, default='|', help='the sep
 parser.add_argument('-p','--pattern', nargs=1, type=str, default='', help='alternate file selector for when argument list would be too long')
 
 
+parser.add_argument('-c','--chromosome', nargs=1, type=str, default='', help='chromosome subset')
+
+
 #	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
 #parser.add_argument('--int', action='store_true', help='convert values to ints to %(prog)s (default: %(default)s)')
 
@@ -48,7 +51,13 @@ if isinstance(args.pattern,list):
 	pattern=args.pattern[0]
 else:
 	pattern=args.pattern
-print( "Using separator :", pattern, ":" )
+print( "Using pattern :", pattern, ":" )
+
+if isinstance(args.chromosome,list):
+	chromosome=args.chromosome[0]
+else:
+	chromosome=args.chromosome
+print( "Using chromosome :", chromosome, ":" )
 
 
 
@@ -95,6 +104,11 @@ for filename in glob.glob(pattern) + args.files:
 		#raw['hkle']=filenameparts[3]
 		#raw['q']=filenameparts[10][1:2]
 
+		if chromosome:
+			print("Selecting "+chromosome)
+			raw=raw[raw.chromosome == chromosome]
+
+		#	Count the number of occurrences
 		d=raw.groupby(raw.columns.tolist(),as_index=False).size().to_frame(sample)
 
 		#	sample
@@ -129,14 +143,17 @@ for filename in glob.glob(pattern) + args.files:
 	else:
 		print(filename + " is empty")
 
+sys.stdout.flush()
 
 if len(data_frames) > 0:
 	print("Concating all")
+	sys.stdout.flush()
 	df = pd.concat(data_frames, axis=1, sort=True)
 	data_frames = []
 	print(df.head())
 
 	print("Replacing all NaN with 0")
+	sys.stdout.flush()
 	df.fillna(0, inplace=True)
 ##	df.info(verbose=True)
 #	df.head()
@@ -145,12 +162,18 @@ if len(data_frames) > 0:
 #
 #	if args.int:
 	print("Converting all counts back to integers")
+	sys.stdout.flush()
 	df = pd.DataFrame(df, dtype=int)
 	#	df.info(verbose=True)
 	#	df.head()
 	#	df.dtypes
 
-	print("Writing CSV")
+
+	if chromosome:
+		output=output.replace('csv', chromosome+'.csv', 1)
+
+	print("Writing CSV : ",output)
+	sys.stdout.flush()
 	df.to_csv(output,index_label=['chromosome','position'])
 
 	#	sample
@@ -159,9 +182,11 @@ if len(data_frames) > 0:
 	#	pup
 	#	hkle
 	#	mapq
-	print("Writing transposed CSV")
+	toutput=output.replace('csv', 'T.csv', 1)
+	print("Writing transposed CSV : ",toutput)
+	sys.stdout.flush()
 	#df.T.to_csv(output.replace('csv', 'T.csv', 1),index_label=['sample','relpos','direction','pup','hkle','mapq'])
-	df.T.to_csv(output.replace('csv', 'T.csv', 1),index_label=['sample','pup','hkle','mapq'])
+	df.T.to_csv(toutput,index_label=['sample','pup','hkle','mapq'])
 
 else:
 	print("No data.")
