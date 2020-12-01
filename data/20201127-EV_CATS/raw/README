@@ -37,13 +37,59 @@ curl -netrc -T ${f} "${BOX}/"
 done
 
 
-bowtie2.bash --very-sensitive -x human_mirna -U $f -o ${base}.vs_mirna.bam
+for f in output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+echo $f
+bowtie2.bash --sort --very-sensitive -x human_mirna -U $f -o ${base}.vs_mirna.bam
+bowtie2.bash --sort --very-sensitive-local -x human_mirna -U $f -o ${base}.vsl_mirna.bam
+bowtie2.bash --sort --very-sensitive -x hg38 -U $f -o ${base}.vs_hg38.bam
+bowtie2.bash --sort --very-sensitive-local -x hg38 -U $f -o ${base}.vsl_hg38.bam
+done
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201130 20201127-EV_CATS Test Trimming"
+for f in output/trimmed*bam* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+
 
 for f in output/trimmed*q.gz ; do
 base=${f%_001.fastq.gz}
 base=${base/_S?_L001/}
 echo $f
-bowtie2.bash --very-sensitive-local -x human_mirna -U $f -o ${base}.vsl_mirna.bam
+zcat ${f} | sed -n '1~4s/^@/>/p;2~4p' | blastn -db nt -outfmt 6 -out ${base}.nt.tsv
 done
 
+
+for f in output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+echo $f
+zcat ${f} | sed -n '1~4s/^@/>/p;2~4p' | diamond blastx --threads 8 --db /francislab/data1/refs/diamond/nr --outfmt 100 --out ${base}.nr.dmnd
+done
+
+
+
+for f in output/trimmed*.bam ; do
+base=${f%.bam}
+base=${base//./-}
+echo $f
+samtools view -F4 $f | awk '{print $3}' | sort | uniq -c > ${base}.counts.txt
+done
+
+
+merge_uniq-c.py --int --output merged_mirna_counts.csv.gz output/*_mirna.counts.txt
+merge_uniq-c.py --int --output merged_hg38_counts.csv.gz output/*_hg38.counts.txt
+
+
+for f in output/trimmed*.bam ; do
+base=${f%.bam}
+base=${base//./-}
+echo $f
+samtools view -F4 $f | awk '{print $3":"int($4/1000)*1000}' | sort | uniq -c > ${base}.pos1k_counts.txt
+done
+
+merge_uniq-c.py --int --output merged_hg38_pos1k_counts.csv.gz output/*_hg38.pos1k_counts.txt
 
