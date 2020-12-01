@@ -66,8 +66,9 @@ while read -r accession ; do
 	#	Sadly many files have the same dependencies resulting in a lot 
 	#	of redundant dependency data.
 
-#done < ${basedir}/PairedBrainRNASRAAccessions.txt
-done < <( head -n 1300 ${basedir}/PairedBrainRNASRAAccessions.txt )
+done < ${basedir}/PairedBrainRNASRAAccessions.txt
+#done < <( head -n 1300 ${basedir}/PairedBrainRNASRAAccessions.txt )
+#done < <( head -n 1300 ${basedir}/PairedBrainRNASRAAccessions.txt )
 #done < <( head -n 702 ${basedir}/PairedBrainRNASRAAccessions.txt | tail -n 98)
 #done < <( head -n 600 ${basedir}/tmp )
 
