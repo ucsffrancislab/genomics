@@ -10,14 +10,17 @@ FASTA=${REFS}/fasta
 date=$( date "+%Y%m%d%H%M%S" )
 
 unpair=false
+bbduk_options=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		--unpair)
 			shift; unpair=true;;
-		-out)
+		-out|--out)
 			shift; OUT=$1; shift;;
-		-r1)
+		-r1|--r1)
 			shift; R1=$1; shift;;
+		--bbduk)
+			shift; bbduk_options="${bbduk_options} $1"; shift;;
 #		-r2)
 #			shift; R2=$1; shift;;
 	esac
@@ -62,7 +65,7 @@ echo $base
 mkdir -p ${OUT}/trimmed
 outbase="${OUT}/trimmed/${base}"
 
-bbduk.bash \
+bbduk.bash ${bbduk_options} \
 	-Xmx16g \
 	in1=${R1} \
 	in2=${R2} \
