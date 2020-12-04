@@ -65,6 +65,7 @@ while read -r accession ; do
 				~/.local/bin/pre_process_paired.bash \
 					-F "-out ${OUT} -r1 ${r1}"
 					#-F "--unpair -out ${OUT} -r1 ${r1}"
+#	--bbduk qin=33
 		fi
 
 	fi
@@ -73,6 +74,7 @@ while read -r accession ; do
 #done
 
 #done < <( head -n 500 /francislab/data1/raw/20201006-GTEx/PairedBrainRNASRAAccessions.txt )
-done < <( head -n 500 /francislab/data1/raw/20201006-GTEx/PairedBrainRNASRAAccessions.txt | tail -n 100 )
+#done < <( head -n 1400 /francislab/data1/raw/20201006-GTEx/PairedBrainRNASRAAccessions.txt | tail -n 100 )
+done < /francislab/data1/raw/20201006-GTEx/PairedBrainRNASRAAccessions.txt
 
 
