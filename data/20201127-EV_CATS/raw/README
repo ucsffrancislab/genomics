@@ -93,3 +93,174 @@ done
 
 merge_uniq-c.py --int --output merged_hg38_pos1k_counts.csv.gz output/*_hg38.pos1k_counts.txt
 
+
+for f in *daa ; do
+echo $f
+/Applications/MEGAN/tools/daa-meganizer --in ${f} --mapDB ~/megan/megan-map-Jul2020-2.db --threads 8
+done
+
+Open MEGAN, File -> Compare ... 
+
+
+
+
+
+
+for f in output/trimmed_L*fastq.gz ; do
+echo $f
+#zcat $f | sed -n '2~4p' > ${f}.reads
+#sort ${f}.reads > ${f}.reads.sorted
+#uniq -c ${f}.reads.sorted > ${f}.reads.sorted.uniq-c
+sort -n ${f}.reads.sorted.uniq-c > ${f}.reads.sorted.uniq-c.sort
+done
+
+
+
+
+--masking                enable masking of low complexity regions (0/1=default)
+
+
+
+for f in /francislab/data1/raw/20201127-EV_CATS/output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+basename=$(basename $base)
+echo $f
+for m in 0 1 ; do
+echo "diamond blastx --query ${f} --threads 16 --db /francislab/data1/refs/diamond/nr --outfmt 100 --out ${base}.nr.masking${m} --masking ${m}" | qsub -N ${basename}${m} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o ${base}.nr.masking${m}.stdout -e ${base}.nr.masking${m}.stderr
+done ; done
+
+
+
+
+
+
+
+
+
+for f in /francislab/data1/raw/20201127-EV_CATS/output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+basename=$(basename $base)
+echo $f
+for ref in /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq /francislab/data1/refs/STAR/hg38-golden-none ; do 
+baseref=$(basename $ref)
+out=${basename}_${baseref}
+command="STAR --twopassMode Basic --outSAMmultNmax 20 --outSAMprimaryFlag AllBestScore --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --runMode alignReads --outFileNamePrefix /francislab/data1/raw/20201127-EV_CATS/STAR/${out}. --outSAMtype BAM SortedByCoordinate --genomeDir ${ref} --runThreadN 16 --outSAMattrRGline ID:${out} SM:${out} --readFilesCommand zcat --outSAMunmapped Within --readFilesIn ${f}"
+echo ${command}
+echo ${command} | qsub -N ${out} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR/${out}.out -e /francislab/data1/raw/20201127-EV_CATS/STAR/${out}.err
+done ; done
+
+
+
+
+Compare read counts
+
+echo "sample,raw,trimmed,bowtie e2e,bowtie loc,STAR gtf,STAR none" > read_counts.csv
+for l in 6 8; do
+for r in 1 2; do
+x=$( zcat output/L${l}_S?_L001_R${r}_001.fastq.gz | paste - - - - | wc -l )
+c=$( zcat output/trimmed_L${l}_S?_L001_R${r}_001.fastq.gz | paste - - - - | wc -l )
+echo -n "L${l}_R${r},${x},${c}"
+for f in */trimmed_L${l}_R${r}*hg38*bam ; do
+c=$( samtools view -F4 $f | awk '{print $1}' | sort | uniq | wc -l )
+echo -n ",${c}"
+done
+echo
+done ; done >> read_counts.csv
+
+
+
+for f in STAR/*bam ; do
+basename=$( basename $f )
+base=${basename%.Aligned.sortedByCoord.out.bam}
+base=${base/trimmed_}
+base=${base/_hg38-golden}
+echo $f ; echo $base ; 
+samtools view -F4 $f | awk '{print $3":"int($4/1000)*1000}' | sort | uniq -c > STAR/${base}.pos1k_counts.txt
+done
+
+merge_uniq-c.py --int --output merged_STAR_hg38_pos1k_counts.csv.gz STAR/*.pos1k_counts.txt
+
+
+
+
+
+Test
+
+for f in /francislab/data1/raw/20201127-EV_CATS/output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+basename=$(basename $base)
+echo $f
+for ref in /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq ; do 
+baseref=$(basename $ref)
+out=${basename}_${baseref}
+command="STAR --runMode alignReads --outFileNamePrefix /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}. --outSAMtype BAM SortedByCoordinate --genomeDir ${ref} --runThreadN 16 --outSAMattrRGline ID:${out} SM:${out} --readFilesCommand zcat --outSAMunmapped Within --readFilesIn ${f}"
+echo ${command}
+echo ${command} | qsub -N ${out} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}.out -e /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}.err
+done ; done
+
+
+
+
+
+
+for f in STAR/*ncbiRefSeq.Aligned.sortedByCoord.out.bam ; do
+echo $f
+samtools view -F4 $f | awk '{print $1}' | sort | uniq -c > ${f}.aligned_reads.uniq-c.txt
+awk '( $1 == 1 ){single++}($1 > 1){multi++}END{print "Single:"single" - Multi:"multi}' ${f}.aligned_reads.uniq-c.txt
+done
+
+
+
+
+
+
+
+for f in /francislab/data1/raw/20201127-EV_CATS/output/trimmed*q.gz ; do
+base=${f%_001.fastq.gz}
+base=${base/_S?_L001/}
+basename=$(basename $base)
+echo $f
+for ref in /francislab/data1/refs/STAR/human_mirna ; do 
+baseref=$(basename $ref)
+out=${basename}_${baseref}
+command="STAR --twopassMode Basic --outSAMmultNmax 20 --outSAMprimaryFlag AllBestScore --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --runMode alignReads --outFileNamePrefix /francislab/data1/raw/20201127-EV_CATS/STAR/${out}. --outSAMtype BAM SortedByCoordinate --genomeDir ${ref} --runThreadN 16 --outSAMattrRGline ID:${out} SM:${out} --readFilesCommand zcat --outSAMunmapped Within --readFilesIn ${f}"
+echo ${command}
+echo ${command} | qsub -N ${out} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR/${out}.out -e /francislab/data1/raw/20201127-EV_CATS/STAR/${out}.err
+done ; done
+
+
+
+
+qsub -N featureCounts -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR/featureCounts.transcript.out -e /francislab/data1/raw/20201127-EV_CATS/STAR/featureCounts.transcript.err ~/.local/bin/featureCounts_scratch.bash -F "-o /francislab/data1/raw/20201127-EV_CATS/STAR/featureCounts.transcript.csv -a /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf -t transcript -T 64 /francislab/data1/raw/20201127-EV_CATS/STAR/*ncbiRefSeq.Aligned.sortedByCoord.out.bam"
+
+qsub -N featureCounts -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR/featureCounts.exon.out -e /francislab/data1/raw/20201127-EV_CATS/STAR/featureCounts.exon.err ~/.local/bin/featureCounts_scratch.bash -F "-o /francislab/data1/raw/20201127-EV_CATS/STAR/featureCounts.exon.csv -a /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf -t exon -T 64 /francislab/data1/raw/20201127-EV_CATS/STAR/*ncbiRefSeq.Aligned.sortedByCoord.out.bam"
+
+
+
+
+
+for f in STAR/*ncbiRefSeq.Aligned.sortedByCoord.out.bam ; do
+echo $f
+samtools view -c -F4 $f > ${f}.F4.alignment_count.txt
+done
+
+
+for f in STAR/trimmed_L?_R?_human_mirna.Aligned.sortedByCoord.out.bam ; do
+basename=$( basename $f )
+base=${basename%.Aligned.sortedByCoord.out.bam}
+base=${base/trimmed_}
+echo $f
+samtools view -F4 $f | awk '{print $3}' | sort | uniq -c > STAR/${base}.counts.txt
+done
+
+
+merge_uniq-c.py --int --output merged_STAR_mirna_counts.csv.gz STAR/L?_R?_human_mirna.counts.txt
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201130 20201127-EV_CATS Test Trimming"
+curl -netrc -T merged_STAR_mirna_counts.csv.gz "${BOX}/"
+
+
+
+
