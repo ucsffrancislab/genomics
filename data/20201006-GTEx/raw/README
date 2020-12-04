@@ -189,3 +189,15 @@ nohup ./prefetch.bash > prefetch.out 2> prefetch.err &
 nohup ./fastq-dump.bash > fastq-dump.out 2> fastq-dump.err &
 
 
+
+
+https://github.com/brentp/bio-playground/blob/master/reads-utils/guess-encoding.py
+
+awk 'NR % 4 == 0' your.fastq | guess-encoding.py -n 1000
+
+for f in fastq/*fastq.gz; do
+echo $f
+encoding=$( zcat $f | awk 'NR % 4 == 0' | guess-encoding.py -n 100000 2> /dev/null )
+echo ${f},${encoding} >> encoding.csv 
+done
+
