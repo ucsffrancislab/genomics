@@ -5,3 +5,6 @@ Based on
 20200407_Schizophrenia/20201014-preprocess
 
 
+wget https://raw.githubusercontent.com/brentp/bio-playground/master/reads-utils/guess-encoding.py
+
+
