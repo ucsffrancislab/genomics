@@ -70,7 +70,7 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 			-l gres=scratch:${scratch} \
 			-j oe -o ${outbase}.${date}.out.txt \
 			~/.local/bin/paired_reads_select_scratch.bash \
-				-F "--score-min G,1,3 -r ${index} -1 ${r1} -2 ${r2} -o ${f}"
+				-F "--very-sensitive-local --score-min G,1,3 -r ${index} -1 ${r1} -2 ${r2} -o ${f}"
 
 #Some Bowtie 2 options specify a function rather than an individual number or setting. In these cases the user specifies three parameters: (a) a function type F, (b) a constant term B, and (c) a coefficient A. The available function types are constant (C), linear (L), square-root (S), and natural log (G). The parameters are specified as F,B,A - that is, the function type, the constant term, and the coefficient are separated by commas with no whitespace. The constant term and coefficient may be negative and/or floating-point numbers.
 
@@ -92,6 +92,11 @@ for r1 in ${INDIR}/02*_R1.fastq.gz ; do
 #	What?
 #
 #	Testing --score-min G,1,3  ( if read length = 100, min score is 14.8 )
+
+
+#	Works much better, but still why needed?
+#	--local -D 85 -R 5 -N 0 -L 10 -i S,1,0
+
 
 	fi
 
