@@ -65,7 +65,7 @@ else
 
 	threads=${PBS_NUM_PPN:-1}
 
-	bowtie2.bash --very-sensitive-local ${SELECT_ARGS} --threads ${threads} -x ${scratch_ref} -o ${TMPDIR}/tmp.bam ${scratch_inputs}
+	bowtie2.bash ${SELECT_ARGS} --threads ${threads} -x ${scratch_ref} -o ${TMPDIR}/tmp.bam ${scratch_inputs}
 
 
 	#	select reads where read or mate aligned
