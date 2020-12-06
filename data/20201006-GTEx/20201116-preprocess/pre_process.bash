@@ -63,9 +63,9 @@ while read -r accession ; do
 				-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 				-j oe -o ${outbase}.pre_process.${date}.out.txt \
 				~/.local/bin/pre_process_paired.bash \
-					-F "-out ${OUT} -r1 ${r1}"
+					-F "-out ${OUT} -r1 ${r1} --bbduk qin=33"
+					#-F "-out ${OUT} -r1 ${r1}"
 					#-F "--unpair -out ${OUT} -r1 ${r1}"
-#	--bbduk qin=33
 		fi
 
 	fi
