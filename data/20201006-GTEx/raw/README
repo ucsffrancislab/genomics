@@ -201,3 +201,8 @@ encoding=$( zcat $f | awk 'NR % 4 == 0' | guess-encoding.py -n 100000 2> /dev/nu
 echo ${f},${encoding} >> encoding.csv 
 done
 
+grep -vs "Illumina-1.8 35 74" encoding.csv
+
+24 are "corrupt"
+
+
