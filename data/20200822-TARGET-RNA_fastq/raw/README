@@ -1,5 +1,7 @@
 
 
+This manifest is from the legacy download portal TARGET Unaligned RNA.
+
 
 nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2020-08-21T19_15_34-07_00.txt -m gdc_manifest.TARGET.RNA.tar.20200823_023543.txt &
 
@@ -81,9 +83,5 @@ d7fb6886-7df1-4908-955a-783b84c15d7e
 
 
 Which file ids are in manifest, but not downloaded?
-
-
-
-
 
 
