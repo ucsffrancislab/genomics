@@ -262,5 +262,13 @@ BOX="https://dav.box.com/dav/Francis _Lab_Share/20201130 20201127-EV_CATS Test T
 curl -netrc -T merged_STAR_mirna_counts.csv.gz "${BOX}/"
 
 
+./samtools_depths_to_ranges.bash --min 2 --gap 1 STAR/trimmed_L6_R1_human_mirna.Aligned.sortedByCoord.out.bam 
+
+
+for f in STAR/trimmed_L?_R?_human_mirna.Aligned.sortedByCoord.out.bam ; do
+echo $f
+./samtools_depths_to_ranges.bash --min 3 --gap 0 --length 20 $f
+done
+
 
 
