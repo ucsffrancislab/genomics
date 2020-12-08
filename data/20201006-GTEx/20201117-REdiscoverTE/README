@@ -3,3 +3,25 @@
 ./REdiscoverTE.bash
 
 
+
+
+
+ROOT="https://dav.box.com/dav/Francis _Lab_Share/20201207 20201006-GTEx 20201117-REdiscoverTE"
+curl -netrc -X MKCOL "${ROOT}/"
+
+DIR=REdiscoverTE_rollup.original
+BOX="${ROOT}/${DIR}"
+curl -netrc -X MKCOL "${BOX}/"
+for f in ${DIR}/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+
+DIR=REdiscoverTE_rollup.noquestion
+BOX="${ROOT}/${DIR}"
+curl -netrc -X MKCOL "${BOX}/"
+for f in ${DIR}/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+
