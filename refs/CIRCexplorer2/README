@@ -1,0 +1,82 @@
+
+
+pip install --upgrade --user CIRCexplorer2
+
+
+
+Download human RefSeq gene annotation file ( Downloads refFlat.txt.gz and gunzips to hg38_ref.txt )
+
+fetch_ucsc.py hg38 ref hg38_ref.txt
+
+hg38 and mm10 only have RefSeq and KnownGenes (GENCODE) gene annotations, and does not support Ensembl gene annotations.
+
+
+Download human KnownGenes gene annotation file ( knownGene.txt.gz and kgXref.txt.gz then creates hg38_kg.txt )
+
+fetch_ucsc.py hg38 kg hg38_kg.txt
+
+
+
+Concatenate all
+
+#cat hg19_ref.txt hg19_kg.txt hg19_ens.txt > hg19_ref_all.txt
+
+cat hg38_ref.txt hg38_kg.txt > hg38_ref_all.txt
+
+
+Convert gene annotation file to GTF format (require genePredToGtf from kentutils)
+
+cut -f2-11 hg38_ref_all.txt | genePredToGtf file stdin hg38_ref_all.gtf
+
+
+
+
+Download human reference genome sequence file ( chromFa.tar.gz opened to hg38.fa and hg38.fa.fai )
+Much Faster on c4/c4-dt1 but still takes an hour or two
+
+fetch_ucsc.py hg38 fa hg38.fa
+
+
+
+
+
+
+
+CIRCexploer2 TopHat2/TopHat-Fusion pipeline requires Bowtie and Bowtie2 index files for reference genome. You could use bowtie-build and bowtie2-build to index relevant genome. Or you could use CIRCexplorer2 align to automatically index the genome file (See Alignment).
+
+
+
+# index genome for Bowtie
+bowtie-build --threads 16 hg38.fa bowtie1_index
+
+
+# index genome for Bowtie2
+bowtie2-build --threads 16 hg38.fa bowtie2_index
+
+
+
+
+
+
+
+
+
+
+RUN single end
+
+
+CIRCexplorer2 align -G hg38_ref_all.gtf -i bowtie1_index -j bowtie2_index -f RNA_seq.fastq > CIRCexplorer2_align.log
+
+CIRCexplorer2 parse -t TopHat-Fusion tophat_fusion/accepted_hits.bam > CIRCexplorer2_parse.log
+
+CIRCexplorer2 annotate -r hg38_ref_all.txt -g hg38.fa -b back_spliced_junction.bed -o circularRNA_known.txt > CIRCexplorer2_annotate.log
+
+CIRCexplorer2 assemble -r hg38_ref_all.txt -m tophat -o assemble > CIRCexplorer2_assemble.log
+
+CIRCexplorer2 denovo -r hg38_ref_all.txt -g hg38.fa -b back_spliced_junction.bed --abs abs --as as -m tophat -n pAplus_tophat -o denovo > CIRCexplorer2_denovo.log
+
+
+
+
+
+
