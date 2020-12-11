@@ -37,15 +37,11 @@ curl -netrc -T ${f} "${BOX}/"
 done
 
 
-for f in output/trimmed*q.gz ; do
-base=${f%_001.fastq.gz}
-base=${base/_S?_L001/}
-echo $f
-bowtie2.bash --sort --very-sensitive -x human_mirna -U $f -o ${base}.vs_mirna.bam
-bowtie2.bash --sort --very-sensitive-local -x human_mirna -U $f -o ${base}.vsl_mirna.bam
-bowtie2.bash --sort --very-sensitive -x hg38 -U $f -o ${base}.vs_hg38.bam
-bowtie2.bash --sort --very-sensitive-local -x hg38 -U $f -o ${base}.vsl_hg38.bam
-done
+align.bash
+
+
+
+
 
 
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20201130 20201127-EV_CATS Test Trimming"
@@ -116,40 +112,7 @@ done
 
 
 
-
---masking                enable masking of low complexity regions (0/1=default)
-
-
-
-for f in /francislab/data1/raw/20201127-EV_CATS/output/trimmed*q.gz ; do
-base=${f%_001.fastq.gz}
-base=${base/_S?_L001/}
-basename=$(basename $base)
-echo $f
-for m in 0 1 ; do
-echo "diamond blastx --query ${f} --threads 16 --db /francislab/data1/refs/diamond/nr --outfmt 100 --out ${base}.nr.masking${m} --masking ${m}" | qsub -N ${basename}${m} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o ${base}.nr.masking${m}.stdout -e ${base}.nr.masking${m}.stderr
-done ; done
-
-
-
-
-
-
-
-
-
-for f in /francislab/data1/raw/20201127-EV_CATS/output/trimmed*q.gz ; do
-base=${f%_001.fastq.gz}
-base=${base/_S?_L001/}
-basename=$(basename $base)
-echo $f
-for ref in /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq /francislab/data1/refs/STAR/hg38-golden-none ; do 
-baseref=$(basename $ref)
-out=${basename}_${baseref}
-command="STAR --twopassMode Basic --outSAMmultNmax 20 --outSAMprimaryFlag AllBestScore --outFilterMismatchNmax 999 --outFilterMismatchNoverReadLmax 0.04 --alignIntronMin 20 --alignIntronMax 1000000 --alignMatesGapMax 1000000 --runMode alignReads --outFileNamePrefix /francislab/data1/raw/20201127-EV_CATS/STAR/${out}. --outSAMtype BAM SortedByCoordinate --genomeDir ${ref} --runThreadN 16 --outSAMattrRGline ID:${out} SM:${out} --readFilesCommand zcat --outSAMunmapped Within --readFilesIn ${f}"
-echo ${command}
-echo ${command} | qsub -N ${out} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR/${out}.out -e /francislab/data1/raw/20201127-EV_CATS/STAR/${out}.err
-done ; done
+diamond.bash
 
 
 
