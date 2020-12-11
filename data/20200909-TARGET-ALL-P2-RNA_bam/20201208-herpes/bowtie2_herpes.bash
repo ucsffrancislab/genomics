@@ -20,14 +20,14 @@ DIR="/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20201208-herpes/ou
 mkdir -p ${DIR}
 
 #	remember 64 cores and ~504GB mem
-#threads=8
-#vmem=62
-threads=4
-vmem=30
+threads=8
+vmem=62
+#threads=4
+#vmem=30
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-for r1 in ${INDIR}/10-PA[KM]*_R1.fastq.gz ; do
+for r1 in ${INDIR}/10-PA[A-N]*_R1.fastq.gz ; do
 
 #	Only want to process the ALL files at the moment so ...
 #while IFS=, read -r r1 ; do
