@@ -78,5 +78,44 @@ CIRCexplorer2 denovo -r hg38_ref_all.txt -g hg38.fa -b back_spliced_junction.bed
 
 
 
+Weird errors.
 
+CIRCexplorer2.fail/L6_R1/tophat_fusion.log 
+
+[2020-12-11 08:27:06] Mapping left_kept_reads_seg6 to genome bowtie1_index with Bowtie (6/6)
+[2020-12-11 08:27:08] Searching for junctions via segment mapping
+[2020-12-11 08:28:21] Retrieving sequences for splices
+[2020-12-11 08:29:23] Indexing splices
+[2020-12-11 08:29:23] Mapping left_kept_reads_seg1 to genome segment_juncs with Bowtie (1/6)
+	[FAILED]
+Error running bowtie:
+Error while flushing and closing output
+terminate called after throwing an instance of 'int'
+
+
+
+
+https://www.biostars.org/p/104269/
+
+Suggests downgrading bowtie2 from 2.2.3 to 2.2.2 worked for them
+
+Same results
+
+tail /francislab/data1/raw/20201127-EV_CATS/CIRCexplorer2/L6_R1/tophat_fusion.log 
+[2020-12-14 20:27:00] Mapping left_kept_reads_seg6 to genome bowtie1_index with Bowtie (6/6)
+[2020-12-14 20:27:02] Searching for junctions via segment mapping
+[2020-12-14 20:27:59] Retrieving sequences for splices
+[2020-12-14 20:29:07] Indexing splices
+[2020-12-14 20:29:08] Mapping left_kept_reads_seg1 to genome segment_juncs with Bowtie (1/6)
+	[FAILED]
+Error running bowtie:
+Error while flushing and closing output
+terminate called after throwing an instance of 'int'
+
+
+
+
+
+
+~/.local/bin/STAR --runMode genomeGenerate --genomeFastaFiles hg38.fa --sjdbGTFfile hg38_ref_all.gtf --genomeDir STAR/ --runThreadN 64
 
