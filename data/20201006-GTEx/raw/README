@@ -1,4 +1,8 @@
 
+https://trace.ncbi.nlm.nih.gov/Traces/study/?drid=78036&dbgap_project=20942&o=acc_s%3Aa
+
+download metadata as SraRunTable.txt
+
 
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print NF}' SraRunTable.txt | uniq
 78
