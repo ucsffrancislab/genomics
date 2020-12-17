@@ -15,3 +15,13 @@ echo $base
 cat $f | bamReadDepther | grep "^[#*]" | sed 's/^#//' | awk -v c=${seq_count} -v s=${base} -F"\t" '($1=="*"){u=$3;next} ($1!="*"){m[$1]=$2;p[$1]=$3} END{ printf "%s,%d",s,u; for(i=0;i<c;i++){ printf ",%d,%d",m[i],p[i] }; print""}' >> target-herpes.csv
 done
 
+
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201213 20200909-TARGET-ALL-P2-RNA_bam 20201208-herpes"
+
+curl -netrc -X MKCOL "${BOX}/"
+
+curl -netrc -T target-herpes.csv "${BOX}/"
+
+
