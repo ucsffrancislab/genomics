@@ -101,3 +101,35 @@ done ; done ; done ; done
 
 nohup ./merge_insertion_points.py -o merged.0-D.rounded10k.csv.gz -p 'premerge10k/*ts' > merge_insertion_points.all10k.out 2> merge_insertion_points.all10k.err &
 
+nohup ./merge_insertion_points.py -o merged.rounded10k.csv.gz -p 'premerge10k/*ts' > merge_insertion_points.all10k.out 2> merge_insertion_points.all10k.err &
+
+
+
+
+echo ${command} | qsub -N ${out} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}.out -e /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}.err
+
+
+echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.py -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded1k.csv.gz -p '/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/premerge1k/*ts'" | qsub -N merge -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.err
+
+
+
+echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded10k.csv.gz" | qsub -N cull10k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all10k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all10k.cull.err
+
+echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded10k.csv.gz" | qsub -N cull1k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.err
+
+
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera"
+
+curl -netrc -T merged.rounded10k.csv.gz "${BOX}/"
+curl -netrc -T merged.rounded10k.T.csv.gz "${BOX}/"
+curl -netrc -T merged.rounded10k.culled.csv.gz "${BOX}/"
+curl -netrc -T merged.rounded10k.culled.T.csv.gz "${BOX}/"
+
+curl -netrc -T merged.rounded1k.csv.gz "${BOX}/"
+curl -netrc -T merged.rounded1k.T.csv.gz "${BOX}/"
+curl -netrc -T merged.rounded1k.culled.csv.gz "${BOX}/"
+curl -netrc -T merged.rounded1k.culled.T.csv.gz "${BOX}/"
+
+
