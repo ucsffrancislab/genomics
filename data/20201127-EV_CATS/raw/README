@@ -343,3 +343,38 @@ tophat2 -o /francislab/data1/raw/20201127-EV_CATS/CIRCexplorer2/L6_R1/tophat_fus
 
 
 
+
+For some reason, without the -f option, the second command fails. The first doesn't care. Buffer size?
+Don't know exactly why, but "CIRCexplorer2 align" may actually work now. Nope just failed later!!!!
+
+bowtie_header_cmd += ["-f"] 
+
+/home/gwendt/.local/bowtie-1.2.3/bowtie --sam /francislab/data1/refs/CIRCexplorer2/bowtie1_index -f /dev/null
+
+/home/gwendt/.local/bowtie-1.2.3/bowtie --sam /francislab/data1/raw/20201127-EV_CATS/CIRCexplorer2/L6_R1/tophat_fusion/tmp/segment_juncs -f /dev/null
+
+
+
+module load samtools/0.1.19-patched
+export PATH="$HOME/.local/bowtie2-2.3.5.1/:$HOME/.local/bowtie-1.2.3:$HOME/.local/tophat-2.1.1/:$PATH"
+
+ensure the -f option is being used. Still not sure why.
+
+./CIRCexplorer2.bash
+
+
+tophat 2.1.1 ...
+740v1_random...done
+	Loading ...done
+Loaded 0 junctions
+./SeqAn-1.4.2/seqan/basic/basic_exception.h:236 FAILED!  (Uncaught exception of type St12out_of_range: basic_string::substr)
+
+tophat 2.1.0 works ( add -f to this tophat too )
+
+
+
+module load samtools/0.1.19-patched
+export PATH="$HOME/.local/bowtie2-2.3.5.1/:$HOME/.local/bowtie-1.2.3:$HOME/.local/tophat-2.1.0/:$PATH"
+./CIRCexplorer2.bash
+
+

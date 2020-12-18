@@ -34,15 +34,15 @@ for f in ${PWD}/output/trimmed*q.gz ; do
 #		~/.local/bin/CIRCexplorer2 \
 #		-F "align --thread=16 --gtf=$GTF --bowtie1=$BT1 --bowtie2=$BT2 --fastq=${f} --output=${OUT}/${basename}"
 
-#	echo
-#	echo "~/.local/bin/CIRCexplorer2 align --thread=60 --gtf=$GTF --bowtie1=$BT1 --bowtie2=$BT2 --fastq=${f} --output=${OUT}/${basename} > ${OUT}/${basename}-CIRCexplorer2_align.out 2> ${OUT}/${basename}-CIRCexplorer2_align.err"
+	echo
+	echo "~/.local/bin/CIRCexplorer2 align --thread=60 --gtf=$GTF --bowtie1=$BT1 --bowtie2=$BT2 --fastq=${f} --output=${OUT}/${basename} > ${OUT}/${basename}-CIRCexplorer2_align.out 2> ${OUT}/${basename}-CIRCexplorer2_align.err"
 
 
-	mkdir -p ${OUT}/${basename}/tophat
-	mkdir -p ${OUT}/${basename}/tophat_fusion
-	echo "tophat2 -a 6 --microexon-search -m 2 -p 10 -G ${GTF} -o ${OUT}/${basename}/tophat ${BT2} ${f}"
-	echo "bamToFastq -i ${OUT}/${basename}/tophat/unmapped.bam -fq ${OUT}/${basename}/tophat/unmapped.fastq"
-	echo "tophat2 -o ${OUT}/${basename}/tophat_fusion -p 15 --fusion-search --keep-fasta-order --bowtie1 --no-coverage-search ${BT1} ${OUT}/${basename}/tophat/unmapped.fastq"
+#	mkdir -p ${OUT}/${basename}/tophat
+#	mkdir -p ${OUT}/${basename}/tophat_fusion
+#	echo "tophat2 -a 6 --microexon-search -m 2 -p 10 -G ${GTF} -o ${OUT}/${basename}/tophat ${BT2} ${f}"
+#	echo "bamToFastq -i ${OUT}/${basename}/tophat/unmapped.bam -fq ${OUT}/${basename}/tophat/unmapped.fastq"
+#	echo "tophat2 -o ${OUT}/${basename}/tophat_fusion -p 15 --fusion-search --keep-fasta-order --bowtie1 --no-coverage-search ${BT1} ${OUT}/${basename}/tophat/unmapped.fastq"
 #
 #	I just cannot get tophat2 / tophat fusion to run. At best, fails at fix_map_order (sp?) about missing header.
 #
