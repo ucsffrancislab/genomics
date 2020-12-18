@@ -378,3 +378,12 @@ export PATH="$HOME/.local/bowtie2-2.3.5.1/:$HOME/.local/bowtie-1.2.3:$HOME/.loca
 ./CIRCexplorer2.bash
 
 
+[E::idx_find_and_load] Could not retrieve index file for '/francislab/data1/raw/20201127-EV_CATS/CIRCexplorer2/L6_R1/tophat_fusion/accepted_hits.bam'
+upgrade pysam (not 0.16.0.1)
+
+pip uninstall pysam
+pip install --upgrade --user pysam==0.15.2
+
+
+
+
