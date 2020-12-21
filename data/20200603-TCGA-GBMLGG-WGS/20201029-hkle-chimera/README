@@ -127,6 +127,15 @@ curl -netrc -T merged.rounded10k.T.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded10k.culled.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded10k.culled.T.csv.gz "${BOX}/"
 
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera/merged1k-chromosome"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in merged1k/*csv.gz; do 
+echo $( basename $f )
+curl -netrc -T ${f} "${BOX}/"
+done
+
+
 curl -netrc -T merged.rounded1k.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded1k.T.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded1k.culled.csv.gz "${BOX}/"
