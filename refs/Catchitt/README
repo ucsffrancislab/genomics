@@ -6,9 +6,16 @@ https://www.synapse.org/#!Synapse:syn7104742/wiki/407367
 
 http://jstacs.de/index.php/Catchitt
 
+https://github.com/Jstacs/Jstacs
+
 
 
 wget http://www.jstacs.de/downloads/Catchitt-0.1.3.jar
 
+ln -s Catchitt-0.1.3.jar Catchitt.jar 
+
+
+
+java -jar Catchitt.jar
 
 
