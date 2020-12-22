@@ -1,0 +1,36 @@
+
+
+
+
+wget https://www.encodeproject.org/files/GRCh38_no_alt_analysis_set_GCA_000001405.15/@@download/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.gz
+
+gunzip GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.gz 
+samtools faidx GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta 
+
+wget https://www.encodeproject.org/files/ENCFF901UBX/@@download/ENCFF901UBX.bigWig
+wget https://www.encodeproject.org/files/ENCFF652HJH/@@download/ENCFF652HJH.bigWig
+
+wget https://www.encodeproject.org/files/ENCFF183YLB/@@download/ENCFF183YLB.bed.gz
+wget https://www.encodeproject.org/files/ENCFF600CYD/@@download/ENCFF600CYD.bed.gz
+gunzip ENCFF183YLB.bed.gz ENCFF600CYD.bed.gz 
+
+wget http://hocomoco11.autosome.ru/final_bundle/hocomoco11/full/HUMAN/mono/pwm/CTCF_HUMAN.H11MO.0.A.pwm
+
+ln -s ../Catchitt.jar
+mkdir astrocytes
+mv ENCFF183YLB.bed ENCFF600CYD.bed ENCFF901UBX.bigWig astrocytes/
+
+mkdir fibroblasts
+mv ENCFF652HJH.bigWig fibroblasts/
+
+mkdir -p motifs/CTCF/
+mv CTCF_HUMAN.H11MO.0.A.pwm motifs/CTCF/
+
+
+
+java -jar Catchitt.jar labels c=astrocytes/ENCFF183YLB.bed\
+    r=astrocytes/ENCFF600CYD.bed\
+    f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai\
+    b=50 rw=200 outdir=astrocytes/labels
+
+
