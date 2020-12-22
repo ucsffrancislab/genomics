@@ -19,3 +19,24 @@ ln -s Catchitt-0.1.3.jar Catchitt.jar
 java -jar Catchitt.jar
 
 
+java -jar Catchitt.jar labels c=conservative.narrowPeak r=relaxed.narrowPeak f=hg19.fa.fai b=50 rw=200 outdir=labels
+
+
+[gwendt@n38 /francislab/data1/refs/Catchitt]$ find synapse/DNASE/ -name \*PC-3\*
+synapse/DNASE/peaks/relaxed/DNASE.PC-3.relaxed.narrowPeak.gz
+synapse/DNASE/peaks/conservative/DNASE.PC-3.conservative.narrowPeak.gz
+synapse/DNASE/fold_coverage_wiggles/DNASE.PC-3.fc.signal.bigwig
+synapse/DNASE/bams/DNASE.PC-3.biorep1.techrep3.bam
+synapse/DNASE/bams/DNASE.PC-3.biorep1.techrep2.bam
+synapse/DNASE/bams/DNASE.PC-3.biorep1.techrep1.bam
+
+
+GUNZIP!
+
+java -jar Catchitt.jar labels c=synapse/DNASE/peaks/conservative/DNASE.PC-3.conservative.narrowPeak r=synapse/DNASE/peaks/relaxed/DNASE.PC-3.relaxed.narrowPeak f=hg19.fa.fai b=50 rw=200 outdir=labels
+
+
+java -jar Catchitt.jar access d="Bigwig" i=synapse/DNASE/fold_coverage_wiggles/DNASE.PC-3.fc.signal.bigwig f=hg19.fa.fai b=50 outdir=dnase
+
+
+
