@@ -1,0 +1,139 @@
+
+
+Getting data used in ENCODE DREAM competition used by Catchitt
+
+
+Data
+We use the following types of input data sets as provided by the challenge organizers (https://www.synapse.org/#!Synapse:syn6131484/wiki/402033):
+
+The raw sequence of the human genome (hg19) and gene annotations according to the gencode v19 annotation (http://www.gencodegenes.org/releases/19.html) [42]
+
+Cell type-specific DNase-seq "fold-enrichment coverage" tracks, which represent DNase-seq signal relative to a pseudo control, smoothed in a 150-bp window
+
+Cell type-specific DNase-seq peak files in "conservative" (IDR threshold of 10% in pseudo replicates) and "relaxed" (no IDR threshold) flavors
+
+Cell type-specific TPM values from RNA-seq experiments in two bio-replicates for all gencode v19 genes as estimated by RSEM [43]
+
+Cell type-specific and TF-specific ChIP-seq peak files in "conservative" (IDR threshold of 10% in pseudo replicates) and "relaxed" (no IDR threshold) flavors
+
+Cell type-specific and TF-specific label files classifying genome-wide 200-bp regions every 50 bp into B = "bound," A = "ambiguous," and U = "unbound" according to the respective conservative and relaxed ChIP-seq peak files; an overview of the combinations of TF and cell type in the training data, the leaderboard data, and the test data used for evaluation in the final challenge round is given in Additional file 1: Figure S1
+
+In addition, we download sequence motifs represented as PWMs from the following collections:
+
+TF-specific motifs from the databases HOCOMOCO [44] and DBcorrDB [45]
+
+Motifs related to epigenetic markers from the epigram pipeline [46]
+
+
+
+Details about the motifs considered are given in the "Features" section and Additional file 1: Text S2.
+
+For predicting cell type-specific binding of TFs in additional cell types beyond those considered in the challenge, we download DNase-seq data (FastQ format) from the ENCODE project (http://www.encodeproject.org). Specifically, we select all DNase-seq experiments that (i) are flagged as "released," (ii) have FastQ files available, (iii) are not from immortalized cell lines, (iv) have no entry in one of the "Audit error" categories, and (v) are not in the "insufficient replicate concordance" category of "Audit not compliant." A list of the corresponding experiments is obtained from the ENCODE project, and experiments are filtered for the existence of at least two replicates, yielding 23 experiments in total. One of these experiments had to be excluded later, because a different DNase protocol with much shorter reads had been used. For the remaining 22 experiments (Additional file 1: Table S5), all FastQ files are downloaded from ENCODE and processed using ATAC-Seq/DNase-Seq Pipeline (https://github.com/kundajelab/atac_dnase_pipelines, latest git commit: c1d07d38a02af2f0319a69707eee047ab6112ecc (Tue Mar 21 20:31:25 2017)). The data sets are analyzed using the following parameters: -species hg19 -type dnase-seq -subsample 50M -se. For further analyses, the relaxed (./out/peak/idr/pseudo_reps/rep1/*.filt.narrowPeak.gz) and conservative peaks (./out/peak/macs2/overlap/*pval0.1*.filt.narrowPeak.gz) as well as the DNase coverage (./out/signal/macs2/rep1/*.fc.signal.bigwig) are used.
+
+In addition, we download ChIP-seq peak files (Additional file 1: Table S6) matching these cell types and one of the TFs considered. Based on the "relaxed" (i.e., "optimal idr thresholded peaks") and "conservative" (i.e., "conservative idr thresholded peaks") peak files, we derive labels for 200-bp windows every 50 bp as proposed for the challenge. Specifically, we label each 200-bp region overlapping a conservative peak by at least 100 bp as "bound." Of the remaining regions, all regions that overlap a relaxed peak by at least 1 bp are labeled "ambiguous," while all other regions are labeled "unbound." For a subset of TFs, no conservative peaks are available due to the lack of replicates. In such cases, we also use the relaxed peaks to assign "bound" labels.
+
+
+
+Table S5: Experiment IDs, tissue/cell type information, and biosample “Term ID” of the ENCODE DNase-seq data used
+in this study. The list of experiments was obtained from https://www.encodeproject.org/report.tsv?type=Experiment&
+assay_title=DNase-seq&status=released&assembly=hg19&files.file_type=fastq&audit.NOT_COMPLIANT.category. (accessed March 2, 2017)
+Experiment ID Donor ID Tissue/Cell Type Term ID
+ENCSR000ENA ENCDO223AAA astrocyte of the hippocampus CL:0002604
+ENCSR000ENB ENCDO224AAA astrocyte of the spinal cord CL:0002606
+ENCSR000ENH ENCDO095AAA cardiac fibroblast CL:0002548
+ENCSR000ENJ ENCDO330AAA cardiac muscle cell CL:0000746
+ENCSR000ENN ENCDO104AAA epithelial cell of esophagus CL:0002252
+ENCSR000ENQ ENCDO232AAA foreskin fibroblast CL:1001608
+ENCSR000ENT ENCDO100AAA iris pigment epithelial CL:0002565
+ENCSR000EOE ENCDO238AAA lung microvascular endothelial CL:2000016
+ENCSR000ENZ ENCDO241AAA dermis blood vessel endothelial CL:2000010
+ENCSR000EOB ENCDO243AAA dermis microvascular lymphatic vessel endothelial CL:2000041
+ENCSR000EOQ ENCDO000AAS endothelial of umbilical vein CL:0002618
+ENCSR000EOR ENCDO253AAA fibroblast of villous mesenchyme CL:0002558
+ENCSR000EPP ENCDO191CQJ foreskin fibroblast CL:1001608
+ENCSR000EPR ENCDO269AAA fibroblast of lung CL:0002553
+ENCSR000EQC ENCDO334AAA T-helper 1 primary cell CL:0000545
+ENCSR000EMB ENCDO442SWC fibroblast of skin abdomen male adult (22 years) CL:2000013
+ENCSR000EMJ ENCDO114AAA B primary cell female adult (43 years) CL:0000236
+ENCSR621ENC ENCDO539WIJ retina tissue fetal (74 days) UBERON:0000966
+ENCSR474GZQ ENCDO225GSN retina tissue fetal (125 days) UBERON:0000966
+ENCSR503HIB ENCDO240JUB cerebellar cortex tissue male adult (84 years) UBERON:0002129
+ENCSR627NIF ENCDO652XOU lung tissue male fetal (58 days) UBERON:0002048
+ENCSR657DFR ENCDO271OUW thyroid gland tissue female adult (51 year) UBERON:0002046
+
+ENCSR657DFR appears to be archived and superseded by ENCSR450PWF
+Neither have downloadable, replicated fastq data.
+Not sure why its in the list.
+https://www.encodeproject.org/experiments/ENCSR450PWF/
+https://www.encodeproject.org/experiments/ENCSR657DFR/
+
+
+
+I can't find a successful set of options to have these 22 experiments be selected.
+
+
+
+Create used on https://synapse.org
+Dashboard -> Settings -> API Key
+
+
+synapse login -u <Synapse username> -p <API key> --rememberMe
+
+
+synapse login -u JakeW --rememberMe
+
+
+
+for id in syn7417215 syn7499659 syn7417214 syn7675462 ; do
+nohup synapse get ${id} > ${id}.out 2> ${id}.err &
+done
+
+syn7417215 training_data.RNAseq.tar
+syn7499659 training_data.annotations.tar
+syn7417214 training_data.DNASE_wo_bams.tar
+syn7675462 training_data.ChIPseq.tar
+
+
+for id in syn6181333 syn6176230 syn6176231 syn6184307 syn8077510 ; do
+mkdir ${id}
+nohup synapse get -r ${id} --downloadLocation ${id} > ${id}.out 2> ${id}.err &
+done
+
+ln -s syn6181333 ChIPseq
+ln -s syn6176230 DNASE
+ln -s syn6176231 RNAseq
+ln -s syn6184307 annotations
+ln -s syn8077510 within_cell
+
+
+
+
+
+
+
+
+
+
+
+
+The raw sequence of the human genome (hg19) and gene annotations according to the gencode v19 annotation (http://www.gencodegenes.org/releases/19.html)
+
+Dead link. Use ...  https://www.gencodegenes.org/human/release_19.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,23 @@
+Experiment ID,Donor ID,Tissue/Cell Type,Term ID
+ENCSR000ENA,ENCDO223AAA,astrocyte of the hippocampus,CL:0002604
+ENCSR000ENB,ENCDO224AAA,astrocyte of the spinal cord,CL:0002606
+ENCSR000ENH,ENCDO095AAA,cardiac fibroblast,CL:0002548
+ENCSR000ENJ,ENCDO330AAA,cardiac muscle cell,CL:0000746
+ENCSR000ENN,ENCDO104AAA,epithelial cell of esophagus,CL:0002252
+ENCSR000ENQ,ENCDO232AAA,foreskin fibroblast,CL:1001608
+ENCSR000ENT,ENCDO100AAA,iris pigment epithelial,CL:0002565
+ENCSR000EOE,ENCDO238AAA,lung microvascular endothelial,CL:2000016
+ENCSR000ENZ,ENCDO241AAA,dermis blood vessel endothelial,CL:2000010
+ENCSR000EOB,ENCDO243AAA,dermis microvascular lymphatic vessel endothelial,CL:2000041
+ENCSR000EOQ,ENCDO000AAS,endothelial of umbilical vein,CL:0002618
+ENCSR000EOR,ENCDO253AAA,fibroblast of villous mesenchyme,CL:0002558
+ENCSR000EPP,ENCDO191CQJ,foreskin fibroblast,CL:1001608
+ENCSR000EPR,ENCDO269AAA,fibroblast of lung,CL:0002553
+ENCSR000EQC,ENCDO334AAA,T-helper 1 primary cell,CL:0000545
+ENCSR000EMB,ENCDO442SWC,fibroblast of skin abdomen male adult (22 years),CL:2000013
+ENCSR000EMJ,ENCDO114AAA,B primary cell female adult (43 years),CL:0000236
+ENCSR621ENC,ENCDO539WIJ,retina tissue fetal (74 days),UBERON:0000966
+ENCSR474GZQ,ENCDO225GSN,retina tissue fetal (125 days),UBERON:0000966
+ENCSR503HIB,ENCDO240JUB,cerebellar cortex tissue male adult (84 years),UBERON:0002129
+ENCSR627NIF,ENCDO652XOU,lung tissue male fetal (58 days),UBERON:0002048
+ENCSR657DFR,ENCDO271OUW,thyroid gland tissue female adult (51 year),UBERON:0002046
