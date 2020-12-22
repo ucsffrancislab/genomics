@@ -121,6 +121,11 @@ The raw sequence of the human genome (hg19) and gene annotations according to th
 Dead link. Use ...  https://www.gencodegenes.org/human/release_19.html
 
 
+wget -P gencode/ ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/GRCh37.p13.genome.fa.gz
+
+
+wget -P gencode/ ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz
+
 
 
 
