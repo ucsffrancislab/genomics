@@ -1,5 +1,7 @@
 
 
+http://jstacs.de/index.php/Catchitt#Tutorial_using_ENCODE_data
+
 
 
 wget https://www.encodeproject.org/files/GRCh38_no_alt_analysis_set_GCA_000001405.15/@@download/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.gz
@@ -7,30 +9,100 @@ wget https://www.encodeproject.org/files/GRCh38_no_alt_analysis_set_GCA_00000140
 gunzip GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.gz 
 samtools faidx GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta 
 
-wget https://www.encodeproject.org/files/ENCFF901UBX/@@download/ENCFF901UBX.bigWig
-wget https://www.encodeproject.org/files/ENCFF652HJH/@@download/ENCFF652HJH.bigWig
-
-wget https://www.encodeproject.org/files/ENCFF183YLB/@@download/ENCFF183YLB.bed.gz
-wget https://www.encodeproject.org/files/ENCFF600CYD/@@download/ENCFF600CYD.bed.gz
-gunzip ENCFF183YLB.bed.gz ENCFF600CYD.bed.gz 
-
-wget http://hocomoco11.autosome.ru/final_bundle/hocomoco11/full/HUMAN/mono/pwm/CTCF_HUMAN.H11MO.0.A.pwm
-
 ln -s ../Catchitt.jar
 mkdir astrocytes
-mv ENCFF183YLB.bed ENCFF600CYD.bed ENCFF901UBX.bigWig astrocytes/
-
 mkdir fibroblasts
-mv ENCFF652HJH.bigWig fibroblasts/
-
 mkdir -p motifs/CTCF/
-mv CTCF_HUMAN.H11MO.0.A.pwm motifs/CTCF/
+
+
+wget -P astrocytes/ https://www.encodeproject.org/files/ENCFF901UBX/@@download/ENCFF901UBX.bigWig
+wget -P fibroblasts/ https://www.encodeproject.org/files/ENCFF652HJH/@@download/ENCFF652HJH.bigWig
+
+wget -P astrocytes/ https://www.encodeproject.org/files/ENCFF183YLB/@@download/ENCFF183YLB.bed.gz
+wget -P astrocytes/ https://www.encodeproject.org/files/ENCFF600CYD/@@download/ENCFF600CYD.bed.gz
+gunzip astrocytes/ENCFF183YLB.bed.gz astrocytes/ENCFF600CYD.bed.gz 
+
+wget -P motifs/CTCF/ http://hocomoco11.autosome.ru/final_bundle/hocomoco11/full/HUMAN/mono/pwm/CTCF_HUMAN.H11MO.0.A.pwm
 
 
 
-java -jar Catchitt.jar labels c=astrocytes/ENCFF183YLB.bed\
-    r=astrocytes/ENCFF600CYD.bed\
-    f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai\
-    b=50 rw=200 outdir=astrocytes/labels
+
+java -jar Catchitt.jar labels c=astrocytes/ENCFF183YLB.bed r=astrocytes/ENCFF600CYD.bed f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 rw=200 outdir=astrocytes/labels
+
+java -jar Catchitt.jar access d="Bigwig" i=astrocytes/ENCFF901UBX.bigWig f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=astrocytes/access
+
+java -jar Catchitt.jar motif m="HOCOMOCO" h=motifs/CTCF/CTCF_HUMAN.H11MO.0.A.pwm g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/CTCF threads=3
+
+
+
+
+
+
+java -jar Catchitt.jar itrain a=astrocytes/access/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz l=astrocytes/labels/Labels.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 t='chr2,chr3,chr4,chr5,chr6,chr7,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr17,chr18,chr19,chr20,chr22' itc='chr10,chr11,chr12,chr13,chr14' outdir=astrocytes/itrain threads=8
+
+
+
+
+
+
+java -jar Catchitt.jar predict c=astrocytes/itrain/Classifiers.xml a=fibroblasts/access/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai p="chr8" outdir=fibroblasts/predict
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Second Tutorial from bam files
+
+wget -P astrocytes/ https://www.encodeproject.org/files/ENCFF384CCQ/@@download/ENCFF384CCQ.bam
+wget -P fibroblasts/ https://www.encodeproject.org/files/ENCFF368XNE/@@download/ENCFF368XNE.bam
+
+wget http://www.jstacs.de/downloads/motifs.tgz
+tar xvfz motifs.tgz
+
+mkdir motifs/CTCF_Slim/
+ln -s ../databases/used-for-all-TFs/Ctcf_H1hesc_shift20_bdeu_order-20_comp1-model-1.xml motifs/CTCF_Slim/
+
+mkdir motifs/JUND_Slim
+ln -s ../databases/used-for-all-TFs/Jund_K562_shift20_bdeu_order-20_comp1-model-1.xml motifs/JUND_Slim/
+
+mkdir motifs/MAX_Slim
+ln -s ../databases/used-for-all-TFs/Max_K562_shift20_bdeu_order-20_comp1-model-1.xml motifs/MAX_Slim/
+
+mkdir motifs/SP1
+ln -s ../databases/used-for-all-TFs/ENCSR000BHK_SP1-human_1_hg19-model-2.xml motifs/SP1/
+
+
+
+
+
+
+java -jar Catchitt.jar access i=astrocytes/ENCFF384CCQ.bam b=50 outdir=astrocytes/access_bam/
+java -jar Catchitt.jar access i=fibroblasts/ENCFF368XNE.bam b=50 outdir=fibroblasts/access_bam/
+
+
+java -jar Catchitt.jar motif d=motifs/SP1/ENCSR000BHK_SP1-human_1_hg19-model-2.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/SP1 threads=3
+
+java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/CTCF_Slim/Ctcf_H1hesc_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/CTCF_Slim l=false threads=3
+java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/JUND_Slim/Jund_K562_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/JUND_Slim l=false threads=3
+java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/MAX_Slim/Max_K562_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/MAX_Slim l=false threads=3
+
+
+java -jar Catchitt.jar itrain a=astrocytes/access_bam/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz m=motifs/CTCF_Slim/Motif_scores.tsv.gz m=motifs/JUND_Slim/Motif_scores.tsv.gz m=motifs/MAX_Slim/Motif_scores.tsv.gz m=motifs/SP1/Motif_scores.tsv.gz l=astrocytes/labels/Labels.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 t='chr2,chr3,chr4,chr5,chr6,chr7,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr17,chr18,chr19,chr20,chr22' itc='chr10,chr11,chr12,chr13,chr14' outdir=astrocytes/itrain_bam_5motifs threads=8
+
+
+
+java -jar Catchitt.jar predict c=astrocytes/itrain_bam_5motifs/Classifiers.xml a=fibroblasts/access_bam/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz m=motifs/CTCF_Slim/Motif_scores.tsv.gz m=motifs/JUND_Slim/Motif_scores.tsv.gz m=motifs/MAX_Slim/Motif_scores.tsv.gz m=motifs/SP1/Motif_scores.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai p="chr8" outdir=fibroblasts/predict_bam_5motifs
+
+
 
 
