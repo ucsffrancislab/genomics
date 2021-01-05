@@ -1,0 +1,119 @@
+
+
+http://fiserlab.org/tf2dna_db/index.html
+
+
+
+head pscan_files/Homo-sapiens_theoretical_TF2DNA/ZXDC.pscan 
+tf_name	target_name	start_position	end_position	direction	binding_score	p_value	binding_sites
+ZXDC	PCED1A	2821389	2823389	(-)	1102.96	0.000022	2822652:1102.96:0.000022 2822510:810.14:0.000796 2821422:784.67:0.000970
+
+
+
+grep PCED1A pscan_files/Homo-sapiens_theoretical_TF2DNA/* | awk 'BEGIN{FS=OFS="\t"}{print $3,$4}' | sort -n | uniq -c
+   1000 2820848	2822848
+   1104 2821389	2823389
+
+https://www.genecards.org/cgi-bin/carddisp.pl?gene=PCED1A
+Genomic Locations for PCED1A Gene
+chr20:2,835,314-2,841,243(GRCh38/hg38)
+chr20:2,815,960-2,821,836(GRCh37/hg19)
+
+
+grep NDST1 pscan_files/Homo-sapiens_theoretical_TF2DNA/* | awk 'BEGIN{FS=OFS="\t"}{print $3,$4}' | sort -n | uniq -c
+    920 149875839	149877839
+    843 149886173	149888173
+
+
+Genomic Locations for NDST1 Gene
+chr5:150,485,818-150,558,211(GRCh38/hg38)
+chr5:149,865,381-149,937,773(GRCh37/hg19)
+
+
+guessing these coordinates are hg19
+
+
+
+Gene names change and aliases are added.
+
+Since this was built in ~2015, use something about that old
+ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz
+
+zcat gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz gencode.v36lift37.annotation.gtf.gz | awk 'BEGIN{FS=OFS="\t"}{split($NF,a,";");g="";for(i in a){if(a[i] ~ /gene_name/){g=a[i];gsub(/gene_name/,"",g);gsub(/ /,"",g);gsub(/\"/,"",g)}}print($1,g)}' | sort | uniq > gene_chromosome.v3.tsv
+
+
+ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/GRCh37.p13.genome.fa.gz
+
+
+
+
+
+
+zcat gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz gencode.v36lift37.annotation.gtf.gz | awk 'BEGIN{FS=OFS="\t"}($2=="HAVANA"){split($NF,a,";");g="";for(i in a){if(a[i] ~ /gene_name/){g=a[i];gsub(/gene_name/,"",g);gsub(/ /,"",g);gsub(/\"/,"",g)}}print($1,g)}' | sort | uniq > gene_chromosome.v4.tsv
+
+
+
+for f in $( ls -1r gencode*gtf.gz ) ; do echo $f; zcat $f | awk 'BEGIN{FS=OFS="\t"}($2=="HAVANA"){split($NF,a,";");g="";for(i in a){if(a[i] ~ /gene_name/){g=a[i];gsub(/gene_name/,"",g);gsub(/ /,"",g);gsub(/\"/,"",g)}}print($1,g)}' | sort | uniq > ${f}.tsv; done
+
+./merge.py $( ls -1r gencode*gtf.gz.tsv )
+
+
+
+ln -s /francislab/data1/refs/sources/data.broadinstitute.org/snowman/hg19/annotation/Homo_sapiens_assembly19.gtf
+ln -s /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/genes/hg19.ensGene.gtf.gz
+ln -s /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/genes/hg19.knownGene.gtf.gz
+ln -s /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/genes/hg19.ncbiRefSeq.gtf.gz
+ln -s /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/genes/hg19.refGene.gtf.gz
+
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2011-08-30-21-45-18/Genes/genes.gtf hg19-2011-08-30-21-45-18.gtf
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2011-01-27-18-25-49/Genes/genes.gtf hg19-2011-01-27-18-25-49.gtf
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2013-03-06-11-23-03/Genes/genes.gtf hg19-2013-03-06-11-23-03.gtf
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2012-03-09-03-24-41/Genes/genes.gtf hg19-2012-03-09-03-24-41.gtf
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2014-06-02-13-47-56/Genes/genes.gtf hg19-2014-06-02-13-47-56.gtf
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2015-07-17-14-32-32/Genes/genes.gtf hg19-2015-07-17-14-32-32.gtf
+ln -s /francislab/data1/refs/sources/ussd-ftp.illumina.com/Homo_sapiens/UCSC/hg19/Annotation/Archives/archive-2010-09-27-22-25-17/genes.gtf hg19-2010-09-27-22-25-17.gtf
+
+for f in hg19*gtf.gz ; do echo $f; zcat $f | awk 'BEGIN{FS=OFS="\t"}{split($NF,a,";");g="";for(i in a){if(a[i] ~ /gene_id/){g=a[i];gsub(/gene_id/,"",g);gsub(/ /,"",g);gsub(/\"/,"",g)}}print($1,g)}' | sort | uniq > ${f}.tsv; done
+
+for f in hg19*gtf ; do echo $f; cat $f | awk 'BEGIN{FS=OFS="\t"}{split($NF,a,";");g="";for(i in a){if(a[i] ~ /gene_id/){g=a[i];gsub(/gene_id/,"",g);gsub(/ /,"",g);gsub(/\"/,"",g)}}print($1,g)}' | sort | uniq > ${f}.tsv; done
+
+for f in hg19-2011-01-27-18-25-49.gtf hg19-2010-09-27-22-25-17.gtf ; do echo $f; cat $f | awk 'BEGIN{FS=OFS="\t"}{split($NF,a,";");g="";for(i in a){if(a[i] ~ /gene_id/){g=a[i];gsub(/gene_id/,"",g);gsub(/ /,"",g);gsub(/\"/,"",g)}}print($1,g)}' | sort | uniq > ${f}.tsv; done
+
+./merge.py gene_chromosome.v6.tsv hg19.refGene.gtf.gz.tsv hg19.ncbiRefSeq.gtf.gz.tsv hg19.knownGene.gtf.gz.tsv $( ls -1r hg19-*v )
+
+
+
+for gene in $( cat missing_genes );do echo $gene; awk '($2=="'$gene'"){print}' gene_chromosome.tsv; done
+
+still missing ...
+KIAA1731NL
+PANO
+
+
+zgrep -P "^\t" /francislab/data1/refs/tf2dna_db/pscan_files/Homo-sapiens_*/*z | grep -o 'target_name ".*";' | awk '{print $2}' | sort | uniq | sed 's/[\"\;]//g' > missing_genes
+
+
+
+
+
+./merge.py manual.tsv $( ls -1r gencode*gtf.gz.tsv ) hg19.refGene.gtf.gz.tsv hg19.ncbiRefSeq.gtf.gz.tsv hg19.knownGene.gtf.gz.tsv $( ls -1r hg19-*v )
+
+
+Replace with basic chromosomes?
+chr6_apd_hap1
+GL000256.1
+GL383558.1
+GL383561.1
+GL582971.1
+GL582973.1
+
+
+
+* Note that some genes are on multiple chromosomes so this would require extensive modification to correctly infer the chromosome intended by these pscan files. *
+
+
+
+
+
+
+nohup ./convert_to_gtf2.py /francislab/data1/refs/tf2dna_db/pscan_files/Homo-sapiens_*/*pscan > convert_to_gtf2.out 2> convert_to_gtf2.err &
