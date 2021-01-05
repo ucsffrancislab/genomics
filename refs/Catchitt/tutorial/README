@@ -2,6 +2,7 @@
 
 http://jstacs.de/index.php/Catchitt#Tutorial_using_ENCODE_data
 
+with minor mods
 
 
 wget https://www.encodeproject.org/files/GRCh38_no_alt_analysis_set_GCA_000001405.15/@@download/GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.gz
@@ -27,25 +28,26 @@ wget -P motifs/CTCF/ http://hocomoco11.autosome.ru/final_bundle/hocomoco11/full/
 
 
 
-java -jar Catchitt.jar labels c=astrocytes/ENCFF183YLB.bed r=astrocytes/ENCFF600CYD.bed f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 rw=200 outdir=astrocytes/labels
+nohup java -jar Catchitt.jar labels c=astrocytes/ENCFF183YLB.bed r=astrocytes/ENCFF600CYD.bed f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 rw=200 outdir=astrocytes/labels > labels1.out 2> labels1.err &
 
-java -jar Catchitt.jar access d="Bigwig" i=astrocytes/ENCFF901UBX.bigWig f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=astrocytes/access
+nohup java -jar Catchitt.jar access d="Bigwig" i=astrocytes/ENCFF901UBX.bigWig f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=astrocytes/access > access1a.out 2> access1a.err &
 
-java -jar Catchitt.jar motif m="HOCOMOCO" h=motifs/CTCF/CTCF_HUMAN.H11MO.0.A.pwm g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/CTCF threads=3
+nohup java -jar Catchitt.jar motif m="HOCOMOCO" h=motifs/CTCF/CTCF_HUMAN.H11MO.0.A.pwm g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/CTCF threads=3 > motif1.out 2> motif1.err &
 
-
-
-
-
-
-java -jar Catchitt.jar itrain a=astrocytes/access/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz l=astrocytes/labels/Labels.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 t='chr2,chr3,chr4,chr5,chr6,chr7,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr17,chr18,chr19,chr20,chr22' itc='chr10,chr11,chr12,chr13,chr14' outdir=astrocytes/itrain threads=8
+nohup java -jar Catchitt.jar itrain a=astrocytes/access/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz l=astrocytes/labels/Labels.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 t='chr2,chr3,chr4,chr5,chr6,chr7,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr17,chr18,chr19,chr20,chr22' itc='chr10,chr11,chr12,chr13,chr14' outdir=astrocytes/itrain threads=32 > itrain1.out 2> itrain1.err &
 
 
 
 
 
+ADDED THIS. PREDICT STEP SEEMS TO NEED IT BUT NOT INCLUDED IN TUTORIAL.
 
-java -jar Catchitt.jar predict c=astrocytes/itrain/Classifiers.xml a=fibroblasts/access/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai p="chr8" outdir=fibroblasts/predict
+nohup java -jar Catchitt.jar access d="Bigwig" i=fibroblasts/ENCFF652HJH.bigWig f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=fibroblasts/access > access1b.out 2> access1b.err &
+
+
+
+
+nohup java -jar Catchitt.jar predict c=astrocytes/itrain/Classifiers.xml a=fibroblasts/access/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai p="chr8" outdir=fibroblasts/predict > predict1.out 2> predict1.err &
 
 
 
@@ -81,27 +83,28 @@ ln -s ../databases/used-for-all-TFs/Max_K562_shift20_bdeu_order-20_comp1-model-1
 mkdir motifs/SP1
 ln -s ../databases/used-for-all-TFs/ENCSR000BHK_SP1-human_1_hg19-model-2.xml motifs/SP1/
 
+nohup java -jar Catchitt.jar access i=astrocytes/ENCFF384CCQ.bam b=50 outdir=astrocytes/access_bam/ > access2a.out 2> access2a.err &
+nohup java -jar Catchitt.jar access i=fibroblasts/ENCFF368XNE.bam b=50 outdir=fibroblasts/access_bam/ > access2b.out 2> access2b.err &
+
+nohup java -jar Catchitt.jar motif d=motifs/SP1/ENCSR000BHK_SP1-human_1_hg19-model-2.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/SP1 threads=3 > motif2a.out 2> motif2a.err &
+
+nohup java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/CTCF_Slim/Ctcf_H1hesc_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/CTCF_Slim l=false threads=3 > motif2b.out 2> motif2b.err &
+nohup java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/JUND_Slim/Jund_K562_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/JUND_Slim l=false threads=3 > motif2c.out 2> motif2c.err &
+nohup java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/MAX_Slim/Max_K562_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/MAX_Slim l=false threads=3 > motif2d.out 2> motif2d.err &
+
+nohup java -jar Catchitt.jar itrain a=astrocytes/access_bam/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz m=motifs/CTCF_Slim/Motif_scores.tsv.gz m=motifs/JUND_Slim/Motif_scores.tsv.gz m=motifs/MAX_Slim/Motif_scores.tsv.gz m=motifs/SP1/Motif_scores.tsv.gz l=astrocytes/labels/Labels.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 t='chr2,chr3,chr4,chr5,chr6,chr7,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr17,chr18,chr19,chr20,chr22' itc='chr10,chr11,chr12,chr13,chr14' outdir=astrocytes/itrain_bam_5motifs threads=60 > itrain2.out 2> itrain2.err &
 
 
 
 
 
-java -jar Catchitt.jar access i=astrocytes/ENCFF384CCQ.bam b=50 outdir=astrocytes/access_bam/
-java -jar Catchitt.jar access i=fibroblasts/ENCFF368XNE.bam b=50 outdir=fibroblasts/access_bam/
-
-
-java -jar Catchitt.jar motif d=motifs/SP1/ENCSR000BHK_SP1-human_1_hg19-model-2.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/SP1 threads=3
-
-java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/CTCF_Slim/Ctcf_H1hesc_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/CTCF_Slim l=false threads=3
-java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/JUND_Slim/Jund_K562_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/JUND_Slim l=false threads=3
-java -jar -Xms512M -Xmx64G Catchitt.jar motif d=motifs/MAX_Slim/Max_K562_shift20_bdeu_order-20_comp1-model-1.xml g=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 outdir=motifs/MAX_Slim l=false threads=3
-
-
-java -jar Catchitt.jar itrain a=astrocytes/access_bam/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz m=motifs/CTCF_Slim/Motif_scores.tsv.gz m=motifs/JUND_Slim/Motif_scores.tsv.gz m=motifs/MAX_Slim/Motif_scores.tsv.gz m=motifs/SP1/Motif_scores.tsv.gz l=astrocytes/labels/Labels.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai b=50 t='chr2,chr3,chr4,chr5,chr6,chr7,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr17,chr18,chr19,chr20,chr22' itc='chr10,chr11,chr12,chr13,chr14' outdir=astrocytes/itrain_bam_5motifs threads=8
+...
 
 
 
-java -jar Catchitt.jar predict c=astrocytes/itrain_bam_5motifs/Classifiers.xml a=fibroblasts/access_bam/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz m=motifs/CTCF_Slim/Motif_scores.tsv.gz m=motifs/JUND_Slim/Motif_scores.tsv.gz m=motifs/MAX_Slim/Motif_scores.tsv.gz m=motifs/SP1/Motif_scores.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai p="chr8" outdir=fibroblasts/predict_bam_5motifs
+
+
+nohup java -jar Catchitt.jar predict c=astrocytes/itrain_bam_5motifs/Classifiers.xml a=fibroblasts/access_bam/Chromatin_accessibility.tsv.gz m=motifs/CTCF/Motif_scores.tsv.gz m=motifs/CTCF_Slim/Motif_scores.tsv.gz m=motifs/JUND_Slim/Motif_scores.tsv.gz m=motifs/MAX_Slim/Motif_scores.tsv.gz m=motifs/SP1/Motif_scores.tsv.gz f=GRCh38_no_alt_analysis_set_GCA_000001405.15.fasta.fai p="chr8" outdir=fibroblasts/predict_bam_5motifs > predict2.out 2> predict2.err &
 
 
 
