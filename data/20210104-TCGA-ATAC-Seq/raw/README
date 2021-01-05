@@ -1,0 +1,11 @@
+
+
+Roughly 10TB so may want to wait
+
+
+nohup gdc-client download --latest -t ~/gdc/gdc-user-token.2021-01-04T18_06_20.551Z.txt -m gdc_manifest_20210104_180614.txt &
+
+
+
+
+
