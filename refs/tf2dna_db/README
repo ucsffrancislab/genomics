@@ -2,7 +2,17 @@
 
 http://fiserlab.org/tf2dna_db/index.html
 
+How to cite Us
+Pujato M, Kieken F, Skiles AA, Tapinos N, Fiser A
+Prediction of DNA binding motifs from 3D models of transcription factors; identifying TLX3 regulated genes.
+Nucleic Acids Res (2014) 42(22) : 13500-12
+PMID: 25428367 PMCID: PMC4267649
 
+Pujato M, Madrid-Aliste Carlos and Fiser A
+TF2DNA database and web resource: navigating gene regulatory networks.
+in prep.
+
+--------------------------------------------------
 
 head pscan_files/Homo-sapiens_theoretical_TF2DNA/ZXDC.pscan 
 tf_name	target_name	start_position	end_position	direction	binding_score	p_value	binding_sites
@@ -117,3 +127,5 @@ GL582973.1
 
 
 nohup ./convert_to_gtf2.py /francislab/data1/refs/tf2dna_db/pscan_files/Homo-sapiens_*/*pscan > convert_to_gtf2.out 2> convert_to_gtf2.err &
+
+
