@@ -59,7 +59,7 @@ for filename in sys.argv[1:]:
 		#print(gtfsorted.head())
 
 		print("Writing CSV")
-		gtfsorted.to_csv(filename+'.new.gtf.gz',header=False,sep="\t",index=False,quoting=csv.QUOTE_NONE)
+		gtfsorted.to_csv(filename+'.gtf.gz',header=False,sep="\t",index=False,quoting=csv.QUOTE_NONE)
 
 	else:
 		print(filename + " is empty")
