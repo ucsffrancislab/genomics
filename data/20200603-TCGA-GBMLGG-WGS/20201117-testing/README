@@ -117,3 +117,46 @@ samtools fastq -1 select.R1.fastq.gz -2 select.R2.fastq.gz -0 select.RO.fastq.gz
 
 
 
+
+
+bowtie2 --version
+
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/02-2483-01A_R1.fastq.gz.matched.fastq -2 fastq/02-2483-01A_R2.fastq.gz.matched.fastq > test.sam
+samtools view test.sam |gawk -F"\t" '( /^@/ ){ print; next; }( !and($2,4) || !and($2,8) ){ print }' | wc -l
+
+something happened between version 2.1.0 and 2.3.4.1
+
+
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R1.fastq.gz.matched.fastq,fastq/02-2483-01A_R2.fastq.gz.matched.fastq > test1.sam
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R1.fastq.gz.matched.fastq,fastq/02-2483-01A_R2.fastq.gz.matched.fastq > test2.sam
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R1.fastq.gz.matched.fastq,fastq/02-2483-01A_R2.fastq.gz.matched.fastq > test3.sam
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R1.fastq.gz.matched.fastq,fastq/02-2483-01A_R2.fastq.gz.matched.fastq > test4.sam
+
+Multithreading produces output in differing order
+
+
+
+
+mkdir separate_merge
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R1.fastq.gz.matched.fastq > separate_merge/02-2483-01A_R1.sam
+bowtie2 -p 60 -x SVAs_and_HERVs_KWHE --very-sensitive-local -U fastq/02-2483-01A_R2.fastq.gz.matched.fastq > separate_merge/02-2483-01A_R2.sam
+samtools sort -n -O sam separate_merge/02-2483-01A_R1.sam > separate_merge/02-2483-01A_R1.sorted.sam
+samtools sort -n -O sam separate_merge/02-2483-01A_R2.sam > separate_merge/02-2483-01A_R2.sorted.sam
+
+awk -F/ '(!/^@/){print $1}' separate_merge/02-2483-01A_R1.sorted.sam > separate_merge/02-2483-01A_R1.sorted.reads
+awk -F/ '(!/^@/){print $1}' separate_merge/02-2483-01A_R2.sorted.sam > separate_merge/02-2483-01A_R2.sorted.reads
+diff separate_merge/*reads
+
+
+paste <( samtools view separate_merge/02-2483-01A_R1.sorted.sam | cut -f 1,2,10,11 ) <( samtools view separate_merge/02-2483-01A_R2.sorted.sam | cut -f 1,2,10,11 ) | gawk -F"\t" '( /^@/ ){next}( !and($2,4) || !and($6,4) ){ print }' | wc -l
+
+
+
+Convert back to paired fastq if either read mapped.
+
+paste <( samtools view separate_merge/02-2483-01A_R1.sorted.sam | cut -f 1,2,10,11 ) <( samtools view separate_merge/02-2483-01A_R2.sorted.sam | cut -f 1,2,10,11 ) | gawk -F"\t" -v base="separate_merge/02-2483-01A" 'BEGIN{r1=base"_R1.fastq";r2=base"_R2.fastq"}( /^@/ ){next}( !and($2,4) || !and($6,4) ){ 
+print "@"$1 >> r1; print $3 >> r1; print "+" >> r1; print $4 >> r1;
+print "@"$5 >> r2; print $7 >> r2; print "+" >> r2; print $8 >> r2;
+}' 
+
+
