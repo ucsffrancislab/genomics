@@ -115,7 +115,7 @@ echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/m
 
 echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded10k.csv.gz" | qsub -N cull10k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all10k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all10k.cull.err
 
-echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded10k.csv.gz" | qsub -N cull1k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.err
+echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded1k.csv.gz" | qsub -N cull1k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.err
 
 
 
@@ -140,5 +140,22 @@ curl -netrc -T merged.rounded1k.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded1k.T.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded1k.culled.csv.gz "${BOX}/"
 curl -netrc -T merged.rounded1k.culled.T.csv.gz "${BOX}/"
+
+
+--------------------------------------------------
+20210119
+
+
+nohup ./merge_insertion_points.bash > merge_insertion_points.out 2> merge_insertion_points.err &
+
+nohup ./cull_matrix.py 20210119-merged/merged.rounded*.*.Q??.csv.gz > cull_matrix.out 2> cull_matrix.err &
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera/20210119-merged"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in 20210119-merged/*csv.gz; do 
+echo $( basename $f )
+curl -netrc -T ${f} "${BOX}/"
+done
 
 
