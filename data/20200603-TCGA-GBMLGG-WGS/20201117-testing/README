@@ -160,3 +160,38 @@ print "@"$5 >> r2; print $7 >> r2; print "+" >> r2; print $8 >> r2;
 }' 
 
 
+
+
+
+
+
+
+--------------------------------------------------
+20210119
+Test bowtie2 versions
+
+module load bowtie2/2.3.4.1
+bowtie2 --version
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/reads_R1.fastq -2 fastq/reads_R2.fastq > /dev/null
+
+module load bowtie2/2.3.3.1
+bowtie2 --version
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/reads_R1.fastq -2 fastq/reads_R2.fastq > /dev/null
+
+module load bowtie2/2.2.9
+bowtie2 --version
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/reads_R1.fastq -2 fastq/reads_R2.fastq > /dev/null
+
+module load bowtie2/2.2.6
+bowtie2 --version
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/reads_R1.fastq -2 fastq/reads_R2.fastq > /dev/null
+
+module load bowtie2/2.1.0
+bowtie2 --version
+bowtie2 -x SVAs_and_HERVs_KWHE --very-sensitive-local -1 fastq/reads_R1.fastq -2 fastq/reads_R2.fastq > /dev/null
+
+
+
+
+
+
