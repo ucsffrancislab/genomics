@@ -1,0 +1,23 @@
+
+
+
+nohup ./subsample.bash &
+
+for bam in bam/*bam ; do
+echo $bam
+samtools idxstats $bam | awk -vreadlen=150 '{len+=$2;nreads+=$3}END{print nreads * readlen / len }' > $bam.coverage
+done
+
+nohup ./call.bash &
+
+
+
+
+
+
+
+They can be merged into 1 giant vcf file or compared with something like ...
+bedtools intersect ...
+# or
+bcftools isec ...
+
