@@ -3,7 +3,7 @@
 
 mkdir -p vcf
 
-for bam in ${PWD}/bam/122*bam ; do
+for bam in ${PWD}/bam/120*bam ; do
 	echo $bam
 	basename=$( basename $bam .bam )
 
@@ -17,8 +17,12 @@ for bam in ${PWD}/bam/122*bam ; do
 
 	#qsub -N ${basename} -l feature=nocommunal -l nodes=1:ppn=4 -l vmem=30gb -j oe -o ${PWD}/vcf/${basename}.mpileup.out.txt ${PWD}/bcftools_call.bash -F ${bam}
 
-	sbatch --time=9999 --parsable --ntasks=2 --mem=4G --job-name ${basename} --output ${PWD}/vcf/${basename}.mpileup.out.txt ${PWD}/bcftools_call.bash ${bam}
+	sbatch --time=3600 --parsable --ntasks=2 --mem=4G --job-name ${basename} --output ${PWD}/vcf/${basename}.mpileup.out.txt ${PWD}/bcftools_call.bash ${bam}
 
 done
 
 
+#	122997
+#	60% took < 19hours
+#	80% took ...
+#	100 took ...

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE      # required when using 'module'
 
-#module load CBI
-module load bcftools
+module load CBI bcftools/1.11
 
 dirname=$( dirname $1 )
 pdirname=$( dirname $dirname )
