@@ -1,0 +1,17 @@
+
+
+faSplit byname hg38.fa chromosomes/ 
+mkdir chromosomes_numeric_no_alts
+cp chromosomes/chr?.fa chromosomes_numeric_no_alts/
+cp chromosomes/chr??.fa chromosomes_numeric_no_alts/
+rename chr "" chromosomes_numeric_no_alts/*fa
+sed -i -e '1s/chr//' chromosomes_numeric_no_alts/*
+
+cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numeric_no_alts.fa
+cat chromosomes_numeric_no_alts/??.fa >> hg38.numeric_no_alts.fa
+cat chromosomes_numeric_no_alts/[XY].fa >> hg38.numeric_no_alts.fa
+
+samtools faidx hg38.numeric_no_alts.fa
+chmod -w hg38.numeric_no_alts.fa hg38.numeric_no_alts.fa.fai
+
+
