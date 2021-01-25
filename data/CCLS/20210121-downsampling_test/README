@@ -3,7 +3,7 @@
 
 nohup ./subsample.bash &
 
-for bam in bam/*bam ; do
+for bam in bam/122*bam ; do
 echo $bam
 samtools idxstats $bam | awk -vreadlen=150 '{len+=$2;nreads+=$3}END{print nreads * readlen / len }' > $bam.coverage
 done
