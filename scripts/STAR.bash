@@ -21,6 +21,9 @@ while [ $# -gt 0 ] ; do
 				sorted=true
 			fi
 			shift;;
+		--runThreadN)
+			shift; threads=$1; shift;;
+#--runThreadN 8
 		*)
 			shift;;
 	esac
@@ -59,7 +62,8 @@ else
 		fi
 	done
 
-	samtools.bash fasta -f 4 --threads $[${PBS_NUM_PPN:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
+	#samtools.bash fasta -f 4 --threads $[${PBS_NUM_PPN:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
+	samtools.bash fasta -f 4 --threads $[${threads:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
 	count_fasta_reads.bash ${f%.bam}.unmapped.fasta.gz
 fi
 
