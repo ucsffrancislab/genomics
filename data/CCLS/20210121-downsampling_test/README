@@ -11,8 +11,18 @@ done
 nohup ./call.bash &
 
 
+Mismatch of chrM and MT so not included in output
 
 
+mkdir newvcf
+for f in vcf/*vcf.gz ; do
+echo $f
+new=$( basename $f .vcf.gz )
+old=${new%.*}
+echo "Sub ${old} with ${new}"
+zcat $f | sed "/^#CHROM/s/${old}/${new}/" | bgzip > newvcf/${new}.vcf.gz
+bcftools index newvcf/${new}.vcf.gz
+done
 
 
 
@@ -20,4 +30,14 @@ They can be merged into 1 giant vcf file or compared with something like ...
 bedtools intersect ...
 # or
 bcftools isec ...
+
+
+
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210127 CCLS 20210121-downsampling_test"
+curl -netrc -X MKCOL "${BOX}/"
+
+curl -netrc -T 122997.vcf.gz "${BOX}/"
+curl -netrc -T 122997.vcf.gz.csi "${BOX}/"
 

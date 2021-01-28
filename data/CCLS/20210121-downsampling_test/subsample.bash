@@ -1,17 +1,33 @@
 #!/usr/bin/env bash
 
 
-for bam in bam/*bam ; do
+for bam in bam/*100.bam ; do
 	echo $bam
-	base=${bam%.bam}
+	base=${bam%.100.bam}
+	basename=$( basename $base )
 
-	for p in 60 80 ; do
+	echo $basename
 
-		sambamba view -f bam -t 64 --subsampling-seed=13 -s 0.${p} $bam -o ${base}.${p}a.bam
+	#for p in 60 80 ; do
+	for p in 50 ; do
 
-		sambamba view -f bam -t 64 --subsampling-seed=37 -s 0.${p} $bam -o ${base}.${p}b.bam
+		echo $p
 
-		sambamba view -f bam -t 64 --subsampling-seed=91 -s 0.${p} $bam -o ${base}.${p}c.bam
+		sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}${p}a \
+			--output ${PWD}/vcf/${basename}.${p}a.sambamba.out.txt \
+			${PWD}/sambamba.bash view -f bam -t 8 --subsampling-seed=13 -s 0.${p} $bam -o ${base}.${p}a.bam
+
+		sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}${p}b \
+			--output ${PWD}/vcf/${basename}.${p}b.sambamba.out.txt \
+			${PWD}/sambamba.bash view -f bam -t 8 --subsampling-seed=37 -s 0.${p} $bam -o ${base}.${p}b.bam
+
+		sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}${p}c \
+			--output ${PWD}/vcf/${basename}.${p}c.sambamba.out.txt \
+			${PWD}/sambamba.bash view -f bam -t 8 --subsampling-seed=91 -s 0.${p} $bam -o ${base}.${p}c.bam
+
+		#sambamba view -f bam -t 64 --subsampling-seed=13 -s 0.${p} $bam -o ${base}.${p}a.bam
+		#sambamba view -f bam -t 64 --subsampling-seed=37 -s 0.${p} $bam -o ${base}.${p}b.bam
+		#sambamba view -f bam -t 64 --subsampling-seed=91 -s 0.${p} $bam -o ${base}.${p}c.bam
 
 	done
 

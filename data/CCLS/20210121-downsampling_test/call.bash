@@ -3,7 +3,8 @@
 
 mkdir -p vcf
 
-for bam in ${PWD}/bam/120*bam ; do
+#for bam in ${PWD}/bam/18*bam ; do
+for bam in ${PWD}/bam/120207.60a.bam ; do
 	echo $bam
 	basename=$( basename $bam .bam )
 
