@@ -47,6 +47,10 @@ bedtools intersect ...
 bcftools isec ...
 
 
+#	put in decreasing order
+nohup bcftools merge -o 120207.vcf.gz -Oz newvcf/120207.100.vcf.gz newvcf/120207.80?.vcf.gz newvcf/120207.60?.vcf.gz newvcf/120207.50?.vcf.gz &
+nohup bcftools merge -o 122997.vcf.gz -Oz newvcf/122997.100.vcf.gz newvcf/122997.80?.vcf.gz newvcf/122997.60?.vcf.gz newvcf/122997.50?.vcf.gz &
+nohup bcftools merge -o 186069.vcf.gz -Oz newvcf/186069.100.vcf.gz newvcf/186069.80?.vcf.gz newvcf/186069.60?.vcf.gz newvcf/186069.50?.vcf.gz &
 
 
 
