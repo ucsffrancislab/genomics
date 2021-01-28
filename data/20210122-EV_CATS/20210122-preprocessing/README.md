@@ -182,6 +182,7 @@ This version had some issues with the dedup step.
 compiling from source.
 
 
+```BASH
 samtools flags UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
 0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
 
@@ -226,9 +227,10 @@ samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.
 244
 samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam 
 1349
+```
 
 
-|	| | 20210122 | | | 20201127 | |
+|	|             |  20210122   |              |             |   20201127  |              |
 |	| SFHH001A_S1 | SFHH001B_S2 | Undetermined | SFHH001A_S1 | SFHH001B_S2 | Undetermined |
 | ---	| --- | --- | --- | --- | --- | --- |
 | Raw Read Count | 213052 | 217755 | 133027 |
