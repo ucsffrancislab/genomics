@@ -17,6 +17,9 @@ for bam in bam/*100.bam ; do
 			--output ${PWD}/vcf/${basename}.${p}a.sambamba.out.txt \
 			${PWD}/sambamba.bash view -f bam -t 8 --subsampling-seed=13 -s 0.${p} $bam -o ${base}.${p}a.bam
 
+		#	for some reason 13 creates a problematic bam file that fails when calling for vcf
+		#	this is odd since the full file does not have a problem
+
 		sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}${p}b \
 			--output ${PWD}/vcf/${basename}.${p}b.sambamba.out.txt \
 			${PWD}/sambamba.bash view -f bam -t 8 --subsampling-seed=37 -s 0.${p} $bam -o ${base}.${p}b.bam
