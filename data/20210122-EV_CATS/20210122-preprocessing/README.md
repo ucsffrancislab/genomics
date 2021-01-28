@@ -230,8 +230,8 @@ samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.
 ```
 
 
-|	    |             |  20210122   |              |             |   20201127  |              |
-|	    | SFHH001A_S1 | SFHH001B_S2 | Undetermined | SFHH001A_S1 | SFHH001B_S2 | Undetermined |
+
+|	    | SFHH001A_S1 | SFHH001B_S2 | Undetermined | 
 | ---	| --- | --- | --- | --- | --- | --- |
 | Raw Read Count | 213052 | 217755 | 133027 |
 | Raw Read Length | 301 | 301 | 301 |
