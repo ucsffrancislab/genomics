@@ -133,3 +133,8 @@ Species: human ( homo sapiens )
 wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.fa.gz
 
 
+
+Coliphage phi-X174, complete genome
+https://www.ncbi.nlm.nih.gov/nuccore/NC_001422.1?report=fasta
+
+
