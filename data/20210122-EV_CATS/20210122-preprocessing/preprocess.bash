@@ -16,36 +16,50 @@ for f in /francislab/data1/raw/20210122-EV_CATS/*.fastq.gz ; do
 
 	basename=$( basename $f .fastq.gz )
 
-	#python3 bin/fumi_tools copy_umi --threads 10 --umi-length 12 \
-	#	-i ${f} -o ${basename}_w_umi.fastq.gz
+	mkdir -p ${PWD}/${basename}
 
-	#cutadapt --trim-n --match-read-wildcards -u 16 -n 3 \
-	#	-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
-	#	-o ${basename}_w_umi.trimmed.fastq.gz ${basename}_w_umi.fastq.gz
+	python3 bin/fumi_tools copy_umi --threads 10 --umi-length 12 \
+		-i ${f} -o ${PWD}/${basename}/${basename}_w_umi.fastq.gz
 
-	#module load star/2.7.7a
-	#	STAR --runMode genomeGenerate \
-	#		--genomeFastaFiles /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa \
-	#		--sjdbGTFfile /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf \
-	#		--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a/ --runThreadN 32
+	cutadapt --trim-n --match-read-wildcards -u 16 -n 3 \
+		-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
+		-o ${PWD}/${basename}/${basename}_w_umi.trimmed.fastq.gz ${PWD}/${basename}/${basename}_w_umi.fastq.gz
+
+	#	#module load star/2.7.7a
+	#	#	STAR --runMode genomeGenerate \
+	#	#		--genomeFastaFiles /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa \
+	#	#		--sjdbGTFfile /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf \
+	#	#		--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ --runThreadN 32 --sjdbOverhang=49
+
+	sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+		--output=${PWD}/${basename}/${basename}.sbatch.STAR.output.txt \
+		~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
+			--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ \
+			--sjdbGTFfile /francislab/data1/refs/fasta/hg38.ncbiRefSeq.gtf \
+			--sjdbOverhang 49 \
+			--readFilesIn ${PWD}/${basename}/${basename}_w_umi.trimmed.fastq.gz \
+			--quantMode TranscriptomeSAM \
+			--quantTranscriptomeBAMcompression -1 \
+			--outSAMtype BAM SortedByCoordinate \
+			--outSAMunmapped Within \
+			--outFileNamePrefix ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.
 
 
-	STAR --runThreadN 30 --readFilesCommand zcat \
-		--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq/ \
-		--sjdbGTFfile /francislab/data1/refs/fasta/hg38.ncbiRefSeq.gtf \
-		--sjdbOverhang 49 \
-		--readFilesIn ${basename}_w_umi.trimmed.fastq.gz \
-		--quantMode TranscriptomeSAM \
-		--quantTranscriptomeBAMcompression -1 \
-		--outSAMtype BAM SortedByCoordinate \
-		--outSAMunmapped Within \
-		--outFileNamePrefix ./${basename}_w_umi.trimmed.STAR.
 
-	#samtools sort -@ 10 -o MySample_Aligned.toTranscriptome.sorted.out.bam MySample_Aligned.toTranscriptome.out.bam
 
-	#fumi_tools dedup --threads 10 --memory 10G -i MySample_Aligned.toTranscriptome.sorted.out.bam -o MySample_deduplicated_transcriptome.bam fumi_tools dedup --threads 10 --memory 10G -i MySample_Aligned.sortedByCoord.out.bam -o MySample_deduplicated_genome.bam
+#	#	Unnecessary given the failing of the following step.
+#	samtools sort -@ 10 -o ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.bam
 
-	#rsem-calculate-expression -p 10 --strandedness forward --seed-length 15 --no-bam-output --alignments MySample_transcriptome_alignment.bam /transcriptomes/hg19/hg19 MySample
+#	#	fumi_tools_dedup seems to need local compiling. Returns "Illegal Instruction"
+
+#	echo ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam
+#	python3 ~/.local/bin/fumi_tools dedup --threads 10 --memory 10G -i ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam -o ${PWD}/${basename}/${basename}_deduplicated_transcriptome.bam 
+
+#	echo ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam
+#	python3 ~/.local/bin/fumi_tools dedup --threads 10 --memory 10G -i ${PWD}/${basename}/${basename}_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam -o ${PWD}/${basename}/${basename}_deduplicated_genome.bam 
+
+#	#	I don't have this executable and can't get passed the previous steps, so moot.
+#	#rsem-calculate-expression -p 10 --strandedness forward --seed-length 15 --no-bam-output --alignments MySample_transcriptome_alignment.bam /transcriptomes/hg19/hg19 MySample
 
 done
 
