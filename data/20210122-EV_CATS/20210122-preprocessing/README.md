@@ -207,8 +207,27 @@ done
 for f in output/*out.bam ; do
 samtools view -c -F 3844 $f > $f.aligned_count
 done
-```
 
+
+
+for f in output/*.toTranscriptome.out.bam ; do
+samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.transcript_count
+done
+
+for f in output/*.toTranscriptome.out.bam ; do
+samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
+awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv ${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_count
+done
+
+awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv output/*.toTranscriptome.out.bam.transcript_ids | sort | uniq -c | sort -rn > gene_count
+
+
+
+
+for f in output/*unmapped.fasta.gz ; do
+#	diamond nr
+done
+```
 
 
 
@@ -225,6 +244,25 @@ done
 | STAR Aligned to Genome % | 47.39 | 45.86 | 1.02 |
 | Bowtie Aligned to phiX | 9359 | 10504 | 128249 |
 | Bowtie Aligned to phiX % | 6.82 | 7.13 | 97.55 |
-
+| MECP2 | 3090 | 4280 | 60 |
+| P2RX6 | 2793 | 2730 | 63 |
+| NAALADL2 | 2380 | 2040 |  |
+| FGD2 | 2002 | 1209 | 26 |
+| PACS2 | 1425 | 1035 | 45 |
+| ESRRB | 850 | 1490 | 40 |
+| ILDR2 | 929 | 777 | 8 |
+| PPP6R3 | 744 | 868 |  |
+| L1CAM | 612 | 944 | 20 |
+| GRB10 | 846 | 705 | 15 |
+| FOXO3 | 693 | 819 | 9 |
+| SIK3 | 731 | 763 |  |
+| LOC105374102 | 664 | 788 | 16 |
+| EDEM3 | 690 | 741 | 30 |
+| RNA45SN2 | 680 | 686 | 14 |
+| RNA45SN4 | 676 | 682 | 14 |
+| RNA45SN3 | 672 | 681 | 14 |
+| RNA45SN5 | 672 | 678 | 14 |
+| RNA45SN1 | 672 | 677 | 14 |
+| AK9 | 648 | 666 | 36 |
 
 
