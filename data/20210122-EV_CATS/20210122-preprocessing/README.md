@@ -187,50 +187,6 @@ samtools flags UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
 0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
 
 
-zcat SFHH001A_S1_L001_R1_001_w_umi.fastq.gz | paste - - - - | wc -l
-213052
-zcat SFHH001A_S1_L001_R1_001_w_umi.fastq.gz | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}'
-301
-zcat SFHH001A_S1_L001_R1_001_w_umi.trimmed.fastq.gz | paste - - - - | wc -l
-137184
-zcat SFHH001A_S1_L001_R1_001_w_umi.trimmed.fastq.gz | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}'
-53.7021
-samtools view -c -F 3844 SFHH001A_S1_L001_R1_001_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.bam
-11688
-samtools view -c -F 3844 SFHH001A_S1_L001_R1_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam 
-65017
-
-
-zcat SFHH001B_S2_L001_R1_001_w_umi.fastq.gz | paste - - - - | wc -l
-217755
-zcat SFHH001B_S2_L001_R1_001_w_umi.fastq.gz | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}'
-301
-zcat SFHH001B_S2_L001_R1_001_w_umi.trimmed.fastq.gz | paste - - - - | wc -l
-147265
-zcat SFHH001B_S2_L001_R1_001_w_umi.trimmed.fastq.gz | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}'
-51.3464
-samtools view -c -F 3844 SFHH001B_S2_L001_R1_001_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.bam 
-13525
-samtools view -c -F 3844 SFHH001B_S2_L001_R1_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam 
-67542
-
-
-zcat Undetermined_S0_L001_R1_001_w_umi.fastq.gz | paste - - - - | wc -l
-133027
-zcat Undetermined_S0_L001_R1_001_w_umi.fastq.gz | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}'
-301
-zcat Undetermined_S0_L001_R1_001_w_umi.trimmed.fastq.gz | paste - - - - | wc -l
-131457
-zcat Undetermined_S0_L001_R1_001_w_umi.trimmed.fastq.gz | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}'
-274.183
-samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.bam 
-244
-samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam 
-1349
-
-
-
-
 for f in output/*fastq.gz ; do
 zcat $f | paste - - - - | wc -l > $f.read_count
 zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
