@@ -55,5 +55,8 @@ done
 | Trimmed Ave Read Length | 40.8046 | 36.4556 | 40.7141 | 36.7333 | 134.224 | 135.191 |
 | STAR Aligned to Transcriptome | 15290 | 16549 | 22726 | 20099 | 259 | 250 |
 | STAR Aligned to Genome | 89354 | 106931 | 94527 | 113189 | 1251 | 1534 |
+| STAR Aligned to Transcriptome  % | 7.3 | 7.1 | 13.8 | 10.9 | 1.2 | 1.1 |
+| STAR Aligned to Genome % | 42.7 | 45.9 | 57.6 | 61.4 | 5.6 | 6.8 |
+| STAR Aligned to phiX | | | | | | |
 
 

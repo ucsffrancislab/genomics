@@ -239,6 +239,9 @@ samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.
 | Trimmed Ave Read Length | 53.7021 | 51.3464 | 274.183 |
 | STAR Aligned to Transcriptome | 11688 | 13525 | 244 |
 | STAR Aligned to Genome | 65017 | 67542 | 1349 |
+| STAR Aligned to Transcriptome % | 8.5 | 9.2 | 0.2 |
+| STAR Aligned to Genome % | 47.4 | 45.9 | 1.0 |
+| STAR Aligned to phiX | | | |
 
 
 
