@@ -33,6 +33,16 @@ for f in /francislab/data1/working/20201127-EV_CATS/20210128-preprocessing/outpu
 
 done
 
+for f in /francislab/data1/working/20201127-EV_CATS/20210128-preprocessing/output/*.trimmed.fastq.gz ; do
+
+	basename=$( basename $f .fastq.gz )
+
+	sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+		--output=${PWD}/output/${basename}.sbatch.bowtie2phiX.output.txt \
+		~/.local/bin/bowtie2.bash --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -U $f -o ${PWD}/output/${basename}.bowtie2phiX.bam
+
+done
+
 for f in output/*fastq.gz ; do
 zcat $f | paste - - - - | wc -l > $f.read_count
 zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
@@ -47,6 +57,7 @@ done
 
 
 
+
 |    | L6_R1 | L6_R2 | L8_R1 | L8_R2 | Undetermined_R1 | Undetermined_R2 |
 | --- | --- | --- | --- | --- | --- | --- |
 | Raw Read Count | 453845 | 453845 | 454811 | 454811 | 25802 | 25802 |
@@ -54,9 +65,12 @@ done
 | Trimmed Read Count | 209173 | 232875 | 164198 | 184385 | 22220 | 22401 |
 | Trimmed Ave Read Length | 40.8046 | 36.4556 | 40.7141 | 36.7333 | 134.224 | 135.191 |
 | STAR Aligned to Transcriptome | 15290 | 16549 | 22726 | 20099 | 259 | 250 |
+| STAR Aligned to Transcriptome % | 7.30 | 7.10 | 13.84 | 10.90 | 1.16 | 1.11 |
 | STAR Aligned to Genome | 89354 | 106931 | 94527 | 113189 | 1251 | 1534 |
-| STAR Aligned to Transcriptome  % | 7.3 | 7.1 | 13.8 | 10.9 | 1.2 | 1.1 |
-| STAR Aligned to Genome % | 42.7 | 45.9 | 57.6 | 61.4 | 5.6 | 6.8 |
-| STAR Aligned to phiX | | | | | | |
+| STAR Aligned to Genome % | 42.71 | 45.91 | 57.56 | 61.38 | 5.63 | 6.84 |
+| Bowtie Aligned to phiX | 2111 | 53 | 2455 | 56 | 17470 | 3505 |
+| Bowtie Aligned to phiX % | 1.00 | .02 | 1.49 | .03 | 78.62 | 15.64 |
+
+
 
 

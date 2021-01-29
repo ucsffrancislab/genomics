@@ -227,23 +227,48 @@ samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.
 244
 samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam 
 1349
+
+
+
+
+for f in output/*fastq.gz ; do
+zcat $f | paste - - - - | wc -l > $f.read_count
+zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
+done
+
+
+for f in ${PWD}/*/*.trimmed.fastq.gz ; do
+
+	basename=$( basename $f .fastq.gz )
+
+	sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+		--output=${PWD}/${basename}.sbatch.bowtie2phiX.output.txt \
+		~/.local/bin/bowtie2.bash --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -U $f -o ${PWD}/${basename}.bowtie2phiX.bam
+
+done
+
+
+for f in output/*out.bam ; do
+samtools view -c -F 3844 $f > $f.aligned_count
+done
 ```
 
 
 
-|	    | SFHH001A_S1 | SFHH001B_S2 | Undetermined | 
-| ---	| --- | --- | --- |
+
+
+|    | SFHH001A_R1 | SFHH001B_R1 | Undetermined_R1 |
+| --- | --- | --- | --- |
 | Raw Read Count | 213052 | 217755 | 133027 |
 | Raw Read Length | 301 | 301 | 301 |
 | Trimmed Read Count | 137184 | 147265 | 131457 |
 | Trimmed Ave Read Length | 53.7021 | 51.3464 | 274.183 |
 | STAR Aligned to Transcriptome | 11688 | 13525 | 244 |
+| STAR Aligned to Transcriptome % | 8.51 | 9.18 | .18 |
 | STAR Aligned to Genome | 65017 | 67542 | 1349 |
-| STAR Aligned to Transcriptome % | 8.5 | 9.2 | 0.2 |
-| STAR Aligned to Genome % | 47.4 | 45.9 | 1.0 |
-| STAR Aligned to phiX | | | |
-
-
+| STAR Aligned to Genome % | 47.39 | 45.86 | 1.02 |
+| Bowtie Aligned to phiX | 9359 | 10504 | 128249 |
+| Bowtie Aligned to phiX % | 6.82 | 7.13 | 97.55 |
 
 
 
