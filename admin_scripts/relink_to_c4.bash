@@ -18,3 +18,9 @@ done < <( find /francislab/data1/ -type l )
 #	using the while loop seems to work better than the for loop
 #	I think that the for loop won't execute the first iteration until the find command completes.
 
+
+#	Find dead links with ...
+#		find . -xtype l
+#			OR
+#		find -L . -type l
+
