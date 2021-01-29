@@ -13,7 +13,7 @@ while read f ; do
 	fi
 #done
 #done < <( find /francislab/data1/refs/ -type l )
-done < <( find /francislab/data1/ -type l )
+done < <( find -L /francislab/data1/ -type l )
 
 #	using the while loop seems to work better than the for loop
 #	I think that the for loop won't execute the first iteration until the find command completes.
