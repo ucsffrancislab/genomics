@@ -236,8 +236,8 @@ samtools view -c -F 3844 Undetermined_S0_L001_R1_001_w_umi.trimmed.STAR.Aligned.
 | Raw Read Count | 213052 | 217755 | 133027 |
 | Raw Read Length | 301 | 301 | 301 |
 | Trimmed Read Count | 137184 | 147265 | 131457 |
-| Trimmed Read Length | 53.7021 | 51.3464 | 274.183 |
-| STAR Aligned toTranscriptome | 11688 | 13525 | 244 |
+| Trimmed Ave Read Length | 53.7021 | 51.3464 | 274.183 |
+| STAR Aligned to Transcriptome | 11688 | 13525 | 244 |
 | STAR Aligned to Genome | 65017 | 67542 | 1349 |
 
 
