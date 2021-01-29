@@ -3,6 +3,7 @@
 echo -n "|    |"
 for f in output/*_001.fastq.gz.read_count ; do
 c=$( basename $f _001.fastq.gz.read_count )
+c=${c/_*_/_}
 echo -n " ${c} |"
 done
 echo

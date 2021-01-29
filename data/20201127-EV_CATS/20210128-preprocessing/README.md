@@ -47,7 +47,7 @@ done
 
 
 
-|    | L6_S1_L001_R1 | L6_S1_L001_R2 | L8_S2_L001_R1 | L8_S2_L001_R2 | Undetermined_S0_L001_R1 | Undetermined_S0_L001_R2 |
+|    | L6_R1 | L6_R2 | L8_R1 | L8_R2 | Undetermined_R1 | Undetermined_R2 |
 | --- | --- | --- | --- | --- | --- | --- |
 | Raw Read Count | 453845 | 453845 | 454811 | 454811 | 25802 | 25802 |
 | Raw Read Length | 151 | 151 | 151 | 151 | 151 | 151 |
