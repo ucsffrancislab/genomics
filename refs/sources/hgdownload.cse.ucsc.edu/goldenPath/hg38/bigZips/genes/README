@@ -1,0 +1,6 @@
+
+
+awk -F"\t" '{print $9}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf | awk '{print $4"\t"$2}' | tr -d \" | tr -d \; | sort --unique > hg38.ncbiRefSeq.transcript_gene.tsv
+
+
+
