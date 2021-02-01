@@ -233,7 +233,7 @@ for f in ${PWD}/output/*unmapped.fasta.gz ; do
     sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
       --output=${base}.sbatch.diamond.nr.masking${m}.output.txt \
       ~/.local/bin/diamond.bash blastx --query ${f} --threads 8 --db /francislab/data1/refs/diamond/nr \
-        --outfmt 100 --out ${base}.nr.masking${m} --masking ${m}
+        --outfmt 100 --out ${base}.nr.masking${m}.daa --masking ${m}
 
 done ; done
 ```
@@ -273,5 +273,21 @@ done ; done
 | RNA45SN5 | 672 | 678 | 14 |
 | RNA45SN1 | 672 | 677 | 14 |
 | AK9 | 648 | 666 | 36 |
+
+
+
+
+
+```BASH
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210201 20210122-EV_CATS 20210122-preprocessing"
+curl -netrc -X MKCOL "${BOX}/"
+
+curl -netrc -T 122997.vcf.gz "${BOX}/"
+curl -netrc -T 122997.vcf.gz.csi "${BOX}/"
+
+
+```
+
+
 
 
