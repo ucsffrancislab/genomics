@@ -4,7 +4,9 @@
 mkdir -p vcf
 
 #for bam in ${PWD}/bam/18*bam ; do
-for bam in ${PWD}/bam/120207.60a.bam ; do
+#for bam in ${PWD}/bam/120207.60a.bam ; do
+for bam in ${PWD}/bam/120207.50a.bam ; do
+#for bam in ${PWD}/bam/??????.50?.bam ; do
 	echo $bam
 	basename=$( basename $bam .bam )
 
@@ -18,7 +20,14 @@ for bam in ${PWD}/bam/120207.60a.bam ; do
 
 	#qsub -N ${basename} -l feature=nocommunal -l nodes=1:ppn=4 -l vmem=30gb -j oe -o ${PWD}/vcf/${basename}.mpileup.out.txt ${PWD}/bcftools_call.bash -F ${bam}
 
-	sbatch --time=3600 --parsable --ntasks=2 --mem=4G --job-name ${basename} --output ${PWD}/vcf/${basename}.mpileup.out.txt ${PWD}/bcftools_call.bash ${bam}
+	f=${base}.${p}a.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --time=3600 --parsable --ntasks=2 --mem=4G --job-name ${basename} \
+			--output ${PWD}/vcf/${basename}.mpileup.out.txt \
+			${PWD}/bcftools_call.bash ${bam}
+	fi
 
 done
 
