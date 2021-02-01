@@ -128,6 +128,16 @@ curl -netrc -T 122997.vcf.gz.csi "${BOX}/"
 | isec Diff Calls 100 50a | 354066 | 335957 | 352748 |
 | isec Diff Calls 100 50b | 353597 | 334725 | 352008 |
 | isec Diff Calls 100 50c | 353060 | 335113 | 352239 |
+| % isec Diff Calls 100/100 | 0 | 0 | 0 |
+| % isec Diff Calls 80a/100 | 3.31 | 3.20 | 2.93 |
+| % isec Diff Calls 80b/100 | 3.33 | 3.20 | 2.93 |
+| % isec Diff Calls 80c/100 | 3.33 | 3.21 | 2.94 |
+| % isec Diff Calls 60a/100 | 5.83 | 5.60 | 5.14 |
+| % isec Diff Calls 60b/100 | 5.83 | 5.57 | 5.13 |
+| % isec Diff Calls 60c/100 | 5.82 | 5.59 | 5.13 |
+| % isec Diff Calls 50a/100 | 7.18 | 6.91 | 6.32 |
+| % isec Diff Calls 50b/100 | 7.17 | 6.88 | 6.31 |
+| % isec Diff Calls 50c/100 | 7.16 | 6.89 | 6.32 |
 | isec Shared Calls 100 100 | 4928327 | 4860894 | 5572749 |
 | isec Shared Calls 100 80a | 4827914 | 4765602 | 5471829 |
 | isec Shared Calls 100 80b | 4827087 | 4765699 | 5471608 |

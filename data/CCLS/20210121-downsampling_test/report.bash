@@ -46,17 +46,17 @@ done
 echo
 done
 
-#for sub in 100 80a 80b 80c 60a 60b 60c 50a 50b 50c ; do
-#echo -n "| % isec Diff Calls ${sub}/100 |"
-#for f in newvcf/*.${sub}.vcf.gz.diff_100_isec_count ; do
-#b=$( basename $f .${sub}.vcf.gz.diff_100_isec_count )
-#n=$( cat $f )
-#d=$( cat newvcf/${b}.100.vcf.gz.shared_100_isec_count )
-#r=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l )
-#echo -n " ${r} |"
-#done
-#echo
-#done
+for sub in 100 80a 80b 80c 60a 60b 60c 50a 50b 50c ; do
+echo -n "| % isec Diff Calls ${sub}/100 |"
+for f in newvcf/*.${sub}.vcf.gz.diff_100_isec_count ; do
+b=$( basename $f .${sub}.vcf.gz.diff_100_isec_count )
+n=$( cat $f )
+d=$( cat newvcf/${b}.100.vcf.gz.shared_100_isec_count )
+r=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l )
+echo -n " ${r} |"
+done
+echo
+done
 
 
 for sub in 100 80a 80b 80c 60a 60b 60c 50a 50b 50c ; do
