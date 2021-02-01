@@ -224,9 +224,18 @@ awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sourc
 
 
 
-for f in output/*unmapped.fasta.gz ; do
-#	diamond nr
-done
+for f in ${PWD}/output/*unmapped.fasta.gz ; do
+  base=${f%.fasta.gz}
+  basename=$(basename $base)
+  echo $f
+  for m in 0 1 ; do
+
+    sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+      --output=${base}.sbatch.diamond.nr.masking${m}.output.txt \
+      ~/.local/bin/diamond.bash blastx --query ${f} --threads 8 --db /francislab/data1/refs/diamond/nr \
+        --outfmt 100 --out ${base}.nr.masking${m} --masking ${m}
+
+done ; done
 ```
 
 
