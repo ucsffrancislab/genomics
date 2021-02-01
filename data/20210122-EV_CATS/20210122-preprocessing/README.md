@@ -282,12 +282,14 @@ done ; done
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20210201 20210122-EV_CATS 20210122-preprocessing"
 curl -netrc -X MKCOL "${BOX}/"
 
-curl -netrc -T 122997.vcf.gz "${BOX}/"
-curl -netrc -T 122997.vcf.gz.csi "${BOX}/"
-
-
+for f in output/*daa ;do curl -netrc -T $f "${BOX}/" ; done
 ```
 
+
+locally on my laptop
+```BASH
+for f in *daa ; do echo $f ;/Applications/MEGAN/tools/daa-meganizer --in ${f} --mapDB ~/megan/megan-map-Jul2020-2.db --threads 8; done
+```
 
 
 
