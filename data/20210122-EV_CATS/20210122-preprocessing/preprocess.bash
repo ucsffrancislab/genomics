@@ -18,12 +18,24 @@ for f in /francislab/data1/raw/20210122-EV_CATS/*.fastq.gz ; do
 
 	basename=$( basename $f .fastq.gz )
 
-	python3 bin/fumi_tools copy_umi --threads 10 --umi-length 12 \
-		-i ${f} -o ${PWD}/output/${basename}_w_umi.fastq.gz
+	f=${PWD}/output/${basename}_w_umi.fastq.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		python3 bin/fumi_tools copy_umi --threads 10 --umi-length 12 \
+			-i ${f} -o ${PWD}/output/${basename}_w_umi.fastq.gz
+		chmod -w ${f}
+	fi
 
-	cutadapt --trim-n --match-read-wildcards -u 16 -n 3 \
-		-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
-		-o ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz ${PWD}/output/${basename}_w_umi.fastq.gz
+	f=${PWD}/output/${basename}_w_umi.trimmed.fastq.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		cutadapt --trim-n --match-read-wildcards -u 16 -n 3 \
+			-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
+			-o ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz ${PWD}/output/${basename}_w_umi.fastq.gz
+		chmod -w ${f}
+	fi
 
 	#	#module load star/2.7.7a
 	#	#	STAR --runMode genomeGenerate \
@@ -31,18 +43,23 @@ for f in /francislab/data1/raw/20210122-EV_CATS/*.fastq.gz ; do
 	#	#		--sjdbGTFfile /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf \
 	#	#		--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ --runThreadN 32 --sjdbOverhang=49
 
-	sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
-		--output=${PWD}/output/${basename}.sbatch.STAR.output.txt \
-		~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
-			--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ \
-			--sjdbGTFfile /francislab/data1/refs/fasta/hg38.ncbiRefSeq.gtf \
-			--sjdbOverhang 49 \
-			--readFilesIn ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
-			--quantMode TranscriptomeSAM \
-			--quantTranscriptomeBAMcompression -1 \
-			--outSAMtype BAM SortedByCoordinate \
-			--outSAMunmapped Within \
-			--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR.
+	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}.sbatch.STAR.output.txt \
+			~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
+				--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ \
+				--sjdbGTFfile /francislab/data1/refs/fasta/hg38.ncbiRefSeq.gtf \
+				--sjdbOverhang 49 \
+				--readFilesIn ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
+				--quantMode TranscriptomeSAM \
+				--quantTranscriptomeBAMcompression -1 \
+				--outSAMtype BAM SortedByCoordinate \
+				--outSAMunmapped Within \
+				--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR.
+	fi
 
 
 
