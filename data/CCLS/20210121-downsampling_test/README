@@ -13,6 +13,7 @@ done
 nohup ./call.bash &
 
 for some reason seed 13 creates a problematic bam file for 120207.60a.bam that fails when calling for vcf
+and 50a. Trying seed 17.
 this is odd since the full file does not have a problem
 
 cat 120207.60a.mpileup.out.txt
@@ -23,6 +24,14 @@ bcftools: sam.c:3948: resolve_cigar2: Assertion `k < c->n_cigar' failed.
 Error: could not parse the input VCF
 index: the input is probably truncated, use -f to index anyway: /francislab/data1/working/CCLS/20210121-downsampling_test/vcf/120207.60a.vcf.gz
 
+cat vcf/corrupt/120207.50a.mpileup.out.txt 
+Note: none of --samples-file, --ploidy or --ploidy-file given, assuming all sites are diploid
+[mpileup] 1 samples in 1 input files
+[mpileup] maximum number of reads per input file set to -d 250
+bcftools: sam.c:3948: resolve_cigar2: Assertion `k < c->n_cigar' failed.
+Error: could not parse the input VCF
+index: the input is probably truncated, use -f to index anyway: /francislab/data1/working/CCLS/20210121-downsampling_test/vcf/120207.50a.vcf.gz
+
 recreated bam file with same result. Could try different seed
 
 
@@ -30,7 +39,7 @@ Mismatch of chrM and MT so not included in output
 
 
 mkdir newvcf
-for f in vcf/*vcf.gz ; do
+for f in vcf/122*vcf.gz ; do
 echo $f
 new=$( basename $f .vcf.gz )
 old=${new%.*}
