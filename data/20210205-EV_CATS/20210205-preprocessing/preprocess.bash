@@ -3,18 +3,16 @@
 module load star/2.7.7a
 
 
-#/francislab/data1/raw/20210122-EV_CATS/SFHH001A_S1_L001_R1_001.fastq.gz
-#/francislab/data1/raw/20210122-EV_CATS/SFHH001B_S2_L001_R1_001.fastq.gz
-#/francislab/data1/raw/20210122-EV_CATS/Undetermined_S0_L001_R1_001.fastq.gz
+#/francislab/data1/raw/20210205-EV_CATS/SFHH001A_S1_L001_R1_001.fastq.gz
+#/francislab/data1/raw/20210205-EV_CATS/SFHH001B_S2_L001_R1_001.fastq.gz
+#/francislab/data1/raw/20210205-EV_CATS/Undetermined_S0_L001_R1_001.fastq.gz
 
-#	*SFHH001A – index GCCAAT (index #6)
-#	*SFHH001B – index CTTGTA (index #12)
 
 #	uses python3 so need to run on C4
 
 mkdir -p ${PWD}/output
 
-for fastq in /francislab/data1/raw/20210122-EV_CATS/*.fastq.gz ; do
+for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 
 	basename=$( basename $fastq .fastq.gz )
 
