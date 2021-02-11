@@ -48,6 +48,8 @@ done
 
 awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv output/*.toTranscriptome.out.bam.transcript_ids | sort | uniq -c | sort -rn > gene_count
 
+awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv output/SFHH001*.toTranscriptome.out.bam.transcript_ids | sort | uniq -c | sort -rn > determined_gene_count.txt
+
 
 
 
@@ -68,11 +70,6 @@ done ; done
 
 ./report.bash 
 ```
-
-
-
-
-
 
 
 
@@ -109,6 +106,40 @@ done ; done
 | SIK3 | 971 | 1152 | 27 |
 | GRB10 | 1222 | 894 |  |
 | SLC22A1 | 1032 | 1032 | 24 |
+| NSMCE1 | 756 | 1296 | 18 |
+| TNS1 | 1118 | 910 | 26 |
+| PPP6R3 | 620 | 1301 | 62 |
+| NUDT16P1 | 1114 | 808 | 6 |
+| TTN | 828 | 1002 |  |
+| DNAJB14 | 755 | 1008 | 12 |
+| ADGRB2 | 735 | 924 | 42 |
+| POU6F1 | 850 | 775 | 25 |
+| TCF12 | 744 | 866 |  |
+| RNA28SN2 | 782 | 789 | 5 |
+| RNA28SN1 | 776 | 786 | 5 |
+| RNA28SN4 | 771 | 786 | 5 |
+| RNA28SN5 | 770 | 786 | 5 |
+| RNA28SN3 | 770 | 783 | 5 |
+| MICAL2 | 580 | 840 |  |
+| PHKA2 | 732 | 624 | 24 |
+| CHRM2 | 522 | 756 | 27 |
+| NRXN3 | 200 | 1100 |  |
+| GLG1 | 684 | 556 | 16 |
+| SORBS1 | 354 | 826 | 15 |
+| PPM1B | 582 | 590 | 10 |
+| IZUMO4 | 630 | 438 | 12 |
+| TTC21A | 380 | 684 |  |
+| ANKRD11 | 527 | 493 | 17 |
+| SLC1A2 | 360 | 621 | 9 |
+| KIAA0319L | 321 | 650 |  |
+| PRSS37 | 507 | 430 | 6 |
+| S100A13 | 495 | 430 |  |
+| MINK1 | 412 | 495 |  |
+| RNA18SN4 | 445 | 442 | 9 |
+
+
+
+
 
 
 ```BASH

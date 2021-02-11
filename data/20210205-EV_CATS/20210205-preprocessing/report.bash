@@ -102,7 +102,7 @@ echo
 
 
 
-for gene in $( head -20 gene_count | awk '{print $2}' ) ; do
+for gene in $( head -50 gene_count | awk '{print $2}' ) ; do
 echo -n "| ${gene} |"
 for f in output/*_001_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.bam.gene_count ; do
 c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${f} )
