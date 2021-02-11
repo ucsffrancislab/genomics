@@ -161,3 +161,16 @@ curl -netrc -T 122997.vcf.gz.csi "${BOX}/"
 
 
 
+```BASH
+for bam in bam/*100.bam ; do
+nohup samtools view -F 3840 $bam | awk '{l+=length($10)}END{print l}' > $bam.primary.base_count &
+done
+
+for f in bam/*100.bam.primary.base_count ; do
+echo $f
+awk '{print $0/3000000000}' $f
+done
+```
+
+
+
