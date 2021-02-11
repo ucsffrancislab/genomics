@@ -76,5 +76,64 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 #	#	I don't have this executable and can't get passed the previous steps, so moot.
 #	#rsem-calculate-expression -p 10 --strandedness forward --seed-length 15 --no-bam-output --alignments MySample_transcriptome_alignment.bam /transcriptomes/hg19/hg19 MySample
 
+
+
+
+
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2phiX.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}.bowtie2phiX.output.txt \
+			~/.local/bin/bowtie2.bash --threads 8 -x /francislab/data1/refs/bowtie2/phiX \
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+	fi
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.Aligned.sortedByCoord.out.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.output.txt \
+			~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
+				--genomeDir /francislab/data1/refs/STAR/human_mirna \
+				--readFilesIn ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
+				--outSAMtype BAM SortedByCoordinate \
+				--outSAMunmapped Within \
+				--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.
+	fi
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.mirna.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}.bowtie2.mirna.output.txt \
+			~/.local/bin/bowtie2.bash --threads 8 -x /francislab/data1/refs/bowtie2/human_mirna \
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+	fi
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.mirna.all.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}.bowtie2.mirna.all.output.txt \
+			~/.local/bin/bowtie2.bash --all --threads 8 -x /francislab/data1/refs/bowtie2/human_mirna \
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+	fi
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.hg38.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}.bowtie2.hg38.output.txt \
+			~/.local/bin/bowtie2.bash --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+	fi
+
 done
 

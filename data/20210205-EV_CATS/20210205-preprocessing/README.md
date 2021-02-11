@@ -20,20 +20,11 @@ zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f
 done
 
 
-for f in ${PWD}/output/*.trimmed.fastq.gz ; do
-
-	basename=$( basename $f .fastq.gz )
-
-	sbatch --job-name=${basename}  --time=480 --ntasks=8 --mem=32G \
-		--output=${PWD}/output/${basename}.bowtie2phiX.output.txt \
-		~/.local/bin/bowtie2.bash --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -U $f -o ${PWD}/output/${basename}.bowtie2phiX.bam
-
-done
-
-
 for f in output/*.bam ; do
 samtools view -c -F 3844 $f > $f.aligned_count
+samtools view -c -f 4    $f > $f.unaligned_count
 done
+
 
 
 
@@ -50,9 +41,6 @@ awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sourc
 
 awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv output/SFHH001*.toTranscriptome.out.bam.transcript_ids | sort | uniq -c | sort -rn > determined_gene_count.txt
 
-
-
-
 for f in ${PWD}/output/*unmapped.fasta.gz ; do
   base=${f%.fasta.gz}
   basename=$(basename $base)
@@ -66,11 +54,21 @@ for f in ${PWD}/output/*unmapped.fasta.gz ; do
 
 done ; done
 
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o STAR_mirna_miRNA_primary_transcript.tsv output/*_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam
 
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o STAR_mirna_miRNA.tsv output/*_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam
+
+
+for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie2.mirna.bam output/*.bowtie2.mirna.all.bam ; do
+samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
+done
+
+for f in output/*fasta.gz ; do
+zcat $f | paste - - | wc -l > $f.read_count
+done
 
 ./report.bash 
 ```
-
 
 
 
@@ -84,6 +82,12 @@ done ; done
 | STAR Aligned to Transcriptome % | 8.35 | 9.03 | .18 |
 | STAR Aligned to Genome | 112578 | 119483 | 1566 |
 | STAR Aligned to Genome % | 46.90 | 45.51 | 1.11 |
+| STAR Unaligned | 127429 | 143052 | 138259 |
+| STAR Unaligned % | 53.09 | 54.48 | 98.88 |
+| STAR Unmapped | 127429 | 143052 | 138259 |
+| STAR Unmapped % | 53.09 | 54.48 | 98.88 |
+| Bowtie Aligned to hg38 | 24195 | 16285 | 499 |
+| Bowtie Aligned to hg38 % | 10.08 | 6.20 | .35 |
 | Bowtie Aligned to phiX | 17384 | 18145 | 135927 |
 | Bowtie Aligned to phiX % | 7.24 | 6.91 | 97.21 |
 | MECP2 | 4720 | 8090 | 40 |
@@ -136,7 +140,6 @@ done ; done
 | S100A13 | 495 | 430 |  |
 | MINK1 | 412 | 495 |  |
 | RNA18SN4 | 445 | 442 | 9 |
-
 
 
 

@@ -79,6 +79,64 @@ echo -n " ${c} |"
 done
 echo
 
+
+echo -n "| STAR Unaligned |"
+for f in output/*_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam.unaligned_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| STAR Unaligned % |"
+for f in output/*_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam.unaligned_count ; do
+a=$(cat $f)
+f=${f%.STAR.Aligned.sortedByCoord.out.bam.unaligned_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+
+echo -n "| STAR Unmapped |"
+for f in output/*_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| STAR Unmapped % |"
+for f in output/*_001_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count ; do
+a=$(cat $f)
+f=${f%.STAR.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+echo -n "| Bowtie Aligned to hg38 |"
+for f in output/*_001_w_umi.trimmed.bowtie2.hg38.bam.aligned_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| Bowtie Aligned to hg38 % |"
+for f in output/*_001_w_umi.trimmed.bowtie2.hg38.bam.aligned_count ; do
+a=$(cat $f)
+f=${f%.bowtie2.hg38.bam.aligned_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+
+
 echo -n "| Bowtie Aligned to phiX |"
 for f in output/*_001_w_umi.trimmed.bowtie2phiX.bam.aligned_count ; do
 c=$(cat $f)
