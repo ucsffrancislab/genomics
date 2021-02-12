@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE		# required when using 'module'
 
 hostname
 
