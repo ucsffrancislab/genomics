@@ -5,8 +5,7 @@ hostname
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
-
-set -x
+set -x	#	print expanded command before executing it
 
 #threads=""
 SELECT_ARGS=""
