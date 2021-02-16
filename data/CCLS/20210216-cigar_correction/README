@@ -1,0 +1,17 @@
+
+
+It seems that the sentieon data contains cigar strings that anger bcftools.
+
+Some are 97I37S, 73I75S, 71I79S, 69I81S, 68I82S and 150I
+
+https://github.com/samtools/bcftools/issues/1416'
+
+I am simply going to replace the CIGAR strings with * and hope that this works.
+
+
+
+./submit.bash
+
+
+
+
