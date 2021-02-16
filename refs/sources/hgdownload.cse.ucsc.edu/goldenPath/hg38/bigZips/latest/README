@@ -1,17 +1,56 @@
 
 
 faSplit byname hg38.fa chromosomes/ 
+
+sed 's/^>chr/>/' chromosomes/chr[1-9].fa chromosomes/chr[12][0-9].fa chromosomes/chr[XY].fa > hg38.numericXY_no_alts.fa
+samtools faidx hg38.numericXY_no_alts.fa
+chmod -w hg38.numericXY_no_alts.fa hg38.numericXY_no_alts.fa.fai
+
+sed 's/^>chr/>/' chromosomes/chr[1-9].fa chromosomes/chr[12][0-9].fa chromosomes/chr[XYM].fa > hg38.numericXYM_no_alts.fa
+samtools faidx hg38.numericXYM_no_alts.fa
+chmod -w hg38.numericXYM_no_alts.fa hg38.numericXYM_no_alts.fa.fai
+
+sed 's/^>chr/>/' chromosomes/chr[1-9].fa chromosomes/chr[12][0-9].fa chromosomes/chr[XY].fa > hg38.numericXYMT_no_alts.fa
+sed '1s/^>chrM/>MT/' chromosomes/chrM.fa >> hg38.numericXYMT_no_alts.fa
+samtools faidx hg38.numericXYMT_no_alts.fa
+chmod -w hg38.numericXYMT_no_alts.fa hg38.numericXYMT_no_alts.fa.fai
+
+
+
+old way ...
+
 mkdir chromosomes_numeric_no_alts
 cp chromosomes/chr?.fa chromosomes_numeric_no_alts/
 cp chromosomes/chr??.fa chromosomes_numeric_no_alts/
 rename chr "" chromosomes_numeric_no_alts/*fa
 sed -i -e '1s/chr//' chromosomes_numeric_no_alts/*
 
-cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numeric_no_alts.fa
-cat chromosomes_numeric_no_alts/??.fa >> hg38.numeric_no_alts.fa
-cat chromosomes_numeric_no_alts/[XY].fa >> hg38.numeric_no_alts.fa
+cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numericXY_no_alts.fa
+cat chromosomes_numeric_no_alts/??.fa >> hg38.numericXY_no_alts.fa
+cat chromosomes_numeric_no_alts/[XY].fa >> hg38.numericXY_no_alts.fa
 
-samtools faidx hg38.numeric_no_alts.fa
-chmod -w hg38.numeric_no_alts.fa hg38.numeric_no_alts.fa.fai
+samtools faidx hg38.numericXY_no_alts.fa
+chmod -w hg38.numericXY_no_alts.fa hg38.numericXY_no_alts.fa.fai
+
+
+
+cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numericXYM_no_alts.fa
+cat chromosomes_numeric_no_alts/??.fa >> hg38.numericXYM_no_alts.fa
+cat chromosomes_numeric_no_alts/[XYM].fa >> hg38.numericXYM_no_alts.fa
+
+samtools faidx hg38.numericXYM_no_alts.fa
+chmod -w hg38.numericXYM_no_alts.fa hg38.numericXYM_no_alts.fa.fai
+
+
+cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numericXYMT_no_alts.fa
+cat chromosomes_numeric_no_alts/??.fa >> hg38.numericXYMT_no_alts.fa
+cat chromosomes_numeric_no_alts/[XY].fa >> hg38.numericXYMT_no_alts.fa
+cat chromosomes_numeric_no_alts/M.fa | sed '1s/M/MT/' >> hg38.numericXYMT_no_alts.fa
+
+
+samtools faidx hg38.numericXYMT_no_alts.fa
+chmod -w hg38.numericXYMT_no_alts.fa hg38.numericXYMT_no_alts.fa.fai
+
+
 
 
