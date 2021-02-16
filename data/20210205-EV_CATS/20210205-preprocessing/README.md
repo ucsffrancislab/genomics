@@ -20,13 +20,6 @@ zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f
 done
 
 
-for f in output/*.bam ; do
-samtools view -c -F 3844 $f > $f.aligned_count
-samtools view -c -f 4    $f > $f.unaligned_count
-done
-
-
-
 
 for f in output/*.toTranscriptome.out.bam ; do
 samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.transcript_count
@@ -58,6 +51,10 @@ done ; done
 
 ~/.local/bin/featureCounts.bash -t miRNA -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o STAR_mirna_miRNA.tsv output/*_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam
 
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o bowtie2_mirna_miRNA_primary_transcript.tsv output/*_w_umi.trimmed.bowtie2.hg38.all.bam
+
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o bowtie2_mirna_miRNA.tsv output/*_w_umi.trimmed.bowtie2.hg38.all.bam
+
 
 for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie2.mirna.bam output/*.bowtie2.mirna.all.bam ; do
 samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
@@ -65,6 +62,11 @@ done
 
 for f in output/*fasta.gz ; do
 zcat $f | paste - - | wc -l > $f.read_count
+done
+
+for f in output/*.bam ; do
+samtools view -c -F 3844 $f > $f.aligned_count
+samtools view -c -f 4    $f > $f.unaligned_count
 done
 
 ./report.bash 
