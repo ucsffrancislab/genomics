@@ -13,7 +13,7 @@ for bam in /francislab/data1/raw/CCLS/bam/{GM_,}{268325,439338,63185,634370,9838
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		threads=4
+		threads=2
 		bam_size=$( stat --dereference --format %s ${bam} )
 		#r2_size=$( stat --dereference --format %s ${r2} )
 		#index_size=$( du -sb ${index} | awk '{print $1}' )
@@ -25,7 +25,7 @@ for bam in /francislab/data1/raw/CCLS/bam/{GM_,}{268325,439338,63185,634370,9838
 
 		echo "Using scratch:${scratch}"
 
-		sbatch --time=3600 --parsable --ntasks=${threads} --mem=30G --job-name ${basename} \
+		sbatch --time=3600 --parsable --ntasks=${threads} --mem=15G --job-name=${basename} \
 			--gres=scratch:${scratch}G \
 			--output ${base}.correct.out.txt \
 			${PWD}/correct_scratch.bash ${bam} ${f}
