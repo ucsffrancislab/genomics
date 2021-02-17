@@ -9,6 +9,6 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-python3 bin/fumi_tools copy_umi $*
+python3 ${PWD}/bin/fumi_tools copy_umi $*
 chmod -w ${output}
 
