@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 #SBATCH --export=NONE		#	required when using 'module'
 
-module load CBI samtools
+hostname
 
+set -e	#	exit if any command fails
+set -u	#	Error on usage of unset variables
+set -o pipefail
+if [ -n "$( declare -F module )" ] ; then
+	echo "Loading required modules"
+	module load CBI samtools
+fi
+set -x	#	print expanded command before executing it
 
 echo "Correct $1 to $2"
 echo $TMPDIR
@@ -17,6 +25,7 @@ samtools view -h ${TMPDIR}/$( basename $1 ) | awk 'BEGIN{FS=OFS="\t"}(/^@/){prin
 
 mv $log $( dirname $2 )/
 chmod -w $( dirname $2 )/$( basename $log )
+
 mv $TMPDIR/out.bam $2
 chmod -w $2
 
