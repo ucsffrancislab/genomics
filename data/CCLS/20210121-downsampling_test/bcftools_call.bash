@@ -2,6 +2,9 @@
 #SBATCH --export=NONE      # required when using 'module'
 
 module load CBI bcftools/1.11
+#	Can fail on weird CIGAR strings.
+#	bcftools: sam.c:3948: resolve_cigar2: Assertion `k < c->n_cigar' failed.
+#	use module load bcftools/1.10.2 until 1.12 is released
 
 dirname=$( dirname $1 )
 pdirname=$( dirname $dirname )

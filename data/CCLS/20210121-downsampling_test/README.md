@@ -181,3 +181,16 @@ E00368R:278:HJ2L7CCXY:6:1110:10551:12842	163	18	77082768	55	97I53S	=	77082774	15
 
 
 
+module load bcftools/1.11
+bcftools mpileup -Ou -f /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.numericXYMT_no_alts.fa 120207.50a.18.77082760-77082780.bam -o /dev/null
+[mpileup] 1 samples in 1 input files
+[mpileup] maximum number of reads per input file set to -d 250
+bcftools: sam.c:3948: resolve_cigar2: Assertion `k < c->n_cigar' failed.
+Aborted
+
+module load bcftools/1.10.2
+bcftools mpileup -Ou -f /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.numericXYMT_no_alts.fa 120207.50a.18.77082760-77082780.bam -o /dev/null
+[mpileup] 1 samples in 1 input files
+[mpileup] maximum number of reads per input file set to -d 250
+
+
