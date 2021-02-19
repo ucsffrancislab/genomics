@@ -159,3 +159,32 @@ curl -netrc -T ${f} "${BOX}/"
 done
 
 
+
+
+
+
+
+
+
+--------------------------------------------------
+20210218
+
+
+while read filename ; do
+echo $filename
+cat ${filename} | paste - - | wc -l > ${filename}.read_count
+done < <( find out -name \*fasta )
+
+while read filename ; do
+echo $filename
+cat ${filename} | wc -l > ${filename}.count
+done < <( find out -name \*points )
+
+
+
+
+
+
+
+
+
