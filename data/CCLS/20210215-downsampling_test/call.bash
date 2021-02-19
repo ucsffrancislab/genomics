@@ -2,7 +2,7 @@
 
 mkdir -p vcf
 
-for bam in ${PWD}/bam/*bam ; do
+for bam in ${PWD}/bam/[G9]*bam ; do
 
 	echo $bam
 	basename=${bam%.bam}

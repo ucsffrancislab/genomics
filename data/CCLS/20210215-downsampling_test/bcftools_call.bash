@@ -28,7 +28,7 @@ else
 	ref=${TMPDIR}/hg38.numericXYMT_no_alts.fa
 	vcf=${TMPDIR}/${basename}.vcf.gz
 
-	bcftools mpileup -Ou -f ${ref} ${bam} | bcftools call -mv -Oz -o ${vcf}
+	bcftools mpileup --threads 2 -Ou -f ${ref} ${bam} | bcftools call --threads 2 -mv -Oz -o ${vcf}
 	bcftools index ${vcf}
 	mv ${vcf} ${dirname}/
 	mv ${vcf}.csi ${dirname}/
