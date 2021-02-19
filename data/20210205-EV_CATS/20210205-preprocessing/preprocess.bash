@@ -192,7 +192,8 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 
 		echo "Using scratch:${scratch}"
 
-		sbatch ${depend} --job-name=${basename} --time=1920 --ntasks=${threads} --mem=250G \
+		#still failed due to time at 1920 minutes (32 hours)
+		sbatch ${depend} --job-name=${basename} --time=10000 --ntasks=${threads} --mem=250G \
 			--gres=scratch:${scratch}G --output=${base}.output.txt \
 			~/.local/bin/bowtie2_scratch.bash --all --threads ${threads} -x /francislab/data1/refs/bowtie2/hg38 \
 			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
