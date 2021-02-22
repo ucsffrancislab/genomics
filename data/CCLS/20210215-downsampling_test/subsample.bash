@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+set -e	#	exit if any command fails
+set -u	#	Error on usage of unset variables
+set -o pipefail
+
+date=$( date "+%Y%m%d%H%M%S" )
 
 for bam in bam/[^GM]*100.bam ; do
 	echo $bam
@@ -17,7 +22,7 @@ for bam in bam/[^GM]*100.bam ; do
 			echo "Write-protected $f exists. Skipping."
 		else
 			sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}.${p}a \
-				--output ${PWD}/bam/${basename}.${p}a.sambamba.out.txt \
+				--output ${PWD}/bam/${basename}.${p}a.sambamba.out.${date}.txt \
 				~/.local/bin/sambamba.bash view -f bam -t 8 --subsampling-seed=17 -s 0.${p} $bam -o ${f} #${base}.${p}a.bam
 				#${PWD}/sambamba.bash view -f bam -t 8 --subsampling-seed=13 -s 0.${p} $bam -o ${base}.${p}a.bam
 			#	for some reason 13 creates a problematic bam file that fails when calling for vcf
@@ -29,7 +34,7 @@ for bam in bam/[^GM]*100.bam ; do
 			echo "Write-protected $f exists. Skipping."
 		else
 			sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}.${p}b \
-				--output ${PWD}/bam/${basename}.${p}b.sambamba.out.txt \
+				--output ${PWD}/bam/${basename}.${p}b.sambamba.out.${date}.txt \
 				~/.local/bin/sambamba.bash view -f bam -t 8 --subsampling-seed=37 -s 0.${p} $bam -o ${f}	#	${base}.${p}b.bam
 		fi
 		
@@ -38,7 +43,7 @@ for bam in bam/[^GM]*100.bam ; do
 			echo "Write-protected $f exists. Skipping."
 		else
 			sbatch --time=3600 --parsable --ntasks=8 --mem=60G --job-name ${basename}.${p}c \
-				--output ${PWD}/bam/${basename}.${p}c.sambamba.out.txt \
+				--output ${PWD}/bam/${basename}.${p}c.sambamba.out.${date}.txt \
 				~/.local/bin/sambamba.bash view -f bam -t 8 --subsampling-seed=91 -s 0.${p} $bam -o ${f}	#	${base}.${p}c.bam
 		fi
 

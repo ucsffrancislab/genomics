@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
+set -e	#	exit if any command fails
+set -u	#	Error on usage of unset variables
+set -o pipefail
+
+date=$( date "+%Y%m%d%H%M%S" )
+
 mkdir -p vcf
 
-for bam in ${PWD}/bam/[G9]*bam ; do
+for bam in ${PWD}/bam/*bam ; do
 
 	echo $bam
 	basename=${bam%.bam}
@@ -24,7 +30,7 @@ for bam in ${PWD}/bam/[G9]*bam ; do
 		echo "Using scratch:${scratch}"
 
 		sbatch --time=3600 --parsable --ntasks=${threads} --mem=30G --job-name $( basename ${basename} ) \
-			--gres=scratch:${scratch}G --output ${basename}.vcf.out.txt \
+			--gres=scratch:${scratch}G --output ${basename}.vcf.out.${date}.txt \
 			${PWD}/bcftools_call.bash ${bam}
 	fi
 
