@@ -1,14 +1,16 @@
 
 ```BASH
 dir=/francislab/data1/working/CCLS/20210216-cigar_correction/bam
+dir=/francislab/data1/raw/CCLS/bam
 for f in ${dir}/GM_*bam ; do
 b=${f#${dir}/GM_}
 b=${b%.recaled.bam}
 echo $b
+ln -s ${dir}/GM_${b}.recaled.bam.bai bam/GM_${b}.100.bam.bai
+ln -s ${dir}/${b}.recaled.bam.bai bam/${b}.100.bam.bai
 ln -s ${dir}/GM_${b}.bam bam/GM_${b}.100.bam
 ln -s ${dir}/${b}.bam bam/${b}.100.bam
 done
-
 
 ./subsample.bash
 
