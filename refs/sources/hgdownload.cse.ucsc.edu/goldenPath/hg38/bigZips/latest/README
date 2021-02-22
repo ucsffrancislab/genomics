@@ -1,4 +1,11 @@
 
+Only the raw hg38.fa.gz from 2018-08-10 from site.
+
+
+
+ln -s hg38.fa hg38.chrXYM_alts.fa
+samtools faidx hg38.chrXYM_alts.fa
+chmod -w hg38.chrXYM_alts.fa hg38.chrXYM_alts.fa.fai
 
 faSplit byname hg38.fa chromosomes/ 
 
@@ -17,40 +24,14 @@ chmod -w hg38.numericXYMT_no_alts.fa hg38.numericXYMT_no_alts.fa.fai
 
 
 
-old way ...
-
-mkdir chromosomes_numeric_no_alts
-cp chromosomes/chr?.fa chromosomes_numeric_no_alts/
-cp chromosomes/chr??.fa chromosomes_numeric_no_alts/
-rename chr "" chromosomes_numeric_no_alts/*fa
-sed -i -e '1s/chr//' chromosomes_numeric_no_alts/*
-
-cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numericXY_no_alts.fa
-cat chromosomes_numeric_no_alts/??.fa >> hg38.numericXY_no_alts.fa
-cat chromosomes_numeric_no_alts/[XY].fa >> hg38.numericXY_no_alts.fa
-
-samtools faidx hg38.numericXY_no_alts.fa
-chmod -w hg38.numericXY_no_alts.fa hg38.numericXY_no_alts.fa.fai
+cat chromosomes/chr[1-9].fa chromosomes/chr[12][0-9].fa chromosomes/chr[XYM].fa > hg38.chrXYM_no_alts.fa
+samtools faidx hg38.chrXYM_no_alts.fa
+chmod -w hg38.chrXYM_no_alts.fa hg38.chrXYM_no_alts.fa.fai
 
 
 
-cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numericXYM_no_alts.fa
-cat chromosomes_numeric_no_alts/??.fa >> hg38.numericXYM_no_alts.fa
-cat chromosomes_numeric_no_alts/[XYM].fa >> hg38.numericXYM_no_alts.fa
-
-samtools faidx hg38.numericXYM_no_alts.fa
-chmod -w hg38.numericXYM_no_alts.fa hg38.numericXYM_no_alts.fa.fai
-
-
-cat chromosomes_numeric_no_alts/[1-9].fa > hg38.numericXYMT_no_alts.fa
-cat chromosomes_numeric_no_alts/??.fa >> hg38.numericXYMT_no_alts.fa
-cat chromosomes_numeric_no_alts/[XY].fa >> hg38.numericXYMT_no_alts.fa
-cat chromosomes_numeric_no_alts/M.fa | sed '1s/M/MT/' >> hg38.numericXYMT_no_alts.fa
-
-
-samtools faidx hg38.numericXYMT_no_alts.fa
-chmod -w hg38.numericXYMT_no_alts.fa hg38.numericXYMT_no_alts.fa.fai
-
+sbatch --time=3600 --ntasks=16 --mem=120G --job-name no_alts --output ${PWD}/no_alts.out.txt ${PWD}/bowtie2-build.bash --threads 16 ${PWD}/hg38.chrXYM_no_alts.fa ${PWD}/hg38.chrXYM_no_alts
+sbatch --time=3600 --ntasks=16 --mem=120G --job-name alts --output ${PWD}/alts.out.txt ${PWD}/bowtie2-build.bash --threads 16 ${PWD}/hg38.chrXYM_alts.fa ${PWD}/hg38.chrXYM_alts
 
 
 
