@@ -199,3 +199,15 @@ cat bam/02-2483-01A-01D-1494.bam.bai | bamReadDepther | grep "^[#*]" | awk -F"\t
 92109919
 
 
+
+
+
+cat metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.json | jq -r '[.[] | {center_name: .center.name, submitter: .cases[].submitter_id, days_to_death: .cases[].diagnoses[].days_to_death, gender: .cases[].demographic.gender, disease_type: .cases[].disease_type, race: .cases[].demographic.race }] | map(.submitter),map(.days_to_death),map(.gender),map(.disease_type),map(.center_name) | @csv' | datamash transpose -t, | sort | uniq | tr -d \" | sed 's/^TCGA-//' > metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv
+
+
+cat metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.json | jq -r '[.[] | {center_name: .center.name, submitter: .cases[].submitter_id, entity_submitter: .associated_entities[].entity_submitter_id, days_to_death: .cases[].diagnoses[].days_to_death, gender: .cases[].demographic.gender, disease_type: .cases[].disease_type, race: .cases[].demographic.race }] | map(.submitter),map(.entity_submitter),map(.days_to_death),map(.gender),map(.disease_type),map(.center_name) | @csv' | datamash transpose -t, | sort | uniq | tr -d \" | sed 's/TCGA-//g' > metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv
+
+Note that samples from the Harvard Medical School are substantially smaller.
+
+
+
