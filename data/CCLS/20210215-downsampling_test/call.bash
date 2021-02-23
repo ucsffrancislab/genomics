@@ -25,7 +25,7 @@ for bam in ${PWD}/bam/*bam ; do
 		# Add 1 in case files are small so scratch will be 1 instead of 0.
 		# 11/10 adds 10% to account for the output
 
-		scratch=$( echo $(( (${bam_size}/${threads}/1000000000*13/10)+1 )) )
+		scratch=$( echo $(( (${bam_size}/${threads}/1000000000*15/10)+1 )) )
 
 		echo "Using scratch:${scratch}"
 
