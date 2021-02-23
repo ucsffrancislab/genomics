@@ -10,6 +10,8 @@ set -o pipefail
 
 set -x
 
+threads=1
+
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE
@@ -24,6 +26,8 @@ while [ $# -gt 0 ] ; do
 			shift; dir=$1; shift;;
 		--memGb)
 			shift; memGb=$1; shift;;
+		--threads)
+			shift; threads=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -60,7 +64,8 @@ else
 		--runDir ${TMPDIR}/runDir/manta \
 		${SELECT_ARGS}
 
-	${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	#${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${threads} --memGb=${memGb} --mode=local
 
 	scratch_indels=${TMPDIR}/runDir/manta/results/variants/candidateSmallIndels.vcf.gz
 
@@ -72,7 +77,8 @@ else
 		--runDir ${TMPDIR}/runDir/strelka \
 		${SELECT_ARGS}
 
-	${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	#${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${threads} --memGb=${memGb} --mode=local
 
 	mkdir -p ${dir}
 	mv --update ${TMPDIR}/runDir/* ${dir}/
