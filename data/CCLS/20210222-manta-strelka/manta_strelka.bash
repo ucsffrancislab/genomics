@@ -36,8 +36,7 @@ mkdir -p ${OUTDIR}
 #	New way
 #while IFS=, read -r tumor normal ; do
 
-#for tumor in ${INDIR}/[^G]*.bam ; do
-for tumor in ${INDIR}/983899.50a*.bam ; do
+for tumor in ${INDIR}/[^G]*.bam ; do
 
 	echo ${tumor}
 	base=$( basename ${tumor} .bam )
@@ -65,13 +64,16 @@ for tumor in ${INDIR}/983899.50a*.bam ; do
 		# Add 1 in case files are small so scratch will be 1 instead of 0.
 		# 11/10 adds 10% to account for the output
 
-		scratch=$( echo $(( ((${tumor_size}+${normal_size}+${index_size})/${threads}/1000000000*15/10)+1 )) )
+		#	Manta and scratch seems to produce a lot of intermediate files
+
+		scratch=$( echo $(( ((${tumor_size}+${normal_size}+${index_size})/${threads}/1000000000*30/10)+1 )) )
 
 		echo "Using scratch:${scratch}"
 
 		sbatch --time=7200 --parsable --ntasks=${threads} --mem=${vmem}G --job-name ${base} \
-			--gres=scratch:${scratch}G --output ${outbase}.manta_strelka.${date}.txt \
+			--gres=scratch:${scratch}G --output ${outbase}.${date}.txt \
 			~/.local/bin/manta_strelka_scratch.bash \
+				--threads ${threads} \
 				--normalBam ${normal} \
 				--tumorBam ${tumor} \
 				--referenceFasta ${index} \

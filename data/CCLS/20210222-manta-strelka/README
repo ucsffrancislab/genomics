@@ -1,4 +1,24 @@
 
+
+Be sure to have installed manta and strelka in separate directories.
+They contain some files of the same name that are not the same!
+( ~/.local/manta and ~/.local/strelka )
+
+cd ~/github/illumina/manta
+mkdir build
+cd build
+../configure --prefix=$HOME/.local/manta
+make
+make install
+
+cd ~/github/illumina/strelka
+mkdir build
+cd build
+../configure --prefix=$HOME/.local/strelka
+make
+make install
+
+
 ./manta_strelka.bash
 
 
