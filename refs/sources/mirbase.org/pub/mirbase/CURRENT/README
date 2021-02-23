@@ -11,3 +11,10 @@ Last hg19
 ftp://mirbase.org/pub/mirbase/20/genomes/hsa.gff3
 
 
+
+
+
+
+
+bowtie-build human_mirna.ACTG.fa human_mirna
+
