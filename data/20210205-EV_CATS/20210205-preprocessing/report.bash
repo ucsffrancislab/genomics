@@ -117,32 +117,32 @@ done
 echo
 
 
-echo -n "| Bowtie Aligned to hg38 --all |"
-for f in output/*_001_w_umi.trimmed.bowtie2.hg38.all.bam.aligned_count ; do
-c=$(cat $f)
-echo -n " ${c} |"
-done
-echo
+#	echo -n "| Bowtie2 Aligned to hg38 --all |"
+#	for f in output/*_001_w_umi.trimmed.bowtie2.hg38.all.bam.aligned_count ; do
+#	c=$(cat $f)
+#	echo -n " ${c} |"
+#	done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to hg38 --all % |"
+#	for f in output/*_001_w_umi.trimmed.bowtie2.hg38.all.bam.aligned_count ; do
+#	a=$(cat $f)
+#	f=${f%.bowtie2.hg38.all.bam.aligned_count}
+#	b=$(cat ${f}.fastq.gz.read_count )
+#	c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+#	echo -n " ${c} |"
+#	done
+#	echo
 
-echo -n "| Bowtie Aligned to hg38 --all % |"
-for f in output/*_001_w_umi.trimmed.bowtie2.hg38.all.bam.aligned_count ; do
-a=$(cat $f)
-f=${f%.bowtie2.hg38.all.bam.aligned_count}
-b=$(cat ${f}.fastq.gz.read_count )
-c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
-echo -n " ${c} |"
-done
-echo
 
-
-echo -n "| Bowtie Aligned to hg38 (1) |"
+echo -n "| Bowtie2 Aligned to hg38 (1) |"
 for f in output/*_001_w_umi.trimmed.bowtie2.hg38.bam.aligned_count ; do
 c=$(cat $f)
 echo -n " ${c} |"
 done
 echo
 
-echo -n "| Bowtie Aligned to hg38 (1) % |"
+echo -n "| Bowtie2 Aligned to hg38 (1) % |"
 for f in output/*_001_w_umi.trimmed.bowtie2.hg38.bam.aligned_count ; do
 a=$(cat $f)
 f=${f%.bowtie2.hg38.bam.aligned_count}
@@ -170,6 +170,26 @@ echo -n " ${c} |"
 done
 echo
 
+echo -n "| Bowtie Aligned to mirna |"
+for f in output/*_001_w_umi.trimmed.bowtie.mirna.bam.aligned_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| Bowtie Aligned to mirna % |"
+for f in output/*_001_w_umi.trimmed.bowtie.mirna.bam.aligned_count ; do
+a=$(cat $f)
+f=${f%.bowtie.mirna.bam.aligned_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+
+
 echo -n "| Bowtie2 Aligned to mirna |"
 for f in output/*_001_w_umi.trimmed.bowtie2.mirna.bam.aligned_count ; do
 c=$(cat $f)
@@ -194,14 +214,14 @@ echo
 
 
 
-echo -n "| Bowtie Aligned to phiX |"
+echo -n "| Bowtie2 Aligned to phiX |"
 for f in output/*_001_w_umi.trimmed.bowtie2phiX.bam.aligned_count ; do
 c=$(cat $f)
 echo -n " ${c} |"
 done
 echo
 
-echo -n "| Bowtie Aligned to phiX % |"
+echo -n "| Bowtie2 Aligned to phiX % |"
 for f in output/*_001_w_umi.trimmed.bowtie2phiX.bam.aligned_count ; do
 a=$(cat $f)
 f=${f%.bowtie2phiX.bam.aligned_count}

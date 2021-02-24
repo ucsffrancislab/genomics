@@ -62,7 +62,7 @@ done ; done
 
 
 
-for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie2.mirna.bam output/*.bowtie2.mirna.all.bam ; do
+for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
 samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
 done
 
@@ -94,10 +94,16 @@ done
 | STAR Unaligned % | 53.09 | 54.48 | 98.88 |
 | STAR Unmapped | 127429 | 143052 | 138259 |
 | STAR Unmapped % | 53.09 | 54.48 | 98.88 |
-| Bowtie Aligned to hg38 | 24195 | 16285 | 499 |
-| Bowtie Aligned to hg38 % | 10.08 | 6.20 | .35 |
-| Bowtie Aligned to phiX | 17384 | 18145 | 135927 |
-| Bowtie Aligned to phiX % | 7.24 | 6.91 | 97.21 |
+| Bowtie2 Aligned to hg38 (1) | 24195 | 16285 | 499 |
+| Bowtie2 Aligned to hg38 (1) % | 10.08 | 6.20 | .35 |
+| STAR Aligned to mirna | 24085 | 26132 | 373 |
+| STAR Aligned to mirna % | 10.03 | 9.95 | .26 |
+| Bowtie Aligned to mirna | 6313 | 6410 | 97 |
+| Bowtie Aligned to mirna % | 2.63 | 2.44 | .06 |
+| Bowtie2 Aligned to mirna | 209 | 122 | 4 |
+| Bowtie2 Aligned to mirna % | .08 | .04 | 0 |
+| Bowtie2 Aligned to phiX | 17384 | 18145 | 135927 |
+| Bowtie2 Aligned to phiX % | 7.24 | 6.91 | 97.21 |
 | MECP2 | 4720 | 8090 | 40 |
 | P2RX6 | 4557 | 4116 | 63 |
 | NAALADL2 | 4300 | 3380 |  |
@@ -148,7 +154,6 @@ done
 | S100A13 | 495 | 430 |  |
 | MINK1 | 412 | 495 |  |
 | RNA18SN4 | 445 | 442 | 9 |
-
 
 
 
