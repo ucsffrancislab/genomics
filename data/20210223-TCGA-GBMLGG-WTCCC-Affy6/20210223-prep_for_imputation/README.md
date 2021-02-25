@@ -1,10 +1,9 @@
 
-#	TopMed Imputation Prep
+#	TopMed Imputation
 
 https://imputation.biodatacatalyst.nhlbi.nih.gov/
 
 https://topmedimpute.readthedocs.io/en/latest/
-
 
 
 ##	Data preparation
@@ -29,11 +28,6 @@ I have `bed` files so shouldn't need this.
 ```BASH
 plink --file <input-file> --make-bed --out <output-file>
 ```
-
-
-I have a single file and I think that I may have to split these
-
-
 
 ###	Create a frequency file
 
@@ -772,10 +766,7 @@ Options in effect:
 Error: All variants excluded.
 ```
 
-Ends with an Error? Hmm. I think that this doesn't include X and Y.
-
-
-
+Ends with an Error? Hmm. I think that this doesn't include X and Y, so I think we're good.
 
 
 ###	Create vcf using VcfCooker
@@ -784,11 +775,12 @@ Ends with an Error? Hmm. I think that this doesn't include X and Y.
 vcfCooker --in-bfile <bim file> --ref <reference.fasta>  --out <output-vcf> --write-vcf
 bgzip <output-vcf>
 ```
-
-
-
 Why vcfCooker? Why not plink? vcfCooker is part of a pain in a$$ gotcloud toolkit
 Does vcfCooker do something that plink won't?
+Pass.
+
+
+###	Create vcf files using plink
 
 ```BASH
 for bed in TCGA_WTCCC_for_QC-updated-chr*.bed ; do
@@ -1261,35 +1253,69 @@ Warning: Underscore(s) present in sample IDs.
 
 ```BASH
 module load htslib/1.10.2
-bgzip *vcf
+for vcf in *vcf; do
+echo $vcf
+bgzip $vcf
+done
 ```
 
+That should be good.
 
 
 
 
-##	Additional Tools
+##	Upload
 
-###	Convert ped/map files to VCF files
-
-Several tools are available: plink2, BCFtools or VcfCooker.
-
+Copy the files locally.
 ```
-plink --ped study_chr1.ped --map study_chr1.map --recode vcf --out study_chr1
+scp c4:/francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210223-prep_for_imputation/*vcf.gz ./
 ```
 
-###	Create a sorted vcf.gz file using BCFtools:
+Then upload to the web app.
 
-```
-bcftools sort study_chr1.vcf -Oz -o study_chr1.vcf.gz
-```
 
-###	CheckVCF
-Use checkVCF to ensure that the VCF files are valid. checkVCF proposes "Action Items" (e.g. upload to sftp server), which can be ignored. Only the validity should be checked with this command.
 
-```
-checkVCF.py -r human_g1k_v37.fasta -o out mystudy_chr1.vcf.gz
-```
+
+https://imputation.biodatacatalyst.nhlbi.nih.gov/
+
+Login
+
+Run > Genotype Imputation (Minimac4) 1.5.7
+
+
+Name : 20210225
+
+Reference Panel : 
+* **TOPMed r2** (only option)
+
+Input Files : File Upload (selected my local copies for upload)
+
+Array build : 
+* **GRCh37/hg19**
+* GRCh38/hg38
+
+rsq Filter : 
+* off
+* 0.001
+* **0.1**
+* 0.2
+* 0.3
+
+Phasing : 
+* **Eagle v2.4 (unphased input)**
+* No phasing (phased input)
+
+QC Frequency Check : 
+* **vs TOPMed Panel**
+* Skip
+
+Mode : 
+* **Quality Control and Imputation**
+* Quality Control and Phasing Only
+* Quality Control Only
+
+
+**Submit Job**
 
 
 
