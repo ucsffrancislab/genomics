@@ -105,6 +105,10 @@ checkVCF.py -r human_g1k_v37.fasta -o out mystudy_chr1.vcf.gz
 
 Imputation prep with docker and AWS
 
+
+What! No documentation on exactly what I did on AWS? Shame.
+
+
 aws s3 sync s3://herv-unr/20200520_Adult_Glioma_Study_GWAS_OUTPUT_20200523/ /francislab/data1/working/20200520_Adult_Glioma_Study_GWAS/20200520_prep_for_imputation/20200520_Adult_Glioma_Study_GWAS_OUTPUT_20200523/
 
 
