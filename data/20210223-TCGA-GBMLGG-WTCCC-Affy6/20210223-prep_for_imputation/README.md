@@ -775,7 +775,7 @@ Ends with an Error? Hmm. I think that this doesn't include X and Y, so I think w
 vcfCooker --in-bfile <bim file> --ref <reference.fasta>  --out <output-vcf> --write-vcf
 bgzip <output-vcf>
 ```
-Why vcfCooker? Why not plink? vcfCooker is part of a pain in a$$ gotcloud toolkit
+Why vcfCooker? Why not plink? vcfCooker is part of a pain in a$$ gotcloud toolkit.
 Does vcfCooker do something that plink won't?
 Pass.
 
@@ -1316,6 +1316,77 @@ Mode :
 
 
 **Submit Job**
+
+
+Wait for files to upload.  This took me about 30-45 minutes.
+
+
+```
+Input Validation
+22 valid VCF file(s) found.
+
+Samples: 6716
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9
+SNPs: 653048
+Chunks: 291
+Datatype: unphased
+Build: hg19
+Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Population: all
+Phasing: eagle
+Mode: imputation
+Rsq filter: 0.1
+```
+
+```
+Quality Control
+Uploaded data is hg19 and reference is hg38.
+
+Lift Over
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 0
+Reference Overlap: 99.70 %
+Match: 473,576
+Allele switch: 165,654
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 11,389
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 176
+SNPs call rate < 90%: 85,606
+
+Excluded sites in total: 85,782
+Remaining sites in total: 565,013
+See snps-excluded.txt for details
+Typed only sites: 1,940
+See typed-only.txt for details
+
+Warning: 1 Chunk(s) excluded: < 3 SNPs (see chunks-excluded.txt for details).
+Warning: 6 Chunk(s) excluded: at least one sample has a call rate < 50.0% (see chunks-excluded.txt for details).
+Warning: 1 Chunk(s) excluded: reference overlap < 20.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 285
+```
+
+```
+Quality Control (Report)
+Execution successful.
+```
+
+Then wait for the process. Started 20210225 @ 8:45AM MST
+
+
+
+
+
 
 
 
