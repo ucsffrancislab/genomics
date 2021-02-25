@@ -184,6 +184,8 @@ for f in output/*{bam,bam.bai} ;do echo $f; curl -netrc -T $f "${BOX}/" ; done
 curl -netrc -T /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna.ACTG.fa "${BOX}/"
 ```
 
+python3 ./merge_uniq-c.py --int --output mirna_counts.csv output/*mirna_counts
+
 
 Should perhaps sort fasta reference for easier viewing in IGV.
 miRNA analysis. Compute median depth of coverage???
