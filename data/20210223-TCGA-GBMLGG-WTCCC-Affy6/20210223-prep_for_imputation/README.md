@@ -1382,7 +1382,32 @@ Execution successful.
 ```
 
 Then wait for the process. Started 20210225 @ 8:45AM MST
+18.5 hours
 
+
+I was emailed a password which I put in a file called `password`
+
+```BASH
+mkdir imputation
+cd imputation
+
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250674/eb93bf38d87e7850c8039d866ff73b85d13f03d354fafd6d9c5c7d4a62f81a78
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250678/c6f1fa22fafc331230476c7c213a299e08be49cc316db9ba55e22c223cdfe6b4
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250680/0ceb77c74fa6964f3eccb4050e12ab3a5103570a4c4de408f894239ad6528929
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250681/596941d98889e37d8569b328a8194784e312ba935db441102efb69e74778a90c
+
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250674/eb93bf38d87e7850c8039d866ff73b85d13f03d354fafd6d9c5c7d4a62f81a78 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250678/c6f1fa22fafc331230476c7c213a299e08be49cc316db9ba55e22c223cdfe6b4 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250680/0ceb77c74fa6964f3eccb4050e12ab3a5103570a4c4de408f894239ad6528929 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/250681/596941d98889e37d8569b328a8194784e312ba935db441102efb69e74778a90c | bash
+
+chmod a-w *
+
+for zip in chr*zip ; do
+echo $zip
+unzip -P $( cat password ) $zip
+done
+```
 
 
 
