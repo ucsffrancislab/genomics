@@ -1567,19 +1567,67 @@ Mode :
 **Submit Job**
 
 
-Wait for files to upload.  This took me about 30-45 minutes.
+Wait for files to upload.  This took me about 15 minutes.
 
 
 ```
 Input Validation
+22 valid VCF file(s) found.
+
+Samples: 4365
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9
+SNPs: 403267
+Chunks: 292
+Datatype: unphased
+Build: hg19
+Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Population: all
+Phasing: eagle
+Mode: imputation
+Rsq filter: 0.1
 ```
 
 ```
 Quality Control
+
+Uploaded data is hg19 and reference is hg38.
+
+Lift Over
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 103,351
+Reference Overlap: 99.58 %
+Match: 400,162
+Allele switch: 999
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 51
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 157
+SNPs call rate < 90%: 2,529
+
+Excluded sites in total: 2,686
+Remaining sites in total: 398,683
+See snps-excluded.txt for details
+Typed only sites: 1,701
+See typed-only.txt for details
+
+Warning: 1 Chunk(s) excluded: reference overlap < 20.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 291
 ```
 
 ```
 Quality Control (Report)
+
+Execution successful.
 ```
 
 Then wait for the process. Started ...
@@ -1592,16 +1640,15 @@ I was emailed a password which I put in a file called `password`
 mkdir imputation
 cd imputation
 
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251472/10822e30e80495440c5d9fc95c823e373afec37eab915dd0c2e61487ddec662a
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251476/a1608ba2be8ee7d40a86a8ab7469a98e3ed970df67c07405e143265dcb4d4f6d
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251478/7a9cc073502c78d6638872941a01551c4e047ccdf02a20eae61ad59ea3465d5a
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251479/b56f485c0f106a064801e415ddad4e238312edf114ab506b57921e98654ad0ad
 
-
-
-
-
-
-
-
-
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251472/10822e30e80495440c5d9fc95c823e373afec37eab915dd0c2e61487ddec662a | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251476/a1608ba2be8ee7d40a86a8ab7469a98e3ed970df67c07405e143265dcb4d4f6d | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251478/7a9cc073502c78d6638872941a01551c4e047ccdf02a20eae61ad59ea3465d5a | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/251479/b56f485c0f106a064801e415ddad4e238312edf114ab506b57921e98654ad0ad | bash
 
 chmod a-w *
 
