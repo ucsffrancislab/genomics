@@ -1587,10 +1587,16 @@ mkdir imputation
 cd imputation
 
 
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252522/085409efc0892e98d3fcc413e994e7a07c2733c44cd78135338878b2c3c00ef8
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252526/1b9458a179ac90808e6f9c22ee92a7e3729cb841c7eabdd98cee4cac123468a9
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252528/3aaab82245adcdd73eb57f697ba6a5e8dded3c9885d6bcfec33960cccf67d392
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252529/f42ccda4a2eba4f60d3f1c102c63dbec4c28ab6415ba1a14c24e9ecf9581fea8
 
 
-
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252522/085409efc0892e98d3fcc413e994e7a07c2733c44cd78135338878b2c3c00ef8 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252526/1b9458a179ac90808e6f9c22ee92a7e3729cb841c7eabdd98cee4cac123468a9 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252528/3aaab82245adcdd73eb57f697ba6a5e8dded3c9885d6bcfec33960cccf67d392 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252529/f42ccda4a2eba4f60d3f1c102c63dbec4c28ab6415ba1a14c24e9ecf9581fea8 | bash
 
 chmod a-w *
 
