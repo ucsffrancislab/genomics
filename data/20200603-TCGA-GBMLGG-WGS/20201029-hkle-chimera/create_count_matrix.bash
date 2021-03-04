@@ -8,6 +8,12 @@ for hkle in HERVK113 SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F ; do
 		echo -n ",${hkle} ${pup} reads aligned"
 		for quality in Q00 Q10 Q20 ; do
 			echo -n ",${hkle} ${pup} human ${quality} aligned"
+			echo -n ",uniq ${hkle} ${pup} human ${quality} aligned"
+			echo -n ",r10 uniq ${hkle} ${pup} human ${quality} aligned"
+			echo -n ",r100 uniq ${hkle} ${pup} human ${quality} aligned"
+			echo -n ",r1000 uniq ${hkle} ${pup} human ${quality} aligned"
+			echo -n ",r10000 uniq ${hkle} ${pup} human ${quality} aligned"
+			echo -n ",r100000 uniq ${hkle} ${pup} human ${quality} aligned"
 		done
 	done
 done
@@ -28,6 +34,14 @@ for raw_subject in /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-b
 			for quality in Q00 Q10 Q20 ; do
 
 				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points.count 2> /dev/null | awk 'BEGIN{s=0}{s+=$1}END{print s}' )
+
+				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points 2> /dev/null | sort -u | wc -l )
+
+				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points 2> /dev/null | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10)*10}' | sort -u | wc -l )
+				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points 2> /dev/null | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/100)*100}' | sort -u | wc -l )
+				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points 2> /dev/null | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/1000)*1000}' | sort -u | wc -l )
+				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points 2> /dev/null | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10000)*10000}' | sort -u | wc -l )
+				echo -n ,$( cat out/${subject}.SVAs_and_HERVs_KWHE.hkle/${subject}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.*.${pup}.*.${quality}.*insertion_points 2> /dev/null | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10000)*10000}' | sort -u | wc -l )
 
 			done	#	quality
 		done	#	pup
