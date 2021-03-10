@@ -28,14 +28,23 @@ for f in output/*.toTranscriptome.out.bam ; do
 samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.transcript_count
 done
 
+
+transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv
+
 for f in output/*.toTranscriptome.out.bam ; do
 samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
-awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv ${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_count
+awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  ${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_count
 done
 
-awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv output/*.toTranscriptome.out.bam.transcript_ids | sort | uniq -c | sort -rn > gene_count
+awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  output/*.toTranscriptome.out.bam.transcript_ids \
+  | sort | uniq -c | sort -rn > gene_count
 
-awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv output/SFHH0*.toTranscriptome.out.bam.transcript_ids | sort | uniq -c | sort -rn > determined_gene_count.txt
+awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  output/SFHH0*.toTranscriptome.out.bam.transcript_ids \
+  | sort | uniq -c | sort -rn > determined_gene_count.txt
+
 
 for f in ${PWD}/output/*unmapped.fasta.gz ; do
   base=${f%.fasta.gz}
@@ -44,33 +53,39 @@ for f in ${PWD}/output/*unmapped.fasta.gz ; do
   for m in 0 1 ; do
 
     sbatch --job-name=d-${basename}  --time=480 --ntasks=8 --mem=32G \
-      --output=${base}.sbatch.diamond.nr.masking${m}.output.txt \
-      ~/.local/bin/diamond.bash blastx --query ${f} --threads 8 --db /francislab/data1/refs/diamond/nr \
+      --output=${base}.diamond.nr.masking${m}.output.txt \
+      ~/.local/bin/diamond.bash blastx --query ${f} --threads 8 \
+				--db /francislab/data1/refs/diamond/nr \
         --outfmt 100 --out ${base}.nr.masking${m}.daa --masking ${m}
 
 done ; done
 
 
+mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3
 
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
+  -o STAR_mirna_miRNA_primary_transcript.tsv \
+  output/*.trimmed.STAR.Aligned.sortedByCoord.out.bam > STAR_mirna_miRNA_primary_transcript.tsv.log 2>&1
 
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
+  -o STAR_mirna_miRNA.tsv \
+  output/*.trimmed.STAR.Aligned.sortedByCoord.out.bam > STAR_mirna_miRNA.tsv.log 2>&1
 
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
+  -o bowtie2_all_mirna_miRNA_primary_transcript.tsv \
+  output/*.trimmed.bowtie2.hg38.all.bam > bowtie2_all_mirna_miRNA_primary_transcript.tsv.log 2>&1
 
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
+  -o bowtie2_all_mirna_miRNA.tsv \
+  output/*.trimmed.bowtie2.hg38.all.bam > bowtie2_all_mirna_miRNA.tsv.log 2>&1
 
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
+  -o bowtie2_mirna_miRNA_primary_transcript.tsv \
+  output/*.trimmed.bowtie2.hg38.bam > bowtie2_mirna_miRNA_primary_transcript.tsv.log 2>&1
 
-
-~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o STAR_mirna_miRNA_primary_transcript.tsv output/*.trimmed.STAR.Aligned.sortedByCoord.out.bam > STAR_mirna_miRNA_primary_transcript.tsv.log 2>&1
-
-~/.local/bin/featureCounts.bash -t miRNA -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o STAR_mirna_miRNA.tsv output/*.trimmed.STAR.Aligned.sortedByCoord.out.bam > STAR_mirna_miRNA.tsv.log 2>&1
-
-~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o bowtie2_all_mirna_miRNA_primary_transcript.tsv output/*.trimmed.bowtie2.hg38.all.bam > bowtie2_all_mirna_miRNA_primary_transcript.tsv.log 2>&1
-
-~/.local/bin/featureCounts.bash -t miRNA -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o bowtie2_all_mirna_miRNA.tsv output/*.trimmed.bowtie2.hg38.all.bam > bowtie2_all_mirna_miRNA.tsv.log 2>&1
-
-~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o bowtie2_mirna_miRNA_primary_transcript.tsv output/*.trimmed.bowtie2.hg38.bam > bowtie2_mirna_miRNA_primary_transcript.tsv.log 2>&1
-
-~/.local/bin/featureCounts.bash -t miRNA -g Name -a /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3 -o bowtie2_mirna_miRNA.tsv output/*.trimmed.bowtie2.hg38.bam > bowtie2_mirna_miRNA.tsv.log 2>&1
-
-
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
+  -o bowtie2_mirna_miRNA.tsv \
+  output/*.trimmed.bowtie2.hg38.bam > bowtie2_mirna_miRNA.tsv.log 2>&1
 
 
 
@@ -203,14 +218,16 @@ for f in output/*{bam,bam.bai} ;do echo $f; curl -netrc -T $f "${BOX}/" ; done
 curl -netrc -T /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna.ACTG.fa "${BOX}/"
 ```
 
+```BASH
 python3 ./merge_uniq-c.py --int --output mirna_counts.csv output/*mirna_counts
+```
 
 
 Should perhaps sort fasta reference for easier viewing in IGV.
 miRNA analysis. Compute median depth of coverage???
 These regional alignments are all partial which seems unlikely.
 
-```
+```BASH
 faSplit byname /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna.ACTG.fa human_mirna/
 cat human_mirna/*fa > human_mirna.sorted.fa
 ```
