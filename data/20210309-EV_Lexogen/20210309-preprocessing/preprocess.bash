@@ -23,10 +23,10 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 		cutadapt_id=$( sbatch ${depend} --parsable --job-name=cutadapt_${basename} --time=60 --ntasks=2 --mem=15G \
 			--output=${PWD}/output/${basename}.cutadapt.${date}.txt \
 			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
-        -a AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
-        -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
-				-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
+				-a TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC -a AAAAAAAA -m 15 \
 				-o ${f} ${fastq} )
+#		Truseq Small RNA - TGGAATTCTCGGGTGCCAAGG
+#		Lexogen - TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
 			#~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
 	fi
 
