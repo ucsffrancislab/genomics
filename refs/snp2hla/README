@@ -1,0 +1,15 @@
+
+
+From http://software.broadinstitute.org/mpg/snp2hla/snp2hla_manual.html
+
+Input
+1. SNP dataset (.bed/bim/fam PLINK format)
+*** We compare rsIDs to Reference, so coordinates (hg18/hg19) are not important. ***
+2. Reference dataset (.bgl.phased/.markers Beagle format)
+
+
+
+
+*** Output coordinates are all in hg18 currently. ***
+
+
