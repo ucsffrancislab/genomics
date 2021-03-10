@@ -1,0 +1,41 @@
+
+
+
+Here’s the FTP site with the new lexogen library data.
+
+ 
+
+The adaptors are:
+
+ 
+
+SFHH003              GATCAC (SRi7002)
+SFHH004a            TGCACG (SRi7004)
+SFHH004b            ACATTA (SRi7005)
+
+
+ 
+
+
+:: RUN INFORMATION ::
+MiSeq 300SRnano v2 Chemistry
+
+:: LANE ASSIGNMENTS ::
+Lane 1: Helen Hansen and the Francis lab
+
+:: LANE SUMMARY ::
+Lane 1: SFHH003_004 + 30% Phix, 16pM, INDEX (1.18 Reads 25.02% PhiX Aligned)
+
+ 
+
+Add "machine gslanalyzer.qb3.berkeley.edu login ########## password ##########" to ~/.netrc
+
+Then DO NOT USE the "ftp://" prefix or "-u username,password" in command 
+
+So I put the username and password into my ~/.netrc and then downloaded all data.
+
+lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true; open -e "mirror -c; quit" gslanalyzer.qb3.berkeley.edu:990'
+
+
+
+
