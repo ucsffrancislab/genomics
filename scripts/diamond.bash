@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE		# required when using 'module'
+
+hostname
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
