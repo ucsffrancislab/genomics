@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE		# required when using 'module'
 
 hostname
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
-
-set -x
+if [ -n "$( declare -F module )" ] ; then
+	echo "Loading required modules"
+	module load CBI star/2.7.7a
+fi
+set -x	#	print expanded command before executing it
 
 SELECT_ARGS=""
 sorted=false
