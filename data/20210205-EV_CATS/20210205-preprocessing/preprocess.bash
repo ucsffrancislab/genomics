@@ -22,7 +22,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		copy_umi_id=$( sbatch --parseable --job-name=copy_umi_${basename} --time=60 --ntasks=2 --mem=15G \
+		copy_umi_id=$( sbatch --parsable --job-name=copy_umi_${basename} --time=60 --ntasks=2 --mem=15G \
 			--output=${PWD}/output/${basename}.copy_umi.output.${date}.txt \
 			${PWD}/copy_umi.bash --threads 10 --umi-length 12 -i ${fastq} -o ${f} )
 	fi
@@ -33,12 +33,12 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
 		#	gres=scratch should be about total needed divided by num threads
-		cutadapt_id=$( sbatch ${depend} --parseable --job-name=cutadapt_${basename} --time=60 --ntasks=2 --mem=15G \
+		cutadapt_id=$( sbatch ${depend} --parsable --job-name=cutadapt_${basename} --time=60 --ntasks=2 --mem=15G \
 			--output=${PWD}/output/${basename}.cutadapt.output.${date}.txt \
 			${PWD}/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
 				-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
@@ -56,7 +56,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
@@ -101,7 +101,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
@@ -116,7 +116,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
@@ -135,7 +135,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
@@ -150,7 +150,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
@@ -176,7 +176,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 #		echo "Write-protected $f exists. Skipping."
 #	else
 #		if [ ! -z ${cutadapt_id} ] ; then
-#			depend="-W depend=afterok:${cutadapt_id}"
+#			depend="--dependency=afterok:${copy_umi_id}"
 #		else
 #			depend=""
 #		fi
@@ -205,7 +205,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
@@ -221,7 +221,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		if [ ! -z ${cutadapt_id} ] ; then
-			depend="-W depend=afterok:${cutadapt_id}"
+			depend="--dependency=afterok:${copy_umi_id}"
 		else
 			depend=""
 		fi
