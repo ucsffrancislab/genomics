@@ -122,6 +122,21 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 #	#	Unnecessary given the failing of the following step.
 #	samtools sort -@ 10 -o ${PWD}/output/${basename}.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam ${PWD}/output/${basename}.trimmed.STAR.Aligned.toTranscriptome.out.bam
 
+	f=${PWD}/output/${basename}.trimmed.bowtie2burkholderia.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=8 --mem=62G \
+			--output=${PWD}/output/${basename}.bowtie2.burkholderia.${date}.txt \
+			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/burkholderia \
+			--very-sensitive-local -U ${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
+	fi
+
 	f=${PWD}/output/${basename}.trimmed.bowtie2phiX.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -131,7 +146,7 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=phix-${basename} --time=480 --ntasks=8 --mem=62G \
+		sbatch ${depend} --job-name=phix-${basename} --time=30 --ntasks=8 --mem=62G \
 			--output=${PWD}/output/${basename}.bowtie2.phiX.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/phiX \
 			--very-sensitive-local -U ${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}

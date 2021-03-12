@@ -22,6 +22,8 @@
 | Bowtie2 Aligned to mirna % | 1.02 | .63 | .42 | .01 |
 | Bowtie2 Aligned to phiX | 29296 | 24566 | 40807 | 148901 |
 | Bowtie2 Aligned to phiX % | 16.93 | 19.51 | 15.33 | 92.26 |
+| Bowtie2 Aligned to Burkholderia | 89856 | 68920 | 154280 | 1778 |
+| Bowtie2 Aligned to Burkholderia % | 51.94 | 54.75 | 57.98 | 1.10 |
 | RPH3A | 333 | 2367 | 7884 | 54 |
 | ADGRG6 | 3200 | 2010 | 2850 | 70 |
 | TNS1 | 864 | 648 | 1188 | 4401 |
