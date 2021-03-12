@@ -14,21 +14,78 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 
 	basename=$( basename $fastq .fastq.gz )
 
-	cutadapt_id=""
+
+#	Depending on the focus of the experiment there are different potential ways in which to analyze small RNA-Seq data.
+#	An example workflow for analysis of miRNAs in small RNA-Seq library sequencing data is provided. This workflow was adapted from: Tam et al., (2015) Optimization of miRNA-seq data preprocessing. Briefings in Bioinformatics 16(6). This paper also provides an additional comparison of programs for read mapping (alignment), normalization methods, and differential expression analysis.
+#	The general workflow involves, trimming of adapters, size filtering of trimmed reads, read mapping:
+#	
+#	1. Trimming, adapter-removal, and size filtering (BBDuk, http://jgi.doe.gov/data-and-tools/bbtools/bb-tools-user-guide/bbduk-guide/)
+#	1.1. Use bbduk.sh to remove the adapter sequence from the 3’ end of the reads and trim homopolymers.
+#	1.2. Split up the reads into short read and long read fractions.
+#	1.2.1. Short reads read into the adapter sequence AND are shorter than 31 bp and are processed for miRNA alignment.
+#	1.2.2. Long reads are kept separate for alignment to the reference genome.
+#	2. Mapping* (BWA, http://bio-bwa.sourceforge.net/, BBMap, https://sourceforge.net/projects/bbmap/)
+#	2.1. Short read fraction
+#	2.1.1. Filter out reads <= 14 bp -> outputs: “filtered reads: too short” statistic
+#	2.1.2. Map the remaining 15 – 31 bp reads to the ribosomal RNA sequences using BWA. -> outputs: “mapped reads” and “unmapped reads”, mapping statistics
+#	2.1.3. Use the unmapped reads from the BWA alignment and map these against the mirBase annotation (http://www.mirbase.org/ftp.shtml; mature miRNAs, species-specific) -> output “mapped reads”, read count statistics, and miRNA-count table.
+#	2.2. Long read fraction
+#	2.2.1. Map long reads against the reference genome using STAR (https://github.com/alexdobin/STAR) -> output: “mapped reads”, read count statistics, gene_biotype statistics (including rRNA sequences), and gene-read table.
+#	* Alternative programs for read mapping can also be used. A comparison of alignment programs for small RNA-Seq data can be found in Tam et al., 2015.
+
+
+	trim_id=""
 	f=${PWD}/output/${basename}.trimmed.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		#	gres=scratch should be about total needed divided by num threads
-		cutadapt_id=$( sbatch ${depend} --parsable --job-name=cutadapt_${basename} --time=60 --ntasks=2 --mem=15G \
-			--output=${PWD}/output/${basename}.cutadapt.${date}.txt \
-			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
-				-a TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC -a AAAAAAAA -m 15 \
-				-o ${f} ${fastq} )
-#		Truseq Small RNA - TGGAATTCTCGGGTGCCAAGG
-#		Lexogen - TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
-			#~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
+		trim_id=$( sbatch --parsable --job-name=bbduk_${basename} --time=60 --ntasks=2 --mem=15G \
+			--output=${PWD}/output/${basename}.bbduk.${date}.txt \
+			~/.local/bin/bbduk.bash \
+				-Xmx16g \
+				in1=${fastq} \
+				out1=${f} \
+				literal=TGGAATTC,AAAAAAAA \
+				trimpolya=8 \
+				ktrim=r \
+				k=8 \
+				mink=11 \
+				hdist=1 \
+				tbo \
+				ordered=t \
+				gcbins=auto \
+				maq=20 \
+				qtrim=w trimq=20 minavgquality=0 \
+				minlength=15 )
+#				literal=TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC,AAAAAAAA \
+#				k=23 \
+#				maq=10 \
+#				qtrim=w trimq=5 minavgquality=0 \
+		echo $trim_id
 	fi
+
+
+
+#	trim_id=""
+#	f=${PWD}/output/${basename}.trimmed.fastq.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		#	gres=scratch should be about total needed divided by num threads
+#		trim_id=$( sbatch --parsable --job-name=cutadapt_${basename} --time=60 --ntasks=2 --mem=15G \
+#			--output=${PWD}/output/${basename}.cutadapt.${date}.txt \
+#			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
+#				-a TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC -a AAAAAAAA -m 15 \
+#				-o ${f} ${fastq} )
+##		Truseq Small RNA - TGGAATTCTCGGGTGCCAAGG
+##		Lexogen - TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
+#			#~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
+#		echo ${trim_id}
+#	fi
+
+
+
+
 
 	#	#module load star/2.7.7a
 	#	#	STAR --runMode genomeGenerate \
@@ -40,8 +97,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
@@ -69,8 +126,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
@@ -84,8 +141,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
@@ -103,8 +160,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
@@ -118,8 +175,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
@@ -145,8 +202,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 #	if [ -f $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
-#		if [ ! -z ${cutadapt_id} ] ; then
-#			depend="--dependency=afterok:${cutadapt_id}"
+#		if [ ! -z ${trim_id} ] ; then
+#			depend="--dependency=afterok:${trim_id}"
 #		else
 #			depend=""
 #		fi
@@ -174,8 +231,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
@@ -190,8 +247,8 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ ! -z ${cutadapt_id} ] ; then
-			depend="--dependency=afterok:${cutadapt_id}"
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
 		else
 			depend=""
 		fi
