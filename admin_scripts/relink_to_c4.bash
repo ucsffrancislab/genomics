@@ -4,6 +4,14 @@
 #for f in $( find /francislab/data1/ -type l ) ; do
 while read f ; do
 	link=$( readlink -m "$f" )
+	if [[ ${link} == "/raid/data/"* ]] ; then
+		#echo $f
+		#echo $link
+		echo chmod +w $( dirname "${f}" )
+		echo rm -f "${f}"
+		link=${link##/raid/data/}
+		echo ln -s "/francislab/data1/${link}" "${f}"
+	fi
 	if [[ ${link} == "/home/gwendt/github/ucsffrancislab/genomics"* ]] ; then
 		#echo $f
 		#echo $link
