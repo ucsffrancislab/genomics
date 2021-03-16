@@ -1,4 +1,3 @@
-
 |    | SFHH003_R1 | SFHH004a_R1 | SFHH004b_R1 | Undetermined_R1 |
 | --- | --- | --- | --- | --- |
 | Raw Read Count | 291798 | 239036 | 449598 | 195013 |
@@ -23,6 +22,10 @@
 | Bowtie2 Aligned to mirna % | 1.07 | .63 | .43 | .01 |
 | Bowtie2 Aligned to phiX | 35803 | 29816 | 50084 | 180035 |
 | Bowtie2 Aligned to phiX % | 19.23 | 22.02 | 17.50 | 97.67 |
+| Bowtie2 Aligned to Salmonella | 4678 | 1645 | 3907 | 68 |
+| Bowtie2 Aligned to Salmonella % | 2.51 | 1.21 | 1.36 | .03 |
+| Bowtie2 Aligned to Burkholderia | 98777 | 75422 | 170159 | 1967 |
+| Bowtie2 Aligned to Burkholderia % | 53.07 | 55.71 | 59.46 | 1.06 |
 | RPH3A | 351 | 2394 | 7965 | 54 |
 | ADGRG6 | 3280 | 2050 | 2910 | 60 |
 | PLCE1 | 1968 | 1619 | 3533 | 18 |

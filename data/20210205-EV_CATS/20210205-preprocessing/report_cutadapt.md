@@ -22,6 +22,10 @@
 | Bowtie2 Aligned to mirna % | .08 | .04 | 0 |
 | Bowtie2 Aligned to phiX | 17384 | 18145 | 135927 |
 | Bowtie2 Aligned to phiX % | 7.24 | 6.91 | 97.21 |
+| Bowtie2 Aligned to Salmonella | 15600 | 19811 | 557 |
+| Bowtie2 Aligned to Salmonella % | 6.49 | 7.54 | .39 |
+| Bowtie2 Aligned to Burkholderia | 89985 | 104996 | 1513 |
+| Bowtie2 Aligned to Burkholderia % | 37.49 | 39.99 | 1.08 |
 | MECP2 | 4720 | 8090 | 40 |
 | P2RX6 | 4557 | 4116 | 63 |
 | NAALADL2 | 4300 | 3380 |  |
