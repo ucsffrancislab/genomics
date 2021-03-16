@@ -236,6 +236,51 @@ echo
 
 
 
+echo -n "| Bowtie2 Aligned to Salmonella |"
+for f in output/*_001_w_umi.trimmed.bowtie2salmonella.bam.aligned_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| Bowtie2 Aligned to Salmonella % |"
+for f in output/*_001_w_umi.trimmed.bowtie2salmonella.bam.aligned_count ; do
+a=$(cat $f)
+f=${f%.bowtie2salmonella.bam.aligned_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+
+
+echo -n "| Bowtie2 Aligned to Burkholderia |"
+for f in output/*_001_w_umi.trimmed.bowtie2burkholderia.bam.aligned_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| Bowtie2 Aligned to Burkholderia % |"
+for f in output/*_001_w_umi.trimmed.bowtie2burkholderia.bam.aligned_count ; do
+a=$(cat $f)
+f=${f%.bowtie2burkholderia.bam.aligned_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+
+
+
+
+
+
+
 
 for gene in $( head -50 gene_count | awk '{print $2}' ) ; do
 echo -n "| ${gene} |"
