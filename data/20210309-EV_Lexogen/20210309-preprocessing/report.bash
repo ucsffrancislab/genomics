@@ -234,6 +234,26 @@ echo
 
 
 
+echo -n "| Bowtie2 Aligned to Salmonella |"
+for f in output/*_001.trimmed.bowtie2salmonella.bam.aligned_count ; do
+c=$(cat $f)
+echo -n " ${c} |"
+done
+echo
+
+echo -n "| Bowtie2 Aligned to Salmonella % |"
+for f in output/*_001.trimmed.bowtie2salmonella.bam.aligned_count ; do
+a=$(cat $f)
+f=${f%.bowtie2salmonella.bam.aligned_count}
+b=$(cat ${f}.fastq.gz.read_count )
+c=$( echo "scale=2; 100 * ${a} / ${b}" | bc -l )
+echo -n " ${c} |"
+done
+echo
+
+
+
+
 echo -n "| Bowtie2 Aligned to Burkholderia |"
 for f in output/*_001.trimmed.bowtie2burkholderia.bam.aligned_count ; do
 c=$(cat $f)

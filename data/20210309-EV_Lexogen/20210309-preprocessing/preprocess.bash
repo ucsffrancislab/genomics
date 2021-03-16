@@ -122,6 +122,21 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 #	#	Unnecessary given the failing of the following step.
 #	samtools sort -@ 10 -o ${PWD}/output/${basename}.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam ${PWD}/output/${basename}.trimmed.STAR.Aligned.toTranscriptome.out.bam
 
+	f=${PWD}/output/${basename}.trimmed.bowtie2salmonella.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=8 --mem=62G \
+			--output=${PWD}/output/${basename}.bowtie2.salmonella.${date}.txt \
+			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/salmonella \
+			--very-sensitive-local -U ${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
+	fi
+
 	f=${PWD}/output/${basename}.trimmed.bowtie2burkholderia.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -273,6 +288,48 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 			-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
 			${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
 	fi
+
+
+
+	f=${PWD}/output/${basename}.trimmed.blastn.nt.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
+			--output=${PWD}/output/${basename}.blastn.nt.${date}.txt \
+			--partition common \
+			~/.local/bin/blastn.bash -num_threads 8 \
+			-query ${PWD}/output/${basename}.trimmed.fastq.gz \
+			-db /francislab/data1/refs/blastn/nt \
+			-outfmt 6 \
+			-out ${f}
+	fi
+
+
+	f=${PWD}/output/${basename}.trimmed.diamond.nr.daa
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${trim_id} ] ; then
+			depend="--dependency=afterok:${trim_id}"
+		else
+			depend=""
+		fi
+		sbatch --job-name=d-${basename} --time=480 --ntasks=8 --mem=32G \
+			--output=${PWD}/output/${basename}.diamond.nr.${date}.txt \
+			--partition common \
+			~/.local/bin/diamond.bash blastx --threads 8 \
+				--query ${PWD}/output/${basename}.trimmed.fastq.gz \
+				--db /francislab/data1/refs/diamond/nr \
+				--evalue 0.1 \
+				--outfmt 100 --out ${f}
+	fi
+
 
 done
 
