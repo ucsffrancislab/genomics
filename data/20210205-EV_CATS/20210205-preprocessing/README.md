@@ -118,6 +118,8 @@ curl -netrc -T /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hu
 
 python3 ./merge_uniq-c.py --int --output mirna_counts.csv output/*mirna_counts
 
+python3 ./merge_uniq-c.py --int --output gene_counts.csv output/*gene_counts
+
 
 Should perhaps sort fasta reference for easier viewing in IGV.
 miRNA analysis. Compute median depth of coverage???
