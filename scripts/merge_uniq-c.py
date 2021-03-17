@@ -51,21 +51,32 @@ for filename in args.files:
 	if os.path.isfile(filename) and os.path.getsize(filename) > 0:
 		basename=os.path.basename(filename)
 
-		sample=basename.split(".")[0]	#	everything before the first "."
+		#sample=basename.split(".")[0]	#	everything before the first "."
+		sample=basename	#.split(".")[0]	#	everything before the first "."
 
 		print("Reading "+filename+": Sample "+sample)
 
 		#	sep="\t",
+		#d = pd.read_csv(filename,
+		#	skipinitialspace=True,
+		#	sep="\s+",
+		#	header=None,
+		#	usecols=[0,1],
+		#	names=[sample,'sequence'],
+		#	index_col=['sequence'])
+		#	#usecols=[0,1,2],
+		#	#names=['chromosome','position',sample],
+		#	#index_col=['chromosome','position'])
+
+		#	this is the only way to read a file separated by spaces but containing spaces.
+
 		d = pd.read_csv(filename,
 			skipinitialspace=True,
-			sep="\s+",
 			header=None,
-			usecols=[0,1],
-			names=[sample,'sequence'],
-			index_col=['sequence'])
-			#usecols=[0,1,2],
-			#names=['chromosome','position',sample],
-			#index_col=['chromosome','position'])
+			names=['sequence'])
+		d[[sample,'sequence']] = d['sequence'].str.split(" ", 1, expand=True)
+		d.set_index('sequence',inplace=True)
+		print(d.head())
 
 		print("Appending")
 		data_frames.append(d)
