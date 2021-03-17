@@ -22,6 +22,7 @@ done
 f=${input}
 f=${f%.gz}
 f=${f%.csv}
+f=${f%.tsv}
 f=${f%.txt}
 f=${f}.species_genus_family.txt.gz
 
