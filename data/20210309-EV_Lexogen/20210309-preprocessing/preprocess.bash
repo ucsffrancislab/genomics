@@ -185,20 +185,20 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 			--very-sensitive-local -U ${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
 	fi
 
-	f=${PWD}/output/${basename}.trimmed.bowtie2phages.bam
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ ! -z ${trim_id} ] ; then
-			depend="--dependency=afterok:${trim_id}"
-		else
-			depend=""
-		fi
-		sbatch ${depend} --job-name=phix-${basename} --time=30 --ntasks=8 --mem=62G \
-			--output=${PWD}/output/${basename}.bowtie2.phages.${date}.txt \
-			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/refseq/viral-20210316/phages \
-			--very-sensitive-local -U ${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
-	fi
+#	f=${PWD}/output/${basename}.trimmed.bowtie2phages.bam
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		if [ ! -z ${trim_id} ] ; then
+#			depend="--dependency=afterok:${trim_id}"
+#		else
+#			depend=""
+#		fi
+#		sbatch ${depend} --job-name=phix-${basename} --time=30 --ntasks=8 --mem=62G \
+#			--output=${PWD}/output/${basename}.bowtie2.phages.${date}.txt \
+#			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/refseq/viral-20210316/phages \
+#			--very-sensitive-local -U ${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
+#	fi
 
 	f=${PWD}/output/${basename}.trimmed.bowtie2phiX.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -337,24 +337,23 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 			${PWD}/output/${basename}.trimmed.fastq.gz -o ${f}
 	fi
 
-	f=${PWD}/output/${basename}.trimmed.blastn.phages.txt.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ ! -z ${trim_id} ] ; then
-			depend="--dependency=afterok:${trim_id}"
-		else
-			depend=""
-		fi
-		sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
-			--output=${PWD}/output/${basename}.blastn.phages.${date}.txt \
-			--partition common \
-			~/.local/bin/blastn.bash -num_threads 8 \
-			-query ${PWD}/output/${basename}.trimmed.fastq.gz \
-			-db /francislab/data1/refs/refseq/viral-20210316/phages \
-			-outfmt 6 \
-			-out ${f}
-	fi
+#	f=${PWD}/output/${basename}.trimmed.blastn.phages.txt.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		if [ ! -z ${trim_id} ] ; then
+#			depend="--dependency=afterok:${trim_id}"
+#		else
+#			depend=""
+#		fi
+#		sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
+#			--output=${PWD}/output/${basename}.blastn.phages.${date}.txt \
+#			~/.local/bin/blastn.bash -num_threads 8 \
+#			-query ${PWD}/output/${basename}.trimmed.fastq.gz \
+#			-db /francislab/data1/refs/refseq/viral-20210316/phages \
+#			-outfmt 6 \
+#			-out ${f}
+#	fi
 
 	f=${PWD}/output/${basename}.trimmed.blastn.nt.txt.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -365,15 +364,44 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
+		blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.blastn.nt.${date}.txt \
-			--partition common \
 			~/.local/bin/blastn.bash -num_threads 8 \
 			-query ${PWD}/output/${basename}.trimmed.fastq.gz \
 			-db /francislab/data1/refs/blastn/nt \
 			-outfmt 6 \
-			-out ${f}
+			-out ${f} )
+		echo $blast_id
 	fi
+
+	f=${PWD}/output/${basename}.trimmed.blastn.nt.species_genus_family.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${blast_id} ] ; then
+			depend="--dependency=afterok:${blast_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=sgf-${basename} --time=99 --ntasks=2 --mem=15G \
+			--output=${f%.txt.gz}.${date}.txt \
+			~/.local/bin/add_species_genus_family_to_blast_output.bash -input ${f}
+	fi
+
+#	f=${PWD}/output/${basename}.trimmed.blastn.nt.10.summary.txt.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		if [ ! -z ${blast_id} ] ; then
+#			depend="--dependency=afterok:${blast_id}"
+#		else
+#			depend=""
+#		fi
+#		sbatch ${depend} --job-name=sum-${basename} --time=99 --ntasks=2 --mem=15G \
+#			--output=${f%.txt.gz}.${date}.txt \
+#			~/.local/bin/blastn_summary_with_title.bash -db /francislab/data1/refs/blastn/nt -input ${f}
+#	fi
 
 	f=${PWD}/output/${basename}.trimmed.diamond.nr.daa
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -386,7 +414,6 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 		fi
 		sbatch --job-name=d-${basename} --time=480 --ntasks=8 --mem=32G \
 			--output=${PWD}/output/${basename}.diamond.nr.${date}.txt \
-			--partition common \
 			~/.local/bin/diamond.bash blastx --threads 8 \
 				--query ${PWD}/output/${basename}.trimmed.fastq.gz \
 				--db /francislab/data1/refs/diamond/nr \
