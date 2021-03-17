@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE		# required when using 'module'
+
+hostname
 
 set -e  # exit if any command fails
 set -u  # Error on usage of unset variables
 set -o pipefail
-
+if [ -n "$( declare -F module )" ] ; then
+	echo "Loading required modules"
+	module load CBI sqlite
+fi
 #set -x
 
 db=/francislab/data1/refs/taxadb/taxadb_full.sqlite
