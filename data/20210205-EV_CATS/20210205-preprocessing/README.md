@@ -48,3 +48,52 @@ cat human_mirna/*fa > human_mirna.sorted.fa
 ```
 
 
+
+
+
+
+
+
+```BASH
+for f in output/*.trimmed.fastq.gz ; do
+echo $f
+zcat ${f} | sed -n '1~4s/ /_/g;p' | gzip > ${f%.fastq.gz}.underscored.fastq.gz
+done
+
+for f in output/*.trimmed.underscored.fastq.gz ; do
+echo $f
+~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/burkholderia \
+--very-sensitive-local -U ${f} -o ${f%.fastq.gz}.burkholderia.bam
+done
+
+for f in output/*trimmed.underscored.burkholderia.bam ; do
+samtools view ${f} | awk '{print $1}' | awk -F: '{print $NF}' | sort | uniq -c > ${f%.bam}.all_index_counts
+samtools view -F4 ${f} | awk '{print $1}' | awk -F: '{print $NF}' | sort | uniq -c > ${f%.bam}.aligned_index_counts
+done
+
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/index_counts.csv output/*index_counts
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/sindex_counts.csv output/S*index_counts
+
+sed -i '1s/_L001_R1_001_w_umi.trimmed.underscored.burkholderia//g' post/index_counts.csv 
+sed -i '1s/_L001_R1_001_w_umi.trimmed.underscored.burkholderia//g' post/sindex_counts.csv 
+
+
+
+
+
+
+for f in output/*trimmed.bowtie2burkholderia.bam ; do
+samtools view ${f} | awk '{print $1}' | awk -F_ '{print $NF}' | sort | uniq -c > ${f%.bam}.all_umi_counts
+samtools view -F4 ${f} | awk '{print $1}' | awk -F_ '{print $NF}' | sort | uniq -c > ${f%.bam}.aligned_umi_counts
+done
+
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/umi_counts.csv output/*umi_counts
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/sumi_counts.csv output/S*umi_counts
+
+sed -i '1s/_L001_R1_001_w_umi.trimmed.bowtie2burkholderia//g' post/umi_counts.csv 
+sed -i '1s/_L001_R1_001_w_umi.trimmed.bowtie2burkholderia//g' post/sumi_counts.csv 
+```
+
+
+
+

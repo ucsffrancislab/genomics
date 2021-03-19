@@ -25,14 +25,17 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		copy_umi_id=$( sbatch --parsable --job-name=copy_umi_${basename} --time=60 --ntasks=2 --mem=15G \
 			--output=${PWD}/output/${basename}.copy_umi.${date}.txt \
 			${PWD}/copy_umi.bash --threads 10 --umi-length 12 -i ${fastq} -o ${f} )
+		echo $copy_umi_id
 	fi
+
+	#	The umi length is 12, yet they have us remove 16 with cutadapt.
 
 #	trim_id=""
 #	f=${PWD}/output/${basename}_w_umi.trimmed.fastq.gz
 #	if [ -f $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
-#		if [ ! -z ${trim_id} ] ; then
+#		if [ ! -z ${copy_umi_id} ] ; then
 #			depend="--dependency=afterok:${copy_umi_id}"
 #		else
 #			depend=""
@@ -43,8 +46,12 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 #			${PWD}/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
 #				-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
 #				-o ${f} ${PWD}/output/${basename}_w_umi.fastq.gz )
+#				#-a AGATCGGA -a AAAAAAAA -m 15 \
 #	fi
 
+
+	#	bbduk DOES NOT REMOVE THE UMI
+	#	add forcetrimleft=16  ???
 
 	trim_id=""
 	f=${PWD}/output/${basename}_w_umi.trimmed.fastq.gz
@@ -73,11 +80,15 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				gcbins=auto \
 				maq=20 \
 				qtrim=w trimq=20 minavgquality=0 \
+				forcetrimleft=12 \
 				minlength=15 )
+			#	literal=AGATCGGAAGAGCACACGTCTG \
+			#	literal=AGATCGGA,AAAAAAAA \
 			#	literal=TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC,AAAAAAAA \
 			#	k=23 \
 			#	maq=10 \
 			#	qtrim=w trimq=5 minavgquality=0 \
+			#	I think that the trimpolya requires that it be already at the end?
 		echo $trim_id
 	fi	
 
@@ -100,8 +111,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=star-${basename} --time=480 --ntasks=8 --mem=62G \
-			--output=${PWD}/output/${basename}.sbatch.STAR.output.${date}.txt \
+		starhg38_id=$( sbatch ${depend} --job-name=star-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
+			--output=${PWD}/output/${basename}.STAR.output.${date}.txt \
 			~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
 				--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ \
 				--sjdbGTFfile /francislab/data1/refs/fasta/hg38.ncbiRefSeq.gtf \
@@ -111,25 +123,117 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				--quantTranscriptomeBAMcompression -1 \
 				--outSAMtype BAM SortedByCoordinate \
 				--outSAMunmapped Within \
-				--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR.
+				--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR. )
+		echo $starhg38_id
+	fi
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${starhg38_id} ] ; then
+			depend="--dependency=afterok:${starhg38_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=1dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
 	fi
 
 
-
-
+#	#	SORT STAR TRANSCRIPTOME
 #	#	Unnecessary given the failing of the following step.
 #	samtools sort -@ 10 -o ${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam ${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.bam
 
-#	#	fumi_tools_dedup seems to need local compiling. Returns "Illegal Instruction"
-
+#	#	DEDUP STAR TRANSCRIPTOME
 #	echo ${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam
 #	python3 ~/.local/bin/fumi_tools dedup --threads 10 --memory 10G -i ${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.sorted.out.bam -o ${PWD}/output/${basename}_deduplicated_transcriptome.bam 
 
-#	echo ${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam
-#	python3 ~/.local/bin/fumi_tools dedup --threads 10 --memory 10G -i ${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.sortedByCoord.out.bam -o ${PWD}/output/${basename}_deduplicated_genome.bam 
+	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.sorted.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${starhg38_id} ] ; then
+			depend="--dependency=afterok:${starhg38_id}"
+		else
+			depend=""
+		fi
+		sort_id=$( sbatch ${depend} --job-name=2dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--parsable \
+			--output=${f%.bam}.${date}.txt \
+			~/.local/bin/samtools_sort.bash -o ${f} ${f%.sorted.bam}.bam )
+	fi
+
+	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.Aligned.toTranscriptome.out.sorted.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${sort_id} ] ; then
+			depend="--dependency=afterok:${sort_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=3dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
 
 #	#	I don't have this executable and can't get passed the previous steps, so moot.
 #	#rsem-calculate-expression -p 10 --strandedness forward --seed-length 15 --no-bam-output --alignments MySample_transcriptome_alignment.bam /transcriptomes/hg19/hg19 MySample
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -143,28 +247,29 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=8 --mem=62G \
+		salmon_id=$( sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie2.salmonella.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/salmonella \
-			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $salmon_id
 	fi
 
-#	f=${PWD}/20210310-cutadapt/output/${basename}_w_umi.trimmed.bowtie2salmonella.bam
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		if [ ! -z ${trim_id} ] ; then
-#			depend="--dependency=afterok:${trim_id}"
-#		else
-#			depend=""
-#		fi
-#		sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=8 --mem=62G \
-#			--output=${PWD}/20210310-cutadapt/output/${basename}.bowtie2.salmonella.${date}.txt \
-#			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/salmonella \
-#			--very-sensitive-local -U ${PWD}/20210310-cutadapt/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
-#	fi
-
-
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2salmonella.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${salmon_id} ] ; then
+			depend="--dependency=afterok:${salmon_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=4dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
 
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2burkholderia.bam
@@ -176,46 +281,36 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=8 --mem=62G \
+		burk_id=$( sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie2.burkholderia.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/burkholderia \
-			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $burk_id
+	fi
+
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2burkholderia.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${burk_id} ] ; then
+			depend="--dependency=afterok:${burk_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=5dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
 	fi
 
 
 
 
-#	f=${PWD}/20210310-cutadapt/output/${basename}_w_umi.trimmed.bowtie2burkholderia.bam
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		if [ ! -z ${trim_id} ] ; then
-#			depend="--dependency=afterok:${trim_id}"
-#		else
-#			depend=""
-#		fi
-#		sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=8 --mem=62G \
-#			--output=${PWD}/20210310-cutadapt/output/${basename}.bowtie2.burkholderia.${date}.txt \
-#			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/burkholderia \
-#			--very-sensitive-local -U ${PWD}/20210310-cutadapt/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
-#	fi
 
 
 
-#	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2phages.bam
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		if [ ! -z ${trim_id} ] ; then
-#			depend="--dependency=afterok:${trim_id}"
-#		else
-#			depend=""
-#		fi
-#		sbatch ${depend} --job-name=phages-${basename} --time=480 --ntasks=8 --mem=62G \
-#			--output=${PWD}/output/${basename}.bowtie2phages.${date}.txt \
-#			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/refseq/viral-20210316/phages \
-#			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
-#	fi
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2phiX.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -226,11 +321,30 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=phiX-${basename} --time=480 --ntasks=8 --mem=62G \
+		phix_id=$( sbatch ${depend} --job-name=phiX-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie2phiX.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/phiX \
-			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $phix_id
 	fi
+
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2phiX.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${phix_id} ] ; then
+			depend="--dependency=afterok:${phix_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=6dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.Aligned.sortedByCoord.out.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -241,15 +355,34 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=Smi-${basename} --time=480 --ntasks=8 --mem=62G \
+		starmirna_id=$( sbatch ${depend} --job-name=Smi-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.${date}.txt \
 			~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
 				--genomeDir /francislab/data1/refs/STAR/human_mirna \
 				--readFilesIn ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
 				--outSAMtype BAM SortedByCoordinate \
 				--outSAMunmapped Within \
-				--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.
+				--outFileNamePrefix ${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna. )
+		echo $starmirna_id
 	fi
+
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.STAR.mirna.Aligned.sortedByCoord.out.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${starmirna_id} ] ; then
+			depend="--dependency=afterok:${starmirna_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=7dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.mirna.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -260,11 +393,30 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=b2mi-${basename} --time=480 --ntasks=8 --mem=62G \
+		b2mirna_id=$( sbatch ${depend} --job-name=b2mi-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie2.mirna.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/human_mirna \
-			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $b2mirna_id
 	fi
+
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.mirna.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${b2mirna_id} ] ; then
+			depend="--dependency=afterok:${b2mirna_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=8dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.mirna.all.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -275,11 +427,30 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=b2mia-${basename} --time=480 --ntasks=8 --mem=62G \
+		b2mirnaall_id=$( sbatch ${depend} --job-name=b2mia-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie2.mirna.all.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --all --threads 8 -x /francislab/data1/refs/bowtie2/human_mirna \
-			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $b2mirnaall_id
 	fi
+
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.mirna.all.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${b2mirnaall_id} ] ; then
+			depend="--dependency=afterok:${b2mirnaall_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=9dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.hg38.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -290,43 +461,32 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=b2h-${basename} --time=480 --ntasks=8 --mem=62G \
+		bhg38_id=$( sbatch ${depend} --job-name=b2h-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie2.hg38.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
 			-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
-			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $bhg38_id
 	fi
 
-	#	base=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.hg38.all
-	#	f=${base}.bam
-	#	if [ -f $f ] && [ ! -w $f ] ; then
-	#		echo "Write-protected $f exists. Skipping."
-	#	else
-	#		if [ ! -z ${trim_id} ] ; then
-	#			depend="--dependency=afterok:${copy_umi_id}"
-	#		else
-	#			depend=""
-	#		fi
-	#
-	#		threads=32
-	#		fasta_size=$( stat --dereference --format %s ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz )
-	#		#r2_size=$( stat --dereference --format %s ${r2} )
-	#		#index_size=$( du -sb ${index} | awk '{print $1}' )
-	#		#scratch=$( echo $(( ((${r1_size}+${r2_size}+${index_size})/${threads}/1000000000*11/10)+1 )) )
-	#		# Add 1 in case files are small so scratch will be 1 instead of 0.
-	#		# 11/10 adds 10% to account for the output
-	#
-	#		scratch=$( echo $(( ((${fasta_size}*10)/${threads}/1000000000*11/10)+1 )) )
-	#
-	#		echo "Using scratch:${scratch}"
-	#
-	#		#still failed due to time at 1920 minutes (32 hours)
-	#		sbatch ${depend} --job-name=${basename} --time=10000 --ntasks=${threads} --mem=250G \
-	#			--gres=scratch:${scratch}G --output=${base}.output.txt \
-	#			~/.local/bin/bowtie2_scratch.bash --all --threads ${threads} -x /francislab/data1/refs/bowtie2/hg38 \
-	#			--very-sensitive-local -U ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
-	#	fi
-	
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie2.hg38.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${bhg38_id} ] ; then
+			depend="--dependency=afterok:${bhg38_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=0dd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
+
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie.mirna.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -336,12 +496,31 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=b1mi-${basename} --time=480 --ntasks=8 --mem=62G \
+		bmirna_id=$( sbatch ${depend} --job-name=b1mi-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie.mirna.${date}.txt \
 			~/.local/bin/bowtie.bash --sam --threads 8 --sort \
 			-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
-			${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $bmirna_id
 	fi
+
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie.mirna.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${bmirna_id} ] ; then
+			depend="--dependency=afterok:${bmirna_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=Add-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
 
 	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie.mirna.all.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -352,14 +531,38 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 		else
 			depend=""
 		fi
-		sbatch ${depend} --job-name=b1mia-${basename} --time=480 --ntasks=8 --mem=62G \
+		bmirnaall_id=$( sbatch ${depend} --job-name=b1mia-${basename} --time=480 --ntasks=8 --mem=62G \
+			--parsable \
 			--output=${PWD}/output/${basename}.bowtie.mirna.all.${date}.txt \
 			~/.local/bin/bowtie.bash --sam --all --threads 8 --sort \
 			-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
-			${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f}
+			${PWD}/output/${basename}_w_umi.trimmed.fastq.gz -o ${f} )
+		echo $bmirnaall_id
 	fi
 
-#	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.phages.txt.gz
+#	#	DEDUP
+	f=${PWD}/output/${basename}_w_umi.trimmed.bowtie.mirna.all.deduped.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ ! -z ${bmirnaall_id} ] ; then
+			depend="--dependency=afterok:${bmirnaall_id}"
+		else
+			depend=""
+		fi
+		sbatch ${depend} --job-name=Bdd-${basename} --time=480 --ntasks=4 --mem=30G \
+			--output=${f%.bam}.${date}.txt \
+			${PWD}/dedup.bash --input-threads 4 \
+				-i ${f%.deduped.bam}.bam -o ${f}
+	fi
+
+
+
+
+
+
+
+#	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.txt.gz
 #	if [ -f $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
@@ -368,49 +571,17 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 #		else
 #			depend=""
 #		fi
-#		sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
-#			--output=${PWD}/output/${basename}.blastn.phages.${date}.txt \
+#		blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
+#			--parsable \
+#			--output=${PWD}/output/${basename}.blastn.nt.${date}.txt \
 #			~/.local/bin/blastn.bash -num_threads 8 \
 #			-query ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
-#			-db /francislab/data1/refs/refseq/viral-20210316/phages \
+#			-db /francislab/data1/refs/blastn/nt \
 #			-outfmt 6 \
-#			-out ${f}
+#			-out ${f} )
 #	fi
-
-	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.txt.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ ! -z ${trim_id} ] ; then
-			depend="--dependency=afterok:${trim_id}"
-		else
-			depend=""
-		fi
-		blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
-			--parsable \
-			--output=${PWD}/output/${basename}.blastn.nt.${date}.txt \
-			~/.local/bin/blastn.bash -num_threads 8 \
-			-query ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
-			-db /francislab/data1/refs/blastn/nt \
-			-outfmt 6 \
-			-out ${f} )
-	fi
-
-	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.species_genus_family.txt.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ ! -z ${blast_id} ] ; then
-			depend="--dependency=afterok:${blast_id}"
-		else
-			depend=""
-		fi  
-		sbatch ${depend} --job-name=sgf-${basename} --time=99 --ntasks=2 --mem=15G \
-			--output=${f%.txt.gz}.${date}.txt \
-			~/.local/bin/add_species_genus_family_to_blast_output.bash -input ${f}
-	fi  
-
-#	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.10.summary.txt.gz
+#
+#	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.species_genus_family.txt.gz
 #	if [ -f $f ] && [ ! -w $f ] ; then
 #		echo "Write-protected $f exists. Skipping."
 #	else
@@ -419,28 +590,28 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 #		else
 #			depend=""
 #		fi  
-#		sbatch ${depend} --job-name=sum-${basename} --time=99 --ntasks=2 --mem=15G \
+#		sbatch ${depend} --job-name=sgf-${basename} --time=99 --ntasks=2 --mem=15G \
 #			--output=${f%.txt.gz}.${date}.txt \
-#			~/.local/bin/blastn_summary_with_title.bash -db /francislab/data1/refs/blastn/nt -input ${f}
+#			~/.local/bin/add_species_genus_family_to_blast_output.bash -input ${f}
 #	fi  
-
-	f=${PWD}/output/${basename}_w_umi.trimmed.diamond.nr.daa
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ ! -z ${trim_id} ] ; then
-			depend="--dependency=afterok:${trim_id}"
-		else
-			depend=""
-		fi
-		sbatch ${depend} --job-name=d-${basename} --time=480 --ntasks=8 --mem=32G \
-			--output=${PWD}/output/${basename}.diamond.nr.${date}.txt \
-			~/.local/bin/diamond.bash blastx --threads 8 \
-				--query ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
-				--db /francislab/data1/refs/diamond/nr \
-				--evalue 0.1 \
-				--outfmt 100 --out ${f}
-	fi
+#
+#	f=${PWD}/output/${basename}_w_umi.trimmed.diamond.nr.daa
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		if [ ! -z ${trim_id} ] ; then
+#			depend="--dependency=afterok:${trim_id}"
+#		else
+#			depend=""
+#		fi
+#		sbatch ${depend} --job-name=d-${basename} --time=480 --ntasks=8 --mem=32G \
+#			--output=${PWD}/output/${basename}.diamond.nr.${date}.txt \
+#			~/.local/bin/diamond.bash blastx --threads 8 \
+#				--query ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
+#				--db /francislab/data1/refs/diamond/nr \
+#				--evalue 0.1 \
+#				--outfmt 100 --out ${f}
+#	fi
 
 done
 
