@@ -33,7 +33,8 @@ while [ $# -gt 0 ] ; do
 			shift; output=$1; shift;;
 #			SELECT_ARGS="${SELECT_ARGS} -o $1"; shift;;
 		*)	#	NEEEEEEED THIS!
-			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
+#			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
+			shift;;
 	esac
 done
 
