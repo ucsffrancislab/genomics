@@ -52,3 +52,39 @@ faSplit byname /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hu
 cat human_mirna/*fa > human_mirna.sorted.fa
 ```
 
+
+
+
+
+```
+for f in output/*.trimmed.fastq.gz ; do
+echo $f
+zcat ${f} | sed -n '1~4s/ /_/g;p' | gzip > ${f%.fastq.gz}.underscored.fastq.gz
+done
+
+for f in output/*.trimmed.underscored.fastq.gz ; do
+echo $f
+~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/burkholderia \
+--very-sensitive-local -U ${f} -o ${f%.fastq.gz}.burkholderia.bam
+done
+
+for f in output/*trimmed.underscored.burkholderia.bam ; do
+samtools view ${f} | awk '{print $1}' | awk -F: '{print $NF}' | sort | uniq -c > ${f%.bam}.all_index_counts
+samtools view -F4 ${f} | awk '{print $1}' | awk -F: '{print $NF}' | sort | uniq -c > ${f%.bam}.aligned_index_counts
+done
+
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/index_counts.csv output/*index_counts
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/sindex_counts.csv output/S*index_counts
+
+sed -i '1s/_L001_R1_001.trimmed.underscored.burkholderia//g' post/index_counts.csv 
+sed -i '1s/_L001_R1_001.trimmed.underscored.burkholderia//g' post/sindex_counts.csv 
+
+
+
+python3 ~/.local/bin/merge_uniq-c.py --int --output all_family_counts.csv /francislab/data1/working/20210*/20210*-preprocessing/output/*family_counts
+sed -i -e '1s/.trimmed.blastn.nt.species_genus_family.family_counts//g' -e '1s/_L001_R1_001//g' all_family_counts.csv
+```
+
+
+
+

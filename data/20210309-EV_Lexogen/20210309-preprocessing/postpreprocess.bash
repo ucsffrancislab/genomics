@@ -106,21 +106,22 @@ fastqc -o post/ output/*fastq.gz
 #awk -F"\t" '(($7+$8+$9)>0)' *mirna_miRNA*tsv
 
 
-python3 merge_uniq-c.py --int --output post/mirna_counts.csv output/*mirna_counts
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output/*mirna_counts
 
-python3 merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_count
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_count
 
 for f in output/*blastn.nt.species_genus_family.txt.gz ; do
 zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
 done
-python3 merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
+sed -i '1s/_L001_R1_001.trimmed.blastn.nt.species_genus_family.family_counts//g' post/family_counts.csv
 
 
 #	Brutal on sort memory
 #for f in output/*blastn.nt.txt.gz ; do
 #~/.local/bin/blastn_summary_with_title.bash -db /francislab/data1/refs/blastn/nt -input ${f}
 #done
-#python3 merge_uniq-c.py --int --output post/summary_counts.csv output/*blastn.nt.10.summary.txt.gz
+#python3 ~/.local/bin/merge_uniq-c.py --int --output post/summary_counts.csv output/*blastn.nt.10.summary.txt.gz
 
 
 
