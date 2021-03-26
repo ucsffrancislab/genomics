@@ -108,7 +108,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 						trim_id=$( sbatch ${depend} --parsable --job-name=cutadapt1_${basename} \
 							--time=60 --ntasks=2 --mem=15G \
 							--output=${out_base}.${date}.txt \
-							${PWD}/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
+							~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
 								-a AGATCGGA -a AAAAAAAA -m 15 \
 								-o ${f} ${in_base}.fastq.gz )
 					fi
@@ -128,7 +128,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 						trim_id=$( sbatch ${depend} --parsable --job-name=cutadapt2_${basename} \
 							--time=60 --ntasks=2 --mem=15G \
 							--output=${out_base}.${date}.txt \
-							${PWD}/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
+							~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -u 16 -n 3 \
 								-a AGATCGGAAGAGCACACGTCTG -a AAAAAAAA -m 15 \
 								-o ${f} ${in_base}.fastq.gz )
 					fi
