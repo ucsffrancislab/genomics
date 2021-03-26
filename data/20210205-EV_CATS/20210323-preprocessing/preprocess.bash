@@ -92,11 +92,12 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 			in_base=${c_base}
 			out_base=${in_base}.${trimmer}
 
+			trim_id=""
+			f=${out_base}.fastq.gz
+
 			#	Trim 16bp
 			case $trimmer in
 				cutadapt1)
-					trim_id=""
-					f=${out_base}.fastq.gz
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
@@ -115,8 +116,6 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 					;;
 
 				cutadapt2)
-					trim_id=""
-					f=${out_base}.fastq.gz
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
@@ -135,8 +134,6 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 					;;
 
 				bbduk1)
-					trim_id=""
-					f=${out_base}.fastq.gz
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
@@ -170,8 +167,6 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 					;;
 
 				bbduk2)
-					trim_id=""
-					f=${out_base}.fastq.gz
 					if [ -f $f ] && [ ! -w $f ] ; then
 						echo "Write-protected $f exists. Skipping."
 					else
