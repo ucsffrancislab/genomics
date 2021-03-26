@@ -15,9 +15,10 @@ set -x
 mkdir post/
 
 cd output/
-ln -s /francislab/data1/raw/20210205-EV_CATS/SFHH001A_S1_L001_R1_001.fastq.gz
-ln -s /francislab/data1/raw/20210205-EV_CATS/SFHH001B_S2_L001_R1_001.fastq.gz
-ln -s /francislab/data1/raw/20210205-EV_CATS/Undetermined_S0_L001_R1_001.fastq.gz
+ln -s /francislab/data1/raw/20210309-EV_Lexogen/SFHH003_S1_L001_R1_001.fastq.gz
+ln -s /francislab/data1/raw/20210309-EV_Lexogen/SFHH004a_S2_L001_R1_001.fastq.gz
+ln -s /francislab/data1/raw/20210309-EV_Lexogen/SFHH004b_S3_L001_R1_001.fastq.gz
+ln -s /francislab/data1/raw/20210309-EV_Lexogen/Undetermined_S0_L001_R1_001.fastq.gz
 cd ../
 
 

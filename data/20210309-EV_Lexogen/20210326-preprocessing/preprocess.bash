@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 
-#/francislab/data1/raw/20210205-EV_CATS/SFHH001A_S1_L001_R1_001.fastq.gz
-#/francislab/data1/raw/20210205-EV_CATS/SFHH001B_S2_L001_R1_001.fastq.gz
-#/francislab/data1/raw/20210205-EV_CATS/Undetermined_S0_L001_R1_001.fastq.gz
+#	/francislab/data1/raw/20210309-EV_Lexogen/SFHH003_S1_L001_R1_001.fastq.gz
+#	/francislab/data1/raw/20210309-EV_Lexogen/SFHH004a_S2_L001_R1_001.fastq.gz
+#	/francislab/data1/raw/20210309-EV_Lexogen/SFHH004b_S3_L001_R1_001.fastq.gz
+#	/francislab/data1/raw/20210309-EV_Lexogen/Undetermined_S0_L001_R1_001.fastq.gz
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -10,7 +11,6 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${PWD}/output
 
-#for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 
 	ln -s $fastq output/
@@ -26,10 +26,6 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 		trim_id=""
 		f=${out_base}.fastq.gz
 
-#	/c4/home/gwendt/github/ucsffrancislab/genomics/data/20210205-EV_CATS/20210323-preprocessing/
-#				literal=TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC,AAAAAAAA \
-
-		#	Trim 16bp
 		case $trimmer in
 			cutadapt1)
 				if [ -f $f ] && [ ! -w $f ] ; then

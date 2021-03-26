@@ -18,17 +18,6 @@ for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.fastq.gz ) ; do
 done
 echo
 
-echo -n "| Consolidation |"
-for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.fastq.gz.read_count ) ; do
-	if [[ "$f" == *"consolidated"* ]]; then
-		c="consolidated"
-	else
-		c="unconsolidated"
-	fi
-	echo -n " ${c} |"
-done
-echo
-
 echo -n "| Trimmer |"
 for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.fastq.gz.read_count ) ; do
 	case $f in
