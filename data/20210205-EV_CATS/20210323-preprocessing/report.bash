@@ -284,9 +284,32 @@ echo
 
 
 
-for gene in $( head -50 post/gene_count | awk '{print $2}' ) ; do
+echo -n "| STAR Gene Counts |"
+for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts ) ; do
+	echo -n " --- |"
+done
+echo
+
+for gene in $( head -50 post/gene_counts | awk '{print $2}' ) ; do
 	echo -n "| ${gene} |"
-	for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_count ) ; do
+	for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts ) ; do
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${f} )
+		echo -n " ${c} |"
+	done
+	echo
+done
+
+
+
+echo -n "| STAR miRNA Counts |"
+for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts ) ; do
+	echo -n " --- |"
+done
+echo
+
+for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
+	echo -n "| ${gene} |"
+	for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts ) ; do
 		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${f} )
 		echo -n " ${c} |"
 	done

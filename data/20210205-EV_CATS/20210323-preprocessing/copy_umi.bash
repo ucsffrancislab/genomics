@@ -26,6 +26,10 @@ done
 
 #	Assuming input and output are fastq.gz
 
-zcat $input | paste - - - - | awk -v l=${length} -F"\t" '{split($1,a,":"); print $1" "substr($2,0,l)"_"a[length(a)]; print $2; print $3; print $4}' | gzip > $output
+#	UMI and actual adapter found (not the adapter demultiplexed on)
+#zcat $input | paste - - - - | awk -v l=${length} -F"\t" '{split($1,a,":"); print $1" "substr($2,0,l)"_"a[length(a)]; print $2; print $3; print $4}' | gzip > $output
+
+#	Just the UMI given that the adapter may differ and already demultiplexed
+zcat $input | paste - - - - | awk -v l=${length} -F"\t" '{print $1" "substr($2,0,l); print $2; print $3; print $4}' | gzip > $output
 chmod -w ${output}
 

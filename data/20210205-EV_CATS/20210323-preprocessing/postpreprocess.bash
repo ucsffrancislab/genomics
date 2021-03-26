@@ -1,7 +1,14 @@
 #!/usr/bin/env bash
 
 
-module load CBI samtools fastqc
+if [ -n "$( declare -F module )" ] ; then
+	echo "Loading required modules"
+	module load CBI samtools fastqc
+else
+	echo -e "\nThis will probably fail as could not load modules.\n"
+	echo -e "You should probably cancel and run on appropriate node.\n"
+	sleep 10	
+fi
 
 set -x
 
@@ -28,16 +35,17 @@ transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPat
 for f in output/*.toTranscriptome.out.bam ; do
 samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
 awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-  ${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_count
+  ${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_counts
 done
 
 awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
   output/*.toTranscriptome.out.bam.transcript_ids \
-  | sort | uniq -c | sort -rn > post/gene_count
+  | sort | uniq -c | sort -rn > post/gene_counts
 
-awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-  output/SFHH0*.toTranscriptome.out.bam.transcript_ids \
-  | sort | uniq -c | sort -rn > post/determined_gene_count.txt
+#	Exclude the Undetermined data
+#awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+#  output/SFHH0*.toTranscriptome.out.bam.transcript_ids \
+#  | sort | uniq -c | sort -rn > post/determined_gene_count.txt
 
 #for f in ${PWD}/output/*unmapped.fasta.gz ; do
 #  base=${f%.fasta.gz}
@@ -57,11 +65,11 @@ mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22
 
 ~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
   -o post/STAR_mirna_miRNA_primary_transcript.tsv \
-  output/*.trimmed.STAR.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA_primary_transcript.tsv.log 2>&1
+  output/*.STAR.mirna.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA_primary_transcript.tsv.log 2>&1
 
 ~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
   -o post/STAR_mirna_miRNA.tsv \
-  output/*.trimmed.STAR.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA.tsv.log 2>&1
+  output/*.STAR.mirna.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA.tsv.log 2>&1
 
 #~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
 #  -o post/bowtie2_all_mirna_miRNA_primary_transcript.tsv \
@@ -73,18 +81,22 @@ mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22
 
 ~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
   -o post/bowtie2_mirna_miRNA_primary_transcript.tsv \
-  output/*.trimmed.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA_primary_transcript.tsv.log 2>&1
+  output/*.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA_primary_transcript.tsv.log 2>&1
 
 ~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
   -o post/bowtie2_mirna_miRNA.tsv \
-  output/*.trimmed.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA.tsv.log 2>&1
+  output/*.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA.tsv.log 2>&1
 
 #featureCounts -a /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf.gz -o post/featureCounts.csv *bam
 
 
 for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
-samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
+#samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
+samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
+cat ${f}.mirnas | sort | uniq -c | sort -rn > ${f}.mirna_counts
 done
+
+cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | sort | uniq -c | sort -rn > post/mirna_counts
 
 for f in output/*fasta.gz ; do
 zcat $f | paste - - | wc -l > $f.read_count
@@ -98,24 +110,22 @@ done
 fastqc -o post/ output/*fastq.gz
 
 ./report.bash 
-./report.bash >> report.md
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
+
 
 #awk -F"\t" '(($7+$8+$9)>0)' *mirna_miRNA*tsv
 
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output/*mirna_counts
 
-python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_count
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_counts
 
-#for f in output/*blastn.nt.txt.gz ; do
-#add_species_genus_family_to_blast_output.bash -input ${f}
-#done
-#
 #for f in output/*blastn.nt.species_genus_family.txt.gz ; do
-#zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
+#	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
 #done
 #python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
-#
-#sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/family_counts.csv
+
+#	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/family_counts.csv
 
 
 

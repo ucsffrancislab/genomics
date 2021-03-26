@@ -78,8 +78,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				;;
 
 			unconsolidated)
-				cons_umi_id=""
-				c_base=${PWD}/output/${basename}
+				#cons_umi_id=""
+				cons_umi_id=${copy_umi_id}
+				c_base=${PWD}/output/${basename}.umi
 				;;
 		esac
 
@@ -239,9 +240,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/salmonella \
+					~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella \
 					--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 			fi
 
@@ -255,9 +256,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/burkholderia \
+					~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia \
 					--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 			fi
 
@@ -271,9 +272,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=phiX-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=phiX-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/phiX \
+					~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
 					--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 			fi
 
@@ -287,9 +288,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=Smi-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=Smi-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
+					~/.local/bin/STAR.bash --runThreadN 4 --readFilesCommand zcat \
 						--genomeDir /francislab/data1/refs/STAR/human_mirna \
 						--readFilesIn ${in_base}.fastq.gz \
 						--outSAMtype BAM SortedByCoordinate \
@@ -307,9 +308,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=b2mi-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=b2mi-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/human_mirna \
+					~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/human_mirna \
 					--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 			fi
 
@@ -323,9 +324,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=b2mia-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=b2mia-${basename} --time=60 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie2.bash --sort --all --threads 8 -x /francislab/data1/refs/bowtie2/human_mirna \
+					~/.local/bin/bowtie2.bash --sort --all --threads 4 -x /francislab/data1/refs/bowtie2/human_mirna \
 					--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 			fi
 
@@ -339,7 +340,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=b2h-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=b2h-${basename} --time=60 --ntasks=8 --mem=62G \
 					--output=${out_base}.${date}.txt \
 					~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
 					-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
@@ -356,9 +357,9 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=b1mi-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=b1mi-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie.bash --sam --threads 8 --sort \
+					~/.local/bin/bowtie.bash --sam --threads 4 --sort \
 					-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
 					${in_base}.fastq.gz -o ${f}
 			fi
@@ -373,65 +374,71 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi
-				sbatch ${depend} --job-name=b1mia-${basename} --time=480 --ntasks=8 --mem=62G \
+				sbatch ${depend} --job-name=b1mia-${basename} --time=30 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
-					~/.local/bin/bowtie.bash --sam --all --threads 8 --sort \
+					~/.local/bin/bowtie.bash --sam --all --threads 4 --sort \
 					-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
 					${in_base}.fastq.gz -o ${f}
 			fi
 
+			out_base=${in_base}.blastn.nt
+			blast_id=""
+			f=${out_base}.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${trim_id} ] ; then
+					depend="--dependency=afterok:${trim_id}"
+				else
+					depend=""
+				fi
+				blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=60G \
+					--parsable \
+					--output=${out_base}.${date}.txt \
+					~/.local/bin/blastn.bash -num_threads 8 \
+					-query ${in_base}.fastq.gz \
+					-db /francislab/data1/refs/blastn/nt \
+					-outfmt 6 \
+					-out ${f} )
+			fi
+		
+			out_base=${in_base}.blastn.nt.species_genus_family
+			f=${out_base}.txt.gz
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${blast_id} ] ; then
+					depend="--dependency=afterok:${blast_id}"
+				else
+					depend=""
+				fi  
+				sbatch ${depend} --job-name=sgf-${basename} --time=999 --ntasks=4 --mem=30G \
+					--output=${out_base}.${date}.txt \
+					~/.local/bin/add_species_genus_family_to_blast_output.bash \
+						-input ${in_base}.blastn.nt.txt.gz
+			fi  
+		
+			out_base=${in_base}.diamond.nr
+			f=${out_base}.daa
+			if [ -f $f ] && [ ! -w $f ] ; then
+				echo "Write-protected $f exists. Skipping."
+			else
+				if [ ! -z ${trim_id} ] ; then
+					depend="--dependency=afterok:${trim_id}"
+				else
+					depend=""
+				fi
+				sbatch ${depend} --job-name=d-${basename} --time=999 --ntasks=8 --mem=60G \
+					--output=${out_base}.${date}.txt \
+					~/.local/bin/diamond.bash blastx --threads 8 \
+						--query ${in_base}.fastq.gz \
+						--db /francislab/data1/refs/diamond/nr \
+						--evalue 0.1 \
+						--outfmt 100 --out ${f}
+			fi
+
 		done	#	for trimmer in bbduk1 bbduk2 cutadapt ; do
 
-#	#	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.txt.gz
-#	#	if [ -f $f ] && [ ! -w $f ] ; then
-#	#		echo "Write-protected $f exists. Skipping."
-#	#	else
-#	#		if [ ! -z ${trim_id} ] ; then
-#	#			depend="--dependency=afterok:${trim_id}"
-#	#		else
-#	#			depend=""
-#	#		fi
-#	#		blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=62G \
-#	#			--parsable \
-#	#			--output=${PWD}/output/${basename}.blastn.nt.${date}.txt \
-#	#			~/.local/bin/blastn.bash -num_threads 8 \
-#	#			-query ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
-#	#			-db /francislab/data1/refs/blastn/nt \
-#	#			-outfmt 6 \
-#	#			-out ${f} )
-#	#	fi
-#	#
-#	#	f=${PWD}/output/${basename}_w_umi.trimmed.blastn.nt.species_genus_family.txt.gz
-#	#	if [ -f $f ] && [ ! -w $f ] ; then
-#	#		echo "Write-protected $f exists. Skipping."
-#	#	else
-#	#		if [ ! -z ${blast_id} ] ; then
-#	#			depend="--dependency=afterok:${blast_id}"
-#	#		else
-#	#			depend=""
-#	#		fi  
-#	#		sbatch ${depend} --job-name=sgf-${basename} --time=99 --ntasks=2 --mem=15G \
-#	#			--output=${f%.txt.gz}.${date}.txt \
-#	#			~/.local/bin/add_species_genus_family_to_blast_output.bash -input ${f}
-#	#	fi  
-#	#
-#	#	f=${PWD}/output/${basename}_w_umi.trimmed.diamond.nr.daa
-#	#	if [ -f $f ] && [ ! -w $f ] ; then
-#	#		echo "Write-protected $f exists. Skipping."
-#	#	else
-#	#		if [ ! -z ${trim_id} ] ; then
-#	#			depend="--dependency=afterok:${trim_id}"
-#	#		else
-#	#			depend=""
-#	#		fi
-#	#		sbatch ${depend} --job-name=d-${basename} --time=480 --ntasks=8 --mem=32G \
-#	#			--output=${PWD}/output/${basename}.diamond.nr.${date}.txt \
-#	#			~/.local/bin/diamond.bash blastx --threads 8 \
-#	#				--query ${PWD}/output/${basename}_w_umi.trimmed.fastq.gz \
-#	#				--db /francislab/data1/refs/diamond/nr \
-#	#				--evalue 0.1 \
-#	#				--outfmt 100 --out ${f}
-#	#	fi
 	done	#	for cons in consolidated unconsolidated ; do
 
 done	#	for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
