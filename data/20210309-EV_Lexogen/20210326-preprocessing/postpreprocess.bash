@@ -15,12 +15,10 @@ set -x
 mkdir post/
 
 cd output/
-ln -s /francislab/data1/raw/20210309-EV_Lexogen/SFHH003_S1_L001_R1_001.fastq.gz
-ln -s /francislab/data1/raw/20210309-EV_Lexogen/SFHH004a_S2_L001_R1_001.fastq.gz
-ln -s /francislab/data1/raw/20210309-EV_Lexogen/SFHH004b_S3_L001_R1_001.fastq.gz
-ln -s /francislab/data1/raw/20210309-EV_Lexogen/Undetermined_S0_L001_R1_001.fastq.gz
+for f in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
+ln -s ${f}
+done
 cd ../
-
 
 for f in output/*fastq.gz ; do
 zcat $f | paste - - - - | wc -l > $f.read_count
@@ -92,9 +90,9 @@ mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22
 
 
 for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
-#samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
-samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
-cat ${f}.mirnas | sort | uniq -c | sort -rn > ${f}.mirna_counts
+	#samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
+	samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
+	cat ${f}.mirnas | sort | uniq -c | sort -rn > ${f}.mirna_counts
 done
 
 cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | sort | uniq -c | sort -rn > post/mirna_counts
@@ -110,10 +108,6 @@ done
 
 fastqc -o post/ output/*fastq.gz
 
-./report.bash 
-./report.bash > report.md
-sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
-
 
 #awk -F"\t" '(($7+$8+$9)>0)' *mirna_miRNA*tsv
 
@@ -121,12 +115,19 @@ python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output
 
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_counts
 
-#for f in output/*blastn.nt.species_genus_family.txt.gz ; do
+for f in output/*blastn.nt.species_genus_family.txt.gz ; do
 #	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
-#done
-#python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
+	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
+	cat ${f%.txt.gz}.families | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
+done
+cat output/*.blastn.nt.species_genus_family.families | sort | uniq -c | sort -rn > post/family_counts
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
 
 #	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/family_counts.csv
 
 
+
+./report.bash 
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
 

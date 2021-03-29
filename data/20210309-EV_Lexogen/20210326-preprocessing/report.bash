@@ -4,6 +4,8 @@ dir=output
 
 #core=${dir}/*_R1_001.*{bbduk,cutadapt}?
 
+#samples=$( ls -1 /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz | xargs -n 1 basename | awk -F"_" '{print $1}' | uniq )
+
 echo -n "|    |"
 for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.fastq.gz ) ; do
 	base=$( basename $f .fastq.gz )
@@ -306,4 +308,24 @@ for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
 done
 
 
+
+echo -n "| blastn Family Counts |"
+for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.blastn.nt.species_genus_family.family_counts ) ; do
+	echo -n " --- |"
+done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| ${family} |"
+	IFS="${save}"
+	for f in $( ls ${dir}/*_R1_001.*{bbduk,cutadapt}?.blastn.nt.species_genus_family.family_counts ) ; do
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' )
+		echo -n " ${c} |"
+	done
+	echo
+	IFS=","
+done
+IFS="${save}"
 
