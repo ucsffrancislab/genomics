@@ -407,7 +407,7 @@ for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
 				else
 					depend=""
 				fi  
-				sbatch ${depend} --job-name=sgf-${basename} --time=999 --ntasks=4 --mem=30G \
+				sbatch ${depend} --job-name=sgf-${basename} --time=9999 --ntasks=4 --mem=30G \
 					--output=${out_base}.${date}.txt \
 					~/.local/bin/add_species_genus_family_to_blast_output.bash \
 						-input ${in_base}.blastn.nt.txt.gz
