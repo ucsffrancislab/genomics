@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#alias sbatch="sbatch --mail-type=FAIL"
+
 #	/francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz
 #	/francislab/data1/raw/20191008_Stanford71/02_R1.fastq.gz
 #	/francislab/data1/raw/20191008_Stanford71/03_R1.fastq.gz
@@ -84,8 +86,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${PWD}/output
 
-#for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
-for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
+for r1 in /francislab/data1/raw/20191008_Stanford71/50_R1.fastq.gz ; do
 	r2=${r1/R1/R2}
 
 	#ln -s $fastq output/
@@ -95,7 +96,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 	basename=$( basename $r1 _R1.fastq.gz )
 
 	#for trimmer in bbduk1 bbduk2 cutadapt1 cutadapt2 ; do
-	for trimmer in bbduk1 bbduk2 ; do
+	for trimmer in bbduk1 bbduk2 bbduk3 ; do
 		echo Trimming with $trimmer
 
 		in_base=${PWD}/output/${basename}
@@ -134,15 +135,21 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 #				fi
 #				;;
 
+#	>Read1_adapter
+#	AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
+#	>Read2_adapter
+#	AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT
+
 			bbduk1)
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
 					trim_id=$( sbatch --parsable --job-name=bbduk1_${basename} \
-						--time=60 --ntasks=2 --mem=15G \
+						--mail-type=FAIL \
+						--time=99 --ntasks=4 --mem=30G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/bbduk.bash \
-							-Xmx16g \
+							-Xmx30g \
 							in1=${r1} \
 							in2=${r2} \
 							out1=${out_base}_R1.fastq.gz \
@@ -160,10 +167,6 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 							maq=20 \
 							qtrim=w trimq=20 minavgquality=0 \
 							minlength=15 )
-							#literal=TGGAATTC,AAAAAAAA \
-							#forcetrimleft=16 \
-							#in1=${in_base}.fastq.gz \
-							#out1=${f} \
 					echo $trim_id
 				fi
 				;;
@@ -173,10 +176,11 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 					echo "Write-protected $f exists. Skipping."
 				else
 					trim_id=$( sbatch --parsable --job-name=bbduk2_${basename} \
-						--time=60 --ntasks=2 --mem=15G \
+						--mail-type=FAIL \
+						--time=99 --ntasks=4 --mem=30G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/bbduk.bash \
-							-Xmx16g \
+							-Xmx30g \
 							in1=${r1} \
 							in2=${r2} \
 							out1=${out_base}_R1.fastq.gz \
@@ -194,41 +198,69 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 							maq=20 \
 							qtrim=w trimq=20 minavgquality=0 \
 							minlength=15 )
-							#literal=TGGAATTCTCGGGTGCCAAGGAA \
-							#forcetrimleft=16 \
-							#in1=${in_base}.fastq.gz \
-							#out1=${f} \
 					echo $trim_id
 				fi
 				;;
+
+			bbduk3)
+				if [ -f $f ] && [ ! -w $f ] ; then
+					echo "Write-protected $f exists. Skipping."
+				else
+					trim_id=$( sbatch --parsable --job-name=bbduk3_${basename} \
+						--mail-type=FAIL \
+						--time=99 --ntasks=4 --mem=30G \
+						--output=${out_base}.${date}.txt \
+						~/.local/bin/bbduk.bash \
+							-Xmx30g \
+							in1=${r1} \
+							in2=${r2} \
+							out1=${out_base}_R1.fastq.gz \
+							out2=${out_base}_R2.fastq.gz \
+							outs=${out_base}_S.fastq.gz \
+							literal=AGATCGGA,AAAAAAAA \
+							trimpolya=8 \
+							ktrim=r \
+							k=8 \
+							mink=11 \
+							hdist=1 \
+							tbo \
+							ordered=t \
+							gcbins=auto \
+							maq=20 \
+							qtrim=w trimq=20 minavgquality=0 \
+							minlength=15 )
+					echo $trim_id
+				fi
+				;;
+
 		esac
 
 
 
-		in_base=${out_base}
-		out_base=${in_base}.length
-		f=${out_base}_R1.fastq.gz
-		length_id=""
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			if [ ! -z ${trim_id} ] ; then
-				depend="--dependency=afterok:${trim_id}"
-			else
-				depend=""
-			fi
-			length_id=$( sbatch ${depend} --job-name=length-${basename} --time=30 --ntasks=4 --mem=30G \
-				--parsable \
-				--output=${out_base}.${date}.txt \
-				~/.local/bin/filter_paired_fastq_on_equal_read_length.bash \
-					${out_base}_R1.fastq.gz \
-					${out_base}_R2.fastq.gz \
-					${out_base}_R1.fastq.gz \
-					${out_base}_R2.fastq.gz \
-					${out_base}_diff_R1.fastq.gz \
-					${out_base}_diff_R2.fastq.gz )
-			echo $length_id
-		fi
+#		in_base=${out_base}
+#		out_base=${in_base}.length
+#		f=${out_base}_R1.fastq.gz
+#		length_id=""
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ ! -z ${trim_id} ] ; then
+#				depend="--dependency=afterok:${trim_id}"
+#			else
+#				depend=""
+#			fi
+#			length_id=$( sbatch ${depend} --job-name=length-${basename} --time=30 --ntasks=4 --mem=30G \
+#				--parsable \
+#				--output=${out_base}.${date}.txt \
+#				~/.local/bin/filter_paired_fastq_on_equal_read_length.bash \
+#					${in_base}_R1.fastq.gz \
+#					${in_base}_R2.fastq.gz \
+#					${out_base}_R1.fastq.gz \
+#					${out_base}_R2.fastq.gz \
+#					${out_base}_diff_R1.fastq.gz \
+#					${out_base}_diff_R2.fastq.gz )
+#			echo $length_id
+#		fi
 	
 		in_base=${out_base}
 		out_base=${in_base}.unpaired
@@ -237,15 +269,22 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
-			if [ ! -z ${length_id} ] ; then
-				depend="--dependency=afterok:${length_id}"
+#			if [ ! -z ${length_id} ] ; then
+#				depend="--dependency=afterok:${length_id}"
+#			else
+#				depend=""
+#			fi
+			if [ ! -z ${trim_id} ] ; then
+				depend="--dependency=afterok:${trim_id}"
 			else
 				depend=""
 			fi
-			unpair_id=$( sbatch ${depend} --job-name=unpair-${basename} --time=30 --ntasks=4 --mem=30G \
+			unpair_id=$( sbatch ${depend} --job-name=unpair-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--parsable \
 				--output=${out_base}.${date}.txt \
-				~/.local/bin/unpair_fastqs.bash -o ${f} ${base}_R?.fastq.gz )
+				~/.local/bin/unpair_fastqs.bash -o ${f} ${in_base}_R?.fastq.gz ${in_base}_S.fastq.gz )
+				#~/.local/bin/unpair_fastqs.bash -o ${f} ${in_base}_R?.fastq.gz )
 			echo $unpair_id
 		fi
 
@@ -260,7 +299,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=star-${basename} --time=480 --ntasks=8 --mem=62G \
+			sbatch ${depend} --job-name=star-${basename} --time=999 --ntasks=8 --mem=62G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
 					--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ \
@@ -284,7 +324,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=salmonella-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -300,7 +341,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=burkholderia-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -316,7 +358,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=phiX-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=phiX-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -332,7 +375,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=Smi-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=Smi-${basename} --time=999 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/STAR.bash --runThreadN 4 --readFilesCommand zcat \
 					--genomeDir /francislab/data1/refs/STAR/human_mirna \
@@ -352,7 +396,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=b2mi-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=b2mi-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/human_mirna \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -368,7 +413,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=b2mia-${basename} --time=60 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=b2mia-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --all --threads 4 -x /francislab/data1/refs/bowtie2/human_mirna \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -384,7 +430,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=b2h-${basename} --time=60 --ntasks=8 --mem=62G \
+			sbatch ${depend} --job-name=b2h-${basename} --time=999 --ntasks=8 --mem=62G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
 				-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
@@ -401,7 +448,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=b1mi-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=b1mi-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie.bash --sam --threads 4 --sort \
 				-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
@@ -418,68 +466,69 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			sbatch ${depend} --job-name=b1mia-${basename} --time=30 --ntasks=4 --mem=30G \
+			sbatch ${depend} --job-name=b1mia-${basename} --time=99 --ntasks=4 --mem=30G \
+						--mail-type=FAIL \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie.bash --sam --all --threads 4 --sort \
 				-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
 				${in_base}.fastq.gz -o ${f}
 		fi
 
-		out_base=${in_base}.blastn.nt
-		blast_id=""
-		f=${out_base}.txt.gz
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			if [ ! -z ${unpair_id} ] ; then
-				depend="--dependency=afterok:${unpair_id}"
-			else
-				depend=""
-			fi
-			blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=60G \
-				--parsable \
-				--output=${out_base}.${date}.txt \
-				~/.local/bin/blastn.bash -num_threads 8 \
-				-query ${in_base}.fastq.gz \
-				-db /francislab/data1/refs/blastn/nt \
-				-outfmt 6 \
-				-out ${f} )
-		fi
-	
-		out_base=${in_base}.blastn.nt.species_genus_family
-		f=${out_base}.txt.gz
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			if [ ! -z ${blast_id} ] ; then
-				depend="--dependency=afterok:${blast_id}"
-			else
-				depend=""
-			fi  
-			sbatch ${depend} --job-name=sgf-${basename} --time=999 --ntasks=4 --mem=30G \
-				--output=${out_base}.${date}.txt \
-				~/.local/bin/add_species_genus_family_to_blast_output.bash \
-					-input ${in_base}.blastn.nt.txt.gz
-		fi  
-	
-		out_base=${in_base}.diamond.nr
-		f=${out_base}.daa
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			if [ ! -z ${unpair_id} ] ; then
-				depend="--dependency=afterok:${unpair_id}"
-			else
-				depend=""
-			fi
-			sbatch ${depend} --job-name=d-${basename} --time=999 --ntasks=8 --mem=60G \
-				--output=${out_base}.${date}.txt \
-				~/.local/bin/diamond.bash blastx --threads 8 \
-					--query ${in_base}.fastq.gz \
-					--db /francislab/data1/refs/diamond/nr \
-					--evalue 0.1 \
-					--outfmt 100 --out ${f}
-		fi
+#		out_base=${in_base}.blastn.nt
+#		blast_id=""
+#		f=${out_base}.txt.gz
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ ! -z ${unpair_id} ] ; then
+#				depend="--dependency=afterok:${unpair_id}"
+#			else
+#				depend=""
+#			fi
+#			blast_id=$( sbatch ${depend} --job-name=blast-${basename} --time=999 --ntasks=8 --mem=120G \
+#				--parsable \
+#				--output=${out_base}.${date}.txt \
+#				~/.local/bin/blastn.bash -num_threads 8 \
+#				-query ${in_base}.fastq.gz \
+#				-db /francislab/data1/refs/blastn/nt \
+#				-outfmt 6 \
+#				-out ${f} )
+#		fi
+#	
+#		out_base=${in_base}.blastn.nt.species_genus_family
+#		f=${out_base}.txt.gz
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ ! -z ${blast_id} ] ; then
+#				depend="--dependency=afterok:${blast_id}"
+#			else
+#				depend=""
+#			fi  
+#			sbatch ${depend} --job-name=sgf-${basename} --time=999 --ntasks=4 --mem=30G \
+#				--output=${out_base}.${date}.txt \
+#				~/.local/bin/add_species_genus_family_to_blast_output.bash \
+#					-input ${in_base}.blastn.nt.txt.gz
+#		fi  
+
+#		out_base=${in_base}.diamond.nr
+#		f=${out_base}.daa
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ ! -z ${unpair_id} ] ; then
+#				depend="--dependency=afterok:${unpair_id}"
+#			else
+#				depend=""
+#			fi
+#			sbatch ${depend} --job-name=d-${basename} --time=999 --ntasks=8 --mem=60G \
+#				--output=${out_base}.${date}.txt \
+#				~/.local/bin/diamond.bash blastx --threads 8 \
+#					--query ${in_base}.fastq.gz \
+#					--db /francislab/data1/refs/diamond/nr \
+#					--evalue 0.1 \
+#					--outfmt 100 --out ${f}
+#		fi
 
 	done	#	for trimmer in bbduk1 bbduk2 cutadapt ; do
 
