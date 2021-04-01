@@ -45,10 +45,10 @@ while [ $# -gt 0 ] ; do
 				query="${query}"
 			elif [ ${query: -4} == 'q.gz' ]; then
 				querybase=${query%.*q.gz}
-				query="<(zcat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/p;2~4p' )"
+				query="<(zcat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/;1~4p;2~4p' )"
 			elif [ ${query: -1} == 'a' ]; then
 				querybase=${query%.*q}
-				query="<( cat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/p;2~4p' )"
+				query="<( cat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/;1~4p;2~4p' )"
 			fi
 
 #				query="<( cat ${query} | paste - - - - | cut -f 1,2n| sed 's/@/>/'g | tr -s '\t' '\n' )"
