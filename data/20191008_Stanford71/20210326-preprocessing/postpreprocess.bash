@@ -21,7 +21,7 @@ done
 cd ../
 
 
-for f in output/*fastq.gz ; do
+for f in output/[2-7]*fastq.gz ; do
 zcat $f | paste - - - - | wc -l > $f.read_count
 zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
 done
@@ -122,9 +122,19 @@ python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/
 #	cat ${f%.txt.gz}.families | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
 #done
 #cat output/*.blastn.nt.species_genus_family.families | sort | uniq -c | sort -rn > post/family_counts
-#python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
+#python3 ~/.local/bin/merge_uniq-c.py --int --output post/blastn_family_counts.csv output/*blastn*family_counts
 
-#	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/family_counts.csv
+#	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/blastn_family_counts.csv
+
+
+#for f in output/*diamond.nr.species_genus_family.txt.gz ; do
+#	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
+#	cat ${f%.txt.gz}.families | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
+#done
+#cat output/*.diamond.nr.species_genus_family.families | sort | uniq -c | sort -rn > post/diamond_family_counts
+#python3 ~/.local/bin/merge_uniq-c.py --int --output post/diamond_family_counts.csv output/*diamond*family_counts
+
+#	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/diamond_family_counts.csv
 
 
 
