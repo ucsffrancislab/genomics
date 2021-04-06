@@ -37,5 +37,8 @@ else
 	echo "Creating $f"
 	~/.local/BBMap/bbduk.sh $ARGS
 	chmod a-w $out1 $out2 $outs
+
+	count_fasta_reads.bash $out1 $out2 $outs
+	average_fasta_read_length.bash $out1 $out2 $outs
 fi
 
