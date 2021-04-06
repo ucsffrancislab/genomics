@@ -140,3 +140,20 @@ nohup bracken-build -d viral_masked -t 32 -l 75  > bracken.viral_masked.75.out 2
 
 
 
+##################################################
+20210405
+
+cp -a standard-20200615 standard-k15-20200615
+\rm standard-k15-20200615/*k2d
+\rm standard-k15-20200615/seqid2taxid.map
+
+Make db with smaller k (default is 35)
+
+nohup kraken2-build --db standard-k15-20200615 --build --threads 16 --kmer-len 15 --minimizer-len 15 --minimizer-spaces 3 &
+
+
+
+
+
+
+
