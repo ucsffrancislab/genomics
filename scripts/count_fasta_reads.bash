@@ -6,7 +6,7 @@ set -o pipefail
 
 set -x
 
-ARGS=$*
+#ARGS=$*
 
 while [ $# -gt 0 ] ; do
 
