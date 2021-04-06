@@ -2,6 +2,8 @@
 #SBATCH --export=NONE		# required when using 'module'
 
 hostname
+echo "Slurm job id:${SLURM_JOBID}:"
+date
 
 set -e  # exit if any command fails
 set -u  # Error on usage of unset variables
