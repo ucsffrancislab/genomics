@@ -69,8 +69,37 @@ else
 		fi
 	done
 
+	#	01.bbduk1.unpaired.STAR.hg38.Aligned.sortedByCoord.out.bam
+	#	01.bbduk1.unpaired.STAR.hg38.Aligned.toTranscriptome.out.bam
+
+	tbam="${outprefix}Aligned.toTranscriptome.out.bam"
+	if [ -f ${tbam} ] ; then
+		#	-F = NOT
+		#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
+		samtools view -c -F 3844 ${tbam} > ${tbam}.aligned_count.txt
+		chmod a-w ${tbam}.aligned_count.txt
+
+		#	-f = IS
+		#	0x4	4	UNMAP
+		samtools view -c -f 4    ${tbam} > ${tbam}.unaligned_count.txt
+		chmod a-w ${tbam}.unaligned_count.txt
+	fi
+
 	#samtools.bash fasta -f 4 --threads $[${PBS_NUM_PPN:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
 	samtools.bash fasta -f 4 --threads $[${threads:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
+	chmod a-w ${f%.bam}.unmapped.fasta.gz
+
+	#	Produces ${f%.bam}.unmapped.fasta.gz.read_count.txt
 	count_fasta_reads.bash ${f%.bam}.unmapped.fasta.gz
+
+	#	-F = NOT
+	#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
+	samtools view -c -F 3844 $f > $f.aligned_count.txt
+	chmod a-w $f.aligned_count.txt
+
+	#	-f = IS
+	#	0x4	4	UNMAP
+	samtools view -c -f 4    $f > $f.unaligned_count.txt
+	chmod a-w $f.unaligned_count.txt
 fi
 

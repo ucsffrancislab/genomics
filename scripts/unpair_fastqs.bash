@@ -28,7 +28,13 @@ else
 	echo "Creating $f"
 
 	zcat ${SELECT_ARGS} | sed -E 's/ ([[:digit:]]):.*$/\/\1/' | gzip > ${f}
+	chmod a-w ${f}
 
-	chmod a-w $f
+	#	count_fasta_reads.bash
+	zcat ${f} | paste - - - - | wc -l > ${f}.read_count.txt
+	chmod a-w ${f}
+
+	zcat ${f} | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > ${f}.average_length.txt
+	chmod a-w ${f}
 fi
 

@@ -76,7 +76,10 @@ else
 		--readFilesIn ${scratch_r1} ${scratch_r2} \
 		--outFileNamePrefix ${scratch_out}/$( basename ${outFileNamePrefix} )
 
-	mv --update ${scratch_out}/* $( dirname ${f} )
-	#	unnecessary as STAR.bash will chmod files if successfull
+	#	won't mv fail if files are write protected?
+	#mv --update ${scratch_out}/* $( dirname ${f} )
+	cp --archive ${scratch_out}/* $( dirname ${f} )
+
+	#	unnecessary as STAR.bash will chmod files if successfull?
 	#chmod -R a-w ${f}
 fi

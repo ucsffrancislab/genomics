@@ -66,8 +66,13 @@ else
 
 	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${scratch_out} ${scratch_inputs}
 
-	mv --update ${scratch_out}* $( dirname ${f} )
+	#	won't mv fail if files are write protected?
+	#mv --update ${scratch_out}* $( dirname ${f} )
+	cp --archive ${scratch_out}* $( dirname ${f} )
+
 #	mv --update ${scratch_out} $( dirname ${f} )
 #	mv --update ${TMPDIR}/*.err.txt $( dirname ${f} )
-	chmod a-w ${f}
+
+	#	unnecessary as bowtie2.bash will chmod files if successfull?
+	#chmod a-w ${f}
 fi

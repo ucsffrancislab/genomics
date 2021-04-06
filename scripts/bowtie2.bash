@@ -52,5 +52,15 @@ else
 		chmod a-w $f.bai
 	fi
 	chmod a-w $f
+
+	#	-F = NOT
+	#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
+	samtools view -c -F 3844 $f > $f.aligned_count.txt
+	chmod a-w $f.aligned_count.txt
+
+	#	-f = IS
+	#	0x4	4	UNMAP
+	samtools view -c -f 4    $f > $f.unaligned_count.txt
+	chmod a-w $f.unaligned_count.txt
 fi
 
