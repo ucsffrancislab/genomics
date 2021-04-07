@@ -93,7 +93,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${PWD}/output
 
-for r1 in /francislab/data1/raw/20191008_Stanford71/0?_R1.fastq.gz ; do
+for r1 in /francislab/data1/raw/20191008_Stanford71/1?_R1.fastq.gz ; do
 	r2=${r1/R1/R2}
 
 	#ln -s $fastq output/
@@ -566,8 +566,9 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/0?_R1.fastq.gz ; do
 			else
 				depend=""
 			fi
-			diamond_id=$( sbatch ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
-				--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
+			#diamond_id=$( sbatch ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
+			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
+			diamond_id=$( ${sbatch} ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
 				--output=${f}.${date}.txt \
 				~/.local/bin/diamond.bash blastx --threads 8 \
 					--query ${in_base}.fastq.gz \
@@ -587,8 +588,8 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/0?_R1.fastq.gz ; do
 			else
 				depend=""
 			fi  
-			sbatch ${depend} --job-name=sgf-${basename} --time=9999 --ntasks=4 --mem=30G \
-				--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
+			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
+			${sbatch} ${depend} --job-name=sgf-${basename} --time=9999 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/add_species_genus_family_to_blast_output.bash \
 					-input ${in_base}.diamond.nr.txt.gz

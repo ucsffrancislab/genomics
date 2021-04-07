@@ -15,32 +15,35 @@ set -x
 mkdir post/
 
 cd output/
-for f in /francislab/data1/raw/20191008_Stanford71/01_R?.fastq.gz ; do
-ln -s ${f}
+for f in /francislab/data1/raw/20191008_Stanford71/??_R?.fastq.gz* ; do
+	ln -s ${f}
 done
 cd ../
 
 
-for f in output/[2-7]*fastq.gz ; do
-zcat $f | paste - - - - | wc -l > $f.read_count
-zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
-done
+#for f in output/[2-7]*fastq.gz ; do
+#for f in output/*fastq.gz ; do
+#	zcat $f | paste - - - - | wc -l > $f.read_count
+#	zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
+#done
 
 for f in output/*.toTranscriptome.out.bam ; do
-samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.transcript_count
+	samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.transcript_count
 done
 
 transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv
 
 for f in output/*.toTranscriptome.out.bam ; do
-samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
-awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-  ${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_counts
+	samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
+	awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  	${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_counts
 done
 
+mkdir ~/.sort_gene_counts
 awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
   output/*.toTranscriptome.out.bam.transcript_ids \
-  | sort | uniq -c | sort -rn > post/gene_counts
+  | sort --temporary-directory=$HOME/.sort_gene_counts | uniq -c | sort -rn > post/gene_counts
+rmdir ~/.sort_gene_counts
 
 #	Exclude the Undetermined data
 #awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
@@ -91,23 +94,26 @@ mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22
 
 
 for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
-#samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
-samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
-cat ${f}.mirnas | sort | uniq -c | sort -rn > ${f}.mirna_counts
+	#samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
+	samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
+	cat ${f}.mirnas | sort | uniq -c | sort -rn > ${f}.mirna_counts
 done
 
-cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | sort | uniq -c | sort -rn > post/mirna_counts
+mkdir ~/.sort_mirna_counts
+cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | \
+	sort --temporary-directory=$HOME/.sort_mirna_counts | uniq -c | sort -rn > post/mirna_counts
+rmdir ~/.sort_mirna_counts
 
-for f in output/*fasta.gz ; do
-zcat $f | paste - - | wc -l > $f.read_count
-done
 
-for f in output/*.bam ; do
-samtools view -c -F 3844 $f > $f.aligned_count
-samtools view -c -f 4    $f > $f.unaligned_count
-done
+#for f in output/*fasta.gz ; do
+#	zcat $f | paste - - | wc -l > $f.read_count
+#done
 
-fastqc -o post/ output/*fastq.gz
+#for f in output/*.bam ; do
+#	samtools view -c -F 3844 $f > $f.aligned_count
+#	samtools view -c -f 4    $f > $f.unaligned_count
+#done
+
 
 
 #awk -F"\t" '(($7+$8+$9)>0)' *mirna_miRNA*tsv
@@ -138,7 +144,11 @@ python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/
 
 
 
-./report.bash 
+#	./report.bash 
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
+
+
+
+fastqc -o post/ output/*fastq.gz
 

@@ -27,6 +27,12 @@ cd ../
 
 echo -n "|    |"
 for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
+	echo -n " ${s} |"
+done ; done
+echo
+
+echo -n "| --- |"
+for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
 	echo -n " --- |"
 done ; done
 echo
@@ -300,7 +306,7 @@ echo
 for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
 	echo -n "| ${gene} |"
 	for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
-		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.unpaired.STAR.hg38.Aligned.toTranscriptome.out.bam.mirna_counts )
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.unpaired.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts )
 		echo -n " ${c} |"
 	done ; done
 	echo
