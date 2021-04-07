@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE		# required when using 'module'
+
+hostname
+echo "Slurm job id:${SLURM_JOBID}:"
+date
 
 #	git clone https://github.com/chmille4/bamReadDepther.git
 #	cd bamReadDepther
