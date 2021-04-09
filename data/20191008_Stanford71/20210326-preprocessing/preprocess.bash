@@ -93,7 +93,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${PWD}/output
 
-for r1 in /francislab/data1/raw/20191008_Stanford71/1?_R1.fastq.gz ; do
+for r1 in /francislab/data1/raw/20191008_Stanford71/??_R1.fastq.gz ; do
 	r2=${r1/R1/R2}
 
 	#ln -s $fastq output/
@@ -588,11 +588,33 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/1?_R1.fastq.gz ; do
 			else
 				depend=""
 			fi  
-			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
-			${sbatch} ${depend} --job-name=sgf-${basename} --time=9999 --ntasks=4 --mem=30G \
+
+			threads=4
+			db=/francislab/data1/refs/taxadb/asgf.sqlite
+			input=${in_base}.diamond.nr.txt.gz
+			db_size=$( stat --dereference --format %s ${db} )
+
+			if [ -f ${input} ] ; then
+				input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
+			else
+				#	biggest existing.
+				#input_size=17000000000
+				input_size=10000000000
+			fi
+
+			#index_size=$( du -sb ${index} | awk '{print $1}' )
+			scratch=$( echo $(( ((${input_size}+${input_size}+${db_size})/${threads}/1000000000*12/10)+1 )) )
+			# Add 1 in case files are small so scratch will be 1 instead of 0.
+			# 11/10 adds 10% to account for the output
+			# 12/10 adds 20% to account for the output
+
+			echo "Using scratch:${scratch}"
+
+			${sbatch} ${depend} --job-name=sgf-${basename} --time=9999 --ntasks=${threads} --mem=30G \
+				--gres=scratch:${scratch}G \
 				--output=${out_base}.${date}.txt \
-				~/.local/bin/add_species_genus_family_to_blast_output.bash \
-					-input ${in_base}.diamond.nr.txt.gz
+				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
+					-db ${db} -input ${input}
 		fi  
 
 
