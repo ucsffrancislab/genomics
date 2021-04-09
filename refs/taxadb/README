@@ -249,3 +249,71 @@ select * from taxa where ncbi_taxid = 2717128;
 
 
 
+
+
+
+sqlite3 /francislab/data1/refs/taxadb/taxadb_full.sqlite "select a.accession, t1.ncbi_taxid, t1.tax_name, t1.lineage_level, t2.ncbi_taxid, t2.tax_name, t2.lineage_level, t3.ncbi_taxid, t3.tax_name, t3.lineage_level, t4.ncbi_taxid, t4.tax_name, t4.lineage_level, t5.ncbi_taxid, t5.tax_name, t5.lineage_level , t6.ncbi_taxid, t6.tax_name, t6.lineage_level , t7.ncbi_taxid, t7.tax_name, t7.lineage_level , t8.ncbi_taxid, t8.tax_name, t8.lineage_level, t9.ncbi_taxid, t9.tax_name, t9.lineage_level, t10.ncbi_taxid, t10.tax_name, t10.lineage_level from accession a join taxa t1 on t1.ncbi_taxid = a.taxid_id join taxa t2 on t2.ncbi_taxid = t1.parent_taxid join taxa t3 on t3.ncbi_taxid = t2.parent_taxid join taxa t4 on t4.ncbi_taxid = t3.parent_taxid join taxa t5 on t5.ncbi_taxid = t4.parent_taxid join taxa t6 on t6.ncbi_taxid = t5.parent_taxid join taxa t7 on t7.ncbi_taxid = t6.parent_taxid join taxa t8 on t8.ncbi_taxid = t7.parent_taxid join taxa t9 on t9.ncbi_taxid = t8.parent_taxid join taxa t10 on t10.ncbi_taxid = t9.parent_taxid where a.accession IN ( 'NC_006273', 'CP048030','CP031704','NC_001638','NC_023091','NC_039755','NC_039754','NC_033969','NC_027859','NC_028331','NC_042478','NC_009681','NC_002387','NC_000926','NC_041490' )"
+
+
+sqlite3 -header /francislab/data1/refs/taxadb/taxadb_full.sqlite "select a.accession, iif( t1.lineage_level == 'species',t1.tax_name, iif( t2.lineage_level == 'species',t2.tax_name, iif( t3.lineage_level == 'species',t3.tax_name, iif( t4.lineage_level == 'species',t4.tax_name, iif( t5.lineage_level == 'species',t5.tax_name, iif( t6.lineage_level == 'species',t6.tax_name, iif( t7.lineage_level == 'species',t7.tax_name, iif( t8.lineage_level == 'species',t8.tax_name, iif( t9.lineage_level == 'species',t9.tax_name, 'no species' ))))))))) as species, iif( t1.lineage_level == 'genus',t1.tax_name, iif( t2.lineage_level == 'genus',t2.tax_name, iif( t3.lineage_level == 'genus',t3.tax_name, iif( t4.lineage_level == 'genus',t4.tax_name, iif( t5.lineage_level == 'genus',t5.tax_name, iif( t6.lineage_level == 'genus',t6.tax_name, iif( t7.lineage_level == 'genus',t7.tax_name, iif( t8.lineage_level == 'genus',t8.tax_name, iif( t9.lineage_level == 'genus',t9.tax_name, 'no genus' ))))))))) as genus, iif( t1.lineage_level == 'family',t1.tax_name, iif( t2.lineage_level == 'family',t2.tax_name, iif( t3.lineage_level == 'family',t3.tax_name, iif( t4.lineage_level == 'family',t4.tax_name, iif( t5.lineage_level == 'family',t5.tax_name, iif( t6.lineage_level == 'family',t6.tax_name, iif( t7.lineage_level == 'family',t7.tax_name, iif( t8.lineage_level == 'family',t8.tax_name, iif( t9.lineage_level == 'family',t9.tax_name, 'no family' ))))))))) as family from accession a join taxa t1 on t1.ncbi_taxid = a.taxid_id join taxa t2 on t2.ncbi_taxid = t1.parent_taxid join taxa t3 on t3.ncbi_taxid = t2.parent_taxid join taxa t4 on t4.ncbi_taxid = t3.parent_taxid join taxa t5 on t5.ncbi_taxid = t4.parent_taxid join taxa t6 on t6.ncbi_taxid = t5.parent_taxid join taxa t7 on t7.ncbi_taxid = t6.parent_taxid join taxa t8 on t8.ncbi_taxid = t7.parent_taxid join taxa t9 on t9.ncbi_taxid = t8.parent_taxid join taxa t10 on t10.ncbi_taxid = t9.parent_taxid where a.accession IN ( 'NC_006273', 'CP048030','CP031704','NC_001638','NC_023091','NC_039755','NC_039754','NC_033969','NC_027859','NC_028331','NC_042478','NC_009681','NC_002387','NC_000926','NC_041490' )"
+
+
+
+
+
+nohup sqlite3 /francislab/data1/refs/taxadb/taxadb_full.sqlite "select a.accession, iif( t1.lineage_level == 'species',t1.tax_name, iif( t2.lineage_level == 'species',t2.tax_name, iif( t3.lineage_level == 'species',t3.tax_name, iif( t4.lineage_level == 'species',t4.tax_name, iif( t5.lineage_level == 'species',t5.tax_name, iif( t6.lineage_level == 'species',t6.tax_name, iif( t7.lineage_level == 'species',t7.tax_name, iif( t8.lineage_level == 'species',t8.tax_name, iif( t9.lineage_level == 'species',t9.tax_name, 'no species' ))))))))) as species, iif( t1.lineage_level == 'genus',t1.tax_name, iif( t2.lineage_level == 'genus',t2.tax_name, iif( t3.lineage_level == 'genus',t3.tax_name, iif( t4.lineage_level == 'genus',t4.tax_name, iif( t5.lineage_level == 'genus',t5.tax_name, iif( t6.lineage_level == 'genus',t6.tax_name, iif( t7.lineage_level == 'genus',t7.tax_name, iif( t8.lineage_level == 'genus',t8.tax_name, iif( t9.lineage_level == 'genus',t9.tax_name, 'no genus' ))))))))) as genus, iif( t1.lineage_level == 'family',t1.tax_name, iif( t2.lineage_level == 'family',t2.tax_name, iif( t3.lineage_level == 'family',t3.tax_name, iif( t4.lineage_level == 'family',t4.tax_name, iif( t5.lineage_level == 'family',t5.tax_name, iif( t6.lineage_level == 'family',t6.tax_name, iif( t7.lineage_level == 'family',t7.tax_name, iif( t8.lineage_level == 'family',t8.tax_name, iif( t9.lineage_level == 'family',t9.tax_name, 'no family' ))))))))) as family from accession a join taxa t1 on t1.ncbi_taxid = a.taxid_id join taxa t2 on t2.ncbi_taxid = t1.parent_taxid join taxa t3 on t3.ncbi_taxid = t2.parent_taxid join taxa t4 on t4.ncbi_taxid = t3.parent_taxid join taxa t5 on t5.ncbi_taxid = t4.parent_taxid join taxa t6 on t6.ncbi_taxid = t5.parent_taxid join taxa t7 on t7.ncbi_taxid = t6.parent_taxid join taxa t8 on t8.ncbi_taxid = t7.parent_taxid join taxa t9 on t9.ncbi_taxid = t8.parent_taxid join taxa t10 on t10.ncbi_taxid = t9.parent_taxid" > taxadb_full.sqlite.accession_species_genus_family &
+
+
+
+
+CREATE TABLE IF NOT EXISTS "asgf" ("id" INTEGER NOT NULL PRIMARY KEY, "accession" VARCHAR(255) NOT NULL, "species" VARCHAR(255) NOT NULL, "genus" VARCHAR(255) NOT NULL, "family" VARCHAR(255) NOT NULL );
+
+sqlite3 asgf.sqlite "CREATE TABLE IF NOT EXISTS "asgf" ("accession" VARCHAR(255) NOT NULL PRIMARY KEY, "species" VARCHAR(255) NOT NULL, "genus" VARCHAR(255) NOT NULL, "family" VARCHAR(255) NOT NULL ); CREATE UNIQUE INDEX "asgf_accession" ON "asgf" ("accession");"
+
+DEFAULT - -cmd '.separator "|"' 
+SAME_AS --separator "|"
+
+nohup sqlite3 asgf.sqlite ".import taxadb_full.sqlite.accession_species_genus_family asgf" &
+
+
+
+
+
+
+module load sqlite
+
+
+sqlite3 tmp.sqlite 'CREATE TABLE query ( qaccver, saccver, pident, length, mismatch, gapopen, qstart, qend, sstart, send, evalue, bitscore); CREATE INDEX "qacc" ON "query"("saccver");'
+
+zcat 25.bbduk2.unpaired.diamond.nr.txt.gz | sqlite3 tmp.sqlite -separator $'\t' ".import /dev/stdin query"
+
+cat 25.bbduk2.unpaired.diamond.nr.txt.gz.head | sqlite3 tmp.sqlite -separator $'\t' ".import /dev/stdin query"
+
+sqlite3 -csv -separator $'\t' -cmd ".output stdout" tmp.sqlite "SELECT q.*, a.species, a.genus, a.family FROM query q LEFT JOIN asgf a ON a.accession = SUBSTR(q.saccver,0,INSTR(q.saccver,'.'));"
+
+sqlite3 -separator $'\t' -cmd ".mode tabs" -cmd ".output stdout" tmp.sqlite "SELECT q.*, a.species, a.genus, a.family FROM query q LEFT JOIN asgf a ON a.accession = SUBSTR(q.saccver,0,INSTR(q.saccver,'.'));"
+
+
+This seems to work best. "-csv" will quote fields with spaces even though unnecessary.
+
+sqlite3 -cmd ".mode tabs" -cmd ".output stdout" tmp.sqlite "SELECT q.*, a.species, a.genus, a.family FROM query q LEFT JOIN asgf a ON a.accession = SUBSTR(q.saccver,0,INSTR(q.saccver,'.'));" | gzip > output.gz
+
+
+
+
+sqlite3 tmp.sqlite 'CREATE TABLE query ( qaccver, saccver, pident, length, mismatch, gapopen, qstart, qend, sstart, send, evalue, bitscore);'
+
+time zcat 25.bbduk2.unpaired.diamond.nr.txt.gz | sqlite3 tmp.sqlite -separator $'\t' ".import /dev/stdin query"
+
+real	7m50.172s
+user	7m3.561s
+sys	0m33.525s
+
+time sqlite3 -cmd ".mode tabs" -cmd ".output stdout" tmp.sqlite "SELECT q.*, a.species, a.genus, a.family FROM query q LEFT JOIN asgf a ON a.accession = SUBSTR(q.saccver,0,INSTR(q.saccver,'.'));" | gzip > output.gz
+
+real	140m45.028s
+user	20m59.422s
+sys	16m46.185s
+
+
+
