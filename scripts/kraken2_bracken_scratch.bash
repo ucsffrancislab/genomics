@@ -103,7 +103,7 @@ else
 	min_read_length=$( head -400000 < <( zcat ${scratch_r1} ) | sed -n '2~4p' | awk 'BEGIN{min=10000}{l=length($1);min=(min<l?min:l)}END{print min}' )
 
 	chmod -R +w ${scratch_db}
-	bracken-build -d ${scratch_db} -l ${min_read_length} -t ${PBS_NUM_PPN:-1}
+	bracken-build -d ${scratch_db} -l ${min_read_length} -t ${SLURM_NTASKS:-1}
 
 #  LEVEL          level to estimate abundance at [options: D,P,C,O,F,G,S] (default: S)
 	for lvl in D P C O F G S ; do

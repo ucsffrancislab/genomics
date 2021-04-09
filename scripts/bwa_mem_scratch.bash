@@ -54,12 +54,12 @@ else
 
 	scratch_out=${TMPDIR}/$( basename ${f} )
 
-	bwa mem -t ${PBS_NUM_PPN:-1} ${SELECT_ARGS} ${scratch_index} ${scratch_r1} ${scratch_r2} \
+	bwa mem -t ${SLURM_NTASKS:-1} ${SELECT_ARGS} ${scratch_index} ${scratch_r1} ${scratch_r2} \
 		| samtools view -o ${scratch_out} -
 
 	if $sortbam; then
 		mv ${scratch_out} ${scratch_out/%.bam/.unsorted.bam}
-		sambamba sort -m $mem -t ${PBS_NUM_PPN:-1} -o ${scratch_out} ${scratch_out/%.bam/.unsorted.bam}
+		sambamba sort -m $mem -t ${SLURM_NTASKS:-1} -o ${scratch_out} ${scratch_out/%.bam/.unsorted.bam}
 		\rm ${scratch_out/%.bam/.unsorted.bam}
 	fi
 

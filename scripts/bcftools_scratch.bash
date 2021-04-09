@@ -45,7 +45,7 @@ else
 	scratch_input=${TMPDIR}/$( basename ${input} )
 	scratch_out=${TMPDIR}/$( basename ${f} )
 
-#	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
+#	diamond.bash $SELECT_ARGS --threads ${SLURM_NTASKS:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
 
 	bcftools.bash ${SELECT_ARGS} ${scratch_fasta_option} -o ${scratch_out} ${scratch_input}

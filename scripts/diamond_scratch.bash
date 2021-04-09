@@ -39,7 +39,7 @@ else
 	scratch_query=${TMPDIR}/$( basename ${query} )
 	scratch_out=${TMPDIR}/$( basename ${out} )
 
-	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
+	diamond.bash $SELECT_ARGS --threads ${SLURM_NTASKS:-1} \
 		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
 
 	mv --update ${scratch_out} $( dirname ${out} )

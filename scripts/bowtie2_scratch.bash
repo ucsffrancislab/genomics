@@ -61,7 +61,7 @@ else
 	scratch_out=${TMPDIR}/$( basename ${f} )
 	scratch_x=${TMPDIR}/$( basename ${x} )
 
-#	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
+#	diamond.bash $SELECT_ARGS --threads ${SLURM_NTASKS:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
 
 	bowtie2.bash ${SELECT_ARGS} -x ${scratch_x} -o ${scratch_out} ${scratch_inputs}

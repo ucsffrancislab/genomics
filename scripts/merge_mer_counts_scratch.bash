@@ -38,7 +38,7 @@ else
 
 	## 2. Process input files
 	#cd $TMPDIR
-	#/path/to/my_pipeline --cores=$PBS_NUM_PPN reference.fa sample.fq > output.bam
+	#/path/to/my_pipeline --cores=$SLURM_NTASKS reference.fa sample.fq > output.bam
 
 #	scratch_infile=${TMPDIR}/$( basename ${infile} )
 	scratch_out=${TMPDIR}/$( basename ${out} )
@@ -46,7 +46,7 @@ else
 
 
 	#merge_mer_counts.py ${threads} -o ${scratch_out} ${TMPDIR}/input/*
-	merge_mer_counts.py -p ${PBS_NUM_PPN:-1} -o ${scratch_out} ${TMPDIR}/input/*
+	merge_mer_counts.py -p ${SLURM_NTASKS:-1} -o ${scratch_out} ${TMPDIR}/input/*
 
 
 

@@ -64,7 +64,7 @@ else
 		--runDir ${TMPDIR}/runDir/manta \
 		${SELECT_ARGS}
 
-	#${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	#${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${SLURM_NTASKS} --memGb=${memGb} --mode=local
 	${TMPDIR}/runDir/manta/runWorkflow.py --jobs=${threads} --memGb=${memGb} --mode=local
 
 	scratch_indels=${TMPDIR}/runDir/manta/results/variants/candidateSmallIndels.vcf.gz
@@ -77,7 +77,7 @@ else
 		--runDir ${TMPDIR}/runDir/strelka \
 		${SELECT_ARGS}
 
-	#${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	#${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${SLURM_NTASKS} --memGb=${memGb} --mode=local
 	${TMPDIR}/runDir/strelka/runWorkflow.py --jobs=${threads} --memGb=${memGb} --mode=local
 
 	mkdir -p ${dir}

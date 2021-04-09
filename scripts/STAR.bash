@@ -86,7 +86,7 @@ else
 		chmod a-w ${tbam}.unaligned_count.txt
 	fi
 
-	#samtools.bash fasta -f 4 --threads $[${PBS_NUM_PPN:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
+	#samtools.bash fasta -f 4 --threads $[${SLURM_NTASKS:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
 	samtools.bash fasta -f 4 --threads $[${threads:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
 	chmod a-w ${f%.bam}.unmapped.fasta.gz
 

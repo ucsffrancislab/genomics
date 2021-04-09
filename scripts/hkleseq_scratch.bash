@@ -58,10 +58,10 @@ else
 		hkle=${hkle%.rev.1.bt2}
 		echo $hkle
 
-		chimera_paired_local.bash --human ${scratch_human} --threads ${PBS_NUM_PPN} \
+		chimera_paired_local.bash --human ${scratch_human} --threads ${SLURM_NTASKS} \
 			--viral ${hkle} -1 ${r1} -2 ${r2}
 
-		chimera_unpaired_local.bash --human ${scratch_human} --threads ${PBS_NUM_PPN} \
+		chimera_unpaired_local.bash --human ${scratch_human} --threads ${SLURM_NTASKS} \
 			--viral ${hkle} ${r1},${r2}
 
 	done

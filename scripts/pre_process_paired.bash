@@ -36,7 +36,7 @@ echo $base
 
 
 
-#	threads = ${PBS_NUM_PPN}
+#	threads = ${SLURM_NTASKS}
 #	vmem = ?????
 
 

@@ -43,7 +43,7 @@ else
 
 	## 2. Process input files
 	#cd $TMPDIR
-	#/path/to/my_pipeline --cores=$PBS_NUM_PPN reference.fa sample.fq > output.bam
+	#/path/to/my_pipeline --cores=$SLURM_NTASKS reference.fa sample.fq > output.bam
 
 #	scratch_infile=${TMPDIR}/$( basename ${infile} )
 	scratch_outbase=${TMPDIR}/$( basename ${outbase} )

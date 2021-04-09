@@ -48,7 +48,7 @@ else
 	#featureCounts -a ${scratch_anno} \
 	featureCounts.bash -a ${scratch_anno} \
 		-o ${scratch_out} \
-		-T ${PBS_NUM_PPN:-1} \
+		-T ${SLURM_NTASKS:-1} \
 		${SELECT_ARGS} \
 		${TMPDIR}/input/*
 

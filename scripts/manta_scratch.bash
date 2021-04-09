@@ -48,7 +48,7 @@ else
 	scratch_tumor=${TMPDIR}/$( basename ${tumor} )
 	scratch_reference=${TMPDIR}/$( basename ${reference} )
 
-#	diamond.bash $SELECT_ARGS --threads ${PBS_NUM_PPN:-1} \
+#	diamond.bash $SELECT_ARGS --threads ${SLURM_NTASKS:-1} \
 #		--db ${scratch_db} --query ${scratch_query} --out ${scratch_out}
 #	samtools_view.bash ${SELECT_ARGS} -o ${scratch_out} ${scratch_input}
 
@@ -59,7 +59,7 @@ else
 		--runDir ${TMPDIR}/runDir \
 		${SELECT_ARGS}
 
-	${TMPDIR}/runDir/runWorkflow.py --jobs=${PBS_NUM_PPN} --memGb=${memGb} --mode=local
+	${TMPDIR}/runDir/runWorkflow.py --jobs=${SLURM_NTASKS} --memGb=${memGb} --mode=local
 
 	#mkdir -p $( dirname ${dir} )	#	just in case
 	#mv --update ${TMPDIR}/runDir/* $( dirname ${dir} )

@@ -63,7 +63,7 @@ else
 	#	Obviously, this requires that the outfile ends with .fa.gz
 	#scratch_bam=${scratch_out%.fa.gz}.bam
 
-	threads=${PBS_NUM_PPN:-1}
+	threads=${SLURM_NTASKS:-1}
 
 	bowtie2.bash ${SELECT_ARGS} --threads ${threads} -x ${scratch_ref} -o ${TMPDIR}/tmp.bam ${scratch_inputs}
 
