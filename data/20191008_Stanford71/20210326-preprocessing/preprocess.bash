@@ -610,7 +610,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/??_R1.fastq.gz ; do
 
 			echo "Using scratch:${scratch}"
 
-			${sbatch} ${depend} --job-name=sgf-${basename} --time=9999 --ntasks=${threads} --mem=30G \
+			${sbatch} ${depend} --job-name=sgf-${basename} --time=999 --ntasks=${threads} --mem=30G \
 				--gres=scratch:${scratch}G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
