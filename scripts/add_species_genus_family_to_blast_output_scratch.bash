@@ -86,18 +86,42 @@ else
 	scratch_db=${TMPDIR}/$( basename ${db} )
 	chmod +w ${scratch_db}
 
-	scratch_out=${TMPDIR}/$( basename ${f} )
+	scratch_out=${TMPDIR}/out
+	mkdir ${scratch_out}
+	scratch_f=${scratch_out}/$( basename ${f} )
 
 	sqlite3 ${scratch_db} 'CREATE TABLE query ( qaccver, saccver, pident, length, mismatch, gapopen, qstart, qend, sstart, send, evalue, bitscore);'
 
+	echo "Loading query into database"
 	time zcat ${scratch_input} | sqlite3 ${scratch_db} -separator $'\t' ".import /dev/stdin query"
 
-	time sqlite3 -cmd ".mode tabs" -cmd ".output stdout" ${scratch_db} "SELECT q.*, a.species, a.genus, a.family FROM query q LEFT JOIN asgf a ON a.accession = SUBSTR(q.saccver,0,INSTR(q.saccver,'.'));" | gzip > ${scratch_out}
+	echo "Extracting results"
+	time sqlite3 -cmd ".mode tabs" -cmd ".output stdout" ${scratch_db} "SELECT q.*, a.species, a.genus, a.family FROM query q LEFT JOIN asgf a ON a.accession = SUBSTR(q.saccver,0,INSTR(q.saccver,'.'));" | gzip > ${scratch_f}
 
-	chmod a-w ${scratch_out}
+	mkdir ${TMPDIR}/sort
+
+	echo "Extracting families"
+	time zcat ${scratch_f} | awk 'BEGIN{FS=OFS="\t"}($NF!~/^\s*$/){print $1, $NF}' | uniq \
+		| sort --temporary-directory=${TMPDIR}/sort | uniq \
+		| awk 'BEGIN{FS=OFS="\t"}{print $2}' | gzip > ${scratch_f%.txt.gz}.families.gz
+	zcat ${scratch_f%.txt.gz}.families.gz | sort | uniq -c | sort -rn > ${scratch_f%.txt.gz}.family_counts
+
+	echo "Extracting genuses"
+	time zcat ${scratch_f} | awk 'BEGIN{FS=OFS="\t"}($(NF-1)!~/^\s*$/){print $1, $(NF-1)}' | uniq \
+		| sort --temporary-directory=${TMPDIR}/sort | uniq \
+		| awk 'BEGIN{FS=OFS="\t"}{print $2}' | gzip > ${scratch_f%.txt.gz}.genuses.gz
+	zcat ${scratch_f%.txt.gz}.genuses.gz | sort | uniq -c | sort -rn > ${scratch_f%.txt.gz}.genus_counts
+
+	echo "Extracting species"
+	time zcat ${scratch_f} | awk 'BEGIN{FS=OFS="\t"}($(NF-2)!~/^\s*$/){print $1, $(NF-2)}' | uniq \
+		| sort --temporary-directory=${TMPDIR}/sort | uniq \
+		| awk 'BEGIN{FS=OFS="\t"}{print $2}' | gzip > ${scratch_f%.txt.gz}.species.gz
+	zcat ${scratch_f%.txt.gz}.species.gz | sort | uniq -c | sort -rn > ${scratch_f%.txt.gz}.species_counts
+
+	chmod a-w ${scratch_out}/*
 
 	#cp --archive ${scratch_out} $( dirname ${f} )
-	cp --archive ${scratch_out} ${f}
+	cp --archive ${scratch_out}/* $( dirname ${f} )
 fi
 
 #	sqlite3 /francislab/data1/refs/taxadb/taxadb_full.sqlite  "select a.accession, t1.ncbi_taxid, t1.tax_name, t1.lineage_level, t2.ncbi_taxid, t2.tax_name, t2.lineage_level, t3.ncbi_taxid, t3.tax_name, t3.lineage_level, t4.ncbi_taxid, t4.tax_name, t4.lineage_level, t5.ncbi_taxid, t5.tax_name, t5.lineage_level, t6.ncbi_taxid, t6.tax_name, t6.lineage_level, t7.ncbi_taxid, t7.tax_name, t7.lineage_level, t8.ncbi_taxid, t8.tax_name, t8.lineage_level from accession a join taxa t1 on t1.ncbi_taxid = a.taxid_id join taxa t2 on t2.ncbi_taxid = t1.parent_taxid join taxa t3 on t3.ncbi_taxid = t2.parent_taxid join taxa t4 on t4.ncbi_taxid = t3.parent_taxid join taxa t5 on t5.ncbi_taxid = t4.parent_taxid join taxa t6 on t6.ncbi_taxid = t5.parent_taxid join taxa t7 on t7.ncbi_taxid = t6.parent_taxid join taxa t8 on t8.ncbi_taxid = t7.parent_taxid where a.accession = 'NC_031270'"
