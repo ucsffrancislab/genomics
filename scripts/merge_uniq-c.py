@@ -20,6 +20,8 @@ parser.add_argument('-o', '--output', nargs=1, type=str, default='merged.csv.gz'
 #	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
 parser.add_argument('--int', action='store_true', help='convert values to ints to %(prog)s (default: %(default)s)')
 
+parser.add_argument('--seqint', action='store_true', help='items are ints so sort like it : %(prog)s (default: %(default)s)')
+
 # read arguments from the command line
 args = parser.parse_args()
 
@@ -75,6 +77,10 @@ for filename in args.files:
 			header=None,
 			names=['sequence'])
 		d[[sample,'sequence']] = d['sequence'].str.split(" ", 1, expand=True)
+
+		if args.seqint:
+			d['sequence']=d['sequence'].astype(int)
+
 		d.set_index('sequence',inplace=True)
 		print(d.head())
 
