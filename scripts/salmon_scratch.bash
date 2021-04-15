@@ -23,7 +23,7 @@ while [ $# -gt 0 ] ; do
 			shift; index=$1; shift;;
 		--unmatedReads)
 			shift; unmatedReads=$1; shift;;
-		-o)
+		-o|--output)
 			shift; f=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
@@ -51,13 +51,13 @@ else
 	if [ -n "${r1:-}" ] ; then
 		cp ${r1} ${TMPDIR}/
 		scratch_r1=${TMPDIR}/$( basename ${r1} )
-		params="${params} -1 ${scratch_r1}"
+		params="${params} --mates1 ${scratch_r1}"
 	fi
 
 	if [ -n "${r2:-}" ] ; then
 		cp ${r2} ${TMPDIR}/
 		scratch_r2=${TMPDIR}/$( basename ${r2} )
-		params="${params} -2 ${scratch_r2}"
+		params="${params} --mates2 ${scratch_r2}"
 	fi
 
 	if [ -n "${index:-}" ] ; then
@@ -66,13 +66,16 @@ else
 		params="${params} --index ${scratch_index}"
 	fi
 
-	scratch_out=${TMPDIR}/outdir
+	if [ -n "${f:-}" ] ; then
+		scratch_out=${TMPDIR}/$( basename ${f} )
+		params="${params} --output ${scratch_out}"
+	fi
 
 	mkdir -p ${scratch_out}/
 	cd ${scratch_out}/
 
 	#salmon.bash ${SELECT_ARGS} --index ${scratch_index} -1 ${scratch_r1} -2 ${scratch_r2} -o ${scratch_out}
-	salmon.bash ${params} -o ${scratch_out}
+	salmon.bash ${params}
 
 	#	GOTTA move an existing dir or we'll move this INTO it.
 	if [ -d ${f} ] ; then
