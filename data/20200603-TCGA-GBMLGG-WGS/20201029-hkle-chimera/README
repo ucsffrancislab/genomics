@@ -188,3 +188,17 @@ done < <( find out -name \*points )
 
 
 
+--------------------------------------------------
+20210414
+nohup python3 ./merge_insertion_points.py -o focused.csv.gz -p premerge1k/*.paired.Q20.* > focused.out 2> focused.err &
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera"
+
+curl -netrc -X MKCOL "${BOX}/"
+
+curl -netrc -T focused.csv.gz "${BOX}/"
+curl -netrc -T focused.T.csv.gz "${BOX}/"
+
+
+
