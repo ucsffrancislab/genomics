@@ -343,26 +343,26 @@ done
 
 
 
-#echo -n "| diamond Family Counts |"
-#for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
-#	echo -n " --- |"
-#done ; done
-#echo
-#
-#save="${IFS}"
-#IFS=","
-#for family in $( head -50 post/diamond_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#	echo -n "| ${family} |"
-#	IFS="${save}"
-#	for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
-#		f=${dir}/${s}.${t}.unpaired.diamond.nr.species_genus_family.family_counts
-#		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' )
-#		echo -n " ${c} |"
-#	done ; done
-#	echo
-#	IFS=","
-#done
-#IFS="${save}"
+echo -n "| diamond Family Counts |"
+for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
+	echo -n " --- |"
+done ; done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/diamond_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| ${family} |"
+	IFS="${save}"
+	for s in $( seq -w 1 77 ) ; do for t in bbduk1 bbduk2 bbduk3 ; do
+		f=${dir}/${s}.${t}.unpaired.diamond.nr.species_genus_family.family_counts
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' )
+		echo -n " ${c} |"
+	done ; done
+	echo
+	IFS=","
+done
+IFS="${save}"
 
 
 

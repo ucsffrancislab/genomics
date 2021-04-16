@@ -568,7 +568,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/??_R1.fastq.gz ; do
 			fi
 			#diamond_id=$( sbatch ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
 			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
-			diamond_id=$( ${sbatch} ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
+			diamond_id=$( ${sbatch} ${depend} --job-name=d-${basename}-${trimmer} --time=9999 --ntasks=8 --mem=60G \
 				--output=${f}.${date}.txt \
 				~/.local/bin/diamond.bash blastx --threads 8 \
 					--query ${in_base}.fastq.gz \
@@ -603,14 +603,14 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/??_R1.fastq.gz ; do
 			fi
 
 			#index_size=$( du -sb ${index} | awk '{print $1}' )
-			scratch=$( echo $(( ((${input_size}+${input_size}+${db_size})/${threads}/1000000000*12/10)+1 )) )
+			scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*12/10)+1 )) )
 			# Add 1 in case files are small so scratch will be 1 instead of 0.
 			# 11/10 adds 10% to account for the output
 			# 12/10 adds 20% to account for the output
 
 			echo "Using scratch:${scratch}"
 
-			${sbatch} ${depend} --job-name=sgf-${basename} --time=999 --ntasks=${threads} --mem=30G \
+			${sbatch} ${depend} --job-name=sgf-${basename}-${trimmer} --time=999 --ntasks=${threads} --mem=30G \
 				--gres=scratch:${scratch}G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
