@@ -9,7 +9,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${DIR}
 
-for raw in ${INDIR}/0?.bbduk?.unpaired.fastq.gz ; do
+for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
 
 	echo $raw
 	basename=$( basename $raw .unpaired.fastq.gz )
