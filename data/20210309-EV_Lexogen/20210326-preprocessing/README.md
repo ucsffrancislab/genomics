@@ -83,3 +83,25 @@ sed -i '1s/_L001_R1_001_w_umi.trimmed.underscored.burkholderia//g' post/sindex_c
 
 
 
+
+
+
+
+
+for bam in output/*STAR.hg38.Aligned.sortedByCoord.out.bam; do
+echo $bam
+samtools view -F 3844 ${bam} | awk '{print length($10)}' > ${bam}.aligned_lengths
+sort -n ${bam}.aligned_lengths | uniq -c > ${bam}.aligned_length_counts
+samtools view -f 4    ${bam} | awk '{print length($10)}' > ${bam}.unaligned_lengths
+sort -n ${bam}.unaligned_lengths | uniq -c > ${bam}.unaligned_length_counts
+done
+
+
+python3 ~/.local/bin/merge_uniq-c.py --seqint --int --output merged_aligned_length_counts.csv output/*.aligned_length_counts
+sed -i '1s/.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_length_counts//g' merged_aligned_length_counts.csv
+
+
+```
+
+
+
