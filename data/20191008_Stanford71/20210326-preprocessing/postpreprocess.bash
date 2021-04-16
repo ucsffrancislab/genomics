@@ -28,7 +28,7 @@ cd ../
 #done
 
 for f in output/*.toTranscriptome.out.bam ; do
-	samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.transcript_count
+	samtools view -F4 $f | awk '{print $3}' | sort --parallel=8 | uniq -c | sort -rn > ${f}.transcript_count
 done
 
 transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv
@@ -36,19 +36,19 @@ transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPat
 for f in output/*.toTranscriptome.out.bam ; do
 	samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
 	awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-  	${f}.transcript_ids | sort | uniq -c | sort -rn > ${f}.gene_counts
+  	${f}.transcript_ids | sort --parallel=8 | uniq -c | sort -rn > ${f}.gene_counts
 done
 
 mkdir ~/.sort_gene_counts
 awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
   output/*.toTranscriptome.out.bam.transcript_ids \
-  | sort --temporary-directory=$HOME/.sort_gene_counts | uniq -c | sort -rn > post/gene_counts
+  | sort --temporary-directory=$HOME/.sort_gene_counts --parallel=8 | uniq -c | sort -rn > post/gene_counts
 rmdir ~/.sort_gene_counts
 
 #	Exclude the Undetermined data
 #awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
 #  output/SFHH0*.toTranscriptome.out.bam.transcript_ids \
-#  | sort | uniq -c | sort -rn > post/determined_gene_count.txt
+#  | sort --parallel=8 | uniq -c | sort -rn > post/determined_gene_count.txt
 
 #for f in ${PWD}/output/*unmapped.fasta.gz ; do
 #  base=${f%.fasta.gz}
@@ -94,14 +94,14 @@ mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22
 
 
 for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
-	#samtools view -F4 $f | awk '{print $3}' | sort | uniq -c | sort -rn > ${f}.mirna_counts
+	#samtools view -F4 $f | awk '{print $3}' | sort --parallel=8 | uniq -c | sort -rn > ${f}.mirna_counts
 	samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
-	cat ${f}.mirnas | sort | uniq -c | sort -rn > ${f}.mirna_counts
+	cat ${f}.mirnas | sort --parallel=8 | uniq -c | sort -rn > ${f}.mirna_counts
 done
 
 mkdir ~/.sort_mirna_counts
 cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | \
-	sort --temporary-directory=$HOME/.sort_mirna_counts | uniq -c | sort -rn > post/mirna_counts
+	sort --temporary-directory=$HOME/.sort_mirna_counts --parallel=8 | uniq -c | sort -rn > post/mirna_counts
 rmdir ~/.sort_mirna_counts
 
 
