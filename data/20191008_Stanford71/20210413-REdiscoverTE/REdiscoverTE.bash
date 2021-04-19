@@ -9,7 +9,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${DIR}
 
-for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
+for raw in ${INDIR}/??.bbduk?.unpaired.fastq.gz ; do
 
 	echo $raw
 	basename=$( basename $raw .unpaired.fastq.gz )
@@ -33,6 +33,12 @@ for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
 	in_base=${DIR}/${basename}
 
 
+	#	OUT OF MEMORY FAILURE - upped from 8/60 to 16/110
+	#	19.bbduk1k15, 20.bbduk1k15, 23.bbduk1k15, 73.bbduk1k15, 68.bbduk1k15, 66.bbduk1k15, ...
+
+	#	TIMEOUT - upped from 99 to 999
+	#	70.bbduk2k31, 62.bbduk2k15, 61.bbduk2k31, 61.bbduk3k15, 59.bbduk3k15, 52.bbduk3k31, ...
+
 	infile=${in_base}.lte31.fastq.gz
 	out_base=${in_base}.salmon.REdiscoverTE.k15
 	f=${out_base}
@@ -45,7 +51,8 @@ for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
 			depend=""
 		fi
 
-		threads=8
+		threads=16
+		mem=110
 
 		#	infile won't exist immediately so reference raw file
 		infile_size=$( stat --dereference --format %s ${raw} )
@@ -59,7 +66,7 @@ for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
 	
 		echo "Using scratch:${scratch}"
 	
-		${sbatch} ${depend} --mem=64G --job-name=${basename}k15 --ntasks=${threads} --time=99 \
+		${sbatch} ${depend} --mem=${mem}G --job-name=${basename}k15 --ntasks=${threads} --time=999 \
 			--gres=scratch:${scratch}G \
 			--output=${out_base}.${date}.txt \
 			~/.local/bin/salmon_scratch.bash quant --seqBias --gcBias --index ${index} \
@@ -81,7 +88,8 @@ for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
 			depend=""
 		fi
 
-		threads=8
+		threads=16
+		mem=110
 
 		#	infile won't exist immediately so reference raw file
 		infile_size=$( stat --dereference --format %s ${raw} )
@@ -95,7 +103,7 @@ for raw in ${INDIR}/[3]?.bbduk?.unpaired.fastq.gz ; do
 	
 		echo "Using scratch:${scratch}"
 	
-		${sbatch} ${depend} --mem=64G --job-name=${basename}k31 --ntasks=${threads} --time=99 \
+		${sbatch} ${depend} --mem=${mem}G --job-name=${basename}k31 --ntasks=${threads} --time=999 \
 			--gres=scratch:${scratch}G \
 			--output=${out_base}.${date}.txt \
 			~/.local/bin/salmon_scratch.bash quant --seqBias --gcBias --index ${index} \
@@ -111,12 +119,22 @@ done
 exit
 
 
+INDIR="${PWD}/out"
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+for k in 15 31 ; do for bbduk in 1 2 3 ; do
+echo "bbduk${bbduk}.k${k}"
+OUTDIR="${PWD}/rollup.bbduk${bbduk}.k${k}"
+mkdir ${OUTDIR}
+echo -e "sample\tquant_sf_path" > ${OUTDIR}/REdiscoverTE.tsv
+ls -1 ${INDIR}/??.bbduk${bbduk}.salmon.REdiscoverTE.k${k}/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${OUTDIR}/REdiscoverTE.tsv
 
-#		DIR="/francislab/data1/working/20191008_Stanford71/20210413-REdiscoverTE/out"
-#		
-#		echo -e "sample\tquant_sf_path" > ${DIR}/REdiscoverTE.tsv
-#		ls -1 ${DIR}/*REdiscoverTE/quant.sf | awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${DIR}/REdiscoverTE.tsv
-#		
+echo ${sbatch} --job-name=bbduk${bbduk}.k${k}.rollup --time=999 --ntasks=64 --mem=495G \
+	--output=${OUTDIR}/rollup.${date}.txt \
+	--wrap "/francislab/data1/refs/REdiscoverTE/rollup.R --metadata=${OUTDIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ --nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/rollup/"
+done ; done
+
+		
 #		echo "/francislab/data1/refs/REdiscoverTE/rollup.R --metadata=${DIR}/REdiscoverTE.tsv --datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ --nozero --threads=64 --assembly=hg38 --outdir=${DIR}/REdiscoverTE_rollup/" | qsub -l vmem=500gb -N rollup -l nodes=1:ppn=64 -j oe -o ${DIR}/REdiscoverTE_rollup.out.txt
 #		
 #		
