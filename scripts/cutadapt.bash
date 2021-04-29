@@ -29,5 +29,8 @@ else
 	echo "Creating $f"
 	cutadapt $ARGS
 	chmod a-w $f
+
+	count_fasta_reads.bash $f
+	average_fasta_read_length.bash $f
 fi
 
