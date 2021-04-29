@@ -6,8 +6,6 @@
 
 ./postpreprocess.bash
 
-nohup zcat output/*.diamond.nr.species_genus_family.families.gz | awk '{x[$0]++}END{asorti(x);for k in x{print k, x[k]}}'
-> post/diamond_family_counts &
 
 nohup zcat output/*.diamond.nr.species_genus_family.families.gz | awk '{x[$0]++}END{for(k in x){print x[k]" "k}}' | sort -rn > test_diamond_family_counts
 

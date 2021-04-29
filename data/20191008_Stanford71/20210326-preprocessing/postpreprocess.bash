@@ -137,8 +137,9 @@ python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/
 #	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
 #	cat ${f%.txt.gz}.families | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
 #done
-#cat output/*.diamond.nr.species_genus_family.families | sort | uniq -c | sort -rn > post/diamond_family_counts
-#zcat output/*.diamond.nr.species_genus_family.families.gz | sort --temporary-directory=${PWD}/tmp/ | uniq -c | sort -rn > post/diamond_family_counts
+#zcat output/*.diamond.nr.species_genus_family.families.gz | awk '{x[$0]++}END{for(k in x){print x[k]" "k}}' | sort -rn > post/diamond_family_counts
+###cat output/*.diamond.nr.species_genus_family.families | sort | uniq -c | sort -rn > post/diamond_family_counts
+###zcat output/*.diamond.nr.species_genus_family.families.gz | sort --temporary-directory=${PWD}/tmp/ | uniq -c | sort -rn > post/diamond_family_counts
 #python3 ~/.local/bin/merge_uniq-c.py --int --output post/diamond_family_counts.csv output/*diamond*family_counts
 
 #	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/diamond_family_counts.csv
