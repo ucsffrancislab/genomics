@@ -1,0 +1,38 @@
+
+
+
+Add "machine gslanalyzer.qb3.berkeley.edu login ########## password ##########" to ~/.netrc
+
+Then DO NOT USE the "ftp://" prefix or "-u username,password" in command 
+
+So I put the username and password into my ~/.netrc and then downloaded all data.
+
+lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true; open -e "mirror -c; quit" gslanalyzer.qb3.berkeley.edu:990'
+
+
+
+
+Contains both CATS/D-plex and Lexogen data.
+They need to be preprocessed differently.
+
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print "D-plex" > "Hansen/"$3".labkit";print "Lexogen" > "Hansen/"$8".labkit"}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv 
+
+
+
+
+
+
+
+fastqc *fastq.gz
+
+upload fastqc to Box .........
+
+```BASH
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in Hansen/*fastqc* ;do echo $f; curl -netrc -T $f "${BOX}/" ; done
+```
+
+
+
