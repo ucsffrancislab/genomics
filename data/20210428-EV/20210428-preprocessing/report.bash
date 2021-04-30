@@ -328,7 +328,7 @@ echo
 for gene in $( head -50 post/gene_counts | awk '{print $2}' ) ; do
 	echo -n "| ${gene} |"
 	for s in ${samples} ; do for t in ${trimmers} ; do
-		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts.txt 2> /dev/null)
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts 2> /dev/null)
 		echo -n " ${c} |"
 	done ; done
 	echo
@@ -345,7 +345,7 @@ echo
 for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
 	echo -n "| ${gene} |"
 	for s in ${samples} ; do for t in ${trimmers} ; do
-		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts.txt 2> /dev/null)
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts 2> /dev/null)
 		echo -n " ${c} |"
 	done ; done
 	echo

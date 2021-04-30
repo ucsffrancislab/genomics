@@ -14,29 +14,29 @@ set -x
 
 mkdir post/
 
-#	#cd output/
-#	#for f in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
-#	#	ln -s ${f}
-#	#done
-#	#cd ../
-#	
-#	#for f in output/*fastq.gz ; do
-#	#	zcat $f | paste - - - - | wc -l > $f.read_count
-#	#	zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
-#	#done
-#	
-#	for f in output/*.toTranscriptome.out.bam ; do
-#		samtools view -F4 $f | awk '{print $3}' | sort --parallel=8 | uniq -c | sort -rn > ${f}.transcript_count
-#	done
-#	
-#	transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv
-#	
-#	for f in output/*.toTranscriptome.out.bam ; do
-#		samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
-#		awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-#	  	${f}.transcript_ids | sort --parallel=8 | uniq -c | sort -rn > ${f}.gene_counts
-#	done
-#	python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_counts
+#cd output/
+#for f in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
+#	ln -s ${f}
+#done
+#cd ../
+
+#for f in output/*fastq.gz ; do
+#	zcat $f | paste - - - - | wc -l > $f.read_count
+#	zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
+#done
+
+for f in output/*.toTranscriptome.out.bam ; do
+	samtools view -F4 $f | awk '{print $3}' | sort --parallel=8 | uniq -c | sort -rn > ${f}.transcript_count
+done
+	
+transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv
+	
+for f in output/*.toTranscriptome.out.bam ; do
+	samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
+	awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  	${f}.transcript_ids | sort --parallel=8 | uniq -c | sort -rn > ${f}.gene_counts
+done
+python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_counts
 
 
 
@@ -71,33 +71,33 @@ rmdir ~/.sort_gene_counts
 
 mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg38.gff3
 
-#	~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
-#	  -o post/STAR_mirna_miRNA_primary_transcript.tsv \
-#	  output/*.STAR.mirna.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA_primary_transcript.tsv.log 2>&1
-#	
-#	~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
-#	  -o post/STAR_mirna_miRNA.tsv \
-#	  output/*.STAR.mirna.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA.tsv.log 2>&1
-#	
-#	#~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
-#	#  -o post/bowtie2_all_mirna_miRNA_primary_transcript.tsv \
-#	#  output/*.trimmed.bowtie2.hg38.all.bam > post/bowtie2_all_mirna_miRNA_primary_transcript.tsv.log 2>&1
-#	#
-#	#~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
-#	#  -o post/bowtie2_all_mirna_miRNA.tsv \
-#	#  output/*.trimmed.bowtie2.hg38.all.bam > post/bowtie2_all_mirna_miRNA.tsv.log 2>&1
-#	
-#	~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
-#	  -o post/bowtie2_mirna_miRNA_primary_transcript.tsv \
-#	  output/*.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA_primary_transcript.tsv.log 2>&1
-#	
-#	~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
-#	  -o post/bowtie2_mirna_miRNA.tsv \
-#	  output/*.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA.tsv.log 2>&1
-#	
-#	#featureCounts -a \
-#		/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf.gz \
-#		-o post/featureCounts.csv *bam
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
+  -o post/STAR_mirna_miRNA_primary_transcript.tsv \
+  output/*.STAR.mirna.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA_primary_transcript.tsv.log 2>&1
+
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
+  -o post/STAR_mirna_miRNA.tsv \
+  output/*.STAR.mirna.Aligned.sortedByCoord.out.bam > post/STAR_mirna_miRNA.tsv.log 2>&1
+
+#~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
+#  -o post/bowtie2_all_mirna_miRNA_primary_transcript.tsv \
+#  output/*.trimmed.bowtie2.hg38.all.bam > post/bowtie2_all_mirna_miRNA_primary_transcript.tsv.log 2>&1
+#
+#~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
+#  -o post/bowtie2_all_mirna_miRNA.tsv \
+#  output/*.trimmed.bowtie2.hg38.all.bam > post/bowtie2_all_mirna_miRNA.tsv.log 2>&1
+
+~/.local/bin/featureCounts.bash -t miRNA_primary_transcript -g Name -a ${mirna_gff} \
+  -o post/bowtie2_mirna_miRNA_primary_transcript.tsv \
+  output/*.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA_primary_transcript.tsv.log 2>&1
+
+~/.local/bin/featureCounts.bash -t miRNA -g Name -a ${mirna_gff} \
+  -o post/bowtie2_mirna_miRNA.tsv \
+  output/*.bowtie2.hg38.bam > post/bowtie2_mirna_miRNA.tsv.log 2>&1
+
+#featureCounts -a \
+#	/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf.gz \
+#	-o post/featureCounts.csv *bam
 
 
 for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
@@ -106,7 +106,11 @@ for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mi
 	cat ${f}.mirnas | sort --parallel=8 | uniq -c | sort -rn > ${f}.mirna_counts
 done
 
-cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | sort --parallel=8 | uniq -c | sort -rn > post/mirna_counts
+
+mkdir ~/.sort_mirna_counts
+cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas | 
+	sort --temporary-directory=$HOME/.sort_mirna_counts --parallel=8 | uniq -c | sort -rn > post/mirna_counts
+rmdir ~/.sort_mirna_counts
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output/*mirna_counts
 
 #for f in output/*fasta.gz ; do
@@ -132,8 +136,11 @@ python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output
 #done
 #cat output/*.blastn.nt.species_genus_family.families | sort | uniq -c | sort -rn > post/family_counts
 
-cat output/*.diamond.nr.species_genus_family.families | sort --parallel=8 | uniq -c | sort -rn > post/family_counts
-python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
+
+
+#cat output/*.diamond.nr.species_genus_family.families | sort --parallel=8 | uniq -c | sort -rn > post/family_counts
+#python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
+
 
 #	sed -i '1s/_L001_R1_001_w_umi.trimmed.blastn.nt.species_genus_family.family_counts//g' post/family_counts.csv
 
