@@ -10,12 +10,24 @@ So I put the username and password into my ~/.netrc and then downloaded all data
 lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl-force true; open -e "mirror -c; quit" gslanalyzer.qb3.berkeley.edu:990'
 
 
+count_fasta_reads.bash *fastq.gz
+average_fasta_read_length.bash
+
 
 
 Contains both CATS/D-plex and Lexogen data.
 They need to be preprocessed differently.
 
 awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print "D-plex" > "Hansen/"$3".labkit";print "Lexogen" > "Hansen/"$8".labkit"}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv 
+
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print $13 > "Hansen/"$3".subject";print $13 > "Hansen/"$8".subject"}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv 
+
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print $2 > "Hansen/"$3".diagnosis";print $2 > "Hansen/"$8".diagnosis"}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv 
+sed -i 's/"//g' Hansen/*diagnosis
+
+Would like to separate the diagnosis column into its parts.
+
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS=","}{print $13,$3,$8,$2}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv > metadata.csv
 
 
 
@@ -29,6 +41,8 @@ upload fastqc to Box .........
 
 ```BASH
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/raw"
 curl -netrc -X MKCOL "${BOX}/"
 
 for f in Hansen/*fastqc* ;do echo $f; curl -netrc -T $f "${BOX}/" ; done

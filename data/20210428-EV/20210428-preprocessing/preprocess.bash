@@ -13,16 +13,14 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${PWD}/output
 
-#for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
-#for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005aa*.fastq.gz ; do
-for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; do
-
+for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
 
 	basename=$( basename $fastq .fastq.gz )
 	basename=${basename%%_*}
 
 	ln -s ${fastq} output/${basename}.fastq.gz
 	ln -s ${fastq}.read_count.txt output/${basename}.fastq.gz.read_count.txt
+	ln -s ${fastq}.average_length.txt output/${basename}.fastq.gz.average_length.txt
 
 	echo $basename
 
@@ -56,13 +54,13 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 					else
 						trim_options=""
 					fi
-				fi
-					trim_id=$( ${sbatch} --parsable --job-name=${trimmer}_${basename} \
+					trim_id=$( ${sbatch} --parsable --job-name=${basename}_${trimmer} \
 						--time=60 --ntasks=2 --mem=15G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
 							${trim_options} -a AAAAAAAA -m 15 -o ${f} ${in_base}.fastq.gz )
 							#-a TGGAATTC -a AAAAAAAA -m 15 -o ${f} ${in_base}.fastq.gz )
+				fi
 				;;
 
 			cutadapt2)
@@ -76,7 +74,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 					else
 						trim_options=""
 					fi
-					trim_id=$( ${sbatch} --parsable --job-name=${trimmer}_${basename} \
+					trim_id=$( ${sbatch} --parsable --job-name=${basename}_${trimmer} \
 						--time=60 --ntasks=2 --mem=15G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
@@ -96,7 +94,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 					else
 						trim_options=""
 					fi
-					trim_id=$( ${sbatch} --parsable --job-name=${trimmer}_${basename} \
+					trim_id=$( ${sbatch} --parsable --job-name=${basename}_${trimmer} \
 						--time=60 --ntasks=2 --mem=15G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
@@ -116,7 +114,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 					else
 						trim_options=""
 					fi
-					trim_id=$( ${sbatch} --parsable --job-name=${trimmer}_${basename} \
+					trim_id=$( ${sbatch} --parsable --job-name=${basename}_${trimmer} \
 						--time=60 --ntasks=2 --mem=15G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/bbduk.bash \
@@ -150,7 +148,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 					else
 						trim_options=""
 					fi
-					trim_id=$( ${sbatch} --parsable --job-name=${trimmer}_${basename} \
+					trim_id=$( ${sbatch} --parsable --job-name=${basename}_${trimmer} \
 						--time=60 --ntasks=2 --mem=15G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/bbduk.bash \
@@ -184,7 +182,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 					else
 						trim_options=""
 					fi
-					trim_id=$( ${sbatch} --parsable --job-name=${trimmer}_${basename} \
+					trim_id=$( ${sbatch} --parsable --job-name=${basename}_${trimmer} \
 						--time=60 --ntasks=2 --mem=15G \
 						--output=${out_base}.${date}.txt \
 						~/.local/bin/bbduk.bash \
@@ -209,6 +207,8 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 
 		esac
 
+		t=${trimmer:0:1}${trimmer: -1}
+
 		in_base=${out_base}
 		out_base=${in_base}.STAR.hg38
 		f=${out_base}.Aligned.sortedByCoord.out.bam
@@ -220,7 +220,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=star-${basename} --time=480 --ntasks=8 --mem=62G \
+			${sbatch} ${depend} --job-name=${basename}${t}star --time=480 --ntasks=8 --mem=62G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/STAR.bash --runThreadN 8 --readFilesCommand zcat \
 					--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a-49/ \
@@ -244,7 +244,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=salmonella-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}salmonella --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -260,7 +260,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=burkholderia-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}burkholderia --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -276,7 +276,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=phiX-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}phiX --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -292,7 +292,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=Smi-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}Smi --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/STAR.bash --runThreadN 4 --readFilesCommand zcat \
 					--genomeDir /francislab/data1/refs/STAR/human_mirna \
@@ -312,7 +312,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=b2mi-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}b2mi --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/human_mirna \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -328,7 +328,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=b2mia-${basename} --time=60 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}b2mia --time=60 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --all --threads 4 -x /francislab/data1/refs/bowtie2/human_mirna \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
@@ -344,7 +344,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=b2h-${basename} --time=60 --ntasks=8 --mem=62G \
+			${sbatch} ${depend} --job-name=${basename}${t}b2h --time=999 --ntasks=8 --mem=62G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
 				-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
@@ -361,7 +361,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=b1mi-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}b1mi --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie.bash --sam --threads 4 --sort \
 				-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
@@ -378,7 +378,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=b1mia-${basename} --time=30 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}b1mia --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie.bash --sam --all --threads 4 --sort \
 				-x /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/human_mirna \
@@ -461,7 +461,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 #			fi
 #			#diamond_id=$( sbatch ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
 #			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
-#			diamond_id=$( ${sbatch} ${depend} --job-name=d-${basename}-${trimmer} --time=9999 --ntasks=8 --mem=60G \
+#			diamond_id=$( ${sbatch} ${depend} --job-name=${basename}${t}dia --time=9999 --ntasks=8 --mem=60G \
 #				--output=${f}.${date}.txt \
 #				~/.local/bin/diamond.bash blastx --threads 8 \
 #					--query ${in_base}.fastq.gz \
@@ -503,7 +503,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 #
 #			echo "Using scratch:${scratch}"
 #
-#			${sbatch} ${depend} --job-name=sgf-${basename}-${trimmer} --time=999 --ntasks=${threads} --mem=30G \
+#			${sbatch} ${depend} --job-name=${basename}${t}sgf --time=999 --ntasks=${threads} --mem=30G \
 #				--gres=scratch:${scratch}G \
 #				--output=${out_base}.${date}.txt \
 #				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
@@ -512,5 +512,5 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005[a-m]_*fastq.gz ; d
 
 	done	#	for trimmer in bbduk1 bbduk2 cutadapt1 cutadapt2 ; do
 
-done	#	for fastq in /francislab/data1/raw/20210205-EV_CATS/*.fastq.gz ; do
+done	#	for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*.fastq.gz ; do
 
