@@ -55,16 +55,23 @@ for s in ${samples} ; do for t in ${trimmers} ; do
 done ; done
 echo
 
-echo -n "|    |"
+echo -n "| --- |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+echo -n "| Subject |"
 for s in ${samples} ; do for t in ${trimmers} ; do
 	c=$(cat ${dir}/${s}.subject 2> /dev/null)
 	echo -n " ${c} |"
 done ; done
 echo
 
-echo -n "| --- |"
+echo -n "| Lab kit |"
 for s in ${samples} ; do for t in ${trimmers} ; do
-	echo -n " --- |"
+	c=$(cat ${dir}/${s}.labkit 2> /dev/null)
+	echo -n " ${c} |"
 done ; done
 echo
 
