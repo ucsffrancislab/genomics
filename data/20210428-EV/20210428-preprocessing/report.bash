@@ -319,9 +319,6 @@ echo
 
 
 
-exit
-
-
 echo -n "| STAR Gene Counts |"
 for s in ${samples} ; do for t in ${trimmers} ; do
 	echo -n " --- |"
