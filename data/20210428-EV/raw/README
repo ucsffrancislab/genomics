@@ -32,6 +32,12 @@ awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS=","}{print $13,$3,$8,$2}' Final\ ID
 
 
 
+for f in Hansen/*.fastq.gz ; do
+echo $f
+zcat $f | paste - - - - | cut -f1 | awk -F: '{print $NF}' | sort | uniq -c > ${f}.index_counts.txt
+done
+
+
 
 
 

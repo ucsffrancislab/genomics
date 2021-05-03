@@ -298,6 +298,24 @@ for s in ${samples} ; do for t in ${trimmers} ; do
 done ; done
 echo
 
+echo -n "| Bowtie2 Aligned to masked Salmonella |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	c=$(cat ${dir}/${s}.${t}.bowtie2.salmonella.masked.bam.aligned_count.txt 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
+echo -n "| Bowtie2 Aligned to masked Salmonella % |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	f=${dir}/${s}.${t}.bowtie2.salmonella.masked.bam.aligned_count.txt
+	n=$(cat ${f} 2> /dev/null)
+	f=${f%.bowtie2.salmonella.masked.bam.aligned_count.txt}
+	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
 
 echo -n "| Bowtie2 Aligned to Burkholderia |"
 for s in ${samples} ; do for t in ${trimmers} ; do
@@ -311,6 +329,24 @@ for s in ${samples} ; do for t in ${trimmers} ; do
 	f=${dir}/${s}.${t}.bowtie2.burkholderia.bam.aligned_count.txt
 	n=$(cat ${f} 2> /dev/null)
 	f=${f%.bowtie2.burkholderia.bam.aligned_count.txt}
+	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
+echo -n "| Bowtie2 Aligned to masked Burkholderia |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	c=$(cat ${dir}/${s}.${t}.bowtie2.burkholderia.masked.bam.aligned_count.txt 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
+echo -n "| Bowtie2 Aligned to masked Burkholderia % |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	f=${dir}/${s}.${t}.bowtie2.burkholderia.masked.bam.aligned_count.txt
+	n=$(cat ${f} 2> /dev/null)
+	f=${f%.bowtie2.burkholderia.masked.bam.aligned_count.txt}
 	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
 	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 	echo -n " ${c} |"

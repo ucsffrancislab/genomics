@@ -13,7 +13,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${PWD}/output
 
-for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
+for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 
 	basename=$( basename $fastq .fastq.gz )
 	basename=${basename%%_*}
@@ -247,6 +247,24 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
 			${sbatch} ${depend} --job-name=${basename}${t}salmonella --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella \
+				--no-unal \
+				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
+		fi
+
+		out_base=${in_base}.bowtie2.salmonella.masked
+		f=${out_base}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${trim_id} ] ; then
+				depend="--dependency=afterok:${trim_id}"
+			else
+				depend=""
+			fi
+			${sbatch} ${depend} --job-name=${basename}${t}Msalmonella --time=30 --ntasks=4 --mem=30G \
+				--output=${out_base}.${date}.txt \
+				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella.masked \
+				--no-unal \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 		fi
 
@@ -263,6 +281,24 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
 			${sbatch} ${depend} --job-name=${basename}${t}burkholderia --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia \
+				--no-unal \
+				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
+		fi
+
+		out_base=${in_base}.bowtie2.burkholderia.masked
+		f=${out_base}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${trim_id} ] ; then
+				depend="--dependency=afterok:${trim_id}"
+			else
+				depend=""
+			fi
+			${sbatch} ${depend} --job-name=${basename}${t}Mburkholderia --time=30 --ntasks=4 --mem=30G \
+				--output=${out_base}.${date}.txt \
+				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia.masked \
+				--no-unal \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 		fi
 
@@ -279,6 +315,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
 			${sbatch} ${depend} --job-name=${basename}${t}phiX --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
+				--no-unal \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 		fi
 
@@ -448,67 +485,98 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz ; do
 #	--very-sensitive         enable very sensitive mode (default: fast)
 #	--ultra-sensitive        enable ultra sensitive mode (default: fast)
 
-#		diamond_id=""
-#		out_base=${in_base}.diamond.nr
-#		f=${out_base}.txt.gz
-#		if [ -f $f ] && [ ! -w $f ] ; then
-#			echo "Write-protected $f exists. Skipping."
-#		else
-#			if [ ! -z "${unpair_id}" ] ; then
-#				depend="--dependency=afterok:${unpair_id}"
-#			else
-#				depend=""
-#			fi
-#			#diamond_id=$( sbatch ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
-#			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
-#			diamond_id=$( ${sbatch} ${depend} --job-name=${basename}${t}dia --time=9999 --ntasks=8 --mem=60G \
-#				--output=${f}.${date}.txt \
-#				~/.local/bin/diamond.bash blastx --threads 8 \
-#					--query ${in_base}.fastq.gz \
-#					--db /francislab/data1/refs/diamond/nr \
-#					--evalue 0.1 \
-#					--outfmt 6 --out ${f} )
-#			echo $diamond_id
-#		fi
-#
-#		out_base=${in_base}.diamond.nr.species_genus_family
-#		f=${out_base}.txt.gz
-#		if [ -f $f ] && [ ! -w $f ] ; then
-#			echo "Write-protected $f exists. Skipping."
-#		else
-#			if [ ! -z "${diamond_id}" ] ; then
-#				depend="--dependency=afterok:${diamond_id}"
-#			else
-#				depend=""
-#			fi  
-#
-#			threads=4
-#			db=/francislab/data1/refs/taxadb/asgf.sqlite
-#			input=${in_base}.diamond.nr.txt.gz
-#			db_size=$( stat --dereference --format %s ${db} )
-#
-#			if [ -f ${input} ] ; then
-#				input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
-#			else
-#				#	biggest existing.
-#				#input_size=17000000000
-#				input_size=10000000000
-#			fi
-#
-#			#index_size=$( du -sb ${index} | awk '{print $1}' )
-#			scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*12/10)+1 )) )
-#			# Add 1 in case files are small so scratch will be 1 instead of 0.
-#			# 11/10 adds 10% to account for the output
-#			# 12/10 adds 20% to account for the output
-#
-#			echo "Using scratch:${scratch}"
-#
-#			${sbatch} ${depend} --job-name=${basename}${t}sgf --time=999 --ntasks=${threads} --mem=30G \
-#				--gres=scratch:${scratch}G \
-#				--output=${out_base}.${date}.txt \
-#				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
-#					-db ${db} -input ${input}
-#		fi  
+		diamond_id=""
+		out_base=${in_base}.diamond.nr
+		f=${out_base}.txt.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z "${unpair_id}" ] ; then
+				depend="--dependency=afterok:${unpair_id}"
+			else
+				depend=""
+			fi
+
+			#diamond_id=$( ${sbatch} ${depend} --job-name=${basename}${t}dia --time=9999 --ntasks=8 --mem=60G \
+			#	--output=${f}.${date}.txt \
+			#	~/.local/bin/diamond.bash blastx --threads 8 \
+			#		--query ${in_base}.fastq.gz \
+			#		--db /francislab/data1/refs/diamond/nr \
+			#		--evalue 0.1 \
+			#		--outfmt 6 --out ${f} )
+
+			threads=8
+			db=/francislab/data1/refs/diamond/nr	#.dmnd
+			input=${in_base}.fastq.gz
+			db_size=$( stat --dereference --format %s ${db}.dmnd )
+
+			if [ -f ${input} ] ; then
+				input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
+			else
+				#	biggest existing.
+				#input_size=17000000000
+				#input_size=10000000000
+                  # 5950036175
+				input_size=6000000000
+			fi
+
+			#index_size=$( du -sb ${index} | awk '{print $1}' )
+			scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*12/10)+1 )) )
+			# Add 1 in case files are small so scratch will be 1 instead of 0.
+			# 11/10 adds 10% to account for the output
+			# 12/10 adds 20% to account for the output
+
+			echo "Using scratch:${scratch}"
+
+			diamond_id=$( ${sbatch} ${depend} --job-name=${basename}${t}dia --time=9999 --ntasks=${threads} --mem=60G \
+				--output=${f}.${date}.txt \
+				--gres=scratch:${scratch}G \
+				~/.local/bin/diamond_scratch.bash blastx --threads ${threads} \
+					--query ${input} \
+					--db ${db} \
+					--evalue 0.1 \
+					--outfmt 6 --out ${f} )
+			echo $diamond_id
+		fi
+
+		out_base=${in_base}.diamond.nr.species_genus_family
+		f=${out_base}.txt.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z "${diamond_id}" ] ; then
+				depend="--dependency=afterok:${diamond_id}"
+			else
+				depend=""
+			fi  
+
+			threads=4
+			db=/francislab/data1/refs/taxadb/asgf.sqlite
+			input=${in_base}.diamond.nr.txt.gz
+			db_size=$( stat --dereference --format %s ${db} )
+
+			if [ -f ${input} ] ; then
+				input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
+			else
+				#	biggest existing.
+				#input_size=17000000000
+				input_size=10000000000
+			fi
+
+			#index_size=$( du -sb ${index} | awk '{print $1}' )
+			scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*12/10)+1 )) )
+			# Add 1 in case files are small so scratch will be 1 instead of 0.
+			# 11/10 adds 10% to account for the output
+			# 12/10 adds 20% to account for the output
+
+			echo "Using scratch:${scratch}"
+
+			${sbatch} ${depend} --job-name=${basename}${t}sgf --time=999 --ntasks=${threads} --mem=30G \
+				--gres=scratch:${scratch}G \
+				--output=${out_base}.${date}.txt \
+				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
+					-db ${db} -input ${input}
+		fi  
 
 	done	#	for trimmer in bbduk1 bbduk2 cutadapt1 cutadapt2 ; do
 
