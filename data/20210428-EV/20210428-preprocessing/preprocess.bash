@@ -335,7 +335,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 			else
 				depend=""
 			fi
-			${sbatch} ${depend} --job-name=${basename}${t}rmsk --time=99 --ntasks=4 --mem=30G \
+			${sbatch} ${depend} --job-name=${basename}${t}rmsk --time=999 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/rmsk \
 				--no-unal \
