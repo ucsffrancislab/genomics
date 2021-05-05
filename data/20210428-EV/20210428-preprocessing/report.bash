@@ -49,389 +49,408 @@ trimmers="bbduk1 bbduk2 bbduk3 cutadapt1 cutadapt2 cutadapt3"
 
 suffix=""	#	_R1
 
-echo -n "|    |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	echo -n " ${s} |"
-done ; done
-echo
-
-echo -n "| --- |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	echo -n " --- |"
-done ; done
-echo
-
-echo -n "| Subject |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.subject 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Lab kit |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.labkit 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Trimmer |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	echo -n " ${t} |"
-done ; done
-echo
-
-echo -n "| Raw Read Count |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}${suffix}.fastq.gz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Raw Read Length |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}${suffix}.fastq.gz.average_length.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Trimmed Read Count |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.fastq.gz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Trimmed Ave Read Length |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.fastq.gz.average_length.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| STAR Aligned to Transcriptome |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| STAR Aligned to Transcriptome % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.STAR.hg38.Aligned.toTranscriptome.out.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| STAR Aligned to Genome |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| STAR Aligned to Genome % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| STAR Unaligned |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.unaligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| STAR Unaligned % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.unaligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.STAR.hg38.Aligned.sortedByCoord.out.bam.unaligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| STAR Unmapped |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| STAR Unmapped % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| Bowtie2 Aligned to hg38 (1) |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.hg38.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to hg38 (1) % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.hg38.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.hg38.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| STAR Aligned to mirna |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| STAR Aligned to mirna % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.STAR.mirna.Aligned.sortedByCoord.out.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| Bowtie Aligned to mirna |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie.mirna.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie Aligned to mirna % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie.mirna.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie.mirna.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| Bowtie2 Aligned to mirna |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.mirna.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to mirna % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.mirna.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.mirna.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| Bowtie2 Aligned to phiX |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.phiX.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to phiX % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.phiX.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.phiX.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| Bowtie2 Aligned to Salmonella |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.salmonella.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to Salmonella % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.salmonella.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.salmonella.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to masked Salmonella |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.salmonella.masked.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to masked Salmonella % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.salmonella.masked.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.salmonella.masked.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-echo -n "| Bowtie2 Aligned to Burkholderia |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.burkholderia.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to Burkholderia % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.burkholderia.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.burkholderia.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to masked Burkholderia |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	c=$(cat ${dir}/${s}.${t}.bowtie2.burkholderia.masked.bam.aligned_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-echo -n "| Bowtie2 Aligned to masked Burkholderia % |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	f=${dir}/${s}.${t}.bowtie2.burkholderia.masked.bam.aligned_count.txt
-	n=$(cat ${f} 2> /dev/null)
-	f=${f%.bowtie2.burkholderia.masked.bam.aligned_count.txt}
-	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done ; done
-echo
-
-
-
-echo -n "| STAR Gene Counts |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	echo -n " --- |"
-done ; done
-echo
-
-for gene in $( head -50 post/gene_counts | awk '{print $2}' ) ; do
-	echo -n "| ${gene} |"
-	for s in ${samples} ; do for t in ${trimmers} ; do
-		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts 2> /dev/null)
-		echo -n " ${c} |"
-	done ; done
-	echo
-done
-
-
-
-echo -n "| STAR miRNA Counts |"
-for s in ${samples} ; do for t in ${trimmers} ; do
-	echo -n " --- |"
-done ; done
-echo
-
-for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
-	echo -n "| ${gene} |"
-	for s in ${samples} ; do for t in ${trimmers} ; do
-		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts 2> /dev/null)
-		echo -n " ${c} |"
-	done ; done
-	echo
-done
-
-
-
-
-
-#	echo -n "| blastn Family Counts |"
-#	for f in $( ls ${core}.blastn.nt.species_genus_family.family_counts ) ; do
-#		echo -n " --- |"
-#	done
+#	echo -n "|    |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		echo -n " ${s} |"
+#	done ; done
 #	echo
 #	
-#	save="${IFS}"
-#	IFS=","
-#	for family in $( head -50 post/blastn_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#		echo -n "| ${family} |"
-#		IFS="${save}"
-#		for f in $( ls ${core}.blastn.nt.species_genus_family.family_counts ) ; do
-#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' )
-#			#c=$( awk -v family=$family '( $2 == family ){print $1}' ${f} )
-#			echo -n " ${c} |"
-#		done
-#		echo
-#		IFS=","
-#	done
-#	IFS="${save}"
-
-
-#	echo -n "| diamond Family Counts |"
+#	echo -n "| --- |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
 #		echo -n " --- |"
 #	done ; done
 #	echo
 #	
-#	save="${IFS}"
-#	IFS=","
-#	for family in $( head -50 post/diamond_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#		echo -n "| ${family} |"
-#		IFS="${save}"
+#	echo -n "| Subject |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.subject 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Lab kit |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.labkit 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Trimmer |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		echo -n " ${t} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Raw Read Count |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}${suffix}.fastq.gz.read_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Raw Read Length |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}${suffix}.fastq.gz.average_length.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Trimmed Read Count |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.fastq.gz.read_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Trimmed Ave Read Length |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.fastq.gz.average_length.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| STAR Aligned to Transcriptome |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| STAR Aligned to Transcriptome % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.STAR.hg38.Aligned.toTranscriptome.out.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| STAR Aligned to Genome |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| STAR Aligned to Genome % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.STAR.hg38.Aligned.sortedByCoord.out.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| STAR Unaligned |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.unaligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| STAR Unaligned % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.bam.unaligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.STAR.hg38.Aligned.sortedByCoord.out.bam.unaligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| STAR Unmapped |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| STAR Unmapped % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.STAR.hg38.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie2 Aligned to hg38 (1) |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.hg38.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to hg38 (1) % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.hg38.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.hg38.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| STAR Aligned to mirna |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| STAR Aligned to mirna % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.STAR.mirna.Aligned.sortedByCoord.out.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie Aligned to mirna |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie.mirna.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie Aligned to mirna % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie.mirna.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie.mirna.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie2 Aligned to mirna |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.mirna.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to mirna % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.mirna.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.mirna.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie2 Aligned to RMSK |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.rmsk.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to RMSK % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.rmsk.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.rmsk.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie2 Aligned to phiX |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.phiX.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to phiX % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.phiX.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.phiX.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie2 Aligned to Salmonella |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.salmonella.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to Salmonella % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.salmonella.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.salmonella.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to masked Salmonella |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.salmonella.masked.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to masked Salmonella % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.salmonella.masked.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.salmonella.masked.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	echo -n "| Bowtie2 Aligned to Burkholderia |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.burkholderia.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to Burkholderia % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.burkholderia.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.burkholderia.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to masked Burkholderia |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		c=$(cat ${dir}/${s}.${t}.bowtie2.burkholderia.masked.bam.aligned_count.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	echo -n "| Bowtie2 Aligned to masked Burkholderia % |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		f=${dir}/${s}.${t}.bowtie2.burkholderia.masked.bam.aligned_count.txt
+#		n=$(cat ${f} 2> /dev/null)
+#		f=${f%.bowtie2.burkholderia.masked.bam.aligned_count.txt}
+#		d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+#		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+#		echo -n " ${c} |"
+#	done ; done
+#	echo
+#	
+#	
+#	
+#	echo -n "| STAR Gene Counts |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		echo -n " --- |"
+#	done ; done
+#	echo
+#	
+#	for gene in $( head -50 post/gene_counts | awk '{print $2}' ) ; do
+#		echo -n "| ${gene} |"
 #		for s in ${samples} ; do for t in ${trimmers} ; do
-#			f=${dir}/${s}.${t}.diamond.nr.species_genus_family.family_counts
-#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
+#			c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts 2> /dev/null)
 #			echo -n " ${c} |"
 #		done ; done
 #		echo
-#		IFS=","
 #	done
-#	IFS="${save}"
+#	
+#	
+#	
+#	echo -n "| STAR miRNA Counts |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		echo -n " --- |"
+#	done ; done
+#	echo
+#	
+#	for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
+#		echo -n "| ${gene} |"
+#		for s in ${samples} ; do for t in ${trimmers} ; do
+#			c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts 2> /dev/null)
+#			echo -n " ${c} |"
+#		done ; done
+#		echo
+#	done
+#	
+#	
+#	
+#	
+#	
+#	#	echo -n "| blastn Family Counts |"
+#	#	for f in $( ls ${core}.blastn.nt.species_genus_family.family_counts ) ; do
+#	#		echo -n " --- |"
+#	#	done
+#	#	echo
+#	#	
+#	#	save="${IFS}"
+#	#	IFS=","
+#	#	for family in $( head -50 post/blastn_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+#	#		echo -n "| ${family} |"
+#	#		IFS="${save}"
+#	#		for f in $( ls ${core}.blastn.nt.species_genus_family.family_counts ) ; do
+#	#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' )
+#	#			#c=$( awk -v family=$family '( $2 == family ){print $1}' ${f} )
+#	#			echo -n " ${c} |"
+#	#		done
+#	#		echo
+#	#		IFS=","
+#	#	done
+#	#	IFS="${save}"
+
+
+echo -n "| diamond Family Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/diamond_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| ${family} |"
+	IFS="${save}"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		f=${dir}/${s}.${t}.diamond.nr.species_genus_family.family_counts
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+	IFS=","
+done
+IFS="${save}"
 
 

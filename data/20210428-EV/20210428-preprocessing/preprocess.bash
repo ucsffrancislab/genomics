@@ -47,6 +47,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
+					#	8bp
 					if [ ${labkit} == "D-plex" ] ; then
 						trim_options="-u 16 -a AGATCGGA"
 					elif [ ${labkit} == "Lexogen" ] ; then
@@ -67,6 +68,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
+					#	14bp
 					if [ ${labkit} == "D-plex" ] ; then
 						trim_options="-u 16 -a AGATCGGAAGAGCA"
 					elif [ ${labkit} == "Lexogen" ] ; then
@@ -87,6 +89,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
+					#	22bp
 					if [ ${labkit} == "D-plex" ] ; then
 						trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTG"
 					elif [ ${labkit} == "Lexogen" ] ; then
@@ -107,6 +110,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
+					#	8bp
 					if [ ${labkit} == "D-plex" ] ; then
 						trim_options="literal=AGATCGGA,AAAAAAAA forcetrimleft=16"
 					elif [ ${labkit} == "Lexogen" ] ; then
@@ -141,10 +145,11 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
+					#	14bp
 					if [ ${labkit} == "D-plex" ] ; then
 						trim_options="literal=AGATCGGAAGAGCA forcetrimleft=16"
 					elif [ ${labkit} == "Lexogen" ] ; then
-						trim_options="literal=TGGAATTCTCGGGTG"
+						trim_options="literal=TGGAATTCTCGGGTG"	#	this is 15bp?
 					else
 						trim_options=""
 					fi
@@ -175,10 +180,11 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				if [ -f $f ] && [ ! -w $f ] ; then
 					echo "Write-protected $f exists. Skipping."
 				else
+					#	22bp
 					if [ ${labkit} == "D-plex" ] ; then
 						trim_options="literal=AGATCGGAAGAGCACACGTCTG forcetrimleft=16"
 					elif [ ${labkit} == "Lexogen" ] ; then
-						trim_options="literal=TGGAATTCTCGGGTGCCAAGGAA"
+						trim_options="literal=TGGAATTCTCGGGTGCCAAGGAA"	#	this is 23bp?
 					else
 						trim_options=""
 					fi
@@ -315,6 +321,23 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 			${sbatch} ${depend} --job-name=${basename}${t}phiX --time=30 --ntasks=4 --mem=30G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
+				--no-unal \
+				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
+		fi
+
+		out_base=${in_base}.bowtie2.rmsk
+		f=${out_base}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${trim_id} ] ; then
+				depend="--dependency=afterok:${trim_id}"
+			else
+				depend=""
+			fi
+			${sbatch} ${depend} --job-name=${basename}${t}rmsk --time=99 --ntasks=4 --mem=30G \
+				--output=${out_base}.${date}.txt \
+				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/rmsk \
 				--no-unal \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 		fi
@@ -563,8 +586,19 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 				input_size=10000000000
 			fi
 
+			#	Occassionally jobs fail, apparently due to out of disk space.
+			#	cp: failed to extend ‘/scratch/gwendt/105418/asgf.sqlite’: No space left on device
+			#	Others aren't properly requesting scratch space, or perhaps I'm doing this wrong.
+			#	Increase request size
+			#
+			#	I'm guessing that the number of threads is not relevant on C4?
+			#	This seems to be the case. Requesting 227GB each and running 11 on n17
+			#	Roughly 2.5TB and n17 has 2.6TB. Remove threads from all scratch calculations.
+			#
 			#index_size=$( du -sb ${index} | awk '{print $1}' )
-			scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*12/10)+1 )) )
+			#scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*20/10)+1 )) )
+			#scratch=$( echo $(( (((3*${input_size})+${db_size})/1000000000*13/10)+1 )) )
+			scratch=$( echo $(( (((2*${input_size})+${db_size})/1000000000*12/10)+1 )) )
 			# Add 1 in case files are small so scratch will be 1 instead of 0.
 			# 11/10 adds 10% to account for the output
 			# 12/10 adds 20% to account for the output

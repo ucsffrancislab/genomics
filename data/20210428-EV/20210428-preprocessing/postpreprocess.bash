@@ -130,15 +130,24 @@ python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output
 
 
 #for f in output/*blastn.nt.species_genus_family.txt.gz ; do
-##	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
-#	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
-#	cat ${f%.txt.gz}.families | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
-#done
 #cat output/*.blastn.nt.species_genus_family.families | sort | uniq -c | sort -rn > post/family_counts
+#	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
 
 
+#for f in output/*diamond.nr.species_genus_family.txt.gz ; do
+#  zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | \
+#    uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
+#  cat ${f%.txt.gz}.families | \
+#    sort --parallel=8 --temporary-directory=$HOME/.sort_family_counts | \
+#    uniq -c | sort -rn > ${f%.txt.gz}.family_counts
+#done
+#cat output/*.diamond.nr.species_genus_family.families | \
 
-#cat output/*.diamond.nr.species_genus_family.families | sort --parallel=8 | uniq -c | sort -rn > post/family_counts
+mkdir ~/.sort_family_counts
+zcat output/*.diamond.nr.species_genus_family.families.gz | \
+  sort --parallel=8 --temporary-directory=$HOME/.sort_family_counts | uniq -c | sort -rn > post/diamond_family_counts
+rmdir ~/.sort_family_counts
+
 #python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
 
 
