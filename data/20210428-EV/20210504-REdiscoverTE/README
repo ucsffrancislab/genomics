@@ -1,0 +1,15 @@
+
+
+./REdiscoverTE.bash
+
+
+./REdiscoverTE_rollup.bash
+
+
+
+Rscript ./EdgeR_Template.R ${PWD}/myrollup.bbduk3.k31/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA 6 0.5 0.25 20210407
+
+
+
+
+
