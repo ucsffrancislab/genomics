@@ -155,6 +155,38 @@ rmdir ~/.sort_family_counts
 
 
 
+
+
+mkdir ~/.sort_sequences
+for b in output/SF*.bowtie2.rmsk.bam ; do
+  base=${b%.bam}
+  samtools view -F4 $b | awk '{print $3}' | gzip > ${base}.aligned_sequences.txt.gz
+  zcat ${base}.aligned_sequences.txt.gz | \
+    awk -F\; '{print $1}' | awk -F\= '{print $2}' | gzip > ${base}.aligned_sequences.names.txt.gz
+  zcat ${base}.aligned_sequences.names.txt.gz | sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+    | uniq -c | sort -rn > ${base}.rmsk_name_counts
+  zcat ${base}.aligned_sequences.txt.gz | \
+    awk -F\; '{print $2}' | awk -F\= '{print $2}' | gzip > ${base}.aligned_sequences.classes.txt.gz
+  zcat ${base}.aligned_sequences.classes.txt.gz | sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+    | uniq -c | sort -rn > ${base}.rmsk_class_counts
+  zcat ${base}.aligned_sequences.txt.gz | \
+    awk -F\; '{print $3}' | awk -F\= '{print $2}' | awk -F: '{print $1}' \
+      | gzip > ${base}.aligned_sequences.families.txt.gz
+  zcat ${base}.aligned_sequences.families.txt.gz | sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+    | uniq -c | sort -rn > ${base}.rmsk_family_counts
+done
+rmdir ~/.sort_sequences
+
+mkdir ~/.sort_sequences
+zcat output/*.aligned_sequences.names.txt.gz | sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+  | uniq -c | sort -rn > post/rmsk_name_counts
+zcat output/*.aligned_sequences.classes.txt.gz | sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+  | uniq -c | sort -rn > post/rmsk_class_counts
+zcat output/*.aligned_sequences.families.txt.gz | sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+  | uniq -c | sort -rn > post/rmsk_family_counts
+rmdir ~/.sort_sequences
+
+
 #./report.bash 
 ./report.bash > report.md
 cat report.md
