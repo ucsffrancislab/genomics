@@ -465,7 +465,7 @@ echo
 save="${IFS}"
 IFS=","
 for family in $( head -50 post/rmsk_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-	echo -n "| ${family} |"
+	echo -n "| rf${family} |"
 	IFS="${save}"
 	for s in ${samples} ; do for t in ${trimmers} ; do
 		f=${dir}/${s}.${t}.bowtie2.rmsk.rmsk_family_counts
@@ -491,7 +491,7 @@ echo
 save="${IFS}"
 IFS=","
 for family in $( head -50 post/rmsk_class_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-	echo -n "| ${family} |"
+	echo -n "| rc${family} |"
 	IFS="${save}"
 	for s in ${samples} ; do for t in ${trimmers} ; do
 		f=${dir}/${s}.${t}.bowtie2.rmsk.rmsk_class_counts
@@ -517,7 +517,7 @@ echo
 save="${IFS}"
 IFS=","
 for family in $( head -50 post/rmsk_name_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-	echo -n "| ${family} |"
+	echo -n "| rn${family} |"
 	IFS="${save}"
 	for s in ${samples} ; do for t in ${trimmers} ; do
 		f=${dir}/${s}.${t}.bowtie2.rmsk.rmsk_name_counts
