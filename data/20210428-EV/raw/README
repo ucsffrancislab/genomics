@@ -56,3 +56,8 @@ for f in Hansen/*fastqc* ;do echo $f; curl -netrc -T $f "${BOX}/" ; done
 
 
 
+for f in Hansen/SFHH005*.fastq.gz ; do
+echo $f
+zcat $f | paste - - - - | cut -f2 | cut -c1-12 | sort | uniq -c | sort -rn > ${f}.umi_counts.txt
+done
+
