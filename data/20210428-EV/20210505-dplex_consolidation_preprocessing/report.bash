@@ -103,6 +103,15 @@ for s in ${samples} ; do for t in ${trimmers} ; do
 done ; done
 echo
 
+echo -n "| Consolidated Read % |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	n=$(cat ${dir}/${s}.umi.fastq.gz.read_count.txt 2> /dev/null)
+	d=$(cat ${dir}/${s}.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
 echo -n "| Trimmed Read Count |"
 for s in ${samples} ; do for t in ${trimmers} ; do
 	c=$(cat ${dir}/${s}.umi.${t}.fastq.gz.read_count.txt 2> /dev/null)
