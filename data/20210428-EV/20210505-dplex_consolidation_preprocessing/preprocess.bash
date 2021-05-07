@@ -10,7 +10,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 mkdir -p ${PWD}/output
 
 #	ONLY THE D-PLEX DATA (SFHH005)
-for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005ar_*fastq.gz ; do #	u,v,ab,ar
+for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005a[s-z]_*fastq.gz ; do #	u,v,ar
 
 	basename=$( basename $fastq .fastq.gz )
 	basename=${basename%%_*}
@@ -506,6 +506,7 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005ar_*fastq.gz ; do #
 			${sbatch} ${depend} --job-name=${basename}${t}rna --time=999 --ntasks=8 --mem=62G \
 				--output=${out_base}.${date}.txt \
 				~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/mRNA_Prot \
+				--no-unal \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 		fi
 
