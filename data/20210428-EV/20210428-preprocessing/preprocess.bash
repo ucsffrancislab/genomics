@@ -406,8 +406,28 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH00*fastq.gz ; do
 			fi
 			${sbatch} ${depend} --job-name=${basename}${t}b2h --time=999 --ntasks=8 --mem=62G \
 				--output=${out_base}.${date}.txt \
-				~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
+				~/.local/bin/bowtie2.bash --sort --threads 8 \
 				-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
+				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
+
+				#	Accidentally included 2 indexes. Not sure what that does so rerunning.
+				#-x /francislab/data1/refs/bowtie2/hg38 \
+				
+		fi
+
+		out_base=${in_base}.bowtie2.mRNA_Prot
+		f=${out_base}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			if [ ! -z ${trim_id} ] ; then
+				depend="--dependency=afterok:${trim_id}"
+			else
+				depend=""
+			fi
+			${sbatch} ${depend} --job-name=${basename}${t}rna --time=999 --ntasks=8 --mem=62G \
+				--output=${out_base}.${date}.txt \
+				~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/mRNA_Prot \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
 		fi
 
