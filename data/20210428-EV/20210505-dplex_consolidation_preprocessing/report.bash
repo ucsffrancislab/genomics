@@ -411,6 +411,23 @@ echo
 
 
 
+#	echo -n "| bowtie2 mRNA Counts |"
+#	for s in ${samples} ; do for t in ${trimmers} ; do
+#		echo -n " --- |"
+#	done ; done
+#	echo
+#	
+#	for gene in $( head -50 post/mrna_counts | awk '{print $2}' ) ; do
+#		echo -n "| ${gene} |"
+#		for s in ${samples} ; do for t in ${trimmers} ; do
+#			c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.bowtie2.mRNA_Prot.bam.mrna_counts 2> /dev/null)
+#			echo -n " ${c} |"
+#		done ; done
+#		echo
+#	done
+
+
+#	
 #	echo -n "| STAR Gene Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
 #		echo -n " --- |"
