@@ -17,3 +17,9 @@ rsync -avz --progress --exclude archive/ rsync://ftp.ncbi.nih.gov/refseq/release
 
 rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/bacteria/ /francislab/data1/refs/refseq/bacteria/
 
+rsync -avz --progress --include=README.txt --include="*fna.gz" --include="gene_RefSeqGene" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/RefSeqGene/ RefSeqGene-20210505/
+
+
+rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/mRNA_Prot/ mRNA_Prot-20210506/
+
+
