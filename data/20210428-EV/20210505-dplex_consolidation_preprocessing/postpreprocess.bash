@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+!/usr/bin/env bash
 
 
 if [ -n "$( declare -F module )" ] ; then
@@ -25,17 +25,36 @@ mkdir post/
 #	zcat $f | paste - - - - | cut -f2 | awk '{l+=length($1);i++}END{print l/i}' > $f.average_length
 #done
 
-for f in output/*.toTranscriptome.out.bam ; do
-	samtools view -F4 $f | awk '{print $3}' | sort --parallel=8 \
-		| uniq -c | sort -rn > ${f}.transcript_count
+for bam in output/*.toTranscriptome.out.bam ; do
+	f=${bam}.transcript_count
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		samtools view -F4 $bam | awk '{print $3}' | sort --parallel=8 \
+			| uniq -c | sort -rn > ${f}
+		chmod -w $f
+	fi
 done
 	
 transcript_gene=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.transcript_gene.tsv
 	
-for f in output/*.toTranscriptome.out.bam ; do
-	samtools view -F4 $f | awk '{print $3}' > ${f}.transcript_ids
-	awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-  	${f}.transcript_ids | sort --parallel=8 | uniq -c | sort -rn > ${f}.gene_counts
+for bam in output/*.toTranscriptome.out.bam ; do
+	f=${bam}.transcript_ids
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		samtools view -F4 $bam | awk '{print $3}' > ${f}
+		chmod -w $f
+	fi
+
+	f=${bam}.gene_counts
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  		${bam}.transcript_ids | sort --parallel=8 | uniq -c | sort -rn > ${f}
+		chmod -w $f
+	fi
 done
 #python3 ~/.local/bin/merge_uniq-c.py --int --output post/gene_counts.csv output/*gene_counts
 
@@ -43,12 +62,18 @@ done
 
 
 
-mkdir ~/.sort_gene_counts
-awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
-  output/*.toTranscriptome.out.bam.transcript_ids \
-  | sort --temporary-directory=$HOME/.sort_gene_counts --parallel=8 \
-	| uniq -c | sort -rn > post/gene_counts
-rmdir ~/.sort_gene_counts
+f=post/gene_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	mkdir ~/.sort_gene_counts
+	awk '(NR==FNR){t2g[$1]=$2}(NR!=FNR){print t2g[$1]}' ${transcript_gene} \
+  	output/*.toTranscriptome.out.bam.transcript_ids \
+  	| sort --temporary-directory=$HOME/.sort_gene_counts --parallel=8 \
+		| uniq -c | sort -rn > $f
+	chmod -w $f
+	rmdir ~/.sort_gene_counts
+fi
 
 
 
@@ -102,17 +127,39 @@ mirna_gff=/francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22
 #	#	-o post/featureCounts.csv *bam
 
 
-for f in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
-	samtools view -F4 $f | awk '{print $3}' > ${f}.mirnas
-	cat ${f}.mirnas | sort --parallel=8 | uniq -c | sort -rn > ${f}.mirna_counts
+for bam in output/*STAR.mirna.Aligned.sortedByCoord.out.bam output/*.bowtie{2,}.mirna{.all,}.bam ; do
+	f=${bam}.mirnas
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		samtools view -F4 $bam | awk '{print $3}' > ${f}
+		chmod -w $f
+	fi
+
+	f=${bam}.mirna_counts
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		cat ${bam}.mirnas | sort --parallel=8 | uniq -c | sort -rn > ${f}
+		chmod -w $f
+	fi
 done
 
 
-mkdir ~/.sort_mirna_counts
-cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas \
-	| sort --temporary-directory=$HOME/.sort_mirna_counts --parallel=8 \
-	| uniq -c | sort -rn > post/mirna_counts
-rmdir ~/.sort_mirna_counts
+f=post/mirna_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	mkdir ~/.sort_mirna_counts
+	cat output/*.STAR.mirna.Aligned.sortedByCoord.out.bam.mirnas \
+		| sort --temporary-directory=$HOME/.sort_mirna_counts --parallel=8 \
+		| uniq -c | sort -rn > $f
+	chmod -w $f
+	rmdir ~/.sort_mirna_counts
+fi
+
+
+
 #python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output/*mirna_counts
 
 #for f in output/*fasta.gz ; do
@@ -136,20 +183,26 @@ rmdir ~/.sort_mirna_counts
 #	zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' | sort | uniq -c | sort -rn > ${f%.txt.gz}.family_counts
 
 
-#for f in output/*diamond.nr.species_genus_family.txt.gz ; do
-#  zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | \
-#    uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
-#  cat ${f%.txt.gz}.families | \
-#    sort --parallel=8 --temporary-directory=$HOME/.sort_family_counts | \
-#    uniq -c | sort -rn > ${f%.txt.gz}.family_counts
-#done
+for f in output/*diamond.nr.species_genus_family.txt.gz ; do
+  zcat ${f} | awk 'BEGIN{FS=OFS="\t"}{print $1, $NF}' | \
+    uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $2}' > ${f%.txt.gz}.families
+  cat ${f%.txt.gz}.families | \
+    sort --parallel=8 --temporary-directory=$HOME/.sort_family_counts | \
+    uniq -c | sort -rn > ${f%.txt.gz}.family_counts
+done
 #cat output/*.diamond.nr.species_genus_family.families | \
 
-mkdir ~/.sort_family_counts
-zcat output/*.diamond.nr.species_genus_family.families.gz \
-	| sort --parallel=8 --temporary-directory=$HOME/.sort_family_counts \
-	| uniq -c | sort -rn > post/diamond_family_counts
-rmdir ~/.sort_family_counts
+f=post/diamond_family_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	mkdir ~/.sort_family_counts
+	zcat output/*.diamond.nr.species_genus_family.families.gz \
+		| sort --parallel=8 --temporary-directory=$HOME/.sort_family_counts \
+		| uniq -c | sort -rn > $f
+	rmdir ~/.sort_family_counts
+	chmod -w $f
+fi
 
 #python3 ~/.local/bin/merge_uniq-c.py --int --output post/family_counts.csv output/*family_counts
 
@@ -159,47 +212,150 @@ rmdir ~/.sort_family_counts
 
 
 mkdir ~/.sort_sequences
-for b in output/SF*.bowtie2.rmsk.bam ; do
-	base=${b%.bam}
-	samtools view -F4 $b | awk '{print $3}' | gzip > ${base}.aligned_sequences.txt.gz
-	zcat ${base}.aligned_sequences.txt.gz \
-		| awk -F\; '{print $1}' | awk -F\= '{print $2}' \
-		| gzip > ${base}.aligned_sequences.names.txt.gz
-	zcat ${base}.aligned_sequences.names.txt.gz \
-		| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
-		| uniq -c | sort -rn > ${base}.rmsk_name_counts
-	zcat ${base}.aligned_sequences.txt.gz \
-		| awk -F\; '{print $2}' | awk -F\= '{print $2}' \
-		| gzip > ${base}.aligned_sequences.classes.txt.gz
-	zcat ${base}.aligned_sequences.classes.txt.gz \
-		| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
-		| uniq -c | sort -rn > ${base}.rmsk_class_counts
-	zcat ${base}.aligned_sequences.txt.gz \
-		| awk -F\; '{print $3}' | awk -F\= '{print $2}' | awk -F: '{print $1}' \
-		| gzip > ${base}.aligned_sequences.families.txt.gz
-	zcat ${base}.aligned_sequences.families.txt.gz \
-		| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
-		| uniq -c | sort -rn > ${base}.rmsk_family_counts
+for bam in output/SF*.bowtie2.rmsk.bam ; do
+	base=${bam%.bam}
+	
+	f=${base}.aligned_sequences.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		samtools view -F4 $bam | awk '{print $3}' | gzip > ${f}
+		chmod -w $f
+	fi
+
+	f=${base}.aligned_sequences.names.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		zcat ${base}.aligned_sequences.txt.gz \
+			| awk -F\; '{print $1}' | awk -F\= '{print $2}' \
+			| gzip > $f
+		chmod -w $f
+	fi
+
+	f=${base}.rmsk_name_counts
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		zcat ${base}.aligned_sequences.names.txt.gz \
+			| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+			| uniq -c | sort -rn > $f
+		chmod -w $f
+	fi
+
+	f=${base}.aligned_sequences.classes.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		zcat ${base}.aligned_sequences.txt.gz \
+			| awk -F\; '{print $2}' | awk -F\= '{print $2}' \
+			| gzip > $f
+		chmod -w $f
+	fi
+
+	f=${base}.rmsk_class_counts
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		zcat ${base}.aligned_sequences.classes.txt.gz \
+			| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+			| uniq -c | sort -rn > $f
+		chmod -w $f
+	fi
+
+	f=${base}.aligned_sequences.families.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		zcat ${base}.aligned_sequences.txt.gz \
+			| awk -F\; '{print $3}' | awk -F\= '{print $2}' | awk -F: '{print $1}' \
+			| gzip > $f
+		chmod -w $f
+	fi
+
+	f=${base}.rmsk_family_counts
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		zcat ${base}.aligned_sequences.families.txt.gz \
+			| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+			| uniq -c | sort -rn > $f
+		chmod -w $f
+	fi
+
 done
 rmdir ~/.sort_sequences
 
 mkdir ~/.sort_sequences
-zcat output/*.aligned_sequences.names.txt.gz \
-	| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
-	| uniq -c | sort -rn > post/rmsk_name_counts
-zcat output/*.aligned_sequences.classes.txt.gz \
-	| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
-	| uniq -c | sort -rn > post/rmsk_class_counts
-zcat output/*.aligned_sequences.families.txt.gz \
-	| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
-	| uniq -c | sort -rn > post/rmsk_family_counts
+f=post/rmsk_name_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	zcat output/*.aligned_sequences.names.txt.gz \
+		| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+		| uniq -c | sort -rn > $f
+	chmod -w $f
+fi
+
+f=post/rmsk_class_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	zcat output/*.aligned_sequences.classes.txt.gz \
+		| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+		| uniq -c | sort -rn > $f
+	chmod -w $f
+fi
+
+f=post/rmsk_family_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	zcat output/*.aligned_sequences.families.txt.gz \
+		| sort --parallel=8 --temporary-directory=$HOME/.sort_sequences \
+		| uniq -c | sort -rn > $f
+	chmod -w $f
+fi
+
 rmdir ~/.sort_sequences
 
 
 
 
-#./report.bash 
+for bam in output/*.umi.*.bowtie2.mRNA_Prot.bam ; do
+	f=${bam}.mrnas
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		samtools view -F4 $bam | awk '{print $3}' > ${f}
+		chmod -w $f
+	fi
+
+	f=${bam}.mrna_counts
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		cat ${bam}.mrnas | sort --parallel=8 | uniq -c | sort -rn > ${f}
+		chmod -w $f
+	fi
+done
+
+f=post/mrna_counts
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	mkdir ~/.sort_mrna_counts
+	cat output/*.umi.*.bowtie2.mRNA_Prot.bam.mrnas \
+		| sort --temporary-directory=$HOME/.sort_mrna_counts --parallel=8 \
+		| uniq -c | sort -rn > $f
+	rmdir ~/.sort_mrna_counts
+	chmod -w $f
+fi
+
+
+
+
 ./report.bash > report.md
-cat report.md
+#cat report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
 

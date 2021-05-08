@@ -411,54 +411,54 @@ echo
 
 
 
-#	echo -n "| bowtie2 mRNA Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	for gene in $( head -50 post/mrna_counts | awk '{print $2}' ) ; do
-#		echo -n "| ${gene} |"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.bowtie2.mRNA_Prot.bam.mrna_counts 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#	done
+echo -n "| bowtie2 mRNA Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+for gene in $( head -50 post/mrna_counts | awk '{print $2}' ) ; do
+	echo -n "| ${gene} |"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.bowtie2.mRNA_Prot.bam.mrna_counts 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+done
 
 
-#	
-#	echo -n "| STAR Gene Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	for gene in $( head -50 post/gene_counts | awk '{print $2}' ) ; do
-#		echo -n "| ${gene} |"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#	done
-#	
-#	
-#	
-#	echo -n "| STAR miRNA Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
-#		echo -n "| ${gene} |"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#	done
+
+echo -n "| STAR Gene Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+for gene in $( head -50 post/gene_counts | awk '{print $2}' ) ; do
+	echo -n "| ${gene} |"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.STAR.hg38.Aligned.toTranscriptome.out.bam.gene_counts 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+done
+
+
+
+echo -n "| STAR miRNA Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+for gene in $( head -50 post/mirna_counts | awk '{print $2}' ) ; do
+	echo -n "| ${gene} |"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		c=$( awk -v gene=$gene '( $2 == gene ){print $1}' ${dir}/${s}.umi.${t}.STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+done
 
 
 
@@ -489,101 +489,101 @@ echo
 
 
 
-#	echo -n "| diamond Family Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	save="${IFS}"
-#	IFS=","
-#	for family in $( head -50 post/diamond_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#		echo -n "| ${family} |"
-#		IFS="${save}"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			f=${dir}/${s}.umi.${t}.diamond.nr.species_genus_family.family_counts
-#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#		IFS=","
-#	done
-#	IFS="${save}"
-#	
-#	
-#	
-#	
-#	echo -n "| rmsk Family Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	save="${IFS}"
-#	IFS=","
-#	for family in $( head -50 post/rmsk_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#		echo -n "| rf${family} |"
-#		IFS="${save}"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			f=${dir}/${s}.umi.${t}.bowtie2.rmsk.rmsk_family_counts
-#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#		IFS=","
-#	done
-#	IFS="${save}"
-#	
-#	
-#	
-#	
-#	
-#	
-#	echo -n "| rmsk Class Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	save="${IFS}"
-#	IFS=","
-#	for family in $( head -50 post/rmsk_class_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#		echo -n "| rc${family} |"
-#		IFS="${save}"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			f=${dir}/${s}.umi.${t}.bowtie2.rmsk.rmsk_class_counts
-#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#		IFS=","
-#	done
-#	IFS="${save}"
-#	
-#	
-#	
-#	
-#	
-#	
-#	echo -n "| rmsk Name Counts |"
-#	for s in ${samples} ; do for t in ${trimmers} ; do
-#		echo -n " --- |"
-#	done ; done
-#	echo
-#	
-#	save="${IFS}"
-#	IFS=","
-#	for family in $( head -50 post/rmsk_name_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
-#		echo -n "| rn${family} |"
-#		IFS="${save}"
-#		for s in ${samples} ; do for t in ${trimmers} ; do
-#			f=${dir}/${s}.umi.${t}.bowtie2.rmsk.rmsk_name_counts
-#			c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
-#			echo -n " ${c} |"
-#		done ; done
-#		echo
-#		IFS=","
-#	done
-#	IFS="${save}"
+echo -n "| diamond Family Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/diamond_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| ${family} |"
+	IFS="${save}"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		f=${dir}/${s}.umi.${t}.diamond.nr.species_genus_family.family_counts
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+	IFS=","
+done
+IFS="${save}"
+
+
+
+
+echo -n "| rmsk Family Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/rmsk_family_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| rf${family} |"
+	IFS="${save}"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		f=${dir}/${s}.umi.${t}.bowtie2.rmsk.rmsk_family_counts
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+	IFS=","
+done
+IFS="${save}"
+
+
+
+
+
+
+echo -n "| rmsk Class Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/rmsk_class_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| rc${family} |"
+	IFS="${save}"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		f=${dir}/${s}.umi.${t}.bowtie2.rmsk.rmsk_class_counts
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+	IFS=","
+done
+IFS="${save}"
+
+
+
+
+
+
+echo -n "| rmsk Name Counts |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	echo -n " --- |"
+done ; done
+echo
+
+save="${IFS}"
+IFS=","
+for family in $( head -50 post/rmsk_name_counts | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" '{print $2}' | paste -sd ',' ) ; do
+	echo -n "| rn${family} |"
+	IFS="${save}"
+	for s in ${samples} ; do for t in ${trimmers} ; do
+		f=${dir}/${s}.umi.${t}.bowtie2.rmsk.rmsk_name_counts
+		c=$( cat ${f} | sed -e 's/^ *//' -e 's/ /\t/' | awk -F"\t" -v family="${family}" '( $2 == family ){print $1}' 2> /dev/null)
+		echo -n " ${c} |"
+	done ; done
+	echo
+	IFS=","
+done
+IFS="${save}"
 
 

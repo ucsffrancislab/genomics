@@ -10,7 +10,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 mkdir -p ${PWD}/output
 
 #	ONLY THE D-PLEX DATA (SFHH005)
-for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005a[s-z]_*fastq.gz ; do #	u,v,ar
+for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005*fastq.gz ; do
 
 	basename=$( basename $fastq .fastq.gz )
 	basename=${basename%%_*}
@@ -38,6 +38,8 @@ for fastq in /francislab/data1/raw/20210428-EV/Hansen/SFHH005a[s-z]_*fastq.gz ; 
 		#	1 of these reads exists so many times that even 60G isn't enough
 		#	Even a few samples that fail on 120GB! (SFHH005u, ...)
 		#	And even v won't run on 240! And ar, v and u takes longer than 4 hours!
+		#	Note that v and ar are the blank samples. Wondering if 6 hours is too little.
+		#	v is now at 12 hours and using about 326GB memory. 23hours! now
 		cons_id=$( ${sbatch} --parsable --job-name=${basename}_umi --time=360 --ntasks=16 --mem=495G \
 			--output=${out_base}.${date}.txt \
 			${PWD}/consolidate_umi.bash -l 12 -i ${fastq} -o ${f} )
