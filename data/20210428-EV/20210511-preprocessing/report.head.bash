@@ -397,13 +397,12 @@ echo
 
 
 
-
-
 #	
 #	
 #	
 #	echo -n "| STAR Gene Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
+#		#echo -n " --- |"
 #		echo -n " |"
 #	done ; done
 #	echo
@@ -436,6 +435,7 @@ echo
 #	
 #	echo -n "| STAR miRNA Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
+#		#echo -n " --- |"
 #		echo -n " |"
 #	done ; done
 #	echo
@@ -456,7 +456,7 @@ echo
 #	
 #	#	echo -n "| blastn Family Counts |"
 #	#	for f in $( ls ${core}.blastn.nt.species_genus_family.family_counts ) ; do
-#	#		echo -n " |"
+#	#		echo -n " --- |"
 #	#	done
 #	#	echo
 #	#	
@@ -478,6 +478,7 @@ echo
 #	
 #	echo -n "| diamond Family Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
+#		#echo -n " --- |"
 #		echo -n " |"
 #	done ; done
 #	echo
@@ -503,6 +504,7 @@ echo
 #	
 #	echo -n "| rmsk Family Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
+#		#echo -n " --- |"
 #		echo -n " |"
 #	done ; done
 #	echo
@@ -530,6 +532,7 @@ echo
 #	
 #	echo -n "| rmsk Class Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
+#		#echo -n " --- |"
 #		echo -n " |"
 #	done ; done
 #	echo
@@ -557,6 +560,7 @@ echo
 #	
 #	echo -n "| rmsk Name Counts |"
 #	for s in ${samples} ; do for t in ${trimmers} ; do
+#		#echo -n " --- |"
 #		echo -n " |"
 #	done ; done
 #	echo

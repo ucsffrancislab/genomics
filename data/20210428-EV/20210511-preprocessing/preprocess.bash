@@ -538,8 +538,8 @@ for fastq in /francislab/data1/working/20210428-EV/20210511-trimming/trimmed/SFH
 #		if [ -f $f ] && [ ! -w $f ] ; then
 #			echo "Write-protected $f exists. Skipping."
 #		else
-#			if [ ! -z "${trim_id}" ] ; then
-#				depend="--dependency=afterok:${trim_id}"
+#			if [ ! -z "${unpair_id}" ] ; then
+#				depend="--dependency=afterok:${unpair_id}"
 #			else
 #				depend=""
 #			fi

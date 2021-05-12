@@ -159,11 +159,7 @@ else
 	rmdir ~/.sort_mirna_counts
 fi
 
-#python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output/*mirna_counts
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/mirna_counts.csv output/*STAR.mirna.Aligned.sortedByCoord.out.bam.mirna_counts
-
-
-
 
 #for f in output/*fasta.gz ; do
 #	zcat $f | paste - - | wc -l > $f.read_count
@@ -336,9 +332,12 @@ fi
 
 rmdir ~/.sort_sequences
 
+<<<<<<< HEAD
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/rmsk_family_counts.csv output/*rmsk_family_counts
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/rmsk_class_counts.csv output/*rmsk_class_counts
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/rmsk_name_counts.csv output/*rmsk_name_counts
+=======
+>>>>>>> Another go. Using pretrimmed data
 
 
 
@@ -374,7 +373,10 @@ else
 	chmod -w $f
 fi
 
+<<<<<<< HEAD
 python3 ~/.local/bin/merge_uniq-c.py --int --output post/mrna_counts.csv output/*mrna_counts
+=======
+>>>>>>> Another go. Using pretrimmed data
 
 
 

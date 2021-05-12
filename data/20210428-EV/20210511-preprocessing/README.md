@@ -12,14 +12,16 @@ ll S*.{bbduk,cutadapt}?.fastq.gz
 
 
 ./report.head.bash > report.head.md &
-#nohup ./report.gene.bash > report.gene.md &
-#nohup ./report.mirna.bash > report.mirna.md &
-#nohup ./report.mrna.bash > report.mrna.md &
-#nohup ./report.rmsk.bash > report.rmsk.md &
-#nohup ./report.diamond.bash > report.diamond.md &
 
 cat report.head.md report.mrna.md report.gene.md report.mirna.md report.diamond.md report.rmsk.md > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md | gzip > report.csv.gz
+./report.gene.bash > report.gene.md &
+./report.mirna.bash > report.mirna.md &
+./report.mrna.bash > report.mrna.md &
+./report.rmsk.bash > report.rmsk.md &
+
+cat report.head.md report.mirna.md report.gene.md report.mirna.md report.rmsk.md > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
 
 
 ```
