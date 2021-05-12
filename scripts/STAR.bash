@@ -84,6 +84,13 @@ else
 		#	0x4	4	UNMAP
 		samtools view -c -f 4    ${tbam} > ${tbam}.unaligned_count.txt
 		chmod a-w ${tbam}.unaligned_count.txt
+
+		samtools view -F4 ${tbam} | awk '{print $3}' | gzip > ${tbam}.aligned_sequences.txt.gz
+		chmod a-w ${tbam}.aligned_sequences.txt.gz
+
+		zcat ${tbam}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${tbam}.aligned_sequence_counts.txt
+		chmod a-w ${tbam}.aligned_sequence_counts.txt
+
 	fi
 
 	#samtools.bash fasta -f 4 --threads $[${SLURM_NTASKS:-1}-1] -N -o ${f%.bam}.unmapped.fasta.gz ${f}
@@ -95,12 +102,18 @@ else
 
 	#	-F = NOT
 	#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
-	samtools view -c -F 3844 $f > $f.aligned_count.txt
-	chmod a-w $f.aligned_count.txt
+	samtools view -c -F 3844 ${f} > ${f}.aligned_count.txt
+	chmod a-w ${f}.aligned_count.txt
 
 	#	-f = IS
 	#	0x4	4	UNMAP
-	samtools view -c -f 4    $f > $f.unaligned_count.txt
-	chmod a-w $f.unaligned_count.txt
+	samtools view -c -f 4    ${f} > ${f}.unaligned_count.txt
+	chmod a-w ${f}.unaligned_count.txt
+
+	samtools view -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.txt.gz
+	chmod a-w ${f}.aligned_sequences.txt.gz
+
+	zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.txt
+	chmod a-w ${f}.aligned_sequence_counts.txt
 fi
 
