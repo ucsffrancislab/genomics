@@ -39,10 +39,10 @@ done
 
 
 f=${output}
-if [ -f $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
+if [ -f ${f} ] && [ ! -w ${f} ] ; then
+	echo "Write-protected ${f} exists. Skipping."
 else
-	echo "Creating $f"
+	echo "Creating ${f}"
 	bowtie2 $SELECT_ARGS 2> ${f}.err.txt | samtools view -o ${f} -
 	#bowtie2 $SELECT_ARGS | samtools view -o ${f} -
 	if $sortbam; then
@@ -50,18 +50,25 @@ else
 		samtools sort --threads ${threads} -o ${f} ${f/%.bam/.unsorted.bam}
 		\rm ${f/%.bam/.unsorted.bam}
 		samtools index ${f}
-		chmod a-w $f.bai
+		chmod a-w ${f}.bai
 	fi
-	chmod a-w $f
+	chmod a-w ${f}
 
 	#	-F = NOT
 	#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
-	samtools view -c -F 3844 $f > $f.aligned_count.txt
-	chmod a-w $f.aligned_count.txt
+	samtools view -c -F 3844 ${f} > ${f}.aligned_count.txt
+	chmod a-w ${f}.aligned_count.txt
 
 	#	-f = IS
 	#	0x4	4	UNMAP
-	samtools view -c -f 4    $f > $f.unaligned_count.txt
-	chmod a-w $f.unaligned_count.txt
+	samtools view -c -f 4    ${f} > ${f}.unaligned_count.txt
+	chmod a-w ${f}.unaligned_count.txt
+
+	samtools view -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.txt.gz
+	chmod a-w ${f}.aligned_sequences.txt.gz
+
+	zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.txt
+	chmod a-w ${f}.aligned_sequence_counts.txt
+
 fi
 
