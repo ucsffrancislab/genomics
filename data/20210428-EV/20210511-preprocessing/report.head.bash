@@ -374,6 +374,28 @@ done ; done
 echo
 
 
+echo -n "| Bowtie2 Aligned to mRNA_Prot |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	c=$(cat ${dir}/${s}.${t}.bowtie2.mRNA_Prot.bam.aligned_count.txt 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
+echo -n "| Bowtie2 Aligned to mRNA_Prot % |"
+for s in ${samples} ; do for t in ${trimmers} ; do
+	f=${dir}/${s}.${t}.bowtie2.mRNA_Prot.bam.aligned_count.txt
+	n=$(cat ${f} 2> /dev/null)
+	f=${f%.bowtie2.mRNA_Prot.bam.aligned_count.txt}
+	d=$(cat ${f}.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+	echo -n " ${c} |"
+done ; done
+echo
+
+
+
+
+
 
 
 
