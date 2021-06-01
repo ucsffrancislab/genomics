@@ -53,6 +53,6 @@ n=pd.DataFrame(data={0:[""]})
 for a in sys.argv[1]:
 	n=n.merge(aminos[a],how='cross')
 
-n.sum(axis='columns').to_csv(sys.argv[1]+".nucleotides",header=False,index=False)
+n.sum(axis='columns').to_csv(sys.argv[1]+".nucleotides.gz",header=False,index=False)
 
 
