@@ -44,3 +44,7 @@ ln -s 20200430-nr.dmnd nr.dmnd
 
 
 
+diamond makedb --in /francislab/data1/refs/refseq/mRNA_Prot-20210528/human.protein.faa.gz --db mRNA_Prot
+
+
+
