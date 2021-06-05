@@ -1,0 +1,209 @@
+ 
+
+
+nohup peptide2nucleotide.py TNRTLKTQLVKQK &
+#	Too much memory
+#nohup peptide2nucleotide.py IIKLCGNDPDKIVVPLTKEQVR &
+#nohup peptide2nucleotide.py KNSPHEGKLIWWKDNKNKTWEIGK &
+#nohup peptide2nucleotide.py CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV &
+
+
+DON'T FORGET TO CONVERT THE U's to T's
+REALLY SHOULD DO THIS IN THE INITIAL CONVERTER.
+NONE OF MY INDEXES USE THE U.
+
+
+nucleotides2fasta
+
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+
+${sbatch} --job-name=TNRp2n --time=999 --ntasks=16 --mem=499G --output=${PWD}/TNRTLKTQLVKQK.p2n.${date}.txt ~/.local/bin/peptide2nucleotide.bash TNRTLKTQLVKQK
+
+
+NOT ENOUGH MEMORY! NEED TO DEVISE RECURSIVE LOOPING. MORE TIME, LESS MEMORY
+
+${sbatch} --job-name=IIKp2n --time=999 --ntasks=16 --mem=499G --output=${PWD}/IIKLCGNDPDKIVVPLTKEQVR.p2n.${date}.txt ~/.local/bin/peptide2nucleotide.bash IIKLCGNDPDKIVVPLTKEQVR
+
+${sbatch} --job-name=KNSp2n --time=999 --ntasks=16 --mem=499G --output=${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.p2n.${date}.txt ~/.local/bin/peptide2nucleotide.bash KNSPHEGKLIWWKDNKNKTWEIGK
+
+${sbatch} --job-name=CTQp2n --time=999 --ntasks=16 --mem=499G --output=${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.p2n.${date}.txt ~/.local/bin/peptide2nucleotide.bash CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV
+
+
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+${sbatch} --job-name=IIKp2n --time=999 --ntasks=8 --mem=32G --output=${PWD}/IIKLCGNDPDKIVVPLTKEQVR.nucleotides ${PWD}/p2n.bash IIKLCGNDPDKIVVPLTKEQVR
+
+${sbatch} --job-name=KNSp2n --time=999 --ntasks=8 --mem=32G --output=${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.nucleotides ${PWD}/p2n.bash KNSPHEGKLIWWKDNKNKTWEIGK
+
+${sbatch} --job-name=CTQp2n --time=999 --ntasks=8 --mem=32G --output=${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.nucleotides ${PWD}/p2n.bash CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV
+
+
+
+
+
+
+
+
+
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+${sbatch} --job-name=n2f --time=999 --ntasks=8 --mem=62G --output=${PWD}/TNRTLKTQLVKQK.n2f.${date}.txt nucleotides2fastq.bash ${PWD}/TNRTLKTQLVKQK.nucleotides.gz
+
+${sbatch} --job-name=n2f --time=999 --ntasks=8 --mem=62G --output=${PWD}/IIKLCGNDPDKIVVPLTKEQVR.n2f.${date}.txt nucleotides2fastq.bash ${PWD}/IIKLCGNDPDKIVVPLTKEQVR.nucleotides.gz
+
+${sbatch} --job-name=n2f --time=999 --ntasks=8 --mem=62G --output=${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.n2f.${date}.txt nucleotides2fastq.bash ${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.nucleotides.gz
+
+${sbatch} --job-name=n2f --time=999 --ntasks=8 --mem=62G --output=${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.n2f.${date}.txt nucleotides2fastq.bash ${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.nucleotides.gz
+
+
+
+
+
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+${sbatch} --job-name=bowtie2 --time=999 --ntasks=8 --mem=62G --output=${PWD}/TNRTLKTQLVKQK.bt2.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts --no-unal --very-sensitive --all -f -U ${PWD}/TNRTLKTQLVKQK.fasta.gz -o ${PWD}/TNRTLKTQLVKQK.bam
+
+${sbatch} --job-name=bowtie2 --time=999 --ntasks=8 --mem=62G --output=${PWD}/IIKLCGNDPDKIVVPLTKEQVR.bt2.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts --no-unal --very-sensitive --all -f -U ${PWD}/IIKLCGNDPDKIVVPLTKEQVR.fasta.gz -o ${PWD}/IIKLCGNDPDKIVVPLTKEQVR.bam
+
+${sbatch} --job-name=bowtie2 --time=999 --ntasks=8 --mem=62G --output=${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.bt2.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts --no-unal --very-sensitive --all -f -U ${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.fasta.gz -o ${PWD}/KNSPHEGKLIWWKDNKNKTWEIGK.bam
+
+${sbatch} --job-name=bowtie2 --time=999 --ntasks=8 --mem=62G --output=${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.bt2.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts --no-unal --very-sensitive --all -f -U ${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.fasta.gz -o ${PWD}/CTQQLRRDSDHRERAMMTMAVLSKRKGGNVGKSKRDQIVTVSV.bam
+
+Exact matches
+
+samtools view ... | grep "NM:i:0"
+
+
+
+
+
+
+--------------------------------------------------
+
+
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+${sbatch} --job-name=${s} --time=999 --ntasks=8 --mem=60G --output=${PWD}/${s}.p2n.${date}.txt ~/.local/bin/peptide2nucleotide.bash ${s}
+done
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+${sbatch} --job-name=${s} --time=999 --ntasks=8 --mem=60G --output=${PWD}/${s}.n2f.${date}.txt nucleotides2fastq.bash ${PWD}/${s}.nucleotides.gz
+done
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+${sbatch} --job-name=${s} --time=999 --ntasks=8 --mem=62G --output=${PWD}/${s}.bt2.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts --no-unal --very-sensitive --all -f -U ${PWD}/${s}.fasta.gz -o ${PWD}/${s}.bam
+done
+
+
+
+
+Exact matches
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+samtools view ${s}.bam | grep "NM:i:0" | awk '{print $3"|"$4}' > ${s}.exact_matches.txt
+done
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+samtools view -h ${s}.bam | awk '(/^@/ || /NM:i:0/)' | samtools view -o ${s}.exact.bam -
+done
+
+
+
+samtools merge all.bam *.exact.bam
+
+samtools view all.bam | awk '{print $3,int($4/10000)*10000}' | uniq -c | sort -n
+
+samtools view all.bam | awk '{print $3,int($4/100000)*100000}' | uniq -c | sort -n
+
+
+while read seq chr pos ; do
+echo $chr $pos - $seq
+awk -v c=$chr -v p=$pos '( ( $1 == c ) && ( $4 <= p ) && ( p <= $5 ) ){print;exit}' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf
+done < <( samtools view all.bam | awk '{print $1,$3,$4}' )
+
+
+while read seq chr pos ; do
+echo $chr $pos - $seq
+awk -v c=$chr -v p=$pos '( ( $1 == c ) && ( $2 <= p ) && ( p <= $3 ) ){print;exit}' /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk/rmsk.bed
+done < <( samtools view all.bam | awk '{print $1,$3,$4}' )
+
+
+
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10000)*10000}' ${s}.exact_matches.txt > ${s}.exact_matches.10000.txt
+done
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+cat ${s}.exact_matches.10000.txt | uniq -c > ${s}.exact_matches.10000.uniqc.txt
+done
+
+module load WitteLab python3/3.9.1
+
+python3 ~/.local/bin/merge_uniq-c.py
+
+
+
+Create list of approximate positions for all in each group... ???
+TNRTLKTQLVKQK 
+IIKLCGNDPDKIV DKIVVPLTKEQVR 
+KNSPHEGKLIWWK WKDNKNKTWEIGK 
+CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV
+
+
+
+
+
+
+
+
+
+
+
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+date=$( date "+%Y%m%d%H%M%S" )
+
+for s in TNRTLKTQLVKQK IIKLCGNDPDKIV DKIVVPLTKEQVR KNSPHEGKLIWWK WKDNKNKTWEIGK CTQQLRRDSDHRER HRERAMMTMAVLSK VLSKRKGGNVGKSK VGKSKRDQIVTVSV ; do
+echo $s
+${sbatch} --job-name=${s} --time=999 --ntasks=8 --mem=62G --output=${PWD}/${s}.bt2.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/SVAs_and_HERVK113/HERVK113 --no-unal --very-sensitive --all -f -U ${PWD}/${s}.fasta.gz -o ${PWD}/${s}.HERVK113.bam
+done
+
+samtools merge all.HERVK113.bam *.HERVK113.bam
+samtools index all.HERVK113.bam
+
+
+
+
+
