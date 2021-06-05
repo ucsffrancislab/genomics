@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -108,8 +108,16 @@ for filename in glob.glob(pattern) + args.files:
 			print("Selecting "+chromosome)
 			raw=raw[raw.chromosome == chromosome]
 
+
 		#	Count the number of occurrences
-		d=raw.groupby(raw.columns.tolist(),as_index=False).size().to_frame(sample)
+		#	20210525 - This no longer works. Confused.
+		#d=raw.groupby(raw.columns.tolist(),as_index=False).size().to_frame(sample)
+		# Still confused. Not sure how it worked before. This works.
+		#d=raw.groupby(raw.columns.tolist(),as_index=False).size()
+		#d.set_index(['chromosome','position'],inplace=True)
+		#	This works too.
+		d=raw.groupby(raw.columns.tolist(),as_index=True).size()
+
 
 		#	sample
 		#	relpos
