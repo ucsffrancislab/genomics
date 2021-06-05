@@ -1,0 +1,19 @@
+
+
+wget https://www.ncbi.nlm.nih.gov/books/NBK179288/bin/install-edirect.sh
+
+
+
+esearch -db nucleotide -query "NC_030850.1" | efetch -format fasta > NC_030850.1.fasta
+
+
+while read Class Strain Accession_ID Source Comments ; do
+acc=$( echo $Accession_ID | cut -d. -f1 )
+echo $Class $acc
+edirect/esearch -db nucleotide -query "${acc}" | edirect/efetch -format fasta > ${Class}_${acc}.fasta
+
+done < <( tail -n +2 /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210603-viral-alignment/ViralListForBBT.tsv )
+
+
+awk '(NR>1){ print "edirect/esearch -db nucleotide -query \""$3"\" | edirect/efetch -format fasta > "$1"_"$3".fasta" }' /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210603-viral-alignment/ViralListForBBT.tsv
+
