@@ -1,0 +1,20 @@
+
+
+
+https://www.sciencedirect.com/science/article/pii/S1074761318301213
+
+
+
+I think we should probably do our own alignments with the WGS and RNA-seq data for the TCGA gliomas. We can just use bowtie to a curated list of viruses.
+
+
+
+
+
+for bt2 in /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210603-viral-alignment/*bt2 ; do
+echo $bt2
+ln -s $bt2
+done
+
+
+
