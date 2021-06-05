@@ -20,6 +20,26 @@ rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsy
 rsync -avz --progress --include=README.txt --include="*fna.gz" --include="gene_RefSeqGene" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/RefSeqGene/ RefSeqGene-20210505/
 
 
+
+
+
 rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/mRNA_Prot/ mRNA_Prot-20210506/
+zcat human.?.rna.fna.gz | gzip > human.rna.fna.gz
+zcat human.rna.fna.gz | grep "^>" | tr -d "^>" | awk '{split($0,a,"(");split(a[length(a)],b,")");print $1,b[1]}' > human.rna.table
+awk  '( $2 == "NAALADL2" ){print $1}' human.rna.table > NAALADL2.transcripts
+awk  '( $2 == "AHDC1" ){print $1}' human.rna.table > AHDC1.transcripts
+
+vi human.rna.table
+>NM_001281971.2 Homo sapiens killer cell immunoglobulin like receptor, two Ig domains and short cytoplasmic tail 4 (KIR2DS4), transcript variant 2 (KIR2DS4*003 allele), mRNA
+>NM_001322168.1 Homo sapiens killer cell immunoglobulin like receptor, three Ig domains and long cytoplasmic tail 1 (KIR3DL1), transcript variant 2 (alternate allele), mRNA
+>NM_013289.3 Homo sapiens killer cell immunoglobulin like receptor, three Ig domains and long cytoplasmic tail 1 (KIR3DL1), transcript variant 1 (reference allele), mRNA
+
+
+
+
+
+
+
+rsync -avz --progress rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/mRNA_Prot/ mRNA_Prot-20210528/
 
 
