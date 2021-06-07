@@ -21,7 +21,7 @@ done
 
 
 
-conversion_table=virallist.tsv
+conversion_table=virallist.csv
 	
 for f in out/*.aligned_sequences.txt.gz ; do
 	echo $f
