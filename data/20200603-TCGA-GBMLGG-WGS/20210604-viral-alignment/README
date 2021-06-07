@@ -18,3 +18,25 @@ done
 
 
 
+
+
+
+conversion_table=virallist.tsv
+	
+for f in out/*.aligned_sequences.txt.gz ; do
+	echo $f
+	o=${f%.aligned_sequences.txt.gz}.aligned_viral_counts.txt
+	echo $o
+	awk -F, '(NR==FNR){t2v[$2]=$1}(NR!=FNR){split($0,a,".");print t2v[a[1]]}' ${conversion_table} \
+		<( zcat ${f} ) | sort --parallel=8 | uniq -c | sort -rn > ${o}
+	chmod -w $o
+done
+
+python3 ~/.local/bin/merge_uniq-c.py --int -o aligned_viral_counts.csv.gz out/*aligned_viral_counts.txt
+
+for f in /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/sample/*_R1.fastq.gz.read_count.txt ; do
+	c=$( cat $f)
+	echo $( basename $f _R1.fastq.gz.read_count.txt ),${c}
+done
+
+
