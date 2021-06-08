@@ -69,7 +69,7 @@ for r1 in ${INDIR}/*_N_R1.fastq.gz ; do
 		echo "Using scratch:${scratch}"
 
 		${sbatch} --job-name "${base}.select" --ntasks=${threads} --mem=${vmem}G \
-			--time=1999 --gres=scratch:${scratch}G \
+			--time=2999 --gres=scratch:${scratch}G \
 			--output=${outbase}.${date}.out.txt \
 			~/.local/bin/paired_reads_select_scratch.bash \
 				--very-sensitive-local --score-min G,1,3 -r ${index} -1 ${r1} -2 ${r2} -o ${f}
