@@ -1,0 +1,51 @@
+
+
+Running chimera on 6 references just taking too long.
+
+Deving read selector for 1 reference, then run chimera with the output as source.
+
+
+Need to compare the unpaired alignments from the raw data
+to the selected alignments from this selection.
+
+
+
+
+
+As you can see the sample name, N means normal, E and NE mean enhancing and non-enhancing tumor, respectively. 
+
+
+Could you please take the new WGS data and integrate it in to the HERV/SVA analysis? The priority is to look at the normal samples with the TCGA. These are all GBM so lets call them the GPMP-GBM
+
+
+
+The data are stored on C4 cluster, path: /diazlab/data1/GPMP2/EGA, which includes WGS and RNA-seq data folder, see below
+cohort1_RNA_seq
+cohort1_WGS
+cohort2_RNA_seq
+cohort2_WGS
+cohort3_RNA_seq
+cohort3_WGS
+RNA_seq_CellLines
+
+
+for f in /diazlab/data1/GPMP2/EGA/cohort?_WGS/*.fastq.gz ; do
+l=$( basename $f _001.fastq.gz )
+echo -e "${l}\t${f}"
+done
+
+mkdir raw
+while read link file ; do
+echo $file
+ln -s $file raw/${link}.fastq.gz
+done < table
+
+
+for f in ${PWD}/raw/*R1.fastq.gz; do
+echo $f
+b=$( basename $f _R1.fastq.gz )
+${sbatch} --job-name=${b} --time=999 --ntasks=4 --mem=30G --output=${f}.${date}.count.txt ~/.local/bin/count_fasta_reads.bash $f
+done
+
+
+
