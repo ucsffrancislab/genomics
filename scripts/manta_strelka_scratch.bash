@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE   # required when using 'module' IN THIS SCRIPT OR ANY THAT ARE CALLED
 
 #	Sometimes the files are huge and it just makes more sense to do both at the same time
 
