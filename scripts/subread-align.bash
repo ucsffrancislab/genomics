@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#SBATCH --export=NONE   # required when using 'module' IN THIS SCRIPT OR ANY THAT ARE CALLED
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
