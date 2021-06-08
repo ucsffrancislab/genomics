@@ -69,7 +69,7 @@ else
 
 	threads=${SLURM_NTASKS:-1}
 
-	bowtie2.bash ${SELECT_ARGS} --threads ${threads} -x ${scratch_ref} -o ${TMPDIR}/tmp.bam ${scratch_inputs}
+	bowtie2.bash ${SELECT_ARGS} --nocount --threads ${threads} -x ${scratch_ref} -o ${TMPDIR}/tmp.bam ${scratch_inputs}
 
 
 	#	select reads where read or mate aligned
@@ -106,6 +106,10 @@ else
 
 	samtools fastq -1 ${scratch_base}.R1.fastq.gz -2 ${scratch_base}.R2.fastq.gz \
 		-0 ${scratch_base}.RO.fastq.gz -s ${scratch_base}.SI.fastq.gz -N ${scratch_bam}
+	chmod -w {scratch_base}.*.fastq.gz
+
+	count_fasta_reads.bash ${scratch_base}.R1.fastq.gz
+	count_fasta_reads.bash ${scratch_base}.R2.fastq.gz
 
 	mv --update ${scratch_out}/* $( dirname ${f} )
 #	mv --update ${scratch_out}.err.txt $( dirname ${f} )

@@ -18,6 +18,7 @@ ARGS=$*
 
 #	No easily computable output file so pick custom argument, pass on the rest
 
+count=true
 sortbam=false
 threads=0
 SELECT_ARGS=""
@@ -27,6 +28,8 @@ while [ $# -gt 0 ] ; do
 			shift; output=$1; shift;;
 		--sort)
 			shift; sortbam=true;;
+		--nocount)
+			shift; count=false;;
 		-@|--threads)
 			SELECT_ARGS="${SELECT_ARGS} $1";
 			shift; threads=$1;
@@ -54,21 +57,23 @@ else
 	fi
 	chmod a-w ${f}
 
-	#	-F = NOT
-	#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
-	samtools view -c -F 3844 ${f} > ${f}.aligned_count.txt
-	chmod a-w ${f}.aligned_count.txt
+	if $count; then
+		#	-F = NOT
+		#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
+		samtools view -c -F 3844 ${f} > ${f}.aligned_count.txt
+		chmod a-w ${f}.aligned_count.txt
 
-	#	-f = IS
-	#	0x4	4	UNMAP
-	samtools view -c -f 4    ${f} > ${f}.unaligned_count.txt
-	chmod a-w ${f}.unaligned_count.txt
+		#	-f = IS
+		#	0x4	4	UNMAP
+		samtools view -c -f 4    ${f} > ${f}.unaligned_count.txt
+		chmod a-w ${f}.unaligned_count.txt
 
-	samtools view -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.txt.gz
-	chmod a-w ${f}.aligned_sequences.txt.gz
+		samtools view -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.txt.gz
+		chmod a-w ${f}.aligned_sequences.txt.gz
 
-	zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.txt
-	chmod a-w ${f}.aligned_sequence_counts.txt
+		zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.txt
+		chmod a-w ${f}.aligned_sequence_counts.txt
+	fi
 
 fi
 
