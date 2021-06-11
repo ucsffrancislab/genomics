@@ -113,10 +113,10 @@ for filename in glob.glob(pattern) + args.files:
 		#	20210525 - This no longer works. Confused.
 		#d=raw.groupby(raw.columns.tolist(),as_index=False).size().to_frame(sample)
 		# Still confused. Not sure how it worked before. This works.
-		#d=raw.groupby(raw.columns.tolist(),as_index=False).size()
-		#d.set_index(['chromosome','position'],inplace=True)
-		#	This works too.
-		d=raw.groupby(raw.columns.tolist(),as_index=True).size()
+		d=raw.groupby(raw.columns.tolist(),as_index=False).size()
+		d.set_index(['chromosome','position'],inplace=True)
+		#	This works too. No it doesn't
+		#d=raw.groupby(raw.columns.tolist(),as_index=True).size()
 
 
 		#	sample
