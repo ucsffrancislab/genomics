@@ -106,7 +106,7 @@ else
 
 	samtools fastq -1 ${scratch_base}.R1.fastq.gz -2 ${scratch_base}.R2.fastq.gz \
 		-0 ${scratch_base}.RO.fastq.gz -s ${scratch_base}.SI.fastq.gz -N ${scratch_bam}
-	chmod -w {scratch_base}.*.fastq.gz
+	chmod -w ${scratch_base}.*.fastq.gz
 
 	count_fasta_reads.bash ${scratch_base}.R1.fastq.gz
 	count_fasta_reads.bash ${scratch_base}.R2.fastq.gz
