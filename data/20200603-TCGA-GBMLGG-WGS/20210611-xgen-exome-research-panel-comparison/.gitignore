@@ -1,0 +1,4 @@
+*.paired.Q20.all_insertion_points
+*.paired.Q20.all_insertion_points.uniqc.sorted.txt
+*.paired.Q20.all_insertion_points.uniqc.txt
+xgen-exome-research-panel-v2-targets-hg38.bed
