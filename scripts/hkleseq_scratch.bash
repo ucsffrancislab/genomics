@@ -2,11 +2,17 @@
 #SBATCH --export=NONE   # required when using 'module' IN THIS SCRIPT OR ANY THAT ARE CALLED
 
 hostname
+echo "Slurm job id:${SLURM_JOBID}:"
+echo "Slurm ntasks:${SLURM_NTASKS}:"
+date
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
-
+if [ -n "$( declare -F module )" ] ; then
+        echo "Loading required modules"
+        module load CBI samtools bowtie2
+fi
 set -x
 
 SELECT_ARGS=""
