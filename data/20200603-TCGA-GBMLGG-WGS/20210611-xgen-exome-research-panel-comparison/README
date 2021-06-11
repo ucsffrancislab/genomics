@@ -1,0 +1,23 @@
+
+
+@Jake can you please take this .bed file and see how many of the HKLE sites we are finding in the TCGA would intersect with the regions covered in this exome kit? And how many are associated with tumor type (p=0.01 would be great).
+
+
+
+for hkle in SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F HERVK113 ; do
+for pup in paired ; do
+for mapq in Q20 ; do
+echo "${hkle}-${pup}-${mapq}"
+sort -t\| -k1,1 -k2n /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/out/*.SVAs_and_HERVs_KWHE.hkle/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.${mapq}.{ins,rc_ins}*ts > ${hkle}.${pup}.${mapq}.all_insertion_points
+done ; done ; done
+
+for f in *all_insertion_points ; do
+echo ${f}
+uniq -c ${f} | sed 's/|/ /g' > ${f}.uniqc.txt
+done
+
+for f in *all_insertion_points.uniqc.txt ; do
+echo ${f}
+sort -n ${f} > ${f%.txt}.sorted.txt
+done
+
