@@ -44,18 +44,22 @@ for a in ${accessions} ; do
 	for size in 25 50 75 100 ; do
 	for split in custom dev vsl ; do
 
+		n=''
 		if [ -f split.${split}/${a}.split.${size}.fasta.base_count.txt ] ; then
 			n=$( awk '($2=="N"){print $1}' split.${split}/${a}.split.${size}.fasta.base_count.txt )
-		else
+		fi
+		if [ -z "${n}" ] ; then
 			n=0
 		fi
 		echo -n " ${n} |"
 		p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 		echo -n " ${p} |"
 
+		n=''
 		if [ -f split.${split}/${a}.masked.split.${size}.fasta.base_count.txt ] ; then
 			n=$( awk '($2=="N"){print $1}' split.${split}/${a}.masked.split.${size}.fasta.base_count.txt )
-		else
+		fi
+		if [ -z "${n}" ] ; then
 			n=0
 		fi
 		echo -n " ${n} |"
