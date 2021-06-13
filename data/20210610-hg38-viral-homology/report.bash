@@ -4,7 +4,7 @@
 accessions=$( ls -1 raw/*fasta | xargs -I% basename % .fasta )
 
 
-echo -n "| accession | description | length | masked Ns |"
+echo -n "| accession | description | length | masked Ns | masked Ns % |"
 for size in 25 50 75 100 ; do
 for split in custom dev vsl ; do
 echo -n " ${split}-${size} Ns |"
@@ -14,7 +14,7 @@ echo -n " masked ${split}-${size} Ns % |"
 done ; done
 echo
 
-echo -n "| ---       | ---         | ---    | ---       |"
+echo -n "| --- | --- | --- | --- | --- |"
 for size in 25 50 75 100 ; do
 for split in custom dev vsl ; do
 echo -n " --- |"
@@ -26,7 +26,7 @@ echo
 
 for a in ${accessions} ; do
 	echo -n "| ${a} |"
-	d=$( head -1 raw/${a}.fasta | sed 's/^\S*\s//' )
+	d=$( head -1 raw/${a}.fasta | sed -e 's/^\S*\s//' -e 's/,/ /g' )
 	echo -n " ${d} |"
 	l=$( tail -n +2 raw/${a}.fasta | tr -d "\n" | wc -c )
 	echo -n " ${l} |"
