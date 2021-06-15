@@ -61,3 +61,15 @@ for f in [0-D]*t; do s=$( echo $f | awk -F_ '{print $1}' ); c=$( cat $f ); echo 
 
 
 
+date=$( date "+%Y%m%d%H%M%S" )
+for f in *R1.fastq.gz ; do
+${sbatch} --job-name=$( basename $f ) --time=60 --ntasks=4 --mem=30G --output ${f}.${date}.length.txt ~/.local/bin/average_fasta_read_length.bash $f
+done
+
+
+for f in *R1.fastq.gz ; do
+echo $f
+zcat ${f} | paste - - - - | cut -f2 | head -1000 | awk '{l+=length($1);i++}END{print l/i}' > ${f}.average_length.txt
+done
+
+
