@@ -73,3 +73,9 @@ zcat ${f} | paste - - - - | cut -f2 | head -1000 | awk '{l+=length($1);i++}END{p
 done
 
 
+for f in *average_length.txt ; do
+echo $( basename $f _R1.fastq.gz.average_length.txt ),$( cat $f )
+done > ../read_lengths.csv
+
+
+
