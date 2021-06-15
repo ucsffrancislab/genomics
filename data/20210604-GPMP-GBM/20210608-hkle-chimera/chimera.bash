@@ -18,13 +18,13 @@ DIAMOND=${REFS}/diamond
 #export BOWTIE2_INDEXES=/francislab/data1/refs/bowtie2
 #export BLASTDB=/francislab/data1/refs/blastn
 
-#	remember 64 cores and ~504GB mem
-threads=4
-vmem=30
-#threads=8
-#vmem=62
+#	remember 64 cores and ~499GB mem 
+#threads=4
+#vmem=30
+threads=8
+vmem=62
 #threads=16
-#vmem=125
+#vmem=124
 
 date=$( date "+%Y%m%d%H%M%S" )
 
@@ -36,7 +36,7 @@ mkdir -p ${OUTDIR}
 
 #while IFS=, read -r r1 ; do
 
-for r1 in ${INDIR}/SF*_N.SVAs_and_HERVs_KWHE.R1.fastq.gz ; do
+for r1 in ${INDIR}/SF*.SVAs_and_HERVs_KWHE.R1.fastq.gz ; do
 	echo ${r1}
 
 	r2=${r1/R1/R2}
@@ -54,7 +54,8 @@ for r1 in ${INDIR}/SF*_N.SVAs_and_HERVs_KWHE.R1.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 
-		human=${BOWTIE2}/hg38
+		#human=${BOWTIE2}/hg38
+		human=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts
 		
 		r1_size=$( stat --dereference --format %s ${r1} )
 		r2_size=$( stat --dereference --format %s ${r2} )
@@ -75,7 +76,7 @@ for r1 in ${INDIR}/SF*_N.SVAs_and_HERVs_KWHE.R1.fastq.gz ; do
 		#	NOTE THAT THIS RUNS ON EACH VIRAL REFERENCE IN THE INDEX DIR SO AN INDEX DIR NEEDS TO BE PREPPED!
 		#	This is not a single reference run.
 	
-		${sbatch} --job-name ${jobbase}.hkle \
+		${sbatch} --time=999 --job-name ${jobbase}.hkle \
 			--ntasks=${threads} --mem=${vmem}G --gres=scratch:${scratch}G \
 			--output=${outbase}.${date}.out.txt \
 			~/.local/bin/hkleseq_scratch.bash \

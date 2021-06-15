@@ -49,3 +49,13 @@ done
 
 
 
+echo "sample,raw pair count" > raw_read_counts.csv
+for f in ${PWD}/raw/*R1.fastq.gz.read_count.txt ; do
+b=$( basename $f _R1.fastq.gz.read_count.txt )
+c=$( cat $f )
+echo ${b},${c}
+done >> raw_read_counts.csv
+
+
+
+

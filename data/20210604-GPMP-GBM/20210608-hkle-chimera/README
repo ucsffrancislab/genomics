@@ -2,54 +2,13 @@
 
 See ../../20200529_Raleigh_WES/20200610-HKLE_chimera
 
-See ../../20200603-TCGA-GBMLGG-WGS/20201027-hkle-chimera
+See ../../20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera
 
 
 
+/bin/rm -rf focused.1* premerge1*
 
 
-
-
-
-
-
-
-
-
-
-import pandas as pd
-df=pd.read_csv("out/02-2483-01A.SVAs_and_HERVs_KWHE.hkle/02-2483-01A.SVAs_and_HERVs_KWHE.bowtie2.SVA_F.very_sensitive_local.unpaired.aligned.pre.bowtie2.hg38.Q20.rc_insertion_points", sep='|', header=None, names=['chromosome','position'])
-df['rp']='pre'
-df['dir']='rc'
-df['pup']='u'
-df['hkle']='SVA_F'
-udf=df.groupby(df.columns.tolist(),as_index=False).size().to_frame('samplename')
-
-#	as_index=False seems to have no impact on output
-
-
-udf.columns=pd.MultiIndex.from_product([['u'],['20'],['SVA_F']])
-
-
-
-
-df=pd.read_csv('merge2.csv.gz',header=[0,1,2,3,4,5],index_col=[0,1])
-
-
-
-
-
-Argument list is long so created -p option for script.
-
-nohup ./merge_insertion_points.py -o merged.0-D.csv.gz -p 'out/[0-D]*.SVAs_and_HERVs_KWHE.hkle/*.SVAs_and_HERVs_KWHE.bowtie2.*.very_sensitive_local.*.aligned.*.bowtie2.hg38.*.*ts' &
-
-
-Ran out of memory.
-
-
-
-
-Merge pre/post and forward/reverse and round 1000
 
 
 mkdir premerge1k
@@ -60,39 +19,11 @@ for hkle in SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F HERVK113 ; do
 for pup in paired unpaired ; do
 for mapq in Q00 Q10 Q20 ; do
 echo "${sample}-${hkle}-${pup}-${mapq}"
-sort ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/1000)*1000}' > premerge1k/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
+sort -t\| -k1,1 -k2n ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.chrXYM_alts.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/1000)*1000}' > premerge1k/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
 done ; done ; done ; done
 
-
-nohup ./merge_insertion_points.py -o merged.0-D.rounded1k.csv.gz -p 'premerge1k/*ts' > merge_insertion_points.all1k.out 2> merge_insertion_points.all1k.err &
-
-
-
-
-
-nohup ./merge_insertion_points.bash > merge_insertion_points.out 2> merge_insertion_points.err &
-
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera"
-
-curl -netrc -X MKCOL "${BOX}/"
-
-for f in *chr2[01].*gz ; do
-echo $f
-curl -netrc -T ${f} "${BOX}/"
-done
-
-
-import pandas as pd
-df=pd.read_csv("merged/merged.0-D.rounded1k.chr2.T.csv.gz",index_col=[0,1,2,3],header=[0,1])
-df=pd.read_csv("merged/merged.0-D.rounded1k.chr2.csv.gz",header=[0,1,2,3],index_col=[0,1])
-
-
-
-import pandas as pd
-df=pd.read_csv("merged.0-D.rounded1k----.T.csv.gz",index_col=[0,1,2,3],header=[0,1])
-df=pd.read_csv("merged.0-D.rounded1k----.csv.gz",header=[0,1,2,3],index_col=[0,1])
-
+module load WitteLab python3/3.9.1
+python3 ./merge_insertion_points.py -o focused.1000.csv.gz -p premerge1k/*.paired.Q20.* > focused.1000.out
 
 
 mkdir premerge10k
@@ -103,110 +34,23 @@ for hkle in SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F HERVK113 ; do
 for pup in paired unpaired ; do
 for mapq in Q00 Q10 Q20 ; do
 echo "${sample}-${hkle}-${pup}-${mapq}"
-sort ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10000)*10000}' > premerge10k/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
+sort -t\| -k1,1 -k2n ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.chrXYM_alts.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10000)*10000}' > premerge10k/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
 done ; done ; done ; done
 
-
-nohup ./merge_insertion_points.py -o merged.0-D.rounded10k.csv.gz -p 'premerge10k/*ts' > merge_insertion_points.all10k.out 2> merge_insertion_points.all10k.err &
-
-nohup ./merge_insertion_points.py -o merged.rounded10k.csv.gz -p 'premerge10k/*ts' > merge_insertion_points.all10k.out 2> merge_insertion_points.all10k.err &
-
-
-
-
-echo ${command} | qsub -N ${out} -l nodes=1:ppn=16 -l vmem=125gb -l feature=nocommunal -o /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}.out -e /francislab/data1/raw/20201127-EV_CATS/STAR_test/${out}.err
-
-
-echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.py -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded1k.csv.gz -p '/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/premerge1k/*ts'" | qsub -N merge -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.err
-
-
-
-echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded10k.csv.gz" | qsub -N cull10k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all10k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all10k.cull.err
-
-echo "/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/cull_matrix.py /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merged.rounded1k.csv.gz" | qsub -N cull1k -l nodes=1:ppn=64 -l vmem=500gb -l feature=nocommunal -o /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.out -e /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/merge_insertion_points.all1k.cull.err
-
-
-
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera"
-
-curl -netrc -T merged.rounded10k.csv.gz "${BOX}/"
-curl -netrc -T merged.rounded10k.T.csv.gz "${BOX}/"
-curl -netrc -T merged.rounded10k.culled.csv.gz "${BOX}/"
-curl -netrc -T merged.rounded10k.culled.T.csv.gz "${BOX}/"
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera/merged1k-chromosome"
-curl -netrc -X MKCOL "${BOX}/"
-
-for f in merged1k/*csv.gz; do 
-echo $( basename $f )
-curl -netrc -T ${f} "${BOX}/"
-done
-
-
-curl -netrc -T merged.rounded1k.csv.gz "${BOX}/"
-curl -netrc -T merged.rounded1k.T.csv.gz "${BOX}/"
-curl -netrc -T merged.rounded1k.culled.csv.gz "${BOX}/"
-curl -netrc -T merged.rounded1k.culled.T.csv.gz "${BOX}/"
-
-
---------------------------------------------------
-20210119
-
-
-nohup ./merge_insertion_points.bash > merge_insertion_points.out 2> merge_insertion_points.err &
-
-nohup ./cull_matrix.py 20210119-merged/merged.rounded*.*.Q??.csv.gz > cull_matrix.out 2> cull_matrix.err &
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera/20210119-merged"
-curl -netrc -X MKCOL "${BOX}/"
-
-for f in 20210119-merged/*csv.gz; do 
-echo $( basename $f )
-curl -netrc -T ${f} "${BOX}/"
-done
+module load WitteLab python3/3.9.1
+python3 ./merge_insertion_points.py -o focused.10000.csv.gz -p premerge10k/*.paired.Q20.* > focused.10000.out
 
 
 
 
 
 
-
-
-
---------------------------------------------------
-20210218
-
-
-while read filename ; do
-echo $filename
-cat ${filename} | paste - - | wc -l > ${filename}.read_count
-done < <( find out -name \*fasta )
-
-while read filename ; do
-echo $filename
-cat ${filename} | wc -l > ${filename}.count
-done < <( find out -name \*points )
-
-
-
-
-
-
-
-
-
---------------------------------------------------
-20210414
-nohup python3 ./merge_insertion_points.py -o focused.csv.gz -p premerge1k/*.paired.Q20.* > focused.out 2> focused.err &
-
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20201123 20200603-TCGA-GBMLGG-WGS 20201029-hkle-chimera"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/.........."
 
 curl -netrc -X MKCOL "${BOX}/"
 
-curl -netrc -T focused.csv.gz "${BOX}/"
-curl -netrc -T focused.T.csv.gz "${BOX}/"
+curl -netrc -T focused.1k.csv.gz "${BOX}/"
+curl -netrc -T focused.1k.T.csv.gz "${BOX}/"
 
 
 
