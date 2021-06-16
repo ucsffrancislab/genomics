@@ -145,7 +145,7 @@ for f in raw/*fasta masks/*fasta ; do
 
 done	#	for f in raw/*fasta ; do
 
-for f in raw/*fasta split.*/*fasta ; do
+for f in raw/*fasta masks/*fasta split.*/*fasta ; do
 
 	echo $f
 
