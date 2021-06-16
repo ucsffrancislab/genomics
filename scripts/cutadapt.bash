@@ -15,7 +15,7 @@ ARGS=$*
 
 while [ $# -gt 0 ] ; do
 	case $1 in
-		-o)
+		-o|--output)
 			shift; output=$1; shift;;
 		*)
 			shift;;
