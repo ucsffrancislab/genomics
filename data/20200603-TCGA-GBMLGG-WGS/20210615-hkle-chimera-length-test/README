@@ -112,6 +112,14 @@ python3 ./merge_insertion_points.py -o focused.10000.csv.gz -p premerge10k/*.pai
 
 
 
+for f in raw/*.R1.fastq.gz.read_count.txt; do echo $( basename $f .R1.fastq.gz.read_count.txt | sed -e 's/.SVAs_and_HERVs_KWHE//' -e 's/\./_/g' ),$( cat $f ); done > select_read_counts.csv
+
+Need to manually compile the raw read counts
+
+vi select_raw_read_counts.csv
+
+
+
 
 
 BOX="https://dav.box.com/dav/Francis _Lab_Share/.........."
