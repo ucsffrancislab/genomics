@@ -2,3 +2,6 @@ focused*gz
 20210421 TCGA Uniq Position Boxplots and TTests.ipynb
 normalize_test.ipynb
 raw_read_counts.csv
+select_raw_read_counts.csv
+read_lengths.csv
+count_matrix2.csv.gz
