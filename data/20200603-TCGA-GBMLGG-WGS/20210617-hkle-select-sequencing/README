@@ -1,0 +1,22 @@
+
+Similar to 20201027-hkle-select
+Running chimera on 6 references just takes too long.
+Deving read selector for 1 reference, then run chimera with the output as source.
+Need to compare the unpaired alignments from the raw data
+to the selected alignments from this selection.
+
+
+
+
+However, 
+* running by sequencing and not concatenated samples.
+* limit to just 01 and 10?
+* limit to just 101 and 151 bp sequencings?
+* using newer bowtie2 so no need for the extreme custom scoring?
+* also using paired data so no need for custom scoring
+
+
+
+
+
+
