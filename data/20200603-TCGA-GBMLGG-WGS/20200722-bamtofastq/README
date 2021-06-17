@@ -78,4 +78,14 @@ echo $( basename $f _R1.fastq.gz.average_length.txt ),$( cat $f )
 done > ../read_lengths.csv
 
 
+date=$( date "+%Y%m%d%H%M%S" )
+for f in out/*R1.fastq.gz ; do
+${sbatch} --job-name=$( basename $f ) --time=120 --ntasks=4 --mem=30G --output ${f}.${date}.count.txt ~/.local/bin/count_fasta_reads.bash $f
+done
+
+for f in out/*read_count.txt ; do
+echo $( basename $f _R1.fastq.gz.read_count.txt ),$( cat $f )
+done > sequencing_paired_read_counts.csv
+
+
 
