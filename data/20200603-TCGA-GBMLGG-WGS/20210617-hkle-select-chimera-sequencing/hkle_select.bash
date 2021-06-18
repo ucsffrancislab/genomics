@@ -87,6 +87,11 @@ while IFS=, read -r sequencing length ; do
 				--very-sensitive-local -r ${index} -1 ${r1} -2 ${r2} -o ${f}
 
 
+#		The results from different bowtie2 versions and this scoring change
+#		resulted in files about half the size!
+#		Glad that I reran all the data and not just CS-6186 and DU-5872
+
+
 #		qsub -N "${base}.select" -l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
 #			-l feature=nocommunal \
 #			-l gres=scratch:${scratch} \
@@ -126,6 +131,7 @@ while IFS=, read -r sequencing length ; do
 
 	fi
 
+#done < <( head -n 62 sequencing_paired_read_lengths.csv )
 #done < <( tail -n +63 sequencing_paired_read_lengths.csv )
 done < sequencing_paired_read_lengths.csv
 #done < <( sed 's/,/ /' read_lengths.csv )
