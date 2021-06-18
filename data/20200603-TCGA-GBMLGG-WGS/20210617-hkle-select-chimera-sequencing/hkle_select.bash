@@ -16,7 +16,7 @@ STAR=${REFS}/STAR
 SALMON=${REFS}/salmon
 
 INDIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out"
-DIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20210617-hkle-select-sequencing/out"
+DIR="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20210617-hkle-select-sequencing/select"
 mkdir -p ${DIR}
 
 #	remember 64 cores and ~504GB mem
@@ -80,7 +80,7 @@ while IFS=, read -r sequencing length ; do
 
 		echo "Using scratch:${scratch}"
 
-		${sbatch} --time=999 --job-name="${base}.select" --ntasks=${threads} --mem=${vmem}G \
+		${sbatch} --time=2999 --job-name="${base}.select" --ntasks=${threads} --mem=${vmem}G \
 			--gres=scratch:${scratch}G \
 			--output=${outbase}.${date}.out.txt \
 			~/.local/bin/paired_reads_select_scratch.bash \
@@ -126,7 +126,8 @@ while IFS=, read -r sequencing length ; do
 
 	fi
 
-done < read_lengths.csv
+#done < <( tail -n +63 sequencing_paired_read_lengths.csv )
+done < sequencing_paired_read_lengths.csv
 #done < <( sed 's/,/ /' read_lengths.csv )
 #done
 
