@@ -57,15 +57,35 @@ while IFS=, read -r sequencing length ; do
 		echo "processing"
 
 		if [ $length -eq 101 ] ; then
+
 			echo "Linking ${sequencing} as length ${length} is just right"
 			l=${DIR}/${sequencing}.R1.fastq.gz
 			if [ ! -e ${l} ] ; then
 				ln -s ${r1} ${l}
 			fi
+
 			l=${DIR}/${sequencing}.R2.fastq.gz
 			if [ ! -e ${l} ] ; then
 				ln -s ${r2} ${l}
 			fi
+
+			#l=${DIR}/${sequencing}.R1.fastq.gz.average_length.txt
+			#if [ ! -e ${l} ] ; then
+			#	ln -s ${r1}.average_length.txt ${l}
+			#fi
+
+			l=${DIR}/${sequencing}.R1.fastq.gz.average_length.txt
+			if [ ! -e ${l} ] ; then
+			#	ln -s ${r1}.average_length.txt ${l}
+				#	better be 101
+				echo "101" > ${l}
+			fi
+
+			l=${DIR}/${sequencing}.R1.fastq.gz.read_count.txt
+			if [ ! -e ${l} ] ; then
+				ln -s ${r1}.read_count.txt ${l}
+			fi
+
 		else
 			echo "${sequencing} length ${length} is too long. Trimming to 101."
 		
@@ -77,10 +97,11 @@ while IFS=, read -r sequencing length ; do
 			if [ -f $f ] && [ ! -w $f ] ; then
 				echo "Write-protected $f exists. Skipping."
 			else
-				${sbatch} --job-name=${basename}trim --time=30 --ntasks=4 --mem=30G \
-					--output=${out_base}.${r}.${date}.txt \
+				${sbatch} --job-name=${base}trim --time=30 --ntasks=4 --mem=30G \
+					--output=${out_base}.${date}.txt \
 					~/.local/bin/cutadapt.bash --length 101 --cores 4 \
 						--output ${f} --paired-output ${f/.R1/.R2} ${r1} ${r2}
+				#	This doesn't do paired trimming in older versions like (1.8)
 			fi
 
 		fi
