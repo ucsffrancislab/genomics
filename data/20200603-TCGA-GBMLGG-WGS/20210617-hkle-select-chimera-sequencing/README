@@ -26,3 +26,48 @@ CS-5390-10A-01D-1468
 FG-5963-01A-11D-1703
 
 
+./hkle_select.bash
+./trim.bash
+./chimera.bash
+
+
+---
+
+/bin/rm -rf focused.1* premerge1*
+
+mkdir premerge1k
+for dir in hkle/*.hkle ; do
+sample=$( basename $dir )
+sample=${sample/.hkle/}
+for hkle in SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F HERVK113 ; do
+for pup in paired unpaired ; do
+for mapq in Q00 Q10 Q20 ; do
+echo "${sample}-${hkle}-${pup}-${mapq}"
+sort -t\| -k1,1 -k2n ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.chrXYM_alts.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/1000)*1000}' > premerge1k/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
+done ; done ; done ; done
+
+
+module load WitteLab python3/3.9.1
+python3 ./merge_insertion_points.py -o focused.1000.csv.gz -p premerge1k/*.paired.Q20.* > focused.1000.out
+
+
+mkdir premerge10k
+for dir in hkle/*.hkle ; do
+sample=$( basename $dir )
+sample=${sample/.hkle/}
+for hkle in SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F HERVK113 ; do
+for pup in paired unpaired ; do
+for mapq in Q00 Q10 Q20 ; do
+echo "${sample}-${hkle}-${pup}-${mapq}"
+sort -t\| -k1,1 -k2n ${dir}/*.bowtie2.${hkle}.very_sensitive_local.${pup}.aligned.{pre,post}.bowtie2.hg38.chrXYM_alts.${mapq}.{ins,rc_ins}*ts | awk 'BEGIN{FS=OFS="|"}{print $1,int($2/10000)*10000}' > premerge10k/${sample}.${hkle}.${pup}.${mapq}.all_insertion_points
+done ; done ; done ; done
+
+module load WitteLab python3/3.9.1
+python3 ./merge_insertion_points.py -o focused.10000.csv.gz -p premerge10k/*.paired.Q20.* > focused.10000.out
+
+
+
+
+
+
+
