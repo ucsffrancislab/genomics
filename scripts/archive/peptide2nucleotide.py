@@ -23,10 +23,7 @@ Q	CAA,CAG
 R	CGC,CGT,CGA,CGG,AGA,AGG
 S	TCC,TCT,TCA,TCG,AGC,AGT
 F	TTC,TTT
-T	TAC,TAT,ACC,ACT,ACA,ACG
-X	TAA,TAG
 C	TGC,TGT
-U	TGA
 W	TGG
 I	ATC,ATT,ATA
 M	ATG
@@ -37,11 +34,22 @@ V	GTC,GTT,GTA,GTG
 D	GAC,GAT
 E	GAA,GAG
 G	GGC,GGT,GGA,GGG
+Y	TAC,TAT
+T	ACC,ACT,ACA,ACG
+X	TAA,TAG,TGA
 """
+
+#	Change
+#T	TAC,TAT,ACC,ACT,ACA,ACG    #	<---- WRONG! 2 are Y, which is missing altogether
+#X	TAA,TAG
+#U	TGA                        #	<---- WRONG? Should be X? ( No U? )
+# To
+#Y	TAC,TAT
+#T	ACC,ACT,ACA,ACG  
+#X	TAA,TAG,TGA
 
 # Used T and not U since all of my indexes are built with T
 
-#acids=pd.read_csv("20210528-herv-peptide-sequences/acid_table",
 acids=pd.read_csv(StringIO(ACID_TABLE),
 	header=None,
 	sep="\t",
