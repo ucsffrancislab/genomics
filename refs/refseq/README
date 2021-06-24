@@ -43,3 +43,10 @@ vi human.rna.table
 rsync -avz --progress rsync://ftp.ncbi.nih.gov/refseq/H_sapiens/mRNA_Prot/ mRNA_Prot-20210528/
 
 
+rsync -avz --progress rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral-20210623/
+zcat viral.?.protein.faa.gz | gzip > viral.protein.faa.gz
+faSplit byname viral.protein.faa.gz split/
+
+VZV=1384
+EBV=
+
