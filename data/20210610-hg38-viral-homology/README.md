@@ -118,3 +118,26 @@ Accession,Description,length,( N counts for masked and all splits )
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 
 
+
+
+
+
+---
+
+
+Protein comparisons of VZV and EBV to hg38
+
+PROTEIN VERSION for 
+VZV - HHV-3 - NC_001348
+EBV - HHV-4 - NC_007605
+
+
+/francislab/data1/working/20210610-hg38-viral-homology/20210601-HERV-peptides/
+
+
+Extract protein sequences from RefSeq viral proteins.
+Chop into overlapping 14bp sequences. Any bigger becomes hard to manage.
+Reverse translate to all possible nucleotide sequences.
+Align each to hg38 to find any homogeneity.
+
+
