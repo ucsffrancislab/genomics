@@ -1,4 +1,5 @@
  
+20210624 - note that my translation table had 2 errors in it. Fortunately, this data didn't include X,Y or U so no misses, but it did include T so possibly some false positives.
 
 
 nohup peptide2nucleotide.py TNRTLKTQLVKQK &
