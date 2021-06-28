@@ -14,7 +14,7 @@ mkdir -p masks
 
 #for f in /francislab/data1/refs/fasta/nuccore/*.fasta /francislab/data1/refs/fasta/Burkholderia.fasta /francislab/data1/refs/fasta/Salmonella.fasta /francislab/data2/refs/fasta/viruses/NC_001422.1_Coliphage_phi-X174.fasta /francislab/data1/refs/fasta/coronaviruses/NC_??????.?.fasta /francislab/data1/refs/refseq/viral-20210316/split/*BeAn*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*Burkholderia*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*oronavirus*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*cytomegalovirus*complete_genome.fa ; do
 
-for f in /francislab/data1/refs/refseq/viral-20210316/split/*{BeAn,Burkholder,Coliphage,oronavirus,cytomegalovirus,epatitis,Human_herpes,Human_papillomavirus,immuno,Salmonella}*complete_genome.fa ; do
+for f in /francislab/data1/refs/refseq/viral-20210316/split/*{BeAn,Burkholder,Coliphage,oronavirus,cytomegalovirus,epatitis,Human*herpes,Human_papillomavirus,immuno,Salmonella}*complete_genome.fa ; do
 
 #${PWD}/tmp/*fa 
 
