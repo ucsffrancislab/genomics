@@ -192,3 +192,14 @@ sort -n EBV.aligned_accessions.txt | tail
 
 
 
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210610-hg38-viral-homology"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in *bam*; do
+curl -netrc -T $f "${BOX}/"
+done
+```
+
