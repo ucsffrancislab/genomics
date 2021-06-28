@@ -25,6 +25,9 @@ generationRefreshLog=100
 
 DO NOT USE --export=None with sbatch HERE. IT WILL FAIL.
 
+
+
+
 ```
 export sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
 export GECKO=/francislab/data1/working/20210428-EV/20210623-Gecko/GECKO
@@ -33,6 +36,11 @@ mkdir ${GDATA}
 export k=21
 date=$( date "+%Y%m%d%H%M%S" )
 ```
+
+
+
+
+
 
 I am going to try to minimize duplicate processing so I will process the first steps just once.
 
@@ -148,6 +156,25 @@ mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/${subset}/
 ```
 
 
+
+
+
+----> DONE UP TO HERE <----
+
+
+WAITING UNTIL CLUSTER REBOOT TO RUN THE REST
+
+
+
+
+
+
+
+
+
+
+
+
 This next step (filter) can take days depending on data size so ALWAYS run with nohup (or submit to queue).
 
 
@@ -158,8 +185,90 @@ date=$( date "+%Y%m%d%H%M%S" )
 for subset in Astro Oligo GBMWT GBMmut ; do
 ${sbatch} --job-name=${subset}filter --time=2880 --ntasks=8 --mem=61G --output=${GDATA}/${subset}.filter.${date}.txt ${GECKO}/ImportMatrix/main.pl filter --matrix ${GDATA}/${subset}/discretization/matrix/DISCRETmatrix.matrix --outdir ${GDATA}/${subset}
 done
+```
 
 ```
+date=$( date "+%Y%m%d%H%M%S" )
+cd ${GECKO}/ImportMatrix
+
+for subset in Astro Oligo GBMWT GBMmut ; do
+${sbatch} --job-name=${subset}real --time=1440 --ntasks=8 --mem=61G --output=${GDATA}/${subset}.real.${date}.txt ${GECKO}/ImportMatrix/main.pl real --matrixDiscrete ${GDATA}/${subset}/filtering/matrix/FILTEREDmatrix.matrix --matrixRaw ${GDATA}/${subset}/rawimport/matrix/RAWmatrix.matrix --outdir ${GDATA}/${subset}
+done
+```
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+cd ${GECKO}/Gecko/algoGen/Producteurv2/utils
+
+for subset in Astro Oligo GBMWT GBMmut ; do
+${sbatch} --job-name=${subset}transformIntoBinary --time=1440 --ntasks=8 --mem=61G --output=${GDATA}/${subset}.transformIntoBinary.${date}.txt --wrap="${GECKO}/Gecko/algoGen/Producteurv2/utils/transformIntoBinary ${GDATA}/${subset}/filtering/final/FILTEREDmatrix_RealCounts.matrix ${GDATA}/${subset}/filtering/final/FILTEREDmatrix_RealCounts.bin"
+done
+```
+
+Not sure of the purpose of this step
+```
+date=$( date "+%Y%m%d%H%M%S" )
+cd ${GECKO}/Gecko/algoGen/Producteurv2/utils
+
+for subset in Astro Oligo GBMWT GBMmut ; do
+mkdir ${GDATA}/${subset}/filtering/final/CutMatrix/
+${sbatch} --job-name=${subset}indexBinary --time=1440 --ntasks=8 --mem=61G --output=${GDATA}/${subset}.indexBinary.${date}.txt --wrap="${GECKO}/Gecko/algoGen/Producteurv2/utils/indexBinary ${GDATA}/${subset}/filtering/final/FILTEREDmatrix_RealCounts.bin ${GDATA}/${subset}/filtering/final/CutMatrix/example.bin 1000"
+done
+```
+
+```
+cd ${GECKO}/Gecko/algoGen
+
+/bin/rm -rf ../../Demo/DemoGeneticAlgResultDir/ slurm-*.out GECKO_*.* __pycache__/ plot_analysis_*.* 
+
+find ${GDATA}/ -type f -exec chmod a-w {} \;
+```
+
+
+
+
+Copy GA conf files for each run.
+```
+for subset in Astro Oligo GBMWT GBMmut ; do
+cp GA.conf ${GDATA}/${subset}/GA.10.conf
+cp GA.conf ${GDATA}/${subset}/GA.20.conf
+done
+```
+
+
+Prepare GA conf files for each run.
+```
+kmer=10 and 20
+Generation=5000
+Individuals=600
+Elite=5
+generationRefreshLog=100
+```
+
+```
+vi ${GDATA}/*/GA.??.conf
+```
+
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+cd ${GECKO}/Gecko/algoGen
+
+for subset in Astro Oligo GBMWT GBMmut ; do
+for kmer in 10 20 ; do
+${sbatch} --job-name=${subset}${kmer}multipleGeckoStart --time=5760 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.${kmer}.multipleGeckoStart.${date}.txt ${GECKO}/Gecko/algoGen/multipleGeckoStart.py ${GDATA}/${subset}/GA.${kmer}.conf ${k}
+done ; done
+```
+
+Job is submitted. Waiting ...
+
+
+
+
+
+
+
+
 
 
 
@@ -170,66 +279,9 @@ done
 From notes and need "converted" ... ( note change of GDATA to GDATA/import
 
 
-```
-${sbatch} --job-name=real --time=999 --ntasks=8 --mem=61G --output=${GDATA}/real.${date}.txt ${GECKO}/ImportMatrix/main.pl real --matrixDiscrete ${GDATA}/filtering/matrix/FILTEREDmatrix.matrix --matrixRaw ${GDATA}/rawimport/matrix/RAWmatrix.matrix --outdir ${GDATA}
-
-
-cd ${GECKO}/Gecko/algoGen/Producteurv2/utils
-
-${sbatch} --job-name=transformIntoBinary --time=999 --ntasks=8 --mem=61G --output=${GDATA}/transformIntoBinary.${date}.txt --wrap="${GECKO}/Gecko/algoGen/Producteurv2/utils/transformIntoBinary ${GDATA}/filtering/final/FILTEREDmatrix_RealCounts.matrix ${GDATA}/filtering/final/FILTEREDmatrix_RealCounts.bin"
-
-mkdir ${GDATA}/filtering/final/CutMatrix/
-
-${sbatch} --job-name=indexBinary --time=999 --ntasks=8 --mem=61G --output=${GDATA}/indexBinary.${date}.txt --wrap="${GECKO}/Gecko/algoGen/Producteurv2/utils/indexBinary ${GDATA}/filtering/final/FILTEREDmatrix_RealCounts.bin ${GDATA}/filtering/final/CutMatrix/example.bin 1000"
-```
 
 
 
-
-```
-cd ${GECKO}/Gecko/algoGen
-
-/bin/rm -rf ../../Demo/DemoGeneticAlgResultDir/ slurm-*.out GECKO_*.* __pycache__/ plot_analysis_*.* 
-
-find ${GDATA}/ -type f -exec chmod a-w {} \;
-
-
-cd ${GECKO}/Gecko/algoGen
-
-mkdir /francislab/data1/users/gwendt/github/ucsffrancislab/GECKO/EV_IDHWT
-mkdir /francislab/data1/users/gwendt/github/ucsffrancislab/GECKO/EV_IDHWT/GeneticAlgResultDir
-ln -s /francislab/data1/users/gwendt/github/ucsffrancislab/GECKO/EV_IDHWT/GeneticAlgResultDir ${GECKO}/EV_IDHWT/
-${sbatch} --job-name=multipleGeckoStart --time=9999 --ntasks=4 --mem=30G --output=${GECKO}/EV_IDHWT/GeneticAlgResultDir/multipleGeckoStart.${date}.txt ${GECKO}/Gecko/algoGen/multipleGeckoStart.py ${GECKO}/EV_IDHWT/GA.conf ${k}
-
-```
-
-Job is submitted. Waiting ...
-
-
-
-
-If running many, wrap it in a loop.
-
-```
-
-
-cd ${GECKO}/Gecko/algoGen
-
-date=$( date "+%Y%m%d%H%M%S" )
-#for i in $( seq 0 9 ) ; do
-
-i=5
-mkdir /francislab/data1/users/gwendt/github/ucsffrancislab/GECKO/EV_IDHWT/GeneticAlgResult${i}Dir
-ln -s /francislab/data1/users/gwendt/github/ucsffrancislab/GECKO/EV_IDHWT/GeneticAlgResult${i}Dir ${GECKO}/EV_IDHWT/
-
-cp ${GECKO}/EV_IDHWT/GA.conf ${GECKO}/EV_IDHWT/GA${i}.conf
-vi ${GECKO}/EV_IDHWT/GA${i}.conf
-
-${sbatch} --job-name=${i}multipleGeckoStart --time=999 --ntasks=4 --mem=30G --output=${GECKO}/EV_IDHWT/GeneticAlgResult${i}Dir/multipleGeckoStart.${date}.txt ${GECKO}/Gecko/algoGen/multipleGeckoStart.py ${GECKO}/EV_IDHWT/GA${i}.conf ${k}
-
-#done
-
-```
 
 
 
