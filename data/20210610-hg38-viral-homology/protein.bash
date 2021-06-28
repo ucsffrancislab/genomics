@@ -10,52 +10,7 @@ while read -r virus ; do
 	for accession in $( zgrep "${virus}" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' ) ; do
 		ls -1 /francislab/data1/refs/refseq/viral/split/${accession}.fa
 
-#if [ ${accession} == 'NP_040135.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040149.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040154.2' ] ; then continue; fi
-#if [ ${accession} == 'NP_040163.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040164.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040183.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040184.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040185.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040186.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040188.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040189.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040190.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040191.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040192.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040193.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_053044.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_068407.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401631.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401632.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401633.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401635.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401636.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401637.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401638.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401639.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401684.3' ] ; then continue; fi
-#if [ ${accession} == 'YP_401699.3' ] ; then continue; fi
-#if [ ${accession} == 'YP_401715.3' ] ; then continue; fi
-#if [ ${accession} == 'YP_401718.3' ] ; then continue; fi
-#if [ ${accession} == 'YP_401720.3' ] ; then continue; fi
-
-#	c4_clear_orphaned_jobs.bash
-#	qstat | awk '($10~/R|Q/){print $4}' | sed 's/^...//' | sort -u
-#if [ ${accession} == 'YP_401652.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401653.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401677.1' ] ; then continue; fi
-
-#if [ ${accession} == 'NP_040184.1' ] ; then continue; fi
-#if [ ${accession} == 'NP_040193.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401643.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401655.1' ] ; then continue; fi
-#if [ ${accession} == 'YP_401722.1' ] ; then continue; fi
-
-if [ ${accession} == 'YP_401652.1' ] ; then continue; fi
-if [ ${accession} == 'YP_401653.1' ] ; then continue; fi
-if [ ${accession} == 'YP_401685.1' ] ; then continue; fi
+if [ ${accession} == 'YP_401643.1' ] ; then continue; fi
 
 		o=${PWD}/proteins/${accession}.faa
 		if [ ! -f ${o} ] ; then
