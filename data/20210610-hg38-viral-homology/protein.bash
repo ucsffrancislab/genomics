@@ -10,6 +10,53 @@ while read -r virus ; do
 	for accession in $( zgrep "${virus}" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' ) ; do
 		ls -1 /francislab/data1/refs/refseq/viral/split/${accession}.fa
 
+#if [ ${accession} == 'NP_040135.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040149.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040154.2' ] ; then continue; fi
+#if [ ${accession} == 'NP_040163.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040164.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040183.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040184.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040185.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040186.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040188.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040189.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040190.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040191.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040192.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040193.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_053044.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_068407.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401631.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401632.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401633.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401635.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401636.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401637.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401638.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401639.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401684.3' ] ; then continue; fi
+#if [ ${accession} == 'YP_401699.3' ] ; then continue; fi
+#if [ ${accession} == 'YP_401715.3' ] ; then continue; fi
+#if [ ${accession} == 'YP_401718.3' ] ; then continue; fi
+#if [ ${accession} == 'YP_401720.3' ] ; then continue; fi
+
+#	c4_clear_orphaned_jobs.bash
+#	qstat | awk '($10~/R|Q/){print $4}' | sed 's/^...//' | sort -u
+#if [ ${accession} == 'YP_401652.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401653.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401677.1' ] ; then continue; fi
+
+#if [ ${accession} == 'NP_040184.1' ] ; then continue; fi
+#if [ ${accession} == 'NP_040193.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401643.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401655.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401722.1' ] ; then continue; fi
+
+if [ ${accession} == 'YP_401652.1' ] ; then continue; fi
+if [ ${accession} == 'YP_401653.1' ] ; then continue; fi
+if [ ${accession} == 'YP_401685.1' ] ; then continue; fi
+
 		o=${PWD}/proteins/${accession}.faa
 		if [ ! -f ${o} ] ; then
 			#	7 keeps tripping out of memory in next step. So does 6, but much less.
@@ -19,22 +66,91 @@ while read -r virus ; do
 			chmod -w $o
 		fi
 
+		p2n_id=""
 		o=${PWD}/proteins/${accession}.fna.gz
 		if [ ! -f "${o}" ] || [ -w "${o}" ] ; then
 			#	takes about 2 hours
 			#	Many run out of memory. Bumping up to 124 for rerun.
-			${sbatch} --job-name=$(basename ${o} .fna.gz) --time=999 --ntasks=4 --mem=124G --output=${o}.${date}.txt \
-				${PWD}/peptides2nucleotides.bash -o ${o} ${o%.fna.gz}.faa
+			#	More run out of memory. Bumping up to 248 for rerun.
+			#	Several still out of memory or out of time!
+			#p2n_id=$( ${sbatch} --parsable --job-name=p2n${accession} --time=999 --ntasks=8 --mem=62G --output=${o}.peptides2nucleotides.${date}.txt \
+			#p2n_id=$( ${sbatch} --parsable --job-name=p2n${accession} --time=999 --ntasks=8 --mem=124G --output=${o}.peptides2nucleotides.${date}.txt \
+			#p2n_id=$( ${sbatch} --parsable --job-name=p2n${accession} --time=999 --ntasks=8 --mem=248G --output=${o}.peptides2nucleotides.${date}.txt \
+			#p2n_id=$( ${sbatch} --parsable --job-name=p2n${accession} --time=1999 --ntasks=8 --mem=499G --output=${o}.peptides2nucleotides.${date}.txt \
+			p2n_id=$( ${sbatch} --parsable --job-name=p2n${accession} --time=2880 --ntasks=8 --mem=499G --output=${o}.peptides2nucleotides.${date}.txt \
+				${PWD}/peptides2nucleotides.bash -o ${o} ${o%.fna.gz}.faa )
+			echo ${p2n_id}
 		fi
 
-#		o=${PWD}/proteins/${accession}.bam
-#		if [ ! -f "${o}" ] || [ -w "${o}" ] ; then
-#
-#			#	SCRATCH?
-#
-#			echo ${sbatch} --job-name=$(basename ${o} .bam) --time=999 --ntasks=8 --mem=62G --output=${PWD}/${o}.${date}.txt ~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts --no-unal --very-sensitive --all -f -U ${o%.bam}.fna.gz -o ${o}
-#
-#		fi
+#	 1hr -   60
+#	 4hr -  240
+#	10hr -  600
+#	12hr -  720
+#	20hr - 1200
+#	24hr - 1440
+#	36hr - 2160
+#	48hr - 2880
+
+		o=${PWD}/proteins/${accession}.loc.bam
+		if [ ! -f "${o}" ] || [ -w "${o}" ] ; then
+			if [ ! -z "${p2n_id}" ] ; then
+				depend="--dependency=afterok:${p2n_id}"
+			else
+				depend=""
+			fi
+
+			fasta=${o%.loc.bam}.fna.gz
+			fasta_size=$( stat --dereference --format %s ${fasta} 2> /dev/null || echo 13575438589 ) #	 13 575 438 589 was largest I saw
+
+			index=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts
+			index_size=$( stat --dereference --format %s ${index}.?.bt2 ${index}.rev.?.bt2 | awk '{s+=$1}END{print s}' )
+
+			#scratch=$( echo $(( ((2*(${r1_size}+${r2_size})+${index_size})/${threads}/1000000000)+1 )) )
+			#	c4 doesn't do thread-based scratch calculation. just job.
+			scratch=$( echo $(( ((2*(${fasta_size})+${index_size})/1000000000)+1 )) )
+			#	Add 1 in case files are small so scratch will be 1 instead of 0.
+			#	11/10 adds 10% to account for the output
+
+			echo "Using scratch:${scratch}"
+
+			${sbatch} ${depend} --time=1440 --job-name=btl${accession} --ntasks=8 --mem=62G \
+				--gres=scratch:${scratch}G \
+				--output=${o}.bowtie2hg38.${date}.txt \
+				~/.local/bin/bowtie2_scratch.bash --sort --threads 8 \
+					-x ${index} --no-unal --very-sensitive-local --all -f -U ${o%.loc.bam}.fna.gz -o ${o}
+
+		fi
+
+		o=${PWD}/proteins/${accession}.e2e.bam
+		if [ ! -f "${o}" ] || [ -w "${o}" ] ; then
+			if [ ! -z "${p2n_id}" ] ; then
+				depend="--dependency=afterok:${p2n_id}"
+			else
+				depend=""
+			fi
+
+			fasta=${o%.e2e.bam}.fna.gz
+			fasta_size=$( stat --dereference --format %s ${fasta} 2> /dev/null || echo 13575438589 ) #	 13 575 438 589 was largest I saw
+
+			index=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts
+			index_size=$( stat --dereference --format %s ${index}.?.bt2 ${index}.rev.?.bt2 | awk '{s+=$1}END{print s}' )
+
+			#scratch=$( echo $(( ((2*(${r1_size}+${r2_size})+${index_size})/${threads}/1000000000)+1 )) )
+			#	c4 doesn't do thread-based scratch calculation. just job.
+			scratch=$( echo $(( ((2*(${fasta_size})+${index_size})/1000000000)+1 )) )
+			#	Add 1 in case files are small so scratch will be 1 instead of 0.
+			#	11/10 adds 10% to account for the output
+
+			echo "Using scratch:${scratch}"
+
+			${sbatch} ${depend} --time=1440 --job-name=bte${accession} --ntasks=8 --mem=62G \
+				--gres=scratch:${scratch}G \
+				--output=${o}.bowtie2hg38.${date}.txt \
+				~/.local/bin/bowtie2_scratch.bash --sort --threads 8 \
+					-x ${index} --no-unal --very-sensitive --all -f -U ${o%.e2e.bam}.fna.gz -o ${o}
+
+		fi
+
 
 	done
 

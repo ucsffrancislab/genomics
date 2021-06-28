@@ -141,3 +141,16 @@ Reverse translate to all possible nucleotide sequences.
 Align each to hg38 to find any homogeneity.
 
 
+```
+eval samtools merge VZV.bam proteins/{$(zgrep "Human alphaherpesvirus 3" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' | paste -s -d',')}*bam
+samtools index VZV.bam
+samtools_depths_to_ranges.bash VZV.bam 
+
+
+eval samtools merge EBV.bam proteins/{$(zgrep "Human gammaherpesvirus 4" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' | paste -s -d',')}*bam
+samtools index EBV.bam
+samtools_depths_to_ranges.bash EBV.bam 
+```
+
+
+

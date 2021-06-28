@@ -25,34 +25,6 @@ args = parser.parse_args()
 output=args.output[0]
 print( "Using output name: ", output )
 
-
-#print(len(sys.argv))
-
-#ACID_TABLE = u"""\
-#P	CCC,CCT,CCA,CCG
-#L	CTC,CTT,CTA,CTG,TTA,TTG
-#H	CAC,CAT
-#Q	CAA,CAG
-#R	CGC,CGT,CGA,CGG,AGA,AGG
-#S	TCC,TCT,TCA,TCG,AGC,AGT
-#F	TTC,TTT
-#T	TAC,TAT,ACC,ACT,ACA,ACG					# <---- WRONG! 2 are Y, which is missing altogether
-#X	TAA,TAG
-#C	TGC,TGT
-#U	TGA															#	<---- WRONG? Should be X?
-#W	TGG
-#I	ATC,ATT,ATA
-#M	ATG
-#N	AAC,AAT
-#K	AAA,AAG
-#A	GCC,GCT,GCA,GCG
-#V	GTC,GTT,GTA,GTG
-#D	GAC,GAT
-#E	GAA,GAG
-#G	GGC,GGT,GGA,GGG
-#"""
-
-
 ACID_TABLE = u"""\
 A	GCC,GCT,GCA,GCG
 C	TGC,TGT
@@ -78,6 +50,12 @@ Y	TAC,TAT
 """
 
 # Used T and not U since all of my indexes are built with T
+#https://www.researchgate.net/figure/Amino-Acid-Translation-Table_fig12_45151954
+#https://www.bugsinourbackyard.org/wp-content/uploads/2020/03/Screen-Shot-2020-03-10-at-4.50.53-PM.png
+#
+#	I've seen some tables that use U, instead of T, as the abbreviation Threonine
+#	https://www.semanticscholar.org/paper/Translation-tables%3A-A-genetic-code-in-a-algorithm-Ashlock-Schonfeld/342d4e9fceaaebeb42fe8b179c2364dbc3decaac/figure/6
+#https://d3i71xaburhd42.cloudfront.net/342d4e9fceaaebeb42fe8b179c2364dbc3decaac/1-TableI-1.png
 
 acids=pd.read_csv(StringIO(ACID_TABLE),
 	header=None,
