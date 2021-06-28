@@ -2,6 +2,8 @@
 
 ```
 git clone https://github.com/ucsffrancislab/GECKO.git
+Don't do this. You'll need to compile everything.
+ln -s ~/github/ucsffrancislab/GECKO
 
 4 meta data files
 
@@ -64,10 +66,10 @@ rm -f ${GDATA}/input/SFHH005ar.fastq.gz
 Create matrix conf files.
 
 ```
-awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/Oligodendroglioma/)?"Oligo":"nonOligo"; print "'${GDATA}/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/Oligo.metadata.conf
-awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/Astrocytoma/)?"Astro":"nonAstro"; print "'${GDATA}/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/Astro.metadata.conf
-awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/GBM, IDH1R132H WT/)?"GBMWT":"nonGBMWT"; print "'${GDATA}/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/GBMWT.metadata.conf
-awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/GBM, IDH-mutant/)?"GBMmut":"nonGBMmut"; print "'${GDATA}/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/GBMmut.metadata.conf
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/Oligodendroglioma/)?"Oligo":"nonOligo"; print "'${GDATA}/import/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/Oligo.metadata.conf
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/Astrocytoma/)?"Astro":"nonAstro"; print "'${GDATA}/import/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/Astro.metadata.conf
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/GBM, IDH1R132H WT/)?"GBMWT":"nonGBMWT"; print "'${GDATA}/import/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/GBMWT.metadata.conf
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")"}((NR>1)&&($1!~/_11$/)){ g=($4~/GBM, IDH-mutant/)?"GBMmut":"nonGBMmut"; print "'${GDATA}/import/jellyfish/text/'"$2".ojf.tab\t"++i"\t"g}' /francislab/data1/raw/20210428-EV/metadata.csv > ${GDATA}/GBMmut.metadata.conf
 ```
 
 Nextflow uses a Java VM so needs to be from a non-login dev node ( or as a job on the cluster )
@@ -77,31 +79,12 @@ cd ${GECKO}/ImportMatrix
 mkdir ${GDATA}/import
 #/bin/rm -rf ${GDATA}/import/* ${GECKO}/ImportMatrix/work/* ${GECKO}/ImportMatrix/results/*
 
-${sbatch} --job-name=decomposition --time=9999 --ntasks=4 --mem=30G --output=${GDATA}/decomposition.${date}.txt ${GECKO}/ImportMatrix/main.pl decomposition --singleEnd --outdir ${GDATA}/import --reads \'${GDATA}/input/\*.fastq.gz\' --kmersize ${k}
+${sbatch} --job-name=decomposition --time=480 --ntasks=4 --mem=30G --output=${GDATA}/decomposition.${date}.txt ${GECKO}/ImportMatrix/main.pl decomposition --singleEnd --outdir ${GDATA}/import --reads ${GDATA}/input/\*.fastq.gz --kmersize ${k}
 ```
-
-
-
 
 Can take quite a while depending on file size. 
 
 Then cleanup.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ```
@@ -112,6 +95,14 @@ find ${GDATA}/import -type f -exec chmod a-w {} \;
 
 
 
+
+
+1440 = 24 hours
+2880 = 48 hours
+5760 = 96 hours
+
+
+
 Now we need to split, which may be tricky.
 
 ```
@@ -119,7 +110,7 @@ cd ${GECKO}/ImportMatrix
 
 for subset in Astro Oligo GBMWT GBMmut ; do
 mkdir -p ${GDATA}/${subset}
-${sbatch} --job-name=${subset}importation --time=9999 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.importation.${date}.txt ${GECKO}/ImportMatrix/main.pl importation --groupconfig ${GDATA}/${subset}.metadata.conf --outdir ${GDATA}/${subset}
+${sbatch} --job-name=${subset}importation --time=2880 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.importation.${date}.txt ${GECKO}/ImportMatrix/main.pl importation --groupconfig ${GDATA}/${subset}.metadata.conf --outdir ${GDATA}/${subset}
 done
 ```
 
@@ -127,10 +118,48 @@ done
 
 
 
+For the moment, this next step must be submitted and dealt with 1 at a time. 
+The output goes to the same place so afterwards, the output will need to be moved before another data set can be run.
+Not sure what is special about this step.
 
 
+```
+cd ${GECKO}/ImportMatrix
+date=$( date "+%Y%m%d%H%M%S" )
+
+subset=Astro
+${sbatch} --job-name=${subset}discretization --time=2880 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.discretization.${date}.txt ${GECKO}/ImportMatrix/main.pl discretization --matrix ${GDATA}/${subset}/rawimport/matrix/RAWmatrix.matrix –-outdir ${GDATA}/${subset}
+mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/${subset}/
 
 
+subset=Oligo
+${sbatch} --job-name=${subset}discretization --time=2880 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.discretization.${date}.txt ${GECKO}/ImportMatrix/main.pl discretization --matrix ${GDATA}/${subset}/rawimport/matrix/RAWmatrix.matrix –-outdir ${GDATA}/${subset}
+mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/${subset}/
+
+
+subset=GBMWT
+${sbatch} --job-name=${subset}discretization --time=2880 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.discretization.${date}.txt ${GECKO}/ImportMatrix/main.pl discretization --matrix ${GDATA}/${subset}/rawimport/matrix/RAWmatrix.matrix –-outdir ${GDATA}/${subset}
+mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/${subset}/
+
+
+subset=GBMmut
+${sbatch} --job-name=${subset}discretization --time=2880 --ntasks=4 --mem=30G --output=${GDATA}/${subset}.discretization.${date}.txt ${GECKO}/ImportMatrix/main.pl discretization --matrix ${GDATA}/${subset}/rawimport/matrix/RAWmatrix.matrix –-outdir ${GDATA}/${subset}
+mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/${subset}/
+```
+
+
+This next step (filter) can take days depending on data size so ALWAYS run with nohup (or submit to queue).
+
+
+```
+cd ${GECKO}/ImportMatrix
+date=$( date "+%Y%m%d%H%M%S" )
+
+for subset in Astro Oligo GBMWT GBMmut ; do
+${sbatch} --job-name=${subset}filter --time=2880 --ntasks=8 --mem=61G --output=${GDATA}/${subset}.filter.${date}.txt ${GECKO}/ImportMatrix/main.pl filter --matrix ${GDATA}/${subset}/discretization/matrix/DISCRETmatrix.matrix --outdir ${GDATA}/${subset}
+done
+
+```
 
 
 
@@ -141,36 +170,7 @@ done
 From notes and need "converted" ... ( note change of GDATA to GDATA/import
 
 
-
 ```
-cd ${GECKO}/ImportMatrix
-
-${sbatch} --job-name=importation --time=9999 --ntasks=4 --mem=30G --output=${GDATA}/importation.${date}.txt ${GECKO}/ImportMatrix/main.pl importation --groupconfig ${GECKO}/EV_IDHWT_metadata.conf --outdir ${GDATA}
-
-${sbatch} --job-name=discretization --time=9999 --ntasks=4 --mem=30G --output=${GDATA}/discretization.${date}.txt ${GECKO}/ImportMatrix/main.pl discretization --matrix ${GDATA}/rawimport/matrix/RAWmatrix.matrix –-outdir ${GDATA}
-```
-
-
-
-
-
-
-
-
-
-The above does not put the output in `ev_IDHWT_import`.
-Initially it had `-outdir` and not `--outdir`, which was incorrect, but not the problem.
-Not sure what is special about this step.
-
-This next step (filter) can take days depending on data size so ALWAYS run with nohup (or submit to queue).
-
-
-```
-mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/
-
-${sbatch} --job-name=filter --time=9999 --ntasks=8 --mem=61G --output=${GDATA}/filter.${date}.txt ${GECKO}/ImportMatrix/main.pl filter --matrix ${GDATA}/discretization/matrix/DISCRETmatrix.matrix --outdir ${GDATA}
-
-
 ${sbatch} --job-name=real --time=999 --ntasks=8 --mem=61G --output=${GDATA}/real.${date}.txt ${GECKO}/ImportMatrix/main.pl real --matrixDiscrete ${GDATA}/filtering/matrix/FILTEREDmatrix.matrix --matrixRaw ${GDATA}/rawimport/matrix/RAWmatrix.matrix --outdir ${GDATA}
 
 
