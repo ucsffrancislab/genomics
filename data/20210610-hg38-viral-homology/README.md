@@ -163,7 +163,7 @@ done < <( tail -n +3 VZV.ranges.txt ) > VZV.notable_ranges_and_genes.txt
 
 eval samtools merge EBV.bam proteins/{$(zgrep "Human gammaherpesvirus 4" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' | paste -s -d',')}*bam
 
-samtools merge EBV.bam proteins/{YP_401684.3,YP_401699.3,YP_401715.3,YP_401718.3,YP_401720.3,YP_401631.1,YP_401632.1,YP_401633.1,YP_401634.1,YP_401635.1,YP_401636.1,YP_401637.1,YP_401638.1,YP_401639.1,YP_401640.1,YP_401641.1,YP_401642.1,YP_401644.1,YP_401645.1,YP_401646.1,YP_401647.1,YP_401648.1,YP_401649.1,YP_401650.1,YP_401651.1,YP_401653.1,YP_401654.1,YP_401655.1,YP_401656.1,YP_401657.1,YP_401658.1,YP_401659.1,YP_401662.1,YP_401663.1,YP_401664.1,YP_401665.1,YP_401666.1,YP_401667.1,YP_401668.1,YP_401669.1,YP_401670.1,YP_401671.1,YP_401672.1,YP_401673.1,YP_401674.1,YP_401675.1,YP_401676.1,YP_401677.1,YP_401678.1,YP_401679.1,YP_401680.1,YP_401681.1,YP_401682.1,YP_401683.1,YP_401685.1,YP_401686.1,YP_401687.1,YP_401688.1,YP_401689.1,YP_401690.1,YP_401691.1,YP_401692.1,YP_401693.1,YP_401694.1,YP_401695.1,YP_401696.1,YP_401697.1,YP_401698.1,YP_401700.1,YP_401701.1,YP_401702.1,YP_401703.1,YP_401704.1,YP_401705.1,YP_401706.1,YP_401707.1,YP_401708.1,YP_401709.1,YP_401710.1,YP_401711.1,YP_401712.1,YP_401713.1,YP_401714.1,YP_401716.1,YP_401717.1,YP_401719.1,YP_401721.1,YP_401722.1,YP_401724.1,YP_401725.1,YP_401726.1,YP_401728.1}*bam
+samtools merge EBV.bam proteins/{YP_401684.3,YP_401699.3,YP_401715.3,YP_401718.3,YP_401720.3,YP_401631.1,YP_401632.1,YP_401633.1,YP_401634.1,YP_401635.1,YP_401636.1,YP_401637.1,YP_401638.1,YP_401639.1,YP_401640.1,YP_401641.1,YP_401642.1,YP_401643.1,YP_401644.1,YP_401645.1,YP_401646.1,YP_401647.1,YP_401648.1,YP_401649.1,YP_401650.1,YP_401651.1,YP_401653.1,YP_401654.1,YP_401655.1,YP_401656.1,YP_401657.1,YP_401658.1,YP_401659.1,YP_401662.1,YP_401663.1,YP_401664.1,YP_401665.1,YP_401666.1,YP_401667.1,YP_401668.1,YP_401669.1,YP_401670.1,YP_401671.1,YP_401672.1,YP_401673.1,YP_401674.1,YP_401675.1,YP_401676.1,YP_401677.1,YP_401678.1,YP_401679.1,YP_401680.1,YP_401681.1,YP_401682.1,YP_401683.1,YP_401685.1,YP_401686.1,YP_401687.1,YP_401688.1,YP_401689.1,YP_401690.1,YP_401691.1,YP_401692.1,YP_401693.1,YP_401694.1,YP_401695.1,YP_401696.1,YP_401697.1,YP_401698.1,YP_401700.1,YP_401701.1,YP_401702.1,YP_401703.1,YP_401704.1,YP_401705.1,YP_401706.1,YP_401707.1,YP_401708.1,YP_401709.1,YP_401710.1,YP_401711.1,YP_401712.1,YP_401713.1,YP_401714.1,YP_401716.1,YP_401717.1,YP_401719.1,YP_401721.1,YP_401722.1,YP_401724.1,YP_401725.1,YP_401726.1,YP_401728.1}*bam
 
 samtools index EBV.bam
 samtools_depths_to_ranges.bash EBV.bam > EBV.ranges.txt
@@ -202,4 +202,63 @@ for f in *bam*; do
 curl -netrc -T $f "${BOX}/"
 done
 ```
+
+
+
+
+```
+eval samtools merge VZV.e2e.bam proteins/{$(zgrep "Human alphaherpesvirus 3" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' | paste -s -d',')}*.e2e.bam
+samtools index VZV.e2e.bam
+
+
+GTF=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf
+while read count chr pos ; do
+echo $count $chr $pos
+awk -v c=$chr -v p=$pos -v OFS="\t" '( ( $1 == c ) && ( ( ( $4 <= p ) && ( p <= $5 ) ) || ( ( $4 <= p+1000 ) && ( p+1000 <= $5 ) ) ) ){print "",$1,$4,$5,$10;exit}' $GTF | sed 's/[";]//g'
+done < <( samtools view VZV.e2e.bam | awk 'BEGIN{FS=OFS="\t"}{split($1,a,"_");print a[1]"_"a[2]"_"a[3]"_"a[4],$3,int($4/1000)*1000}' | sort -k2,2 -k3n -k1,1 | uniq | awk '{print $2,$3}'| uniq -c ) > VZV.e2e.1000.groupings.txt &
+
+while read count chr pos ; do
+echo $count $chr $pos
+awk -v c=$chr -v p=$pos -v OFS="\t" '( ( $1 == c ) && ( ( ( $4 <= p ) && ( p <= $5 ) ) || ( ( $4 <= p+10000 ) && ( p+10000 <= $5 ) ) ) ){print "",$1,$4,$5,$10;exit}' $GTF | sed 's/[";]//g'
+done < <( samtools view VZV.e2e.bam | awk 'BEGIN{FS=OFS="\t"}{split($1,a,"_");print a[1]"_"a[2]"_"a[3]"_"a[4],$3,int($4/10000)*10000}' | sort -k2,2 -k3n -k1,1 | uniq | awk '{print $2,$3}'| uniq -c ) > VZV.e2e.10000.groupings.txt &
+
+
+
+
+
+eval samtools merge EBV.e2e.bam proteins/{$(zgrep "Human gammaherpesvirus 4" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' | paste -s -d',')}*.e2e.bam
+
+samtools merge EBV.e2e.bam proteins/{YP_401684.3,YP_401699.3,YP_401715.3,YP_401718.3,YP_401720.3,YP_401631.1,YP_401632.1,YP_401633.1,YP_401634.1,YP_401635.1,YP_401636.1,YP_401637.1,YP_401638.1,YP_401639.1,YP_401640.1,YP_401641.1,YP_401642.1,YP_401643.1,YP_401644.1,YP_401645.1,YP_401646.1,YP_401647.1,YP_401648.1,YP_401649.1,YP_401650.1,YP_401651.1,YP_401653.1,YP_401654.1,YP_401655.1,YP_401656.1,YP_401657.1,YP_401658.1,YP_401659.1,YP_401662.1,YP_401663.1,YP_401664.1,YP_401665.1,YP_401666.1,YP_401667.1,YP_401668.1,YP_401669.1,YP_401670.1,YP_401671.1,YP_401672.1,YP_401673.1,YP_401674.1,YP_401675.1,YP_401676.1,YP_401677.1,YP_401678.1,YP_401679.1,YP_401680.1,YP_401681.1,YP_401682.1,YP_401683.1,YP_401685.1,YP_401686.1,YP_401687.1,YP_401688.1,YP_401689.1,YP_401690.1,YP_401691.1,YP_401692.1,YP_401693.1,YP_401694.1,YP_401695.1,YP_401696.1,YP_401697.1,YP_401698.1,YP_401700.1,YP_401701.1,YP_401702.1,YP_401703.1,YP_401704.1,YP_401705.1,YP_401706.1,YP_401707.1,YP_401708.1,YP_401709.1,YP_401710.1,YP_401711.1,YP_401712.1,YP_401713.1,YP_401714.1,YP_401716.1,YP_401717.1,YP_401719.1,YP_401721.1,YP_401722.1,YP_401724.1,YP_401725.1,YP_401726.1,YP_401728.1}*.e2e.bam
+samtools index EBV.e2e.bam
+
+
+GTF=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf
+while read count chr pos ; do
+echo $count $chr $pos
+awk -v c=$chr -v p=$pos -v OFS="\t" '( ( $1 == c ) && ( ( ( $4 <= p ) && ( p <= $5 ) ) || ( ( $4 <= p+1000 ) && ( p+1000 <= $5 ) ) ) ){print "",$1,$4,$5,$10;exit}' $GTF | sed 's/[";]//g'
+done < <( samtools view EBV.e2e.bam | awk 'BEGIN{FS=OFS="\t"}{split($1,a,"_");print a[1]"_"a[2]"_"a[3]"_"a[4],$3,int($4/1000)*1000}' | sort -k2,2 -k3n -k1,1  | uniq | awk '{print $2,$3}'| uniq -c ) > EBV.e2e.1000.groupings.txt &
+
+while read count chr pos ; do
+echo $count $chr $pos
+awk -v c=$chr -v p=$pos -v OFS="\t" '( ( $1 == c ) && ( ( ( $4 <= p ) && ( p <= $5 ) ) || ( ( $4 <= p+10000 ) && ( p+10000 <= $5 ) ) ) ){print "",$1,$4,$5,$10;exit}' $GTF | sed 's/[";]//g'
+done < <( samtools view EBV.e2e.bam | awk 'BEGIN{FS=OFS="\t"}{split($1,a,"_");print a[1]"_"a[2]"_"a[3]"_"a[4],$3,int($4/10000)*10000}' | sort -k2,2 -k3n -k1,1  | uniq | awk '{print $2,$3}'| uniq -c ) > EBV.e2e.10000.groupings.txt &
+
+```
+
+
+
+
+
+
+```
+awk '(/\tchr/){if(x==1)print;x=0}(/^[[:digit:]]/){if($1>2){print;x=1}else{x=0}}' VZV.e2e.1000.groupings.txt
+awk '(/\tchr/){if(x==1)print;x=0}(/^[[:digit:]]/){if($1>2){print;x=1}else{x=0}}' VZV.e2e.10000.groupings.txt
+
+awk '(/\tchr/){if(x==1)print;x=0}(/^[[:digit:]]/){if($1>29){print;x=1}else{x=0}}' EBV.e2e.1000.groupings.txt
+awk '(/\tchr/){if(x==1)print;x=0}(/^[[:digit:]]/){if($1>29){print;x=1}else{x=0}}' EBV.e2e.10000.groupings.txt
+```
+
+
+
+
 
