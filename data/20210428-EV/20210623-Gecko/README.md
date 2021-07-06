@@ -156,25 +156,6 @@ mv ${GECKO}/ImportMatrix/results/discretization ${GDATA}/${subset}/
 ```
 
 
-
-
-
-----> DONE UP TO HERE <----
-
-
-WAITING UNTIL CLUSTER REBOOT TO RUN THE REST
-
-
-
-
-
-
-
-
-
-
-
-
 This next step (filter) can take days depending on data size so ALWAYS run with nohup (or submit to queue).
 
 
@@ -188,6 +169,11 @@ done
 ```
 
 ```
+export sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+export GECKO=/francislab/data1/working/20210428-EV/20210623-Gecko/GECKO
+export GDATA=/francislab/data1/working/20210428-EV/20210623-Gecko/data
+export k=21
+
 date=$( date "+%Y%m%d%H%M%S" )
 cd ${GECKO}/ImportMatrix
 
@@ -196,7 +182,16 @@ ${sbatch} --job-name=${subset}real --time=1440 --ntasks=8 --mem=61G --output=${G
 done
 ```
 
+
+
+
+
 ```
+export sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+export GECKO=/francislab/data1/working/20210428-EV/20210623-Gecko/GECKO
+export GDATA=/francislab/data1/working/20210428-EV/20210623-Gecko/data
+export k=21
+
 date=$( date "+%Y%m%d%H%M%S" )
 cd ${GECKO}/Gecko/algoGen/Producteurv2/utils
 
@@ -205,7 +200,14 @@ ${sbatch} --job-name=${subset}transformIntoBinary --time=1440 --ntasks=8 --mem=6
 done
 ```
 
-Not sure of the purpose of this step
+
+
+
+
+
+
+Not sure of the purpose of this step. Skipping to see if any repercussions(sp?)
+
 ```
 date=$( date "+%Y%m%d%H%M%S" )
 cd ${GECKO}/Gecko/algoGen/Producteurv2/utils
@@ -215,6 +217,15 @@ mkdir ${GDATA}/${subset}/filtering/final/CutMatrix/
 ${sbatch} --job-name=${subset}indexBinary --time=1440 --ntasks=8 --mem=61G --output=${GDATA}/${subset}.indexBinary.${date}.txt --wrap="${GECKO}/Gecko/algoGen/Producteurv2/utils/indexBinary ${GDATA}/${subset}/filtering/final/FILTEREDmatrix_RealCounts.bin ${GDATA}/${subset}/filtering/final/CutMatrix/example.bin 1000"
 done
 ```
+
+
+
+
+
+
+
+
+
 
 ```
 cd ${GECKO}/Gecko/algoGen
@@ -226,24 +237,29 @@ find ${GDATA}/ -type f -exec chmod a-w {} \;
 
 
 
+Prepare GA conf files for all runs.
 
-Copy GA conf files for each run.
 ```
-for subset in Astro Oligo GBMWT GBMmut ; do
-cp GA.conf ${GDATA}/${subset}/GA.10.conf
-cp GA.conf ${GDATA}/${subset}/GA.20.conf
-done
-```
+vi ${GDATA}/GA.conf
 
-
-Prepare GA conf files for each run.
-```
-kmer=10 and 20
 Generation=5000
 Individuals=600
 Elite=5
 generationRefreshLog=100
 ```
+
+
+Copy GA conf files for each run.
+```
+for subset in Astro Oligo GBMWT GBMmut ; do
+cp ${GDATA}/GA.conf ${GDATA}/${subset}/GA.10.conf
+cp ${GDATA}/GA.conf ${GDATA}/${subset}/GA.20.conf
+done
+```
+
+
+Set pathLog and pathData
+Set kmer=10 and 20
 
 ```
 vi ${GDATA}/*/GA.??.conf
