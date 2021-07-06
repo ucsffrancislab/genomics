@@ -10,7 +10,7 @@ while read -r virus ; do
 	for accession in $( zgrep "${virus}" /francislab/data1/refs/refseq/viral/viral.protein.faa.gz | sed 's/>//' | cut -f1 -d' ' ) ; do
 		ls -1 /francislab/data1/refs/refseq/viral/split/${accession}.fa
 
-if [ ${accession} == 'YP_401643.1' ] ; then continue; fi
+#if [ ${accession} == 'YP_401643.1' ] ; then continue; fi
 
 		o=${PWD}/proteins/${accession}.faa
 		if [ ! -f ${o} ] ; then
