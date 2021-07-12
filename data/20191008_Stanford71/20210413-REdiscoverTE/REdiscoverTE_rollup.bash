@@ -42,12 +42,12 @@ else
 			| awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${OUTDIR}/REdiscoverTE.tsv
 
 			#--wrap "/francislab/data1/refs/REdiscoverTE/rollup.R \
-		${sbatch} --job-name=bbduk${bbduk}.k${k}.rollup --time=99 --ntasks=64 --mem=499G \
+		${sbatch} --job-name=bbduk${bbduk}.k${k}.rollup --time=99 --ntasks=32 --mem=248G \
 			--output=${OUTDIR}/rollup.${date}.txt \
 			${PWD}/REdiscoverTE_rollup.bash \
 			--metadata=${OUTDIR}/REdiscoverTE.tsv \
 			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ \
-			--nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/rollup/
+			--nozero --threads=32 --assembly=hg38 --outdir=${OUTDIR}/rollup/
 
 	done ; done
 
