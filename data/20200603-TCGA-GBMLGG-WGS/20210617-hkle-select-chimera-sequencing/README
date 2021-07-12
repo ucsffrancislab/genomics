@@ -69,5 +69,15 @@ python3 ./merge_insertion_points.py -o focused.10000.csv.gz -p premerge10k/*.pai
 
 
 
+#	20210712
+
+./create_count_matrix.bash | gzip > count_matrix2.csv.gz
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210712-20210617-hkle-select-sequencing-20200603-TCGA-GBMLGG-WGS"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T count_matrix2.csv.gz "${BOX}/"
+
+
 
 
