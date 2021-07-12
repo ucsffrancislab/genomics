@@ -59,7 +59,8 @@ for raw in ${INDIR}/??.bbduk?.unpaired.fastq.gz ; do
 		index=${SALMON}/REdiscoverTE.k15
 		index_size=$( du -sb ${index} | awk '{print $1}' )
 	
-		scratch=$( echo $(( (((3*${infile_size})+${index_size})/${threads}/1000000000*12/10)+1 )) )
+		#scratch=$( echo $(( (((3*${infile_size})+${index_size})/${threads}/1000000000*12/10)+1 )) )
+		scratch=$( echo $(( (((3*${infile_size})+${index_size})/1000000000*12/10)+1 )) )
 		# Add 1 in case files are small so scratch will be 1 instead of 0.
 		# 11/10 adds 10% to account for the output
 		# 12/10 adds 20% to account for the output
@@ -95,8 +96,9 @@ for raw in ${INDIR}/??.bbduk?.unpaired.fastq.gz ; do
 		infile_size=$( stat --dereference --format %s ${raw} )
 		index=${SALMON}/REdiscoverTE.k31
 		index_size=$( du -sb ${index} | awk '{print $1}' )
-	
-		scratch=$( echo $(( (((3*${infile_size})+${index_size})/${threads}/1000000000*12/10)+1 )) )
+
+		#scratch=$( echo $(( (((3*${infile_size})+${index_size})/${threads}/1000000000*12/10)+1 )) )
+		scratch=$( echo $(( (((3*${infile_size})+${index_size})/1000000000*12/10)+1 )) )
 		# Add 1 in case files are small so scratch will be 1 instead of 0.
 		# 11/10 adds 10% to account for the output
 		# 12/10 adds 20% to account for the output

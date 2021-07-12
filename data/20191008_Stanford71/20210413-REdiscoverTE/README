@@ -7,7 +7,31 @@
 
 
 
-Rscript ./EdgeR_Template.R ${PWD}/myrollup.bbduk3.k31/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA 6 0.5 0.25 20210407
+./EdgeR_Template.R ${PWD}/myrollup.bbduk3.k31/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA 6 0.5 0.25 20210407
+
+
+
+mkdir ${PWD}/test_results
+./EdgeR_Template.R ${PWD}/myrollup.bbduk3.k31/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA 6 0.9 0.5 20210712
+
+./EdgeR_Template.R ${PWD}/myrollup.bbduk3.k31/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA 5 0.9 0.5 20210712
+./EdgeR_Template.R ${PWD}/myrollup.bbduk3.k31/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA 7 0.9 0.5 20210712
+
+
+mkdir ${PWD}/test_results
+for i in $( seq 10 ); do
+for k in 15 31 ; do
+for b in 1 2 3 ; do
+./EdgeR_Template.R ${PWD}/myrollup.bbduk${b}.k${k}/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA ${i} 0.5 0.2 bbduk${b}.k${k}
+done ; done ; done
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210712-20210413-REdiscoverTE-20191008_Stanford71"
+curl -netrc -X MKCOL "${BOX}/"
+for f in test_results/* ; do
+curl -netrc -T ${f} "${BOX}/"
+done
+
 
 
 
