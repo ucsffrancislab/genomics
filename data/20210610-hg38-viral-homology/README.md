@@ -250,6 +250,24 @@ awk '(/\tchr/){if(x==1)print;x=0}(/^[[:digit:]]/){if($1>35){print;x=1}else{x=0}}
 ```
 
 
+20210709
 
+Just interested in the counts per gene so extracting just that, summing up the counts as they can cross the 1000 or 10000 bp bins.
+
+```
+awk '(/\tchr/){if(x==1)printf("\t%s",$NF);x=0}(/^[[:digit:]]/){printf("\n%s",$1);x=1}END{printf("\n")}' EBV.e2e.10000.groupings.txt | awk '{c[$2]+=$1}END{for(k in c){print c[k]"\t"k}}' | sort -rn | head -500 > EBV.e2e.10000.groupings.top500genes.txt
+awk '(/\tchr/){if(x==1)printf("\t%s",$NF);x=0}(/^[[:digit:]]/){printf("\n%s",$1);x=1}END{printf("\n")}' EBV.e2e.1000.groupings.txt | awk '{c[$2]+=$1}END{for(k in c){print c[k]"\t"k}}' | sort -rn | head -500 > EBV.e2e.1000.groupings.top500genes.txt
+
+awk '(/\tchr/){if(x==1)printf("\t%s",$NF);x=0}(/^[[:digit:]]/){printf("\n%s",$1);x=1}END{printf("\n")}' VZV.e2e.10000.groupings.txt | awk '{c[$2]+=$1}END{for(k in c){print c[k]"\t"k}}' | sort -rn | head -500 > VZV.e2e.10000.groupings.top500genes.txt
+awk '(/\tchr/){if(x==1)printf("\t%s",$NF);x=0}(/^[[:digit:]]/){printf("\n%s",$1);x=1}END{printf("\n")}' VZV.e2e.1000.groupings.txt | awk '{c[$2]+=$1}END{for(k in c){print c[k]"\t"k}}' | sort -rn | head -500 > VZV.e2e.1000.groupings.top500genes.txt
+
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210610-hg38-viral-homology"
+
+for f in *top500genes.txt; do
+curl -netrc -T $f "${BOX}/"
+done
+```
 
 
