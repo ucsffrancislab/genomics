@@ -329,3 +329,108 @@ curl -netrc -T 41/aggregated.json "${BOX}/"
 ```
 
 
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka"
+curl -netrc -X MKCOL "${BOX}/"
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/31"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T 31/aggregated.json "${BOX}/"
+curl -netrc -T 31/output.json "${BOX}/"
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/41"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T 41/aggregated.json "${BOX}/"
+curl -netrc -T 41/output.json "${BOX}/"
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/51"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T 51/aggregated.json "${BOX}/"
+curl -netrc -T 51/output.json "${BOX}/"
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/61"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T 61/aggregated.json "${BOX}/"
+curl -netrc -T 61/output.json "${BOX}/"
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/71"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T 71/aggregated.json "${BOX}/"
+curl -netrc -T 71/output.json "${BOX}/"
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/81"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T 81/aggregated.json "${BOX}/"
+curl -netrc -T 81/output.json "${BOX}/"
+```
+
+
+```
+for s in /francislab/data1/working/20210428-EV/20210518-preprocessing/output/SFHH005z.*.fastq.gz ; do 
+s=$( basename $s .fastq.gz )
+s=${s#SFHH005z.}
+dir=raw.${s}
+mkdir -p ${dir}
+for f in /francislab/data1/working/20210428-EV/20210518-preprocessing/output/SFHH005*.${s}.fastq.gz ; do
+echo $f
+base=$( basename $f .${s}.fastq.gz )
+ln -s $f ${dir}/${base}.fastq.gz
+done
+awk -F, -v dir=${dir} '($1~/_11$/){print "rm -f "dir"/"$2".fastq.gz"}' /francislab/data1/raw/20210428-EV/metadata.csv
+awk -v dir=${dir} 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}{group=""}( (NR==1) || ($4~/blank/) || ($4~/control/) ){next}($4~/Astro/){group="Astro"}($4~/Oligo/){group="Oligo"}($4~/GBM, IDH-mutant/){group="GBMmut"}($4~/GBM, IDH1R132H WT/){group="GBMWT"}{print $2,group,"/francislab/data1/working/20210428-EV/20210706-iMoka/"dir"/"$2".fastq.gz"}' /francislab/data1/raw/20210428-EV/metadata.csv > ${dir}.source.tsv
+done
+```
+
+
+
+```
+s=31.cutadapt2
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+
+s=31.cutadapt2.lte30
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+
+s=25.cutadapt2.lte30
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+
+s=31.cutadapt2.IDH
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+```
+
+
+
+```
+for s in /francislab/data1/working/20210428-EV/20210518-preprocessing/output/SFHH005z.*.fastq.gz ; do 
+s=$( basename $s .fastq.gz )
+s=${s#SFHH005z.}
+dir=raw.${s}
+awk -v dir=${dir} 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}{group=""}( (NR==1) || ($4~/blank/) || ($4~/control/) ){next}($4~/IDH-mutant/){group="IDHmut"}($4~/IDH1R132H WT/){group="IDHWT"}{print $2,group,"/francislab/data1/working/20210428-EV/20210706-iMoka/"dir"/"$2".fastq.gz"}' /francislab/data1/raw/20210428-EV/metadata.csv > ${dir}.source.IDH.tsv
+done
+```
+
+```
+for i in 16 17 19 21 23 25 ; do
+s=${i}.cutadapt2.lte30
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+done
+```
+
+
+
