@@ -430,6 +430,14 @@ curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T ${s}/aggregated.json "${BOX}/"
 curl -netrc -T ${s}/output.json "${BOX}/"
 done
+
+for i in 21 27 29 ; do
+s=${i}.cutadapt2.IDH
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+done
 ```
 
 
