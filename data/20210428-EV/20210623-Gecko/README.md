@@ -280,8 +280,14 @@ Job is submitted. Waiting ...
 
 
 
+```
+cd /francislab/data1/working/20210428-EV/
+tar cvf - 20210623-Gecko/data | gzip > 20210623-Gecko.tar.gz
 
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV"
 
+curl -netrc --progress-bar -T 20210623-Gecko.tar.gz "${BOX}/"
+```
 
 
 
@@ -314,3 +320,6 @@ BOX="https://dav.box.com/dav/Francis _Lab_Share"
 
 curl -netrc -T 20210616-EV_IDHWT-Gecko.tar.gz "${BOX}/"
 ```
+
+
+
