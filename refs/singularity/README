@@ -1,0 +1,25 @@
+
+
+singularity build iMOKA-1.0.img docker://cloxd/imoka:1.0
+
+singularity build iMOKA-1.1.img docker://cloxd/imoka:1.1
+
+
+# doesn't exist
+#singularity build iMOKA_extended-1.1.img docker://cloxd/imoka_extended:1.1
+
+wget -O iMOKA_extended-1.1.img https://github.com/RitchieLabIGH/iMOKA/releases/download/v1.1/iMOKA_extended
+
+
+
+Had issues with the v1.1 images.
+Submitted issue and in a few hours they fixed the issue and uploaded new images with the same names. I reversioned them 1.1.1.
+
+wget https://github.com/RitchieLabIGH/iMOKA/releases/download/v1.1/iMOKA
+mv iMOKA iMOKA-1.1.1.img 
+
+wget https://github.com/RitchieLabIGH/iMOKA/releases/download/v1.1/iMOKA_extended
+mv iMOKA_extended iMOKA_extended-1.1.1.img 
+
+
+

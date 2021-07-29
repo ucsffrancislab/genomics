@@ -19,3 +19,15 @@ fi
 done
 
 
+
+
+
+for f in out/*fastq.gz ; do
+echo $f
+size=$( stat --format %s ${f} )
+if [ $size -ne 40 ] ; then
+zcat $f | paste - - - - | cut -f2 | head -100 | awk '{l+=length($1);i++}END{print l/i}' > ${f}.average_length.txt
+fi
+done
+
+
