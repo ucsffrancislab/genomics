@@ -4,14 +4,6 @@ Raw data length varies, either 48 or 76
 ~171 / 686 are 48bp
 
 
-n17 gender
-n1 - TERT / primary_diag
-n2 - IDH 1p19q status
-n5 - IDH
-n1/n10
-
-
-
 
 ```
 mkdir -p raw
@@ -168,6 +160,22 @@ done < <( tail -n +2 TCGA.Glioma.metadata.tsv | awk 'BEGIN{FS=OFS="\t"}($11!~/NA
 
 
 
+```
+mkdir 31.WHO_groups
+while read subject field; do
+s=${subject#TCGA-}
+f=$( ls ${PWD}/raw/${s}-01* 2> /dev/null | paste -sd";" )
+if [ -n "${f}" ] ; then
+field=${field/,/}
+field=${field/ /_}
+echo -e "/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/31.WHO_groups/preprocess/${s}/${s}.tsv\t${s}\t${field}"
+fi
+done < <( tail -n +2 TCGA.Glioma.metadata.tsv | awk 'BEGIN{FS=OFS="\t"}($12!~/NA/){print $1,$12}' ) > 31.WHO_groups/create_matrix.tsv
+```
+
+
+
+
 
 
 
@@ -227,7 +235,7 @@ BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/202
 curl -netrc -X MKCOL "${BOX}/"
 
 for i in 31 ; do
-s=${i}.tumor_type
+s=${i}.gender_test
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/${s}"
 curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T ${s}/aggregated.json "${BOX}/"
