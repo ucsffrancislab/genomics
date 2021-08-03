@@ -2,18 +2,23 @@
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-subset='.cutadapt2.lte30'
-#subset='.cutadapt2'
+#subset='cutadapt2.lte30'
+subset='cutadapt2'
 
-#field=""
-field=".IDH"
+field=""
+#field=".IDH"
+#field=".Astro"
+#field=".Oligo"
+#field=".GBMWT"
+#field=".GBMmut"
+field=".noOligo"
 
-k=19
+k=40
 threads=16	#32 # 64
 mem=7		#	per thread (keep 7)
-kdir=${PWD}/${k}${subset}${field}
+kdir=${PWD}/${k}.${subset}${field}
 
-img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.3.img
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.4.img
 
 sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
 export SINGULARITY_BINDPATH=/francislab
@@ -39,7 +44,8 @@ echo "sbatch_mem=${sbatch_mem}"
 
 mkdir ${kdir}; 
 #cp ${PWD}/source.tsv ${kdir}/
-cp ${PWD}/raw${subset}.source${field}.tsv ${kdir}/source.tsv
+#cp ${PWD}/raw${subset}.source${field}.tsv ${kdir}/source.tsv
+cp ${PWD}/${subset}.source${field}.tsv ${kdir}/source.tsv
 cp ${PWD}/config.json ${kdir}/
 cd ${kdir}	# preprocess creates a dir "preprocess" in working dir
 
