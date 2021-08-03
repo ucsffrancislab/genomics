@@ -442,3 +442,37 @@ done
 
 
 
+
+
+
+```
+cat cutadapt2.source.tsv  | awk 'BEGIN{FS=OFS="\t"}($2!="Oligo"){$2="nonOligo"}{print}' > cutadapt2.source.Oligo.tsv
+cat cutadapt2.source.tsv  | awk 'BEGIN{FS=OFS="\t"}($2!="Astro"){$2="nonAstro"}{print}' > cutadapt2.source.Astro.tsv
+cat cutadapt2.source.tsv  | awk 'BEGIN{FS=OFS="\t"}($2!="GBMmut"){$2="nonGBMmut"}{print}' > cutadapt2.source.GBMmut.tsv
+cat cutadapt2.source.tsv  | awk 'BEGIN{FS=OFS="\t"}($2!="GBMWT"){$2="nonGBMWT"}{print}' > cutadapt2.source.GBMWT.tsv
+
+./iMOKA.bash
+
+for i in 25 30 35 ; do
+for x in Astro Oligo GBMWT GBMmut ; do
+s=${i}.cutadapt2.${x}
+echo $s
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+done ; done
+
+for i in 15 20 25 30 35 40 ; do
+s=${i}.cutadapt2.noOligo
+echo $s
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+done
+```
+
+
+
+
