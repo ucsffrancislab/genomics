@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 
 sort -k2n output_fi.tsv | tail -10 | cut -f1 > output_fi.top10kmers.fw
