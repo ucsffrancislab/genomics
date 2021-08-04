@@ -11,9 +11,9 @@ field=""
 #field=".Oligo"
 #field=".GBMWT"
 #field=".GBMmut"
-field=".noOligo"
+#field=".noOligo"
 
-k=40
+k=75
 threads=16	#32 # 64
 mem=7		#	per thread (keep 7)
 kdir=${PWD}/${k}.${subset}${field}
