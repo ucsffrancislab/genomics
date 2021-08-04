@@ -463,8 +463,8 @@ curl -netrc -T ${s}/aggregated.json "${BOX}/"
 curl -netrc -T ${s}/output.json "${BOX}/"
 done ; done
 
-for i in 15 20 25 30 35 40 ; do
-s=${i}.cutadapt2.noOligo
+for i in 45 50 55 60 65 70 75 ; do
+s=${i}.cutadapt2
 echo $s
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
 curl -netrc -X MKCOL "${BOX}/"
