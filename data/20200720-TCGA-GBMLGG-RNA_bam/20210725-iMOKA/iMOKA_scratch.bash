@@ -151,3 +151,8 @@ sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
 ${sbatch} --job-name=WHO_groups --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/31.WHO_groups/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.WHO_groups --step create
 
 
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+${sbatch} --job-name=IDH --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/31.IDH/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.IDH --step create
+
+
