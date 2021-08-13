@@ -202,3 +202,61 @@ curl -netrc -T focused.T.csv.gz "${BOX}/"
 
 
 
+
+
+
+
+--------------------------------------------------
+20210813
+
+
+Select just the unaligned mate
+
+paste <( cat out/TQ-A8XE-10A.SVAs_and_HERVs_KWHE.hkle/TQ-A8XE-10A.SVAs_and_HERVs_KWHE.bowtie2.HERVK113.very_sensitive_local.paired.aligned.?.p*_1.fasta | paste - - ) <( cat out/TQ-A8XE-10A.SVAs_and_HERVs_KWHE.hkle/TQ-A8XE-10A.SVAs_and_HERVs_KWHE.bowtie2.HERVK113.very_sensitive_local.paired.aligned.?.p*_2.fasta | paste - - ) | head | awk -F"\t" '{if(length($2)>length($4)){print $1;print $2}else{print $3;print $4}}'
+
+
+mkdir mateonly
+for d in out/*hkle ; do
+echo $d
+s=$( basename $d .SVAs_and_HERVs_KWHE.hkle )
+for hkle in HERVK113 SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F ; do
+echo $hkle
+b="${d}/${s}.SVAs_and_HERVs_KWHE.bowtie2.${hkle}.very_sensitive_local.paired.aligned"
+paste <( cat ${b}.?.p*_1.fasta | paste - - ) <( cat ${b}.?.p*_2.fasta | paste - - ) | awk -F"\t" '{if(length($2)>length($4)){print $1;print $2}else{print $3;print $4}}' > mateonly/${s}.${hkle}.fasta
+done
+done
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+
+for f in *fasta; do 
+echo $f
+if [ ! -f "${f}.bam" ] ; then
+${sbatch} --job-name=${f} --nodes=1 --ntasks=2 --mem=8G --output=${PWD}/${f}.${date}.txt ~/.local/bin/bowtie2.bash --threads 8 --very-sensitive -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts -f -U ${PWD}/${f} --sort --output ${PWD}/${f}.bam
+fi
+done
+
+
+for b in *bam; do 
+echo $b
+samtools view -F4 $b | awk -F"\t" '{print $3":"int($4/1000)*1000}' | sort -t: -k1,1 -k2n | uniq -c > $b.1000.txt
+samtools view -F4 $b | awk -F"\t" '{print $3":"int($4/10000)*10000}' | sort -t: -k1,1 -k2n | uniq -c > $b.10000.txt
+samtools view -F4 $b | awk -F"\t" '{print $3":"int($4/100000)*100000}' | sort -t: -k1,1 -k2n | uniq -c > $b.100000.txt
+done
+
+for i in 1000 10000 100000 ; do
+for hkle in HERVK113 SVA_A SVA_B SVA_C SVA_D SVA_E SVA_F ; do
+echo ${hkle}-${i}
+python3 ~/.local/bin/merge_uniq-c.py --int --output ${hkle}.${i}.csv *.${hkle}.fasta.bam.${i}.txt
+done ; done
+
+
+for f in *.fasta.average_length.txt; do
+b=$( basename $f .fasta.average_length.txt )
+c=$( cat $f )
+echo ${b},${c}
+done | sed 's/\./,/g' | gzip > average_length.csv.gz
+
+
+
