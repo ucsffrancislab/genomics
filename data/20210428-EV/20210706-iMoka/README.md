@@ -473,6 +473,30 @@ curl -netrc -T ${s}/output.json "${BOX}/"
 done
 ```
 
+#	20210816
 
+```
+dir="cutadapt2.lex"
+mkdir -p ${dir}
+for f in /francislab/data1/working/20210428-EV/20210518-preprocessing/output/SFHH006*.cutadapt2.fastq.gz ; do
+echo $f
+base=$( basename $f .cutadapt2.fastq.gz )
+ln -s $f ${dir}/${base}.fastq.gz
+done
 
+rm -f ${dir}/SFHH00?k.fastq.gz
+rm -f ${dir}/SFHH00?v.fastq.gz
+rm -f ${dir}/SFHH00?ag.fastq.gz
+rm -f ${dir}/SFHH00?ar.fastq.gz
+
+./iMOKA.bash
+```
+
+```
+s=15.cutadapt2.lex
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+```
 
