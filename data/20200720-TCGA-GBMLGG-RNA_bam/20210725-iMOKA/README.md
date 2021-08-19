@@ -241,6 +241,71 @@ curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T ${s}/aggregated.json "${BOX}/"
 curl -netrc -T ${s}/output.json "${BOX}/"
 done
+
+s=31.IDH
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/${s}/output_models"
+curl -netrc -X MKCOL "${BOX}/"
+for f in ${s}/output_models/*_tree_acc_*.png ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
 ```
 
+
+
+```
+module load WitteLab python3/3.9.1
+
+python3
+
+
+import pickle
+unpickled = []
+f = open('9_RF.pickle', 'rb')
+while True:
+	try:          
+		unpickled.append(pickle.load(f))
+	except EOFError:
+		break
+
+f.close()
+
+model = unpickled[0][0]
+
+from sklearn.tree import export_graphviz
+from subprocess import call
+
+for i in range(len(model.estimators_)):
+	# Extract single tree - 0-99
+	estimator = model.estimators_[i]
+	
+	# Export as dot file
+	export_graphviz(estimator, out_file='tree'+str(i)+'.dot', 
+		feature_names = unpickled[0][1],
+		class_names = unpickled[0][2],
+		rounded = True, proportion = False, 
+		precision = 2, filled = True)
+	
+	# Convert to png using system command (requires Graphviz)
+	call(['dot', '-Tpng', 'tree'+str(i)+'.dot', '-o', 'tree'+str(i)+'.png', '-Gdpi=600'])
+
+```
+
+```
+s=31.IDH_1p19q_status
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${s}/aggregated.json "${BOX}/"
+curl -netrc -T ${s}/output.json "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/${s}/output_models"
+curl -netrc -X MKCOL "${BOX}/"
+for f in ${s}/output_models/*_tree_acc_*.png ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
 
