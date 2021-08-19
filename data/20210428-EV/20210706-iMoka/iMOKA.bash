@@ -2,8 +2,10 @@
 
 date=$( date "+%Y%m%d%H%M%S" )
 
+subset=''
 #subset='cutadapt2.lte30'
-subset='cutadapt2'
+#subset='cutadapt2'
+subset='cutadapt2.lex'
 
 field=""
 #field=".IDH"
@@ -13,7 +15,7 @@ field=""
 #field=".GBMmut"
 #field=".noOligo"
 
-k=75
+k=30
 threads=16	#32 # 64
 mem=7		#	per thread (keep 7)
 kdir=${PWD}/${k}.${subset}${field}
