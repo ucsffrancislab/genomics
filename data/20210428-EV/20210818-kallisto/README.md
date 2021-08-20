@@ -32,6 +32,10 @@ Not sure if sleuth works for more than 2 groups
 ```
 echo "id,cc" > metadata.csv
 awk '{print $1","$2}' /francislab/data1/working/20210428-EV/20210706-iMoka/source.tsv >> metadata.csv
+
+
+awk 'BEGIN { FPAT = "([^,]+)|(\"[^\"]+\")"; OFS="," } ($1!~/_11/){print $2,$4}' /francislab/data1/raw/20210428-EV/metadata.csv > metadata.csv
+vi metadata.csv
 ```
 
 
