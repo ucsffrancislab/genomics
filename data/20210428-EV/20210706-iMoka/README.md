@@ -500,3 +500,22 @@ curl -netrc -T ${s}/aggregated.json "${BOX}/"
 curl -netrc -T ${s}/output.json "${BOX}/"
 ```
 
+
+
+
+##################################################
+20210819
+
+Evaluation which k is most predictive in Group/nonGroup comparisons.
+
+Using the model "acc" shown in iMOKA app (not those used in the output_model png file names)
+
+
+
+for k  in 15 20 25 30 35 ; do
+echo $k
+for g in GBMWT GBMmut Oligo Astro ; do
+jq -r ".best_feature_models[].models[].acc" ${k}.cutadapt2.${g}/output.json | sort -n | tail -1
+done ; done
+
+
