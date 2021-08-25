@@ -41,19 +41,9 @@ Only rolling up 2 letter designations simply because its the largest that doesn'
 
 
 
-
-
-
-
-
 echo "id,cc" > CATS-Lex.csv
 awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS=","}{group=""}( (NR==1) || ($4~/blank/) || ($4~/control/) ){next}{ print $2,"CATS"; print $3,"Lex" }' /francislab/data1/raw/20210428-EV/metadata.csv >> CATS-Lex.csv
 
-
-awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}{group=""}( (NR==1) || ($4~/blank/) || ($4~/control/) ){next}
-($2~/SFHH005/){group="CATS"}
-($2~/SFHH006/){group="Lex"}
-{print $2,group}' /francislab/data1/raw/20210428-EV/metadata.csv > source.tsv
 
 
 
@@ -63,11 +53,11 @@ for k in 15 31 ; do
 for n in 1 2 3 ; do
 for t in bbduk cutadapt ; do
 ./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.9 0.5 ${t}${n}.k${k}
+./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.5 0.2 ${t}${n}.k${k}
 done ; done ; done ; done
 
 
 
-#./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.5 0.2 ${t}${n}.k${k}
 
 
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210823-REdiscoverTE"
@@ -76,4 +66,5 @@ for f in test_results/* ; do
 echo $f
 curl -netrc -T ${f} "${BOX}/"
 done
+
 
