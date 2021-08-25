@@ -1,5 +1,9 @@
 
 
+This preprocessing starts with pre-trimmed data?
+
+
+
 ```BASH
 ./preprocess.bash
 
