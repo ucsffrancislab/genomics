@@ -1,0 +1,79 @@
+
+
+./REdiscoverTE.bash
+
+
+
+module load r
+R
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install(version = "3.13", update = TRUE, ask = FALSE)
+BiocManager::install(c("tibble","readr","dplyr","Biobase","edgeR"), version = "3.13", update = TRUE, ask = FALSE)
+BiocManager::install(c("EDASeq","ggplot2","RColorBrewer","pheatmap","gridExtra"), version = "3.13", update = TRUE, ask = FALSE)
+
+
+
+./REdiscoverTE_rollup.bash
+
+
+Rollup of all samples is not working. Only subsets???
+
+JAKE :   08
+Error: C stack usage  12709167 is too close to the limit
+Execution halted
+
+
+
+Occasionally, on subsets
+Error in cpm.default(y$counts, lib.size = lib.size, offset = y$offset,  : 
+  library sizes should be finite and non-negative
+Calls: make_repName_NormCountDGE_CPM -> <Anonymous> -> cpm.DGEList -> cpm.default
+Execution halted
+
+
+Only rolling up 2 letter designations simply because its the largest that doesn't fail
+
+		ls -1 ${INDIR}/SFHH00???.${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \
+
+
+
+
+
+
+
+
+
+
+echo "id,cc" > CATS-Lex.csv
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS=","}{group=""}( (NR==1) || ($4~/blank/) || ($4~/control/) ){next}{ print $2,"CATS"; print $3,"Lex" }' /francislab/data1/raw/20210428-EV/metadata.csv >> CATS-Lex.csv
+
+
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}{group=""}( (NR==1) || ($4~/blank/) || ($4~/control/) ){next}
+($2~/SFHH005/){group="CATS"}
+($2~/SFHH006/){group="Lex"}
+{print $2,group}' /francislab/data1/raw/20210428-EV/metadata.csv > source.tsv
+
+
+
+mkdir -p ${PWD}/test_results
+for i in $( seq 10 ); do
+for k in 15 31 ; do
+for n in 1 2 3 ; do
+for t in bbduk cutadapt ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.9 0.5 ${t}${n}.k${k}
+done ; done ; done ; done
+
+
+
+#./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.5 0.2 ${t}${n}.k${k}
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210823-REdiscoverTE"
+curl -netrc -X MKCOL "${BOX}/"
+for f in test_results/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+
