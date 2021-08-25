@@ -40,5 +40,7 @@ curl -netrc -T GBMmut_output_fi.tsv "${BOX}/"
 curl -netrc -T GBMWT_output_fi.tsv "${BOX}/"
 curl -netrc -T Oligo_output_fi.tsv "${BOX}/"
 curl -netrc -T Astro_output_fi.tsv "${BOX}/"
+curl -netrc -T subject_raw_counts.csv "${BOX}/"
+curl -netrc -T subject_normal_counts.csv "${BOX}/"
 ```
 
