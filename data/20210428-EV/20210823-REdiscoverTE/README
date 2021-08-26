@@ -47,13 +47,13 @@ awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS=","}{group=""}( (NR==1) || ($4~/bla
 
 
 
-mkdir -p ${PWD}/test_results
+mkdir -p ${PWD}/results
 for i in $( seq 10 ); do
-for k in 15 31 ; do
+for k in 15 ; do
 for n in 1 2 3 ; do
 for t in bbduk cutadapt ; do
-./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.9 0.5 ${t}${n}.k${k}
-./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/test_results id cc NA NA ${i} 0.5 0.2 ${t}${n}.k${k}
+./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/results id cc NA NA ${i} 0.9 0.5 ${t}${n}.k${k}
+./REdiscoverTE_EdgeR.R ${PWD}/rollup.${t}${n}.k${k}/rollup ${PWD}/CATS-Lex.csv ${PWD}/results id cc NA NA ${i} 0.5 0.2 ${t}${n}.k${k}
 done ; done ; done ; done
 
 
@@ -62,7 +62,7 @@ done ; done ; done ; done
 
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210823-REdiscoverTE"
 curl -netrc -X MKCOL "${BOX}/"
-for f in test_results/* ; do
+for f in results/* ; do
 echo $f
 curl -netrc -T ${f} "${BOX}/"
 done

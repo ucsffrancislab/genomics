@@ -25,7 +25,8 @@ else
 	INDIR="${PWD}/output"
 	sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
 	date=$( date "+%Y%m%d%H%M%S" )
-	for k in 15 31 ; do for trimmer in bbduk1 bbduk2 bbduk3 cutadapt1 cutadapt2 cutadapt3 ; do
+	for k in 15 ; do for trimmer in bbduk1 bbduk2 bbduk3 cutadapt1 cutadapt2 cutadapt3 ; do
+	#for k in 15 31 ; do for trimmer in bbduk1 bbduk2 bbduk3 cutadapt1 cutadapt2 cutadapt3 ; do
 	#for k in 15 ; do for trimmer in cutadapt2 ; do
 		echo "${trimmer}.k${k}"
 		OUTDIR="${PWD}/rollup.${trimmer}.k${k}"
@@ -40,7 +41,8 @@ else
 		#ls -1 ${INDIR}/SFHH00???.${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \ works
 		#ls -1 ${INDIR}/SFHH00?[a-m].${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \	works
 		#ls -1 ${INDIR}/SFHH00?[n-z].${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \
-		ls -1 ${INDIR}/SFHH00???.${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \
+		#ls -1 ${INDIR}/SFHH00???.${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \
+		ls -1 ${INDIR}/SFHH00*.${trimmer}.salmon.REdiscoverTE.k${k}/quant.sf \
 			| awk -F/ '{split($8,a,".");print a[1]"\t"$0}' >> ${OUTDIR}/REdiscoverTE.tsv
 
 			#--wrap "/francislab/data1/refs/REdiscoverTE/rollup.R \
