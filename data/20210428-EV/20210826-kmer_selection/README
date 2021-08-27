@@ -1,0 +1,20 @@
+
+
+
+
+#tail -q -n +2 /francislab/data1/working/20210428-EV/20210706-iMoka/25.cutadapt2.{GBMmut,GBMWT,Oligo,Astro}/output_fi.tsv | awk '{print $1}' | sort > kmers.fw.txt
+tail -q -n +2 /francislab/data1/working/20210428-EV/20210706-iMoka/25.cutadapt2.{GBMmut,GBMWT,Oligo,Astro}/output_fi.tsv | awk '{print $1}' | sort 
+
+cat kmers.fw.txt | rev | tr "ACTG" "TGAC" > kmers.rc.txt
+
+sort kmers.??.txt > kmers.all.txt
+
+
+./count_kmers.bash
+
+
+
+
+out/SFHH005a.{bbduk,cutadapt}?.?????????????????????????.txt
+
+
