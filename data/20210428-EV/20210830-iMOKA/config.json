@@ -1,0 +1,17 @@
+{
+ "aligner": {
+  "command": "blat",
+  "flag_in": " ",
+  "flag_multi_thread": "",
+  "flag_out": " ",
+  "io_order": "io",
+  "options": " -out=pslx -q=rna -stepSize=5 -repMatch=2253 -minScore=30 -minIdentity=95 -ooc=/blat_ref/hg38.11.ooc /blat_ref/hg38.2bit ",
+  "output_type": "pslx",
+  "parallel": -1
+ },
+ "annotation": {
+  "file": "/blat_ref/gencode.v29.annotation.noIR.gtf",
+  "name": "DefaultAnnotation",
+  "repeats": "/blat_ref/hg38_repmask.bed"
+ }
+}
