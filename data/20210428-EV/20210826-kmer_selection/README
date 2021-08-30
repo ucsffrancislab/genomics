@@ -18,3 +18,16 @@ sort kmers.??.txt > kmers.all.txt
 out/SFHH005a.{bbduk,cutadapt}?.?????????????????????????.txt
 
 
+
+blastn -outfmt 6 -query allreads.fasta -db /francislab/data1/refs/blastn/viral.raw > blastn.viral.raw.txt
+blastn -outfmt 6 -query allreads.fasta -db /francislab/data1/refs/blastn/viral.masked > blastn.viral.masked.txt
+
+blastn -outfmt 6 -query allreads.fasta -db /francislab/data1/refs/blastn/nt > blastn.nt.txt
+
+
+cat blastn.nt.txt | awk '{print $2}' | uniq | awk -F"." '{print $1}' | sort | uniq 
+
+
+
+
+
