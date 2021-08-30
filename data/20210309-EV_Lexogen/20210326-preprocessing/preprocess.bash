@@ -249,9 +249,10 @@ for fastq in /francislab/data1/raw/20210309-EV_Lexogen/*.fastq.gz ; do
 			fi
 			sbatch ${depend} --job-name=b2h-${basename} --time=60 --ntasks=8 --mem=62G \
 				--output=${out_base}.${date}.txt \
-				~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/hg38 \
+				~/.local/bin/bowtie2.bash --sort --threads 8 \
 				-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
 				--very-sensitive-local -U ${in_base}.fastq.gz -o ${f}
+			#	-x /francislab/data1/refs/bowtie2/hg38 \
 		fi
 
 		out_base=${in_base}.bowtie.mirna
