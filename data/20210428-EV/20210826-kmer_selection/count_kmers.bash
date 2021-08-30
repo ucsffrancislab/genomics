@@ -35,8 +35,18 @@ for f in /francislab/data1/working/20210428-EV/20210518-preprocessing/output/SFH
 #			${PWD}/base_count.bash -m 25 -o ${o} ${f}
 #	fi
 
-	${sbatch} --job-name=${base}kmers --time=60 --ntasks=${threads} --nodes=1 --mem=${mem} --output=${outbase}.kmers_count.${date}.txt \
-		${PWD}/kmers_count.bash -k ${PWD}/kmers.all.txt -i ${f} -o ${outbase}
+
+#	kid=$( ${sbatch} --parsable --job-name=${base}kmers --time=60 --ntasks=${threads} --nodes=1 --mem=${mem} \
+#		--output=${outbase}.kmers_count.${date}.txt \
+#		${PWD}/kmers_count.bash -k ${PWD}/kmers.all.txt -i ${f} -o ${outbase} )
+#	echo ${kid}
+
+
+	${sbatch} --parsable --job-name=${base}bt2 --time=60 --ntasks=${threads} --nodes=1 --mem=${mem} \
+		--output=${outbase}.kmers_count.bowtie2.${date}.txt \
+		~/.local/bin/bowtie2.bash --very-sensitive -U ${outbase}.kmers.all.fastq.gz \
+			--threads ${threads} --sort --output ${outbase}.kmers.all.bam \
+			-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts 
 
 done
 
