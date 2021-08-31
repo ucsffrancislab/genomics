@@ -17,3 +17,12 @@ Then run ...
 * REdiscoverTE?
 
 
+
+for a in output/SFHH00*.*.filtered.bam.aligned_count.txt ; do
+u=${a/align/unalign}
+ac=$( cat ${a} )
+uc=$( cat ${u} )
+c=$( echo "scale=2; 100 * ${ac} / ( ${ac} + ${uc} )" | bc -l 2> /dev/null )
+echo $c
+done
+
