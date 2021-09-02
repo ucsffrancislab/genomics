@@ -74,7 +74,7 @@ done ; done
 for k in 15 20 25 30 ; do
 for f in Astro GBMmut GBMWT Oligo ; do
 echo "${k} - ${f}"
-jq -r ".best_feature_models[].models[].acc" cutadapt2.${k}.${f}/output.json | sort -n | tail -1
+jq -r ".best_feature_models[].models[].acc" cutadapt2.${k}.${f}/output.json 2> /dev/null | sort -n | tail -1
 done ; done
 ```
 
@@ -103,4 +103,30 @@ done
 ```
 
 
+
+cat cutadapt2.25/aggregated.json  | jq -r '.sequences[].sequence' | sort | uniq -d
+
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210830-iMOKA-shift4"
+curl -netrc -X MKCOL "${BOX}/"
+for i in 15 20 25 30 ; do
+for f in Astro Oligo GBMWT GBMmut ; do
+d=cutadapt2.${i}.${f}
+echo $d
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210830-iMOKA-shift4/${d}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${d}/aggregated.json "${BOX}/"
+curl -netrc -T ${d}/output.json "${BOX}/"
+done ; done
+```
+
+```
+for k in 15 20 25 30 ; do
+for f in Astro GBMmut GBMWT Oligo ; do
+echo "${k} - ${f}"
+jq -r ".best_feature_models[].models[].acc" shift-4/cutadapt2.${k}.${f}/output.json 2> /dev/null | sort -n | tail -1
+done ; done
+```
 
