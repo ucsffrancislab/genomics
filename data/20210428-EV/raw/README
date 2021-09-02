@@ -67,7 +67,17 @@ zcat $f | paste - - - - | cut -f2 | cut -c1-12 | sort | uniq -c | sort -rn > ${f
 done
 
 awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print $5;print $10}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv 
-awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print $5;print $10}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv | sort | awk '{print ">"$1;print $1}' > indexes.fasta
 
-bowtie2 --threads 8 --very-sensitive -x /francislab/data1/refs/bowtie2/phiX -f -U indexes.fasta
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print ">"$3;print $5;print ">"$8;print $10}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv > indexes.fasta
+bowtie2 --threads 8 --very-sensitive -x /francislab/data1/refs/bowtie2/phiX -f -U indexes.fasta > indexes.phiX.sam
+samtools view -F4 -f16 indexes.phiX.sam | awk '{print $1}' > indexes.phiX.reverse.txt
+samtools view -F20 indexes.phiX.sam | awk '{print $1}' > indexes.phiX.forward.txt
+
+samtools view -f4 indexes.phiX.sam | awk '{print $1}' > indexes.phiX.none.txt
+
+
+
+[gwendt@c4-dev1 /francislab/data1/raw/20210428-EV]$ ll /francislab/data1/working/20210428-EV/20210830-filter/output/*cutadapt2.filtered.bam.*aligned_count.txt
+
+
 
