@@ -19,10 +19,14 @@ Then run ...
 
 
 for a in output/SFHH00*.*.filtered.bam.aligned_count.txt ; do
+
+for a in output/SFHH00*.cutadapt2.filtered.bam.aligned_count.txt ; do
 u=${a/align/unalign}
 ac=$( cat ${a} )
 uc=$( cat ${u} )
 c=$( echo "scale=2; 100 * ${ac} / ( ${ac} + ${uc} )" | bc -l 2> /dev/null )
-echo $c
-done
+echo $( basename $a .cutadapt2.filtered.bam.aligned_count.txt ),$c
+done | sort > phiX.percentage.csv
+
+samtools view /francislab/data1/raw/20210428-EV/indexes.phiX.sam | awk '{print $1","$2}' | sort > indexes.phiX.flags.csv
 
