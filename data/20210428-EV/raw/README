@@ -66,3 +66,8 @@ echo $f
 zcat $f | paste - - - - | cut -f2 | cut -c1-12 | sort | uniq -c | sort -rn > ${f}.umi_counts.txt
 done
 
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print $5;print $10}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv 
+awk 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")"}(NR>1){print $5;print $10}' Final\ IDs\ and\ Indexes\ for\ GBM\ histology\ project_4-28-21hmh.csv | sort | awk '{print ">"$1;print $1}' > indexes.fasta
+
+bowtie2 --threads 8 --very-sensitive -x /francislab/data1/refs/bowtie2/phiX -f -U indexes.fasta
+
