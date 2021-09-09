@@ -15,10 +15,13 @@ for raw in ${INDIR}/SFHH00*.{bbduk,cutadapt}?.fastq.gz ; do
 	basename=$( basename $raw .fastq.gz )
 	echo $basename
 
-	if [[ "${basename%.*}" =~ ^(SFHH005k|SFHH005v|SFHH005ag|SFHH005ar|SFHH006k|SFHH006v|SFHH006ag|SFHH006ar)$ ]]; then
-		echo "Skipping ${basename}"
-		continue
-	fi
+#1_11,SFHH005k,SFHH006k,V01 control (S1)
+#3_11,SFHH005ag,SFHH006ag,V01 control (S1)
+
+#	if [[ "${basename%.*}" =~ ^(SFHH005k|SFHH005v|SFHH005ag|SFHH005ar|SFHH006k|SFHH006v|SFHH006ag|SFHH006ar)$ ]]; then
+#		echo "Skipping ${basename}"
+#		continue
+#	fi
 	echo "Processing ${basename}"
 
 	jobbase=${basename%.*}
@@ -88,6 +91,7 @@ for raw in ${INDIR}/SFHH00*.{bbduk,cutadapt}?.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
+		echo "Write-protected $f NOT FOUND. GZIPPING."
 		if [ ! -z ${alignid} ] ; then
 			depend="--dependency=afterok:${alignid}"
 		else
