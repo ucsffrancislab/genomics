@@ -3,10 +3,13 @@
 
 accessions=$( ls -1 raw/*fasta | xargs -I% basename % .fasta )
 
+splits="vsl c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12"
+sizes="25" # "25 50 75 100"
+
 
 echo -n "| accession | description | length | masked Ns | masked Ns % |"
-for size in 25 50 75 100 ; do
-for split in custom dev vsl ; do
+for size in ${sizes}; do
+for split in ${splits} ; do
 echo -n " ${split}-${size} Ns |"
 echo -n " ${split}-${size} Ns % |"
 echo -n " masked ${split}-${size} Ns |"
@@ -15,8 +18,8 @@ done ; done
 echo
 
 echo -n "| --- | --- | --- | --- | --- |"
-for size in 25 50 75 100 ; do
-for split in custom dev vsl ; do
+for size in ${sizes}; do
+for split in ${splits} ; do
 echo -n " --- |"
 echo -n " --- |"
 echo -n " --- |"
@@ -41,8 +44,9 @@ for a in ${accessions} ; do
 	p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 	echo -n " ${p} |"
 
-	for size in 25 50 75 100 ; do
-	for split in custom dev vsl ; do
+
+	for size in ${sizes}; do
+	for split in ${splits} ; do
 
 		n=''
 		if [ -f split.${split}/${a}.split.${size}.fasta.base_count.txt ] ; then

@@ -12,6 +12,8 @@ fi
 mkdir -p raw
 mkdir -p masks
 
+splits="c14 c13 c12 c11 c10 c9 c8 c7 c6 c5 c4 c3 c2 c1 vsl"
+
 #for f in /francislab/data1/refs/fasta/nuccore/*.fasta /francislab/data1/refs/fasta/Burkholderia.fasta /francislab/data1/refs/fasta/Salmonella.fasta /francislab/data2/refs/fasta/viruses/NC_001422.1_Coliphage_phi-X174.fasta /francislab/data1/refs/fasta/coronaviruses/NC_??????.?.fasta /francislab/data1/refs/refseq/viral-20210316/split/*BeAn*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*Burkholderia*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*oronavirus*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*cytomegalovirus*complete_genome.fa ; do
 
 for f in /francislab/data1/refs/refseq/viral-20210316/split/*{BeAn,Burkholder,Coliphage,oronavirus,cytomegalovirus,epatitis,Human*herpes,Human_papillomavirus,immuno,Salmonella}*complete_genome.fa ; do
@@ -46,16 +48,18 @@ for f in /francislab/data1/refs/refseq/viral-20210316/split/*{BeAn,Burkholder,Co
 done
 
 
+mkdir -p split
+for a in ${splits}; do
+mkdir -p split.${a}
+done
+
 for f in raw/*fasta masks/*fasta ; do
 
 	echo $f
-	mkdir -p split
-	mkdir -p split.custom
-	mkdir -p split.vsl
-	mkdir -p split.dev
 	b=$( basename $f .fasta )
 
-	for s in 100 75 50 25 ; do
+	#for s in 100 75 50 25 ; do
+	for s in 25 ; do
 	
 		o=split/${b}.split.${s}.fa
 		echo $o
@@ -65,7 +69,7 @@ for f in raw/*fasta masks/*fasta ; do
 			chmod -w $o
 		fi
 
-		for a in dev custom vsl ; do
+		for a in ${splits}; do
 			echo ${a}
 
 			#	I can't remember the details, but I believe the custom settings
@@ -73,11 +77,59 @@ for f in raw/*fasta masks/*fasta ; do
 
 			o=split.${a}/${b}.split.${s}.sam
 			if [ ! -f ${o} ] ; then
-				if [ ${a} == 'dev' ] ; then
+				if [ ${a} == 'c14' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 30 -R 4 -N 0 -L 16 -i C,1,0 --score-min C,40,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c13' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 30 -R 4 -N 0 -L 18 -i C,1,0 --score-min C,40,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c12' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 30 -R 4 -N 0 -L 12 -i C,1,0 --score-min C,40,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c11' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 30 -R 4 -N 0 -L 22 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c10' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 30 -R 4 -N 0 -L 20 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c9' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 30 -R 4 -N 0 -L 10 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c8' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 25 -R 3 -N 0 -L 18 -i C,1,0 --score-min G,15,8 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c7' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 25 -R 3 -N 0 -L 12 -i C,1,0 --score-min G,15,8 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c6' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 25 -R 3 -N 0 -L 12 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c5' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 25 -R 3 -N 0 -L 18 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c4' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 25 -R 3 -N 0 -L 15 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c3' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--local -D 25 -R 3 -N 0 -L 15 -i C,1,0 --score-min G,15,8 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c2' ] ; then
 					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
 						--local -D 25 -R 3 -N 0 -L 15 -i S,1,0.25 --score-min G,15,8 \
 						-S ${o} 2> ${o%.sam}.summary.txt
-				elif [ ${a} == 'custom' ] ; then
+				elif [ ${a} == 'c1' ] ; then
 					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
 						--local -D 25 -R 3 -N 0 -L 18 -i S,1,0.30 --score-min G,15,8 \
 						-S ${o} 2> ${o%.sam}.summary.txt
@@ -139,7 +191,7 @@ for f in raw/*fasta masks/*fasta ; do
 				chmod -w ${o}
 			fi
 
-		done	#	for a in custom vsl ; do
+		done	#	for a in c1 vsl ; do
 	
 	done	#	for s in 100 50 25 ; do
 
