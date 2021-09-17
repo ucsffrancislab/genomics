@@ -50,3 +50,27 @@ faSplit byname viral.protein.faa.gz split/
 VZV=1384
 EBV=
 
+
+rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/bacteria/ /francislab/data1/refs/refseq/bacteria-20210916/
+rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ /francislab/data1/refs/refseq/viral-20210916/
+
+
+
+cat bacteria.*fna.gz > bacteria.genomic.fna.gz
+zcat bacteria.genomic.fna.gz | sed -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' | gzip  > bacteria.genomic.cleaned.fna.gz
+mkdir split
+faSplit byname bacteria.genomic.cleaned.fna.gz split/
+gzip split/*fa
+
+
+cat viral.*fna.gz > viral.genomic.fna.gz
+zcat viral.genomic.fna.gz | sed -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' | gzip  > viral.genomic.cleaned.fna.gz
+mkdir split
+faSplit byname viral.genomic.cleaned.fna.gz split/
+gzip split/*fa
+
+
+
+
+
+
