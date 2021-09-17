@@ -12,7 +12,7 @@ fi
 mkdir -p raw
 mkdir -p masks
 
-splits="c14 c13 c12 c11 c10 c9 c8 c7 c6 c5 c4 c3 c2 c1 vsl"
+splits="c20 c19 c18 c17 c16 c15 c14 c13 c12 c11 c10 c9 c8 c7 c6 c5 c4 c3 c2 c1 vsl"
 
 #for f in /francislab/data1/refs/fasta/nuccore/*.fasta /francislab/data1/refs/fasta/Burkholderia.fasta /francislab/data1/refs/fasta/Salmonella.fasta /francislab/data2/refs/fasta/viruses/NC_001422.1_Coliphage_phi-X174.fasta /francislab/data1/refs/fasta/coronaviruses/NC_??????.?.fasta /francislab/data1/refs/refseq/viral-20210316/split/*BeAn*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*Burkholderia*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*oronavirus*complete_genome.fa /francislab/data1/refs/refseq/viral-20210316/split/*cytomegalovirus*complete_genome.fa ; do
 
@@ -75,9 +75,45 @@ for f in raw/*fasta masks/*fasta ; do
 			#	I can't remember the details, but I believe the custom settings
 			#	were meant to inspire more alignments.
 
+			#	--very-sensitive-local = -D 20 -R 3 -N 0 -L 20 -i S,1,0.50
+			#	--score-min <func> min acceptable alignment score w/r/t read length
+			#                     (G,20,8 for local, L,-0.6,-0.6 for end-to-end)
+			# G,20,8 for 50 = 20 + 8*ln(50) = 20 + 8 * 3.91 = 51.29
+			#   -D 40 -R 5 -N 1 -L 20 -i C,1,0 
+
 			o=split.${a}/${b}.split.${s}.sam
 			if [ ! -f ${o} ] ; then
-				if [ ${a} == 'c14' ] ; then
+				if [ ${a} == 'c20' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--threads 8 \
+						--local -D 30 -R 4 -N 1 -L 18 -i C,1,0 --score-min C,50,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c19' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--threads 8 \
+						--local -D 30 -R 4 -N 1 -L 18 -i C,1,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c18' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--threads 8 \
+						--local -D 30 -R 4 -N 1 -L 18 -i C,1,0 --score-min C,44,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c17' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--threads 8 \
+						--local -D 30 -R 4 -N 1 -L 16 -i C,1,0 --score-min C,44,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c16' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--threads 8 \
+						--local -D 30 -R 4 -N 1 -L 18 -i C,1,0 --score-min C,42,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c15' ] ; then
+					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
+						--threads 8 \
+						--local -D 30 -R 4 -N 0 -L 16 -i C,1,0 --score-min C,42,0 \
+						-S ${o} 2> ${o%.sam}.summary.txt
+				elif [ ${a} == 'c14' ] ; then
 					bowtie2 -x hg38-noEBV -f -U split/${b}.split.${s}.fa --no-unal \
 						--local -D 30 -R 4 -N 0 -L 16 -i C,1,0 --score-min C,40,0 \
 						-S ${o} 2> ${o%.sam}.summary.txt
@@ -146,7 +182,8 @@ for f in raw/*fasta masks/*fasta ; do
 
 			o=split.${a}/${b}.split.${s}.mask.bed
 			if [ ! -f ${o} ] ; then
-				samtools view split.${a}/${b}.split.${s}.sam | awk -v s=${s} -v ref=${b%.masked} '{
+				#samtools view split.${a}/${b}.split.${s}.sam | awk -v s=${s} -v ref=${b%.masked} '{
+				samtools sort -n -O SAM -o - split.${a}/${b}.split.${s}.sam | awk -v s=${s} -v ref=${b%.masked} '{
 					sub(/^split/,"",$1);
 					a=1+s*$1
 					b=a+(2*s-1)
