@@ -52,24 +52,39 @@ EBV=
 
 
 rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/bacteria/ /francislab/data1/refs/refseq/bacteria-20210916/
-rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ /francislab/data1/refs/refseq/viral-20210916/
-
-
-
+cd /francislab/data1/refs/refseq/bacteria-20210916/
 cat bacteria.*fna.gz > bacteria.genomic.fna.gz
 zcat bacteria.genomic.fna.gz | sed -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' | gzip  > bacteria.genomic.cleaned.fna.gz
 mkdir split
 faSplit byname bacteria.genomic.cleaned.fna.gz split/
-gzip split/*fa
+cd split
+for f in *fa ; do echo $f; sed -i -e '1s/_/ /g' -e '1s/^>\(\S\{2\}\) />\1_/' $f ; done
+find . -name \*fa -ls -exec gzip {} \;
+chmod -w *fa.gz
 
 
+rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ /francislab/data1/refs/refseq/viral-20210916/
+cd /francislab/data1/refs/refseq/viral-20210916/
 cat viral.*fna.gz > viral.genomic.fna.gz
 zcat viral.genomic.fna.gz | sed -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' | gzip  > viral.genomic.cleaned.fna.gz
 mkdir split
 faSplit byname viral.genomic.cleaned.fna.gz split/
-gzip split/*fa
+cd split
+for f in *fa ; do echo $f; sed -i -e '1s/_/ /g' -e '1s/^>\(\S\{2\}\) />\1_/' $f ; done
+find . -name \*fa -ls -exec gzip {} \;
+chmod -w *fa.gz
 
 
+rsync -avz --progress --include=README.txt --include="*.genomic.fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/fungi/ /francislab/data1/refs/refseq/fungi-20210920/
+cd /francislab/data1/refs/refseq/fungi-20210920/
+cat fungi.*fna.gz > fungi.genomic.fna.gz
+zcat fungi.genomic.fna.gz | sed -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' | gzip  > fungi.genomic.cleaned.fna.gz
+mkdir split
+faSplit byname fungi.genomic.cleaned.fna.gz split/
+cd split
+for f in *fa ; do echo $f; sed -i -e '1s/_/ /g' -e '1s/^>\(\S\{2\}\) />\1_/' $f ; done
+find . -name \*fa -ls -exec gzip {} \;
+chmod -w *fa.gz
 
 
 
