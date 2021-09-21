@@ -31,7 +31,8 @@ for f in /francislab/data1/refs/refseq/viral-20210316/split/*{BeAn,Burkholder,Co
 	if [ ! -f ${l} ] ; then
 		#ln -s ${f} ${l}
 		#cp ${f} ${l}
-		cat ${f} | sed -e '1s/_/ /g' -e '1s/^>NC />NC_/' -e 's/^>AC />AC_/' > ${l}
+		#cat ${f} | sed -e '1s/_/ /g' -e '1s/^>NC />NC_/' -e 's/^>AC />AC_/' > ${l}
+		cat ${f} | sed -e '1s/_/ /g' -e '1s/^>NC />NC_/' -e '1s/^>AC />AC_/' > ${l}
 		chmod +w ${l}
 	fi
 
