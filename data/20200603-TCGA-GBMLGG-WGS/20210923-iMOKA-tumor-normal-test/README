@@ -1,0 +1,38 @@
+
+
+Try to use iMOKA on paired tumor/normal data.
+
+How?
+
+Create source.tsv with some select samples. (comma separated list of files?)
+
+SFHH005a	GBMWT	/francislab/data1/working/20210428-EV/20210830-iMOKA/cutadapt2/SFHH005a.fastq.gz
+
+
+/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/*R1.fastq.gz | xargs -i basename {} _R1.fastq.gz | cut -d - -f1,2 | uniq | xargs -i grep {} TCGA.Glioma.metadata.tsv | awk -F"\t" '{print $1,$2,$3,$8}'
+
+
+
+for f in /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/[01]*R1.fastq.gz ; do
+b=$( basename ${f} _R1.fastq.gz )
+su=$( basename ${f} _R1.fastq.gz | cut -d - -f1,2 )
+sa=$( basename ${f} _R1.fastq.gz | cut -d - -f1,2,3 )
+idh=$( grep ${su} TCGA.Glioma.metadata.tsv | awk -F"\t" '{print $8}' )
+echo -e "${sa}\t${idh}\t${f};${f/R1/R2}"
+done
+
+Edit out NA and -02 stuff.
+
+
+
+Create kmer counts for both samples.
+
+Normalize the counts by read count? Anything about read length?
+( All GBM WGS are 101bp )
+
+Subtract normal from tumor.
+
+Any issues with negative?
+
+
+
