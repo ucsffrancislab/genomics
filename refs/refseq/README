@@ -88,4 +88,100 @@ chmod -w *fa.gz
 
 
 
+RepeatMasker version 4.1.1
+Search Engine: NCBI/RMBLAST [ 2.10.0+ ]
+
+Using Master RepeatMasker Database: /c4/home/gwendt/.local/RepeatMasker-4.1.1/Libraries/RepeatMaskerLib.h5
+  Title    : Dfam
+  Version  : 3.2
+  Date     : 2020-07-02
+  Families : 273,693
+
+Species/Taxa Search:
+  Homo sapiens [NCBI Taxonomy ID: 9606]
+  Lineage: root;cellular organisms;Eukaryota;Opisthokonta;Metazoa;
+           Eumetazoa;Bilateria;Deuterostomia;Chordata;
+           Craniata <chordates>;Vertebrata <vertebrates>;
+           Gnathostomata <vertebrates>;Teleostomi;Euteleostomi;
+           Sarcopterygii;Dipnotetrapodomorpha;Tetrapoda;Amniota;
+           Mammalia;Theria <mammals>;Eutheria;Boreoeutheria;
+           Euarchontoglires;Primates;Haplorrhini;Simiiformes
+  1337 families in ancestor taxa; 8 lineage-specific families
+
+
+
+https://ftp.ncbi.nih.gov/refseq/release/invertebrate/
+https://ftp.ncbi.nih.gov/refseq/release/archaea/
+https://ftp.ncbi.nih.gov/refseq/release/plant/
+https://ftp.ncbi.nih.gov/refseq/release/vertebrate_mammalian/
+https://ftp.ncbi.nih.gov/refseq/release/vertebrate_other/
+
+https://ftp.ncbi.nih.gov/refseq/release/complete/
+
+
+
+#	No more futsing around with partials. Using the complete reference.
+
+rsync -avz --progress --include=README.txt --include="*.genomic.fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/complete/ /francislab/data1/refs/refseq/complete-20210920/
+cd /francislab/data1/refs/refseq/complete-20210920/
+
+# prep for faSplit so that output files include full name, not just accession number.
+gunzip *.genomic.fna.gz
+for f in complete.*.?.genomic.fna ; do echo $f ; sed -i -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' $f ; done
+chmod -w *.genomic.fna
+
+mkdir split
+for f in complete.?.?.genomic.fna ; do echo $f ; faSplit byname ${f} split/ ; done
+for f in complete.??.?.genomic.fna ; do echo $f ; faSplit byname ${f} split/ ; done
+cd split
+
+#	I'm only interested in the complete genome references
+mkdir complete
+mv *complete_genome.fa complete/
+
+for f in *fa ; do echo $f; sed -i -e '1s/_/ /g' -e '1s/^>\(\S\{2\}\) />\1_/' $f ; done
+find . -name \*fa -ls -exec gzip {} \;
+chmod -w *fa.gz
+
+
+gunzip -v complete.?.*.genomic.fna.gz
+gunzip -v complete.??.*.genomic.fna.gz
+gunzip -v complete.???.*.genomic.fna.gz
+gunzip -v complete.????.*.genomic.fna.gz
+
+
+
+
+
+
+for i in $( seq 2416 3937 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sed -i -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' $f ; fi ; done ; done >> correcting &
+
+
+I/O bottleneck
+
+date=$( date "+%Y%m%d%H%M%S" )
+for i in $( seq 542 641 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
+for i in 580 ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
+
+for i in $( seq 642 999 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
+
+
+
+
+
+for i in $( seq 542 999 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then faSplit byname ${PWD}/${f} ${PWD}/split/ ; fi ; done ; done
+
+
+Checks
+
+for f in complete.?.*.genomic.fna ; do echo $f; grep "^>" $f | sed -e 's/^>//' > ${f}.sequences.txt ; cat ${f}.sequences.txt | wc -l > ${f}.sequences.wc-l.txt ; done
+
+for f in complete.1???.*.genomic.fna ; do echo $f; grep "^>" $f | sed -e 's/^>//' > ${f}.sequences.txt ; cat ${f}.sequences.txt | wc -l > ${f}.sequences.wc-l.txt ; done
+
+ls split/ | wc -l
+
+
+
+
+
 
