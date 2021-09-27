@@ -2,11 +2,16 @@
 #SBATCH --export=NONE   # required when using 'module' IN THIS SCRIPT OR ANY THAT ARE CALLED
 
 hostname
+echo "Slurm job id:${SLURM_JOBID}:"
+date
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
-
+if [ -n "$( declare -F module )" ] ; then
+	echo "Loading required modules"
+	module load CBI plink
+fi
 set -x
 
 plot_prefix=""
