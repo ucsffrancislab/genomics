@@ -10,7 +10,7 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
-	module load CBI plink
+	module load CBI plink2
 fi
 set -x
 
@@ -38,7 +38,9 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	plink $SELECT_ARGS
+	plink2 $SELECT_ARGS
 	chmod a-w ${outbase}*
 fi
+
+#	untested
 

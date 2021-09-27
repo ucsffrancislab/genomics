@@ -10,7 +10,7 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
-	module load CBI plink
+	module load CBI plink2
 fi
 set -x
 
@@ -55,9 +55,9 @@ else
 	scratch_covar=${TMPDIR}/$( basename ${covar} )
 	scratch_out=${TMPDIR}/$( basename ${out} )
 
-	#plink --out ${scratch_out} \
+	#plink2 --out ${scratch_out} \
 	#	untested using plink.bash
-	plink.bash --out ${scratch_out} \
+	plink2.bash --out ${scratch_out} \
 		--bfile ${scratch_bfile} \
 		--pheno ${scratch_pheno} \
 		--covar ${scratch_covar} \
@@ -66,4 +66,6 @@ else
 	mv --update ${scratch_out}* $( dirname ${out} )
 	chmod a-w ${out}*	#	probably unnecessary
 fi
+
+#	untested
 
