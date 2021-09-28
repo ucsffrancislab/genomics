@@ -149,39 +149,55 @@ gunzip -v complete.??.*.genomic.fna.gz
 gunzip -v complete.???.*.genomic.fna.gz
 gunzip -v complete.????.*.genomic.fna.gz
 
+for i in $( seq 3108 3937 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sed -i -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' $f ; fi ; done ; done >> correcting &
 
 
 
 
 
-for i in $( seq 2416 3937 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sed -i -e '/^>/s/ /_/g' -e '/^>/s/\//_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' $f ; fi ; done ; done >> correcting &
 
+I/O bottleneck so use more CPU's than necessary to minimize number of jobs running. Better way?
 
-I/O bottleneck
 
 date=$( date "+%Y%m%d%H%M%S" )
-for i in $( seq 542 641 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
-for i in 580 ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
 
-for i in $( seq 642 999 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
+for i in $( seq 1101 1200 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=$f --time=240 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
 
-
+for i in 1078 1095 1105 1109 1117 1118 ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=$f --time=300 --nodes=1 --ntasks=8 --mem=15G --output=${PWD}/${f}.${date}.txt --wrap="faSplit byname ${PWD}/${f} ${PWD}/split/" ; fi ; done ; done
 
 
+This would have been a great opportunity to learn about array jobs
 
-for i in $( seq 542 999 ) ; do echo $i ; for f in complete.${i}.*.genomic.fna ; do echo $f ; if [ -e ${f} ] ; then faSplit byname ${PWD}/${f} ${PWD}/split/ ; fi ; done ; done
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=201-220%10 --job-name="%a.faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 2
 
 
+
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=221-1000%10 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}.%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 2
+
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 3
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 4
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-896%10 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 5
+
+
+
+
+This got really muddy by breaking it all up. Not sure if everything that was supposed to happen actually happened.
 Checks
 
-for f in complete.?.*.genomic.fna ; do echo $f; grep "^>" $f | sed -e 's/^>//' > ${f}.sequences.txt ; cat ${f}.sequences.txt | wc -l > ${f}.sequences.wc-l.txt ; done
-
-for f in complete.1???.*.genomic.fna ; do echo $f; grep "^>" $f | sed -e 's/^>//' > ${f}.sequences.txt ; cat ${f}.sequences.txt | wc -l > ${f}.sequences.wc-l.txt ; done
+for f in complete.*.*.genomic.fna ; do echo $f; grep "^>" $f | sed -e 's/^>//' > ${f}.sequences.txt ; cat ${f}.sequences.txt | wc -l > ${f}.sequences.wc-l.txt ; done
 
 ls split/ | wc -l
 
 
+NEED TO QUOTE THESE FILENAMES as many include []'s and such.
 
-
+for l in complete.*.*.genomic.fna.sequences.txt ; do echo ${l}; for f in $( cat ${l} ) ; do if [ ! -s "split/${f}.fa" ] ;then echo "Missing or empty : $f" >> ${l}.missings.txt ; fi ; done ; done
 
 
