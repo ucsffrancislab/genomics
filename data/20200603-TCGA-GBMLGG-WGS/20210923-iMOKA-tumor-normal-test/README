@@ -32,7 +32,15 @@ Normalize the counts by read count? Anything about read length?
 
 Subtract normal from tumor.
 
+
+
+
 Any issues with negative?
+
+
+How is iMOKA going to normalize this?
+
+
 
 
 
