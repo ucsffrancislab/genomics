@@ -187,6 +187,30 @@ for f in $( cat complete.1297.1.genomic.fna.sequences.txt ); do if [ ! -s "split
 
 
 
+NOTE THAT SUBMITTED ARRAY JOBS THAT FAIL DON'T SEND INDIVIDUAL EMAILS!
+
+Rerun these
+-rw-r----- 1 gwendt francislab 244 Oct  3 00:22 complete.genomic.20210929070303-262981_433.out
+-rw-r----- 1 gwendt francislab 244 Oct  3 00:12 complete.genomic.20210929070303-262981_431.out
+-rw-r----- 1 gwendt francislab 244 Oct  2 20:59 complete.genomic.20210929070303-262981_416.out
+-rw-r----- 1 gwendt francislab 244 Oct  2 15:22 complete.genomic.20210929070303-262981_391.out
+-rw-r----- 1 gwendt francislab 244 Oct  2 14:05 complete.genomic.20210929070303-262981_389.out
+-rw-r----- 1 gwendt francislab 244 Oct  2 08:05 complete.genomic.20210929070303-262981_336.out
+-rw-r----- 1 gwendt francislab 244 Oct  2 03:04 complete.genomic.20210929070303-262981_322.out
+-rw-r----- 1 gwendt francislab 244 Oct  2 02:24 complete.genomic.20210929070303-262981_314.out
+-rw-r----- 1 gwendt francislab 244 Oct  1 22:00 complete.genomic.20210929070303-262981_308.out
+-rw-r----- 1 gwendt francislab 244 Oct  1 22:00 complete.genomic.20210929070303-262981_307.out
+-rw-r----- 1 gwendt francislab 245 Oct  3 21:54 complete.genomic.20210929070303-262981_557.out
+-rw-r----- 1 gwendt francislab 245 Oct  3 09:50 complete.genomic.20210929070303-262981_481.out
+-rw-r----- 1 gwendt francislab 245 Oct  3 07:45 complete.genomic.20210929070303-262981_464.out
+-rw-r----- 1 gwendt francislab 245 Oct  3 04:50 complete.genomic.20210929070303-262981_451.out
+-rw-r----- 1 gwendt francislab 245 Oct  1 08:30 complete.genomic.20210929070303-262981_284.out
+-rw-r----- 1 gwendt francislab 245 Sep 30 21:58 complete.genomic.20210929070303-262981_253.out
+-rw-r----- 1 gwendt francislab 245 Sep 25 08:31 complete.genomic.20210924163633.260211_297.out
+
+
+
+
 
 
 

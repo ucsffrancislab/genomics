@@ -36,7 +36,7 @@ done
 mem=7		#	per thread (keep 7)
 kdir=${PWD}/${subset}${k}${field}
 
-img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.6.img
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 
 sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 export SINGULARITY_BINDPATH=/francislab
@@ -69,7 +69,11 @@ ppid=''
 if [ -d "${kdir}/preprocess" ] ; then
 	echo "Preprocessing dir exists. Skipping"
 else
-	ppid=$( ${sbatch} --export=SINGULARITY_BINDPATH --parsable --job-name=T${k}iMOKApreprocess --time=2880 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.preprocess.${date}.txt --wrap="singularity exec ${img} preprocess.sh --input-file ${kdir}/source.tsv --kmer-length ${k} --ram $((threads*mem)) --threads ${threads} --keep-files" )
+
+#	-l|--library-type [NULL|fr|rf|ff|rr]
+#				 The type of stranded library. In case of presence of one or more "r" file, it will be converted to its complementary reverse.
+
+	ppid=$( ${sbatch} --export=SINGULARITY_BINDPATH --parsable --job-name=T${k}iMOKApreprocess --time=2880 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.preprocess.${date}.txt --wrap="singularity exec ${img} preprocess.sh --input-file ${kdir}/source.tsv --kmer-length ${k} --ram $((threads*mem)) --threads ${threads} --keep-files --library-type fr" )
 	echo $ppid
 fi
 
@@ -98,10 +102,22 @@ else
 	else
 		depend=" --dependency=afterok:${crid} "
 	fi
-	rdid=$( ${sbatch} --export=SINGULARITY_BINDPATH,OMP_NUM_THREADS,IMOKA_MAX_MEM_GB --parsable ${depend} --job-name=T${k}iMOKAreduce --time=5760 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.reduce.${date}.txt --wrap="singularity exec ${img} iMOKA_core reduce --input ${kdir}/matrix.json --output ${kdir}/reduced.matrix" )
+	rdid=$( ${sbatch} --export=SINGULARITY_BINDPATH,OMP_NUM_THREADS,IMOKA_MAX_MEM_GB --parsable ${depend} --job-name=T${k}iMOKAreduce --time=14400 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.reduce.${date}.txt --wrap="singularity exec ${img} iMOKA_core reduce --input ${kdir}/matrix.json --output ${kdir}/reduced.matrix --test-percentage 0.5" )
+
+#	Possibly up this when have very small groups to ensure more than 1 sample is used.
+#  -t, --test-percentage arg     The percentage of the min class used as test
+#                                size (default: 0.25)
+
+#	  -a, --accuracy arg            Minimum of accuracy (default: 65)
+
 	#rdid=$( ${sbatch} --export=SINGULARITY_BINDPATH,OMP_NUM_THREADS,IMOKA_MAX_MEM_GB --parsable --job-name=T${k}iMOKAreduce --time=5760 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.reduce.${date}.txt --wrap="singularity exec ${img} iMOKA_core reduce --input ${kdir}/matrix.json --output ${kdir}/reduced.matrix" )
 	echo ${rdid}
 fi
+
+
+
+#export IMOKA_MAX_MEM_GB=450
+#export sbatch_mem=499G
 
 agid=''
 if [ -f "${kdir}/aggregated.json" ] ; then
@@ -112,7 +128,17 @@ else
 	else
 		depend=" --dependency=afterok:${rdid} "
 	fi
-	agid=$( ${sbatch} --export=SINGULARITY_BINDPATH,OMP_NUM_THREADS,IMOKA_MAX_MEM_GB --parsable ${depend} --job-name=T${k}iMOKAaggregate --time=2880 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.aggregate.${date}.txt --wrap="singularity exec ${img} iMOKA_core aggregate --input ${kdir}/reduced.matrix --count-matrix ${kdir}/matrix.json --mapper-config ${kdir}/config.json --output ${kdir}/aggregated" )
+	agid=$( ${sbatch} --export=SINGULARITY_BINDPATH,OMP_NUM_THREADS,IMOKA_MAX_MEM_GB --parsable ${depend} --job-name=T${k}iMOKAaggregate --time=2880 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.aggregate.${date}.txt --wrap="singularity exec ${img} iMOKA_core aggregate --input ${kdir}/reduced.matrix --count-matrix ${kdir}/matrix.json --mapper-config ${kdir}/config.json --output ${kdir}/aggregated --global-threshold 95 --origin-threshold 99" )
+
+#	up these to fix aggregation seg fault?
+#  -t, --origin-threshold arg    Mininum value needed to create a graph
+#                                (default: 80)
+#  -T, --global-threshold arg    Global minimum value for whom the nodes will
+#                                be used to build the graphs (default: 70)
+#
+#	Try increasing the general threshold (-T) to 90 and the source threshold (-t) to 95 ( or even 95 and 99 ) to keep only the best results.
+
+
 	#	--shift 4
 	#agid=$( ${sbatch} --export=SINGULARITY_BINDPATH,OMP_NUM_THREADS,IMOKA_MAX_MEM_GB --parsable --job-name=T${k}iMOKAaggregate --time=120 --ntasks=${threads} --mem=${sbatch_mem} --output=${kdir}/iMOKA.aggregate.${date}.txt --wrap="singularity exec ${img} iMOKA_core aggregate --input ${kdir}/reduced.matrix --count-matrix ${kdir}/matrix.json --mapper-config ${kdir}/config.json --output ${kdir}/aggregated" )
 	echo ${agid}
