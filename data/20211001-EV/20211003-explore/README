@@ -1,0 +1,29 @@
+
+
+/francislab/data1/raw/20211001-EV/SFHH008A_S1_L001_R1_001.fastq.gz
+
+
+
+zcat /francislab/data1/raw/20211001-EV/SFHH008A_S1_L001_R2_001.fastq.gz | sed -n '2~4p' | grep "^TTTTTTTTTGTTTTTTTTTT" | head
+zcat /francislab/data1/raw/20211001-EV/SFHH008A_S1_L001_R2_001.fastq.gz | sed -n '2~4p' | grep "^TTTTTCTTTGTTTTTTTTTT" | head
+zcat /francislab/data1/raw/20211001-EV/SFHH008A_S1_L001_R2_001.fastq.gz | sed -n '2~4p' | grep "^TATATTTTTGTTTTTTTTTT" | head
+zcat /francislab/data1/raw/20211001-EV/SFHH008A_S1_L001_R2_001.fastq.gz | sed -n '2~4p' | grep "^TTTTTTTTGGTTTTTTTTTT" | head
+
+
+./process.bash
+
+
+
+Filter reads based on quality
+Filter reads based on R2's expected format of "^.........GTTT". Keep R2? Or just R1?
+paste <( zcat out/SFHH008F_R1.fastq.gz | paste - - - - ) <( zcat out/SFHH008F_R2.fastq.gz | paste - - - - ) | head
+consolidate
+Trim R1 by polyA
+Trim R1 by adapter
+
+
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
+
+
+
