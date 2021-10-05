@@ -191,9 +191,85 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 			--output=${outbase}.${date}.txt \
 			~/.local/bin/bowtie2.bash --sort --threads 8 \
 			-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
-			--very-sensitive-local -U ${inbase}.fastq -o ${f} )
+			--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
 	fi
 
+	ntid=""
+	inbase=${outbase}
+	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt"
+	f=${outbase}.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ -z ${hg38id} ] ; then
+			depend=""
+		else
+			depend=" --dependency=afterok:${hg38id} "
+		fi
+		ntid=$( ${sbatch} ${depend} --job-name=nt${s} --time=600 --ntasks=8 --mem=60G \
+			--output=${outbase}.${date}.txt \
+			~/.local/bin/blastn.bash -num_threads 8 \
+				-query ${inbase}.fastq \
+				-db /francislab/data1/refs/blastn/nt \
+				-outfmt 6 \
+				-out ${f} )
+	fi
+
+	sgfid=""
+	inbase=${outbase}
+	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt.species_genus_family"
+	f=${outbase}.txt.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		if [ -z ${ntid} ] ; then
+			depend=""
+		else
+			depend=" --dependency=afterok:${ntid} "
+		fi
+
+		threads=4
+		db=/francislab/data1/refs/taxadb/asgf.sqlite
+		input=${inbase}.txt.gz
+		db_size=$( stat --dereference --format %s ${db} )
+
+		if [ -f ${input} ] ; then
+			input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
+		else
+			#	biggest existing.
+			#input_size=17000000000
+			input_size=10000000000
+		fi
+
+		#	Occassionally jobs fail, apparently due to out of disk space.
+		#	cp: failed to extend ‘/scratch/gwendt/105418/asgf.sqlite’: No space left on device
+		#	Others aren't properly requesting scratch space, or perhaps I'm doing this wrong.
+		#	Increase request size
+		#
+		#	I'm guessing that the number of threads is not relevant on C4?
+		#	This seems to be the case. Requesting 227GB each and running 11 on n17
+		#	Roughly 2.5TB and n17 has 2.6TB. Remove threads from all scratch calculations.
+		#
+		#index_size=$( du -sb ${index} | awk '{print $1}' )
+		#scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*20/10)+1 )) )
+		#scratch=$( echo $(( (((3*${input_size})+${db_size})/1000000000*13/10)+1 )) )
+		scratch=$( echo $(( (((2*${input_size})+${db_size})/1000000000*12/10)+1 )) )
+		# Add 1 in case files are small so scratch will be 1 instead of 0.
+		# 11/10 adds 10% to account for the output
+		# 12/10 adds 20% to account for the output
+
+		echo "Using scratch:${scratch}"
+
+		sgfid=$( ${sbatch} ${depend} --job-name=sgf${s} --time=600 --ntasks=4 --mem=30G \
+			--output=${outbase}.${date}.txt \
+			--gres=scratch:${scratch}G \
+			~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
+				-input ${inbase}.txt.gz )
+		echo $sgfid
+	fi
+
+#	cat out/SFHH008?.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt.species_genus_family.family_counts | awk '{s[$2]+=$1}END{for(k in s){print k k[s]}}'
+#| sort | uniq -c | sort -rn | head -50
 
 done
 
