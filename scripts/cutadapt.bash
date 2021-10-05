@@ -16,10 +16,14 @@ set -x
 
 ARGS=$*
 
+output=""
+output2=""
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-o|--output)
 			shift; output=$1; shift;;
+		-p|--output2)
+			shift; output2=$1; shift;;
 		*)
 			shift;;
 	esac
@@ -35,5 +39,12 @@ else
 
 	count_fasta_reads.bash $f
 	average_fasta_read_length.bash $f
+
+	if [ -n "${output2}" ] ; then
+		chmod a-w $output2
+		count_fasta_reads.bash $output2
+		average_fasta_read_length.bash $output2
+	fi
+
 fi
 
