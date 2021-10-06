@@ -23,13 +23,18 @@ Trim R1 by adapter
 
 
 ./report.bash > report.md
-sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
-
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '/---/d' report.md > report.csv
 
 for f in out/SFHH008?.quality.format.consolidate.R1.fastq.gz ; do
 echo $f
 b=$( basename $f .quality.format.consolidate.R1.fastq.gz )
 zcat $f | paste - - - - | cut -f1 | cut -d' ' -f1 | cut -d'_' -f2 | sort -n > ${b}.umi_counts
+done
+
+for f in out/SFHH008?.quality.format.consolidate.trimmed.R1.fastq.gz ; do
+echo $f
+b=$( basename $f .quality.format.consolidate.trimmed.R1.fastq.gz )
+zcat $f | paste - - - - | cut -f1 | cut -d' ' -f1 | cut -d'_' -f2 | sort -n > ${b}.trimmed.umi_counts
 done
 
 
