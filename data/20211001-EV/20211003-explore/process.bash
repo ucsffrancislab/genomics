@@ -93,11 +93,15 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 		else
 			depend=" --dependency=afterok:${cid} "
 		fi
+#		AAAAAAAAAAAAAACTGTCTCTTATACACATCTCCGAGCCCACGAGAC
+#		TTTTTTTTTTTTTTGACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG
 #    cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2.fastq
 		tid=$( ${sbatch} ${depend} --job-name=t${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
 			~/.local/bin/cutadapt.bash \
-				 --match-read-wildcards -n 2 \
+				 --match-read-wildcards -n 4 \
 				-a AAAAAAAA -a TTTTTTTT \
+				-a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
+				-a GACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG \
 				-m 15 --trim-n \
 				-o ${outbase}.R1.fastq.gz \
 				${inbase}.R1.fastq.gz )
