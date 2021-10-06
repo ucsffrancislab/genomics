@@ -26,4 +26,11 @@ Trim R1 by adapter
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' report.md > report.csv
 
 
+for f in out/SFHH008?.quality.format.consolidate.R1.fastq.gz ; do
+echo $f
+b=$( basename $f .quality.format.consolidate.R1.fastq.gz )
+zcat $f | paste - - - - | cut -f1 | cut -d' ' -f1 | cut -d'_' -f2 | sort -n > ${b}.umi_counts
+done
+
+
 

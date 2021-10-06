@@ -104,7 +104,7 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 #			~/.local/bin/cutadapt.bash \
 #				 --match-read-wildcards -n 2 \
 #				-a AAAAAAAA -a TTTTTTTT \
-#				-A AAAAAAAA -A TTTTTTTT -U 9 \
+#				-A AAAAAAAA -A TTTTTTTT -U 10 \
 #				-m 15 --trim-n \
 #				-o ${OUT}/${s}.quality.format.consolidate.trimmed.R1.fastq.gz \
 #				-p ${OUT}/${s}.quality.format.consolidate.trimmed.R2.fastq.gz \
@@ -298,4 +298,7 @@ done
 #	out/SFHH008F.out.txt:Total Removed:          	8422 reads (1.86%) 	1271722 bases (1.86%)
 
 
+#				-m 15 --trim-n \
+
+#	cutadapt --trim-n --match-read-wildcards -n 5 -a AAAAAA -G TTTTTT -U 10 -o SFHH008A.quality.format.consolidate.trimmed2.R1.fastq.gz -p SFHH008A.quality.format.consolidate.trimmed2.R2.fastq.gz SFHH008A.quality.format.consolidate.R1.fastq.gz SFHH008A.quality.format.consolidate.R2.fastq.gz
 
