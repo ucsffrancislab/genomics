@@ -19,8 +19,9 @@ in2=$2
 out1=$3
 out2=$4
 
+	#awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.........GTTTTT/ ){
 paste <( zcat $in1 | paste - - - - ) <( zcat $in2 | paste - - - - ) |
-	awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.........GTTTTT/ ){
+	awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.........GTTT/ ){
 		print $1 >> o1
 		print $2 >> o1
 		print $3 >> o1
