@@ -6,9 +6,12 @@ dir=out
 rawdir=/francislab/data1/raw/20211001-EV
 for fastq in ${rawdir}/S*fastq.gz ; do
 	basename=$( basename $fastq .fastq.gz )
+#	basename=${basename%%_*}
+	basename=${basename%_001}
+	r=${basename##*_}
 	basename=${basename%%_*}
-	ln -s ${fastq} ${dir}/${basename}.fastq.gz 2> /dev/null
-	ln -s ${fastq}.read_count.txt ${dir}/${basename}.fastq.gz.read_count.txt 2> /dev/null
+	ln -s ${fastq} ${dir}/${basename}_${r}.fastq.gz 2> /dev/null
+	ln -s ${fastq}.read_count.txt ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
 #	ln -s ${fastq}.average_length.txt output/${basename}.fastq.gz.average_length.txt 2> /dev/null
 #	ln -s ${rawdir}/${basename}.labkit output/ 2> /dev/null
 #	ln -s ${rawdir}/${basename}.subject output/ 2> /dev/null
@@ -37,7 +40,7 @@ echo
 
 echo -n "| Paired Raw Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.fastq.gz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}_R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
