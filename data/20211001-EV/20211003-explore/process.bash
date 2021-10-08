@@ -31,14 +31,15 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		qid=$( ${sbatch} --job-name=q${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
-		~/.local/bin/bbduk.bash in1=${r1} in2=${r2} out1=${outbase}.R1.fastq.gz out2=${outbase}.R2.fastq.gz minavgquality=15 )
+		~/.local/bin/bbduk.bash in1=${r1} in2=${r2} out1=${outbase}.R1.fastq.gz out2=${outbase}.R2.fastq.gz minavgquality=30 )
+		#~/.local/bin/bbduk.bash in1=${r1} in2=${r2} out1=${outbase}.R1.fastq.gz out2=${outbase}.R2.fastq.gz minavgquality=15 )
 		echo $qid
 	fi
 
 
 	fid=""
 	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format"
+	outbase="${inbase}.format"	#	"${OUT}/${s}.quality.format"
 	f=${outbase}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -60,7 +61,7 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 
 	cid=""
 	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate"
+	outbase="${inbase}.consolidate"	#	"${OUT}/${s}.quality.format.consolidate"
 	f=${outbase}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -81,9 +82,9 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 	fi
 
 
-	tid=""
+	t1id=""
 	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed"
+	outbase="${inbase}.t1"	#	"${OUT}/${s}.quality.format.consolidate.t1"
 	f=${outbase}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -93,184 +94,289 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 		else
 			depend=" --dependency=afterok:${cid} "
 		fi
-#		AAAAAAAAAAAAAACTGTCTCTTATACACATCTCCGAGCCCACGAGAC
-#		TTTTTTTTTTTTTTGACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG
-#    cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2.fastq
-		tid=$( ${sbatch} ${depend} --job-name=t${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
+		t1id=$( ${sbatch} ${depend} --job-name=t1${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
 			~/.local/bin/cutadapt.bash \
-				 --match-read-wildcards -n 4 \
-				-a AAAAAAAA -a TTTTTTTT \
-				-a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
-				-a GACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG \
+				--match-read-wildcards -n 4 \
+				-a CTGTCTCTTATACACATCTC \
+				-A CTGTCTCTTATACACATCTC \
+				-U 10 \
 				-m 15 --trim-n \
 				-o ${outbase}.R1.fastq.gz \
-				${inbase}.R1.fastq.gz )
-#			~/.local/bin/cutadapt.bash \
-#				 --match-read-wildcards -n 2 \
-#				-a AAAAAAAA -a TTTTTTTT \
-#				-A AAAAAAAA -A TTTTTTTT -U 10 \
-#				-m 15 --trim-n \
-#				-o ${OUT}/${s}.quality.format.consolidate.trimmed.R1.fastq.gz \
-#				-p ${OUT}/${s}.quality.format.consolidate.trimmed.R2.fastq.gz \
-#				${OUT}/${s}.quality.format.consolidate.R1.fastq.gz \
-#				${OUT}/${s}.quality.format.consolidate.R2.fastq.gz )
-		echo $tid
-				#-a AAAAAAAA -G TTTTTTTT \
+				-p ${outbase}.R2.fastq.gz \
+				${inbase}.R1.fastq.gz \
+				${inbase}.R2.fastq.gz )
+		echo $t1id
 	fi
 
+#	Using the full adapter is more accurate, but there are misses. Shortening from 34bp to 20bp
+#				-a CTGTCTCTTATACACATCTC \ 		#CGAGCCCACGAGAC \
+#				-A CTGTCTCTTATACACATCTC \ 		#CGAGCCCACGAGAC \
+#	AATGATACGGCGACCACCGAGATCTACAC[i5 index]TCGTCGGCAGCGTCAGATGTGTATAAGAGACAGGGGXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXBAAAAAAAAAAAAAAAAAAAAA[UMI]CTGTCTCTTATACACATCTCCGAGCCCACGAGAC[i7 index]ATCTCGTATGCCGTCTTCTGCTTG
+#	R1 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXBAAAAAAAAAAAAAAAAAAAAA[UMI]CTGTCTCTTATACACATCTCCGAGCCCACGAGAC[i7 index]ATCTCGTATGCCGTCTTCTGCTTG
+#	R2 (RC of) AATGATACGGCGACCACCGAGATCTACAC[i5 index]TCGTCGGCAGCGTCAGATGTGTATAAGAGACAG GGG XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXBAAAAAAAAAAAAAAAAAAAAA[UMI]
+#
+#	R1 Trailing UMI and CTGTCTCTTATACACATCTCCGAGCCCACGAGAC
+#	# R2 Trailing GGG and GACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG
+#	#   ( The first GGG (CCC actually) doesn't appear to ever exist?
+#	R2 Trailing CTGTCTCTTATACACATCTCCGAGCCCACGAGAC
 
-	phixid=""
+
+	t2id=""
 	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX"
-	f=${outbase}.bam
+	outbase="${outbase}.t2" #"${OUT}/${s}.quality.format.consolidate.t1"
+	f=${outbase}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ -z ${tid} ] ; then
+		if [ -z ${t1id} ] ; then
 			depend=""
 		else
-			depend=" --dependency=afterok:${tid} "
+			depend=" --dependency=afterok:${t1id} "
 		fi
-		phixid=$( ${sbatch} ${depend} --job-name=p${s} --time=30 --ntasks=4 --mem=30G \
-			--output=${outbase}.${date}.txt \
-			~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
-			--very-sensitive-local -U ${inbase}.R1.fastq.gz -o ${f} --un ${outbase}.fastq )
+
+		#	custom script to remove RC of UMI from end (add a few bases as say 5bp of the adapter still there) of R2
+
+		t2id=$( ${sbatch} ${depend} --job-name=t2${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
+				${PWD}/trim_rc_umi_from_end.bash \
+					${inbase}.R1.fastq.gz \
+					${outbase}.R1.fastq.gz )
+		echo $t2id
 	fi
 
 
-
-	salmonid=""
+	t3id=""
 	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon"
-	f=${outbase}.bam
+	outbase="${outbase}.t3"	#"${OUT}/${s}.quality.format.consolidate.trimmedpair"
+	f=${outbase}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ -z ${phixid} ] ; then
+		if [ -z ${t1id} ] ; then
 			depend=""
 		else
-			depend=" --dependency=afterok:${phixid} "
+			depend=" --dependency=afterok:${t1id} "
 		fi
-		salmonid=$( ${sbatch} ${depend} --job-name=s${s} --time=30 --ntasks=4 --mem=30G \
-			--output=${outbase}.${date}.txt \
-			~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella \
-			--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
+		t3id=$( ${sbatch} ${depend} --job-name=t3${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
+			~/.local/bin/cutadapt.bash \
+				--match-read-wildcards -n 5 \
+				--error-rate 0.20 \
+				-a A{10} \
+				-G T{10} \
+				-G T{150} \
+				-m 15 --trim-n \
+				-o ${outbase}.R1.fastq.gz \
+				-p ${outbase}.R2.fastq.gz \
+				${inbase}.R1.fastq.gz \
+				${inbase%.t2}.R2.fastq.gz )
+		echo $t3id
 	fi
 
 
 
-	burkid=""
-	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk"
-	f=${outbase}.bam
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ -z ${salmonid} ] ; then
-			depend=""
-		else
-			depend=" --dependency=afterok:${salmonid} "
-		fi
-		burkid=$( ${sbatch} ${depend} --job-name=b${s} --time=30 --ntasks=4 --mem=30G \
-			--output=${outbase}.${date}.txt \
-			~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia \
-			--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
-	fi
 
 
 
-	hg38id=""
-	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38"
-	f=${outbase}.bam
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ -z ${burkid} ] ; then
-			depend=""
-		else
-			depend=" --dependency=afterok:${burkid} "
-		fi
-		hg38id=$( ${sbatch} ${depend} --job-name=h${s} --time=30 --ntasks=8 --mem=60G \
-			--output=${outbase}.${date}.txt \
-			~/.local/bin/bowtie2.bash --sort --threads 8 \
-			-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
-			--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
-	fi
 
-	ntid=""
-	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt"
-	f=${outbase}.txt.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ -z ${hg38id} ] ; then
-			depend=""
-		else
-			depend=" --dependency=afterok:${hg38id} "
-		fi
-		ntid=$( ${sbatch} ${depend} --job-name=nt${s} --time=600 --ntasks=8 --mem=60G \
-			--output=${outbase}.${date}.txt \
-			~/.local/bin/blastn.bash -num_threads 8 \
-				-query ${inbase}.fastq \
-				-db /francislab/data1/refs/blastn/nt \
-				-outfmt 6 \
-				-out ${f} )
-	fi
 
-	sgfid=""
-	inbase=${outbase}
-	outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt.species_genus_family"
-	f=${outbase}.txt.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		if [ -z ${ntid} ] ; then
-			depend=""
-		else
-			depend=" --dependency=afterok:${ntid} "
-		fi
 
-		threads=4
-		db=/francislab/data1/refs/taxadb/asgf.sqlite
-		input=${inbase}.txt.gz
-		db_size=$( stat --dereference --format %s ${db} )
 
-		if [ -f ${input} ] ; then
-			input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
-		else
-			#	biggest existing.
-			#input_size=17000000000
-			input_size=10000000000
-		fi
 
-		#	Occassionally jobs fail, apparently due to out of disk space.
-		#	cp: failed to extend ‘/scratch/gwendt/105418/asgf.sqlite’: No space left on device
-		#	Others aren't properly requesting scratch space, or perhaps I'm doing this wrong.
-		#	Increase request size
-		#
-		#	I'm guessing that the number of threads is not relevant on C4?
-		#	This seems to be the case. Requesting 227GB each and running 11 on n17
-		#	Roughly 2.5TB and n17 has 2.6TB. Remove threads from all scratch calculations.
-		#
-		#index_size=$( du -sb ${index} | awk '{print $1}' )
-		#scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*20/10)+1 )) )
-		#scratch=$( echo $(( (((3*${input_size})+${db_size})/1000000000*13/10)+1 )) )
-		scratch=$( echo $(( (((2*${input_size})+${db_size})/1000000000*12/10)+1 )) )
-		# Add 1 in case files are small so scratch will be 1 instead of 0.
-		# 11/10 adds 10% to account for the output
-		# 12/10 adds 20% to account for the output
 
-		echo "Using scratch:${scratch}"
 
-		sgfid=$( ${sbatch} ${depend} --job-name=sgf${s} --time=600 --ntasks=4 --mem=30G \
-			--output=${outbase}.${date}.txt \
-			--gres=scratch:${scratch}G \
-			~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
-				-input ${inbase}.txt.gz )
-		echo $sgfid
-	fi
+
+
+
+#		outbase="${OUT}/${s}.quality.format.consolidate"
+#	
+#		tid=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed"
+#		f=${outbase}.R1.fastq.gz
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${cid} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${cid} "
+#			fi
+#	#		AAAAAAAAAAAAAACTGTCTCTTATACACATCTCCGAGCCCACGAGAC
+#	#		TTTTTTTTTTTTTTGACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG
+#	#    cutadapt -a ADAPT1 -A ADAPT2 [options] -o out1.fastq -p out2.fastq in1.fastq in2.fastq
+#			tid=$( ${sbatch} ${depend} --job-name=t${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
+#				~/.local/bin/cutadapt.bash \
+#					 --match-read-wildcards -n 4 \
+#					-a AAAAAAAA -a TTTTTTTT \
+#					-a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
+#					-a GACAGAGAATATGTGTAGAGGCTCGGGTGCTCTG \
+#					-m 15 --trim-n \
+#					-o ${outbase}.R1.fastq.gz \
+#					${inbase}.R1.fastq.gz )
+#	#			~/.local/bin/cutadapt.bash \
+#	#				 --match-read-wildcards -n 2 \
+#	#				-a AAAAAAAA -a TTTTTTTT \
+#	#				-A AAAAAAAA -A TTTTTTTT -U 10 \
+#	#				-m 15 --trim-n \
+#	#				-o ${OUT}/${s}.quality.format.consolidate.trimmed.R1.fastq.gz \
+#	#				-p ${OUT}/${s}.quality.format.consolidate.trimmed.R2.fastq.gz \
+#	#				${OUT}/${s}.quality.format.consolidate.R1.fastq.gz \
+#	#				${OUT}/${s}.quality.format.consolidate.R2.fastq.gz )
+#			echo $tid
+#					#-a AAAAAAAA -G TTTTTTTT \
+#		fi
+#	
+#		phixid=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX"
+#		f=${outbase}.bam
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${tid} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${tid} "
+#			fi
+#			phixid=$( ${sbatch} ${depend} --job-name=p${s} --time=30 --ntasks=4 --mem=30G \
+#				--output=${outbase}.${date}.txt \
+#				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
+#				--very-sensitive-local -U ${inbase}.R1.fastq.gz -o ${f} --un ${outbase}.fastq )
+#		fi
+#	
+#	
+#	
+#		salmonid=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon"
+#		f=${outbase}.bam
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${phixid} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${phixid} "
+#			fi
+#			salmonid=$( ${sbatch} ${depend} --job-name=s${s} --time=30 --ntasks=4 --mem=30G \
+#				--output=${outbase}.${date}.txt \
+#				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/salmonella \
+#				--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
+#		fi
+#	
+#	
+#	
+#		burkid=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk"
+#		f=${outbase}.bam
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${salmonid} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${salmonid} "
+#			fi
+#			burkid=$( ${sbatch} ${depend} --job-name=b${s} --time=30 --ntasks=4 --mem=30G \
+#				--output=${outbase}.${date}.txt \
+#				~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/burkholderia \
+#				--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
+#		fi
+#	
+#	
+#	
+#		hg38id=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38"
+#		f=${outbase}.bam
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${burkid} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${burkid} "
+#			fi
+#			hg38id=$( ${sbatch} ${depend} --job-name=h${s} --time=30 --ntasks=8 --mem=60G \
+#				--output=${outbase}.${date}.txt \
+#				~/.local/bin/bowtie2.bash --sort --threads 8 \
+#				-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
+#				--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
+#		fi
+#	
+#		ntid=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt"
+#		f=${outbase}.txt.gz
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${hg38id} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${hg38id} "
+#			fi
+#			ntid=$( ${sbatch} ${depend} --job-name=nt${s} --time=600 --ntasks=8 --mem=60G \
+#				--output=${outbase}.${date}.txt \
+#				~/.local/bin/blastn.bash -num_threads 8 \
+#					-query ${inbase}.fastq \
+#					-db /francislab/data1/refs/blastn/nt \
+#					-outfmt 6 \
+#					-out ${f} )
+#		fi
+#	
+#		sgfid=""
+#		inbase=${outbase}
+#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt.species_genus_family"
+#		f=${outbase}.txt.gz
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			if [ -z ${ntid} ] ; then
+#				depend=""
+#			else
+#				depend=" --dependency=afterok:${ntid} "
+#			fi
+#	
+#			threads=4
+#			db=/francislab/data1/refs/taxadb/asgf.sqlite
+#			input=${inbase}.txt.gz
+#			db_size=$( stat --dereference --format %s ${db} )
+#	
+#			if [ -f ${input} ] ; then
+#				input_size=$( stat --dereference --format %s ${input} )	#	output should be similar
+#			else
+#				#	biggest existing.
+#				#input_size=17000000000
+#				input_size=10000000000
+#			fi
+#	
+#			#	Occassionally jobs fail, apparently due to out of disk space.
+#			#	cp: failed to extend ‘/scratch/gwendt/105418/asgf.sqlite’: No space left on device
+#			#	Others aren't properly requesting scratch space, or perhaps I'm doing this wrong.
+#			#	Increase request size
+#			#
+#			#	I'm guessing that the number of threads is not relevant on C4?
+#			#	This seems to be the case. Requesting 227GB each and running 11 on n17
+#			#	Roughly 2.5TB and n17 has 2.6TB. Remove threads from all scratch calculations.
+#			#
+#			#index_size=$( du -sb ${index} | awk '{print $1}' )
+#			#scratch=$( echo $(( (((3*${input_size})+${db_size})/${threads}/1000000000*20/10)+1 )) )
+#			#scratch=$( echo $(( (((3*${input_size})+${db_size})/1000000000*13/10)+1 )) )
+#			scratch=$( echo $(( (((2*${input_size})+${db_size})/1000000000*12/10)+1 )) )
+#			# Add 1 in case files are small so scratch will be 1 instead of 0.
+#			# 11/10 adds 10% to account for the output
+#			# 12/10 adds 20% to account for the output
+#	
+#			echo "Using scratch:${scratch}"
+#	
+#			sgfid=$( ${sbatch} ${depend} --job-name=sgf${s} --time=600 --ntasks=4 --mem=30G \
+#				--output=${outbase}.${date}.txt \
+#				--gres=scratch:${scratch}G \
+#				~/.local/bin/add_species_genus_family_to_blast_output_scratch.bash \
+#					-input ${inbase}.txt.gz )
+#			echo $sgfid
+#		fi
 
 #	cat out/SFHH008?.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38.nt.species_genus_family.family_counts | awk '{s[$2]+=$1}END{for(k in s){print k k[s]}}'
 #| sort | uniq -c | sort -rn | head -50
