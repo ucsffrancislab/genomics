@@ -5,8 +5,7 @@ OUT=${PWD}/out
 
 mkdir -p ${OUT}
 
-#for chr in $( seq 1 22 ) ; do
-for chr in 22 ; do
+for chr in $( seq 1 22 ) ; do
 	echo $chr
 	for phen_file in ${PWD}/PRS_blood_cell_*.txt ; do
 		echo $phen_file
