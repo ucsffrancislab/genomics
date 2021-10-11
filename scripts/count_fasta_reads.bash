@@ -22,15 +22,27 @@ while [ $# -gt 0 ] ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		echo "Creating $f"
-		if [ "${1: -3}" == ".gz" ] ; then
-			command="zcat ${1} "
+#		if [ "${1: -3}" == ".gz" ] ; then
+#			command="zcat ${1} "
+#		else
+#			command="cat ${1} "
+#		fi
+#		if [ "${1: -4}" == "q.gz" ] ; then
+#			command="${command} | paste - - - - "
+#		else
+#			command="${command} | paste - - "
+#		fi
+
+		if [ "${1: -4}" == "q.gz" ] ; then
+			command="zcat ${1} | paste - - - - "
+		elif [ "${1: -1}" == "q" ] ; then
+			command="cat ${1} | paste - - - - "
+		elif [ "${1: -4}" == "a.gz" ] ; then
+			command="cat ${1} | paste - - "
+		elif [ "${1: -1}" == "a" ] ; then
+			command="cat ${1} | paste - - "
 		else
 			command="cat ${1} "
-		fi
-		if [ "${1: -4}" == "q.gz" ] ; then
-			command="${command} | paste - - - - "
-		else
-			command="${command} | paste - - "
 		fi
 		command="${command} | wc -l"
 		eval $command > ${f}
