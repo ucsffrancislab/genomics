@@ -133,9 +133,6 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 		else
 			depend=" --dependency=afterok:${t1id} "
 		fi
-
-		#	custom script to remove RC of UMI from end (add a few bases as say 5bp of the adapter still there) of R2
-
 		t2id=$( ${sbatch} ${depend} --job-name=t2${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
 				${PWD}/trim_rc_umi_from_end.bash \
 					${inbase}.R1.fastq.gz \
@@ -151,10 +148,10 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		if [ -z ${t1id} ] ; then
+		if [ -z ${t2id} ] ; then
 			depend=""
 		else
-			depend=" --dependency=afterok:${t1id} "
+			depend=" --dependency=afterok:${t2id} "
 		fi
 		t3id=$( ${sbatch} ${depend} --job-name=t3${s} --time=60 --nodes=1 --ntasks=4 --mem=30G --output=${outbase}.${date}.out.txt \
 			~/.local/bin/cutadapt.bash \
