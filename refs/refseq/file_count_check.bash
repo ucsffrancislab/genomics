@@ -4,11 +4,11 @@
 
 
 #for l in complete.?.*.genomic.fna.sequences.txt ; do
-for l in complete.9?.*.genomic.fna.sequences.txt ; do
+for l in complete.3???.*.genomic.fna.sequences.txt ; do
 	echo ${l}
 	b=$( basename $l .fna.sequences.txt )
 
-	a=$( find split2/${b}/ -type f | wc -l )
+	a=$( find split/${b}/ -type f | wc -l )
 	c=$( cat ${l%.txt}.wc-l.txt )
 
 	if [ ${a} -eq ${c} ] ; then
