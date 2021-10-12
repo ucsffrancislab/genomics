@@ -214,15 +214,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=821-1000%5 --
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%5 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 4
 
-
-
-
-
-
-
-
-
-
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-896%5 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 5
 
@@ -248,5 +239,12 @@ for l in complete.*.*.genomic.fna.sequences.txt ; do echo ${l}; for f in $( cat 
 nohup ./missings_check.bash >> missings.out.txt &
 
 nohup ../faSplit_reruns.bash >> faSplit_reruns.out.txt &
+
+
+mkdir complete_genomes
+while read path ; do
+echo $path
+cp $path complete_genomes/
+done < complete_genomes.txt
 
 

@@ -28,3 +28,15 @@ echo faSplit byname ${dir}/${f} ${dir}/split/
 faSplit byname ${dir}/${f} ${dir}/split/
 
 
+
+#	date=$( date "+%Y%m%d%H%M%S" )
+#	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%5 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 3
+#	
+#	
+#	date=$( date "+%Y%m%d%H%M%S" )
+#	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%5 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 4
+#	
+#	date=$( date "+%Y%m%d%H%M%S" )
+#	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-896%5 --job-name="faSplit.complete.genomic" --output="${PWD}/complete.genomic.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=2 --mem=7G /francislab/data1/refs/refseq/faSplit_array_wrapper.bash --page 5
+#	
+#	

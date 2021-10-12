@@ -15,17 +15,17 @@
 
 #for l in complete.?.*.genomic.fna.sequences.txt ; do
 #for l in complete.[3-9].*.genomic.fna.sequences.txt ; do
-for l in complete.???.*.genomic.fna.sequences.txt ; do
+for l in complete.[23]???.*.genomic.fna.sequences.txt ; do
 	echo ${l}
 	b=$( basename $l .fna.sequences.txt )
-	mkdir -p split2/${b}
-	for f in $( cat ${l} ) ; do
+	mkdir -p split/${b}
+#	for f in $( cat ${l} ) ; do
 #		if [ ! -s "split/${f}.fa" ] ; then
 #			echo "Missing or empty : $f" >> ${l}.missings.txt
 #		else
-			mv "split/${f}.fa" split2/${b}/
+#			mv "split/${f}.fa" split2/${b}/
 #		fi
-	done
+#	done
 done
 
 
