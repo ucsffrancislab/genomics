@@ -174,4 +174,71 @@ paste <( zcat out/SFHH008A.quality.format.R2.fastq.gz | paste - - - - | cut -f 2
 
 
 
+~/.local/pear-0.9.11-linux-x86_64/bin/pear -f SFHH008E_R1.fastq -r SFHH008E_R2.fastq -o test
+
+head SFHH008E_R?.fastq test.assembled.fastq 
+
+paste <( cat test.assembled.fastq | paste - - - - | cut -f 2 ) <( cat SFHH008E_R1.fastq | paste - - - - | cut -f 2 ) <( cat SFHH008E_R2.fastq | paste - - - - | cut -f 2 ) | head | awk -F"\t" '{print $1;print $2;print $3;print ""}'
+
+
+paste <( cat test.assembled.fastq | paste - - - - | cut -f 2 ) <( cat SFHH008E_R1.fastq | paste - - - - | cut -f 2 ) <( cat SFHH008E_R2.fastq | paste - - - - | cut -f 2 | rev | tr "ACTG" "TGAC" ) | head | awk -F"\t" '{print "AS: "$1;print "R1: "$2;print "R2: "$3;print ""}'
+
+kinda sucks? or reads out of order?
+
+
+~/github/jsh58/NGmerge/NGmerge -1 SFHH008E_head_R1.fastq -2 SFHH008E_head_R2.fastq -o test
+Sucks. Obvious same length RC don't "merge"?
+
+
+
+R1: GACACCTAAGGTGATTCACCCTCCTCAGCCTCCCATGGTGCTTGGANTACAGGTGTGAACTACTGTGCCTGCACAAACCAGAACCTCTTTAAAGCATAAATCACACAAGACCTAT
+R2:               TTCACCCTCCTCAGCCTCCCATGGTGCTTGGANTACAGGTGTGAACTACTGTGCCTGCACAAACCAGAACCTCTTTAAAGCATAAATCACACAAGACCTATCAAAC
+AS: GACACCTAAGGTGATTCACCCTCCTCAGCCTCCCATGGTGCTTGGANTACAGGTGTGAACTACTGTGCCTGCACAAACCAGAACCTCTTTAAAGCATAAATCACACAAGACCTATCAAAC
+
+R1: TGCCATGAACTCAGGAGGCAGAGGTTGCAGTGAGCCGAGATCACGCCACTGCACTCCAGCCTGGGCGACAGACCAAGACTCCATC
+R2: TGCCATGAACTCAGGAGGCAGAGGTTGCAGTGAGCCGAGATCACGCCACTGCACTCCAGCCTGGGCGACAGACCAAGACTCC
+AS: TGCCATGAACTCAGGAGGCAGAGGTTGCAGTGAGCCGAGATCACGCCACTGCACTCCAGCCTGGGCGACAGACCAAGACTCC
+
+R1: TGCCTCCCACCTCCACCTTCAAAAGTGCTGGGATTATAGGTGTGAGCCCACCATGCCTGGCCTTGAAGGTACTAGTTTTTAGAGATGGTTCAACAGC
+R2: TGCCTCCCACCTCCACCTTCAAAAGTGCTGGGATTATAGGTGTGAGCCCACCATGCCTGGCCTTGAAGGTACTAGTTTTTAGAGATGGTTC
+AS: TGCCTCCCACCTCCACCTTCAAAAGTGCTGGGATTATAGGTGTGAGCCCACCATGCCTGGCCTTGAAGGTACTAGTTTTTAGAGATGGTTC
+
+~/.local/pear-0.9.11-linux-x86_64/bin/pear -f SFHH008E_R1.fastq -r SFHH008E_R2.fastq -o test
+
+
+
+
+for r1 in out/SFHH008[A-E].quality.format.consolidate.t1.t2.t3.R1.fastq.gz; do
+echo $r1
+r2=${r1/.R1./.R2.}
+echo $r2
+o=${r1%.R1.fastq.gz}
+~/.local/pear-0.9.11-linux-x86_64/bin/pear -f ${r1} -r ${r2} -o ${o}
+done
+
+for r1 in out/SFHH008[A-E].quality.format.consolidate.t1.t2.t3.R1.fastq.gz.read_count.txt ; do
+echo $r1
+ac=$( cat ${r1%.R1.fastq.gz.read_count.txt}.assembled.fastq.read_count.txt )
+r1c=$( cat $r1 )
+echo $ac / $r1c
+done
+
+for r1 in out/SFHH008[A-E].quality.format.consolidate.t1.t2.t3.unassembled.forward.fastq ; do
+echo $r1
+r2=${r1/forward/reverse}
+paste <( zcat ${r1} | paste - - - - | cut -f 2 ) <( zcat ${r2} | paste - - - - | cut -f 2 | rev | tr "ACTG" "TGAC" ) | awk -F"\t" '{print "R1: "$1;print "R2: "$2;print ""}'
+done
+
+
+
+for f in out/*assembled.fastq ; do
+cat $f | paste - - - - | cut -f2 | awk '{print length($0)}' | sort -n | uniq -c > ${f}.read_length_counts.csv
+done
+
+
+./distributions2.py out/*assembled.fastq.read_length_counts.csv
+
+
+
+
 
