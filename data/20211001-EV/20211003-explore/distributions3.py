@@ -37,11 +37,15 @@ for filename in args.files:
 #	print(d['count'].value_counts())
 
 	if len(d) > 0:
-		d.plot.hist(bins=40)
-#			x='length',
-#			y='count',
-#			title="Count chart of "+basename,
-#			kind='bar')
+		d.plot.hist(bins=40,
+			legend=False,
+			color="skyblue",
+			edgecolor='Black')
+		plt.suptitle("Insert length histogram of "+basename,fontsize=20)
+		plt.xlabel('Length',fontsize=16)
+		plt.ylabel('Frequency',fontsize=16)
+		plt.xticks(fontsize=16)
+		plt.yticks(fontsize=16)
 		plt.savefig(basename+".hist.png")
 		plt.close()
 
