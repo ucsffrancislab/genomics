@@ -213,8 +213,11 @@ echo $r1
 r2=${r1/.R1./.R2.}
 echo $r2
 o=${r1%.R1.fastq.gz}
-~/.local/pear-0.9.11-linux-x86_64/bin/pear -f ${r1} -r ${r2} -o ${o}
+~/.local/pear-0.9.11-linux-x86_64/bin/pear --forward-fastq ${r1} --reverse-fastq ${r2} --output ${o} --min-assembly-length 10
 done
+
+\rm -f out/*fastq.read_count.txt
+count_fasta_reads.bash out/*fastq
 
 for r1 in out/SFHH008[A-E].quality.format.consolidate.t1.t2.t3.R1.fastq.gz.read_count.txt ; do
 echo $r1
@@ -226,17 +229,18 @@ done
 for r1 in out/SFHH008[A-E].quality.format.consolidate.t1.t2.t3.unassembled.forward.fastq ; do
 echo $r1
 r2=${r1/forward/reverse}
-paste <( zcat ${r1} | paste - - - - | cut -f 2 ) <( zcat ${r2} | paste - - - - | cut -f 2 | rev | tr "ACTG" "TGAC" ) | awk -F"\t" '{print "R1: "$1;print "R2: "$2;print ""}'
+paste <( cat ${r1} | paste - - - - | cut -f 2 ) <( cat ${r2} | paste - - - - | cut -f 2 | rev | tr "ACTG" "TGAC" ) | awk -F"\t" '{print "R1: "$1;print "R2: "$2;print ""}'
 done
-
-
 
 for f in out/*assembled.fastq ; do
+cat $f | paste - - - - | cut -f2 | awk '{print length($0)}' | sort -n > ${f}.read_lengths.txt
 cat $f | paste - - - - | cut -f2 | awk '{print length($0)}' | sort -n | uniq -c > ${f}.read_length_counts.csv
 done
+cat out/*assembled.fastq | paste - - - - | cut -f2 | awk '{print length($0)}' | sort -n > read_lengths.txt
 
 
 ./distributions2.py out/*assembled.fastq.read_length_counts.csv
+./distributions3.py out/*assembled.fastq.read_lengths.txt read_lengths.txt
 
 
 
@@ -248,6 +252,19 @@ zcat out/SFHH008A.quality.format.R2.fastq.gz | paste - - - - | cut -f2 | grep "^
 paste <( zcat out/SFHH008A.quality.format.R2.fastq.gz | paste - - - - | cut -f2 ) <( zcat out/SFHH008A.quality.format.R1.fastq.gz | paste - - - - | cut -f2 ) | grep "^${umi}" | awk '{print $2}'
 done
 
+
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211001-EV"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211001-EV/20211003-explore"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in out/SFHH008?.quality.format.R?.fastq.gz ; do
+curl -netrc -T $f "${BOX}/"
+done
+```
 
 
 
