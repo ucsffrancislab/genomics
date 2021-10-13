@@ -2,14 +2,19 @@
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | NC_000117.1 | Chlamydia trachomatis D UW-3 CX chromosome  complete genome | 1042519 | 0 | 0 | 4939 | .47 | 858 | .08 | 5650 | .54 |
 | NC_000875.1 | Anopheles quadrimaculatus A mitochondrion  complete genome | 15455 | 0 | 0 | 714 | 4.61 | 984 | 6.36 | 1599 | 10.34 |
+| NC_000962.3 | Mycobacterium tuberculosis H37Rv  complete genome | 4411532 | 0 | 0 | 33970 | .77 | 1987 | .04 | 35393 | .80 |
 | NC_001276.1 | Crassostrea gigas mitochondrion  complete genome | 18224 | 0 | 0 | 82 | .44 | 245 | 1.34 | 327 | 1.79 |
+| NC_001319.1 | Marchantia paleacea chloroplast  complete genome | 121024 | 0 | 0 | 7398 | 6.11 | 3172 | 2.62 | 8722 | 7.20 |
+| NC_001324.2 | Paramecium aurelia mitochondrial complete genome | 40469 | 0 | 0 | 1308 | 3.23 | 662 | 1.63 | 1651 | 4.07 |
 | NC_001631.1 | Pinus thunbergii chloroplast  complete genome | 119707 | 0 | 0 | 2574 | 2.15 | 466 | .38 | 2819 | 2.35 |
 | NC_001636.1 | Katharina tunicata mitochondrion  complete genome | 15532 | 0 | 0 | 363 | 2.33 | 451 | 2.90 | 706 | 4.54 |
 | NC_001637.1 | Acanthamoeba castellanii mitochondrion  complete genome | 41591 | 0 | 0 | 1444 | 3.47 | 343 | .82 | 1689 | 4.06 |
+| NC_001660.1 | Marchantia paleacea mitochondrion  complete genome | 186609 | 0 | 0 | 2945 | 1.57 | 957 | .51 | 3386 | 1.81 |
 | NC_001665.2 | Rattus norvegicus strain BN SsNHsdMCW mitochondrion  complete genome | 16313 | 0 | 0 | 391 | 2.39 | 3953 | 24.23 | 4114 | 25.21 |
 | NC_001673.1 | Lumbricus terrestris mitochondrion  complete genome | 14998 | 0 | 0 | 213 | 1.42 | 225 | 1.50 | 385 | 2.56 |
 | NC_001715.1 | Allomyces macrogynus mitochondrion  complete genome | 57473 | 0 | 0 | 943 | 1.64 | 222 | .38 | 992 | 1.72 |
 | NC_001798.2 | Human herpesvirus 2 strain HG52  complete genome | 154675 | 0 | 0 | 5884 | 3.80 | 2391 | 1.54 | 6945 | 4.49 |
+| NC_001861.1 | Onchocerca volvulus strain forest mitochondrion  complete genome | 13747 | 0 | 0 | 556 | 4.04 | 1105 | 8.03 | 1513 | 11.00 |
 | NC_001872.1 | Chlamydomonas moewusii mitochondrion  complete genome | 22897 | 0 | 0 | 682 | 2.97 | 172 | .75 | 780 | 3.40 |
 | NC_002007.1 | Porphyra purpurea mitochondrion  complete genome | 36753 | 0 | 0 | 1005 | 2.73 | 196 | .53 | 1200 | 3.26 |
 | NC_002012.1 | Squalus acanthias mitochondrion  complete genome | 16738 | 0 | 0 | 277 | 1.65 | 1010 | 6.03 | 1287 | 7.68 |
@@ -17,14 +22,18 @@
 | NC_002163.1 | Campylobacter jejuni subsp. jejuni NCTC 11168 = ATCC 700819 chromosome  complete genome | 1641481 | 0 | 0 | 21862 | 1.33 | 6324 | .38 | 27230 | 1.65 |
 | NC_002254.1 | Tetradesmus obliquus strain KS3-2 mitochondrion  complete genome | 42781 | 0 | 0 | 2895 | 6.76 | 1505 | 3.51 | 3410 | 7.97 |
 | NC_002333.2 | Danio rerio mitochondrion  complete genome | 16596 | 0 | 0 | 258 | 1.55 | 1033 | 6.22 | 1217 | 7.33 |
+| NC_002971.4 | Coxiella burnetii RSA 493  complete genome | 1995488 | 0 | 0 | 5228 | .26 | 1595 | .07 | 6480 | .32 |
 | NC_003029.1 | Tetrahymena thermophila mitochondrion  complete genome | 47577 | 0 | 0 | 3039 | 6.38 | 1571 | 3.30 | 3996 | 8.39 |
+| NC_003119.8 | Medicago truncatula chloroplast  complete genome | 124033 | 0 | 0 | 4794 | 3.86 | 1351 | 1.08 | 5309 | 4.28 |
 | NC_003127.1 | Neoceratodus forsteri mitochondrion  complete genome | 16572 | 0 | 0 | 213 | 1.28 | 1130 | 6.81 | 1343 | 8.10 |
+| NC_003197.2 | Salmonella enterica subsp. enterica serovar Typhimurium str. LT2  complete genome | 4857450 | 0 | 0 | 23617 | .48 | 1079 | .02 | 24450 | .50 |
 | NC_003210.1 | Listeria monocytogenes EGD-e chromosome  complete genome | 2944528 | 0 | 0 | 14922 | .50 | 2574 | .08 | 17226 | .58 |
 | NC_004312.1 | Schizosaccharomyces octosporus mitochondrion  complete genome | 44227 | 0 | 0 | 3092 | 6.99 | 883 | 1.99 | 3827 | 8.65 |
 | NC_004337.2 | Shigella flexneri 2a str. 301 chromosome  complete genome | 4607202 | 0 | 0 | 22111 | .47 | 1185 | .02 | 22699 | .49 |
 | NC_004383.1 | Caulophryne jordani mitochondrial DNA  complete genome | 16657 | 0 | 0 | 167 | 1.00 | 592 | 3.55 | 710 | 4.26 |
 | NC_004413.1 | Arcos sp. KU 149 mitochondrial DNA  complete genome | 16534 | 0 | 0 | 337 | 2.03 | 713 | 4.31 | 1050 | 6.35 |
 | NC_004591.1 | Lipolagus ochotensis mitochondrion  complete genome | 17338 | 0 | 0 | 416 | 2.39 | 641 | 3.69 | 1057 | 6.09 |
+| NC_004691.1 | Candida glabrata mitochondrion  complete genome | 20063 | 0 | 0 | 1629 | 8.11 | 4715 | 23.50 | 5082 | 25.33 |
 | NC_005089.1 | Mus musculus mitochondrion  complete genome | 16299 | 0 | 0 | 495 | 3.03 | 3433 | 21.06 | 3695 | 22.67 |
 | NC_005253.2 | Candida parapsilosis mitochondrion  complete genome | 32745 | 0 | 0 | 3349 | 10.22 | 1671 | 5.10 | 3938 | 12.02 |
 | NC_005316.1 | Katsuwonus pelamis mitochondrion  complete genome | 16515 | 0 | 0 | 142 | .85 | 1329 | 8.04 | 1471 | 8.90 |
@@ -45,10 +54,34 @@
 | NC_008131.1 | Atractosteus spatula mitochondrion  complete genome | 16262 | 0 | 0 | 304 | 1.86 | 1085 | 6.67 | 1388 | 8.53 |
 | NC_008256.1 | Oltmannsiellopsis viridis mitochondrion  complete genome | 56761 | 0 | 0 | 1813 | 3.19 | 567 | .99 | 2183 | 3.84 |
 | NC_008288.1 | Plasmodium gallinaceum mitochondrion  complete genome | 6003 | 0 | 0 | 213 | 3.54 | 49 | .81 | 262 | 4.36 |
+| NC_008832.4 | Placozoan sp. BZ10101 mitochondrion  complete genome | 32661 | 0 | 0 | 533 | 1.63 | 270 | .82 | 631 | 1.93 |
+| NC_008833.4 | Placozoan sp. BZ49 mitochondrion  complete genome | 37194 | 0 | 0 | 327 | .87 | 147 | .39 | 425 | 1.14 |
+| NC_008834.4 | Placozoan sp. BZ2423 mitochondrion  complete genome | 36699 | 0 | 0 | 330 | .89 | 98 | .26 | 428 | 1.16 |
 | NC_009493.1 | Fusarium graminearum mitochondrion  complete genome | 95676 | 0 | 0 | 1579 | 1.65 | 564 | .58 | 1922 | 2.00 |
 | NC_009733.1 | Lucilia sericata mitochondrion  complete genome | 15945 | 0 | 0 | 667 | 4.18 | 1230 | 7.71 | 1528 | 9.58 |
 | NC_009768.1 | Agkistrodon piscivorus mitochondrion  complete genome | 17213 | 0 | 0 | 181 | 1.05 | 616 | 3.57 | 797 | 4.63 |
 | NC_009905.1 | Pleurotus ostreatus mitochondrion  complete genome | 73242 | 0 | 0 | 5304 | 7.24 | 3173 | 4.33 | 6581 | 8.98 |
+| NC_010108.2 | Acanthurus lineatus mitochondrion  complete genome | 16532 | 0 | 0 | 178 | 1.07 | 1131 | 6.84 | 1260 | 7.62 |
+| NC_010127.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 1  complete genome | 422616 | 0 | 0 | 4024 | .95 | 2262 | .53 | 4171 | .98 |
+| NC_010128.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 2  complete genome | 457013 | 0 | 0 | 3910 | .85 | 2657 | .58 | 4057 | .88 |
+| NC_010129.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 3  complete genome | 481791 | 0 | 0 | 4285 | .88 | 3044 | .63 | 4677 | .97 |
+| NC_010130.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 4  complete genome | 513455 | 0 | 0 | 4724 | .92 | 2459 | .47 | 4896 | .95 |
+| NC_010131.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 5  complete genome | 528682 | 0 | 0 | 5976 | 1.13 | 3202 | .60 | 6273 | 1.18 |
+| NC_010132.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 6  complete genome | 536163 | 0 | 0 | 5233 | .97 | 3125 | .58 | 5356 | .99 |
+| NC_010133.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 7  complete genome | 584452 | 0 | 0 | 6956 | 1.19 | 3515 | .60 | 7348 | 1.25 |
+| NC_010134.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 8  complete genome | 739753 | 0 | 0 | 6337 | .85 | 2754 | .37 | 6582 | .88 |
+| NC_010135.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 9  complete genome | 810151 | 0 | 0 | 8479 | 1.04 | 4010 | .49 | 8750 | 1.08 |
+| NC_010136.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 10  complete genome | 839707 | 0 | 0 | 7988 | .95 | 4896 | .58 | 8455 | 1.00 |
+| NC_010137.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 11  complete genome | 852849 | 0 | 0 | 5910 | .69 | 4129 | .48 | 6131 | .71 |
+| NC_010138.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 12  complete genome | 859119 | 0 | 0 | 6704 | .78 | 4770 | .55 | 6851 | .79 |
+| NC_010139.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 13  complete genome | 866983 | 0 | 0 | 6730 | .77 | 4451 | .51 | 6926 | .79 |
+| NC_010140.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 14  complete genome | 852727 | 0 | 0 | 8165 | .95 | 5852 | .68 | 9274 | 1.08 |
+| NC_010141.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 15  complete genome | 902900 | 0 | 0 | 6799 | .75 | 5017 | .55 | 7093 | .78 |
+| NC_010142.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 16  complete genome | 908485 | 0 | 0 | 6564 | .72 | 3831 | .42 | 6834 | .75 |
+| NC_010143.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 17  complete genome | 1232258 | 0 | 0 | 19921 | 1.61 | 9470 | .76 | 20362 | 1.65 |
+| NC_010144.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 18  complete genome | 1253087 | 0 | 0 | 17663 | 1.40 | 10755 | .85 | 17859 | 1.42 |
+| NC_010145.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 19  complete genome | 1282939 | 0 | 0 | 9635 | .75 | 6067 | .47 | 9831 | .76 |
+| NC_010146.1 | Cyanidioschyzon merolae strain 10D DNA  chromosome 20  complete genome | 1621617 | 0 | 0 | 10513 | .64 | 8426 | .51 | 11151 | .68 |
 | NC_010358.2 | Oenothera argillicola chloroplast  complete genome | 165061 | 0 | 0 | 6166 | 3.73 | 2041 | 1.23 | 6853 | 4.15 |
 | NC_010360.2 | Oenothera glazioviana chloroplast  complete genome | 165359 | 0 | 0 | 6103 | 3.69 | 1426 | .86 | 6716 | 4.06 |
 | NC_010650.1 | Mus terricolor mitochondrion  complete genome | 16310 | 0 | 0 | 477 | 2.92 | 3160 | 19.37 | 3359 | 20.59 |
@@ -63,6 +96,7 @@
 | NC_011278.1 | Polystoechotes punctatus mitochondrion  complete genome | 16036 | 0 | 0 | 671 | 4.18 | 934 | 5.82 | 1408 | 8.78 |
 | NC_011361.1 | Micropterus dolomieu mitochondrion  complete genome | 16488 | 0 | 0 | 181 | 1.09 | 1082 | 6.56 | 1263 | 7.66 |
 | NC_011394.1 | Ophiophagus hannah mitochondrion  complete genome | 17267 | 0 | 0 | 19 | .11 | 714 | 4.13 | 733 | 4.24 |
+| NC_011574.1 | Steganacarus magnus mitochondrion  complete genome | 13818 | 0 | 0 | 592 | 4.28 | 564 | 4.08 | 1033 | 7.47 |
 | NC_011597.1 | Eriocheir japonica mitochondrion  complete genome | 16352 | 0 | 0 | 406 | 2.48 | 741 | 4.53 | 1073 | 6.56 |
 | NC_011598.1 | Eriocheir hepuensis mitochondrion  complete genome | 16335 | 0 | 0 | 798 | 4.88 | 816 | 4.99 | 1241 | 7.59 |
 | NC_011608.1 | Mimachlamys nobilis mitochondrion  complete genome | 17963 | 0 | 0 | 157 | .87 | 147 | .81 | 227 | 1.26 |
@@ -115,9 +149,11 @@
 | NC_013617.1 | Cynoponticus ferox mitochondrion  complete genome | 17822 | 0 | 0 | 514 | 2.88 | 1332 | 7.47 | 1797 | 10.08 |
 | NC_013618.1 | Thalassenchelys sp. Tht2 mitochondrion  complete genome | 17617 | 0 | 0 | 292 | 1.65 | 1304 | 7.40 | 1522 | 8.63 |
 | NC_013620.1 | Nemichthys scolopaceus mitochondrion  complete genome | 17457 | 0 | 0 | 142 | .81 | 1061 | 6.07 | 1203 | 6.89 |
+| NC_013626.2 | Labichthys carinatus mitochondrion  complete genome | 16683 | 0 | 0 | 213 | 1.27 | 837 | 5.01 | 1025 | 6.14 |
 | NC_013629.1 | Heteroconger hassi mitochondrion  complete genome | 17768 | 0 | 0 | 237 | 1.33 | 1160 | 6.52 | 1393 | 7.83 |
 | NC_013632.1 | Ariosoma shiroanago mitochondrion  complete genome | 16922 | 0 | 0 | 107 | .63 | 1110 | 6.55 | 1217 | 7.19 |
 | NC_013660.2 | Pneumocystis carinii mitochondrion  complete genome | 26119 | 0 | 0 | 1542 | 5.90 | 1584 | 6.06 | 2854 | 10.92 |
+| NC_013707.2 | Olea europaea cultivar Bianchera chloroplast  complete genome | 155888 | 0 | 0 | 4534 | 2.90 | 588 | .37 | 5024 | 3.22 |
 | NC_013709.1 | Rhodeus suigensis mitochondrion  complete genome | 16733 | 0 | 0 | 435 | 2.59 | 1107 | 6.61 | 1493 | 8.92 |
 | NC_013711.1 | Acheilognathus macropterus mitochondrion  complete genome | 16774 | 0 | 0 | 423 | 2.52 | 788 | 4.69 | 1113 | 6.63 |
 | NC_013712.1 | Acheilognathus yamatsutae mitochondrion  complete genome | 16703 | 0 | 0 | 348 | 2.08 | 1033 | 6.18 | 1332 | 7.97 |
@@ -139,6 +175,7 @@
 | NC_014581.1 | Hoplobatrachus tigerinus mitochondrion  complete genome | 20462 | 0 | 0 | 224 | 1.09 | 985 | 4.81 | 1209 | 5.90 |
 | NC_014588.1 | Thylacodes squamigerus mitochondrion  complete genome | 15544 | 0 | 0 | 63 | .40 | 172 | 1.10 | 235 | 1.51 |
 | NC_014671.1 | Ammothea carolinensis mitochondrion  complete genome | 15101 | 0 | 0 | 584 | 3.86 | 1208 | 7.99 | 1620 | 10.72 |
+| NC_014676.2 | Theobroma cacao chloroplast  complete genome | 160619 | 0 | 0 | 7197 | 4.48 | 2189 | 1.36 | 8106 | 5.04 |
 | NC_014848.1 | Hypsibius dujardini mitochondrion  complete genome | 15169 | 0 | 0 | 248 | 1.63 | 319 | 2.10 | 518 | 3.41 |
 | NC_014849.1 | Cottus poecilopus mitochondrion  complete genome | 16560 | 0 | 0 | 212 | 1.28 | 788 | 4.75 | 1000 | 6.03 |
 | NC_014851.1 | Cottus hangiongensis mitochondrion  complete genome | 16598 | 0 | 0 | 161 | .96 | 764 | 4.60 | 925 | 5.57 |
@@ -160,6 +197,7 @@
 | NC_015201.1 | Bycanistes brevis mitochondrion  complete genome | 17591 | 0 | 0 | 210 | 1.19 | 888 | 5.04 | 1095 | 6.22 |
 | NC_015203.1 | Zenaida auriculata mitochondrion  complete genome | 16781 | 0 | 0 | 241 | 1.43 | 791 | 4.71 | 1029 | 6.13 |
 | NC_015207.1 | Geotrygon violacea mitochondrion  complete genome | 16864 | 0 | 0 | 96 | .56 | 643 | 3.81 | 736 | 4.36 |
+| NC_015238.2 | Crocodylus johnsoni mitochondrion  complete genome | 16851 | 0 | 0 | 169 | 1.00 | 1039 | 6.16 | 1084 | 6.43 |
 | NC_015403.1 | Fistulifera solaris chloroplast  complete genome | 134918 | 0 | 0 | 5340 | 3.95 | 686 | .50 | 5781 | 4.28 |
 | NC_015406.1 | Corallium konojoi mitochondrion  complete genome | 18969 | 0 | 0 | 298 | 1.57 | 49 | .25 | 347 | 1.82 |
 | NC_015535.1 | Trigonostigma espei mitochondrion  complete genome | 17162 | 0 | 0 | 364 | 2.12 | 836 | 4.87 | 1151 | 6.70 |
@@ -174,6 +212,9 @@
 | NC_015753.1 | Micralestes sp. NM-2010 mitochondrion  complete genome | 16660 | 0 | 0 | 172 | 1.03 | 1156 | 6.93 | 1324 | 7.94 |
 | NC_015755.1 | Acestrorhynchus sp. NM-2010 mitochondrion  complete genome | 16758 | 0 | 0 | 260 | 1.55 | 961 | 5.73 | 1122 | 6.69 |
 | NC_015799.1 | Abidama producta mitochondrion  complete genome | 15277 | 0 | 0 | 595 | 3.89 | 884 | 5.78 | 1381 | 9.03 |
+| NC_015804.1 | Crithmum maritimum chloroplast  complete genome | 158355 | 0 | 0 | 5590 | 3.53 | 1006 | .63 | 5835 | 3.68 |
+| NC_015818.1 | Hydrocotyle verticillata chloroplast  complete genome | 153207 | 0 | 0 | 4952 | 3.23 | 1103 | .71 | 5516 | 3.60 |
+| NC_015821.1 | Petroselinum crispum chloroplast  complete genome | 152890 | 0 | 0 | 5126 | 3.35 | 810 | .52 | 5616 | 3.67 |
 | NC_015828.1 | Myotis formosus mitochondrion  complete genome | 17159 | 0 | 0 | 808 | 4.70 | 3483 | 20.29 | 3990 | 23.25 |
 | NC_015842.1 | Agriosphodrus dohrni mitochondrion  complete genome | 16470 | 0 | 0 | 776 | 4.71 | 613 | 3.72 | 1242 | 7.54 |
 | NC_015891.1 | Spirodela polyrhiza chloroplast  complete genome | 168788 | 0 | 0 | 7581 | 4.49 | 2411 | 1.42 | 8634 | 5.11 |
@@ -188,6 +229,43 @@
 | NC_016425.1 | Semirossia patagonica mitochondrion  complete genome | 17086 | 0 | 0 | 1091 | 6.38 | 615 | 3.59 | 1534 | 8.97 |
 | NC_016430.1 | Eleutherococcus senticosus chloroplast  complete genome | 156768 | 0 | 0 | 4724 | 3.01 | 834 | .53 | 5214 | 3.32 |
 | NC_016433.2 | Sesamum indicum chloroplast  complete genome | 153324 | 0 | 0 | 4863 | 3.17 | 490 | .31 | 5059 | 3.29 |
+| NC_016479.1 | Naumovozyma dairenensis CBS 421 chromosome 1  complete genome | 2054635 | 0 | 0 | 61011 | 2.96 | 35314 | 1.71 | 64910 | 3.15 |
+| NC_016480.1 | Naumovozyma dairenensis CBS 421 chromosome 2  complete genome | 1549475 | 0 | 0 | 49499 | 3.19 | 29315 | 1.89 | 53133 | 3.42 |
+| NC_016481.1 | Naumovozyma dairenensis CBS 421 chromosome 3  complete genome | 1536206 | 0 | 0 | 48473 | 3.15 | 30065 | 1.95 | 51971 | 3.38 |
+| NC_016482.1 | Naumovozyma dairenensis CBS 421 chromosome 4  complete genome | 1230053 | 0 | 0 | 39688 | 3.22 | 22287 | 1.81 | 42531 | 3.45 |
+| NC_016483.1 | Naumovozyma dairenensis CBS 421 chromosome 5  complete genome | 1184459 | 0 | 0 | 39630 | 3.34 | 24863 | 2.09 | 42245 | 3.56 |
+| NC_016484.1 | Naumovozyma dairenensis CBS 421 chromosome 6  complete genome | 1138463 | 0 | 0 | 44275 | 3.88 | 28951 | 2.54 | 47242 | 4.14 |
+| NC_016485.2 | Naumovozyma dairenensis CBS 421 chromosome 7  complete genome | 1565278 | 0 | 0 | 48693 | 3.11 | 27509 | 1.75 | 52222 | 3.33 |
+| NC_016486.1 | Naumovozyma dairenensis CBS 421 chromosome 8  complete genome | 1004037 | 0 | 0 | 36390 | 3.62 | 22626 | 2.25 | 38616 | 3.84 |
+| NC_016487.1 | Naumovozyma dairenensis CBS 421 chromosome 9  complete genome | 786484 | 0 | 0 | 25362 | 3.22 | 14781 | 1.87 | 27054 | 3.43 |
+| NC_016488.1 | Naumovozyma dairenensis CBS 421 chromosome 10  complete genome | 782356 | 0 | 0 | 22764 | 2.90 | 13571 | 1.73 | 24475 | 3.12 |
+| NC_016489.1 | Naumovozyma dairenensis CBS 421 chromosome 11  complete genome | 696134 | 0 | 0 | 22015 | 3.16 | 12715 | 1.82 | 23560 | 3.38 |
+| NC_016491.1 | Naumovozyma castellii CBS 4309 chromosome 1  complete genome | 3019861 | 0 | 0 | 45570 | 1.50 | 17337 | .57 | 49753 | 1.64 |
+| NC_016492.1 | Naumovozyma castellii CBS 4309 chromosome 2  complete genome | 1756361 | 0 | 0 | 23777 | 1.35 | 10317 | .58 | 26155 | 1.48 |
+| NC_016493.1 | Naumovozyma castellii CBS 4309 chromosome 3  complete genome | 1245273 | 0 | 0 | 25737 | 2.06 | 11976 | .96 | 27724 | 2.22 |
+| NC_016494.1 | Naumovozyma castellii CBS 4309 chromosome 4  complete genome | 958728 | 0 | 0 | 12996 | 1.35 | 5478 | .57 | 14172 | 1.47 |
+| NC_016495.1 | Naumovozyma castellii CBS 4309 chromosome 5  complete genome | 835708 | 0 | 0 | 14833 | 1.77 | 5675 | .67 | 15839 | 1.89 |
+| NC_016496.1 | Naumovozyma castellii CBS 4309 chromosome 6  complete genome | 828437 | 0 | 0 | 12906 | 1.55 | 4792 | .57 | 14058 | 1.69 |
+| NC_016497.1 | Naumovozyma castellii CBS 4309 chromosome 7  complete genome | 804126 | 0 | 0 | 13250 | 1.64 | 6108 | .75 | 14377 | 1.78 |
+| NC_016498.1 | Naumovozyma castellii CBS 4309 chromosome 8  complete genome | 699326 | 0 | 0 | 10133 | 1.44 | 4065 | .58 | 11503 | 1.64 |
+| NC_016499.1 | Naumovozyma castellii CBS 4309 chromosome 9  complete genome | 603245 | 0 | 0 | 9177 | 1.52 | 3754 | .62 | 9888 | 1.63 |
+| NC_016500.1 | Naumovozyma castellii CBS 4309 chromosome 10  complete genome | 468474 | 0 | 0 | 6363 | 1.35 | 2726 | .58 | 6951 | 1.48 |
+| NC_016520.1 | Tetrapisispora phaffii CBS 4417 chromosome 1  complete genome | 1377933 | 0 | 0 | 27144 | 1.96 | 13676 | .99 | 30627 | 2.22 |
+| NC_016521.1 | Tetrapisispora phaffii CBS 4417 chromosome 2  complete genome | 1164785 | 0 | 0 | 24422 | 2.09 | 13246 | 1.13 | 27538 | 2.36 |
+| NC_016522.1 | Tetrapisispora phaffii CBS 4417 chromosome 3  complete genome | 1096211 | 0 | 0 | 24719 | 2.25 | 12408 | 1.13 | 27639 | 2.52 |
+| NC_016523.1 | Tetrapisispora phaffii CBS 4417 chromosome 4  complete genome | 1042069 | 0 | 0 | 20205 | 1.93 | 11492 | 1.10 | 23138 | 2.22 |
+| NC_016524.1 | Tetrapisispora phaffii CBS 4417 chromosome 5  complete genome | 854350 | 0 | 0 | 18942 | 2.21 | 10155 | 1.18 | 21124 | 2.47 |
+| NC_016525.1 | Tetrapisispora phaffii CBS 4417 chromosome 6  complete genome | 815984 | 0 | 0 | 16056 | 1.96 | 9521 | 1.16 | 18066 | 2.21 |
+| NC_016526.1 | Tetrapisispora phaffii CBS 4417 chromosome 7  complete genome | 808783 | 0 | 0 | 14057 | 1.73 | 7205 | .89 | 16187 | 2.00 |
+| NC_016527.1 | Tetrapisispora phaffii CBS 4417 chromosome 8  complete genome | 752451 | 0 | 0 | 17476 | 2.32 | 8558 | 1.13 | 19283 | 2.56 |
+| NC_016528.1 | Tetrapisispora phaffii CBS 4417 chromosome 9  complete genome | 740259 | 0 | 0 | 17613 | 2.37 | 10395 | 1.40 | 19624 | 2.65 |
+| NC_016529.1 | Tetrapisispora phaffii CBS 4417 chromosome 10  complete genome | 713392 | 0 | 0 | 11821 | 1.65 | 7133 | .99 | 13389 | 1.87 |
+| NC_016530.1 | Tetrapisispora phaffii CBS 4417 chromosome 11  complete genome | 536385 | 0 | 0 | 10503 | 1.95 | 4337 | .80 | 11631 | 2.16 |
+| NC_016531.1 | Tetrapisispora phaffii CBS 4417 chromosome 12  complete genome | 504740 | 0 | 0 | 8464 | 1.67 | 3889 | .77 | 9495 | 1.88 |
+| NC_016532.1 | Tetrapisispora phaffii CBS 4417 chromosome 13  complete genome | 452480 | 0 | 0 | 9013 | 1.99 | 3405 | .75 | 9748 | 2.15 |
+| NC_016533.1 | Tetrapisispora phaffii CBS 4417 chromosome 14  complete genome | 432466 | 0 | 0 | 10286 | 2.37 | 6102 | 1.41 | 11046 | 2.55 |
+| NC_016534.1 | Tetrapisispora phaffii CBS 4417 chromosome 15  complete genome | 413379 | 0 | 0 | 8028 | 1.94 | 3975 | .96 | 8858 | 2.14 |
+| NC_016535.1 | Tetrapisispora phaffii CBS 4417 chromosome 16  complete genome | 394523 | 0 | 0 | 5144 | 1.30 | 3301 | .83 | 6051 | 1.53 |
 | NC_016603.1 | Acinetobacter pittii PHEA-2 chromosome  complete genome | 3862530 | 0 | 0 | 15627 | .40 | 3947 | .10 | 18739 | .48 |
 | NC_016638.1 | Mycoplasma haemocanis str. Illinois  complete genome | 919992 | 0 | 0 | 4567 | .49 | 1300 | .14 | 5057 | .54 |
 | NC_016663.1 | Sundasalanx sp. Chao Phraya mitochondrial DNA  complete genome | 16748 | 0 | 0 | 262 | 1.56 | 1356 | 8.09 | 1544 | 9.21 |
@@ -266,6 +344,7 @@
 | NC_018598.1 | Uropsilus sp. 1 FT-2014 mitochondrion  complete genome | 16530 | 0 | 0 | 485 | 2.93 | 4057 | 24.54 | 4241 | 25.65 |
 | NC_018599.1 | Macrotermes barneyi mitochondrion  complete genome | 15940 | 0 | 0 | 967 | 6.06 | 319 | 2.00 | 1163 | 7.29 |
 | NC_018602.1 | Angiostrongylus vasorum mitochondrion  complete genome | 13422 | 0 | 0 | 467 | 3.47 | 196 | 1.46 | 565 | 4.20 |
+| NC_018690.1 | Actinobacillus suis H91-0380  complete genome | 2484940 | 0 | 0 | 15709 | .63 | 2164 | .08 | 17057 | .68 |
 | NC_018780.1 | Equus zebra hartmannae isolate H21 mitochondrion  complete genome | 16409 | 0 | 0 | 500 | 3.04 | 4442 | 27.07 | 4644 | 28.30 |
 | NC_018781.1 | Equus burchellii chapmani isolate 6381 mitochondrion  complete genome | 16407 | 0 | 0 | 487 | 2.96 | 4247 | 25.88 | 4486 | 27.34 |
 | NC_018782.1 | Equus hemionus kulan isolate Ehemionus mitochondrion  complete genome | 16381 | 0 | 0 | 554 | 3.38 | 4273 | 26.08 | 4603 | 28.09 |
@@ -277,6 +356,18 @@
 | NC_018815.1 | Tropheus moorii mitochondrion  complete genome | 16590 | 0 | 0 | 209 | 1.25 | 984 | 5.93 | 1193 | 7.19 |
 | NC_018823.1 | Tridentiger barbatus mitochondrion  complete genome | 16522 | 0 | 0 | 242 | 1.46 | 788 | 4.76 | 1030 | 6.23 |
 | NC_018825.1 | Leuciscus waleckii mitochondrion  complete genome | 16605 | 0 | 0 | 203 | 1.22 | 813 | 4.89 | 1016 | 6.11 |
+| NC_018940.1 | Kazachstania africana CBS 2517 chromosome 1  complete genome | 1757399 | 0 | 0 | 21818 | 1.24 | 11321 | .64 | 23975 | 1.36 |
+| NC_018941.1 | Kazachstania africana CBS 2517 chromosome 2  complete genome | 1485491 | 0 | 0 | 17487 | 1.17 | 11518 | .77 | 19864 | 1.33 |
+| NC_018942.1 | Kazachstania africana CBS 2517 chromosome 3  complete genome | 1340033 | 0 | 0 | 14353 | 1.07 | 8623 | .64 | 16552 | 1.23 |
+| NC_018943.1 | Kazachstania africana CBS 2517 chromosome 4  complete genome | 1026673 | 0 | 0 | 10957 | 1.06 | 6516 | .63 | 12526 | 1.22 |
+| NC_018944.1 | Kazachstania africana CBS 2517 chromosome 5  complete genome | 925516 | 0 | 0 | 8603 | .92 | 4399 | .47 | 9436 | 1.01 |
+| NC_018945.1 | Kazachstania africana CBS 2517 chromosome 6  complete genome | 888590 | 0 | 0 | 10982 | 1.23 | 7332 | .82 | 12697 | 1.42 |
+| NC_018946.1 | Kazachstania africana CBS 2517 chromosome 7  complete genome | 812636 | 0 | 0 | 9544 | 1.17 | 6062 | .74 | 10819 | 1.33 |
+| NC_018947.1 | Kazachstania africana CBS 2517 chromosome 8  complete genome | 738805 | 0 | 0 | 12348 | 1.67 | 7643 | 1.03 | 13475 | 1.82 |
+| NC_018948.1 | Kazachstania africana CBS 2517 chromosome 9  complete genome | 607727 | 0 | 0 | 6534 | 1.07 | 3819 | .62 | 7612 | 1.25 |
+| NC_018949.1 | Kazachstania africana CBS 2517 chromosome 10  complete genome | 578118 | 0 | 0 | 6365 | 1.10 | 3659 | .63 | 7149 | 1.23 |
+| NC_018950.1 | Kazachstania africana CBS 2517 chromosome 11  complete genome | 547686 | 0 | 0 | 6816 | 1.24 | 3540 | .64 | 7723 | 1.41 |
+| NC_018951.1 | Kazachstania africana CBS 2517 chromosome 12  complete genome | 421466 | 0 | 0 | 3887 | .92 | 2915 | .69 | 4721 | 1.12 |
 | NC_019572.1 | Perca flavescens mitochondrion  complete genome | 16537 | 0 | 0 | 205 | 1.23 | 1182 | 7.14 | 1387 | 8.38 |
 | NC_019574.1 | Alburnus istanbulensis mitochondrion  complete genome | 16612 | 0 | 0 | 138 | .83 | 986 | 5.93 | 1124 | 6.76 |
 | NC_019575.1 | Alburnus tarichi mitochondrion  complete genome | 16602 | 0 | 0 | 197 | 1.18 | 764 | 4.60 | 961 | 5.78 |
@@ -311,6 +402,16 @@
 | NC_020149.1 | Scopelengys tristis mitochondrial DNA  complete genome | 16768 | 0 | 0 | 297 | 1.77 | 1033 | 6.16 | 1330 | 7.93 |
 | NC_020150.1 | Neoscopelus macrolepidotus mitochondrial DNA  complete genome | 16609 | 0 | 0 | 228 | 1.37 | 763 | 4.59 | 991 | 5.96 |
 | NC_020151.1 | Lampadena atlantica mitochondrial DNA  complete genome | 17807 | 0 | 0 | 254 | 1.42 | 837 | 4.70 | 1091 | 6.12 |
+| NC_020185.1 | Tetrapisispora blattae CBS 6284 chromosome 1  complete genome | 2697332 | 0 | 0 | 98072 | 3.63 | 54759 | 2.03 | 107397 | 3.98 |
+| NC_020186.1 | Tetrapisispora blattae CBS 6284 chromosome 2  complete genome | 2450908 | 0 | 0 | 96781 | 3.94 | 55748 | 2.27 | 107885 | 4.40 |
+| NC_020187.1 | Tetrapisispora blattae CBS 6284 chromosome 3  complete genome | 1779678 | 0 | 0 | 60546 | 3.40 | 32939 | 1.85 | 67259 | 3.77 |
+| NC_020188.1 | Tetrapisispora blattae CBS 6284 chromosome 4  complete genome | 1449145 | 0 | 0 | 56979 | 3.93 | 30193 | 2.08 | 61925 | 4.27 |
+| NC_020189.1 | Tetrapisispora blattae CBS 6284 chromosome 5  complete genome | 1324051 | 0 | 0 | 58147 | 4.39 | 32470 | 2.45 | 63658 | 4.80 |
+| NC_020190.1 | Tetrapisispora blattae CBS 6284 chromosome 6  complete genome | 1053862 | 0 | 0 | 39312 | 3.73 | 21942 | 2.08 | 43950 | 4.17 |
+| NC_020191.1 | Tetrapisispora blattae CBS 6284 chromosome 7  complete genome | 986391 | 0 | 0 | 39138 | 3.96 | 21534 | 2.18 | 44459 | 4.50 |
+| NC_020192.1 | Tetrapisispora blattae CBS 6284 chromosome 8  complete genome | 956377 | 0 | 0 | 40019 | 4.18 | 22323 | 2.33 | 44627 | 4.66 |
+| NC_020193.1 | Tetrapisispora blattae CBS 6284 chromosome 9  complete genome | 857919 | 0 | 0 | 37507 | 4.37 | 18951 | 2.20 | 40738 | 4.74 |
+| NC_020194.1 | Tetrapisispora blattae CBS 6284 chromosome 10  complete genome | 492930 | 0 | 0 | 21085 | 4.27 | 11394 | 2.31 | 23145 | 4.69 |
 | NC_020316.1 | Magnolia officinalis chloroplast  complete genome | 160183 | 0 | 0 | 4219 | 2.63 | 696 | .43 | 4562 | 2.84 |
 | NC_020325.1 | Psittacara acuticaudatus acuticaudatus mitochondrion  complete genome | 16998 | 0 | 0 | 214 | 1.25 | 1257 | 7.39 | 1471 | 8.65 |
 | NC_020333.1 | Amblyomma cajennense mitochondrion  complete genome | 14780 | 0 | 0 | 479 | 3.24 | 467 | 3.15 | 896 | 6.06 |
@@ -542,6 +643,7 @@
 | NC_022412.1 | Angophora costata chloroplast  complete genome | 160326 | 0 | 0 | 5991 | 3.73 | 1796 | 1.12 | 6630 | 4.13 |
 | NC_022413.1 | Allosyncarpia ternata chloroplast  complete genome | 159593 | 0 | 0 | 5278 | 3.30 | 1250 | .78 | 5866 | 3.67 |
 | NC_022414.1 | Stockwellia quadrifida chloroplast  complete genome | 159561 | 0 | 0 | 5753 | 3.60 | 1226 | .76 | 6341 | 3.97 |
+| NC_022415.1 | Carcharodon carcharias mitochondrion  complete genome | 16744 | 0 | 0 | 140 | .83 | 986 | 5.88 | 1126 | 6.72 |
 | NC_022417.1 | Cocos nucifera chloroplast  complete genome | 154731 | 0 | 0 | 6528 | 4.21 | 2167 | 1.40 | 7216 | 4.66 |
 | NC_022418.1 | Anas poecilorhyncha mitochondrion  complete genome | 16608 | 0 | 0 | 130 | .78 | 566 | 3.40 | 696 | 4.19 |
 | NC_022419.1 | Micronycteris megalotis mitochondrion  complete genome | 16589 | 0 | 0 | 539 | 3.24 | 3706 | 22.34 | 4022 | 24.24 |
@@ -1210,6 +1312,7 @@
 | NC_024101.1 | Isurus paucus mitochondrion  complete genome | 16704 | 0 | 0 | 365 | 2.18 | 960 | 5.74 | 1325 | 7.93 |
 | NC_024102.1 | Gymnura poecilura mitochondrion  complete genome | 17874 | 0 | 0 | 378 | 2.11 | 1107 | 6.19 | 1338 | 7.48 |
 | NC_024103.1 | Botrylloides leachii mitochondrion  complete genome | 14408 | 0 | 0 | 379 | 2.63 | 245 | 1.70 | 575 | 3.99 |
+| NC_024104.1 | Botrylloides giganteum mitochondrion  complete genome | 14323 | 0 | 0 | 466 | 3.25 | 196 | 1.36 | 613 | 4.27 |
 | NC_024107.1 | Cecropis daurica mitochondrion  complete genome | 17949 | 0 | 0 | 261 | 1.45 | 762 | 4.24 | 1023 | 5.69 |
 | NC_024108.1 | Grammistes sexlineatus mitochondrion  complete genome | 16502 | 0 | 0 | 177 | 1.07 | 885 | 5.36 | 1062 | 6.43 |
 | NC_024109.1 | Protosalanx hyalocranius mitochondrion  complete genome | 16693 | 0 | 0 | 337 | 2.01 | 887 | 5.31 | 1224 | 7.33 |
@@ -1253,6 +1356,7 @@
 | NC_024194.1 | Callionymus enneactis mitochondrion  complete genome | 17171 | 0 | 0 | 141 | .82 | 789 | 4.59 | 881 | 5.13 |
 | NC_024195.1 | Synchiropus splendidus mitochondrion  complete genome | 16430 | 0 | 0 | 218 | 1.32 | 1330 | 8.09 | 1499 | 9.12 |
 | NC_024197.1 | Hoplolatilus cuniculus mitochondrion  complete genome | 16853 | 0 | 0 | 143 | .84 | 1057 | 6.27 | 1200 | 7.12 |
+| NC_024198.1 | Halcyon pileata mitochondrion  complete genome | 17612 | 0 | 0 | 234 | 1.32 | 960 | 5.45 | 1194 | 6.77 |
 | NC_024199.1 | Takifugu flavidus voucher ECSFRI-JHDFT01 mitochondrion  complete genome | 16449 | 0 | 0 | 226 | 1.37 | 1205 | 7.32 | 1431 | 8.69 |
 | NC_024200.1 | Lichtheimia hongkongensis mitochondrion  complete genome | 31830 | 0 | 0 | 1537 | 4.82 | 196 | .61 | 1586 | 4.98 |
 | NC_024202.1 | Lithodes nintokuae mitochondrion  complete genome | 15731 | 0 | 0 | 616 | 3.91 | 245 | 1.55 | 665 | 4.22 |
@@ -2132,8 +2236,10 @@
 | NC_026221.1 | Bangana decora mitochondrion  complete genome | 16607 | 0 | 0 | 497 | 2.99 | 984 | 5.92 | 1407 | 8.47 |
 | NC_026222.1 | Atule mate mitochondrion  complete genome | 16565 | 0 | 0 | 261 | 1.57 | 1328 | 8.01 | 1491 | 9.00 |
 | NC_026223.1 | Periparus ater mitochondrion  complete genome | 16783 | 0 | 0 | 244 | 1.45 | 1084 | 6.45 | 1254 | 7.47 |
+| NC_026224.1 | Cherax holthuisi mitochondrion  complete genome | 15889 | 0 | 0 | 212 | 1.33 | 196 | 1.23 | 408 | 2.56 |
 | NC_026225.2 | Trypaea australiensis mitochondrion  complete genome | 15485 | 0 | 0 | 199 | 1.28 | 392 | 2.53 | 542 | 3.50 |
 | NC_026226.1 | Cherax bicarinatus mitochondrion  complete genome | 16099 | 0 | 0 | 164 | 1.01 | 295 | 1.83 | 385 | 2.39 |
+| NC_026227.1 | Cherax boesemani mitochondrion  complete genome | 15858 | 0 | 0 | 175 | 1.10 | 98 | .61 | 273 | 1.72 |
 | NC_026228.1 | Polytremis nascens voucher Pn MES 2 mitochondrion  complete genome | 15392 | 0 | 0 | 881 | 5.72 | 1327 | 8.62 | 1888 | 12.26 |
 | NC_026229.1 | Lagocephalus suezensis mitochondrion  complete genome | 16494 | 0 | 0 | 207 | 1.25 | 1306 | 7.91 | 1464 | 8.87 |
 | NC_026232.1 | Gazza minuta mitochondrial DNA  complete genome | 16475 | 0 | 0 | 196 | 1.18 | 1084 | 6.57 | 1206 | 7.32 |
@@ -2271,6 +2377,7 @@
 | NC_026673.1 | Anodonta lucida mitochondrion  complete genome | 16285 | 0 | 0 | 41 | .25 | 196 | 1.20 | 188 | 1.15 |
 | NC_026674.1 | Anodonta arcaeformis mitochondrion  complete genome | 15672 | 0 | 0 | 203 | 1.29 | 147 | .93 | 301 | 1.92 |
 | NC_026675.1 | Acerella muscorum mitochondrion  complete genome | 15018 | 0 | 0 | 1053 | 7.01 | 1132 | 7.53 | 1813 | 12.07 |
+| NC_026685.1 | Tamarindus indica chloroplast  complete genome | 159551 | 0 | 0 | 7955 | 4.98 | 2826 | 1.77 | 9127 | 5.72 |
 | NC_026686.1 | Lanceolaria grayana mitochondrion  complete genome | 15736 | 0 | 0 | 36 | .22 | 147 | .93 | 183 | 1.16 |
 | NC_026687.1 | Gongylonema pulchrum mitochondrion  complete genome | 13798 | 0 | 0 | 553 | 4.00 | 1204 | 8.72 | 1609 | 11.66 |
 | NC_026688.1 | Umalia orientalis mitochondrion  complete genome | 15466 | 0 | 0 | 213 | 1.37 | 344 | 2.22 | 557 | 3.60 |
@@ -2565,6 +2672,9 @@
 | NC_027191.1 | Gekko chinensis mitochondrion  complete genome | 17906 | 0 | 0 | 185 | 1.03 | 713 | 3.98 | 824 | 4.60 |
 | NC_027192.1 | Barbatula barbatula mitochondrion  complete genome | 16630 | 0 | 0 | 139 | .83 | 912 | 5.48 | 1051 | 6.31 |
 | NC_027193.1 | Chaenogobius gulosus mitochondrion  complete genome | 16477 | 0 | 0 | 166 | 1.00 | 1082 | 6.56 | 1248 | 7.57 |
+| NC_027205.1 | Babesia microti strain RI chromosome I  complete genome | 1304281 | 0 | 0 | 10064 | .77 | 3611 | .27 | 11733 | .89 |
+| NC_027206.1 | Babesia microti strain RI chromosome II  complete genome | 1508385 | 0 | 0 | 11413 | .75 | 3463 | .22 | 13202 | .87 |
+| NC_027207.2 | Babesia microti strain RI chromosome III  complete genome | 1766409 | 0 | 0 | 22312 | 1.26 | 10083 | .57 | 25954 | 1.46 |
 | NC_027224.1 | Salicornia brachiata chloroplast  complete genome | 153324 | 0 | 0 | 5671 | 3.69 | 763 | .49 | 6286 | 4.09 |
 | NC_027225.1 | Salicornia europaea chloroplast  complete genome | 153232 | 0 | 0 | 5865 | 3.82 | 1081 | .70 | 6578 | 4.29 |
 | NC_027226.1 | Salicornia bigelovii chloroplast  complete genome | 153076 | 0 | 0 | 6209 | 4.05 | 1547 | 1.01 | 6921 | 4.52 |
@@ -4092,20 +4202,26 @@
 | NC_030481.1 | Odontamblyopus rebecca mitochondrion  complete genome | 17009 | 0 | 0 | 298 | 1.75 | 1207 | 7.09 | 1505 | 8.84 |
 | NC_030482.1 | Leitneria floridana voucher MO:MO 2008-0670 chloroplast  complete genome | 158763 | 0 | 0 | 5593 | 3.52 | 1128 | .71 | 6206 | 3.90 |
 | NC_030483.1 | Triplophysa tibetana mitochondrion  complete genome | 16574 | 0 | 0 | 253 | 1.52 | 739 | 4.45 | 992 | 5.98 |
+| NC_030484.1 | Lagerstroemia indica chloroplast  complete genome | 152205 | 0 | 0 | 4868 | 3.19 | 712 | .46 | 5236 | 3.44 |
 | NC_030485.1 | Macrhybopsis storeriana mitochondrion  complete genome | 16709 | 0 | 0 | 302 | 1.80 | 1206 | 7.21 | 1508 | 9.02 |
+| NC_030486.1 | Eleusine indica chloroplast  complete genome | 135151 | 0 | 0 | 4667 | 3.45 | 637 | .47 | 5010 | 3.70 |
 | NC_030487.1 | Imperata cylindrica voucher DEK:Burke 21 chloroplast  complete genome | 140831 | 0 | 0 | 4596 | 3.26 | 686 | .48 | 5037 | 3.57 |
 | NC_030488.1 | Ischaemum afrum voucher PI<ITA>:364924 chloroplast  complete genome | 141097 | 0 | 0 | 4874 | 3.45 | 711 | .50 | 4874 | 3.45 |
+| NC_030489.1 | Megathyrsus maximus voucher PI<ITA>:12181 chloroplast  complete genome | 138994 | 0 | 0 | 4427 | 3.18 | 515 | .37 | 4427 | 3.18 |
 | NC_030490.1 | Oncorachis ramosa voucher SI:Zuloaga 6960 chloroplast  complete genome | 139873 | 0 | 0 | 4892 | 3.49 | 588 | .42 | 5284 | 3.77 |
 | NC_030491.1 | Oplismenus hirtellus voucher ISC<USA-IA>:Clark & Lewis 1644 chloroplast  complete genome | 137424 | 0 | 0 | 4865 | 3.54 | 540 | .39 | 4865 | 3.54 |
 | NC_030492.1 | Otachyrium versicolor voucher SI:Zuloaga 7027 chloroplast  complete genome | 140081 | 0 | 0 | 4881 | 3.48 | 713 | .50 | 5076 | 3.62 |
+| NC_030493.1 | Panicum capillare voucher CAN:Saarela 769 chloroplast  complete genome | 134520 | 0 | 0 | 4630 | 3.44 | 539 | .40 | 4875 | 3.62 |
 | NC_030495.1 | Paspalum fimbriatum voucher SI:Morrone 3651 chloroplast  complete genome | 140804 | 0 | 0 | 4609 | 3.27 | 589 | .41 | 4805 | 3.41 |
 | NC_030496.1 | Paspalum glaziovii voucher SI:Filgueiras 3482 chloroplast  complete genome | 139255 | 0 | 0 | 4692 | 3.36 | 662 | .47 | 4986 | 3.58 |
 | NC_030497.1 | Plagiantha tenella voucher SI:Zuloaga 6953 chloroplast  complete genome | 139722 | 0 | 0 | 4672 | 3.34 | 613 | .43 | 4966 | 3.55 |
 | NC_030498.1 | Sorghastrum nutans voucher DEK:Wysocki s.n. chloroplast  complete genome | 141061 | 0 | 0 | 5040 | 3.57 | 834 | .59 | 5408 | 3.83 |
 | NC_030499.1 | Steinchisma laxum voucher SI:Zuloaga 7416 chloroplast  complete genome | 139902 | 0 | 0 | 4635 | 3.31 | 589 | .42 | 4954 | 3.54 |
+| NC_030500.1 | Zeugites pittieri voucher ISC<USA-IA>:Clark et al. 1171 chloroplast  complete genome | 139738 | 0 | 0 | 3836 | 2.74 | 368 | .26 | 3836 | 2.74 |
 | NC_030501.1 | Axonopus fissifolius voucher ISC<USA-IA>:Clark et al. 1703 chloroplast  complete genome | 139250 | 0 | 0 | 4562 | 3.27 | 637 | .45 | 4562 | 3.27 |
 | NC_030502.1 | Danthoniopsis dinteri voucher DEK:Duvall s.n. chloroplast  complete genome | 139169 | 0 | 0 | 4576 | 3.28 | 368 | .26 | 4723 | 3.39 |
 | NC_030503.1 | Eulalia aurea voucher PI<ITA>:12153 chloroplast  complete genome | 140220 | 0 | 0 | 4751 | 3.38 | 785 | .55 | 4751 | 3.38 |
+| NC_030504.1 | Liriodendron chinense chloroplast  complete genome | 159429 | 0 | 0 | 4428 | 2.77 | 1055 | .66 | 4845 | 3.03 |
 | NC_030505.1 | Triplophysa orientalis mitochondrion  complete genome | 16562 | 0 | 0 | 210 | 1.26 | 936 | 5.65 | 1146 | 6.91 |
 | NC_030506.1 | Triplophysa stewarti mitochondrion  complete genome | 16567 | 0 | 0 | 291 | 1.75 | 691 | 4.17 | 982 | 5.92 |
 | NC_030507.1 | Numenius phaeopus mitochondrion  complete genome | 17091 | 0 | 0 | 269 | 1.57 | 1058 | 6.19 | 1228 | 7.18 |
@@ -4132,12 +4248,14 @@
 | NC_030529.1 | Fischoederius cobboldi mitochondrion  complete genome | 14256 | 0 | 0 | 279 | 1.95 | 98 | .68 | 377 | 2.64 |
 | NC_030530.1 | Homalogaster paloniae mitochondrion  complete genome | 15987 | 0 | 0 | 1000 | 6.25 | 441 | 2.75 | 1098 | 6.86 |
 | NC_030531.1 | Gramastacus insolitus mitochondrion  complete genome | 15704 | 0 | 0 | 86 | .54 | 319 | 2.03 | 331 | 2.10 |
+| NC_030532.1 | Oenothera villaricae strain berteriana Schwemmle chloroplast  complete genome | 165779 | 0 | 0 | 5024 | 3.03 | 1104 | .66 | 5563 | 3.35 |
 | NC_030533.1 | Saccostrea kegaki isolate P380 mitochondrion  complete genome | 16260 | 0 | 0 | 71 | .43 | 98 | .60 | 169 | 1.03 |
 | NC_030534.1 | Acioa guianensis chloroplast  complete genome | 162329 | 0 | 0 | 7879 | 4.85 | 2926 | 1.80 | 9283 | 5.71 |
 | NC_030536.1 | Conus striatus mitochondrion  complete genome | 15738 | 0 | 0 | 116 | .73 | 343 | 2.17 | 410 | 2.60 |
 | NC_030537.1 | Elysia ornata mitochondrion  complete genome | 14188 | 0 | 0 | 243 | 1.71 | 344 | 2.42 | 538 | 3.79 |
 | NC_030538.1 | Tachysurus argentivittatus mitochondrion  complete genome | 16534 | 0 | 0 | 208 | 1.25 | 1626 | 9.83 | 1834 | 11.09 |
 | NC_030539.1 | Styrax grandiflorus chloroplast  complete genome | 158052 | 0 | 0 | 6074 | 3.84 | 1202 | .76 | 6563 | 4.15 |
+| NC_030540.1 | Ludisia discolor chloroplast  complete genome | 153054 | 0 | 0 | 6177 | 4.03 | 1352 | .88 | 6693 | 4.37 |
 | NC_030541.1 | Wasmannia auropunctata voucher WA20160314 mitochondrion  complete genome | 16362 | 0 | 0 | 714 | 4.36 | 735 | 4.49 | 1351 | 8.25 |
 | NC_030542.1 | Channa micropeltes mitochondrion  complete genome | 16567 | 0 | 0 | 230 | 1.38 | 1157 | 6.98 | 1387 | 8.37 |
 | NC_030543.1 | Capsicum chinense chloroplast  complete genome | 156807 | 0 | 0 | 5620 | 3.58 | 1007 | .64 | 5963 | 3.80 |
@@ -4172,6 +4290,7 @@
 | NC_030572.1 | Licania micrantha chloroplast  complete genome | 162313 | 0 | 0 | 8211 | 5.05 | 2776 | 1.71 | 9135 | 5.62 |
 | NC_030573.1 | Licania minutiflora chloroplast  complete genome | 162318 | 0 | 0 | 7801 | 4.80 | 2411 | 1.48 | 8685 | 5.35 |
 | NC_030574.1 | Licania ovalifolia chloroplast  complete genome | 162227 | 0 | 0 | 8092 | 4.98 | 2778 | 1.71 | 9022 | 5.56 |
+| NC_030575.1 | Licania tomentosa chloroplast  complete genome | 162547 | 0 | 0 | 7683 | 4.72 | 2283 | 1.40 | 8813 | 5.42 |
 | NC_030576.1 | Magnistipula butayei chloroplast  complete genome | 162610 | 0 | 0 | 7791 | 4.79 | 2848 | 1.75 | 9358 | 5.75 |
 | NC_030577.1 | Maranthes gabunensis chloroplast  complete genome | 162659 | 0 | 0 | 8041 | 4.94 | 2678 | 1.64 | 8973 | 5.51 |
 | NC_030578.1 | Maranthes glabra chloroplast  complete genome | 162185 | 0 | 0 | 7922 | 4.88 | 2677 | 1.65 | 8878 | 5.47 |
@@ -4192,7 +4311,9 @@
 | NC_030593.1 | Hygrobia hermanni mitochondrion  complete genome | 16336 | 0 | 0 | 854 | 5.22 | 1033 | 6.32 | 1737 | 10.63 |
 | NC_030594.1 | Liposcelis keleri mitochondrion  complete genome | 14334 | 0 | 0 | 657 | 4.58 | 392 | 2.73 | 1049 | 7.31 |
 | NC_030595.1 | Littorina saxatilis mitochondrion  complete genome | 16887 | 0 | 0 | 833 | 4.93 | 994 | 5.88 | 1128 | 6.67 |
+| NC_030596.1 | Oryza brachyantha chloroplast  complete genome | 134604 | 0 | 0 | 4355 | 3.23 | 515 | .38 | 4698 | 3.49 |
 | NC_030597.1 | Sargocentron spiniferum mitochondrion  complete genome | 16548 | 0 | 0 | 142 | .85 | 1083 | 6.54 | 1176 | 7.10 |
+| NC_030598.1 | Panax stipuleanatus chloroplast  complete genome | 156064 | 0 | 0 | 4910 | 3.14 | 638 | .40 | 5351 | 3.42 |
 | NC_030599.1 | Prunus pseudocerasus voucher PSEUDO20160226 chloroplast  complete genome | 157834 | 0 | 0 | 5824 | 3.68 | 2064 | 1.30 | 6579 | 4.16 |
 | NC_030600.1 | Cladophialophora bantiana mitochondrion  complete genome | 26821 | 0 | 0 | 621 | 2.31 | 712 | 2.65 | 1137 | 4.23 |
 | NC_030601.1 | Erythroxylum novogranatense chloroplast  complete genome | 163937 | 0 | 0 | 9224 | 5.62 | 4063 | 2.47 | 10651 | 6.49 |
@@ -4228,6 +4349,7 @@
 | NC_030633.1 | Mytilus chilensis mitochondrion  complete genome | 16765 | 0 | 0 | 24 | .14 | 148 | .88 | 122 | .72 |
 | NC_030634.1 | Yaoshania pachychilus mitochondrion  complete genome | 16564 | 0 | 0 | 192 | 1.15 | 1010 | 6.09 | 1202 | 7.25 |
 | NC_030635.1 | Beauveria malawiensis isolate k89 mitochondrion  complete genome | 44135 | 0 | 0 | 1343 | 3.04 | 343 | .77 | 1588 | 3.59 |
+| NC_030636.1 | Beauveria caledonica isolate fhr1 mitochondrion  complete genome | 38316 | 0 | 0 | 1578 | 4.11 | 500 | 1.30 | 1921 | 5.01 |
 | NC_030692.1 | Borna disease virus 2  complete genome | 8908 | 0 | 0 | 38 | .42 | 49 | .55 | 87 | .97 |
 | NC_030702.1 | Zanthoxylum schinifolium isolate IM2014 ZS chloroplast  complete genome | 158963 | 0 | 0 | 5863 | 3.68 | 908 | .57 | 6206 | 3.90 |
 | NC_030703.1 | Aphyllorchis montana voucher Jin X.H. 14848 (PE) plastid  complete genome | 94559 | 0 | 0 | 2997 | 3.16 | 688 | .72 | 3316 | 3.50 |
@@ -4239,6 +4361,7 @@
 | NC_030709.1 | Neottia acuminata voucher Jin X. H. 13296 (PE) plastid  complete genome | 83190 | 0 | 0 | 4792 | 5.76 | 589 | .70 | 5037 | 6.05 |
 | NC_030710.1 | Neottia pinetorum voucher STET 1587 (PE) chloroplast  complete genome | 155959 | 0 | 0 | 6337 | 4.06 | 1202 | .77 | 6974 | 4.47 |
 | NC_030711.1 | Listera fugongensis voucher Jin X.H. 11375 (PE) chloroplast  complete genome | 156536 | 0 | 0 | 5811 | 3.71 | 1351 | .86 | 6448 | 4.11 |
+| NC_030712.1 | Neottia ovata voucher Jin X.H. 14242 (PE) chloroplast  complete genome | 156978 | 0 | 0 | 5683 | 3.62 | 662 | .42 | 6149 | 3.91 |
 | NC_030713.1 | Neottia listeroides voucher SET-ET 355 (PE) plastid  complete genome | 110246 | 0 | 0 | 6201 | 5.62 | 1204 | 1.09 | 6593 | 5.98 |
 | NC_030714.1 | Polypterus mokelembembe voucher NTNU LSP121 mitochondrion  complete genome | 16629 | 0 | 0 | 270 | 1.62 | 983 | 5.91 | 1253 | 7.53 |
 | NC_030715.1 | Anopheles oryzalimnetes mitochondrion  complete genome | 15422 | 0 | 0 | 790 | 5.12 | 1180 | 7.65 | 1773 | 11.49 |
@@ -4339,6 +4462,7 @@
 | NC_031206.1 | Pelargonium transvaalense chloroplast  complete genome | 242575 | 0 | 0 | 5688 | 2.34 | 1080 | .44 | 6129 | 2.52 |
 | NC_031209.1 | Urocitellus richardsonii mitochondrion  complete genome | 16460 | 0 | 0 | 510 | 3.09 | 4203 | 25.53 | 4290 | 26.06 |
 | NC_031210.1 | Callospermophilus lateralis mitochondrion  complete genome | 16457 | 0 | 0 | 348 | 2.11 | 3805 | 23.12 | 3977 | 24.16 |
+| NC_031211.1 | Ceramium sungminbooi voucher UC2050592 plastid  complete genome | 171923 | 0 | 0 | 6782 | 3.94 | 1127 | .65 | 7762 | 4.51 |
 | NC_031212.1 | Brachythecium rivulare mitochondrion  complete genome | 104460 | 0 | 0 | 1836 | 1.75 | 859 | .82 | 2277 | 2.17 |
 | NC_031213.1 | Turritopsis dohrnii isolate BP mitochondrion  complete genome | 15425 | 0 | 0 | 380 | 2.46 | 246 | 1.59 | 552 | 3.57 |
 | NC_031299.1 | Chasechloa egregia voucher P:L.H. Boivin  sn chloroplast  complete genome | 140371 | 0 | 0 | 4573 | 3.25 | 540 | .38 | 4720 | 3.36 |
@@ -5025,6 +5149,7 @@
 | NC_033909.1 | Otolithes ruber isolate MJ2015081503 mitochondrion  complete genome | 16589 | 0 | 0 | 290 | 1.74 | 861 | 5.19 | 1148 | 6.92 |
 | NC_033910.1 | Euphorbia esula cultivar 1984-ND001 chloroplast  complete genome | 160512 | 0 | 0 | 6135 | 3.82 | 1989 | 1.23 | 7313 | 4.55 |
 | NC_033911.1 | Lamna nasus mitochondrion  complete genome | 16697 | 0 | 0 | 411 | 2.46 | 1059 | 6.34 | 1470 | 8.80 |
+| NC_033912.1 | Castor canadensis mitochondrion  complete genome | 16767 | 0 | 0 | 833 | 4.96 | 3706 | 22.10 | 3986 | 23.77 |
 | NC_033913.1 | Akebia quinata chloroplast  complete genome | 157817 | 0 | 0 | 5409 | 3.42 | 1006 | .63 | 5973 | 3.78 |
 | NC_033914.1 | Barbus pobeguini mitochondrial DNA  complete genome | 16933 | 0 | 0 | 130 | .76 | 1108 | 6.54 | 1238 | 7.31 |
 | NC_033915.1 | Oreichthys crenuchoides mitochondrial DNA  complete genome | 16894 | 0 | 0 | 116 | .68 | 839 | 4.96 | 953 | 5.64 |
@@ -5258,8 +5383,11 @@
 | NC_034239.1 | Gnathostoma nipponicum mitochondrion  complete genome | 14093 | 0 | 0 | 809 | 5.74 | 589 | 4.17 | 1201 | 8.52 |
 | NC_034272.1 | Sargassum spinuligerum mitochondrion  complete genome | 34891 | 0 | 0 | 1566 | 4.48 | 319 | .91 | 1762 | 5.05 |
 | NC_034275.1 | Desmophyllum dianthus mitochondrion  complete genome | 16310 | 0 | 0 | 381 | 2.33 | 739 | 4.53 | 770 | 4.72 |
+| NC_034276.1 | Chlorocebus aethiops x Chlorocebus pygerythrus isolate C2 mitochondrion  complete genome | 16388 | 0 | 0 | 487 | 2.97 | 5697 | 34.76 | 5859 | 35.75 |
+| NC_034277.1 | Chlorocebus djamdjamensis isolate C5 mitochondrion  complete genome | 16443 | 0 | 0 | 446 | 2.71 | 6041 | 36.73 | 6158 | 37.45 |
 | NC_034278.1 | Campephilus imperialis mitochondrion  complete genome | 16858 | 0 | 0 | 274 | 1.62 | 1009 | 5.98 | 1234 | 7.31 |
 | NC_034279.1 | Brahmaea hearseyi mitochondrion  complete genome | 15442 | 0 | 0 | 687 | 4.44 | 1277 | 8.26 | 1767 | 11.44 |
+| NC_034280.1 | Pachliopta aristolochiae mitochondrion  complete genome | 15232 | 0 | 0 | 924 | 6.06 | 1450 | 9.51 | 1931 | 12.67 |
 | NC_034281.1 | Leporinus elongatus mitochondrion  complete genome | 16774 | 0 | 0 | 211 | 1.25 | 1108 | 6.60 | 1319 | 7.86 |
 | NC_034282.1 | Rhombodera brachynota mitochondrion  complete genome | 16616 | 0 | 0 | 608 | 3.65 | 147 | .88 | 755 | 4.54 |
 | NC_034283.1 | Hierodula patellifera mitochondrion  complete genome | 16999 | 0 | 0 | 549 | 3.22 | 417 | 2.45 | 966 | 5.68 |
@@ -5267,16 +5395,24 @@
 | NC_034285.1 | Passiflora edulis chloroplast  complete genome | 151406 | 0 | 0 | 6379 | 4.21 | 1276 | .84 | 6918 | 4.56 |
 | NC_034286.1 | Alliaria grandifolia chloroplast  complete genome | 153964 | 0 | 0 | 5623 | 3.65 | 1769 | 1.14 | 6383 | 4.14 |
 | NC_034287.1 | Cardamine limprichtiana chloroplast  complete genome | 153746 | 0 | 0 | 5619 | 3.65 | 1422 | .92 | 6276 | 4.08 |
+| NC_034288.1 | Macrotermes yunnanensis isolate D50 mitochondrion  complete genome | 15965 | 0 | 0 | 613 | 3.83 | 490 | 3.06 | 1103 | 6.90 |
 | NC_034289.1 | Ancylostoma tubaeforme mitochondrion  complete genome | 13730 | 0 | 0 | 889 | 6.47 | 319 | 2.32 | 1159 | 8.44 |
 | NC_034290.1 | Citrus maxima plastid  complete genome | 160133 | 0 | 0 | 5799 | 3.62 | 1718 | 1.07 | 6338 | 3.95 |
 | NC_034291.1 | Ichthyomyzon gagei mitochondrion  complete genome | 16359 | 0 | 0 | 349 | 2.13 | 1036 | 6.33 | 1136 | 6.94 |
 | NC_034292.1 | Ellobium chinense mitochondrion  complete genome | 13979 | 0 | 0 | 69 | .49 | 172 | 1.23 | 241 | 1.72 |
 | NC_034293.1 | Curculio davidi mitochondrion  complete genome | 16852 | 0 | 0 | 582 | 3.45 | 688 | 4.08 | 1221 | 7.24 |
+| NC_034294.1 | Thymallus baicalolenensis isolate TBL-B1 mitochondrion  complete genome | 16662 | 0 | 0 | 143 | .85 | 913 | 5.47 | 1056 | 6.33 |
 | NC_034295.1 | Ostrya trichocarpa chloroplast  complete genome | 159122 | 0 | 0 | 7149 | 4.49 | 1818 | 1.14 | 7885 | 4.95 |
 | NC_034296.1 | Glaucidium cuculoides mitochondrion  complete genome | 17392 | 0 | 0 | 292 | 1.67 | 836 | 4.80 | 1128 | 6.48 |
 | NC_034297.1 | Daphnia galeata mitochondrial DNA  complete genome | 16339 | 0 | 0 | 180 | 1.10 | 613 | 3.75 | 621 | 3.80 |
 | NC_034298.1 | Nihonotrypaea harmandi mitochondrion  complete genome | 15272 | 0 | 0 | 253 | 1.65 | 245 | 1.60 | 449 | 2.94 |
 | NC_034299.1 | Alyssum desertorum voucher ADES20160707 chloroplast  complete genome | 151677 | 0 | 0 | 5735 | 3.78 | 1502 | .99 | 6460 | 4.25 |
+| NC_034300.1 | Bryopa lata voucher Bryopa 29Jun15 mitochondrion  complete genome | 31969 | 0 | 0 | 412 | 1.28 | 441 | 1.37 | 706 | 2.20 |
+| NC_034301.1 | Euciroa cf. queenslandica STW-2017 voucher E queens 29Jun15 mitochondrion  complete genome | 15042 | 0 | 0 | 299 | 1.98 | 343 | 2.28 | 593 | 3.94 |
+| NC_034302.1 | Lyonsia norwegica voucher L norwegica 29Jun15 mitochondrion  complete genome | 14673 | 0 | 0 | 76 | .51 | 123 | .83 | 199 | 1.35 |
+| NC_034303.1 | Myadora brevis voucher M brevis 29Jun15 mitochondrion  complete genome | 19292 | 0 | 0 | 403 | 2.08 | 541 | 2.80 | 747 | 3.87 |
+| NC_034304.1 | Tropidomya abbreviata voucher T abbreviata 29Jun15 mitochondrion  complete genome | 16829 | 0 | 0 | 295 | 1.75 | 294 | 1.74 | 442 | 2.62 |
+| NC_034305.1 | Laternula truncata voucher L truncata 29Jun15 mitochondrion  complete genome | 16363 | 0 | 0 | 191 | 1.16 | 98 | .59 | 289 | 1.76 |
 | NC_034306.1 | Rhinolophus thomasi mitochondrion  complete genome | 16899 | 0 | 0 | 369 | 2.18 | 4126 | 24.41 | 4317 | 25.54 |
 | NC_034307.1 | Dicrostonyx hudsonius mitochondrion  complete genome | 16338 | 0 | 0 | 436 | 2.66 | 3755 | 22.98 | 3943 | 24.13 |
 | NC_034308.1 | Rehmannia glutinosa chloroplast  complete genome | 153622 | 0 | 0 | 4764 | 3.10 | 662 | .43 | 5058 | 3.29 |
@@ -5284,10 +5420,13 @@
 | NC_034310.1 | Rehmannia solanifolia chloroplast  complete genome | 153989 | 0 | 0 | 4901 | 3.18 | 761 | .49 | 5269 | 3.42 |
 | NC_034311.1 | Rehmannia piasezkii chloroplast  complete genome | 153925 | 0 | 0 | 4592 | 2.98 | 735 | .47 | 5082 | 3.30 |
 | NC_034312.1 | Rehmannia elata chloroplast  complete genome | 153772 | 0 | 0 | 4972 | 3.23 | 784 | .50 | 5364 | 3.48 |
+| NC_034313.1 | Dicrostonyx groenlandicus mitochondrion  complete genome | 16341 | 0 | 0 | 436 | 2.66 | 3579 | 21.90 | 3791 | 23.19 |
 | NC_034314.1 | Meriones tamariscinus mitochondrion  complete genome | 16389 | 0 | 0 | 479 | 2.92 | 2711 | 16.54 | 3061 | 18.67 |
 | NC_034315.1 | Cyclocarya paliurus chloroplast  complete genome | 160562 | 0 | 0 | 6589 | 4.10 | 2504 | 1.55 | 7863 | 4.89 |
 | NC_034316.1 | Sarothrura ayresi mitochondrion  complete genome | 16767 | 0 | 0 | 241 | 1.43 | 1181 | 7.04 | 1420 | 8.46 |
 | NC_034317.1 | Papilio protenor mitochondrion  complete genome | 15268 | 0 | 0 | 1299 | 8.50 | 908 | 5.94 | 1838 | 12.03 |
+| NC_034318.1 | Sinularia cf. cruciata GS-2016 mitochondrion  complete genome | 18730 | 0 | 0 | 255 | 1.36 | 49 | .26 | 304 | 1.62 |
+| NC_034319.1 | Hippocampus queenslandicus mitochondrion  complete genome | 16527 | 0 | 0 | 267 | 1.61 | 739 | 4.47 | 1006 | 6.08 |
 | NC_034320.1 | Echinacea paradoxa plastid  complete genome | 151837 | 0 | 0 | 5152 | 3.39 | 736 | .48 | 5397 | 3.55 |
 | NC_034321.1 | Echinacea pallida plastid  complete genome | 151883 | 0 | 0 | 5284 | 3.47 | 786 | .51 | 5578 | 3.67 |
 | NC_034322.1 | Echinacea laevigata plastid  complete genome | 151886 | 0 | 0 | 5317 | 3.50 | 835 | .54 | 5513 | 3.62 |
@@ -5297,11 +5436,32 @@
 | NC_034326.1 | Echinacea tennesseensis plastid  complete genome | 151877 | 0 | 0 | 5137 | 3.38 | 736 | .48 | 5382 | 3.54 |
 | NC_034327.1 | Echinacea purpurea plastid  complete genome | 151913 | 0 | 0 | 5083 | 3.34 | 957 | .62 | 5500 | 3.62 |
 | NC_034328.1 | Echinacea sanguinea plastid  complete genome | 151926 | 0 | 0 | 5462 | 3.59 | 1031 | .67 | 5805 | 3.82 |
+| NC_034329.1 | Anisakis pegreffii mitochondrion  complete genome | 14002 | 0 | 0 | 1193 | 8.52 | 716 | 5.11 | 1340 | 9.57 |
+| NC_034330.1 | Mustela itatsi isolate IT01 mitochondrion  complete genome | 16027 | 0 | 0 | 287 | 1.79 | 3458 | 21.57 | 3646 | 22.74 |
 | NC_034331.1 | Primula persimilis chloroplast  complete genome | 152756 | 0 | 0 | 5035 | 3.29 | 834 | .54 | 5403 | 3.53 |
 | NC_034332.1 | Coccocarpia palmicola voucher NY:45953 mitochondrion  complete genome | 73992 | 0 | 0 | 3418 | 4.61 | 1206 | 1.62 | 3791 | 5.12 |
+| NC_034333.1 | Acanthocepola krusensternii mitochondrion  complete genome | 16415 | 0 | 0 | 208 | 1.26 | 887 | 5.40 | 1095 | 6.67 |
+| NC_034334.1 | Epigonus denticulatus mitochondrion  complete genome | 16515 | 0 | 0 | 179 | 1.08 | 861 | 5.21 | 1040 | 6.29 |
+| NC_034335.1 | Synagrops japonicus mitochondrion  complete genome | 16803 | 0 | 0 | 205 | 1.22 | 1204 | 7.16 | 1409 | 8.38 |
+| NC_034336.1 | Bedotia geayi mitochondrion  complete genome | 16527 | 0 | 0 | 196 | 1.18 | 1008 | 6.09 | 1204 | 7.28 |
+| NC_034337.1 | Dermogenys pusilla mitochondrion  complete genome | 16529 | 0 | 0 | 292 | 1.76 | 1181 | 7.14 | 1424 | 8.61 |
+| NC_034338.1 | Hoplichthys gilberti mitochondrion  complete genome | 16504 | 0 | 0 | 257 | 1.55 | 886 | 5.36 | 1143 | 6.92 |
+| NC_034339.1 | Lates japonicus mitochondrion  complete genome | 16590 | 0 | 0 | 245 | 1.47 | 1083 | 6.52 | 1279 | 7.70 |
+| NC_034340.1 | Uranoscopus japonicus mitochondrion  complete genome | 17878 | 0 | 0 | 115 | .64 | 664 | 3.71 | 779 | 4.35 |
+| NC_034341.1 | Plesiops nakaharae mitochondrion  complete genome | 16961 | 0 | 0 | 278 | 1.63 | 787 | 4.64 | 1065 | 6.27 |
+| NC_034342.1 | Bathyclupea megaceps mitochondrion  complete genome | 16850 | 0 | 0 | 236 | 1.40 | 1233 | 7.31 | 1469 | 8.71 |
+| NC_034344.1 | Acanthaphritis unoorum mitochondrion  complete genome | 16620 | 0 | 0 | 151 | .90 | 862 | 5.18 | 915 | 5.50 |
+| NC_034345.1 | Trichonotus setiger mitochondrion  complete genome | 16595 | 0 | 0 | 68 | .40 | 886 | 5.33 | 954 | 5.74 |
 | NC_034346.1 | Acer griseum chloroplast  complete genome | 156857 | 0 | 0 | 5604 | 3.57 | 1227 | .78 | 6138 | 3.91 |
 | NC_034347.1 | Fragaria pentaphylla chloroplast  complete genome | 155640 | 0 | 0 | 4679 | 3.00 | 1450 | .93 | 5218 | 3.35 |
+| NC_034348.1 | Indopacetus pacificus voucher NMNS011169 mitochondrion  complete genome | 16341 | 0 | 0 | 206 | 1.26 | 3384 | 20.70 | 3535 | 21.63 |
+| NC_034350.1 | Nibea mitsukurii mitochondrion  complete genome | 16498 | 0 | 0 | 180 | 1.09 | 813 | 4.92 | 944 | 5.72 |
+| NC_034351.1 | Bovichtus argentinus mitochondrion  complete genome | 16903 | 0 | 0 | 185 | 1.09 | 1035 | 6.12 | 1220 | 7.21 |
+| NC_034352.1 | Macropodus chinensis mitochondrion  complete genome | 16497 | 0 | 0 | 204 | 1.23 | 1083 | 6.56 | 1287 | 7.80 |
+| NC_034353.1 | Garrulax formosus voucher B36 mitochondrion  complete genome | 17869 | 0 | 0 | 184 | 1.02 | 1033 | 5.78 | 1217 | 6.81 |
 | NC_034354.1 | Diplostephium hartwegii voucher TEX:Vargas 456 mitochondrion  complete genome | 277718 | 0 | 0 | 2684 | .96 | 490 | .17 | 3076 | 1.10 |
+| NC_034355.1 | Papilio dardanus mitochondrion  complete genome | 15349 | 0 | 0 | 1340 | 8.73 | 859 | 5.59 | 1953 | 12.72 |
+| NC_034356.1 | Papilio rex voucher BMNH1044356 mitochondrion  complete genome | 15239 | 0 | 0 | 980 | 6.43 | 861 | 5.64 | 1519 | 9.96 |
 | NC_034357.1 | Megadenia pygmaea chloroplast  complete genome | 153569 | 0 | 0 | 5714 | 3.72 | 1375 | .89 | 6201 | 4.03 |
 | NC_034358.1 | Matthiola incana chloroplast  complete genome | 153896 | 0 | 0 | 6722 | 4.36 | 2557 | 1.66 | 7482 | 4.86 |
 | NC_034359.1 | Solms-laubachia eurycarpa chloroplast  complete genome | 152895 | 0 | 0 | 6342 | 4.14 | 2162 | 1.41 | 7225 | 4.72 |
@@ -5309,6 +5469,7 @@
 | NC_034361.1 | Neotorularia korolkowii chloroplast  complete genome | 153892 | 0 | 0 | 6165 | 4.00 | 1841 | 1.19 | 6704 | 4.35 |
 | NC_034362.1 | Thlaspi arvense chloroplast  complete genome | 153892 | 0 | 0 | 6075 | 3.94 | 1793 | 1.16 | 6958 | 4.52 |
 | NC_034363.1 | Lepidium meyenii chloroplast  complete genome | 154403 | 0 | 0 | 5901 | 3.82 | 1202 | .77 | 6484 | 4.19 |
+| NC_034364.1 | Tarenaya hassleriana chloroplast  complete genome | 157688 | 0 | 0 | 6386 | 4.04 | 2359 | 1.49 | 7465 | 4.73 |
 | NC_034365.1 | Arabidopsis lyrata chloroplast  complete genome | 154678 | 0 | 0 | 6138 | 3.96 | 1400 | .90 | 6334 | 4.09 |
 | NC_034366.1 | Arabidopsis halleri chloroplast  complete genome | 154671 | 0 | 0 | 6084 | 3.93 | 1373 | .88 | 6476 | 4.18 |
 | NC_034367.1 | Aethionema arabicum chloroplast  complete genome | 154234 | 0 | 0 | 5842 | 3.78 | 1105 | .71 | 6357 | 4.12 |
@@ -5316,7 +5477,1388 @@
 | NC_034369.1 | Fritillaria ussuriensis chloroplast  complete genome | 151524 | 0 | 0 | 6540 | 4.31 | 2038 | 1.34 | 6957 | 4.59 |
 | NC_034370.1 | Lilium taliense chloroplast  complete genome | 153055 | 0 | 0 | 6492 | 4.24 | 1595 | 1.04 | 7106 | 4.64 |
 | NC_034371.1 | Primula kwangtungensis chloroplast  complete genome | 153757 | 0 | 0 | 4890 | 3.18 | 637 | .41 | 5282 | 3.43 |
+| NC_034372.1 | Ciona robusta voucher SMNHTAU<ISR>:SMNHTAU AS25981 mitochondrion  complete genome | 14790 | 0 | 0 | 1062 | 7.18 | 481 | 3.25 | 1062 | 7.18 |
+| NC_034373.1 | Garrulax elliotii mitochondrion  complete genome | 17873 | 0 | 0 | 257 | 1.43 | 1304 | 7.29 | 1561 | 8.73 |
 | NC_034374.1 | Numida meleagris isolate 19003 mitochondrion  complete genome | 16785 | 0 | 0 | 168 | 1.00 | 911 | 5.42 | 1079 | 6.42 |
+| NC_034634.1 | Amana erythronioides chloroplast  complete genome | 150714 | 0 | 0 | 7385 | 4.90 | 1865 | 1.23 | 7777 | 5.16 |
+| NC_034636.1 | Babesia microti strain RI apicoplast complete genome | 28657 | 0 | 0 | 909 | 3.17 | 2628 | 9.17 | 3216 | 11.22 |
+| NC_034637.1 | Babesia microti strain RI mitochondrion  isoform 3 complete genome | 10547 | 0 | 0 | 0 | 0 | 49 | .46 | 0 | 0 |
+| NC_034638.1 | Paragabara curvicornuta mitochondrion  complete genome | 15532 | 0 | 0 | 1319 | 8.49 | 1109 | 7.14 | 1884 | 12.12 |
+| NC_034639.1 | Eriobotrya japonica chloroplast  complete genome | 159137 | 0 | 0 | 6283 | 3.94 | 1792 | 1.12 | 7068 | 4.44 |
+| NC_034640.1 | Androsace paxiana chloroplast  complete genome | 150528 | 0 | 0 | 4753 | 3.15 | 687 | .45 | 4949 | 3.28 |
+| NC_034641.1 | Androsace bulleyana chloroplast  complete genome | 152110 | 0 | 0 | 4921 | 3.23 | 539 | .35 | 5117 | 3.36 |
+| NC_034642.1 | Merops viridis mitochondrion  complete genome | 18295 | 0 | 0 | 315 | 1.72 | 1060 | 5.79 | 1226 | 6.70 |
+| NC_034643.1 | Ledebouriella seseloides chloroplast  complete genome | 147830 | 0 | 0 | 5708 | 3.86 | 1694 | 1.14 | 6419 | 4.34 |
+| NC_034644.1 | Peucedanum japonicum chloroplast  complete genome | 164653 | 0 | 0 | 5870 | 3.56 | 1669 | 1.01 | 6704 | 4.07 |
+| NC_034645.1 | Glehnia littoralis chloroplast  complete genome | 147477 | 0 | 0 | 5616 | 3.80 | 1523 | 1.03 | 6279 | 4.25 |
+| NC_034646.1 | Dicrostonyx torquatus voucher UAM:Mamm:84102 mitochondrion  complete genome | 16340 | 0 | 0 | 441 | 2.69 | 3828 | 23.42 | 3895 | 23.83 |
+| NC_034647.1 | Liobagrus styani voucher Zhange:IHB2015111503 mitochondrion  complete genome | 16515 | 0 | 0 | 145 | .87 | 1134 | 6.86 | 1279 | 7.74 |
+| NC_034648.1 | Anaphalis sinica chloroplast  complete genome | 152718 | 0 | 0 | 6711 | 4.39 | 1524 | .99 | 7424 | 4.86 |
+| NC_034649.1 | Lycodes tanakae mitochondrion  complete genome | 16594 | 0 | 0 | 214 | 1.28 | 690 | 4.15 | 904 | 5.44 |
+| NC_034650.1 | Gymnocanthus intermedius mitochondrion  complete genome | 16639 | 0 | 0 | 145 | .87 | 816 | 4.90 | 958 | 5.75 |
+| NC_034651.1 | Gymnocanthus herzensteini mitochondrion  complete genome | 16691 | 0 | 0 | 154 | .92 | 702 | 4.20 | 844 | 5.05 |
+| NC_034652.1 | Arundo plinii chloroplast  complete genome | 137128 | 0 | 0 | 4283 | 3.12 | 588 | .42 | 4528 | 3.30 |
+| NC_034653.1 | Hemilepidotus gilberti mitochondrion  complete genome | 16907 | 0 | 0 | 380 | 2.24 | 788 | 4.66 | 1168 | 6.90 |
+| NC_034654.1 | Pediastrum duplex voucher EL0201CT chloroplast  complete genome | 232554 | 0 | 0 | 18144 | 7.80 | 4932 | 2.12 | 21259 | 9.14 |
+| NC_034655.1 | Hydrodictyon reticulatum voucher HAM0289 chloroplast  complete genome | 225641 | 0 | 0 | 24381 | 10.80 | 13125 | 5.81 | 28893 | 12.80 |
+| NC_034656.1 | Anaulaciulus koreanus mitochondrion  complete genome | 14916 | 0 | 0 | 848 | 5.68 | 295 | 1.97 | 1094 | 7.33 |
+| NC_034657.1 | Diodon hystrix mitochondrion  complete genome | 16512 | 0 | 0 | 241 | 1.45 | 1254 | 7.59 | 1495 | 9.05 |
+| NC_034658.1 | Diodon liturosus mitochondrion  complete genome | 16514 | 0 | 0 | 175 | 1.05 | 861 | 5.21 | 1036 | 6.27 |
+| NC_034659.1 | Ophiocordyceps sinensis mitochondrion  complete genome | 157539 | 0 | 0 | 2882 | 1.82 | 1696 | 1.07 | 3764 | 2.38 |
+| NC_034660.1 | Lysionotus pauciflorus chloroplast  complete genome | 153856 | 0 | 0 | 4315 | 2.80 | 834 | .54 | 4732 | 3.07 |
+| NC_034661.1 | Capnia zijinshana mitochondrion  complete genome | 16310 | 0 | 0 | 340 | 2.08 | 344 | 2.10 | 536 | 3.28 |
+| NC_034662.1 | Lagerstroemia intermedia chloroplast  complete genome | 152330 | 0 | 0 | 4707 | 3.09 | 491 | .32 | 4952 | 3.25 |
+| NC_034663.1 | Junonia litoralis mitochondrion  complete genome | 15177 | 0 | 0 | 1092 | 7.19 | 1448 | 9.54 | 1976 | 13.01 |
+| NC_034664.1 | Junonia vestina mitochondrion  complete genome | 15224 | 0 | 0 | 829 | 5.44 | 1056 | 6.93 | 1565 | 10.27 |
+| NC_034665.1 | Bathylychnops exilis mitochondrial DNA  complete genome | 16444 | 0 | 0 | 287 | 1.74 | 985 | 5.99 | 1272 | 7.73 |
+| NC_034666.1 | Dolichopteryx minuscula mitochondrial DNA  complete genome | 16875 | 0 | 0 | 335 | 1.98 | 1008 | 5.97 | 1294 | 7.66 |
+| NC_034667.1 | Hypophthalmichthys nobilis x Hypophthalmichthys molitrix mitochondrion  complete genome | 16616 | 0 | 0 | 309 | 1.85 | 1381 | 8.31 | 1690 | 10.17 |
+| NC_034668.1 | Epinephelus akaara x Epinephelus lanceolatus mitochondrion  complete genome | 16795 | 0 | 0 | 69 | .41 | 1060 | 6.31 | 1129 | 6.72 |
+| NC_034669.1 | Xiphister atropurpureus voucher 262 mitochondrion  complete genome | 16518 | 0 | 0 | 176 | 1.06 | 715 | 4.32 | 891 | 5.39 |
+| NC_034670.1 | Ipomoea trifida plastid  complete genome | 161133 | 0 | 0 | 6011 | 3.73 | 735 | .45 | 6446 | 4.00 |
+| NC_034671.1 | Citrus reticulata plastid  complete genome | 160100 | 0 | 0 | 5721 | 3.57 | 1523 | .95 | 6064 | 3.78 |
+| NC_034672.1 | Fucus distichus voucher UC2050487 mitochondrion  complete genome | 36400 | 0 | 0 | 1401 | 3.84 | 147 | .40 | 1499 | 4.11 |
+| NC_034673.1 | Choroedocus violaceipes voucher CHVI1116 mitochondrion  complete genome | 15694 | 0 | 0 | 384 | 2.44 | 590 | 3.75 | 875 | 5.57 |
+| NC_034674.1 | Aiolopus thalassinus voucher AITH2016 mitochondrion  complete genome | 15753 | 0 | 0 | 1086 | 6.89 | 687 | 4.36 | 1626 | 10.32 |
+| NC_034675.1 | Cromileptes altivelis x Epinephelus lanceolatus mitochondrion  complete genome | 16503 | 0 | 0 | 233 | 1.41 | 1083 | 6.56 | 1267 | 7.67 |
+| NC_034676.1 | Burara striata voucher NVG-5270 mitochondrion  complete genome | 15327 | 0 | 0 | 1035 | 6.75 | 1352 | 8.82 | 2043 | 13.32 |
+| NC_034677.1 | Primula stenodonta chloroplast  complete genome | 150785 | 0 | 0 | 4259 | 2.82 | 662 | .43 | 4676 | 3.10 |
+| NC_034678.1 | Primula chrysochlora chloroplast  complete genome | 151944 | 0 | 0 | 4599 | 3.02 | 466 | .30 | 4918 | 3.23 |
+| NC_034679.1 | Amazona ventralis mitochondrion  complete genome | 18571 | 0 | 0 | 468 | 2.52 | 1305 | 7.02 | 1625 | 8.75 |
+| NC_034680.1 | Cynodon dactylon chloroplast  complete genome | 134297 | 0 | 0 | 4644 | 3.45 | 663 | .49 | 4865 | 3.62 |
+| NC_034681.1 | Gracilaria changii isolate GC2 mitochondrion  complete genome | 25729 | 0 | 0 | 1520 | 5.90 | 245 | .95 | 1765 | 6.85 |
+| NC_034682.1 | Spirula spirula voucher NMV:Z7946 mitochondrion  complete genome | 15472 | 0 | 0 | 780 | 5.04 | 343 | 2.21 | 1074 | 6.94 |
+| NC_034683.1 | Artemisia annua plastid  complete genome | 150952 | 0 | 0 | 5657 | 3.74 | 1226 | .81 | 6147 | 4.07 |
+| NC_034684.1 | Pimenta dioica plastid  complete genome | 158984 | 0 | 0 | 5831 | 3.66 | 1301 | .81 | 6370 | 4.00 |
+| NC_034685.1 | Illicium floridanum plastid  complete genome | 143571 | 0 | 0 | 5587 | 3.89 | 1574 | 1.09 | 5955 | 4.14 |
+| NC_034686.1 | Dioscorea villosa plastid  complete genome | 153974 | 0 | 0 | 5678 | 3.68 | 1082 | .70 | 6120 | 3.97 |
+| NC_034687.1 | Magnolia biondii plastid  complete genome | 160002 | 0 | 0 | 4053 | 2.53 | 665 | .41 | 4249 | 2.65 |
+| NC_034688.1 | Digitalis lanata plastid  complete genome | 153108 | 0 | 0 | 4462 | 2.91 | 735 | .48 | 5001 | 3.26 |
+| NC_034689.1 | Illicium verum plastid  complete genome | 143187 | 0 | 0 | 5688 | 3.97 | 1079 | .75 | 5933 | 4.14 |
+| NC_034690.1 | Citrus limon plastid  complete genome | 160101 | 0 | 0 | 5774 | 3.60 | 1572 | .98 | 6313 | 3.94 |
+| NC_034691.1 | Jasminum tortuosum plastid  complete genome | 162080 | 0 | 0 | 6670 | 4.11 | 1965 | 1.21 | 7160 | 4.41 |
+| NC_034692.1 | Piper nigrum plastid  complete genome | 161523 | 0 | 0 | 6363 | 3.93 | 1400 | .86 | 6830 | 4.22 |
+| NC_034693.1 | Scutellaria lateriflora plastid  complete genome | 152283 | 0 | 0 | 4597 | 3.01 | 492 | .32 | 4793 | 3.14 |
+| NC_034694.1 | Jasminum sambac plastid  complete genome | 163186 | 0 | 0 | 7236 | 4.43 | 2005 | 1.22 | 7628 | 4.67 |
+| NC_034695.1 | Aloysia citrodora plastid  complete genome | 154699 | 0 | 0 | 4639 | 2.99 | 394 | .25 | 4884 | 3.15 |
+| NC_034696.1 | Prunus dulcis plastid  complete genome | 157723 | 0 | 0 | 6553 | 4.15 | 1794 | 1.13 | 7085 | 4.49 |
+| NC_034697.1 | Piper auritum plastid  complete genome | 159909 | 0 | 0 | 5679 | 3.55 | 1106 | .69 | 6243 | 3.90 |
+| NC_034698.1 | Mitragyna speciosa plastid  complete genome | 155600 | 0 | 0 | 5287 | 3.39 | 860 | .55 | 5483 | 3.52 |
+| NC_034699.1 | Illicium henryi plastid  complete genome | 143240 | 0 | 0 | 5210 | 3.63 | 1129 | .78 | 5643 | 3.93 |
+| NC_034700.1 | Laurus nobilis plastid  complete genome | 152750 | 0 | 0 | 4843 | 3.17 | 1129 | .73 | 5334 | 3.49 |
+| NC_034701.1 | Althaea officinalis plastid  complete genome | 159987 | 0 | 0 | 6471 | 4.04 | 1817 | 1.13 | 7222 | 4.51 |
+| NC_034702.1 | Hydrastis canadensis plastid  complete genome | 160000 | 0 | 0 | 5167 | 3.22 | 663 | .41 | 5461 | 3.41 |
+| NC_034703.1 | Illicium anisatum plastid  complete genome | 142723 | 0 | 0 | 5249 | 3.67 | 1228 | .86 | 5617 | 3.93 |
+| NC_034705.1 | Amana wanzhensis chloroplast  complete genome | 150576 | 0 | 0 | 6880 | 4.56 | 1399 | .92 | 7297 | 4.84 |
+| NC_034706.1 | Amana anhuiensis chloroplast  complete genome | 150723 | 0 | 0 | 6863 | 4.55 | 1350 | .89 | 7378 | 4.89 |
+| NC_034707.1 | Amana edulis chloroplast  complete genome | 150810 | 0 | 0 | 6533 | 4.33 | 1816 | 1.20 | 7244 | 4.80 |
+| NC_034708.1 | Amana kuocangshanica chloroplast  complete genome | 151058 | 0 | 0 | 6777 | 4.48 | 1718 | 1.13 | 7310 | 4.83 |
+| NC_034709.1 | Trichosarcina mucosa culture SAG:4.90 chloroplast  complete genome | 227181 | 0 | 0 | 5162 | 2.27 | 931 | .40 | 5897 | 2.59 |
+| NC_034710.1 | Pseudoneochloris marina culture UTEX:1445 chloroplast  complete genome | 134753 | 0 | 0 | 7121 | 5.28 | 2483 | 1.84 | 8496 | 6.30 |
+| NC_034711.1 | Pseudocharacium americanum culture UTEX:2112 chloroplast  complete genome | 239448 | 0 | 0 | 6808 | 2.84 | 1816 | .75 | 8034 | 3.35 |
+| NC_034712.1 | Ignatius tetrasporus culture UTEX:2012 chloroplast  complete genome | 239387 | 0 | 0 | 6812 | 2.84 | 1864 | .77 | 8038 | 3.35 |
+| NC_034713.1 | Neodangemannia microcystis culture SAG:2022 chloroplast  complete genome | 166355 | 0 | 0 | 6512 | 3.91 | 1888 | 1.13 | 7588 | 4.56 |
+| NC_034715.1 | Senga ophiocephalina mitochondrion  complete genome | 13816 | 0 | 0 | 269 | 1.94 | 221 | 1.59 | 441 | 3.19 |
+| NC_034716.1 | Melastoma candidum chloroplast  complete genome | 156682 | 0 | 0 | 5856 | 3.73 | 1550 | .98 | 6445 | 4.11 |
+| NC_034717.1 | Lepilemur ankaranensis isolate ANAL5 mitochondrion  complete genome | 17157 | 0 | 0 | 625 | 3.64 | 4369 | 25.46 | 4672 | 27.23 |
+| NC_034718.1 | Lepilemur fleuretae isolate AND6.3 mitochondrion  complete genome | 16879 | 0 | 0 | 518 | 3.06 | 4196 | 24.85 | 4415 | 26.15 |
+| NC_034719.1 | Lepilemur leucopus isolate AND65 mitochondrion  complete genome | 16753 | 0 | 0 | 487 | 2.90 | 3255 | 19.42 | 3420 | 20.41 |
+| NC_034720.1 | Lepilemur edwardsi isolate ANK16 mitochondrion  complete genome | 16923 | 0 | 0 | 609 | 3.59 | 4198 | 24.80 | 4360 | 25.76 |
+| NC_034721.1 | Lepilemur dorsalis isolate ANT5.2 mitochondrion  complete genome | 17078 | 0 | 0 | 592 | 3.46 | 3950 | 23.12 | 4094 | 23.97 |
+| NC_034722.1 | Lepilemur randrianasoloi isolate BEMA7.7 mitochondrion  complete genome | 16993 | 0 | 0 | 475 | 2.79 | 4318 | 25.41 | 4421 | 26.01 |
+| NC_034723.1 | Lepilemur petteri isolate BEZ7.20 mitochondrion  complete genome | 16789 | 0 | 0 | 563 | 3.35 | 3404 | 20.27 | 3595 | 21.41 |
+| NC_034724.1 | Lepilemur otto isolate BIBO7.1 mitochondrion  complete genome | 16769 | 0 | 0 | 216 | 1.28 | 3234 | 19.28 | 3351 | 19.98 |
+| NC_034725.1 | Lepilemur milanoii isolate DAR5.1 mitochondrion  complete genome | 17057 | 0 | 0 | 529 | 3.10 | 4096 | 24.01 | 4327 | 25.36 |
+| NC_034726.1 | Lepilemur betsileo isolate FAN6.1 mitochondrion  complete genome | 16916 | 0 | 0 | 401 | 2.37 | 3899 | 23.04 | 3952 | 23.36 |
+| NC_034727.1 | Lepilemur septentrionalis isolate FARY5.1 mitochondrion  complete genome | 16935 | 0 | 0 | 404 | 2.38 | 3946 | 23.30 | 4248 | 25.08 |
+| NC_034728.1 | Lepilemur mittermeieri isolate DVA8.2 mitochondrion  complete genome | 17077 | 0 | 0 | 592 | 3.46 | 3725 | 21.81 | 3995 | 23.39 |
+| NC_034729.1 | Lepilemur grewcocki isolate HIH7.4 mitochondrion  complete genome | 17052 | 0 | 0 | 508 | 2.97 | 4025 | 23.60 | 4160 | 24.39 |
+| NC_034730.1 | Lepilemur aeeclis isolate JAM4.8 mitochondrion  complete genome | 16941 | 0 | 0 | 567 | 3.34 | 3951 | 23.32 | 4165 | 24.58 |
+| NC_034731.1 | Lepilemur seali isolate JAR3.46 mitochondrion  complete genome | 16771 | 0 | 0 | 334 | 1.99 | 3826 | 22.81 | 3962 | 23.62 |
+| NC_034732.1 | Lepilemur wrighti isolate KAL7.4 mitochondrion  complete genome | 16943 | 0 | 0 | 714 | 4.21 | 3801 | 22.43 | 4037 | 23.82 |
+| NC_034733.1 | Lepilemur ahmansoni isolate KIBO22 mitochondrion  complete genome | 17179 | 0 | 0 | 681 | 3.96 | 4223 | 24.58 | 4457 | 25.94 |
+| NC_034734.1 | Lepilemur sahamalazensis isolate KMTEA7.5 mitochondrion  complete genome | 16773 | 0 | 0 | 257 | 1.53 | 3602 | 21.47 | 3686 | 21.97 |
+| NC_034735.1 | Lepilemur tymerlachsoni isolate LOKO4.2 mitochondrion  complete genome | 16780 | 0 | 0 | 257 | 1.53 | 3798 | 22.63 | 3932 | 23.43 |
+| NC_034736.1 | Lepilemur jamesi isolate M104B mitochondrion  complete genome | 16845 | 0 | 0 | 418 | 2.48 | 3676 | 21.82 | 3821 | 22.68 |
+| NC_034737.1 | Lepilemur scottorum isolate MAS6.12 mitochondrion  complete genome | 17038 | 0 | 0 | 541 | 3.17 | 4174 | 24.49 | 4167 | 24.45 |
+| NC_034738.1 | Lepilemur hollandorum isolate NARA8.5 mitochondrion  complete genome | 17018 | 0 | 0 | 588 | 3.45 | 3829 | 22.49 | 3944 | 23.17 |
+| NC_034739.1 | Lepilemur microdon isolate RANO234 mitochondrion  complete genome | 17050 | 0 | 0 | 538 | 3.15 | 3805 | 22.31 | 3895 | 22.84 |
+| NC_034740.1 | Clostera anachoreta mitochondrion  complete genome | 15456 | 0 | 0 | 595 | 3.84 | 1255 | 8.11 | 1259 | 8.14 |
+| NC_034741.1 | Gallinago stenura mitochondrion  complete genome | 16899 | 0 | 0 | 142 | .84 | 837 | 4.95 | 979 | 5.79 |
+| NC_034742.1 | Ammopiptanthus mongolicus chloroplast  complete genome | 153935 | 0 | 0 | 6414 | 4.16 | 1619 | 1.05 | 7100 | 4.61 |
+| NC_034743.1 | Ammopiptanthus nanus chloroplast  complete genome | 154140 | 0 | 0 | 6574 | 4.26 | 1743 | 1.13 | 7432 | 4.82 |
+| NC_034744.1 | Acer buergerianum chloroplast  complete genome | 156477 | 0 | 0 | 5637 | 3.60 | 1080 | .69 | 5980 | 3.82 |
+| NC_034746.1 | Schistura sikmaiensis mitochondrion  complete genome | 16581 | 0 | 0 | 210 | 1.26 | 1108 | 6.68 | 1318 | 7.94 |
+| NC_034747.1 | Fargesia denudata chloroplast  complete genome | 133730 | 0 | 0 | 4547 | 3.40 | 518 | .38 | 4645 | 3.47 |
+| NC_034748.1 | Squalus brevirostris mitochondrion  complete genome | 16734 | 0 | 0 | 309 | 1.84 | 838 | 5.00 | 1147 | 6.85 |
+| NC_034749.1 | Paramuricea clavata voucher GW4701 mitochondrion  complete genome | 18669 | 0 | 0 | 297 | 1.59 | 49 | .26 | 346 | 1.85 |
+| NC_034752.1 | Thyestilla gebleri mitochondrion  complete genome | 15505 | 0 | 0 | 533 | 3.43 | 614 | 3.96 | 1049 | 6.76 |
+| NC_034753.1 | Sarcocheilichthys kiangsiensis voucher 01-SKV-2016 mitochondrion  complete genome | 16672 | 0 | 0 | 262 | 1.57 | 1107 | 6.63 | 1369 | 8.21 |
+| NC_034754.1 | Limenitis helmanni voucher YM20160706 mitochondrion  complete genome | 15178 | 0 | 0 | 922 | 6.07 | 1253 | 8.25 | 1951 | 12.85 |
+| NC_034755.1 | Barbodes binotatus mitochondrion  complete genome | 16573 | 0 | 0 | 404 | 2.43 | 1107 | 6.67 | 1462 | 8.82 |
+| NC_034756.1 | Phaneroptera gracilis mitochondrion  complete genome | 18255 | 0 | 0 | 807 | 4.42 | 417 | 2.28 | 1126 | 6.16 |
+| NC_034757.1 | Phaneroptera nigroantennata mitochondrion  complete genome | 16832 | 0 | 0 | 339 | 2.01 | 540 | 3.20 | 780 | 4.63 |
+| NC_034758.1 | Oryza rhizomatis chloroplast  complete genome | 134796 | 0 | 0 | 4239 | 3.14 | 490 | .36 | 4533 | 3.36 |
+| NC_034759.1 | Oryza eichingeri chloroplast  complete genome | 134821 | 0 | 0 | 4233 | 3.13 | 466 | .34 | 4429 | 3.28 |
+| NC_034760.1 | Oryza alta chloroplast  complete genome | 135175 | 0 | 0 | 4292 | 3.17 | 343 | .25 | 4488 | 3.32 |
+| NC_034761.1 | Oryza grandiglumis chloroplast  complete genome | 135150 | 0 | 0 | 4360 | 3.22 | 343 | .25 | 4556 | 3.37 |
+| NC_034762.1 | Oryza latifolia chloroplast  complete genome | 135190 | 0 | 0 | 4289 | 3.17 | 245 | .18 | 4338 | 3.20 |
+| NC_034763.1 | Oryza longiglumis chloroplast  complete genome | 135641 | 0 | 0 | 4204 | 3.09 | 343 | .25 | 4400 | 3.24 |
+| NC_034764.1 | Oryza ridleyi chloroplast  complete genome | 135731 | 0 | 0 | 4198 | 3.09 | 441 | .32 | 4492 | 3.30 |
+| NC_034765.1 | Oryza meyeriana chloroplast  complete genome | 136133 | 0 | 0 | 4131 | 3.03 | 196 | .14 | 4229 | 3.10 |
+| NC_034766.1 | Leersia japonica chloroplast  complete genome | 134074 | 0 | 0 | 4183 | 3.11 | 368 | .27 | 4330 | 3.22 |
+| NC_034767.1 | Echinometra mathaei mitochondrion  complete genome | 15699 | 0 | 0 | 47 | .29 | 418 | 2.66 | 464 | 2.95 |
+| NC_034768.1 | Heterocentrotus mammillatus mitochondrion  complete genome | 15729 | 0 | 0 | 175 | 1.11 | 245 | 1.55 | 420 | 2.67 |
+| NC_034769.1 | Mespilia globulus mitochondrion  complete genome | 15719 | 0 | 0 | 240 | 1.52 | 417 | 2.65 | 608 | 3.86 |
+| NC_034770.1 | Tripneustes gratilla mitochondrion  complete genome | 15720 | 0 | 0 | 20 | .12 | 491 | 3.12 | 511 | 3.25 |
+| NC_034771.1 | Narcine brasiliensis mitochondrion  complete genome | 16997 | 0 | 0 | 422 | 2.48 | 1083 | 6.37 | 1456 | 8.56 |
+| NC_034772.1 | Narcine bancroftii mitochondrion  complete genome | 16971 | 0 | 0 | 146 | .86 | 688 | 4.05 | 785 | 4.62 |
+| NC_034774.1 | Maackia floribunda chloroplast  complete genome | 154541 | 0 | 0 | 6990 | 4.52 | 2283 | 1.47 | 7694 | 4.97 |
+| NC_034775.1 | Oryzias curvinotus mitochondrion  complete genome | 16676 | 0 | 0 | 212 | 1.27 | 1009 | 6.05 | 1221 | 7.32 |
+| NC_034776.1 | Boldia erythrosiphon strain UTEX LB2858 chloroplast  complete genome | 226658 | 0 | 0 | 9359 | 4.12 | 1937 | .85 | 10708 | 4.72 |
+| NC_034778.1 | Schistura fasciolata mitochondrion  complete genome | 16560 | 0 | 0 | 180 | 1.08 | 1109 | 6.69 | 1289 | 7.78 |
+| NC_034779.1 | Phyllopsora corallina voucher 45963 mitochondrion  complete genome | 39591 | 0 | 0 | 984 | 2.48 | 663 | 1.67 | 1352 | 3.41 |
+| NC_034780.1 | Bavayia robusta mitochondrial DNA  complete genome | 17271 | 0 | 0 | 289 | 1.67 | 1156 | 6.69 | 1346 | 7.79 |
+| NC_034781.1 | Macrosteles quadrilineatus mitochondrion  complete genome | 16626 | 0 | 0 | 591 | 3.55 | 1033 | 6.21 | 1354 | 8.14 |
+| NC_034782.1 | Orcula dolium mitochondrion  complete genome | 14063 | 0 | 0 | 77 | .54 | 196 | 1.39 | 273 | 1.94 |
+| NC_034783.1 | Pontoscolex corethrurus mitochondrion  complete genome | 14835 | 0 | 0 | 72 | .48 | 344 | 2.31 | 342 | 2.30 |
+| NC_034784.1 | Huso dauricus x Acipenser schrenckii mitochondrion  complete genome | 16693 | 0 | 0 | 311 | 1.86 | 1036 | 6.20 | 1347 | 8.06 |
+| NC_034785.1 | Haemaphysalis concinna mitochondrion  complete genome | 14675 | 0 | 0 | 812 | 5.53 | 539 | 3.67 | 1198 | 8.16 |
+| NC_034786.1 | Bryoria tenuis voucher 46176 mitochondrion  complete genome | 84295 | 0 | 0 | 2722 | 3.22 | 1403 | 1.66 | 3048 | 3.61 |
+| NC_034787.1 | Bulboplastis apyrenoidosa strain NIES-2742 chloroplast  complete genome | 610063 | 0 | 0 | 19767 | 3.24 | 7062 | 1.15 | 24534 | 4.02 |
+| NC_034788.1 | Cupressus chengiana chloroplast  complete genome | 128151 | 0 | 0 | 3637 | 2.83 | 1207 | .94 | 4029 | 3.14 |
+| NC_034789.1 | Sinocrossocheilus bamaensis mitochondrion  complete genome | 16594 | 0 | 0 | 273 | 1.64 | 1182 | 7.12 | 1406 | 8.47 |
+| NC_034790.1 | Gomphillus americanus voucher NYBG:Lendemer 45954 mitochondrion  complete genome | 28370 | 0 | 0 | 286 | 1.00 | 245 | .86 | 531 | 1.87 |
+| NC_034791.1 | Eriachne armittii voucher CAN:J. Saarela 1808 chloroplast  complete genome | 134864 | 0 | 0 | 4376 | 3.24 | 761 | .56 | 4842 | 3.59 |
+| NC_034792.1 | Adoxa moschatellina chloroplast  complete genome | 157238 | 0 | 0 | 4896 | 3.11 | 762 | .48 | 5191 | 3.30 |
+| NC_034793.1 | Tetradoxa omeiensis chloroplast  complete genome | 157502 | 0 | 0 | 5237 | 3.32 | 1178 | .74 | 5502 | 3.49 |
+| NC_034795.1 | Trachypithecus poliocephalus mitochondrion  complete genome | 16556 | 0 | 0 | 520 | 3.14 | 6262 | 37.82 | 6381 | 38.54 |
+| NC_034798.1 | Pharyngomonas kirbyi isolate AS12B mitochondrion  complete genome | 75717 | 0 | 0 | 1903 | 2.51 | 490 | .64 | 2223 | 2.93 |
+| NC_034800.1 | Khawia sinensis mitochondrion  complete genome | 13759 | 0 | 0 | 0 | 0 | 49 | .35 | 0 | 0 |
+| NC_034801.1 | Plinia trunciflora chloroplast  complete genome | 159512 | 0 | 0 | 5518 | 3.45 | 1153 | .72 | 6303 | 3.95 |
+| NC_034802.1 | Saccharum spontaneum chloroplast  complete genome | 141168 | 0 | 0 | 4926 | 3.48 | 735 | .52 | 5367 | 3.80 |
+| NC_034803.1 | Vernicia fordii chloroplast  complete genome | 161528 | 0 | 0 | 7928 | 4.90 | 3248 | 2.01 | 9970 | 6.17 |
+| NC_034804.1 | Abraxas suspecta mitochondrion  complete genome | 15537 | 0 | 0 | 1356 | 8.72 | 1156 | 7.44 | 2389 | 15.37 |
+| NC_034805.1 | Muscina angustifrons mitochondrion  complete genome | 16316 | 0 | 0 | 529 | 3.24 | 1157 | 7.09 | 1341 | 8.21 |
+| NC_034806.1 | Torreya grandis chloroplast  complete genome | 136949 | 0 | 0 | 3954 | 2.88 | 1057 | .77 | 4371 | 3.19 |
+| NC_034807.1 | Ozobranchus jantseanus mitochondrion  complete genome | 14864 | 0 | 0 | 446 | 3.00 | 492 | 3.31 | 863 | 5.80 |
+| NC_034808.1 | Sorex roboratus mitochondrion  complete genome | 17153 | 0 | 0 | 569 | 3.31 | 4206 | 24.52 | 4368 | 25.46 |
+| NC_034809.1 | Styloperla spinicercia mitochondrion  complete genome | 16129 | 0 | 0 | 1179 | 7.30 | 591 | 3.66 | 1522 | 9.43 |
+| NC_034810.1 | Diplostephium pulchrum voucher HUSA:Vargas 404 chloroplast  complete genome | 152236 | 0 | 0 | 6279 | 4.12 | 1057 | .69 | 6720 | 4.41 |
+| NC_034811.1 | Diplostephium jelskii voucher USM<PER>:Cano 14716 chloroplast  complete genome | 152142 | 0 | 0 | 6153 | 4.04 | 1401 | .92 | 6153 | 4.04 |
+| NC_034812.1 | Diplostephium huertasii voucher ANDES:Vargas 518 chloroplast  complete genome | 151684 | 0 | 0 | 6258 | 4.12 | 1209 | .79 | 6748 | 4.44 |
+| NC_034813.1 | Diplostephium juniperinum voucher QCA:Vargas 480 chloroplast  complete genome | 152454 | 0 | 0 | 6364 | 4.17 | 1059 | .69 | 6683 | 4.38 |
+| NC_034814.1 | Diplostephium obtusum voucher US:Dorr 9246 chloroplast  complete genome | 152179 | 0 | 0 | 6219 | 4.08 | 1134 | .74 | 6563 | 4.31 |
+| NC_034815.1 | Diplostephium oxapampanum voucher HUSA:Vargas 408 chloroplast  complete genome | 151637 | 0 | 0 | 6148 | 4.05 | 865 | .57 | 6442 | 4.24 |
+| NC_034816.1 | Diplostephium lechleri voucher HUSA:Vargas 381 chloroplast  complete genome | 152067 | 0 | 0 | 6171 | 4.05 | 865 | .56 | 6490 | 4.26 |
+| NC_034817.1 | Diplostephium violaceum voucher ANDES:Vargas 501 chloroplast  complete genome | 151387 | 0 | 0 | 6244 | 4.12 | 866 | .57 | 6585 | 4.34 |
+| NC_034818.1 | Diplostephium oblongifolium voucher ANDES:Vargas 344 chloroplast  complete genome | 152282 | 0 | 0 | 6021 | 3.95 | 1325 | .87 | 6757 | 4.43 |
+| NC_034819.1 | Lagenophora cuchumatanica voucher TEX:De Jong 694 chloroplast  complete genome | 152462 | 0 | 0 | 6409 | 4.20 | 1178 | .77 | 6777 | 4.44 |
+| NC_034820.1 | Diplostephium rhododendroides voucher ANDES:Vargas 233 chloroplast  complete genome | 152289 | 0 | 0 | 6210 | 4.07 | 1324 | .86 | 6847 | 4.49 |
+| NC_034821.1 | Llerasia caucana voucher ANDES:Vargas 444 chloroplast  complete genome | 152015 | 0 | 0 | 5765 | 3.79 | 889 | .58 | 6059 | 3.98 |
+| NC_034822.1 | Diplostephium juajibioyi voucher ANDES:Vargas 50 chloroplast  complete genome | 152282 | 0 | 0 | 6075 | 3.98 | 1081 | .70 | 6565 | 4.31 |
+| NC_034823.1 | Diplostephium spinulosum voucher ANDES:Vargas 445 chloroplast  complete genome | 152155 | 0 | 0 | 6115 | 4.01 | 1302 | .85 | 6680 | 4.39 |
+| NC_034824.1 | Diplostephium meyenii voucher HUSA:Vargas 351 chloroplast  complete genome | 152537 | 0 | 0 | 6235 | 4.08 | 1131 | .74 | 6627 | 4.34 |
+| NC_034825.1 | Diplostephium tachirense voucher ANDES:Vargas 336 chloroplast  complete genome | 152197 | 0 | 0 | 6013 | 3.95 | 1155 | .75 | 6528 | 4.28 |
+| NC_034826.1 | Diplostephium serratifolium voucher F:Sagastegui 16159a chloroplast  complete genome | 152060 | 0 | 0 | 6314 | 4.15 | 1129 | .74 | 6608 | 4.34 |
+| NC_034827.1 | Diplostephium mutiscuanum voucher ANDES:Vargas 346 chloroplast  complete genome | 152282 | 0 | 0 | 6023 | 3.95 | 1130 | .74 | 6611 | 4.34 |
+| NC_034828.1 | Diplostephium sagasteguii voucher F:Sagastegui 16951 chloroplast  complete genome | 152214 | 0 | 0 | 6047 | 3.97 | 1398 | .91 | 6709 | 4.40 |
+| NC_034829.1 | Diplostephium jenesanum voucher ANDES:Vargas 509 chloroplast  complete genome | 150924 | 0 | 0 | 6065 | 4.01 | 1019 | .67 | 6433 | 4.26 |
+| NC_034830.1 | Diplostephium oblanceolatum voucher QCA:Vargas 465 chloroplast  complete genome | 151895 | 0 | 0 | 6071 | 3.99 | 1176 | .77 | 6557 | 4.31 |
+| NC_034831.1 | Diplostephium hippophae voucher HUSA:Vargas 393 chloroplast  complete genome | 152197 | 0 | 0 | 6116 | 4.01 | 1132 | .74 | 6435 | 4.22 |
+| NC_034832.1 | Diplostephium hartwegii voucher QCA:Vargas 456 chloroplast  complete genome | 151994 | 0 | 0 | 6084 | 4.00 | 983 | .64 | 6378 | 4.19 |
+| NC_034837.1 | Graphium leechi mitochondrion  complete genome | 15836 | 0 | 0 | 878 | 5.54 | 1774 | 11.20 | 2281 | 14.40 |
+| NC_034838.1 | Corvus corax isolate 70173 mitochondrion  complete genome | 16928 | 0 | 0 | 265 | 1.56 | 1034 | 6.10 | 1299 | 7.67 |
+| NC_034840.1 | Lilium cernuum chloroplast  complete genome | 152604 | 0 | 0 | 6382 | 4.18 | 1743 | 1.14 | 7038 | 4.61 |
+| NC_034841.1 | Periplaneta australasiae mitochondrion  complete genome | 15605 | 0 | 0 | 1163 | 7.45 | 417 | 2.67 | 1531 | 9.81 |
+| NC_034842.1 | Neostylopyga rhombifolia mitochondrion  complete genome | 15711 | 0 | 0 | 923 | 5.87 | 564 | 3.58 | 1438 | 9.15 |
+| NC_034843.1 | Neotrigonia margaritacea isolate H3283 mitochondrion  complete genome | 16739 | 0 | 0 | 186 | 1.11 | 196 | 1.17 | 382 | 2.28 |
+| NC_034844.1 | Mutela dubia isolate H1495 mitochondrion  complete genome | 16168 | 0 | 0 | 165 | 1.02 | 295 | 1.82 | 386 | 2.38 |
+| NC_034845.1 | Echyridella menziesii isolate SB11 mitochondrion  complete genome | 16031 | 0 | 0 | 299 | 1.86 | 221 | 1.37 | 520 | 3.24 |
+| NC_034846.1 | Cumberlandia monodonta isolate H3010 mitochondrion  complete genome | 16099 | 0 | 0 | 209 | 1.29 | 147 | .91 | 356 | 2.21 |
+| NC_034847.1 | Diplostephium alveolatum voucher ANDES:Vargas 205 chloroplast  complete genome | 152265 | 0 | 0 | 6168 | 4.05 | 1128 | .74 | 6609 | 4.34 |
+| NC_034848.1 | Archibaccharis asperifolia voucher TEX:Trujillo 1192 chloroplast  complete genome | 151984 | 0 | 0 | 6022 | 3.96 | 1129 | .74 | 6562 | 4.31 |
+| NC_034849.1 | Oritrophium peruvianum voucher ANDES:Vargas 448 chloroplast  complete genome | 151723 | 0 | 0 | 5469 | 3.60 | 908 | .59 | 6033 | 3.97 |
+| NC_034850.1 | Diplostephium cinerascens voucher ANDES:Vargas 446 chloroplast  complete genome | 152169 | 0 | 0 | 5975 | 3.92 | 1056 | .69 | 6416 | 4.21 |
+| NC_034851.1 | Soliva sessilis voucher F:Sagastegui 17106 chloroplast  complete genome | 150784 | 0 | 0 | 5811 | 3.85 | 1008 | .66 | 6130 | 4.06 |
+| NC_034852.1 | Baccharis genistelloides voucher HUSA:Vargas 358 chloroplast  complete genome | 153239 | 0 | 0 | 6138 | 4.00 | 1921 | 1.25 | 7245 | 4.72 |
+| NC_034853.1 | Diplostephium barclayanum voucher QCA:Vargas 477 chloroplast  complete genome | 151974 | 0 | 0 | 6218 | 4.09 | 1105 | .72 | 6561 | 4.31 |
+| NC_034854.1 | Diplostephium glandulosum voucher ANDES:Vargas 247 chloroplast  complete genome | 151400 | 0 | 0 | 6000 | 3.96 | 1136 | .75 | 6490 | 4.28 |
+| NC_034855.1 | Heterothalamus alienus voucher TEX:Bartlett 20909 chloroplast  complete genome | 152252 | 0 | 0 | 6214 | 4.08 | 1426 | .93 | 6632 | 4.35 |
+| NC_034856.1 | Diplostephium callilepis voucher HUSA:Vargas 376 chloroplast  complete genome | 152110 | 0 | 0 | 6075 | 3.99 | 1031 | .67 | 6591 | 4.33 |
+| NC_034857.1 | Diplostephium floribundum voucher ANDES:Vargas 499 chloroplast  complete genome | 151768 | 0 | 0 | 6181 | 4.07 | 1353 | .89 | 6647 | 4.37 |
+| NC_034858.1 | Laestadia muscicola voucher TEX:Paco 31 chloroplast  complete genome | 152366 | 0 | 0 | 6084 | 3.99 | 1202 | .78 | 6599 | 4.33 |
+| NC_034859.1 | Diplostephium rhomboidale voucher QCA:Vargas 492 chloroplast  complete genome | 152186 | 0 | 0 | 6316 | 4.15 | 1202 | .78 | 6703 | 4.40 |
+| NC_034860.1 | Diplostephium tenuifolium voucher ANDES:Vargas 520 chloroplast  complete genome | 151911 | 0 | 0 | 5915 | 3.89 | 1206 | .79 | 6430 | 4.23 |
+| NC_034861.1 | Diplostephium colombianum voucher ANDES:Vargas 299 chloroplast  complete genome | 152314 | 0 | 0 | 6370 | 4.18 | 1230 | .80 | 6886 | 4.52 |
+| NC_034862.1 | Diplostephium gynoxyoides voucher HUSA:Vargas 395 chloroplast  complete genome | 151662 | 0 | 0 | 5956 | 3.92 | 895 | .59 | 6299 | 4.15 |
+| NC_034863.1 | Diplostephium revolutum voucher ANDES:Vargas 321 chloroplast  complete genome | 151823 | 0 | 0 | 5882 | 3.87 | 1206 | .79 | 6346 | 4.17 |
+| NC_034864.1 | Exostigma notobellidiastrum voucher TEX:Tressens 6388 chloroplast  complete genome | 151699 | 0 | 0 | 6413 | 4.22 | 1278 | .84 | 6879 | 4.53 |
+| NC_034865.1 | Diplostephium rupestre voucher ANDES:Vargas 504 chloroplast  complete genome | 152027 | 0 | 0 | 6323 | 4.15 | 1251 | .82 | 6764 | 4.44 |
+| NC_034866.1 | Blakiella bartsiifolia voucher TEX:Cuatrecasas 28129 chloroplast  complete genome | 151965 | 0 | 0 | 6339 | 4.17 | 1302 | .85 | 6633 | 4.36 |
+| NC_034867.1 | Diplostephium gnidioides voucher HUSA:Vargas 430 chloroplast  complete genome | 152144 | 0 | 0 | 6219 | 4.08 | 1059 | .69 | 6562 | 4.31 |
+| NC_034868.1 | Baccharis tricuneata voucher HUSA:Vargas 356 chloroplast  complete genome | 152360 | 0 | 0 | 6466 | 4.24 | 1599 | 1.04 | 7395 | 4.85 |
+| NC_034869.1 | Diplostephium cinereum voucher HUSA:Caceres 1494 chloroplast  complete genome | 152554 | 0 | 0 | 6544 | 4.28 | 1302 | .85 | 7034 | 4.61 |
+| NC_034870.1 | Diplostephium ericoides voucher QCA:Vargas 489 chloroplast  complete genome | 151982 | 0 | 0 | 5899 | 3.88 | 1229 | .80 | 6415 | 4.22 |
+| NC_034871.1 | Diplostephium haenkei voucher HUSA:Vargas 372 chloroplast  complete genome | 152292 | 0 | 0 | 6401 | 4.20 | 1326 | .87 | 6867 | 4.50 |
+| NC_034872.1 | Diplostephium cajamarquillense voucher F:Sagastegui 17024 chloroplast  complete genome | 152070 | 0 | 0 | 6379 | 4.19 | 1032 | .67 | 6698 | 4.40 |
+| NC_034873.1 | Diplostephium phylicoides voucher ANDES:Vargas 301 chloroplast  complete genome | 152172 | 0 | 0 | 5961 | 3.91 | 1258 | .82 | 6550 | 4.30 |
+| NC_034874.1 | Diplostephium eriophorum voucher ANDES:Vargas 505 chloroplast  complete genome | 151802 | 0 | 0 | 6227 | 4.10 | 1087 | .71 | 6619 | 4.36 |
+| NC_034875.1 | Diplostephium glutinosum voucher ANDES:Vargas 339 chloroplast  complete genome | 152229 | 0 | 0 | 6220 | 4.08 | 1553 | 1.02 | 6710 | 4.40 |
+| NC_034876.1 | Diplostephium antioquense voucher ANDES:Vargas 533 chloroplast  complete genome | 152027 | 0 | 0 | 6463 | 4.25 | 1130 | .74 | 6905 | 4.54 |
+| NC_034877.1 | Laennecia sophiifolia voucher TEX:Reina 2010-805 chloroplast  complete genome | 151899 | 0 | 0 | 6255 | 4.11 | 1303 | .85 | 6744 | 4.43 |
+| NC_034878.1 | Diplostephium lacunosum voucher ANDES:Vargas 260 chloroplast  complete genome | 152247 | 0 | 0 | 6149 | 4.03 | 1230 | .80 | 6664 | 4.37 |
+| NC_034879.1 | Diplostephium costaricense voucher TEX:Martinez 33 chloroplast  complete genome | 152048 | 0 | 0 | 6242 | 4.10 | 1033 | .67 | 6634 | 4.36 |
+| NC_034880.1 | Diplostephium espinosae voucher QCA:Vargas 464 chloroplast  complete genome | 152091 | 0 | 0 | 6167 | 4.05 | 1422 | .93 | 6657 | 4.37 |
+| NC_034881.1 | Diplostephium crypteriophyllum voucher QCA:Vargas 467 chloroplast  complete genome | 151665 | 0 | 0 | 5825 | 3.84 | 1275 | .84 | 6389 | 4.21 |
+| NC_034882.1 | Diplostephium azureum voucher HUSA:Vargas 389 chloroplast  complete genome | 152124 | 0 | 0 | 6484 | 4.26 | 1301 | .85 | 7048 | 4.63 |
+| NC_034883.1 | Diplostephium foliosissimum voucher F:Sagastegui 16804 chloroplast  complete genome | 152260 | 0 | 0 | 6439 | 4.22 | 1352 | .88 | 7027 | 4.61 |
+| NC_034884.1 | Hinterhubera ericoides voucher TEX:Stergios 20385 chloroplast  complete genome | 150711 | 0 | 0 | 5958 | 3.95 | 1450 | .96 | 6448 | 4.27 |
+| NC_034885.1 | Diplostephium romeroi voucher US:Barclay 6775 chloroplast  complete genome | 152275 | 0 | 0 | 6340 | 4.16 | 1154 | .75 | 6683 | 4.38 |
+| NC_034886.1 | Diplostephium cayambense voucher ANDES:Vargas 234 chloroplast  complete genome | 151206 | 0 | 0 | 5982 | 3.95 | 1013 | .66 | 6446 | 4.26 |
+| NC_034887.1 | Diplostephium venezuelense voucher US:Norrbom 89V33 chloroplast  complete genome | 152173 | 0 | 0 | 6376 | 4.18 | 1325 | .87 | 6891 | 4.52 |
+| NC_034888.1 | Floscaldasia hypsophila voucher ANDES:Cleef 10912 chloroplast  complete genome | 152200 | 0 | 0 | 5874 | 3.85 | 1300 | .85 | 6315 | 4.14 |
+| NC_034889.1 | Westoniella kohkemperi voucher TEX:Pruskii 3925 chloroplast  complete genome | 151824 | 0 | 0 | 5858 | 3.85 | 1104 | .72 | 6324 | 4.16 |
+| NC_034890.1 | Parastrephia quadrangularis voucher HUSA:Vargas 440 chloroplast  complete genome | 152427 | 0 | 0 | 6266 | 4.11 | 1130 | .74 | 6831 | 4.48 |
+| NC_034891.1 | Diplostephium empetrifolium voucher QCA:Vargas 469 chloroplast  complete genome | 152461 | 0 | 0 | 6322 | 4.14 | 1182 | .77 | 6788 | 4.45 |
+| NC_034892.1 | Diplostephium schultzii voucher ANDES:Vargas 164 chloroplast  complete genome | 152252 | 0 | 0 | 6370 | 4.18 | 956 | .62 | 6811 | 4.47 |
+| NC_034893.1 | Diplostephium frontinense voucher ANDES:Vargas 524 chloroplast  complete genome | 152365 | 0 | 0 | 6218 | 4.08 | 1425 | .93 | 6732 | 4.41 |
+| NC_034894.1 | Diplostephium jaramilloi voucher FMB:Prieto 1118 chloroplast  complete genome | 151879 | 0 | 0 | 6485 | 4.26 | 1208 | .79 | 6779 | 4.46 |
+| NC_034895.1 | Diplostephium inesianum voucher US:Barclay 6546 chloroplast  complete genome | 152328 | 0 | 0 | 6527 | 4.28 | 1083 | .71 | 7017 | 4.60 |
+| NC_034896.1 | Diplostephium heterophyllum voucher ANDES:Vargas 162 chloroplast  complete genome | 152223 | 0 | 0 | 6305 | 4.14 | 1277 | .83 | 6844 | 4.49 |
+| NC_034897.1 | Diplostephium camargoanum voucher ANDES:Vargas 319 chloroplast  complete genome | 152249 | 0 | 0 | 6300 | 4.13 | 1399 | .91 | 6914 | 4.54 |
+| NC_034898.1 | Aztecaster matudae voucher TEX:Hinton 29102 chloroplast  complete genome | 151925 | 0 | 0 | 6264 | 4.12 | 1376 | .90 | 6559 | 4.31 |
+| NC_034899.1 | Diplostephium coriaceum voucher US:Barclay 6691 chloroplast  complete genome | 152290 | 0 | 0 | 6335 | 4.15 | 1302 | .85 | 6776 | 4.44 |
+| NC_034900.1 | Diplostephium rosmarinifolium voucher ANDES:Vargas 304 chloroplast  complete genome | 152216 | 0 | 0 | 6098 | 4.00 | 1178 | .77 | 6515 | 4.28 |
+| NC_034901.1 | Diplostephium goodspeedii voucher HUSA:Vargas 373 chloroplast  complete genome | 152006 | 0 | 0 | 6280 | 4.13 | 1082 | .71 | 6621 | 4.35 |
+| NC_034902.1 | Diplostephium apiculatum voucher ANDES:Vargas 332 chloroplast  complete genome | 152277 | 0 | 0 | 6178 | 4.05 | 1326 | .87 | 6766 | 4.44 |
+| NC_034903.1 | Diplostephium ochraceum voucher ANDES:Vargas 161 chloroplast  complete genome | 151555 | 0 | 0 | 6231 | 4.11 | 1014 | .66 | 6599 | 4.35 |
+| NC_034904.1 | Solemya elarraichensis mitochondrion  complete genome | 15767 | 0 | 0 | 275 | 1.74 | 419 | 2.65 | 496 | 3.14 |
+| NC_034905.1 | Solemya pervernicosa mitochondrion  complete genome | 16554 | 0 | 0 | 374 | 2.25 | 320 | 1.93 | 595 | 3.59 |
+| NC_034906.1 | Solemya velesiana mitochondrion  complete genome | 16030 | 0 | 0 | 375 | 2.33 | 491 | 3.06 | 718 | 4.47 |
+| NC_034907.1 | Stoneobryum mirum mitochondrion  complete genome | 104345 | 0 | 0 | 2033 | 1.94 | 1104 | 1.05 | 2670 | 2.55 |
+| NC_034908.1 | Schisandra chinensis chloroplast  complete genome | 146859 | 0 | 0 | 4949 | 3.36 | 711 | .48 | 5194 | 3.53 |
+| NC_034909.1 | Pyrus pashia voucher PPASH20160703 chloroplast  complete genome | 160153 | 0 | 0 | 6621 | 4.13 | 2659 | 1.66 | 7457 | 4.65 |
+| NC_034910.1 | Carpinus tientaiensis chloroplast  complete genome | 160104 | 0 | 0 | 6926 | 4.32 | 2085 | 1.30 | 7979 | 4.98 |
+| NC_034911.1 | Margaritifera marocana isolate BIV1914F mitochondrion  complete genome | 16001 | 0 | 0 | 43 | .26 | 98 | .61 | 141 | .88 |
+| NC_034912.1 | Anastrepha fraterculus voucher UTOL INDV 2 mitochondrion  complete genome | 16739 | 0 | 0 | 1069 | 6.38 | 884 | 5.28 | 1756 | 10.49 |
+| NC_034913.1 | Actinidia arguta chloroplast  complete genome | 156484 | 0 | 0 | 5448 | 3.48 | 859 | .54 | 5791 | 3.70 |
+| NC_034914.1 | Actinidia eriantha chloroplast  complete genome | 156964 | 0 | 0 | 5014 | 3.19 | 1104 | .70 | 5455 | 3.47 |
+| NC_034915.1 | Actinidia kolomikta chloroplast  complete genome | 157425 | 0 | 0 | 5287 | 3.35 | 736 | .46 | 5483 | 3.48 |
+| NC_034916.1 | Favites pentagona mitochondrion  complete genome | 18006 | 0 | 0 | 812 | 4.50 | 614 | 3.40 | 861 | 4.78 |
+| NC_034917.1 | Acrossocheilus jishouensis voucher ZMNH 2015030001 mitochondrion  complete genome | 16587 | 0 | 0 | 408 | 2.45 | 1107 | 6.67 | 1437 | 8.66 |
+| NC_034918.1 | Acrossocheilus spinifer mitochondrion  complete genome | 16591 | 0 | 0 | 248 | 1.49 | 1379 | 8.31 | 1479 | 8.91 |
+| NC_034919.1 | Acrossocheilus wuyiensis mitochondrion  complete genome | 16594 | 0 | 0 | 320 | 1.92 | 1057 | 6.36 | 1253 | 7.55 |
+| NC_034920.1 | Nembrotha kubaryana voucher 624 mitochondrion  complete genome | 14395 | 0 | 0 | 44 | .30 | 196 | 1.36 | 240 | 1.66 |
+| NC_034921.1 | Glyptothorax cavia mitochondrion  complete genome | 16529 | 0 | 0 | 179 | 1.08 | 1208 | 7.30 | 1387 | 8.39 |
+| NC_034922.1 | Cestrotus liui mitochondrion  complete genome | 16171 | 0 | 0 | 644 | 3.98 | 883 | 5.46 | 1522 | 9.41 |
+| NC_034923.1 | Pachycerina decemlineata mitochondrion  complete genome | 16286 | 0 | 0 | 462 | 2.83 | 614 | 3.77 | 1027 | 6.30 |
+| NC_034924.1 | Spaniocelyphus pilosus mitochondrion  complete genome | 16426 | 0 | 0 | 700 | 4.26 | 961 | 5.85 | 1587 | 9.66 |
+| NC_034925.1 | Phoebe chekiangensis chloroplast  complete genome | 152849 | 0 | 0 | 4818 | 3.15 | 883 | .57 | 5309 | 3.47 |
+| NC_034926.1 | Phoebe bournei chloroplast  complete genome | 152853 | 0 | 0 | 4858 | 3.17 | 1005 | .65 | 5348 | 3.49 |
+| NC_034927.1 | Kiwa tyleri mitochondrion  complete genome | 16865 | 0 | 0 | 1059 | 6.27 | 1453 | 8.61 | 2068 | 12.26 |
+| NC_034928.1 | Leptogium hirsutum voucher 46937 mitochondrion  complete genome | 120920 | 0 | 0 | 7134 | 5.89 | 4212 | 3.48 | 8425 | 6.96 |
+| NC_034929.1 | Labiotermes labralis mitochondrion  complete genome | 15953 | 0 | 0 | 891 | 5.58 | 540 | 3.38 | 1237 | 7.75 |
+| NC_034930.1 | Embiratermes neotenicus mitochondrion  complete genome | 15868 | 0 | 0 | 655 | 4.12 | 588 | 3.70 | 1145 | 7.21 |
+| NC_034931.1 | Champereia manillana plastid  complete genome | 147461 | 0 | 0 | 5839 | 3.95 | 1007 | .68 | 6183 | 4.19 |
+| NC_034932.1 | Acer palmatum plastid  complete genome | 157367 | 0 | 0 | 5671 | 3.60 | 1057 | .67 | 6039 | 3.83 |
+| NC_034933.1 | Cypseloides fumigatus isolate LGEMA 11411 mitochondrion  complete genome | 16850 | 0 | 0 | 115 | .68 | 935 | 5.54 | 1050 | 6.23 |
+| NC_034934.1 | Hydrangea serrata cultivar Hallasan chloroplast  complete genome | 157730 | 0 | 0 | 4952 | 3.13 | 760 | .48 | 5516 | 3.49 |
+| NC_034935.1 | Hydrangea petiolaris chloroplast  complete genome | 157434 | 0 | 0 | 5198 | 3.30 | 491 | .31 | 5394 | 3.42 |
+| NC_034936.1 | Schizophragma hydrangeoides chloroplast  complete genome | 157692 | 0 | 0 | 4913 | 3.11 | 392 | .24 | 5158 | 3.27 |
+| NC_034937.1 | Gammarus fossarum mitochondrion  complete genome | 15989 | 0 | 0 | 190 | 1.18 | 196 | 1.22 | 288 | 1.80 |
+| NC_034938.1 | Protegira songi mitochondrion  complete genome | 15410 | 0 | 0 | 1214 | 7.87 | 1402 | 9.09 | 2098 | 13.61 |
+| NC_034940.1 | Callitris rhomboidea chloroplast DNA  complete genome | 121117 | 0 | 0 | 2922 | 2.41 | 981 | .80 | 3510 | 2.89 |
+| NC_034941.1 | Taxodium distichum chloroplast DNA  complete genome | 131954 | 0 | 0 | 3722 | 2.82 | 2089 | 1.58 | 4286 | 3.24 |
+| NC_034942.1 | Dacrycarpus imbricatus chloroplast DNA  complete genome | 133811 | 0 | 0 | 3401 | 2.54 | 1080 | .80 | 3646 | 2.72 |
+| NC_034943.1 | Chamaecyparis formosensis chloroplast DNA  complete genome | 127211 | 0 | 0 | 4137 | 3.25 | 1504 | 1.18 | 4456 | 3.50 |
+| NC_034944.1 | Lepidotrigla microptera mitochondrion  complete genome | 16610 | 0 | 0 | 248 | 1.49 | 1009 | 6.07 | 1257 | 7.56 |
+| NC_034945.1 | Megaleporinus obtusidens mitochondrion  complete genome | 16682 | 0 | 0 | 184 | 1.10 | 1280 | 7.67 | 1464 | 8.77 |
+| NC_034946.1 | Paratomella rubra mitochondrion  complete genome | 14954 | 0 | 0 | 822 | 5.49 | 1229 | 8.21 | 1707 | 11.41 |
+| NC_034947.1 | Archaphanostoma ylvae mitochondrion  complete genome | 16619 | 0 | 0 | 623 | 3.74 | 491 | 2.95 | 1016 | 6.11 |
+| NC_034948.1 | Isodiametra pulchra mitochondrion  complete genome | 18725 | 0 | 0 | 471 | 2.51 | 639 | 3.41 | 716 | 3.82 |
+| NC_034949.1 | Chenopodium quinoa voucher IT123455 chloroplast  complete genome | 152099 | 0 | 0 | 4347 | 2.85 | 735 | .48 | 4837 | 3.18 |
+| NC_034950.1 | Chenopodium album voucher KWNU81461 chloroplast  complete genome | 152167 | 0 | 0 | 4454 | 2.92 | 686 | .45 | 4993 | 3.28 |
+| NC_034951.1 | Solanum berthaultii voucher PI310981 chloroplast  complete genome | 155533 | 0 | 0 | 4714 | 3.03 | 613 | .39 | 4959 | 3.18 |
+| NC_034952.1 | Lagerstroemia subcostata chloroplast  complete genome | 152049 | 0 | 0 | 4888 | 3.21 | 613 | .40 | 5231 | 3.44 |
+| NC_034953.1 | Centropyge nox voucher 397 mitochondrion  complete genome | 16871 | 0 | 0 | 236 | 1.39 | 860 | 5.09 | 1096 | 6.49 |
+| NC_034969.1 | Babesia microti strain RI chromosome IV  complete genome | 1816206 | 0 | 0 | 13370 | .73 | 5969 | .32 | 16418 | .90 |
+| NC_034982.1 | Utricularia reniformis mitochondrion  complete genome | 857234 | 0 | 0 | 4484 | .52 | 401 | .04 | 4778 | .55 |
+| NC_034983.1 | Odorrana wuchuanensis mitochondrion  complete genome | 18256 | 0 | 0 | 164 | .89 | 764 | 4.18 | 928 | 5.08 |
+| NC_034984.1 | Odorrana hainanensis mitochondrion  complete genome | 17986 | 0 | 0 | 198 | 1.10 | 887 | 4.93 | 1085 | 6.03 |
+| NC_034985.1 | Acacia dealbata chloroplast  complete genome | 174217 | 0 | 0 | 7891 | 4.52 | 3640 | 2.08 | 10152 | 5.82 |
+| NC_034986.1 | Adenanthera microsperma chloroplast  complete genome | 159389 | 0 | 0 | 6706 | 4.20 | 1521 | .95 | 7294 | 4.57 |
+| NC_034987.1 | Albizia odoratissima chloroplast  complete genome | 174861 | 0 | 0 | 8203 | 4.69 | 2950 | 1.68 | 9430 | 5.39 |
+| NC_034988.1 | Archidendron lucyi chloroplast  complete genome | 176870 | 0 | 0 | 8626 | 4.87 | 4233 | 2.39 | 10667 | 6.03 |
+| NC_034989.1 | Parkia javanica chloroplast  complete genome | 161681 | 0 | 0 | 7651 | 4.73 | 3227 | 1.99 | 9248 | 5.71 |
+| NC_034990.1 | Piptadenia communis chloroplast  complete genome | 162552 | 0 | 0 | 8087 | 4.97 | 2384 | 1.46 | 9314 | 5.72 |
+| NC_034991.1 | Pithecellobium flexicaule chloroplast  complete genome | 178887 | 0 | 0 | 9417 | 5.26 | 4458 | 2.49 | 11383 | 6.36 |
+| NC_034992.1 | Samanea saman chloroplast  complete genome | 176717 | 0 | 0 | 8238 | 4.66 | 3651 | 2.06 | 10358 | 5.86 |
+| NC_034993.1 | Parasa consocia mitochondrion  complete genome | 15296 | 0 | 0 | 1002 | 6.55 | 1202 | 7.85 | 1910 | 12.48 |
+| NC_034994.1 | Sinochlora szechwanensis mitochondrion  complete genome | 18051 | 0 | 0 | 232 | 1.28 | 417 | 2.31 | 600 | 3.32 |
+| NC_034995.1 | Helicana wuana mitochondrion  complete genome | 16359 | 0 | 0 | 612 | 3.74 | 791 | 4.83 | 1029 | 6.29 |
+| NC_034996.1 | Aster altaicus chloroplast  complete genome | 152446 | 0 | 0 | 6633 | 4.35 | 1525 | 1.00 | 7197 | 4.72 |
+| NC_034997.1 | Zelandoperla fenestrata mitochondrion  complete genome | 16385 | 0 | 0 | 292 | 1.78 | 417 | 2.54 | 660 | 4.02 |
+| NC_034998.1 | Pistacia vera plastid  complete genome | 160674 | 0 | 0 | 5526 | 3.43 | 933 | .58 | 5992 | 3.72 |
+| NC_034999.1 | Kryptopterus bicirrhis mitochondrion  complete genome | 16662 | 0 | 0 | 227 | 1.36 | 1158 | 6.94 | 1385 | 8.31 |
+| NC_035000.1 | Chionanthus retusus chloroplast  complete genome | 155687 | 0 | 0 | 4605 | 2.95 | 761 | .48 | 4899 | 3.14 |
+| NC_035001.1 | Cottus volki isolate CVO45-14 mitochondrion  complete genome | 16536 | 0 | 0 | 142 | .85 | 861 | 5.20 | 1003 | 6.06 |
+| NC_035002.1 | Cottus amblystomopsis isolate CAM1-13 mitochondrion  complete genome | 16528 | 0 | 0 | 220 | 1.33 | 812 | 4.91 | 1032 | 6.24 |
+| NC_035003.1 | Cyathostomum catinatum isolate DQCCM1 mitochondrion  complete genome | 13838 | 0 | 0 | 824 | 5.95 | 221 | 1.59 | 873 | 6.30 |
+| NC_035004.1 | Cylicostephanus minutus isolate DQCMM1 mitochondrion  complete genome | 13826 | 0 | 0 | 969 | 7.00 | 196 | 1.41 | 1067 | 7.71 |
+| NC_035005.1 | Poteriostomum imparidentatum isolate DQPIM1 mitochondrion  complete genome | 13817 | 0 | 0 | 874 | 6.32 | 245 | 1.77 | 1070 | 7.74 |
+| NC_035006.1 | Morella rubra isolate YNML chloroplast  complete genome | 159586 | 0 | 0 | 6312 | 3.95 | 2016 | 1.26 | 7190 | 4.50 |
+| NC_035008.1 | Paramesotriton chinensis mitochondrion  complete genome | 16361 | 0 | 0 | 245 | 1.49 | 1332 | 8.14 | 1528 | 9.33 |
+| NC_035009.1 | Kerriochloa siamensis chloroplast  complete genome | 138335 | 0 | 0 | 4941 | 3.57 | 775 | .56 | 5186 | 3.74 |
+| NC_035010.1 | Andropogon fastigiatus chloroplast  complete genome | 138658 | 0 | 0 | 4360 | 3.14 | 441 | .31 | 4605 | 3.32 |
+| NC_035011.1 | Hyparrhenia rufa chloroplast  complete genome | 139269 | 0 | 0 | 4413 | 3.16 | 466 | .33 | 4609 | 3.30 |
+| NC_035012.1 | Andropogon chinensis chloroplast  complete genome | 138817 | 0 | 0 | 4442 | 3.19 | 613 | .44 | 4785 | 3.44 |
+| NC_035013.1 | Schizachyrium brevifolium chloroplast  complete genome | 138027 | 0 | 0 | 4668 | 3.38 | 736 | .53 | 4962 | 3.59 |
+| NC_035014.1 | Themeda arundinacea chloroplast  complete genome | 139742 | 0 | 0 | 4478 | 3.20 | 604 | .43 | 4821 | 3.44 |
+| NC_035015.1 | Schizachyrium sanguineum chloroplast  complete genome | 139272 | 0 | 0 | 4607 | 3.30 | 1005 | .72 | 5048 | 3.62 |
+| NC_035016.1 | Themeda triandra chloroplast  complete genome | 138865 | 0 | 0 | 4174 | 3.00 | 644 | .46 | 4566 | 3.28 |
+| NC_035017.1 | Arthraxon lanceolatus chloroplast  complete genome | 140381 | 0 | 0 | 4823 | 3.43 | 638 | .45 | 4970 | 3.54 |
+| NC_035018.1 | Dichanthium sericeum chloroplast  complete genome | 138271 | 0 | 0 | 4349 | 3.14 | 565 | .40 | 4594 | 3.32 |
+| NC_035019.1 | Themeda arguens chloroplast  complete genome | 138827 | 0 | 0 | 4218 | 3.03 | 762 | .54 | 4659 | 3.35 |
+| NC_035020.1 | Dimeria ornithopoda chloroplast  complete genome | 140629 | 0 | 0 | 4781 | 3.39 | 760 | .54 | 5247 | 3.73 |
+| NC_035021.1 | Themeda villosa chloroplast  complete genome | 139589 | 0 | 0 | 4415 | 3.16 | 588 | .42 | 4758 | 3.40 |
+| NC_035022.1 | Hemisorghum mekongense chloroplast  complete genome | 140765 | 0 | 0 | 4663 | 3.31 | 687 | .48 | 5104 | 3.62 |
+| NC_035023.1 | Eremochloa eriopoda chloroplast  complete genome | 138995 | 0 | 0 | 4381 | 3.15 | 703 | .50 | 4773 | 3.43 |
+| NC_035024.1 | Pseudosorghum fasciculare chloroplast  complete genome | 140474 | 0 | 0 | 4766 | 3.39 | 637 | .45 | 5109 | 3.63 |
+| NC_035025.1 | Heteropogon triticeus chloroplast  complete genome | 140120 | 0 | 0 | 4651 | 3.31 | 727 | .51 | 4994 | 3.56 |
+| NC_035026.1 | Eulalia contorta chloroplast  complete genome | 140738 | 0 | 0 | 4985 | 3.54 | 835 | .59 | 5353 | 3.80 |
+| NC_035027.1 | Heteropogon contortus chloroplast  complete genome | 134982 | 0 | 0 | 4282 | 3.17 | 761 | .56 | 4699 | 3.48 |
+| NC_035028.1 | Eremochloa ciliaris chloroplast  complete genome | 138970 | 0 | 0 | 4494 | 3.23 | 760 | .54 | 4788 | 3.44 |
+| NC_035029.1 | Schizachyrium exile chloroplast  complete genome | 138519 | 0 | 0 | 4946 | 3.57 | 662 | .47 | 5240 | 3.78 |
+| NC_035030.1 | Andropogon abyssinicus chloroplast  complete genome | 138738 | 0 | 0 | 4581 | 3.30 | 441 | .31 | 4777 | 3.44 |
+| NC_035031.1 | Eulalia siamensis chloroplast  complete genome | 140642 | 0 | 0 | 5120 | 3.64 | 805 | .57 | 5512 | 3.91 |
+| NC_035032.1 | Schizachyrium scoparium chloroplast  complete genome | 139274 | 0 | 0 | 4607 | 3.30 | 637 | .45 | 4901 | 3.51 |
+| NC_035033.1 | Parahyparrhenia siamensis chloroplast  complete genome | 140355 | 0 | 0 | 4579 | 3.26 | 786 | .56 | 4873 | 3.47 |
+| NC_035034.1 | Chrysopogon zizanioides chloroplast  complete genome | 139971 | 0 | 0 | 4779 | 3.41 | 760 | .54 | 5122 | 3.65 |
+| NC_035035.1 | Chrysopogon gryllus chloroplast  complete genome | 140034 | 0 | 0 | 4790 | 3.42 | 687 | .49 | 5158 | 3.68 |
+| NC_035036.1 | Mnesithea helferi chloroplast  complete genome | 140801 | 0 | 0 | 4992 | 3.54 | 760 | .53 | 5335 | 3.78 |
+| NC_035037.1 | Hyparrhenia diplandra chloroplast  complete genome | 139175 | 0 | 0 | 4354 | 3.12 | 628 | .45 | 4697 | 3.37 |
+| NC_035038.1 | Andropogon burmanicus chloroplast  complete genome | 140898 | 0 | 0 | 4793 | 3.40 | 785 | .55 | 5087 | 3.61 |
+| NC_035039.1 | Schizachyrium spicatum chloroplast  complete genome | 139205 | 0 | 0 | 4548 | 3.26 | 931 | .66 | 5038 | 3.61 |
+| NC_035040.1 | Cymbopogon flexuosus chloroplast  complete genome | 139715 | 0 | 0 | 4402 | 3.15 | 502 | .35 | 4696 | 3.36 |
+| NC_035041.1 | Andropogon distachyos chloroplast  complete genome | 139098 | 0 | 0 | 4556 | 3.27 | 539 | .38 | 4850 | 3.48 |
+| NC_035042.1 | Garnotia thailandica chloroplast  complete genome | 139668 | 0 | 0 | 4731 | 3.38 | 1083 | .77 | 5192 | 3.71 |
+| NC_035043.1 | Schizachyrium tenerum chloroplast  complete genome | 138555 | 0 | 0 | 4258 | 3.07 | 735 | .53 | 4944 | 3.56 |
+| NC_035044.1 | Polytoca digitata chloroplast  complete genome | 140892 | 0 | 0 | 4634 | 3.28 | 505 | .35 | 4879 | 3.46 |
+| NC_035045.1 | Schizachyrium imberbe chloroplast  complete genome | 139759 | 0 | 0 | 4520 | 3.23 | 687 | .49 | 4937 | 3.53 |
+| NC_035046.1 | Germainia capitata chloroplast  complete genome | 139817 | 0 | 0 | 4461 | 3.19 | 539 | .38 | 4804 | 3.43 |
+| NC_035047.1 | Chrysopogon orientalis chloroplast  complete genome | 140712 | 0 | 0 | 4687 | 3.33 | 981 | .69 | 5251 | 3.73 |
+| NC_035048.1 | Arthraxon hispidus chloroplast  complete genome | 140507 | 0 | 0 | 4841 | 3.44 | 613 | .43 | 5184 | 3.68 |
+| NC_035049.1 | Eulaliopsis binata chloroplast  complete genome | 141091 | 0 | 0 | 4695 | 3.32 | 539 | .38 | 4891 | 3.46 |
+| NC_035050.1 | Arthraxon microphyllus chloroplast  complete genome | 139858 | 0 | 0 | 4784 | 3.42 | 637 | .45 | 5029 | 3.59 |
+| NC_035051.1 | Garnotia tenella chloroplast  complete genome | 139629 | 0 | 0 | 4722 | 3.38 | 1054 | .75 | 5237 | 3.75 |
+| NC_035052.1 | Nauphoeta cinerea mitochondrion  complete genome | 15923 | 0 | 0 | 355 | 2.22 | 491 | 3.08 | 846 | 5.31 |
+| NC_035053.1 | Hansenia weberbaueriana chloroplast  complete genome | 158625 | 0 | 0 | 5444 | 3.43 | 1155 | .72 | 5959 | 3.75 |
+| NC_035054.1 | Hansenia forbesii chloroplast  complete genome | 159287 | 0 | 0 | 5590 | 3.50 | 982 | .61 | 6080 | 3.81 |
+| NC_035055.1 | Hansenia oviformis chloroplast  complete genome | 157292 | 0 | 0 | 5755 | 3.65 | 1576 | 1.00 | 6294 | 4.00 |
+| NC_035056.1 | Hansenia forrestii chloroplast  complete genome | 159505 | 0 | 0 | 5569 | 3.49 | 1299 | .81 | 6086 | 3.81 |
+| NC_035057.1 | Squatina squatina voucher OC-257 mitochondrion  complete genome | 16689 | 0 | 0 | 260 | 1.55 | 1305 | 7.81 | 1565 | 9.37 |
+| NC_035058.1 | Thermophis shangrila mitochondrion  complete genome | 17407 | 0 | 0 | 183 | 1.05 | 627 | 3.60 | 725 | 4.16 |
+| NC_035059.1 | Chelidonichthys kumu mitochondrion  complete genome | 16495 | 0 | 0 | 175 | 1.06 | 885 | 5.36 | 1060 | 6.42 |
+| NC_035060.1 | Aquatica ficta mitochondrion  complete genome | 16836 | 0 | 0 | 635 | 3.77 | 686 | 4.07 | 1125 | 6.68 |
+| NC_035061.1 | Aquatica wuhana mitochondrion  complete genome | 16186 | 0 | 0 | 658 | 4.06 | 711 | 4.39 | 1369 | 8.45 |
+| NC_035063.1 | Dussumieria elopsoides mitochondrion  complete genome | 16819 | 0 | 0 | 68 | .40 | 689 | 4.09 | 757 | 4.50 |
+| NC_035066.1 | Taxus baccata chloroplast  complete genome | 128653 | 0 | 0 | 4526 | 3.51 | 1531 | 1.19 | 5318 | 4.13 |
+| NC_035067.1 | Abies sibirica chloroplast  complete genome | 121224 | 0 | 0 | 3270 | 2.69 | 1031 | .85 | 3662 | 3.02 |
+| NC_035068.1 | Juniperus communis chloroplast  complete genome | 128334 | 0 | 0 | 3848 | 2.99 | 787 | .61 | 4144 | 3.22 |
+| NC_035069.1 | Pinus sylvestris chloroplast  complete genome | 119758 | 0 | 0 | 2518 | 2.10 | 417 | .34 | 2788 | 2.32 |
+| NC_035073.1 | Gossypium arboreum mitochondrion  complete genome | 687482 | 0 | 0 | 8961 | 1.30 | 2232 | .32 | 9721 | 1.41 |
+| NC_035074.1 | Gossypium thurberi mitochondrion  complete genome | 644395 | 0 | 0 | 8432 | 1.30 | 1938 | .30 | 9265 | 1.43 |
+| NC_035075.1 | Gossypium davidsonii mitochondrion  complete genome | 644311 | 0 | 0 | 8271 | 1.28 | 1962 | .30 | 9202 | 1.42 |
+| NC_035076.1 | Gossypium trilobum mitochondrion  complete genome | 644460 | 0 | 0 | 8356 | 1.29 | 2012 | .31 | 9337 | 1.44 |
+| NC_035140.1 | Cistanthe longiscapa chloroplast  complete genome | 156830 | 0 | 0 | 6345 | 4.04 | 1974 | 1.25 | 7280 | 4.64 |
+| NC_035141.1 | Mastacembelus erythrotaenia mitochondrion  complete genome | 16493 | 0 | 0 | 423 | 2.56 | 1083 | 6.56 | 1506 | 9.13 |
+| NC_035142.1 | Ancylostoma ceylanicum mitochondrion  complete genome | 13660 | 0 | 0 | 564 | 4.12 | 466 | 3.41 | 907 | 6.63 |
+| NC_035143.1 | Ocimum basilicum chloroplast  complete genome | 152407 | 0 | 0 | 4789 | 3.14 | 637 | .41 | 5034 | 3.30 |
+| NC_035145.1 | Yasuhikotakia modesta mitochondrion  complete genome | 16588 | 0 | 0 | 458 | 2.76 | 1330 | 8.01 | 1598 | 9.63 |
+| NC_035147.1 | Atherinosoma microstoma mitochondrion  complete genome | 16573 | 0 | 0 | 304 | 1.83 | 763 | 4.60 | 1018 | 6.14 |
+| NC_035148.1 | Craterocephalus eyresii mitochondrion  complete genome | 16602 | 0 | 0 | 142 | .85 | 840 | 5.05 | 982 | 5.91 |
+| NC_035150.1 | Aeluroscalabotes felinus mitochondrion  complete genome | 18974 | 0 | 0 | 491 | 2.58 | 985 | 5.19 | 1427 | 7.52 |
+| NC_035151.1 | Cyrtopodion scabrum mitochondrial DNA  complete genome | 16994 | 0 | 0 | 121 | .71 | 1157 | 6.80 | 1179 | 6.93 |
+| NC_035152.1 | Ptyodactylus guttatus mitochondrial DNA  complete genome | 17662 | 0 | 0 | 338 | 1.91 | 863 | 4.88 | 1152 | 6.52 |
+| NC_035153.1 | Gonatodes albogularis mitochondrial DNA  complete genome | 16830 | 0 | 0 | 281 | 1.66 | 394 | 2.34 | 675 | 4.01 |
+| NC_035154.1 | Dendrobium moniliforme chloroplast DNA  complete genome | 148778 | 0 | 0 | 6804 | 4.57 | 933 | .62 | 7049 | 4.73 |
+| NC_035155.1 | Sclerotinia sclerotiorum 1980 UF-70 mitochondrion  complete genome | 128852 | 0 | 0 | 3321 | 2.57 | 2164 | 1.67 | 4181 | 3.24 |
+| NC_035156.1 | Euglena archaeoplastidiata isolate MI 67 chloroplast  complete genome | 97245 | 0 | 0 | 6050 | 6.22 | 1571 | 1.61 | 7129 | 7.33 |
+| NC_035157.1 | Populus davidiana mitochondrion  complete genome | 779361 | 0 | 0 | 4653 | .59 | 638 | .08 | 4996 | .64 |
+| NC_035158.1 | Thorea hispida mitochondrion  complete genome | 25380 | 0 | 0 | 959 | 3.77 | 417 | 1.64 | 1155 | 4.55 |
+| NC_035159.1 | Aedes aegypti strain LVP AGWG mitochondrion  complete genome | 16790 | 0 | 0 | 836 | 4.97 | 1307 | 7.78 | 1920 | 11.43 |
+| NC_035225.1 | Lychnis wilfordii chloroplast  complete genome | 152320 | 0 | 0 | 5399 | 3.54 | 1594 | 1.04 | 6110 | 4.01 |
+| NC_035226.1 | Silene capitata chloroplast  complete genome | 150224 | 0 | 0 | 5754 | 3.83 | 1300 | .86 | 6563 | 4.36 |
+| NC_035227.1 | Pternoscirta caliginosa mitochondrion  complete genome | 15598 | 0 | 0 | 787 | 5.04 | 885 | 5.67 | 1574 | 10.09 |
+| NC_035228.1 | Caragana kozlowii chloroplast  complete genome | 131274 | 0 | 0 | 4654 | 3.54 | 2168 | 1.65 | 5790 | 4.41 |
+| NC_035229.1 | Caragana korshinskii chloroplast  complete genome | 129331 | 0 | 0 | 4642 | 3.58 | 1819 | 1.40 | 5748 | 4.44 |
+| NC_035230.1 | Elephas antiquus isolate NEPEC mitochondrion  complete genome | 16105 | 0 | 0 | 472 | 2.93 | 2691 | 16.70 | 2908 | 18.05 |
+| NC_035231.1 | Sheathia arcuata chloroplast  complete genome | 187354 | 0 | 0 | 5925 | 3.16 | 809 | .43 | 6611 | 3.52 |
+| NC_035232.1 | Hermetia illucens voucher hsm-1 mitochondrion  complete genome | 15698 | 0 | 0 | 440 | 2.80 | 688 | 4.38 | 1004 | 6.39 |
+| NC_035233.1 | Salvia japonica chloroplast  complete genome | 153995 | 0 | 0 | 4487 | 2.91 | 515 | .33 | 4830 | 3.13 |
+| NC_035234.1 | Abelmoschus esculentus chloroplast  complete genome | 163121 | 0 | 0 | 8765 | 5.37 | 2758 | 1.69 | 9887 | 6.06 |
+| NC_035235.1 | Anacardium occidentale chloroplast  complete genome | 172199 | 0 | 0 | 5912 | 3.43 | 785 | .45 | 6129 | 3.55 |
+| NC_035236.1 | Cinnamomum verum chloroplast  complete genome | 152766 | 0 | 0 | 4956 | 3.24 | 1202 | .78 | 5373 | 3.51 |
+| NC_035237.1 | Ficus carica chloroplast  complete genome | 160602 | 0 | 0 | 7380 | 4.59 | 1447 | .90 | 7968 | 4.96 |
+| NC_035238.1 | Litchi chinensis chloroplast  complete genome | 162524 | 0 | 0 | 6069 | 3.73 | 932 | .57 | 6510 | 4.00 |
+| NC_035239.1 | Mangifera indica chloroplast  complete genome | 157780 | 0 | 0 | 5601 | 3.54 | 736 | .46 | 5763 | 3.65 |
+| NC_035240.1 | Punica granatum chloroplast  complete genome | 158633 | 0 | 0 | 5473 | 3.45 | 907 | .57 | 6012 | 3.78 |
+| NC_035241.1 | Drosera erythrorhiza voucher PERTH 06332374 plastid  complete genome | 134393 | 0 | 0 | 4619 | 3.43 | 981 | .72 | 5207 | 3.87 |
+| NC_035242.1 | Meroptera pravella voucher JBWM0363025 mitochondrion  complete genome | 15260 | 0 | 0 | 1169 | 7.66 | 1105 | 7.24 | 1951 | 12.78 |
+| NC_035243.1 | Caenorhabditis remanei mitochondrion  complete genome | 13610 | 0 | 0 | 1154 | 8.47 | 393 | 2.88 | 1350 | 9.91 |
+| NC_035244.1 | Caenorhabditis brenneri mitochondrion  complete genome | 14212 | 0 | 0 | 731 | 5.14 | 689 | 4.84 | 1025 | 7.21 |
+| NC_035245.1 | Caenorhabditis plicata mitochondrion  complete genome | 14248 | 0 | 0 | 920 | 6.45 | 639 | 4.48 | 1165 | 8.17 |
+| NC_035246.1 | Caenorhabditis angaria mitochondrion  complete genome | 13596 | 0 | 0 | 675 | 4.96 | 368 | 2.70 | 822 | 6.04 |
+| NC_035247.1 | Caenorhabditis doughertyi mitochondrion  complete genome | 13719 | 0 | 0 | 748 | 5.45 | 565 | 4.11 | 993 | 7.23 |
+| NC_035248.1 | Caenorhabditis virilis mitochondrion  complete genome | 13661 | 0 | 0 | 604 | 4.42 | 468 | 3.42 | 800 | 5.85 |
+| NC_035249.1 | Caenorhabditis wallacei mitochondrion  complete genome | 13705 | 0 | 0 | 1033 | 7.53 | 492 | 3.58 | 1254 | 9.14 |
+| NC_035250.1 | Caenorhabditis nouraguensis mitochondrion  complete genome | 13786 | 0 | 0 | 904 | 6.55 | 421 | 3.05 | 1027 | 7.44 |
+| NC_035251.1 | Caenorhabditis macrosperma mitochondrion  complete genome | 13633 | 0 | 0 | 580 | 4.25 | 272 | 1.99 | 703 | 5.15 |
+| NC_035252.1 | Caenorhabditis afra mitochondrion  complete genome | 14245 | 0 | 0 | 1067 | 7.49 | 690 | 4.84 | 1312 | 9.21 |
+| NC_035253.1 | Caenorhabditis castelli mitochondrion  complete genome | 13655 | 0 | 0 | 1236 | 9.05 | 370 | 2.70 | 1383 | 10.12 |
+| NC_035254.1 | Esteya vermicola culture CBS:115803 mitochondrion  complete genome | 46507 | 0 | 0 | 2022 | 4.34 | 883 | 1.89 | 2488 | 5.34 |
+| NC_035255.1 | Macrostomum lignano mitochondrion  complete genome | 14193 | 0 | 0 | 944 | 6.65 | 638 | 4.49 | 1361 | 9.58 |
+| NC_035256.1 | Stenostomum sthenum mitochondrion  complete genome | 16944 | 0 | 0 | 256 | 1.51 | 294 | 1.73 | 550 | 3.24 |
+| NC_035257.1 | Dipterocladia arabiensis isolate DHO101 chloroplast  complete genome | 173119 | 0 | 0 | 7061 | 4.07 | 1740 | 1.00 | 8286 | 4.78 |
+| NC_035258.1 | Platysiphonia delicata isolate HV1445 chloroplast  complete genome | 171598 | 0 | 0 | 5563 | 3.24 | 1079 | .62 | 6372 | 3.71 |
+| NC_035259.1 | Laurenciella marilzae isolate HV1501 chloroplast  complete genome | 172014 | 0 | 0 | 5567 | 3.23 | 490 | .28 | 5959 | 3.46 |
+| NC_035260.1 | Acrosorium ciliolatum isolate HV3939 chloroplast  complete genome | 176064 | 0 | 0 | 7285 | 4.13 | 1765 | 1.00 | 8656 | 4.91 |
+| NC_035261.1 | Periphykon beckeri isolate JH1427 chloroplast  complete genome | 168283 | 0 | 0 | 4524 | 2.68 | 932 | .55 | 5358 | 3.18 |
+| NC_035262.1 | Osmundaria fimbriata isolate JW2841 chloroplast  complete genome | 183995 | 0 | 0 | 7138 | 3.87 | 1421 | .77 | 8215 | 4.46 |
+| NC_035263.1 | Caloglossa monosticha isolate JW3046 chloroplast  complete genome | 165111 | 0 | 0 | 5017 | 3.03 | 1324 | .80 | 6040 | 3.65 |
+| NC_035264.1 | Bostrychia tenella isolate JW3079 chloroplast  complete genome | 170809 | 0 | 0 | 5857 | 3.42 | 1030 | .60 | 6445 | 3.77 |
+| NC_035265.1 | Caloglossa intermedia isolate JW3535 chloroplast  complete genome | 166397 | 0 | 0 | 4046 | 2.43 | 833 | .50 | 4536 | 2.72 |
+| NC_035266.1 | Bostrychia moritziana isolate JW3660 chloroplast  complete genome | 171750 | 0 | 0 | 7136 | 4.15 | 1963 | 1.14 | 8558 | 4.98 |
+| NC_035267.1 | Symphyocladia dendroidea isolate JW3780 chloroplast  complete genome | 171837 | 0 | 0 | 5572 | 3.24 | 1348 | .78 | 6626 | 3.85 |
+| NC_035268.1 | Bostrychia simpliciuscula isolate JW3897 chloroplast  complete genome | 167514 | 0 | 0 | 7155 | 4.27 | 1790 | 1.06 | 8602 | 5.13 |
+| NC_035269.1 | Caloglossa beccarii isolate JW4523 chloroplast  complete genome | 165038 | 0 | 0 | 6468 | 3.91 | 1740 | 1.05 | 7689 | 4.65 |
+| NC_035270.1 | Polysiphonia sertularioides isolate PD001 chloroplast  complete genome | 166000 | 0 | 0 | 5615 | 3.38 | 711 | .42 | 6179 | 3.72 |
+| NC_035271.1 | Rhodomela confervoides isolate PD508 chloroplast  complete genome | 175951 | 0 | 0 | 5378 | 3.05 | 956 | .54 | 6211 | 3.52 |
+| NC_035272.1 | Polysiphonia brodiei isolate PD516 chloroplast  complete genome | 169795 | 0 | 0 | 5254 | 3.09 | 931 | .54 | 5940 | 3.49 |
+| NC_035273.1 | Vertebrata thuyoides isolate PD546 chloroplast  complete genome | 168951 | 0 | 0 | 5874 | 3.47 | 662 | .39 | 6315 | 3.73 |
+| NC_035274.1 | Polysiphonia elongata isolate PD547 chloroplast  complete genome | 168290 | 0 | 0 | 5103 | 3.03 | 1029 | .61 | 5985 | 3.55 |
+| NC_035275.1 | Polysiphonia stricta isolate PD550 chloroplast  complete genome | 169061 | 0 | 0 | 5316 | 3.14 | 588 | .34 | 5855 | 3.46 |
+| NC_035276.1 | Bryothamnion seaforthii isolate PD644 chloroplast  complete genome | 175547 | 0 | 0 | 5700 | 3.24 | 1226 | .69 | 6705 | 3.81 |
+| NC_035277.1 | Polysiphonia infestans isolate PD763 chloroplast  complete genome | 165237 | 0 | 0 | 5151 | 3.11 | 1005 | .60 | 5984 | 3.62 |
+| NC_035278.1 | Vertebrata isogona isolate PD831 chloroplast  complete genome | 167445 | 0 | 0 | 6008 | 3.58 | 1276 | .76 | 7037 | 4.20 |
+| NC_035279.1 | Herposiphonia versicolor isolate PD852 chloroplast  complete genome | 166895 | 0 | 0 | 6824 | 4.08 | 1497 | .89 | 7830 | 4.69 |
+| NC_035280.1 | Dasya naccarioides isolate PD888 chloroplast  complete genome | 170970 | 0 | 0 | 6378 | 3.73 | 1939 | 1.13 | 7873 | 4.60 |
+| NC_035281.1 | Melanothamnus harveyi isolate PD890 chloroplast  complete genome | 164979 | 0 | 0 | 5312 | 3.21 | 686 | .41 | 5753 | 3.48 |
+| NC_035282.1 | Polysiphonia scopulorum isolate PD899 chloroplast  complete genome | 168001 | 0 | 0 | 4993 | 2.97 | 809 | .48 | 5704 | 3.39 |
+| NC_035283.1 | Vertebrata australis isolate PD931 chloroplast  complete genome | 167318 | 0 | 0 | 6115 | 3.65 | 1202 | .71 | 7169 | 4.28 |
+| NC_035284.1 | Ophidocladus simpliciusculus isolate PD949 chloroplast  complete genome | 168531 | 0 | 0 | 6304 | 3.74 | 1031 | .61 | 7261 | 4.30 |
+| NC_035285.1 | Spyridia filamentosa isolate PD1020 chloroplast  complete genome | 175578 | 0 | 0 | 4871 | 2.77 | 1079 | .61 | 5697 | 3.24 |
+| NC_035286.1 | Thuretia quercifolia isolate PD1024 chloroplast  complete genome | 174510 | 0 | 0 | 7804 | 4.47 | 2160 | 1.23 | 9448 | 5.41 |
+| NC_035287.1 | Dasyclonium flaccidum isolate PD1087 chloroplast  complete genome | 170203 | 0 | 0 | 7007 | 4.11 | 1349 | .79 | 7767 | 4.56 |
+| NC_035288.1 | Dipterosiphonia australica isolate PD1107 chloroplast  complete genome | 169341 | 0 | 0 | 6077 | 3.58 | 907 | .53 | 6886 | 4.06 |
+| NC_035289.1 | Sonderella linearis isolate PD1151 chloroplast  complete genome | 169619 | 0 | 0 | 7110 | 4.19 | 2306 | 1.35 | 8802 | 5.18 |
+| NC_035290.1 | Gredgaria maugeana isolate PD1230 chloroplast  complete genome | 167948 | 0 | 0 | 6722 | 4.00 | 1594 | .94 | 7825 | 4.65 |
+| NC_035291.1 | Thaumatella adunca isolate PD1388 chloroplast  complete genome | 169659 | 0 | 0 | 6117 | 3.60 | 2060 | 1.21 | 7711 | 4.54 |
+| NC_035292.1 | Lophocladia kuetzingii isolate PD1509 chloroplast  complete genome | 175085 | 0 | 0 | 6717 | 3.83 | 1496 | .85 | 7845 | 4.48 |
+| NC_035293.1 | Kuetzingia canaliculata isolate PD1540 chloroplast  complete genome | 178949 | 0 | 0 | 7142 | 3.99 | 1227 | .68 | 8148 | 4.55 |
+| NC_035294.1 | Cliftonaea pectinata isolate PD1561 chloroplast  complete genome | 174482 | 0 | 0 | 7184 | 4.11 | 1374 | .78 | 8215 | 4.70 |
+| NC_035295.1 | Taenioma perpusillum isolate PD1676 chloroplast  complete genome | 163418 | 0 | 0 | 5548 | 3.39 | 1643 | 1.00 | 6675 | 4.08 |
+| NC_035296.1 | Polysiphonia schneideri isolate PD1720 chloroplast  complete genome | 163271 | 0 | 0 | 6451 | 3.95 | 1398 | .85 | 7604 | 4.65 |
+| NC_035297.1 | Dictyomenia sonderi isolate PD1725 chloroplast  complete genome | 168768 | 0 | 0 | 5856 | 3.46 | 1078 | .63 | 6542 | 3.87 |
+| NC_035298.1 | Digenea simplex isolate PD1820 chloroplast  complete genome | 174848 | 0 | 0 | 5444 | 3.11 | 1127 | .64 | 6228 | 3.56 |
+| NC_035299.1 | Tolypiocladia glomerulata isolate PD1825 chloroplast  complete genome | 165623 | 0 | 0 | 5450 | 3.29 | 490 | .29 | 5744 | 3.46 |
+| NC_035300.1 | Segonzacia mesatlantica mitochondrion  complete genome | 15521 | 0 | 0 | 245 | 1.57 | 418 | 2.69 | 540 | 3.47 |
+| NC_035301.1 | Nurudea shiraii mitochondrion  complete genome | 15389 | 0 | 0 | 726 | 4.71 | 1455 | 9.45 | 1960 | 12.73 |
+| NC_035303.1 | Sinapis arvensis chloroplast  complete genome | 153590 | 0 | 0 | 5723 | 3.72 | 1328 | .86 | 6164 | 4.01 |
+| NC_035304.1 | Gekko hokouensis mitochondrion  complete genome | 17769 | 0 | 0 | 464 | 2.61 | 863 | 4.85 | 1327 | 7.46 |
+| NC_035305.1 | Poecilia latipinna isolate 2769 mitochondrion  complete genome | 16533 | 0 | 0 | 159 | .96 | 1059 | 6.40 | 1218 | 7.36 |
+| NC_035306.1 | Poecilia mexicana isolate 1644 mitochondrion  complete genome | 16541 | 0 | 0 | 69 | .41 | 1256 | 7.59 | 1325 | 8.01 |
+| NC_035308.1 | Zeylanicobdella arugamensis mitochondrion  complete genome | 16161 | 0 | 0 | 1907 | 11.80 | 1616 | 9.99 | 2372 | 14.67 |
+| NC_035309.1 | Hippotragus leucophaeus mitochondrion  complete genome | 16505 | 0 | 0 | 444 | 2.69 | 4050 | 24.53 | 4248 | 25.73 |
+| NC_035310.1 | Floraphis choui mitochondrion  complete genome | 15308 | 0 | 0 | 882 | 5.76 | 1699 | 11.09 | 2185 | 14.27 |
+| NC_035311.1 | Nurudea ibofushi mitochondrion  complete genome | 16054 | 0 | 0 | 730 | 4.54 | 1598 | 9.95 | 1834 | 11.42 |
+| NC_035312.1 | Meitanaphis flavogallis mitochondrion  complete genome | 16150 | 0 | 0 | 503 | 3.11 | 1573 | 9.73 | 1904 | 11.78 |
+| NC_035313.1 | Nurudea yanoniella mitochondrion  complete genome | 15858 | 0 | 0 | 837 | 5.27 | 1301 | 8.20 | 1966 | 12.39 |
+| NC_035314.1 | Baizongia pistaciae mitochondrion  complete genome | 15602 | 0 | 0 | 937 | 6.00 | 1921 | 12.31 | 2314 | 14.83 |
+| NC_035315.1 | Meitanaphis elongallis mitochondrion  complete genome | 16191 | 0 | 0 | 633 | 3.90 | 1774 | 10.95 | 2161 | 13.34 |
+| NC_035316.1 | Floraphis meitanensis mitochondrion  complete genome | 15301 | 0 | 0 | 920 | 6.01 | 1698 | 11.09 | 2247 | 14.68 |
+| NC_035317.1 | Stratiotes aloides voucher Seberg et al. C2459 mitochondrion  complete genome | 349058 | 0 | 0 | 3701 | 1.06 | 502 | .14 | 3946 | 1.13 |
+| NC_035320.1 | Vanilla aphylla chloroplast DNA  complete genome | 150165 | 0 | 0 | 11368 | 7.57 | 5772 | 3.84 | 13734 | 9.14 |
+| NC_035321.1 | Dendrobium primulinum chloroplast DNA  complete genome | 150767 | 0 | 0 | 6430 | 4.26 | 981 | .65 | 6822 | 4.52 |
+| NC_035322.1 | Dendrobium aphyllum chloroplast DNA  complete genome | 151524 | 0 | 0 | 6828 | 4.50 | 1350 | .89 | 7416 | 4.89 |
+| NC_035323.1 | Dendrobium brymerianum chloroplast DNA  complete genome | 151830 | 0 | 0 | 6805 | 4.48 | 711 | .46 | 7148 | 4.70 |
+| NC_035324.1 | Dendrobium denneanum chloroplast DNA  complete genome | 151565 | 0 | 0 | 6787 | 4.47 | 1006 | .66 | 7081 | 4.67 |
+| NC_035325.1 | Dendrobium devonianum chloroplast DNA  complete genome | 151945 | 0 | 0 | 6045 | 3.97 | 1178 | .77 | 6511 | 4.28 |
+| NC_035326.1 | Dendrobium falconeri chloroplast DNA  complete genome | 151890 | 0 | 0 | 7456 | 4.90 | 1375 | .90 | 8045 | 5.29 |
+| NC_035327.1 | Dendrobium gratiosissimum chloroplast DNA  complete genome | 151829 | 0 | 0 | 6430 | 4.23 | 933 | .61 | 6872 | 4.52 |
+| NC_035328.1 | Dendrobium hercoglossum chloroplast DNA  complete genome | 151939 | 0 | 0 | 7148 | 4.70 | 1326 | .87 | 7688 | 5.05 |
+| NC_035329.1 | Dendrobium wardianum chloroplast DNA  complete genome | 151788 | 0 | 0 | 6885 | 4.53 | 1399 | .92 | 7449 | 4.90 |
+| NC_035330.1 | Dendrobium wilsonii chloroplast DNA  complete genome | 152080 | 0 | 0 | 7234 | 4.75 | 1129 | .74 | 7577 | 4.98 |
+| NC_035331.1 | Dendrobium crepidatum chloroplast DNA  complete genome | 151717 | 0 | 0 | 6641 | 4.37 | 1227 | .80 | 7396 | 4.87 |
+| NC_035332.1 | Dendrobium salaccense chloroplast DNA  complete genome | 151104 | 0 | 0 | 6638 | 4.39 | 1081 | .71 | 7075 | 4.68 |
+| NC_035333.1 | Dendrobium spatella chloroplast DNA  complete genome | 151829 | 0 | 0 | 6675 | 4.39 | 1058 | .69 | 7093 | 4.67 |
+| NC_035334.1 | Dendrobium parciflorum chloroplast DNA  complete genome | 150073 | 0 | 0 | 6746 | 4.49 | 1499 | .99 | 7114 | 4.74 |
+| NC_035335.1 | Dendrobium henryi chloroplast DNA  complete genome | 151850 | 0 | 0 | 6245 | 4.11 | 1104 | .72 | 6687 | 4.40 |
+| NC_035336.1 | Dendrobium chrysanthum chloroplast DNA  complete genome | 151790 | 0 | 0 | 6327 | 4.16 | 932 | .61 | 6768 | 4.45 |
+| NC_035337.1 | Dendrobium jenkinsii chloroplast DNA  complete genome | 151717 | 0 | 0 | 6849 | 4.51 | 1104 | .72 | 7340 | 4.83 |
+| NC_035338.1 | Dendrobium lohohense chloroplast DNA  complete genome | 151812 | 0 | 0 | 6722 | 4.42 | 1155 | .76 | 7213 | 4.75 |
+| NC_035339.1 | Dendrobium parishii chloroplast DNA  complete genome | 151689 | 0 | 0 | 6709 | 4.42 | 860 | .56 | 6979 | 4.60 |
+| NC_035340.1 | Dendrobium ellipsophyllum chloroplast DNA  complete genome | 152026 | 0 | 0 | 7333 | 4.82 | 1228 | .80 | 7848 | 5.16 |
+| NC_035341.1 | Dendrobium xichouense chloroplast DNA  complete genome | 152052 | 0 | 0 | 7151 | 4.70 | 1178 | .77 | 7492 | 4.92 |
+| NC_035342.1 | Dendrobium fimbriatum chloroplast DNA  complete genome | 151673 | 0 | 0 | 7348 | 4.84 | 981 | .64 | 7691 | 5.07 |
+| NC_035343.1 | Dendrobium exile chloroplast DNA  complete genome | 151294 | 0 | 0 | 6762 | 4.46 | 982 | .64 | 7154 | 4.72 |
+| NC_035344.1 | Dendrobium fanjingshanense chloroplast DNA  complete genome | 152108 | 0 | 0 | 6890 | 4.52 | 1031 | .67 | 7135 | 4.69 |
+| NC_035345.1 | Zostera marina voucher C2544 mitochondrion  complete genome | 191481 | 0 | 0 | 4070 | 2.12 | 538 | .28 | 4217 | 2.20 |
+| NC_035346.1 | Dichrostachys cinerea chloroplast  complete genome | 161240 | 0 | 0 | 6877 | 4.26 | 1965 | 1.21 | 7958 | 4.93 |
+| NC_035347.1 | Faidherbia albida chloroplast  complete genome | 175646 | 0 | 0 | 8648 | 4.92 | 3417 | 1.94 | 10238 | 5.82 |
+| NC_035348.1 | Pararchidendron pruinosum chloroplast  complete genome | 176692 | 0 | 0 | 8878 | 5.02 | 4355 | 2.46 | 10575 | 5.98 |
+| NC_035349.1 | Sheathia arcuata mitochondrion  complete genome | 25086 | 0 | 0 | 870 | 3.46 | 271 | 1.08 | 1067 | 4.25 |
+| NC_035350.1 | Compsopogon caeruleus chloroplast  complete genome | 221013 | 0 | 0 | 10188 | 4.60 | 2009 | .90 | 11707 | 5.29 |
+| NC_035351.1 | Compsopogon caeruleus mitochondrion  complete genome | 26807 | 0 | 0 | 1389 | 5.18 | 98 | .36 | 1487 | 5.54 |
+| NC_035353.1 | Apetahia longistigmata plastid  complete genome | 164283 | 0 | 0 | 4901 | 2.98 | 761 | .46 | 5048 | 3.07 |
+| NC_035354.1 | Centropogon granulosus plastid  complete genome | 166198 | 0 | 0 | 4545 | 2.73 | 810 | .48 | 4986 | 3.00 |
+| NC_035355.1 | Clermontia fauriei plastid  complete genome | 164756 | 0 | 0 | 4372 | 2.65 | 638 | .38 | 4568 | 2.77 |
+| NC_035356.1 | Cyanea leptostegia plastid  complete genome | 163907 | 0 | 0 | 4748 | 2.89 | 638 | .38 | 4895 | 2.98 |
+| NC_035357.1 | Dialypetalum floribundum plastid  complete genome | 166126 | 0 | 0 | 4963 | 2.98 | 687 | .41 | 5208 | 3.13 |
+| NC_035358.1 | Diastatea micrantha plastid  complete genome | 164976 | 0 | 0 | 5083 | 3.08 | 963 | .58 | 5377 | 3.25 |
+| NC_035359.1 | Downingia cuspidata plastid  complete genome | 136733 | 0 | 0 | 4079 | 2.98 | 441 | .32 | 4324 | 3.16 |
+| NC_035360.1 | Downingia elegans plastid  complete genome | 132649 | 0 | 0 | 3813 | 2.87 | 147 | .11 | 3911 | 2.94 |
+| NC_035361.1 | Hippobroma longiflora plastid  complete genome | 165100 | 0 | 0 | 4645 | 2.81 | 1383 | .83 | 5188 | 3.14 |
+| NC_035362.1 | Isotoma tridens plastid  complete genome | 165876 | 0 | 0 | 4433 | 2.67 | 860 | .51 | 4900 | 2.95 |
+| NC_035363.1 | Isotoma hypocrateriformis isolate K5237 plastid  complete genome | 152505 | 0 | 0 | 4456 | 2.92 | 932 | .61 | 4750 | 3.11 |
+| NC_035364.1 | Legenere valdiviana plastid  complete genome | 146691 | 0 | 0 | 5003 | 3.41 | 392 | .26 | 5052 | 3.44 |
+| NC_035365.1 | Lobelia aberdarica plastid  complete genome | 163902 | 0 | 0 | 4791 | 2.92 | 933 | .56 | 5085 | 3.10 |
+| NC_035366.1 | Lobelia acrochila plastid  complete genome | 164047 | 0 | 0 | 4739 | 2.88 | 712 | .43 | 4984 | 3.03 |
+| NC_035367.1 | Pratia angulata plastid  complete genome | 164856 | 0 | 0 | 4999 | 3.03 | 565 | .34 | 5195 | 3.15 |
+| NC_035368.1 | Lobelia bambuseti plastid  complete genome | 164051 | 0 | 0 | 4869 | 2.96 | 834 | .50 | 5163 | 3.14 |
+| NC_035369.1 | Lobelia bequaertii plastid  complete genome | 164299 | 0 | 0 | 4858 | 2.95 | 688 | .41 | 5005 | 3.04 |
+| NC_035370.1 | Lobelia chinensis plastid  complete genome | 164396 | 0 | 0 | 4462 | 2.71 | 491 | .29 | 4609 | 2.80 |
+| NC_035371.1 | Lobelia columnaris isolate M2085 plastid  complete genome | 165416 | 0 | 0 | 4802 | 2.90 | 517 | .31 | 4900 | 2.96 |
+| NC_035372.1 | Lobelia davidii plastid  complete genome | 166287 | 0 | 0 | 4949 | 2.97 | 688 | .41 | 5145 | 3.09 |
+| NC_035373.1 | Lobelia doniana plastid  complete genome | 165003 | 0 | 0 | 4752 | 2.87 | 688 | .41 | 4948 | 2.99 |
+| NC_035374.1 | Lobelia gibberoa plastid  complete genome | 164477 | 0 | 0 | 4700 | 2.85 | 638 | .38 | 4945 | 3.00 |
+| NC_035375.1 | Lobelia x kauaensis plastid  complete genome | 165063 | 0 | 0 | 4963 | 3.00 | 811 | .49 | 5233 | 3.17 |
+| NC_035376.1 | Lobelia lukwangulensis plastid  complete genome | 163845 | 0 | 0 | 4864 | 2.96 | 638 | .38 | 5060 | 3.08 |
+| NC_035377.1 | Lobelia melliana plastid  complete genome | 165413 | 0 | 0 | 4727 | 2.85 | 736 | .44 | 5070 | 3.06 |
+| NC_035378.1 | Lobelia mildbraedii plastid  complete genome | 164214 | 0 | 0 | 4835 | 2.94 | 712 | .43 | 5080 | 3.09 |
+| NC_035379.1 | Lobelia muscoides plastid  complete genome | 164719 | 0 | 0 | 4455 | 2.70 | 638 | .38 | 4848 | 2.94 |
+| NC_035380.1 | Lobelia niihauensis plastid  complete genome | 163898 | 0 | 0 | 4721 | 2.88 | 565 | .34 | 4770 | 2.91 |
+| NC_035381.1 | Pratia nummularia plastid  complete genome | 165428 | 0 | 0 | 4508 | 2.72 | 638 | .38 | 4704 | 2.84 |
+| NC_035382.1 | Lobelia organensis plastid  complete genome | 163974 | 0 | 0 | 4588 | 2.79 | 638 | .38 | 4882 | 2.97 |
+| NC_035383.1 | Lobelia petiolata plastid  complete genome | 165035 | 0 | 0 | 5258 | 3.18 | 540 | .32 | 5307 | 3.21 |
+| NC_035384.1 | Lobelia rhynchopetalum plastid  complete genome | 164254 | 0 | 0 | 4768 | 2.90 | 442 | .26 | 4866 | 2.96 |
+| NC_035385.1 | Lobelia ritabeaniana plastid  complete genome | 163440 | 0 | 0 | 4612 | 2.82 | 491 | .30 | 4808 | 2.94 |
+| NC_035386.1 | Lobelia sancta plastid  complete genome | 163423 | 0 | 0 | 4765 | 2.91 | 614 | .37 | 4961 | 3.03 |
+| NC_035387.1 | Lobelia seguinii plastid  complete genome | 166534 | 0 | 0 | 4914 | 2.95 | 639 | .38 | 5061 | 3.03 |
+| NC_035388.1 | Lobelia sessilifolia plastid  complete genome | 165656 | 0 | 0 | 4636 | 2.79 | 786 | .47 | 4980 | 3.00 |
+| NC_035389.1 | Lobelia stuhlmannii plastid  complete genome | 164767 | 0 | 0 | 4996 | 3.03 | 565 | .34 | 5143 | 3.12 |
+| NC_035390.1 | Lobelia telekii plastid  complete genome | 164360 | 0 | 0 | 4744 | 2.88 | 688 | .41 | 4891 | 2.97 |
+| NC_035391.1 | Lobelia thapsoidea plastid  complete genome | 164158 | 0 | 0 | 5071 | 3.08 | 786 | .47 | 5512 | 3.35 |
+| NC_035392.1 | Lobelia udzungwensis plastid  complete genome | 163628 | 0 | 0 | 4809 | 2.93 | 417 | .25 | 4956 | 3.02 |
+| NC_035393.1 | Lobelia urens plastid  complete genome | 165407 | 0 | 0 | 4478 | 2.70 | 688 | .41 | 4772 | 2.88 |
+| NC_035394.1 | Lobelia wollastonii plastid  complete genome | 164711 | 0 | 0 | 4910 | 2.98 | 565 | .34 | 5057 | 3.07 |
+| NC_035395.1 | Lobelia yuccoides plastid  complete genome | 163791 | 0 | 0 | 5069 | 3.09 | 565 | .34 | 5167 | 3.15 |
+| NC_035396.1 | Sclerotheca viridiflora plastid  complete genome | 163990 | 0 | 0 | 5072 | 3.09 | 983 | .59 | 5293 | 3.22 |
+| NC_035397.1 | Solenopsis bivonae plastid  complete genome | 164930 | 0 | 0 | 4173 | 2.53 | 713 | .43 | 4369 | 2.64 |
+| NC_035398.1 | Trematolobelia kauaiensis plastid  complete genome | 162887 | 0 | 0 | 4726 | 2.90 | 908 | .55 | 5167 | 3.17 |
+| NC_035399.1 | Typhlatya taina mitochondrion  complete genome | 15790 | 0 | 0 | 265 | 1.67 | 270 | 1.70 | 535 | 3.38 |
+| NC_035400.1 | Typhlatya pearsei mitochondrion  complete genome | 15798 | 0 | 0 | 297 | 1.87 | 687 | 4.34 | 935 | 5.91 |
+| NC_035401.1 | Typhlatya iliffei mitochondrion  complete genome | 15926 | 0 | 0 | 144 | .90 | 98 | .61 | 242 | 1.51 |
+| NC_035402.1 | Typhlatya galapagensis mitochondrion  complete genome | 16430 | 0 | 0 | 392 | 2.38 | 491 | 2.98 | 834 | 5.07 |
+| NC_035403.1 | Typhlatya mitchelli mitochondrion  complete genome | 15814 | 0 | 0 | 281 | 1.77 | 221 | 1.39 | 502 | 3.17 |
+| NC_035404.1 | Stygiocaris lancifera mitochondrion  complete genome | 15787 | 0 | 0 | 201 | 1.27 | 516 | 3.26 | 668 | 4.23 |
+| NC_035405.1 | Typhlatya monae mitochondrion  complete genome | 16007 | 0 | 0 | 215 | 1.34 | 245 | 1.53 | 460 | 2.87 |
+| NC_035406.1 | Typhlopatsa pauliani mitochondrion  complete genome | 15824 | 0 | 0 | 111 | .70 | 124 | .78 | 235 | 1.48 |
+| NC_035407.1 | Typhlatya consobrina mitochondrion  complete genome | 15758 | 0 | 0 | 259 | 1.64 | 270 | 1.71 | 480 | 3.04 |
+| NC_035408.1 | Typhlatya dzilamensis mitochondrion  complete genome | 15892 | 0 | 0 | 151 | .95 | 344 | 2.16 | 446 | 2.80 |
+| NC_035409.1 | Typhlatya garciai mitochondrion  complete genome | 15318 | 0 | 0 | 197 | 1.28 | 295 | 1.92 | 492 | 3.21 |
+| NC_035410.1 | Typhlatya arfeae mitochondrion  complete genome | 15887 | 0 | 0 | 194 | 1.22 | 173 | 1.08 | 367 | 2.31 |
+| NC_035411.1 | Stygiocaris stylifera mitochondrion  complete genome | 15812 | 0 | 0 | 29 | .18 | 466 | 2.94 | 495 | 3.13 |
+| NC_035412.1 | Halocaridinides fowleri mitochondrion  complete genome | 15977 | 0 | 0 | 98 | .61 | 270 | 1.68 | 368 | 2.30 |
+| NC_035413.1 | Platycarya strobilacea chloroplast  complete genome | 160994 | 0 | 0 | 6546 | 4.06 | 1545 | .95 | 7183 | 4.46 |
+| NC_035414.1 | Viscum coloratum chloroplast  complete genome | 128744 | 0 | 0 | 6957 | 5.40 | 3127 | 2.42 | 8036 | 6.24 |
+| NC_035415.1 | Drosera regia chloroplast  complete genome | 136810 | 0 | 0 | 4239 | 3.09 | 931 | .68 | 4840 | 3.53 |
+| NC_035416.1 | Aldrovanda vesiculosa voucher PERTH 08722560 chloroplast  complete genome | 141568 | 0 | 0 | 5214 | 3.68 | 1031 | .72 | 5754 | 4.06 |
+| NC_035417.1 | Dionaea muscipula chloroplast  complete genome | 117589 | 0 | 0 | 4417 | 3.75 | 1647 | 1.40 | 5327 | 4.53 |
+| NC_035418.1 | Sinojackia xylocarpa voucher SXYL20170211 chloroplast  complete genome | 158725 | 0 | 0 | 5995 | 3.77 | 1176 | .74 | 6485 | 4.08 |
+| NC_035419.1 | Kryptopterus vitreolus isolate 09 mitochondrion  complete genome | 16662 | 0 | 0 | 227 | 1.36 | 1158 | 6.94 | 1385 | 8.31 |
+| NC_035420.1 | Pteranabropsis carli mitochondrion  complete genome | 15932 | 0 | 0 | 657 | 4.12 | 760 | 4.77 | 1270 | 7.97 |
+| NC_035421.1 | Bathymodiolus platifrons mitochondrion  complete genome | 17435 | 0 | 0 | 525 | 3.01 | 147 | .84 | 623 | 3.57 |
+| NC_035422.1 | Modiolus philippinarum mitochondrion  complete genome | 16389 | 0 | 0 | 154 | .93 | 147 | .89 | 301 | 1.83 |
+| NC_035423.1 | Himantopus himantopus mitochondrion  complete genome | 17378 | 0 | 0 | 384 | 2.20 | 1209 | 6.95 | 1419 | 8.16 |
+| NC_035424.1 | Maja crispata mitochondrion  complete genome | 16592 | 0 | 0 | 341 | 2.05 | 393 | 2.36 | 685 | 4.12 |
+| NC_035425.1 | Maja squinado mitochondrion  complete genome | 16598 | 0 | 0 | 505 | 3.04 | 270 | 1.62 | 677 | 4.07 |
+| NC_035426.1 | Lagenorhynchus obliquidens voucher CRI007319 mitochondrion  complete genome | 16392 | 0 | 0 | 293 | 1.78 | 3559 | 21.71 | 3770 | 22.99 |
+| NC_035427.1 | Calotomus japonicus voucher NSMT:P65394 mitochondrion  complete genome | 17199 | 0 | 0 | 69 | .40 | 1033 | 6.00 | 1102 | 6.40 |
+| NC_035428.1 | Pseudogobius fulvicaudus mitochondrion  complete genome | 16495 | 0 | 0 | 188 | 1.13 | 986 | 5.97 | 1174 | 7.11 |
+| NC_035429.1 | Meghimatium bilineatum mitochondrion  complete genome | 13972 | 0 | 0 | 107 | .76 | 245 | 1.75 | 303 | 2.16 |
+| NC_035430.1 | Caryophyllaeus brachycollis voucher FR198191 mitochondrion  complete genome | 14504 | 0 | 0 | 0 | 0 | 98 | .67 | 0 | 0 |
+| NC_035431.1 | Ampelophaga rubiginosa mitochondrion  complete genome | 15282 | 0 | 0 | 1088 | 7.11 | 1108 | 7.25 | 1875 | 12.26 |
+| NC_035489.1 | Elysia cornigera mitochondrion  complete genome | 14118 | 0 | 0 | 158 | 1.11 | 270 | 1.91 | 428 | 3.03 |
+| NC_035490.1 | Elysia timida mitochondrion  complete genome | 14088 | 0 | 0 | 69 | .48 | 245 | 1.73 | 314 | 2.22 |
+| NC_035491.1 | Sphyrna mokarran voucher OC-226 mitochondrion  complete genome | 16719 | 0 | 0 | 247 | 1.47 | 1083 | 6.47 | 1330 | 7.95 |
+| NC_035492.1 | Themeda quadrivalvis isolate AL95 chloroplast  complete genome | 138961 | 0 | 0 | 4407 | 3.17 | 687 | .49 | 4726 | 3.40 |
+| NC_035493.1 | Etheostoma okaloosae mitochondrion  complete genome | 16616 | 0 | 0 | 178 | 1.07 | 642 | 3.86 | 820 | 4.93 |
+| NC_035494.1 | Eurycea cirrigera mitochondrion  complete genome | 16759 | 0 | 0 | 340 | 2.02 | 1009 | 6.02 | 1349 | 8.04 |
+| NC_035495.1 | Deroceras reticulatum mitochondrion  complete genome | 14048 | 0 | 0 | 516 | 3.67 | 98 | .69 | 614 | 4.37 |
+| NC_035496.1 | Colletotrichum salicis mitochondrion  complete genome | 33950 | 0 | 0 | 658 | 1.93 | 196 | .57 | 854 | 2.51 |
+| NC_035497.1 | Ceratitis fasciventris mitochondrion  complete genome | 16017 | 0 | 0 | 569 | 3.55 | 862 | 5.38 | 1233 | 7.69 |
+| NC_035498.1 | Pseudobagrus tenuis mitochondrion  complete genome | 16535 | 0 | 0 | 208 | 1.25 | 1552 | 9.38 | 1760 | 10.64 |
+| NC_035499.1 | Zantedeschia aethiopica chloroplast  complete genome | 164488 | 0 | 0 | 11127 | 6.76 | 8787 | 5.34 | 13248 | 8.05 |
+| NC_035500.1 | Fragaria nipponica chloroplast  complete genome | 148592 | 0 | 0 | 4975 | 3.34 | 1302 | .87 | 5708 | 3.84 |
+| NC_035501.1 | Fragaria orientalis chloroplast  complete genome | 147835 | 0 | 0 | 5165 | 3.49 | 959 | .64 | 5607 | 3.79 |
+| NC_035502.1 | Hydrocotyle sibthorpioides chloroplast  complete genome | 152880 | 0 | 0 | 5211 | 3.40 | 1202 | .78 | 5751 | 3.76 |
+| NC_035503.1 | Neodon sikimensis mitochondrion  complete genome | 16330 | 0 | 0 | 298 | 1.82 | 3183 | 19.49 | 3351 | 20.52 |
+| NC_035504.1 | Archichauliodes deceptor mitochondrion  complete genome | 15798 | 0 | 0 | 707 | 4.47 | 715 | 4.52 | 1126 | 7.12 |
+| NC_035505.1 | Aloe maculata voucher Aloe maculata chloroplast  complete genome | 153175 | 0 | 0 | 5915 | 3.86 | 1472 | .96 | 6454 | 4.21 |
+| NC_035506.1 | Aloe vera voucher Aloe vera chloroplast  complete genome | 152875 | 0 | 0 | 5751 | 3.76 | 2161 | 1.41 | 6241 | 4.08 |
+| NC_035507.1 | Hediste diadroma mitochondrion  complete genome | 15765 | 0 | 0 | 503 | 3.19 | 344 | 2.18 | 748 | 4.74 |
+| NC_035508.1 | Arthrinium arundinis mitochondrion  complete genome | 48975 | 0 | 0 | 1669 | 3.40 | 466 | .95 | 1914 | 3.90 |
+| NC_035509.1 | Anoplocnemis curvipes mitochondrion  complete genome | 16345 | 0 | 0 | 620 | 3.79 | 368 | 2.25 | 890 | 5.44 |
+| NC_035510.1 | Anaphothrips obscurus mitochondrion  complete genome | 14890 | 0 | 0 | 892 | 5.99 | 688 | 4.62 | 1260 | 8.46 |
+| NC_035511.1 | Hesperis matronalis chloroplast  complete genome | 153907 | 0 | 0 | 5539 | 3.59 | 1381 | .89 | 5977 | 3.88 |
+| NC_035512.1 | Hesperis sylvestris chloroplast  complete genome | 154415 | 0 | 0 | 5630 | 3.64 | 1647 | 1.06 | 6242 | 4.04 |
+| NC_035513.1 | Lobularia libyca chloroplast  complete genome | 152542 | 0 | 0 | 5892 | 3.86 | 907 | .59 | 6333 | 4.15 |
+| NC_035514.1 | Morettia canescens chloroplast  complete genome | 154184 | 0 | 0 | 5595 | 3.62 | 1595 | 1.03 | 6356 | 4.12 |
+| NC_035515.1 | Braya humilis chloroplast  complete genome | 154243 | 0 | 0 | 5618 | 3.64 | 1472 | .95 | 6299 | 4.08 |
+| NC_035516.1 | Cressa cretica chloroplast  complete genome | 141419 | 0 | 0 | 4972 | 3.51 | 1055 | .74 | 5364 | 3.79 |
+| NC_035517.1 | Alloeochaete namuliensis isolate Harris192 chloroplast  complete genome | 139190 | 0 | 0 | 4813 | 3.45 | 540 | .38 | 5058 | 3.63 |
+| NC_035518.1 | Alloeochaete oreogena isolate Chapman19 chloroplast  complete genome | 136079 | 0 | 0 | 4543 | 3.33 | 379 | .27 | 4788 | 3.51 |
+| NC_035519.1 | Alloeochaete uluguruensis isolate Abeid3692 chloroplast  complete genome | 139395 | 0 | 0 | 4719 | 3.38 | 368 | .26 | 4866 | 3.49 |
+| NC_035520.1 | Amphipogon caricinus isolate Latz12610 chloroplast  complete genome | 135994 | 0 | 0 | 4641 | 3.41 | 490 | .36 | 4886 | 3.59 |
+| NC_035521.1 | Amphipogon turbinatus isolate Kellogg1027 chloroplast  complete genome | 135638 | 0 | 0 | 4274 | 3.15 | 386 | .28 | 4470 | 3.29 |
+| NC_035522.1 | Chasmanthium laxum isolate SRR4128961 chloroplast  complete genome | 141203 | 0 | 0 | 4835 | 3.42 | 392 | .27 | 4933 | 3.49 |
+| NC_035523.1 | Crinipes abyssinicus isolate deWilde206 chloroplast  complete genome | 137909 | 0 | 0 | 4710 | 3.41 | 392 | .28 | 4808 | 3.48 |
+| NC_035524.1 | Crinipes longifolius isolate Gilbert1009 chloroplast  complete genome | 138030 | 0 | 0 | 4393 | 3.18 | 417 | .30 | 4540 | 3.28 |
+| NC_035525.1 | Dichaetaria wightii isolate Soderstrom1739 chloroplast  complete genome | 135248 | 0 | 0 | 4611 | 3.40 | 441 | .32 | 4807 | 3.55 |
+| NC_035526.1 | Dregeochloa pumilla isolate Barker chloroplast  complete genome | 136746 | 0 | 0 | 4610 | 3.37 | 760 | .55 | 5051 | 3.69 |
+| NC_035527.1 | Elytrophorus globularis isolate Ing692 chloroplast  complete genome | 136403 | 0 | 0 | 4569 | 3.34 | 662 | .48 | 4765 | 3.49 |
+| NC_035528.1 | Eragrostis walteri isolate Ingram656 chloroplast  complete genome | 137056 | 0 | 0 | 4962 | 3.62 | 760 | .55 | 5207 | 3.79 |
+| NC_035529.1 | Eriachne mucronata isolate Latz13498 chloroplast  complete genome | 135115 | 0 | 0 | 4585 | 3.39 | 711 | .52 | 4977 | 3.68 |
+| NC_035530.1 | Isachne albens isolate Lammers8452 chloroplast  complete genome | 135867 | 0 | 0 | 4540 | 3.34 | 441 | .32 | 4834 | 3.55 |
+| NC_035531.1 | Limnopoa meeboldii isolate Cook282 chloroplast  complete genome | 134724 | 0 | 0 | 4691 | 3.48 | 490 | .36 | 4887 | 3.62 |
+| NC_035532.1 | Nematopoa longipes isolate Simon2353 chloroplast  complete genome | 134459 | 0 | 0 | 5182 | 3.85 | 784 | .58 | 5476 | 4.07 |
+| NC_035533.1 | Phaenanthoecium koestlinii isolate Wood1305 chloroplast  complete genome | 133327 | 0 | 0 | 4636 | 3.47 | 490 | .36 | 4930 | 3.69 |
+| NC_035534.1 | Pheidochloa gracilis isolate Sharp391 chloroplast  complete genome | 134979 | 0 | 0 | 4458 | 3.30 | 663 | .49 | 4728 | 3.50 |
+| NC_035535.1 | Styppeiochloa gynoglossa isolate Hilliard18774 chloroplast  complete genome | 137458 | 0 | 0 | 4452 | 3.23 | 490 | .35 | 4599 | 3.34 |
+| NC_035536.1 | Schima argentea voucher YXQ041 plastid  complete genome | 157245 | 0 | 0 | 5214 | 3.31 | 1029 | .65 | 5846 | 3.71 |
+| NC_035537.1 | Schima brevipedicellata voucher YXQ069 plastid  complete genome | 157227 | 0 | 0 | 5254 | 3.34 | 883 | .56 | 5842 | 3.71 |
+| NC_035538.1 | Schima crenata voucher YXQ103 plastid  complete genome | 157288 | 0 | 0 | 5012 | 3.18 | 1208 | .76 | 5796 | 3.68 |
+| NC_035539.1 | Schima khasiana voucher YXQ070 plastid  complete genome | 157252 | 0 | 0 | 5213 | 3.31 | 916 | .58 | 5801 | 3.68 |
+| NC_035540.1 | Schima multibracteata voucher YXQ146 plastid  complete genome | 157278 | 0 | 0 | 5004 | 3.18 | 1225 | .77 | 5886 | 3.74 |
+| NC_035541.1 | Schima noronhae voucher YXQ034 plastid  complete genome | 157278 | 0 | 0 | 5214 | 3.31 | 960 | .61 | 5851 | 3.72 |
+| NC_035542.1 | Schima remotiserrata voucher YXQ186 plastid  complete genome | 157284 | 0 | 0 | 5044 | 3.20 | 1104 | .70 | 5804 | 3.69 |
+| NC_035543.1 | Schima sericans voucher YXQ053 plastid  complete genome | 157302 | 0 | 0 | 5093 | 3.23 | 1009 | .64 | 5730 | 3.64 |
+| NC_035544.1 | Schima sinensis voucher YXQ2902 plastid  complete genome | 157297 | 0 | 0 | 5140 | 3.26 | 981 | .62 | 5777 | 3.67 |
+| NC_035545.1 | Schima superba voucher YXQ142 plastid  complete genome | 157254 | 0 | 0 | 4910 | 3.12 | 1152 | .73 | 5768 | 3.66 |
+| NC_035546.1 | Schima wallichii voucher YXQ001 plastid  complete genome | 157240 | 0 | 0 | 5123 | 3.25 | 1152 | .73 | 5956 | 3.78 |
+| NC_035547.1 | Triatoma infestans mitochondrion  complete genome | 17301 | 0 | 0 | 549 | 3.17 | 516 | 2.98 | 1016 | 5.87 |
+| NC_035548.1 | Hippophae rhamnoides chloroplast  complete genome | 156132 | 0 | 0 | 5492 | 3.51 | 932 | .59 | 6056 | 3.87 |
+| NC_035549.1 | Hibiscus cannabinus mitochondrion  complete genome | 569915 | 0 | 0 | 5751 | 1.00 | 1153 | .20 | 6364 | 1.11 |
+| NC_035550.1 | Imshaugia aleurites voucher 46246 mitochondrion  complete genome | 32029 | 0 | 0 | 703 | 2.19 | 294 | .91 | 997 | 3.11 |
+| NC_035551.1 | Phellodendron amurense voucher PAMU20170211 chloroplast  complete genome | 158442 | 0 | 0 | 5327 | 3.36 | 1350 | .85 | 5768 | 3.64 |
+| NC_035552.1 | Pteranabropsis carnarius mitochondrion  complete genome | 16119 | 0 | 0 | 737 | 4.57 | 688 | 4.26 | 1179 | 7.31 |
+| NC_035553.1 | Pteranabropsis crenatis mitochondrion  complete genome | 16099 | 0 | 0 | 856 | 5.31 | 687 | 4.26 | 1371 | 8.51 |
+| NC_035554.1 | Microcebus arnholdi isolate AMB5.41 mitochondrion  complete genome | 16832 | 0 | 0 | 723 | 4.29 | 4127 | 24.51 | 4394 | 26.10 |
+| NC_035555.1 | Microcebus tanosi isolate AND6.4 mitochondrion  complete genome | 16649 | 0 | 0 | 519 | 3.11 | 4422 | 26.56 | 4616 | 27.72 |
+| NC_035556.1 | Microcebus ravelobensis isolate ANK25 mitochondrion  complete genome | 16652 | 0 | 0 | 466 | 2.79 | 4075 | 24.47 | 4265 | 25.61 |
+| NC_035557.1 | Microcebus myoxinus isolate BEMA7.11 mitochondrion  complete genome | 16842 | 0 | 0 | 671 | 3.98 | 4648 | 27.59 | 4793 | 28.45 |
+| NC_035558.1 | Microcebus griseorufus isolate BEZ7.11 mitochondrion  complete genome | 16719 | 0 | 0 | 495 | 2.96 | 4522 | 27.04 | 4734 | 28.31 |
+| NC_035559.1 | Microcebus bongolavensis isolate BIBO7.4 mitochondrion  complete genome | 16658 | 0 | 0 | 465 | 2.79 | 4319 | 25.92 | 4558 | 27.36 |
+| NC_035560.1 | Microcebus tavaratra isolate CAR5.3 mitochondrion  complete genome | 16646 | 0 | 0 | 510 | 3.06 | 4373 | 26.27 | 4555 | 27.36 |
+| NC_035561.1 | Microcebus sambiranensis isolate GAR6 mitochondrion  complete genome | 16674 | 0 | 0 | 618 | 3.70 | 3927 | 23.55 | 4195 | 25.15 |
+| NC_035562.1 | Microcebus rufus isolate HABO6.12 mitochondrion  complete genome | 16819 | 0 | 0 | 689 | 4.09 | 4975 | 29.57 | 5138 | 30.54 |
+| NC_035563.1 | Microcebus mittermeieri isolate JAR1 mitochondrion  complete genome | 16687 | 0 | 0 | 569 | 3.40 | 4052 | 24.28 | 4220 | 25.28 |
+| NC_035564.1 | Microcebus jollyae isolate KIAN3.2 mitochondrion  complete genome | 16794 | 0 | 0 | 500 | 2.97 | 4471 | 26.62 | 4693 | 27.94 |
+| NC_035566.1 | Chaenomeles japonica chloroplast  complete genome | 160088 | 0 | 0 | 6472 | 4.04 | 2014 | 1.25 | 7208 | 4.50 |
+| NC_035567.1 | Vaejovis smithi mitochondrion  complete genome | 14492 | 0 | 0 | 568 | 3.91 | 392 | 2.70 | 862 | 5.94 |
+| NC_035568.1 | Lagopus lagopus mitochondrion  complete genome | 16677 | 0 | 0 | 274 | 1.64 | 1081 | 6.48 | 1355 | 8.12 |
+| NC_035569.1 | Broussonetia papyrifera plastid  complete genome | 160239 | 0 | 0 | 7082 | 4.41 | 1840 | 1.14 | 7890 | 4.92 |
+| NC_035570.1 | Lilium henryi chloroplast  complete genome | 153119 | 0 | 0 | 6101 | 3.98 | 1252 | .81 | 6764 | 4.41 |
+| NC_035571.1 | Peromyscus polionotus mitochondrion  complete genome | 16413 | 0 | 0 | 506 | 3.08 | 3331 | 20.29 | 3638 | 22.16 |
+| NC_035572.1 | Sigmodon hispidus mitochondrion  complete genome | 16394 | 0 | 0 | 444 | 2.70 | 2863 | 17.46 | 3201 | 19.52 |
+| NC_035573.1 | Porphyra umbilicalis chloroplast  complete genome | 190173 | 0 | 0 | 5215 | 2.74 | 539 | .28 | 5754 | 3.02 |
+| NC_035574.1 | Camellia azalea chloroplast  complete genome | 157039 | 0 | 0 | 5364 | 3.41 | 1177 | .74 | 5903 | 3.75 |
+| NC_035577.1 | Dremomys pernyi mitochondrion  complete genome | 16573 | 0 | 0 | 254 | 1.53 | 4026 | 24.29 | 4103 | 24.75 |
+| NC_035578.1 | Zoanthus sansibaricus mitochondrion  complete genome | 20972 | 0 | 0 | 45 | .21 | 49 | .23 | 94 | .44 |
+| NC_035579.1 | Palythoa heliodiscus mitochondrion  complete genome | 20841 | 0 | 0 | 21 | .10 | 49 | .23 | 70 | .33 |
+| NC_035580.1 | Allotropa virgata isolate California voucher JVF2959 OS plastid  complete genome | 35983 | 0 | 0 | 3796 | 10.54 | 1254 | 3.48 | 4385 | 12.18 |
+| NC_035581.1 | Hemitomes congestum voucher JVF2918 OS plastid  complete genome | 35569 | 0 | 0 | 4506 | 12.66 | 1768 | 4.97 | 5072 | 14.25 |
+| NC_035582.1 | Monotropa uniflora isolate Florida voucher MBB89 OS plastid  complete genome | 43351 | 0 | 0 | 4224 | 9.74 | 687 | 1.58 | 4526 | 10.44 |
+| NC_035583.1 | Monotropsis odorata voucher JPR10-62 OS plastid  complete genome | 32752 | 0 | 0 | 2948 | 9.00 | 1205 | 3.67 | 3537 | 10.79 |
+| NC_035584.1 | Pityopus californicus isolate California voucher JVF2963 OS plastid  complete genome | 35926 | 0 | 0 | 3379 | 9.40 | 763 | 2.12 | 3723 | 10.36 |
+| NC_035587.1 | Margarya melanioides mitochondrion  complete genome | 17083 | 0 | 0 | 552 | 3.23 | 294 | 1.72 | 797 | 4.66 |
+| NC_035588.1 | Lilium brownii chloroplast  complete genome | 152677 | 0 | 0 | 6540 | 4.28 | 1621 | 1.06 | 7227 | 4.73 |
+| NC_035589.1 | Lilium lancifolium chloroplast  complete genome | 152574 | 0 | 0 | 6369 | 4.17 | 1839 | 1.20 | 7154 | 4.68 |
+| NC_035590.1 | Lilium leucanthum chloroplast  complete genome | 152935 | 0 | 0 | 6130 | 4.00 | 1374 | .89 | 6694 | 4.37 |
+| NC_035591.1 | Lilium duchartrei chloroplast  complete genome | 152287 | 0 | 0 | 6214 | 4.08 | 1300 | .85 | 6778 | 4.45 |
+| NC_035592.1 | Lilium bakerianum chloroplast  complete genome | 151655 | 0 | 0 | 6099 | 4.02 | 1129 | .74 | 6590 | 4.34 |
+| NC_035593.1 | Peromyscus attwateri mitochondrion  complete genome | 16593 | 0 | 0 | 521 | 3.13 | 3552 | 21.40 | 3850 | 23.20 |
+| NC_035594.1 | Neotoma mexicana mitochondrion  complete genome | 16653 | 0 | 0 | 448 | 2.69 | 3235 | 19.42 | 3431 | 20.60 |
+| NC_035595.1 | Podomys floridanus mitochondrion  complete genome | 16486 | 0 | 0 | 501 | 3.03 | 3800 | 23.04 | 4043 | 24.52 |
+| NC_035596.1 | Peromyscus aztecus mitochondrion  complete genome | 16656 | 0 | 0 | 391 | 2.34 | 3409 | 20.46 | 3601 | 21.61 |
+| NC_035597.1 | Reithrodontomys mexicanus mitochondrion  complete genome | 16606 | 0 | 0 | 427 | 2.57 | 3552 | 21.38 | 3675 | 22.13 |
+| NC_035598.1 | Peromyscus pectoralis mitochondrion  complete genome | 16692 | 0 | 0 | 541 | 3.24 | 3433 | 20.56 | 3701 | 22.17 |
+| NC_035599.1 | Isthmomys pirrensis mitochondrion  complete genome | 16512 | 0 | 0 | 475 | 2.87 | 3925 | 23.77 | 4169 | 25.24 |
+| NC_035600.1 | Microcebus danfossi isolate KOA7.2 mitochondrion  complete genome | 16809 | 0 | 0 | 573 | 3.40 | 4346 | 25.85 | 4687 | 27.88 |
+| NC_035601.1 | Microcebus mamiratra isolate LOKO4.37 mitochondrion  complete genome | 16735 | 0 | 0 | 669 | 3.99 | 4321 | 25.82 | 4539 | 27.12 |
+| NC_035602.1 | Microcebus lehilahytsara isolate TAD4.32 mitochondrion  complete genome | 16825 | 0 | 0 | 669 | 3.97 | 4372 | 25.98 | 4566 | 27.13 |
+| NC_035603.1 | Microcebus margotmarshae isolate TAFO6.7 mitochondrion  complete genome | 16821 | 0 | 0 | 526 | 3.12 | 4298 | 25.55 | 4473 | 26.59 |
+| NC_035604.1 | Cheirogaleus crossleyi isolate AMB5.22 mitochondrion  complete genome | 16622 | 0 | 0 | 431 | 2.59 | 4893 | 29.43 | 4963 | 29.85 |
+| NC_035605.1 | Cheirogaleus sibreei isolate JOZO4.17 mitochondrion  complete genome | 16440 | 0 | 0 | 480 | 2.91 | 4595 | 27.95 | 4717 | 28.69 |
+| NC_035606.1 | Mirza zaza isolate TAFO6.14 mitochondrion  complete genome | 16777 | 0 | 0 | 524 | 3.12 | 4146 | 24.71 | 4348 | 25.91 |
+| NC_035607.1 | Phaner electromontis isolate AMB5.37 mitochondrion  complete genome | 16914 | 0 | 0 | 763 | 4.51 | 4570 | 27.01 | 4882 | 28.86 |
+| NC_035608.1 | Phaner pallescens isolate KIR6.22 mitochondrion  complete genome | 16577 | 0 | 0 | 404 | 2.43 | 4545 | 27.41 | 4776 | 28.81 |
+| NC_035609.1 | Phaner parienti isolate TAFO6.11 mitochondrion  complete genome | 16626 | 0 | 0 | 622 | 3.74 | 4499 | 27.06 | 4623 | 27.80 |
+| NC_035610.1 | Dactylogyrus lamellatus mitochondrion  complete genome | 15187 | 0 | 0 | 410 | 2.69 | 570 | 3.75 | 931 | 6.13 |
+| NC_035611.1 | Peromyscus melanophrys mitochondrion  complete genome | 16739 | 0 | 0 | 431 | 2.57 | 3631 | 21.69 | 3788 | 22.62 |
+| NC_035612.1 | Habromys ixtlani mitochondrion  complete genome | 16515 | 0 | 0 | 441 | 2.67 | 3091 | 18.71 | 3267 | 19.78 |
+| NC_035613.1 | Peromyscus megalops mitochondrion  complete genome | 16821 | 0 | 0 | 292 | 1.73 | 3705 | 22.02 | 3897 | 23.16 |
+| NC_035614.1 | Peromyscus crinitus mitochondrion  complete genome | 16672 | 0 | 0 | 431 | 2.58 | 3950 | 23.69 | 4129 | 24.76 |
+| NC_035615.1 | Neotomodon alstoni mitochondrion  complete genome | 16776 | 0 | 0 | 428 | 2.55 | 3484 | 20.76 | 3687 | 21.97 |
+| NC_035616.1 | Lagerstroemia indica mitochondrion  complete genome | 333948 | 0 | 0 | 3621 | 1.08 | 343 | .10 | 3915 | 1.17 |
+| NC_035617.1 | Aneura pinguis voucher ApinguisCpE chloroplast  complete genome | 120698 | 0 | 0 | 3766 | 3.12 | 690 | .57 | 3938 | 3.26 |
+| NC_035618.1 | Spinacia oleracea mitochondrion  complete genome | 329613 | 0 | 0 | 2894 | .87 | 564 | .17 | 3286 | .99 |
+| NC_035621.1 | Rattus baluensis voucher EBD 30360M mitochondrion  complete genome | 16312 | 0 | 0 | 391 | 2.39 | 3759 | 23.04 | 3875 | 23.75 |
+| NC_035623.1 | Paeonia ludlowii voucher 20160519 chloroplast  complete genome | 152687 | 0 | 0 | 4632 | 3.03 | 343 | .22 | 4828 | 3.16 |
+| NC_035624.1 | Platycodon grandiflorus chloroplast  complete genome | 171818 | 0 | 0 | 5145 | 2.99 | 1235 | .71 | 5709 | 3.32 |
+| NC_035625.1 | Malus florentina chloroplast  complete genome | 159672 | 0 | 0 | 6759 | 4.23 | 2066 | 1.29 | 7622 | 4.77 |
+| NC_035626.1 | Napothera epilepidota mitochondrion  complete genome | 17913 | 0 | 0 | 217 | 1.21 | 1081 | 6.03 | 1224 | 6.83 |
+| NC_035627.1 | Lymantria umbrosa mitochondrion  complete genome | 15642 | 0 | 0 | 651 | 4.16 | 1137 | 7.26 | 1310 | 8.37 |
+| NC_035628.1 | Vanmanenia stenosoma mitochondrion  complete genome | 16560 | 0 | 0 | 214 | 1.29 | 1008 | 6.08 | 1173 | 7.08 |
+| NC_035629.1 | Microcebus berthae isolate KIR6.30 mitochondrion  complete genome | 16904 | 0 | 0 | 763 | 4.51 | 4473 | 26.46 | 4651 | 27.51 |
+| NC_035630.1 | Microcebus simmonsi isolate POLO5.19 mitochondrion  complete genome | 16623 | 0 | 0 | 519 | 3.12 | 4469 | 26.88 | 4612 | 27.74 |
+| NC_035631.1 | Allocebus trichotis isolate TVY7.23 mitochondrion  complete genome | 16863 | 0 | 0 | 651 | 3.86 | 3845 | 22.80 | 4291 | 25.44 |
+| NC_035634.1 | Breviscolex orientalis mitochondrion  complete genome | 14011 | 0 | 0 | 107 | .76 | 98 | .69 | 205 | 1.46 |
+| NC_035635.1 | Atractolytocestus huronensis mitochondrion  complete genome | 15130 | 0 | 0 | 33 | .21 | 539 | 3.56 | 572 | 3.78 |
+| NC_035636.1 | Pithomyces chartarum mitochondrion  complete genome | 68926 | 0 | 0 | 2031 | 2.94 | 909 | 1.31 | 2615 | 3.79 |
+| NC_035637.1 | Musella lasiocarpa chloroplast  complete genome | 169178 | 0 | 0 | 8056 | 4.76 | 2264 | 1.33 | 8868 | 5.24 |
+| NC_035638.1 | Agkistrodon contortrix mitochondrion  complete genome | 16269 | 0 | 0 | 239 | 1.46 | 617 | 3.79 | 781 | 4.80 |
+| NC_035639.1 | Pyrenaria menglaensis voucher YXQ211 plastid  complete genome | 157122 | 0 | 0 | 4981 | 3.17 | 1129 | .71 | 5569 | 3.54 |
+| NC_035640.1 | Stewartia sinensis voucher YXQ15072001 plastid  complete genome | 158177 | 0 | 0 | 5754 | 3.63 | 980 | .61 | 6244 | 3.94 |
+| NC_035641.1 | Apterosperma oblata voucher YangSX 4361 plastid  complete genome | 156590 | 0 | 0 | 4484 | 2.86 | 1422 | .90 | 5244 | 3.34 |
+| NC_035642.1 | Pyrenaria pingpienensis voucher YXQ026 plastid  complete genome | 156926 | 0 | 0 | 5047 | 3.21 | 1176 | .74 | 5586 | 3.55 |
+| NC_035643.1 | Polyspora speciosa voucher YXQ145 plastid  complete genome | 157066 | 0 | 0 | 5241 | 3.33 | 1079 | .68 | 5731 | 3.64 |
+| NC_035644.1 | Pyrenaria khasiana voucher YangSX 5046 plastid  complete genome | 157065 | 0 | 0 | 4854 | 3.09 | 1154 | .73 | 5590 | 3.55 |
+| NC_035645.1 | Polyspora axillaris voucher YXQ099 plastid  complete genome | 156770 | 0 | 0 | 5257 | 3.35 | 907 | .57 | 5766 | 3.67 |
+| NC_035646.1 | Gordonia brandegeei voucher N. Zamora 7196 plastid  complete genome | 157604 | 0 | 0 | 5344 | 3.39 | 981 | .62 | 5908 | 3.74 |
+| NC_035647.1 | Stewartia crassifolia voucher YXQ171 plastid  complete genome | 158410 | 0 | 0 | 5743 | 3.62 | 823 | .51 | 6135 | 3.87 |
+| NC_035648.1 | Polyspora dalgleishiana voucher BROWP 501 plastid  complete genome | 156292 | 0 | 0 | 5117 | 3.27 | 1276 | .81 | 5705 | 3.65 |
+| NC_035649.1 | Stewartia cordifolia voucher YXQ144 plastid  complete genome | 158450 | 0 | 0 | 5518 | 3.48 | 934 | .58 | 6029 | 3.80 |
+| NC_035650.1 | Stewartia rubiginosa voucher YXQ189 plastid  complete genome | 158433 | 0 | 0 | 5201 | 3.28 | 784 | .49 | 5593 | 3.53 |
+| NC_035651.1 | Camellia szechuanensis voucher YangSX 5066 plastid  complete genome | 157070 | 0 | 0 | 5301 | 3.37 | 1054 | .67 | 5889 | 3.74 |
+| NC_035652.1 | Camellia elongata voucher YangSX 5065 plastid  complete genome | 156751 | 0 | 0 | 5256 | 3.35 | 980 | .62 | 5697 | 3.63 |
+| NC_035653.1 | Adinandra angustifolia voucher 14CS8678 plastid  complete genome | 156344 | 0 | 0 | 5135 | 3.28 | 1006 | .64 | 5527 | 3.53 |
+| NC_035654.1 | Diospyros strigosa voucher 14CS8899 plastid  complete genome | 157508 | 0 | 0 | 4892 | 3.10 | 1055 | .66 | 5333 | 3.38 |
+| NC_035655.1 | Cheirogaleus major isolate MAS6.10 mitochondrion  complete genome | 16596 | 0 | 0 | 518 | 3.12 | 4770 | 28.74 | 4879 | 29.39 |
+| NC_035656.1 | Mirza coquereli isolate ZOMB53 mitochondrion  complete genome | 17066 | 0 | 0 | 680 | 3.98 | 4145 | 24.28 | 4503 | 26.38 |
+| NC_035657.1 | Magnolia insignis chloroplast  complete genome | 160117 | 0 | 0 | 4221 | 2.63 | 1005 | .62 | 4687 | 2.92 |
+| NC_035658.1 | Megaceryle lugubris mitochondrion  complete genome | 17223 | 0 | 0 | 220 | 1.27 | 984 | 5.71 | 1204 | 6.99 |
+| NC_035659.1 | Ambloplites rupestris mitochondrion  complete genome | 16659 | 0 | 0 | 181 | 1.08 | 838 | 5.03 | 970 | 5.82 |
+| NC_035660.1 | Etheostoma caeruleum mitochondrion  complete genome | 16588 | 0 | 0 | 176 | 1.06 | 739 | 4.45 | 915 | 5.51 |
+| NC_035661.1 | Barthea barthei chloroplast  complete genome | 155951 | 0 | 0 | 5914 | 3.79 | 1229 | .78 | 6355 | 4.07 |
+| NC_035662.1 | Hydrangea luteovenosa chloroplast  complete genome | 157494 | 0 | 0 | 5036 | 3.19 | 588 | .37 | 5330 | 3.38 |
+| NC_035663.1 | Leptogorgia capverdensis mitochondrion  complete genome | 18722 | 0 | 0 | 214 | 1.14 | 49 | .26 | 263 | 1.40 |
+| NC_035665.1 | Eugorgia mutabilis mitochondrion  complete genome | 19157 | 0 | 0 | 249 | 1.29 | 49 | .25 | 298 | 1.55 |
+| NC_035666.1 | Eunicella albicans mitochondrion  complete genome | 19175 | 0 | 0 | 262 | 1.36 | 50 | .26 | 311 | 1.62 |
+| NC_035667.1 | Eunicella cavolinii mitochondrion  complete genome | 19316 | 0 | 0 | 249 | 1.28 | 49 | .25 | 298 | 1.54 |
+| NC_035668.1 | Pacifigorgia cairnsi mitochondrion  complete genome | 19156 | 0 | 0 | 344 | 1.79 | 49 | .25 | 393 | 2.05 |
+| NC_035669.1 | Leptogorgia alba mitochondrion  complete genome | 18848 | 0 | 0 | 214 | 1.13 | 49 | .25 | 263 | 1.39 |
+| NC_035670.1 | Leptogorgia sarmentosa mitochondrion  complete genome | 18722 | 0 | 0 | 297 | 1.58 | 49 | .26 | 346 | 1.84 |
+| NC_035671.1 | Malus trilobata chloroplast  complete genome | 160207 | 0 | 0 | 6625 | 4.13 | 2639 | 1.64 | 7849 | 4.89 |
+| NC_035672.1 | Malus tschonoskii isolate 262 chloroplast  complete genome | 160034 | 0 | 0 | 6798 | 4.24 | 1994 | 1.24 | 7472 | 4.66 |
+| NC_035673.1 | Sporophila maximiliani mitochondrion  complete genome | 16801 | 0 | 0 | 257 | 1.52 | 1107 | 6.58 | 1364 | 8.11 |
+| NC_035677.1 | Acanthoscelides obtectus voucher GZU-CO-000001 mitochondrion  complete genome | 16130 | 0 | 0 | 418 | 2.59 | 811 | 5.02 | 983 | 6.09 |
+| NC_035678.1 | Adinandra millettii voucher 14CS8453 plastid  complete genome | 156311 | 0 | 0 | 5209 | 3.33 | 932 | .59 | 5479 | 3.50 |
+| NC_035679.1 | Laurentaeglyphea neocaledonica voucher MHNMPa1805 mitochondrion  complete genome | 15752 | 0 | 0 | 376 | 2.38 | 196 | 1.24 | 523 | 3.32 |
+| NC_035681.1 | Erythronium sibiricum plastid  complete genome | 151034 | 0 | 0 | 7691 | 5.09 | 2363 | 1.56 | 8231 | 5.44 |
+| NC_035682.1 | Gibbula umbilicalis mitochondrion  complete genome | 16277 | 0 | 0 | 289 | 1.77 | 468 | 2.87 | 609 | 3.74 |
+| NC_035684.1 | Durgades nigropicta mitochondrion  complete genome | 15974 | 0 | 0 | 825 | 5.16 | 737 | 4.61 | 1414 | 8.85 |
+| NC_035685.1 | Japanagallia spinosa mitochondrion  complete genome | 15655 | 0 | 0 | 445 | 2.84 | 639 | 4.08 | 887 | 5.66 |
+| NC_035686.1 | Pyrenaria microcarpa voucher YXQ101 plastid  complete genome | 156864 | 0 | 0 | 4901 | 3.12 | 1152 | .73 | 5489 | 3.49 |
+| NC_035687.1 | Tutcheria championii voucher YXQ155 plastid  complete genome | 156912 | 0 | 0 | 4977 | 3.17 | 1054 | .67 | 5516 | 3.51 |
+| NC_035688.1 | Camellia mairei voucher YangSX 5054 plastid  complete genome | 156963 | 0 | 0 | 5310 | 3.38 | 1300 | .82 | 5849 | 3.72 |
+| NC_035689.1 | Polyspora longicarpa voucher YangSX 4779 plastid  complete genome | 157058 | 0 | 0 | 5045 | 3.21 | 1005 | .63 | 5682 | 3.61 |
+| NC_035690.1 | Stewartia pteropetiolata voucher YXQ038 plastid  complete genome | 158520 | 0 | 0 | 5775 | 3.64 | 736 | .46 | 6069 | 3.82 |
+| NC_035691.1 | Stewartia malacodendron voucher FLAS 260361 plastid  complete genome | 158376 | 0 | 0 | 5715 | 3.60 | 1005 | .63 | 5960 | 3.76 |
+| NC_035692.1 | Franklinia alatamaha voucher MO-6587811 plastid  complete genome | 157626 | 0 | 0 | 5341 | 3.38 | 1080 | .68 | 6028 | 3.82 |
+| NC_035693.1 | Polyspora hainanensis voucher YXQ097 plastid  complete genome | 156725 | 0 | 0 | 5223 | 3.33 | 882 | .56 | 5708 | 3.64 |
+| NC_035694.1 | Pyrenaria oblongicarpa voucher YXQ216 plastid  complete genome | 156732 | 0 | 0 | 4960 | 3.16 | 1127 | .71 | 5688 | 3.62 |
+| NC_035695.1 | Stewartia ovata voucher 18847*A plastid  complete genome | 158416 | 0 | 0 | 5549 | 3.50 | 1030 | .65 | 5990 | 3.78 |
+| NC_035696.1 | Stewartia calcicola voucher YXQ030 plastid  complete genome | 158425 | 0 | 0 | 5770 | 3.64 | 686 | .43 | 6015 | 3.79 |
+| NC_035697.1 | Stewartia pseudocamellia voucher MO-6587810 plastid  complete genome | 158409 | 0 | 0 | 5514 | 3.48 | 980 | .61 | 6151 | 3.88 |
+| NC_035698.1 | Stewartia rostrata voucher YXQ15072003 plastid  complete genome | 158077 | 0 | 0 | 5633 | 3.56 | 833 | .52 | 5976 | 3.78 |
+| NC_035699.1 | Gordonia lasianthus voucher JCRA 110687 plastid  complete genome | 157705 | 0 | 0 | 5448 | 3.45 | 1324 | .83 | 6159 | 3.90 |
+| NC_035700.1 | Laplacea fruticosa voucher N. Zamora 6038 plastid  complete genome | 157214 | 0 | 0 | 5162 | 3.28 | 1005 | .63 | 5700 | 3.62 |
+| NC_035701.1 | Barringtonia fusicarpa voucher 14CS9189 plastid  complete genome | 158927 | 0 | 0 | 5521 | 3.47 | 1524 | .95 | 6134 | 3.85 |
+| NC_035702.1 | Symplocos paniculata voucher 14CS8181 plastid  complete genome | 156992 | 0 | 0 | 5203 | 3.31 | 785 | .50 | 5546 | 3.53 |
+| NC_035703.1 | Diospyros dumetorum voucher 13CS7925 plastid  complete genome | 157834 | 0 | 0 | 5178 | 3.28 | 1373 | .86 | 5717 | 3.62 |
+| NC_035704.1 | Pyrenaria diospyricarpa voucher 13CS6582 plastid  complete genome | 157102 | 0 | 0 | 5028 | 3.20 | 1251 | .79 | 5739 | 3.65 |
+| NC_035705.1 | Barringtonia racemosa voucher 14CS8144 plastid  complete genome | 159002 | 0 | 0 | 5538 | 3.48 | 1352 | .85 | 6176 | 3.88 |
+| NC_035706.1 | Ternstroemia gymnanthera voucher 13CS7178 plastid  complete genome | 157753 | 0 | 0 | 5381 | 3.41 | 1555 | .98 | 6016 | 3.81 |
+| NC_035707.1 | Sladenia celastrifolia voucher 14CS8355 plastid  complete genome | 161319 | 0 | 0 | 5603 | 3.47 | 1594 | .98 | 6437 | 3.99 |
+| NC_035709.1 | Anneslea fragrans voucher 13CS6723 plastid  complete genome | 158182 | 0 | 0 | 4954 | 3.13 | 1103 | .69 | 5444 | 3.44 |
+| NC_035710.1 | Pentaphylax euryoides voucher 14CS8681 plastid  complete genome | 156132 | 0 | 0 | 4968 | 3.18 | 1299 | .83 | 5703 | 3.65 |
+| NC_035711.1 | Sinojackia rehderiana voucher 14CS9081 plastid  complete genome | 158760 | 0 | 0 | 5995 | 3.77 | 1202 | .75 | 6485 | 4.08 |
+| NC_035712.1 | Melliodendron xylocarpum voucher YXQ138 plastid  complete genome | 157131 | 0 | 0 | 4742 | 3.01 | 1128 | .71 | 5281 | 3.36 |
+| NC_035713.1 | Thermophis baileyi mitochondrion  complete genome | 17355 | 0 | 0 | 152 | .87 | 706 | 4.06 | 793 | 4.56 |
+| NC_035714.1 | Manticora tibialis mitochondrion  complete genome | 16439 | 0 | 0 | 807 | 4.90 | 811 | 4.93 | 1419 | 8.63 |
+| NC_035715.1 | Nautilus pompilius mitochondrion  complete genome | 15693 | 0 | 0 | 348 | 2.21 | 369 | 2.35 | 594 | 3.78 |
+| NC_035716.1 | Kraemeria cunicularia voucher URM<JPN>:P48722 mitochondrion  complete genome | 16682 | 0 | 0 | 60 | .35 | 567 | 3.39 | 60 | .35 |
+| NC_035717.1 | Schismatogobius ampluvinculus voucher NSMT:P127399 mitochondrion  complete genome | 16639 | 0 | 0 | 93 | .55 | 763 | 4.58 | 856 | 5.14 |
+| NC_035718.1 | Paeonia delavayi voucher 201605019 chloroplast  complete genome | 154405 | 0 | 0 | 4898 | 3.17 | 737 | .47 | 5143 | 3.33 |
+| NC_035719.1 | Gentiana macrophylla chloroplast  complete genome | 149916 | 0 | 0 | 4700 | 3.13 | 932 | .62 | 5215 | 3.47 |
+| NC_035720.1 | Cryptomonas curvata strain CNUKR plastid  complete genome | 128285 | 0 | 0 | 4108 | 3.20 | 147 | .11 | 4157 | 3.24 |
+| NC_035721.1 | Chroomonas placoidea strain CCAP978 8 plastid  complete genome | 139432 | 0 | 0 | 4644 | 3.33 | 490 | .35 | 4996 | 3.58 |
+| NC_035722.1 | Ulva pertusa mitochondrion  complete genome | 69333 | 0 | 0 | 823 | 1.18 | 470 | .67 | 921 | 1.32 |
+| NC_035723.1 | Musa itinerans chloroplast  complete genome | 168985 | 0 | 0 | 7980 | 4.72 | 2262 | 1.33 | 8814 | 5.21 |
+| NC_035724.1 | Solanum dulcamara chloroplast  complete genome | 155580 | 0 | 0 | 5292 | 3.40 | 539 | .34 | 5635 | 3.62 |
+| NC_035725.1 | Phytophthora nicotianae mitochondrion  complete genome | 37561 | 0 | 0 | 3087 | 8.21 | 2011 | 5.35 | 4480 | 11.92 |
+| NC_035726.1 | Conomurex luhuanus mitochondrion  complete genome | 15799 | 0 | 0 | 103 | .65 | 197 | 1.24 | 300 | 1.89 |
+| NC_035727.1 | Citrullus colocynthis chloroplast  complete genome | 157147 | 0 | 0 | 5212 | 3.31 | 909 | .57 | 5752 | 3.66 |
+| NC_035728.1 | Cerastoderma edule isolate Cedu.11.16.N01.022 mitochondrion  complete genome | 14947 | 0 | 0 | 21 | .14 | 98 | .65 | 119 | .79 |
+| NC_035729.1 | Caryopteris mongholica chloroplast  complete genome | 151707 | 0 | 0 | 4279 | 2.82 | 392 | .25 | 4475 | 2.94 |
+| NC_035730.1 | Hypogymnia vittata mitochondrion  complete genome | 38888 | 0 | 0 | 899 | 2.31 | 344 | .88 | 1144 | 2.94 |
+| NC_035731.1 | Pseudemydura umbrina voucher Pseum AA65990 mitochondrion  complete genome | 16414 | 0 | 0 | 332 | 2.02 | 1181 | 7.19 | 1464 | 8.91 |
+| NC_035732.1 | Coelachne africana isolate Thomas3935 chloroplast  complete genome | 135041 | 0 | 0 | 4460 | 3.30 | 440 | .32 | 4754 | 3.52 |
+| NC_035733.1 | Viviparus chui isolate FY-20160813-Vc-1 mitochondrion  complete genome | 16392 | 0 | 0 | 379 | 2.31 | 270 | 1.64 | 477 | 2.90 |
+| NC_035734.1 | Cipangopaludina chinensis isolate AY-20160612-Cch-2 mitochondrion  complete genome | 17009 | 0 | 0 | 702 | 4.12 | 369 | 2.16 | 874 | 5.13 |
+| NC_035735.1 | Bellamya aeruginosa isolate AY-20160612-Ba-1 mitochondrion  complete genome | 17013 | 0 | 0 | 846 | 4.97 | 515 | 3.02 | 1238 | 7.27 |
+| NC_035736.1 | Lates niloticus isolate A5135 mitochondrion  complete genome | 16684 | 0 | 0 | 400 | 2.39 | 1304 | 7.81 | 1704 | 10.21 |
+| NC_035737.1 | Psammoperca waigiensis isolate MAGNT:Fish:S.16708-010 mitochondrion  complete genome | 16623 | 0 | 0 | 387 | 2.32 | 911 | 5.48 | 1200 | 7.21 |
+| NC_035738.1 | Athyrium anisopterum chloroplast  complete genome | 151284 | 0 | 0 | 4494 | 2.97 | 490 | .32 | 4739 | 3.13 |
+| NC_035739.1 | Lepisorus clathratus chloroplast  complete genome | 156998 | 0 | 0 | 4344 | 2.76 | 393 | .25 | 4540 | 2.89 |
+| NC_035740.1 | Nemopilema nomurai mitochondrion  complete genome | 17024 | 0 | 0 | 547 | 3.21 | 451 | 2.64 | 792 | 4.65 |
+| NC_035741.1 | Rhopilema esculentum mitochondrion  complete genome | 15855 | 0 | 0 | 230 | 1.45 | 280 | 1.76 | 426 | 2.68 |
+| NC_035742.1 | Solanum pennellii chloroplast  complete genome | 155254 | 0 | 0 | 4999 | 3.21 | 760 | .48 | 5440 | 3.50 |
+| NC_035743.1 | Salix oreinoma chloroplast  complete genome | 155531 | 0 | 0 | 6741 | 4.33 | 1940 | 1.24 | 7649 | 4.91 |
+| NC_035744.1 | Salix tetrasperma chloroplast  complete genome | 155671 | 0 | 0 | 7184 | 4.61 | 2800 | 1.79 | 8485 | 5.45 |
+| NC_035745.1 | Dendrobium candidum plastid  complete genome | 152094 | 0 | 0 | 6811 | 4.47 | 1203 | .79 | 7326 | 4.81 |
+| NC_035746.1 | Halcyon smyrnensis mitochondrion  complete genome | 17892 | 0 | 0 | 224 | 1.25 | 885 | 4.94 | 1109 | 6.19 |
+| NC_035747.1 | Prunella fulvescens isolate PF201601 mitochondrion  complete genome | 16837 | 0 | 0 | 205 | 1.21 | 1231 | 7.31 | 1436 | 8.52 |
+| NC_035748.1 | Myuchelys bellii voucher Mybel 177 mitochondrion  complete genome | 16465 | 0 | 0 | 370 | 2.24 | 1082 | 6.57 | 1403 | 8.52 |
+| NC_035749.1 | Rasbora argyrotaenia isolate sbr4 voucher UB.1.122.4 mitochondrion  complete genome | 16740 | 0 | 0 | 262 | 1.56 | 1011 | 6.03 | 1273 | 7.60 |
+| NC_035754.1 | Cipangopaludina ussuriensis isolate FY-20160813-Cu-1 mitochondrion  complete genome | 16596 | 0 | 0 | 711 | 4.28 | 564 | 3.39 | 1054 | 6.35 |
+| NC_035755.1 | Aquatica lateralis isolate Llat-01 mitochondrion  complete genome | 16719 | 0 | 0 | 690 | 4.12 | 638 | 3.81 | 1205 | 7.20 |
+| NC_035756.1 | Reduvius tenebrosus mitochondrion  complete genome | 17090 | 0 | 0 | 366 | 2.14 | 417 | 2.44 | 783 | 4.58 |
+| NC_035757.1 | Ruditapes decussatus mitochondrion  complete genome | 18995 | 0 | 0 | 134 | .70 | 98 | .51 | 183 | .96 |
+| NC_035760.1 | Siphocampylus krauseanus voucher Smith & Leiva 509 chloroplast  complete genome | 164871 | 0 | 0 | 5423 | 3.28 | 641 | .38 | 5766 | 3.49 |
+| NC_035761.1 | Centropogon nigricans voucher Muchhala 118 chloroplast  complete genome | 165515 | 0 | 0 | 5324 | 3.21 | 840 | .50 | 5667 | 3.42 |
+| NC_035762.1 | Burmeistera sodiroana voucher Muchhala 115 chloroplast  complete genome | 165511 | 0 | 0 | 5138 | 3.10 | 736 | .44 | 5432 | 3.28 |
+| NC_035763.1 | Burmeistera smaragdi voucher Muchhala 205 chloroplast  complete genome | 165288 | 0 | 0 | 5364 | 3.24 | 797 | .48 | 5658 | 3.42 |
+| NC_035764.1 | Burmeistera rubrosepala voucher Muchhala 220 chloroplast  complete genome | 165466 | 0 | 0 | 4665 | 2.81 | 724 | .43 | 5008 | 3.02 |
+| NC_035765.1 | Burmeistera resupinata voucher Muchhala 223 chloroplast  complete genome | 166128 | 0 | 0 | 5267 | 3.17 | 884 | .53 | 5561 | 3.34 |
+| NC_035766.1 | Burmeistera pirrensis voucher Muchhala 491 chloroplast  complete genome | 165353 | 0 | 0 | 4324 | 2.61 | 509 | .30 | 4471 | 2.70 |
+| NC_035767.1 | Burmeistera parviflora voucher Lagomarsino 53 chloroplast  complete genome | 164989 | 0 | 0 | 4484 | 2.71 | 467 | .28 | 4631 | 2.80 |
+| NC_035768.1 | Burmeistera oyacachensis voucher Muchhala 171 chloroplast  complete genome | 164048 | 0 | 0 | 4814 | 2.93 | 570 | .34 | 5108 | 3.11 |
+| NC_035769.1 | Burmeistera lutosa voucher Muchhala 133 chloroplast  complete genome | 165367 | 0 | 0 | 4592 | 2.77 | 650 | .39 | 4935 | 2.98 |
+| NC_035770.1 | Burmeistera loejtnantii voucher F 2190436 chloroplast  complete genome | 165888 | 0 | 0 | 5519 | 3.32 | 742 | .44 | 5813 | 3.50 |
+| NC_035771.1 | Burmeistera fuscoapicata voucher Clark 12955 chloroplast  complete genome | 165222 | 0 | 0 | 5020 | 3.03 | 546 | .33 | 5167 | 3.12 |
+| NC_035772.1 | Burmeistera domingensis voucher Muchhala 102 chloroplast  complete genome | 165547 | 0 | 0 | 4377 | 2.64 | 688 | .41 | 4720 | 2.85 |
+| NC_035773.1 | Burmeistera cylindrocarpa voucher Muchhala 202 chloroplast  complete genome | 164865 | 0 | 0 | 4946 | 3.00 | 693 | .42 | 5289 | 3.20 |
+| NC_035774.1 | Burmeistera cyclostigmata voucher Muchhala 145 chloroplast  complete genome | 165032 | 0 | 0 | 5118 | 3.10 | 614 | .37 | 5363 | 3.24 |
+| NC_035775.1 | Burmeistera crispiloba voucher Muchhala 123 chloroplast  complete genome | 165350 | 0 | 0 | 5205 | 3.14 | 565 | .34 | 5450 | 3.29 |
+| NC_035776.1 | Burmeistera ceratocarpa voucher Muchhala 177 chloroplast  complete genome | 165820 | 0 | 0 | 5214 | 3.14 | 650 | .39 | 5557 | 3.35 |
+| NC_035777.1 | Burmeistera borjensis voucher Muchhala 154 chloroplast  complete genome | 163961 | 0 | 0 | 4887 | 2.98 | 545 | .33 | 5181 | 3.15 |
+| NC_035778.1 | Burmeistera auriculata voucher Muchhala 120 chloroplast  complete genome | 165772 | 0 | 0 | 4661 | 2.81 | 835 | .50 | 4955 | 2.98 |
+| NC_035800.1 | Mammut americanum mitochondrion  complete genome | 16467 | 0 | 0 | 428 | 2.59 | 2553 | 15.50 | 2758 | 16.74 |
+| NC_035801.1 | Circus melanoleucos mitochondrion  complete genome | 17749 | 0 | 0 | 213 | 1.20 | 1083 | 6.10 | 1296 | 7.30 |
+| NC_035802.1 | Cinnamomum micranthum chloroplast  complete genome | 152675 | 0 | 0 | 4802 | 3.14 | 1179 | .77 | 5342 | 3.49 |
+| NC_035803.1 | Rana chaochiaoensis voucher SM-ZJLW-01 mitochondrion  complete genome | 18591 | 0 | 0 | 205 | 1.10 | 689 | 3.70 | 894 | 4.80 |
+| NC_035804.1 | Rana kukunoris voucher RG-GYLW-01 mitochondrion  complete genome | 18863 | 0 | 0 | 131 | .69 | 1084 | 5.74 | 1215 | 6.44 |
+| NC_035805.1 | Rana omeimontis voucher YC-EMLW-01 mitochondrion  complete genome | 19934 | 0 | 0 | 153 | .76 | 739 | 3.70 | 892 | 4.47 |
+| NC_035806.1 | Aquila heliaca mitochondrion  complete genome | 18067 | 0 | 0 | 250 | 1.38 | 812 | 4.49 | 1062 | 5.87 |
+| NC_035807.1 | Schizaea elegans voucher UPCB:Labiak 5550 chloroplast  complete genome | 156603 | 0 | 0 | 3988 | 2.54 | 221 | .14 | 4135 | 2.64 |
+| NC_035808.1 | Schizaea pectinata voucher Brande 245 (NY) chloroplast  complete genome | 156392 | 0 | 0 | 4276 | 2.73 | 417 | .26 | 4472 | 2.85 |
+| NC_035809.1 | Ulva flexuosa mitochondrion  complete genome | 71545 | 0 | 0 | 1286 | 1.79 | 964 | 1.34 | 2102 | 2.93 |
+| NC_035810.1 | Lutra sumatrana isolate 49 mitochondrion  complete genome | 16586 | 0 | 0 | 547 | 3.29 | 3781 | 22.79 | 3971 | 23.94 |
+| NC_035811.1 | Lutrogale perspicillata isolate 21 mitochondrion  complete genome | 16043 | 0 | 0 | 331 | 2.06 | 3382 | 21.08 | 3638 | 22.67 |
+| NC_035812.1 | Sundasciurus brookei isolate 6 mitochondrion  complete genome | 16418 | 0 | 0 | 316 | 1.92 | 4516 | 27.50 | 4654 | 28.34 |
+| NC_035813.1 | Sundasciurus lowii isolate 4 mitochondrion  complete genome | 16308 | 0 | 0 | 316 | 1.93 | 3955 | 24.25 | 3972 | 24.35 |
+| NC_035814.1 | Aonyx cinerea isolate 16 mitochondrion  complete genome | 16154 | 0 | 0 | 373 | 2.30 | 3975 | 24.60 | 4149 | 25.68 |
+| NC_035815.1 | Callosciurus notatus isolate 3 mitochondrion  complete genome | 16599 | 0 | 0 | 213 | 1.28 | 4197 | 25.28 | 4255 | 25.63 |
+| NC_035816.1 | Callosciurus prevostii isolate 8 mitochondrion  complete genome | 16674 | 0 | 0 | 263 | 1.57 | 4202 | 25.20 | 4291 | 25.73 |
+| NC_035817.1 | Callosciurus finlaysonii isolate 43 mitochondrion  complete genome | 16490 | 0 | 0 | 211 | 1.27 | 3954 | 23.97 | 3988 | 24.18 |
+| NC_035818.1 | Sundamys muelleri mitochondrion  complete genome | 16336 | 0 | 0 | 505 | 3.09 | 3526 | 21.58 | 3684 | 22.55 |
+| NC_035819.1 | Leopoldamys sabanus isolate 14 mitochondrion  complete genome | 15975 | 0 | 0 | 443 | 2.77 | 3661 | 22.91 | 3924 | 24.56 |
+| NC_035820.1 | Trichys fasciculata isolate 59 mitochondrion  complete genome | 16328 | 0 | 0 | 241 | 1.47 | 3584 | 21.95 | 3698 | 22.64 |
+| NC_035822.1 | Niviventer cremoriventer isolate 12 mitochondrion  complete genome | 16234 | 0 | 0 | 436 | 2.68 | 3406 | 20.98 | 3588 | 22.10 |
+| NC_035823.1 | Ulva flexuosa chloroplast  complete genome | 89414 | 0 | 0 | 5561 | 6.21 | 4273 | 4.77 | 8557 | 9.57 |
+| NC_035824.1 | Graphis lineola voucher 46096 mitochondrion  complete genome | 24945 | 0 | 0 | 537 | 2.15 | 245 | .98 | 733 | 2.93 |
+| NC_035825.1 | Opegrapha vulgata voucher 45910 mitochondrion  complete genome | 38937 | 0 | 0 | 1607 | 4.12 | 934 | 2.39 | 1853 | 4.75 |
+| NC_035826.1 | Ricasolia amplissima voucher CONN:Goffinet 44719 mitochondrion  complete genome | 82333 | 0 | 0 | 4653 | 5.65 | 2712 | 3.29 | 5168 | 6.27 |
+| NC_035827.1 | Hippocampus sindonis mitochondrion  complete genome | 16500 | 0 | 0 | 255 | 1.54 | 640 | 3.87 | 846 | 5.12 |
+| NC_035828.1 | Chlorotocus crassicornis mitochondrion  complete genome | 15935 | 0 | 0 | 210 | 1.31 | 123 | .77 | 333 | 2.08 |
+| NC_035829.1 | Pelatantheria scolopendrifolia voucher PDBK2015-1268 chloroplast  complete genome | 146860 | 0 | 0 | 6869 | 4.67 | 1940 | 1.32 | 7950 | 5.41 |
+| NC_035830.1 | Gastrochilus fuscopunctatus voucher PDBK2015-1265 chloroplast  complete genome | 146183 | 0 | 0 | 6764 | 4.62 | 1276 | .87 | 7426 | 5.07 |
+| NC_035832.1 | Oberonia japonica voucher PDBK2015-1269 chloroplast  complete genome | 142996 | 0 | 0 | 5639 | 3.94 | 1398 | .97 | 6203 | 4.33 |
+| NC_035833.1 | Gastrochilus japonicus voucher PDBK2015-1266 chloroplast  complete genome | 147697 | 0 | 0 | 6716 | 4.54 | 1128 | .76 | 7182 | 4.86 |
+| NC_035834.1 | Habenaria radiata voucher PDBK2015-1271 chloroplast  complete genome | 155353 | 0 | 0 | 6513 | 4.19 | 1816 | 1.16 | 7641 | 4.91 |
+| NC_035835.1 | Ampelopteris elegans chloroplast  complete genome | 151772 | 0 | 0 | 4520 | 2.97 | 1278 | .84 | 4913 | 3.23 |
+| NC_035836.1 | Athyrium sheareri chloroplast  complete genome | 151068 | 0 | 0 | 4508 | 2.98 | 786 | .52 | 4753 | 3.14 |
+| NC_035837.1 | Asplenium pekinense chloroplast  complete genome | 152479 | 0 | 0 | 4079 | 2.67 | 245 | .16 | 4177 | 2.73 |
+| NC_035838.1 | Asplenium prolongatum chloroplast  complete genome | 151115 | 0 | 0 | 4248 | 2.81 | 393 | .26 | 4444 | 2.94 |
+| NC_035839.1 | Athyrium sinense chloroplast  complete genome | 151319 | 0 | 0 | 4802 | 3.17 | 761 | .50 | 5145 | 3.40 |
+| NC_035840.1 | Austroblechnum melanocaulon chloroplast  complete genome | 150202 | 0 | 0 | 4585 | 3.05 | 860 | .57 | 4872 | 3.24 |
+| NC_035841.1 | Athyrium opacum chloroplast  complete genome | 150979 | 0 | 0 | 4444 | 2.94 | 589 | .39 | 4640 | 3.07 |
+| NC_035842.1 | Christella appendiculata chloroplast  complete genome | 151571 | 0 | 0 | 4431 | 2.92 | 442 | .29 | 4529 | 2.98 |
+| NC_035843.1 | Cystopteris chinensis chloroplast  complete genome | 151269 | 0 | 0 | 4489 | 2.96 | 639 | .42 | 4833 | 3.19 |
+| NC_035844.1 | Deparia lancea chloroplast  complete genome | 151011 | 0 | 0 | 4702 | 3.11 | 884 | .58 | 4898 | 3.24 |
+| NC_035845.1 | Deparia pycnosora chloroplast  complete genome | 151126 | 0 | 0 | 4570 | 3.02 | 933 | .61 | 5060 | 3.34 |
+| NC_035846.1 | Deparia viridifrons chloroplast  complete genome | 150939 | 0 | 0 | 4507 | 2.98 | 982 | .65 | 5095 | 3.37 |
+| NC_035847.1 | Diplaziopsis cavaleriana chloroplast  complete genome | 151934 | 0 | 0 | 4128 | 2.71 | 540 | .35 | 4373 | 2.87 |
+| NC_035848.1 | Diplaziopsis javanica chloroplast  complete genome | 151496 | 0 | 0 | 4461 | 2.94 | 564 | .37 | 4608 | 3.04 |
+| NC_035849.1 | Diplazium bellum chloroplast  complete genome | 151601 | 0 | 0 | 4894 | 3.22 | 1724 | 1.13 | 5237 | 3.45 |
+| NC_035850.1 | Diplazium dilatatum chloroplast  complete genome | 151114 | 0 | 0 | 4508 | 2.98 | 738 | .48 | 4802 | 3.17 |
+| NC_035851.1 | Diplazium dushanense chloroplast  complete genome | 150179 | 0 | 0 | 4560 | 3.03 | 564 | .37 | 4756 | 3.16 |
+| NC_035852.1 | Diplazium striatum chloroplast  complete genome | 150779 | 0 | 0 | 4532 | 3.00 | 1055 | .69 | 4924 | 3.26 |
+| NC_035853.1 | Diplazium unilobum chloroplast  complete genome | 127840 | 0 | 0 | 2667 | 2.08 | 699 | .54 | 2912 | 2.27 |
+| NC_035854.1 | Dryopteris decipiens chloroplast  complete genome | 150987 | 0 | 0 | 4713 | 3.12 | 788 | .52 | 4860 | 3.21 |
+| NC_035855.1 | Homalosorus pycnocarpos chloroplast  complete genome | 152159 | 0 | 0 | 4193 | 2.75 | 466 | .30 | 4487 | 2.94 |
+| NC_035856.1 | Hymenasplenium unilaterale chloroplast  complete genome | 151723 | 0 | 0 | 4232 | 2.78 | 539 | .35 | 4477 | 2.95 |
+| NC_035857.1 | Hypodematium crenatum chloroplast  complete genome | 149794 | 0 | 0 | 4584 | 3.06 | 1163 | .77 | 4927 | 3.28 |
+| NC_035858.1 | Macrothelypteris torresiana chloroplast  complete genome | 151130 | 0 | 0 | 4149 | 2.74 | 835 | .55 | 4345 | 2.87 |
+| NC_035859.1 | Matteuccia struthiopteris chloroplast  complete genome | 151003 | 0 | 0 | 4479 | 2.96 | 418 | .27 | 4528 | 2.99 |
+| NC_035860.1 | Onoclea sensibilis chloroplast  complete genome | 148395 | 0 | 0 | 4471 | 3.01 | 615 | .41 | 4692 | 3.16 |
+| NC_035861.1 | Thelypteris aurita chloroplast  complete genome | 149917 | 0 | 0 | 4594 | 3.06 | 961 | .64 | 4839 | 3.22 |
+| NC_035862.1 | Rhachidosorus consimilis chloroplast  complete genome | 152642 | 0 | 0 | 4874 | 3.19 | 1256 | .82 | 5315 | 3.48 |
+| NC_035863.1 | Stegnogramma sagittifolia chloroplast  complete genome | 151132 | 0 | 0 | 4233 | 2.80 | 861 | .56 | 4478 | 2.96 |
+| NC_035864.1 | Woodsia macrochlaena chloroplast  complete genome | 150987 | 0 | 0 | 4014 | 2.65 | 737 | .48 | 4333 | 2.86 |
+| NC_035865.1 | Woodsia polystichoides chloroplast  complete genome | 150685 | 0 | 0 | 4128 | 2.73 | 959 | .63 | 4520 | 2.99 |
+| NC_035866.1 | Myocastor coypus mitochondrion  complete genome | 16874 | 0 | 0 | 260 | 1.54 | 3381 | 20.03 | 3516 | 20.83 |
+| NC_035867.1 | Etheostoma tallapoosae mitochondrion  complete genome | 16592 | 0 | 0 | 274 | 1.65 | 1032 | 6.21 | 1306 | 7.87 |
+| NC_035868.1 | Alcedo atthis mitochondrion  complete genome | 17383 | 0 | 0 | 185 | 1.06 | 1131 | 6.50 | 1316 | 7.57 |
+| NC_035869.1 | Baicalia turriformis mitochondrion  complete genome | 15127 | 0 | 0 | 0 | 0 | 418 | 2.76 | 0 | 0 |
+| NC_035870.1 | Godlewskia godlewskia mitochondrion  complete genome | 15224 | 0 | 0 | 19 | .12 | 246 | 1.61 | 265 | 1.74 |
+| NC_035871.1 | Maackia herderiana mitochondrion  complete genome | 15154 | 0 | 0 | 116 | .76 | 394 | 2.59 | 510 | 3.36 |
+| NC_035872.1 | Circaeaster agrestis chloroplast  complete genome | 151033 | 0 | 0 | 4652 | 3.08 | 1082 | .71 | 5168 | 3.42 |
+| NC_035873.1 | Kingdonia uniflora chloroplast  complete genome | 147378 | 0 | 0 | 4769 | 3.23 | 687 | .46 | 5014 | 3.40 |
+| NC_035874.1 | Sardinella fijiensis mitochondrion  complete genome | 16695 | 0 | 0 | 407 | 2.43 | 1033 | 6.18 | 1440 | 8.62 |
+| NC_035875.1 | Ambrosia artemisiifolia chloroplast  complete genome | 152215 | 0 | 0 | 5626 | 3.69 | 1302 | .85 | 5969 | 3.92 |
+| NC_035876.1 | Echinacanthus lofouensis chloroplast  complete genome | 151333 | 0 | 0 | 4618 | 3.05 | 491 | .32 | 4765 | 3.14 |
+| NC_035877.1 | Corvus coronoides mitochondrion  complete genome | 16925 | 0 | 0 | 289 | 1.70 | 1184 | 6.99 | 1473 | 8.70 |
+| NC_035879.1 | Favites abdita voucher 596 mitochondrion  complete genome | 17825 | 0 | 0 | 883 | 4.95 | 786 | 4.40 | 1006 | 5.64 |
+| NC_035880.1 | Prunus humilis chloroplast  complete genome | 158012 | 0 | 0 | 6575 | 4.16 | 1794 | 1.13 | 7385 | 4.67 |
+| NC_035881.1 | Diphyllobothrium stemmacephalum mitochondrial DNA  complete genome | 13716 | 0 | 0 | 195 | 1.42 | 49 | .35 | 244 | 1.77 |
+| NC_035882.1 | Cinnamomum camphora chloroplast  complete genome | 152570 | 0 | 0 | 4798 | 3.14 | 1030 | .67 | 5092 | 3.33 |
+| NC_035883.1 | Apis mellifera sahariensis mitochondrion  complete genome | 16569 | 0 | 0 | 477 | 2.87 | 1873 | 11.30 | 2101 | 12.68 |
+| NC_035885.1 | Halosauropsis macrochir voucher ZMUC:P3369 mitochondrion  complete genome | 16655 | 0 | 0 | 232 | 1.39 | 1035 | 6.21 | 1267 | 7.60 |
+| NC_035886.1 | Euproctis similis mitochondrion  complete genome | 15437 | 0 | 0 | 1421 | 9.20 | 1674 | 10.84 | 2328 | 15.08 |
+| NC_035890.1 | Helicoverpa assulta mitochondrion  complete genome | 15373 | 0 | 0 | 1134 | 7.37 | 1056 | 6.86 | 1945 | 12.65 |
+| NC_035891.1 | Prunus cerasoides chloroplast  complete genome | 157685 | 0 | 0 | 6104 | 3.87 | 1966 | 1.24 | 6843 | 4.33 |
+| NC_035892.1 | Aconitum pseudolaeve chloroplast  complete genome | 155628 | 0 | 0 | 5820 | 3.73 | 1618 | 1.03 | 6453 | 4.14 |
+| NC_035893.1 | Neanthes glandicincta voucher 497 mitochondrion  complete genome | 16126 | 0 | 0 | 328 | 2.03 | 468 | 2.90 | 598 | 3.70 |
+| NC_035894.1 | Aconitum longecassidatum chloroplast  complete genome | 155524 | 0 | 0 | 5470 | 3.51 | 1275 | .81 | 6009 | 3.86 |
+| NC_035895.1 | Alpinia oxyphylla chloroplast  complete genome | 161351 | 0 | 0 | 6920 | 4.28 | 2041 | 1.26 | 7755 | 4.80 |
+| NC_035896.1 | Daphne kiusiana chloroplast  complete genome | 171491 | 0 | 0 | 6548 | 3.81 | 1568 | .91 | 7528 | 4.38 |
+| NC_035922.1 | Kazachstania naganishii CBS 8797 chromosome 1  complete genome | 1290777 | 0 | 0 | 23568 | 1.82 | 11829 | .91 | 24867 | 1.92 |
+| NC_035923.1 | Kazachstania naganishii CBS 8797 chromosome 2  complete genome | 1410756 | 0 | 0 | 14563 | 1.03 | 7925 | .56 | 16379 | 1.16 |
+| NC_035924.1 | Kazachstania naganishii CBS 8797 chromosome 3  complete genome | 1310278 | 0 | 0 | 13115 | 1.00 | 7269 | .55 | 14745 | 1.12 |
+| NC_035925.1 | Kazachstania naganishii CBS 8797 chromosome 4  complete genome | 993246 | 0 | 0 | 10949 | 1.10 | 6032 | .60 | 12150 | 1.22 |
+| NC_035926.1 | Kazachstania naganishii CBS 8797 chromosome 5  complete genome | 856010 | 0 | 0 | 8584 | 1.00 | 3934 | .45 | 9347 | 1.09 |
+| NC_035927.1 | Kazachstania naganishii CBS 8797 chromosome 6  complete genome | 770551 | 0 | 0 | 7752 | 1.00 | 4099 | .53 | 8389 | 1.08 |
+| NC_035928.1 | Kazachstania naganishii CBS 8797 chromosome 7  complete genome | 780220 | 0 | 0 | 6426 | .82 | 3912 | .50 | 7653 | .98 |
+| NC_035929.1 | Kazachstania naganishii CBS 8797 chromosome 8  complete genome | 724298 | 0 | 0 | 9044 | 1.24 | 4498 | .62 | 9657 | 1.33 |
+| NC_035930.1 | Kazachstania naganishii CBS 8797 chromosome 9  complete genome | 628580 | 0 | 0 | 6100 | .97 | 2211 | .35 | 6664 | 1.06 |
+| NC_035931.1 | Kazachstania naganishii CBS 8797 chromosome 10  complete genome | 586734 | 0 | 0 | 6101 | 1.03 | 3905 | .66 | 7333 | 1.24 |
+| NC_035932.1 | Kazachstania naganishii CBS 8797 chromosome 11  complete genome | 538562 | 0 | 0 | 5653 | 1.04 | 2665 | .49 | 6070 | 1.12 |
+| NC_035933.1 | Kazachstania naganishii CBS 8797 chromosome 12  complete genome | 450952 | 0 | 0 | 6212 | 1.37 | 3023 | .67 | 7096 | 1.57 |
+| NC_035934.1 | Kazachstania naganishii CBS 8797 chromosome 13  complete genome | 504857 | 0 | 0 | 6884 | 1.36 | 2968 | .58 | 7178 | 1.42 |
+| NC_035940.1 | Usnea ceratina mitochondrion  complete genome | 65539 | 0 | 0 | 2054 | 3.13 | 837 | 1.27 | 2152 | 3.28 |
+| NC_035941.1 | Decaisnea insignis chloroplast  complete genome | 158683 | 0 | 0 | 5930 | 3.73 | 1350 | .85 | 6592 | 4.15 |
+| NC_035942.1 | Pennahia pawak isolate BBW20170222 mitochondrion  complete genome | 16408 | 0 | 0 | 143 | .87 | 886 | 5.39 | 1029 | 6.27 |
+| NC_035943.1 | Etheostoma chuckwachatte mitochondrion  complete genome | 16603 | 0 | 0 | 247 | 1.48 | 738 | 4.44 | 985 | 5.93 |
+| NC_035944.1 | Etheostoma jessiae mitochondrion  complete genome | 16600 | 0 | 0 | 142 | .85 | 639 | 3.84 | 781 | 4.70 |
+| NC_035945.1 | Percina crypta mitochondrion  complete genome | 16605 | 0 | 0 | 322 | 1.93 | 911 | 5.48 | 1233 | 7.42 |
+| NC_035946.1 | Rhipicephalus turanicus mitochondrion  complete genome | 14717 | 0 | 0 | 717 | 4.87 | 466 | 3.16 | 1134 | 7.70 |
+| NC_035947.1 | Pinus greggii voucher DSG1311 plastid  complete genome | 120501 | 0 | 0 | 2561 | 2.12 | 491 | .40 | 2831 | 2.34 |
+| NC_035948.1 | Pinus jaliscana voucher DSG456 plastid  complete genome | 120715 | 0 | 0 | 2499 | 2.07 | 565 | .46 | 2843 | 2.35 |
+| NC_035949.1 | Pinus oocarpa voucher DSG711 plastid  complete genome | 120596 | 0 | 0 | 2488 | 2.06 | 467 | .38 | 2759 | 2.28 |
+| NC_035950.1 | Rheum wittrockii plastid  complete genome | 159051 | 0 | 0 | 4442 | 2.79 | 981 | .61 | 4932 | 3.10 |
+| NC_035951.1 | Xenograpsus ngatama mitochondrion  complete genome | 16106 | 0 | 0 | 571 | 3.54 | 540 | 3.35 | 1037 | 6.43 |
+| NC_035952.1 | Nicotiana attenuata chloroplast  complete genome | 155886 | 0 | 0 | 5429 | 3.48 | 1054 | .67 | 5968 | 3.82 |
+| NC_035953.1 | Lindera glauca chloroplast  complete genome | 152780 | 0 | 0 | 4993 | 3.26 | 894 | .58 | 5263 | 3.44 |
+| NC_035954.1 | Xenocypris yunnanensis mitochondrion  complete genome | 16630 | 0 | 0 | 406 | 2.44 | 910 | 5.47 | 1316 | 7.91 |
+| NC_035955.1 | Aesculus wangii chloroplast  complete genome | 155871 | 0 | 0 | 5410 | 3.47 | 958 | .61 | 6049 | 3.88 |
+| NC_035956.1 | Magnolia laevifolia chloroplast  complete genome | 160120 | 0 | 0 | 4276 | 2.67 | 907 | .56 | 4717 | 2.94 |
+| NC_035957.1 | Carmichaelia australis plastid  complete genome | 122805 | 0 | 0 | 4048 | 3.29 | 1767 | 1.43 | 4907 | 3.99 |
+| NC_035958.1 | Platycodon grandiflorus mitochondrion  complete genome | 1249593 | 0 | 0 | 6407 | .51 | 1202 | .09 | 6946 | .55 |
+| NC_035959.1 | Gynostemma cardiospermum chloroplast  complete genome | 159042 | 0 | 0 | 5753 | 3.61 | 1497 | .94 | 6440 | 4.04 |
+| NC_035960.1 | Juglans cinerea chloroplast  complete genome | 160288 | 0 | 0 | 6402 | 3.99 | 2258 | 1.40 | 7431 | 4.63 |
+| NC_035961.1 | Fragaria x ananassa cultivar Benihoppe chloroplast  complete genome | 155549 | 0 | 0 | 4943 | 3.17 | 1426 | .91 | 5605 | 3.60 |
+| NC_035962.1 | Bupleurum falcatum mitochondrion  complete genome | 463792 | 0 | 0 | 3450 | .74 | 392 | .08 | 3744 | .80 |
+| NC_035963.1 | Solanum lycopersicum bio-material TGRC:LA1421 mitochondrion  complete genome | 446257 | 0 | 0 | 5484 | 1.22 | 908 | .20 | 5852 | 1.31 |
+| NC_035964.1 | Solanum pennellii bio-material TGRC:LA0716 mitochondrion  complete genome | 423596 | 0 | 0 | 5073 | 1.19 | 736 | .17 | 5466 | 1.29 |
+| NC_035965.1 | Juglans hindsii chloroplast  complete genome | 160406 | 0 | 0 | 6609 | 4.12 | 2479 | 1.54 | 7861 | 4.90 |
+| NC_035966.1 | Juglans major chloroplast  complete genome | 160276 | 0 | 0 | 6908 | 4.31 | 2331 | 1.45 | 7890 | 4.92 |
+| NC_035967.1 | Juglans nigra chloroplast  complete genome | 160274 | 0 | 0 | 6583 | 4.10 | 2038 | 1.27 | 7467 | 4.65 |
+| NC_035968.1 | Aphyllanthes monspeliensis voucher K:2001826 chloroplast  complete genome | 157009 | 0 | 0 | 6863 | 4.37 | 1695 | 1.07 | 7599 | 4.83 |
+| NC_035969.1 | Asparagus schoberioides voucher K:Hana141018-1 chloroplast  complete genome | 156875 | 0 | 0 | 4727 | 3.01 | 1129 | .71 | 5512 | 3.51 |
+| NC_035970.1 | Maianthemum bicolor voucher K:Hana140621-1 chloroplast  complete genome | 157176 | 0 | 0 | 5338 | 3.39 | 1449 | .92 | 6099 | 3.88 |
+| NC_035971.1 | Agapanthus coddii voucher K:20081397 chloroplast  complete genome | 157055 | 0 | 0 | 5142 | 3.27 | 908 | .57 | 5559 | 3.53 |
+| NC_035972.1 | Anthericum ramosum voucher K:19866218 chloroplast  complete genome | 155812 | 0 | 0 | 5909 | 3.79 | 2455 | 1.57 | 6792 | 4.35 |
+| NC_035973.1 | Spondias mombin chloroplast  complete genome | 162302 | 0 | 0 | 6229 | 3.83 | 859 | .52 | 6474 | 3.98 |
+| NC_035974.1 | Citrullus amarus isolate Grif16135 chloroplast  complete genome | 157008 | 0 | 0 | 5121 | 3.26 | 564 | .35 | 5415 | 3.44 |
+| NC_035975.1 | Citrullus rehmii isolate PI 632755 chloroplast  complete genome | 157135 | 0 | 0 | 5275 | 3.35 | 860 | .54 | 5815 | 3.70 |
+| NC_035976.1 | Carassius auratus x Megalobrama amblycephala x Carassius cuvieri mitochondrion  complete genome | 16596 | 0 | 0 | 401 | 2.41 | 1256 | 7.56 | 1608 | 9.68 |
+| NC_035977.1 | Calypogeia integristipula mitochondrion  complete genome | 163057 | 0 | 0 | 2854 | 1.75 | 788 | .48 | 3124 | 1.91 |
+| NC_035978.1 | Calypogeia arguta mitochondrion  complete genome | 159061 | 0 | 0 | 2504 | 1.57 | 739 | .46 | 2774 | 1.74 |
+| NC_035979.1 | Calypogeia suecica mitochondrion  complete genome | 161960 | 0 | 0 | 2890 | 1.78 | 788 | .48 | 3160 | 1.95 |
+| NC_035980.1 | Calypogeia neogaea mitochondrion  complete genome | 162175 | 0 | 0 | 2786 | 1.71 | 864 | .53 | 3033 | 1.87 |
+| NC_035981.1 | Johnius carouna isolate ZJ2015081504 mitochondrion  complete genome | 18752 | 0 | 0 | 242 | 1.29 | 469 | 2.50 | 711 | 3.79 |
+| NC_035982.1 | Atrobucca nibe isolate WL2017041201 mitochondrion  complete genome | 16842 | 0 | 0 | 238 | 1.41 | 665 | 3.94 | 903 | 5.36 |
+| NC_035988.1 | Lilium amabile chloroplast  complete genome | 152567 | 0 | 0 | 6405 | 4.19 | 1867 | 1.22 | 7116 | 4.66 |
+| NC_035989.1 | Lilium callosum chloroplast  complete genome | 152626 | 0 | 0 | 6554 | 4.29 | 1867 | 1.22 | 7143 | 4.68 |
+| NC_035990.1 | Lilium philadelphicum chloroplast  complete genome | 152175 | 0 | 0 | 6032 | 3.96 | 1350 | .88 | 6596 | 4.33 |
+| NC_035991.1 | Copadichromis trimaculatus mitochondrion  complete genome | 16581 | 0 | 0 | 288 | 1.73 | 1010 | 6.09 | 1249 | 7.53 |
+| NC_035992.1 | Chilotilapia rhoadesii mitochondrion  complete genome | 16580 | 0 | 0 | 216 | 1.30 | 986 | 5.94 | 1202 | 7.24 |
+| NC_035993.1 | Cyathochromis obliquidens mitochondrion  complete genome | 16581 | 0 | 0 | 248 | 1.49 | 986 | 5.94 | 1234 | 7.44 |
+| NC_035994.1 | Schizothorax curvilabiatus mitochondrion  complete genome | 16578 | 0 | 0 | 294 | 1.77 | 739 | 4.45 | 1033 | 6.23 |
+| NC_035995.1 | Polygonatum stenophyllum voucher K:Hana140625-2 chloroplast  complete genome | 156028 | 0 | 0 | 5399 | 3.46 | 1398 | .89 | 5889 | 3.77 |
+| NC_035996.1 | Xanthorrhoea preissii voucher K:20005062 chloroplast  complete genome | 158116 | 0 | 0 | 5526 | 3.49 | 1397 | .88 | 6041 | 3.82 |
+| NC_035997.1 | Barnardia japonica voucher K:Hana140807-3 chloroplast  complete genome | 156079 | 0 | 0 | 5814 | 3.72 | 1324 | .84 | 6476 | 4.14 |
+| NC_035998.1 | Cordyline indivisa voucher K:20071291 chloroplast  complete genome | 155196 | 0 | 0 | 4838 | 3.11 | 1349 | .86 | 5328 | 3.43 |
+| NC_035999.1 | Hosta minor voucher K:SSK01 chloroplast  complete genome | 156674 | 0 | 0 | 5662 | 3.61 | 1595 | 1.01 | 6250 | 3.98 |
+| NC_036000.1 | Milla biflora voucher K:2000-242 chloroplast  complete genome | 156684 | 0 | 0 | 6445 | 4.11 | 1817 | 1.15 | 7327 | 4.67 |
+| NC_036001.1 | Cassytha filiformis chloroplast DNA  complete genome | 114622 | 0 | 0 | 3356 | 2.92 | 2235 | 1.94 | 3944 | 3.44 |
+| NC_036002.1 | Cryptocarya chinensis chloroplast DNA  complete genome | 157718 | 0 | 0 | 4512 | 2.86 | 859 | .54 | 4929 | 3.12 |
+| NC_036003.1 | Neocinnamomum delavayi chloroplast DNA  complete genome | 150850 | 0 | 0 | 5001 | 3.31 | 1397 | .92 | 5533 | 3.66 |
+| NC_036009.1 | Vitis mustangensis chloroplast INRA:8020 Mtp1 DNA  complete genome | 161008 | 0 | 0 | 5557 | 3.45 | 1350 | .83 | 6294 | 3.90 |
+| NC_036010.1 | Pedicularis cheilanthifolia chloroplast  complete genome | 155159 | 0 | 0 | 3972 | 2.55 | 539 | .34 | 4315 | 2.78 |
+| NC_036011.1 | Phymata americana mitochondrion  complete genome | 15954 | 0 | 0 | 639 | 4.00 | 564 | 3.53 | 1154 | 7.23 |
+| NC_036012.1 | Carcinocoris binghami mitochondrion  complete genome | 15344 | 0 | 0 | 152 | .99 | 392 | 2.55 | 544 | 3.54 |
+| NC_036013.1 | Cnizocoris sinensis mitochondrion  complete genome | 15262 | 0 | 0 | 677 | 4.43 | 736 | 4.82 | 1217 | 7.97 |
+| NC_036014.1 | Zostera marina chloroplast  complete genome | 143877 | 0 | 0 | 5739 | 3.98 | 785 | .54 | 6107 | 4.24 |
+| NC_036016.1 | Tringa semipalmata mitochondrion  complete genome | 16603 | 0 | 0 | 343 | 2.06 | 1206 | 7.26 | 1475 | 8.88 |
+| NC_036017.1 | Bupleurum boissieuanum chloroplast  complete genome | 156108 | 0 | 0 | 5268 | 3.37 | 1178 | .75 | 5660 | 3.62 |
+| NC_036018.1 | Mastomys coucha mitochondrion  complete genome | 16216 | 0 | 0 | 498 | 3.07 | 3706 | 22.85 | 3878 | 23.91 |
+| NC_036019.1 | Euonymus schensianus chloroplast  complete genome | 157702 | 0 | 0 | 6491 | 4.11 | 2309 | 1.46 | 7104 | 4.50 |
+| NC_036020.1 | Bos frontalis mitochondrion  complete genome | 16346 | 0 | 0 | 337 | 2.06 | 4351 | 26.61 | 4583 | 28.03 |
+| NC_036021.1 | Tigridiopalma magnifica chloroplast  complete genome | 155663 | 0 | 0 | 5442 | 3.49 | 1227 | .78 | 5834 | 3.74 |
+| NC_036023.1 | Kluyveromyces marxianus DMKU3-1042 mitochondrial DNA  complete genome | 46308 | 0 | 0 | 5060 | 10.92 | 15490 | 33.44 | 15509 | 33.49 |
+| NC_036024.1 | Triticum aestivum cultivar Chinese Yumai mitochondrion  complete genome | 452526 | 0 | 0 | 4733 | 1.04 | 441 | .09 | 4978 | 1.10 |
+| NC_036033.1 | Megalobrama amblycephala x (Megalobrama amblycephala x Parabramis pekinensis) mitochondrion  complete genome | 16623 | 0 | 0 | 370 | 2.22 | 960 | 5.77 | 1250 | 7.51 |
+| NC_036034.1 | Megalobrama amblycephala x (Megalobrama amblycephala x Megalobrama terminalis) mitochondrion  complete genome | 16623 | 0 | 0 | 370 | 2.22 | 960 | 5.77 | 1250 | 7.51 |
+| NC_036035.1 | Ondatra zibethicus mitochondrion  complete genome | 16348 | 0 | 0 | 471 | 2.88 | 3610 | 22.08 | 3726 | 22.79 |
+| NC_036036.1 | Hypolytrum nemorum chloroplast  complete genome | 180648 | 0 | 0 | 6746 | 3.73 | 1793 | .99 | 7556 | 4.18 |
+| NC_036037.1 | Carex neurocarpa voucher PDBK 2014-0675 chloroplast  complete genome | 181397 | 0 | 0 | 6848 | 3.77 | 2087 | 1.15 | 7462 | 4.11 |
+| NC_036038.1 | Prosopocoilus confucius mitochondrion  complete genome | 16951 | 0 | 0 | 179 | 1.05 | 422 | 2.48 | 596 | 3.51 |
+| NC_036039.1 | Stemphylium lycopersici strain CIDEFI-216 mitochondrion  complete genome | 75911 | 0 | 0 | 1502 | 1.97 | 319 | .42 | 1698 | 2.23 |
+| NC_036040.1 | Populus lasiocarpa chloroplast  complete genome | 155783 | 0 | 0 | 7280 | 4.67 | 2014 | 1.29 | 8040 | 5.16 |
+| NC_036041.1 | Potamotrygon magdalenae mitochondrion  complete genome | 17429 | 0 | 0 | 530 | 3.04 | 1187 | 6.81 | 1712 | 9.82 |
+| NC_036042.1 | Epicauta gorhami mitochondrion  complete genome | 15691 | 0 | 0 | 293 | 1.86 | 368 | 2.34 | 612 | 3.90 |
+| NC_036043.1 | Epicauta tibialis mitochondrion  complete genome | 15716 | 0 | 0 | 202 | 1.28 | 393 | 2.50 | 546 | 3.47 |
+| NC_036044.1 | Hycleus marcipoli mitochondrion  complete genome | 15923 | 0 | 0 | 233 | 1.46 | 539 | 3.38 | 723 | 4.54 |
+| NC_036045.1 | Hycleus phaleratus mitochondrion  complete genome | 16003 | 0 | 0 | 217 | 1.35 | 542 | 3.38 | 661 | 4.13 |
+| NC_036046.1 | Mylabris aulica mitochondrion  complete genome | 15758 | 0 | 0 | 378 | 2.39 | 467 | 2.96 | 771 | 4.89 |
+| NC_036047.1 | Hospitalitermes medioflavus mitochondrion  complete genome | 14950 | 0 | 0 | 694 | 4.64 | 564 | 3.77 | 1111 | 7.43 |
+| NC_036048.1 | Sebastes fasciatus mitochondrion  complete genome | 16400 | 0 | 0 | 226 | 1.37 | 739 | 4.50 | 965 | 5.88 |
+| NC_036049.1 | Hippocampus jayakari mitochondrion  complete genome | 16520 | 0 | 0 | 331 | 2.00 | 812 | 4.91 | 1069 | 6.47 |
+| NC_036050.1 | Gyps fulvus mitochondrion  complete genome | 18094 | 0 | 0 | 212 | 1.17 | 1211 | 6.69 | 1418 | 7.83 |
+| NC_036051.1 | Planocera reticulata mitochondrion  complete genome | 14724 | 0 | 0 | 383 | 2.60 | 196 | 1.33 | 562 | 3.81 |
+| NC_036052.1 | Camptotheca acuminata chloroplast  complete genome | 162382 | 0 | 0 | 5183 | 3.19 | 639 | .39 | 5673 | 3.49 |
+| NC_036053.1 | Laticauda laticaudata mitochondrion  complete genome | 17209 | 0 | 0 | 94 | .54 | 566 | 3.28 | 660 | 3.83 |
+| NC_036054.1 | Laticauda colubrina mitochondrion  complete genome | 17450 | 0 | 0 | 168 | .96 | 788 | 4.51 | 956 | 5.47 |
+| NC_036055.1 | Laticauda semifasciata mitochondrion  complete genome | 17170 | 0 | 0 | 0 | 0 | 492 | 2.86 | 0 | 0 |
+| NC_036056.1 | Odontobutis haifengensis mitochondrion  complete genome | 17016 | 0 | 0 | 162 | .95 | 813 | 4.77 | 975 | 5.72 |
+| NC_036057.1 | Athetis lepigone isolate HB25 mitochondrion  complete genome | 15589 | 0 | 0 | 1128 | 7.23 | 1671 | 10.71 | 2258 | 14.48 |
+| NC_036060.1 | Scaphirhynchus suttkusi isolate NFWFLH10433 mitochondrion  complete genome | 16495 | 0 | 0 | 265 | 1.60 | 1208 | 7.32 | 1473 | 8.92 |
+| NC_036061.1 | Bergenia scopulosa chloroplast  complete genome | 156041 | 0 | 0 | 5169 | 3.31 | 1129 | .72 | 5537 | 3.54 |
+| NC_036062.1 | Nomadacris japonica mitochondrion  complete genome | 15638 | 0 | 0 | 475 | 3.03 | 441 | 2.82 | 867 | 5.54 |
+| NC_036063.1 | Traulia minuta mitochondrion  complete genome | 15636 | 0 | 0 | 400 | 2.55 | 588 | 3.76 | 939 | 6.00 |
+| NC_036064.1 | Manis gigantea mitochondrion  complete genome | 16540 | 0 | 0 | 433 | 2.61 | 3702 | 22.38 | 3960 | 23.94 |
+| NC_036065.1 | Melaphis rhois mitochondrion  complete genome | 15436 | 0 | 0 | 890 | 5.76 | 1330 | 8.61 | 1997 | 12.93 |
+| NC_036066.1 | Dorcadia ioffi mitochondrion  complete genome | 16785 | 0 | 0 | 1047 | 6.23 | 1154 | 6.87 | 1954 | 11.64 |
+| NC_036067.1 | Dolichovespula panda mitochondrion  complete genome | 17137 | 0 | 0 | 1175 | 6.85 | 1952 | 11.39 | 2281 | 13.31 |
+| NC_036068.1 | Tectus pyramis mitochondrion  complete genome | 18439 | 0 | 0 | 375 | 2.03 | 270 | 1.46 | 596 | 3.23 |
+| NC_036069.1 | Sinowilsonia henryi chloroplast  complete genome | 158741 | 0 | 0 | 4706 | 2.96 | 760 | .47 | 5196 | 3.27 |
+| NC_036070.1 | Mugilogobius myxodermus mitochondrion  complete genome | 16495 | 0 | 0 | 142 | .86 | 1035 | 6.27 | 1177 | 7.13 |
+| NC_036071.1 | Lobelia galpinii plastid  complete genome | 165607 | 0 | 0 | 5583 | 3.37 | 515 | .31 | 5926 | 3.57 |
+| NC_036072.1 | Lobelia hartlaubii plastid  complete genome | 162298 | 0 | 0 | 5262 | 3.24 | 787 | .48 | 5360 | 3.30 |
+| NC_036073.1 | Lobelia holstii plastid  complete genome | 161906 | 0 | 0 | 5563 | 3.43 | 393 | .24 | 5808 | 3.58 |
+| NC_036074.1 | Lobelia laxa plastid  complete genome | 166601 | 0 | 0 | 4901 | 2.94 | 1260 | .75 | 5743 | 3.44 |
+| NC_036075.1 | Lobelia linearis plastid  complete genome | 167549 | 0 | 0 | 4990 | 2.97 | 492 | .29 | 5113 | 3.05 |
+| NC_036076.1 | Lobelia malowensis plastid  complete genome | 159907 | 0 | 0 | 5268 | 3.29 | 1058 | .66 | 5857 | 3.66 |
+| NC_036077.1 | Lobelia patula plastid  complete genome | 161109 | 0 | 0 | 5129 | 3.18 | 738 | .45 | 5374 | 3.33 |
+| NC_036078.1 | Lobelia puberula plastid  complete genome | 163621 | 0 | 0 | 4229 | 2.58 | 1533 | .93 | 5269 | 3.22 |
+| NC_036079.1 | Lobelia sonderiana plastid  complete genome | 167593 | 0 | 0 | 4570 | 2.72 | 638 | .38 | 4766 | 2.84 |
+| NC_036080.1 | Lobelia spicata plastid  complete genome | 165680 | 0 | 0 | 4129 | 2.49 | 886 | .53 | 4769 | 2.87 |
+| NC_036081.1 | Lobelia thermalis plastid  complete genome | 163968 | 0 | 0 | 4634 | 2.82 | 540 | .32 | 4879 | 2.97 |
+| NC_036082.1 | Monopsis alba plastid  complete genome | 167768 | 0 | 0 | 4957 | 2.95 | 1081 | .64 | 5349 | 3.18 |
+| NC_036083.1 | Monopsis flava plastid  complete genome | 167534 | 0 | 0 | 4844 | 2.89 | 1008 | .60 | 5311 | 3.17 |
+| NC_036084.1 | Carpodetus serratus plastid  complete genome | 162105 | 0 | 0 | 4597 | 2.83 | 1079 | .66 | 5382 | 3.32 |
+| NC_036085.1 | Lobelia physaloides plastid  complete genome | 170087 | 0 | 0 | 5488 | 3.22 | 1154 | .67 | 5856 | 3.44 |
+| NC_036086.1 | Cyphia angustiloba plastid  complete genome | 185219 | 0 | 0 | 5510 | 2.97 | 1228 | .66 | 5903 | 3.18 |
+| NC_036087.1 | Cyphia banksiana plastid  complete genome | 170666 | 0 | 0 | 6082 | 3.56 | 1007 | .59 | 6568 | 3.84 |
+| NC_036088.1 | Cyphia belfastica plastid  complete genome | 184784 | 0 | 0 | 5802 | 3.13 | 1571 | .85 | 6807 | 3.68 |
+| NC_036089.1 | Cyphia crenata plastid  complete genome | 178956 | 0 | 0 | 6996 | 3.90 | 1668 | .93 | 7878 | 4.40 |
+| NC_036090.1 | Cyphia dentariifolia plastid  complete genome | 175713 | 0 | 0 | 5265 | 2.99 | 1351 | .76 | 6049 | 3.44 |
+| NC_036091.1 | Cyphia glandulifera plastid  complete genome | 176129 | 0 | 0 | 6731 | 3.82 | 1869 | 1.06 | 7382 | 4.19 |
+| NC_036092.1 | Cyphia phyteuma plastid  complete genome | 173434 | 0 | 0 | 5454 | 3.14 | 1989 | 1.14 | 6583 | 3.79 |
+| NC_036093.1 | Cyphia schlechteri plastid  complete genome | 183788 | 0 | 0 | 6353 | 3.45 | 1720 | .93 | 7384 | 4.01 |
+| NC_036094.1 | Cyphia tortilis plastid  complete genome | 187672 | 0 | 0 | 6348 | 3.38 | 1252 | .66 | 6691 | 3.56 |
+| NC_036095.1 | Grammatotheca bergiana plastid  complete genome | 171493 | 0 | 0 | 5395 | 3.14 | 565 | .32 | 5567 | 3.24 |
+| NC_036096.1 | Lobelia baumannii plastid  complete genome | 162280 | 0 | 0 | 5223 | 3.21 | 836 | .51 | 5321 | 3.27 |
+| NC_036097.1 | Lobelia cardinalis plastid  complete genome | 166665 | 0 | 0 | 4172 | 2.50 | 1258 | .75 | 5209 | 3.12 |
+| NC_036098.1 | Lobelia erinus plastid  complete genome | 166019 | 0 | 0 | 6297 | 3.79 | 1606 | .96 | 7112 | 4.28 |
+| NC_036099.1 | Dodonaea viscosa chloroplast  complete genome | 159375 | 0 | 0 | 6012 | 3.77 | 1179 | .73 | 6502 | 4.07 |
+| NC_036100.1 | Chirita eburnea voucher CEBURN20170516 chloroplast  complete genome | 152963 | 0 | 0 | 4491 | 2.93 | 588 | .38 | 4785 | 3.12 |
+| NC_036101.1 | Primulina liboensis voucher CLIB14R20170516 chloroplast  complete genome | 152989 | 0 | 0 | 5005 | 3.27 | 637 | .41 | 5397 | 3.52 |
+| NC_036102.1 | Sophora alopecuroides chloroplast  complete genome | 154108 | 0 | 0 | 6474 | 4.20 | 1792 | 1.16 | 7260 | 4.71 |
+| NC_036103.1 | Candida psychrophila strain NRRL Y-17665 mitochondrion  complete genome | 38445 | 0 | 0 | 3291 | 8.56 | 1497 | 3.89 | 3781 | 9.83 |
+| NC_036104.1 | Aethina tumida mitochondrion  complete genome | 16576 | 0 | 0 | 735 | 4.43 | 712 | 4.29 | 1299 | 7.83 |
+| NC_036105.1 | Vitis x champinii chloroplast INRA:8022 Mtp1 DNA  complete genome | 161012 | 0 | 0 | 5642 | 3.50 | 1474 | .91 | 6331 | 3.93 |
+| NC_036107.1 | Sarcophaga misera mitochondrion  complete genome | 14944 | 0 | 0 | 667 | 4.46 | 515 | 3.44 | 1084 | 7.25 |
+| NC_036108.1 | Gastrolina thoracica mitochondrion  complete genome | 16109 | 0 | 0 | 1333 | 8.27 | 1181 | 7.33 | 2119 | 13.15 |
+| NC_036109.1 | Tibetia liangshanensis voucher Liuj153027 chloroplast  complete genome | 123372 | 0 | 0 | 4407 | 3.57 | 1378 | 1.11 | 5122 | 4.15 |
+| NC_036112.1 | Stipagrostis hirtigluma voucher K:MSV902 chloroplast  complete genome | 138026 | 0 | 0 | 4892 | 3.54 | 948 | .68 | 5382 | 3.89 |
+| NC_036113.1 | Loudetia simplex voucher K:MSV1049 chloroplast  complete genome | 138600 | 0 | 0 | 4305 | 3.10 | 466 | .33 | 4648 | 3.35 |
+| NC_036114.1 | Paspalum paniculatum voucher K:MSV500 chloroplast  complete genome | 157507 | 0 | 0 | 4708 | 2.98 | 564 | .35 | 4904 | 3.11 |
+| NC_036115.1 | Tristachya humbertii voucher K:MSV1369 chloroplast  complete genome | 139098 | 0 | 0 | 4471 | 3.21 | 588 | .42 | 4618 | 3.31 |
+| NC_036116.1 | Streptostachys asperifolia voucher P:GB01-2012 chloroplast  complete genome | 140576 | 0 | 0 | 5007 | 3.56 | 1006 | .71 | 5252 | 3.73 |
+| NC_036117.1 | Sartidia isaloensis voucher K:MSV1325 chloroplast  complete genome | 138607 | 0 | 0 | 4337 | 3.12 | 294 | .21 | 4533 | 3.27 |
+| NC_036118.1 | Saccharum hildebrandtii voucher TAN:LRK2008 chloroplast  complete genome | 140901 | 0 | 0 | 4779 | 3.39 | 882 | .62 | 5318 | 3.77 |
+| NC_036119.1 | Pseudolasiacis leptolomoides voucher K:MSV983 chloroplast  complete genome | 140480 | 0 | 0 | 4730 | 3.36 | 417 | .29 | 4877 | 3.47 |
+| NC_036120.1 | Panicum pygmaeum isolate AWECm chloroplast  complete genome | 140996 | 0 | 0 | 4738 | 3.36 | 589 | .41 | 4983 | 3.53 |
+| NC_036121.1 | Panicum lycopodioides voucher GB04-2013 chloroplast  complete genome | 138954 | 0 | 0 | 4911 | 3.53 | 515 | .37 | 5058 | 3.64 |
+| NC_036122.1 | Merxmuellera tsaratananensis voucher L:MSV486 chloroplast  complete genome | 136522 | 0 | 0 | 4810 | 3.52 | 711 | .52 | 5104 | 3.73 |
+| NC_036123.1 | Lasiacis nigra voucher GB02-2014 chloroplast  complete genome | 140431 | 0 | 0 | 4727 | 3.36 | 417 | .29 | 4874 | 3.47 |
+| NC_036124.1 | Hildaea pallens voucher GB06-2014 chloroplast  complete genome | 139145 | 0 | 0 | 4692 | 3.37 | 809 | .58 | 4937 | 3.54 |
+| NC_036125.1 | Homolepis aturensis voucher P:GB06-2012 chloroplast  complete genome | 138757 | 0 | 0 | 4499 | 3.24 | 392 | .28 | 4646 | 3.34 |
+| NC_036126.1 | Entolasia imbricata isolate ARS-GRIN PI 381340 chloroplast  complete genome | 140721 | 0 | 0 | 4775 | 3.39 | 810 | .57 | 5266 | 3.74 |
+| NC_036127.1 | Echinochloa ugandensis voucher K:MSV706 chloroplast  complete genome | 139592 | 0 | 0 | 4639 | 3.32 | 466 | .33 | 4835 | 3.46 |
+| NC_036128.1 | Echinochloa stagnina voucher K:RCH49 chloroplast  complete genome | 139886 | 0 | 0 | 4586 | 3.27 | 711 | .50 | 5150 | 3.68 |
+| NC_036129.1 | Axonopus ramosus voucher P:GB03-2012 chloroplast  complete genome | 139596 | 0 | 0 | 4948 | 3.54 | 589 | .42 | 5046 | 3.61 |
+| NC_036130.1 | Aristida rufescens voucher K:MSV330 chloroplast  complete genome | 137659 | 0 | 0 | 4720 | 3.42 | 566 | .41 | 4941 | 3.58 |
+| NC_036131.1 | Yanocephalus yanonis mitochondrion  complete genome | 15623 | 0 | 0 | 725 | 4.64 | 467 | 2.98 | 1093 | 6.99 |
+| NC_036132.1 | Charybdis natator mitochondrion  complete genome | 15664 | 0 | 0 | 520 | 3.31 | 663 | 4.23 | 986 | 6.29 |
+| NC_036133.1 | Prunus serotina chloroplast  complete genome | 158778 | 0 | 0 | 6889 | 4.33 | 2158 | 1.35 | 7967 | 5.01 |
+| NC_036134.1 | Gynostemma laxiflorum chloroplast  complete genome | 158273 | 0 | 0 | 5645 | 3.56 | 1620 | 1.02 | 6578 | 4.15 |
+| NC_036135.1 | Gynostemma caulopterum chloroplast  complete genome | 157937 | 0 | 0 | 5268 | 3.33 | 1400 | .88 | 6005 | 3.80 |
+| NC_036136.1 | Gynostemma pentagynum chloroplast  complete genome | 157791 | 0 | 0 | 5787 | 3.66 | 1055 | .66 | 6351 | 4.02 |
+| NC_036137.1 | Ulva prolifera chloroplast  complete genome | 93066 | 0 | 0 | 5935 | 6.37 | 3908 | 4.19 | 8834 | 9.49 |
+| NC_036140.1 | Gynostemma longipes chloroplast  complete genome | 157601 | 0 | 0 | 5493 | 3.48 | 1693 | 1.07 | 6517 | 4.13 |
+| NC_036141.1 | Gynostemma 'burmanicum' chloroplast  complete genome | 157687 | 0 | 0 | 5723 | 3.62 | 1472 | .93 | 6479 | 4.10 |
+| NC_036142.1 | Gynostemma pubescens chloroplast  complete genome | 157666 | 0 | 0 | 5864 | 3.71 | 1619 | 1.02 | 6600 | 4.18 |
+| NC_036143.1 | Phoebe zhennan chloroplast  complete genome | 152831 | 0 | 0 | 4833 | 3.16 | 932 | .60 | 5348 | 3.49 |
+| NC_036144.1 | Trichoderma hamatum  complete genome | 32763 | 0 | 0 | 980 | 2.99 | 613 | 1.87 | 1323 | 4.03 |
+| NC_036145.1 | Cottus asper mitochondrion  complete genome | 16511 | 0 | 0 | 142 | .86 | 910 | 5.51 | 1052 | 6.37 |
+| NC_036146.1 | Cottus perifretum mitochondrion  complete genome | 16523 | 0 | 0 | 142 | .85 | 861 | 5.21 | 1003 | 6.07 |
+| NC_036147.1 | Cottus rhenanus mitochondrion  complete genome | 16522 | 0 | 0 | 142 | .85 | 1033 | 6.25 | 1175 | 7.11 |
+| NC_036148.1 | Comephorus baicalensis isolate B45 mitochondrion  complete genome | 16530 | 0 | 0 | 174 | 1.05 | 985 | 5.95 | 1159 | 7.01 |
+| NC_036149.1 | Comephorus dybowskii isolate m225 mitochondrion  complete genome | 16527 | 0 | 0 | 174 | 1.05 | 887 | 5.36 | 1061 | 6.41 |
+| NC_036150.1 | Erpobdella japonica mitochondrion  complete genome | 14725 | 0 | 0 | 262 | 1.77 | 147 | .99 | 360 | 2.44 |
+| NC_036151.1 | Lessertia frutescens chloroplast  complete genome | 122700 | 0 | 0 | 3932 | 3.20 | 1373 | 1.11 | 4716 | 3.84 |
+| NC_036152.1 | Aristolochia contorta chloroplast  complete genome | 160576 | 0 | 0 | 6976 | 4.34 | 3025 | 1.88 | 7836 | 4.87 |
+| NC_036153.1 | Aristolochia debilis chloroplast  complete genome | 159793 | 0 | 0 | 7132 | 4.46 | 3319 | 2.07 | 8237 | 5.15 |
+| NC_036154.1 | Japonolirion osense chloroplast DNA  complete genome | 158020 | 0 | 0 | 5285 | 3.34 | 960 | .60 | 5677 | 3.59 |
+| NC_036156.1 | Hydromanicus wulaianus mitochondrion  complete genome | 15289 | 0 | 0 | 1081 | 7.07 | 835 | 5.46 | 1670 | 10.92 |
+| NC_036157.1 | Sinodendron yunnanense mitochondrion  complete genome | 16921 | 0 | 0 | 829 | 4.89 | 418 | 2.47 | 1123 | 6.63 |
+| NC_036158.1 | Absidia glauca strain CBS 101.48 mitochondrion  complete genome | 63080 | 0 | 0 | 3154 | 5.00 | 1372 | 2.17 | 4299 | 6.81 |
+| NC_036218.1 | Moniezia benedeni isolate Guangxi20151207-1 mitochondrion  complete genome | 13958 | 0 | 0 | 619 | 4.43 | 147 | 1.05 | 717 | 5.13 |
+| NC_036220.1 | Tagiades litigiosa mitochondrion  complete genome | 15359 | 0 | 0 | 745 | 4.85 | 1228 | 7.99 | 1624 | 10.57 |
+| NC_036221.1 | Adenophora divaricata chloroplast  complete genome | 176331 | 0 | 0 | 4868 | 2.76 | 812 | .46 | 5337 | 3.02 |
+| NC_036222.1 | Adenophora erecta chloroplast  complete genome | 173324 | 0 | 0 | 4994 | 2.88 | 937 | .54 | 5489 | 3.16 |
+| NC_036223.1 | Adenophora stricta chloroplast  complete genome | 159759 | 0 | 0 | 5069 | 3.17 | 638 | .39 | 5437 | 3.40 |
+| NC_036224.1 | Awaous banana voucher stri-4986 mitochondrion  complete genome | 16513 | 0 | 0 | 289 | 1.75 | 882 | 5.34 | 1078 | 6.52 |
+| NC_036225.1 | Eleotris amblyopsis voucher stri-16837 mitochondrion  complete genome | 16519 | 0 | 0 | 194 | 1.17 | 984 | 5.95 | 1178 | 7.13 |
+| NC_036226.1 | Eleotris picta voucher stri-6991 mitochondrion  complete genome | 16547 | 0 | 0 | 170 | 1.02 | 886 | 5.35 | 1056 | 6.38 |
+| NC_036227.1 | Gobiomorus maculatus voucher stri-7077 mitochondrion  complete genome | 16536 | 0 | 0 | 189 | 1.14 | 1090 | 6.59 | 1223 | 7.39 |
+| NC_036228.1 | Hemieleotris latifasciata voucher stri-7098 mitochondrion  complete genome | 16523 | 0 | 0 | 242 | 1.46 | 983 | 5.94 | 1225 | 7.41 |
+| NC_036229.1 | Sicydium altum voucher stri-4981 mitochondrion  complete genome | 16499 | 0 | 0 | 144 | .87 | 1426 | 8.64 | 1570 | 9.51 |
+| NC_036230.1 | Sicydium salvini voucher stri-660 mitochondrion  complete genome | 16501 | 0 | 0 | 203 | 1.23 | 1256 | 7.61 | 1459 | 8.84 |
+| NC_036231.1 | Batrachospermaceae sp. DIW-2017a voucher BHO:A-1418 mitochondrion  complete genome | 25191 | 0 | 0 | 1392 | 5.52 | 98 | .38 | 1490 | 5.91 |
+| NC_036232.1 | Osteobrama belangeri voucher OB-WM-MN-01 mitochondrion  complete genome | 16602 | 0 | 0 | 195 | 1.17 | 1204 | 7.25 | 1350 | 8.13 |
+| NC_036233.1 | Ompok bimaculatus voucher OB-WM-TR01 mitochondrion  complete genome | 16482 | 0 | 0 | 338 | 2.05 | 1802 | 10.93 | 2140 | 12.98 |
+| NC_036234.1 | Gloydius strauchi mitochondrion  complete genome | 17224 | 0 | 0 | 190 | 1.10 | 665 | 3.86 | 855 | 4.96 |
+| NC_036235.1 | Apis nuluensis voucher 1929 mitochondrion  complete genome | 15843 | 0 | 0 | 711 | 4.48 | 1304 | 8.23 | 1565 | 9.87 |
+| NC_036236.1 | Portulaca oleracea chloroplast  complete genome | 156533 | 0 | 0 | 6335 | 4.04 | 2114 | 1.35 | 7188 | 4.59 |
+| NC_036261.1 | Tachyta nana voucher BMNH 832958 mitochondrion  complete genome | 16165 | 0 | 0 | 1446 | 8.94 | 1059 | 6.55 | 2234 | 13.81 |
+| NC_036262.1 | Hylastes brunneus voucher BMNH 1046727 mitochondrion  complete genome | 15774 | 0 | 0 | 1247 | 7.90 | 466 | 2.95 | 1615 | 10.23 |
+| NC_036263.1 | Anopheles dirus mitochondrion  complete genome | 15406 | 0 | 0 | 666 | 4.32 | 712 | 4.62 | 1206 | 7.82 |
+| NC_036264.1 | Spheniscus magellanicus isolate 2 mitochondrion  complete genome | 16546 | 0 | 0 | 160 | .96 | 1131 | 6.83 | 1242 | 7.50 |
+| NC_036265.1 | Incoltorrida madagassica voucher BMNH 670733 mitochondrion  complete genome | 16139 | 0 | 0 | 612 | 3.79 | 1204 | 7.46 | 1617 | 10.01 |
+| NC_036266.1 | Monotoma quadricollis voucher BMNH 676892 mitochondrion  complete genome | 16064 | 0 | 0 | 996 | 6.20 | 1059 | 6.59 | 1745 | 10.86 |
+| NC_036267.1 | Byturus ochraceus voucher BMNH 677381 mitochondrion  complete genome | 15143 | 0 | 0 | 988 | 6.52 | 761 | 5.02 | 1602 | 10.57 |
+| NC_036268.1 | Amara communis voucher BMNH 677553 mitochondrion  complete genome | 15745 | 0 | 0 | 954 | 6.05 | 1130 | 7.17 | 1986 | 12.61 |
+| NC_036269.1 | Usechus lacerta voucher BMNH 679350 mitochondrion  complete genome | 15289 | 0 | 0 | 679 | 4.44 | 1103 | 7.21 | 1684 | 11.01 |
+| NC_036270.1 | Hydrochus carinatus voucher BMNH 729517 mitochondrion  complete genome | 16825 | 0 | 0 | 681 | 4.04 | 1006 | 5.97 | 1354 | 8.04 |
+| NC_036271.1 | Amphizoa insolens voucher BMNH 799022 mitochondrion  complete genome | 15117 | 0 | 0 | 803 | 5.31 | 688 | 4.55 | 1319 | 8.72 |
+| NC_036272.1 | Anatis ocellata voucher BMNH 833044 mitochondrion  complete genome | 17092 | 0 | 0 | 1207 | 7.06 | 1033 | 6.04 | 2044 | 11.95 |
+| NC_036273.1 | Silvanus bidentatus voucher BMNH 833384 mitochondrion  complete genome | 17220 | 0 | 0 | 1216 | 7.06 | 1229 | 7.13 | 1976 | 11.47 |
+| NC_036276.1 | Tetratoma fungorum voucher BMNH 833898 mitochondrion  complete genome | 15089 | 0 | 0 | 908 | 6.01 | 883 | 5.85 | 1644 | 10.89 |
+| NC_036278.1 | Eucinetus haemorrhoidalis voucher BMNH 842710 mitochondrion  complete genome | 17954 | 0 | 0 | 926 | 5.15 | 1327 | 7.39 | 2155 | 12.00 |
+| NC_036279.1 | Horatocera niponica voucher BMNH 900056 mitochondrion  complete genome | 16107 | 0 | 0 | 798 | 4.95 | 688 | 4.27 | 1339 | 8.31 |
+| NC_036280.1 | Xylosandrus germanus voucher BMNH 1045796 mitochondrion  complete genome | 16099 | 0 | 0 | 649 | 4.03 | 691 | 4.29 | 919 | 5.70 |
+| NC_036281.1 | Ips sexdentatus voucher BMNH 1047373 mitochondrion  complete genome | 18579 | 0 | 0 | 1396 | 7.51 | 713 | 3.83 | 1764 | 9.49 |
+| NC_036282.1 | Dryocoetes villosus voucher BMNH 1047382 mitochondrion  complete genome | 15859 | 0 | 0 | 571 | 3.60 | 662 | 4.17 | 988 | 6.22 |
+| NC_036284.1 | Xylosandrus crassiusculus voucher BMNH 1043087 mitochondrion  complete genome | 16875 | 0 | 0 | 1075 | 6.37 | 936 | 5.54 | 1591 | 9.42 |
+| NC_036285.1 | Trypophloeus asperatus voucher BMNH 1046450 mitochondrion  complete genome | 17039 | 0 | 0 | 714 | 4.19 | 442 | 2.59 | 1058 | 6.20 |
+| NC_036286.1 | Trypodendron domesticum voucher BMNH 1046468 mitochondrion  complete genome | 16986 | 0 | 0 | 1178 | 6.93 | 1182 | 6.95 | 2039 | 12.00 |
+| NC_036287.1 | Dryocoetes autographus voucher BMNH 1046726 mitochondrion  complete genome | 17055 | 0 | 0 | 657 | 3.85 | 912 | 5.34 | 1394 | 8.17 |
+| NC_036288.1 | Pityophthorus pubescens voucher BMNH 1047183 mitochondrion  complete genome | 17316 | 0 | 0 | 759 | 4.38 | 393 | 2.26 | 1053 | 6.08 |
+| NC_036289.1 | Pityogenes bidentatus voucher BMNH 1047342 mitochondrion  complete genome | 18781 | 0 | 0 | 1257 | 6.69 | 983 | 5.23 | 1698 | 9.04 |
+| NC_036290.1 | Hylastes attenuatus voucher BMNH 1047345 mitochondrion  complete genome | 17409 | 0 | 0 | 878 | 5.04 | 564 | 3.23 | 1361 | 7.81 |
+| NC_036291.1 | Orthotomicus laricis voucher BMNH 1047365 mitochondrion  complete genome | 18887 | 0 | 0 | 1003 | 5.31 | 787 | 4.16 | 1365 | 7.22 |
+| NC_036292.1 | Trypodendron signatum voucher BMNH 1047368 mitochondrion  complete genome | 16909 | 0 | 0 | 1163 | 6.87 | 860 | 5.08 | 1924 | 11.37 |
+| NC_036293.1 | Anisandrus dispar voucher BMNH 1047383 mitochondrion  complete genome | 16665 | 0 | 0 | 1031 | 6.18 | 985 | 5.91 | 1570 | 9.42 |
+| NC_036294.1 | Gnathotrichus materiarius voucher BMNH 1047412 mitochondrion  complete genome | 16871 | 0 | 0 | 586 | 3.47 | 542 | 3.21 | 831 | 4.92 |
+| NC_036295.1 | Cyclorhipidion bodoanus voucher BMNH 1047413 mitochondrion  complete genome | 15899 | 0 | 0 | 479 | 3.01 | 765 | 4.81 | 871 | 5.47 |
+| NC_036296.1 | Maiestas dorsalis mitochondrion  complete genome | 15352 | 0 | 0 | 1428 | 9.30 | 417 | 2.71 | 1649 | 10.74 |
+| NC_036297.1 | Spheniscus mendiculus mitochondrion  complete genome | 16367 | 0 | 0 | 253 | 1.54 | 1329 | 8.11 | 1533 | 9.36 |
+| NC_036298.1 | Japananus hyalinus mitochondrion  complete genome | 15364 | 0 | 0 | 949 | 6.17 | 467 | 3.03 | 1269 | 8.25 |
+| NC_036299.1 | Pleuronichthys japonicus mitochondrion  complete genome | 17325 | 0 | 0 | 601 | 3.46 | 766 | 4.42 | 1144 | 6.60 |
+| NC_036300.1 | Emmenopterys henryi voucher XGS20161127 chloroplast  complete genome | 155379 | 0 | 0 | 4631 | 2.98 | 1179 | .75 | 5465 | 3.51 |
+| NC_036301.1 | Discogobio longibarbatus isolate KIZ201109 mitochondrion  complete genome | 16594 | 0 | 0 | 345 | 2.07 | 1158 | 6.97 | 1454 | 8.76 |
+| NC_036305.1 | Paratetraonchoides inermis mitochondrion  complete genome | 14654 | 0 | 0 | 766 | 5.22 | 1351 | 9.21 | 1895 | 12.93 |
+| NC_036309.1 | Cladonia rangiferina voucher NY:Lendemer 46392 mitochondrion  complete genome | 59116 | 0 | 0 | 2654 | 4.48 | 515 | .87 | 2899 | 4.90 |
+| NC_036312.1 | Myotis dominicensis mitochondrion  complete genome | 16999 | 0 | 0 | 535 | 3.14 | 3831 | 22.53 | 4035 | 23.73 |
+| NC_036313.1 | Myotis evotis mitochondrion  complete genome | 17039 | 0 | 0 | 526 | 3.08 | 3857 | 22.63 | 4054 | 23.79 |
+| NC_036314.1 | Myotis keaysi mitochondrion  complete genome | 17057 | 0 | 0 | 448 | 2.62 | 3630 | 21.28 | 3925 | 23.01 |
+| NC_036316.1 | Myotis oxyotus mitochondrion  complete genome | 17067 | 0 | 0 | 514 | 3.01 | 3461 | 20.27 | 3695 | 21.64 |
+| NC_036317.1 | Myotis riparius mitochondrion  complete genome | 17074 | 0 | 0 | 520 | 3.04 | 3535 | 20.70 | 3728 | 21.83 |
+| NC_036318.1 | Myotis nigricans mitochondrion  complete genome | 17067 | 0 | 0 | 454 | 2.66 | 3260 | 19.10 | 3487 | 20.43 |
+| NC_036319.1 | Myotis yumanensis mitochondrion  complete genome | 17268 | 0 | 0 | 586 | 3.39 | 3758 | 21.76 | 4004 | 23.18 |
+| NC_036320.1 | Myotis auriculus mitochondrion  complete genome | 17289 | 0 | 0 | 923 | 5.33 | 3678 | 21.27 | 4324 | 25.01 |
+| NC_036321.1 | Myotis leibii mitochondrion  complete genome | 16997 | 0 | 0 | 393 | 2.31 | 3555 | 20.91 | 3774 | 22.20 |
+| NC_036323.1 | Myotis thysanodes mitochondrion  complete genome | 17018 | 0 | 0 | 666 | 3.91 | 3733 | 21.93 | 4067 | 23.89 |
+| NC_036324.1 | Myotis atacamensis mitochondrion  complete genome | 17100 | 0 | 0 | 540 | 3.15 | 3389 | 19.81 | 3652 | 21.35 |
+| NC_036325.1 | Myotis horsfieldii mitochondrion  complete genome | 17083 | 0 | 0 | 551 | 3.22 | 3904 | 22.85 | 3909 | 22.88 |
+| NC_036326.1 | Myotis volans mitochondrion  complete genome | 17443 | 0 | 0 | 979 | 5.61 | 3703 | 21.22 | 4226 | 24.22 |
+| NC_036327.1 | Myotis albescens mitochondrion  complete genome | 17126 | 0 | 0 | 514 | 3.00 | 3852 | 22.49 | 4133 | 24.13 |
+| NC_036328.1 | Myotis martiniquensis mitochondrion  complete genome | 17170 | 0 | 0 | 562 | 3.27 | 3606 | 21.00 | 3795 | 22.10 |
+| NC_036329.1 | Atractosteus tristoechus voucher C34 mitochondrion  complete genome | 16290 | 0 | 0 | 292 | 1.79 | 1256 | 7.71 | 1548 | 9.50 |
+| NC_036330.1 | Tadarida teniotis mitochondrion  complete genome | 16869 | 0 | 0 | 636 | 3.77 | 4007 | 23.75 | 4337 | 25.70 |
+| NC_036331.1 | Tadarida latouchei voucher ROM MAM 118321 mitochondrion  complete genome | 16784 | 0 | 0 | 701 | 4.17 | 4155 | 24.75 | 4799 | 28.59 |
+| NC_036332.1 | Phaedyma columella voucher N1-0653 mitochondrion  complete genome | 15197 | 0 | 0 | 963 | 6.33 | 934 | 6.14 | 1601 | 10.53 |
+| NC_036333.1 | Patsuia sinensium voucher N1-1012 mitochondrion  complete genome | 15192 | 0 | 0 | 965 | 6.35 | 1304 | 8.58 | 2171 | 14.29 |
+| NC_036334.1 | Moduza procris voucher N1-2294 mitochondrion  complete genome | 15195 | 0 | 0 | 532 | 3.50 | 1133 | 7.45 | 1443 | 9.49 |
+| NC_036335.1 | Typhlatya miravetensis mitochondrion  complete genome | 15865 | 0 | 0 | 127 | .80 | 245 | 1.54 | 372 | 2.34 |
+| NC_036337.1 | Spheniscus humboldti mitochondrion  complete genome | 16658 | 0 | 0 | 219 | 1.31 | 1280 | 7.68 | 1450 | 8.70 |
+| NC_036340.1 | Rhodotorula mucilaginosa strain RIT389 mitochondrion  complete genome | 47023 | 0 | 0 | 45 | .09 | 98 | .20 | 143 | .30 |
+| NC_036341.1 | Garcinia mangostana voucher PDBK 2014-0243 chloroplast  complete genome | 158179 | 0 | 0 | 6592 | 4.16 | 1425 | .90 | 6960 | 4.40 |
+| NC_036342.1 | Pleione bulbocodioides chloroplast  complete genome | 159269 | 0 | 0 | 6440 | 4.04 | 1202 | .75 | 7225 | 4.53 |
+| NC_036343.1 | Parapolybia crocea mitochondrion  complete genome | 16619 | 0 | 0 | 1160 | 6.97 | 1328 | 7.99 | 1931 | 11.61 |
+| NC_036344.1 | Gelochelidon nilotica mitochondrion  complete genome | 16748 | 0 | 0 | 326 | 1.94 | 837 | 4.99 | 1039 | 6.20 |
+| NC_036346.1 | Mesoclemmys hogei mitochondrion  complete genome | 16513 | 0 | 0 | 133 | .80 | 910 | 5.51 | 1043 | 6.31 |
+| NC_036347.1 | Dendrolimus kikuchii voucher SM20170327 mitochondrion  complete genome | 15422 | 0 | 0 | 904 | 5.86 | 834 | 5.40 | 1566 | 10.15 |
+| NC_036348.1 | Electrona carlsbergi mitochondrion  complete genome | 18282 | 0 | 0 | 211 | 1.15 | 887 | 4.85 | 1073 | 5.86 |
+| NC_036349.1 | Gymnocypris scleracanthus mitochondrion  complete genome | 16679 | 0 | 0 | 319 | 1.91 | 986 | 5.91 | 1256 | 7.53 |
+| NC_036350.1 | Littledalea racemosa voucher L122 chloroplast  complete genome | 136852 | 0 | 0 | 4740 | 3.46 | 662 | .48 | 4985 | 3.64 |
+| NC_036351.1 | Amphioctopus marginatus mitochondrion  complete genome | 15719 | 0 | 0 | 1027 | 6.53 | 711 | 4.52 | 1468 | 9.33 |
+| NC_036352.1 | Diaphorina lycii voucher DP1.idba.143 circ mitochondrion  complete genome | 15112 | 0 | 0 | 752 | 4.97 | 518 | 3.42 | 899 | 5.94 |
+| NC_036353.1 | Pteroptyx maipo mitochondrion  complete genome | 16127 | 0 | 0 | 792 | 4.91 | 1178 | 7.30 | 1871 | 11.60 |
+| NC_036354.1 | Argonauta hians mitochondrion  complete genome | 16130 | 0 | 0 | 975 | 6.04 | 1357 | 8.41 | 1839 | 11.40 |
+| NC_036355.1 | Dendrobium loddigesii chloroplast DNA  complete genome | 152493 | 0 | 0 | 6772 | 4.44 | 785 | .51 | 7140 | 4.68 |
+| NC_036356.1 | Linum usitatissimum chloroplast  complete genome | 156721 | 0 | 0 | 5190 | 3.31 | 613 | .39 | 5582 | 3.56 |
+| NC_036357.1 | Aconitum angustius chloroplast  complete genome | 156109 | 0 | 0 | 5923 | 3.79 | 1128 | .72 | 6365 | 4.07 |
+| NC_036358.1 | Aconitum finetianum chloroplast  complete genome | 155625 | 0 | 0 | 5928 | 3.80 | 1473 | .94 | 6394 | 4.10 |
+| NC_036359.1 | Aconitum sinomontanum chloroplast  complete genome | 157215 | 0 | 0 | 5469 | 3.47 | 1079 | .68 | 6107 | 3.88 |
+| NC_036360.1 | Dorypteryx domestica mitochondrion  complete genome | 18512 | 0 | 0 | 1040 | 5.61 | 616 | 3.32 | 1310 | 7.07 |
+| NC_036361.1 | Prionoglaris stygia mitochondrion  complete genome | 15685 | 0 | 0 | 1291 | 8.23 | 517 | 3.29 | 1610 | 10.26 |
+| NC_036362.1 | Amphigerontia montivaga mitochondrion  complete genome | 15566 | 0 | 0 | 790 | 5.07 | 687 | 4.41 | 1182 | 7.59 |
+| NC_036363.1 | Archipsocus nomas mitochondrion  complete genome | 15349 | 0 | 0 | 878 | 5.72 | 516 | 3.36 | 1197 | 7.79 |
+| NC_036364.1 | Lachesilla anna mitochondrion  complete genome | 16236 | 0 | 0 | 814 | 5.01 | 615 | 3.78 | 1282 | 7.89 |
+| NC_036365.1 | Speleketor irwini mitochondrion  complete genome | 16849 | 0 | 0 | 1168 | 6.93 | 392 | 2.32 | 1560 | 9.25 |
+| NC_036366.1 | Stimulopalpus japonicus mitochondrion  complete genome | 14904 | 0 | 0 | 1021 | 6.85 | 687 | 4.60 | 1530 | 10.26 |
+| NC_036367.1 | Forsythia suspensa chloroplast  complete genome | 156404 | 0 | 0 | 4937 | 3.15 | 834 | .53 | 5133 | 3.28 |
+| NC_036368.1 | Malus micromalus chloroplast  complete genome | 159834 | 0 | 0 | 6686 | 4.18 | 2038 | 1.27 | 7318 | 4.57 |
+| NC_036369.1 | Otocyon megalotis mitochondrion  complete genome | 16431 | 0 | 0 | 180 | 1.09 | 3605 | 21.94 | 3785 | 23.03 |
+| NC_036370.1 | Quercus tarokoensis chloroplast  complete genome | 161355 | 0 | 0 | 6105 | 3.78 | 1692 | 1.04 | 7012 | 4.34 |
+| NC_036371.1 | Vitis coignetiae chloroplast USDA:NCGR:DVIT 1159 DNA  complete genome | 161012 | 0 | 0 | 5577 | 3.46 | 1474 | .91 | 6216 | 3.86 |
+| NC_036372.1 | Neofinetia falcata cultivar CheongSan voucher PDBK 2014-0010 chloroplast  complete genome | 146497 | 0 | 0 | 6689 | 4.56 | 1352 | .92 | 7178 | 4.89 |
+| NC_036373.1 | Neofinetia richardsiana voucher PDBK 2014-0945 chloroplast  complete genome | 146498 | 0 | 0 | 6798 | 4.64 | 1377 | .93 | 7337 | 5.00 |
+| NC_036374.1 | Zygosaccharomyces mellis strain Y-12628 mitochondrion  complete genome | 24335 | 0 | 0 | 1971 | 8.09 | 2683 | 11.02 | 3388 | 13.92 |
+| NC_036375.1 | Torulaspora quercuum strain XZ-46A mitochondrion  complete genome | 33299 | 0 | 0 | 1995 | 5.99 | 4209 | 12.64 | 5366 | 16.11 |
+| NC_036376.1 | Torulaspora microellipsoides strain Y-17058 mitochondrion  complete genome | 34709 | 0 | 0 | 4018 | 11.57 | 3543 | 10.20 | 5664 | 16.31 |
+| NC_036377.1 | Naumovozyma dairenensis strain Y-1353 mitochondrion  complete genome | 46425 | 0 | 0 | 1579 | 3.40 | 15477 | 33.33 | 15245 | 32.83 |
+| NC_036378.1 | Kazachstania unispora strain Y-1556 mitochondrion  complete genome | 29129 | 0 | 0 | 3141 | 10.78 | 1622 | 5.56 | 4050 | 13.90 |
+| NC_036379.1 | [Candida] nivariensis strain Y-48269 mitochondrion  complete genome | 28524 | 0 | 0 | 466 | 1.63 | 7777 | 27.26 | 7896 | 27.68 |
+| NC_036380.1 | [Candida] bracarensis strain Y-48270 mitochondrion  complete genome | 46138 | 0 | 0 | 1122 | 2.43 | 19763 | 42.83 | 19394 | 42.03 |
+| NC_036383.1 | Tor malabaricus mitochondrion  complete genome | 16580 | 0 | 0 | 289 | 1.74 | 1036 | 6.24 | 1202 | 7.24 |
+| NC_036384.1 | Cenchrus purpureus chloroplast  complete genome | 138199 | 0 | 0 | 4547 | 3.29 | 564 | .40 | 4866 | 3.52 |
+| NC_036385.1 | Lepomis auritus strain NEFC F16-508 mitochondrion  complete genome | 16501 | 0 | 0 | 177 | 1.07 | 1181 | 7.15 | 1358 | 8.22 |
+| NC_036386.1 | Pylodictis olivaris strain NEFC F16-278 mitochondrion  complete genome | 16508 | 0 | 0 | 274 | 1.65 | 1231 | 7.45 | 1456 | 8.81 |
+| NC_036388.1 | Lepomis punctatus strain NEFC F16-205 mitochondrion  complete genome | 16512 | 0 | 0 | 212 | 1.28 | 1133 | 6.86 | 1345 | 8.14 |
+| NC_036391.1 | Ameiurus natalis voucher NEFC F16-116 mitochondrion  complete genome | 16513 | 0 | 0 | 198 | 1.19 | 1429 | 8.65 | 1578 | 9.55 |
+| NC_036392.1 | Salvelinus namaycush strain NEFC F16-146 mitochondrion  complete genome | 16653 | 0 | 0 | 337 | 2.02 | 1083 | 6.50 | 1420 | 8.52 |
+| NC_036393.1 | Coregonus artedi voucher NEFC F16-375 mitochondrion  complete genome | 16820 | 0 | 0 | 196 | 1.16 | 642 | 3.81 | 838 | 4.98 |
+| NC_036394.1 | Prunus tomentosa plastid  complete genome | 158356 | 0 | 0 | 6373 | 4.02 | 2087 | 1.31 | 6986 | 4.41 |
+| NC_036395.1 | Firmiana pulcherrima chloroplast  complete genome | 159556 | 0 | 0 | 7070 | 4.43 | 1822 | 1.14 | 7934 | 4.97 |
+| NC_036396.1 | Lonchura leucosticta isolate WAMB56389 voucher CSIRO:B56389 mitochondrion  complete genome | 16833 | 0 | 0 | 348 | 2.06 | 1009 | 5.99 | 1354 | 8.04 |
+| NC_036397.1 | Lonchura caniceps isolate KFS121 mitochondrion  complete genome | 16826 | 0 | 0 | 319 | 1.89 | 910 | 5.40 | 1204 | 7.15 |
+| NC_036398.1 | Lonchura castaneothorax isolate B29859 voucher CSIRO:29859 mitochondrion  complete genome | 16823 | 0 | 0 | 239 | 1.42 | 1009 | 5.99 | 1243 | 7.38 |
+| NC_036399.1 | Lonchura flaviprymna isolate KFS001 mitochondrion  complete genome | 16824 | 0 | 0 | 291 | 1.72 | 1108 | 6.58 | 1393 | 8.27 |
+| NC_036400.1 | Lonchura forbesi isolate KFS177 mitochondrion  complete genome | 16823 | 0 | 0 | 240 | 1.42 | 1108 | 6.58 | 1342 | 7.97 |
+| NC_036402.1 | Lonchura hunsteini isolate CMK018 mitochondrion  complete genome | 16823 | 0 | 0 | 240 | 1.42 | 1108 | 6.58 | 1342 | 7.97 |
+| NC_036403.1 | Lonchura grandis x castaneothorax isolate KFS109 mitochondrion  complete genome | 16826 | 0 | 0 | 370 | 2.19 | 1083 | 6.43 | 1428 | 8.48 |
+| NC_036404.1 | Lonchura melaena isolate CMK017 mitochondrion  complete genome | 16824 | 0 | 0 | 240 | 1.42 | 1108 | 6.58 | 1342 | 7.97 |
+| NC_036405.1 | Lonchura nevermanni isolate KFS190 mitochondrion  complete genome | 16824 | 0 | 0 | 291 | 1.72 | 1108 | 6.58 | 1393 | 8.27 |
+| NC_036406.1 | Lonchura nigerrima isolate CMK022 mitochondrion  complete genome | 16826 | 0 | 0 | 240 | 1.42 | 1058 | 6.28 | 1292 | 7.67 |
+| NC_036407.1 | Lonchura spectabilis isolate KFS094 mitochondrion  complete genome | 16825 | 0 | 0 | 240 | 1.42 | 911 | 5.41 | 1126 | 6.69 |
+| NC_036408.1 | Lonchura stygia isolate KFS192 mitochondrion  complete genome | 16826 | 0 | 0 | 319 | 1.89 | 1058 | 6.28 | 1371 | 8.14 |
+| NC_036409.1 | Marshallagia marshalli mitochondrion  complete genome | 13891 | 0 | 0 | 878 | 6.32 | 588 | 4.23 | 1270 | 9.14 |
+| NC_036410.1 | Mahasena oolona mitochondrion  complete genome | 16119 | 0 | 0 | 893 | 5.54 | 1550 | 9.61 | 1918 | 11.89 |
+| NC_036411.1 | Trichobilharzia szidati mitochondrion  complete genome | 14293 | 0 | 0 | 138 | .96 | 49 | .34 | 187 | 1.30 |
+| NC_036412.1 | Bertholletia excelsa voucher NY:Mori25637 chloroplast  complete genome | 160472 | 0 | 0 | 7138 | 4.44 | 1570 | .97 | 7947 | 4.95 |
+| NC_036413.1 | Primulina huaijiensis chloroplast  complete genome | 153401 | 0 | 0 | 4327 | 2.82 | 442 | .28 | 4548 | 2.96 |
+| NC_036414.1 | Primulina linearifolia chloroplast  complete genome | 153244 | 0 | 0 | 4394 | 2.86 | 613 | .40 | 4566 | 2.97 |
+| NC_036415.1 | Delphinus delphis isolate BS 08 mitochondrion  complete genome | 16384 | 0 | 0 | 654 | 3.99 | 3839 | 23.43 | 3996 | 24.38 |
+| NC_036416.1 | Macadamia ternifolia plastid  complete genome | 159669 | 0 | 0 | 5882 | 3.68 | 1399 | .87 | 6446 | 4.03 |
+| NC_036417.1 | Bipolaris cookei strain LSLP18 mitochondrion  complete genome | 135790 | 0 | 0 | 2436 | 1.79 | 442 | .32 | 2779 | 2.04 |
+| NC_036418.1 | Picromerus griseus mitochondrion  complete genome | 16338 | 0 | 0 | 802 | 4.90 | 294 | 1.79 | 1047 | 6.40 |
+| NC_036419.1 | Rhinolophus yunnanensis mitochondrion  complete genome | 16864 | 0 | 0 | 420 | 2.49 | 3876 | 22.98 | 4098 | 24.30 |
+| NC_036420.1 | Acipenser dabryanus x Acipenser schrenckii mitochondrion  complete genome | 16439 | 0 | 0 | 381 | 2.31 | 1182 | 7.19 | 1563 | 9.50 |
+| NC_036421.1 | Saccopteryx leptura mitochondrion  complete genome | 16577 | 0 | 0 | 365 | 2.20 | 3362 | 20.28 | 3497 | 21.09 |
+| NC_036422.1 | Tremella fuciformis isolate TF01 mitochondrion  complete genome | 35058 | 0 | 0 | 30 | .08 | 49 | .13 | 79 | .22 |
+| NC_036423.1 | Dasiphora fruticosa voucher JLM20170727 chloroplast  complete genome | 152931 | 0 | 0 | 4679 | 3.05 | 687 | .44 | 4873 | 3.18 |
+| NC_036424.1 | Colobanthus apetalus chloroplast  complete genome | 151228 | 0 | 0 | 5792 | 3.82 | 1473 | .97 | 6233 | 4.12 |
+| NC_036425.1 | Hypselodoris apolegma voucher 639 mitochondrion  complete genome | 14749 | 0 | 0 | 128 | .86 | 196 | 1.32 | 324 | 2.19 |
+| NC_036427.1 | Parascaris equorum isolate Daqing mitochondrion  complete genome | 13899 | 0 | 0 | 571 | 4.10 | 393 | 2.82 | 816 | 5.87 |
+| NC_036428.1 | Sarcophaga formosensis mitochondrion  complete genome | 14926 | 0 | 0 | 624 | 4.18 | 564 | 3.77 | 1139 | 7.63 |
+| NC_036429.1 | Eurythenes maldoror strain Yap-5-1 mitochondrion  complete genome | 14976 | 0 | 0 | 66 | .44 | 147 | .98 | 164 | 1.09 |
+| NC_036430.1 | Muntiacus putaoensis mitochondrion  complete genome | 16349 | 0 | 0 | 546 | 3.33 | 3954 | 24.18 | 4169 | 25.50 |
+| NC_036431.1 | Betaphycus gelatinus mitochondrion  complete genome | 25275 | 0 | 0 | 954 | 3.77 | 245 | .96 | 1150 | 4.54 |
+| NC_036432.1 | Eucheuma denticulatum mitochondrion  complete genome | 25327 | 0 | 0 | 1094 | 4.31 | 294 | 1.16 | 1388 | 5.48 |
+| NC_036433.1 | Manis crassicaudata isolate cr3 mitochondrion  complete genome | 16576 | 0 | 0 | 548 | 3.30 | 3160 | 19.06 | 3484 | 21.01 |
+| NC_036434.1 | Manis culionensis isolate 29745 mitochondrion  complete genome | 16577 | 0 | 0 | 512 | 3.08 | 2983 | 17.99 | 3295 | 19.87 |
+| NC_036467.1 | Nicotiana attenuata mitochondrion  complete genome | 394341 | 0 | 0 | 4457 | 1.13 | 735 | .18 | 4849 | 1.22 |
+| NC_036485.1 | Coptis chinensis chloroplast  complete genome | 155484 | 0 | 0 | 5209 | 3.35 | 1718 | 1.10 | 6110 | 3.92 |
+| NC_036487.1 | Lupinus westianus chloroplast  complete genome | 154270 | 0 | 0 | 6032 | 3.91 | 1644 | 1.06 | 6669 | 4.32 |
+| NC_036489.1 | Symplocos ovatilobata chloroplast  complete genome | 157417 | 0 | 0 | 5132 | 3.26 | 882 | .56 | 5671 | 3.60 |
+| NC_036490.1 | Saussurea polylepis chloroplast  complete genome | 152488 | 0 | 0 | 4574 | 2.99 | 441 | .28 | 4819 | 3.16 |
+| NC_036491.1 | Ancoracysta twista mitochondrion  complete genome | 52735 | 0 | 0 | 2727 | 5.17 | 441 | .83 | 3021 | 5.72 |
+| NC_036494.1 | Adenocalymma allamandiflorum voucher B.M. Gomes 671 chloroplast  complete genome | 157953 | 0 | 0 | 4164 | 2.63 | 735 | .46 | 4605 | 2.91 |
+| NC_036495.1 | Adenocalymma aurantiacum voucher L.G. Lohmann 658 chloroplast  complete genome | 159407 | 0 | 0 | 4727 | 2.96 | 663 | .41 | 4972 | 3.11 |
+| NC_036496.1 | Adenocalymma biternatum voucher M.R. Pace 521 chloroplast  complete genome | 157025 | 0 | 0 | 4305 | 2.74 | 392 | .24 | 4452 | 2.83 |
+| NC_036497.1 | Adenocalymma bracteatum voucher L.H.M. Fonseca 100 chloroplast  complete genome | 159725 | 0 | 0 | 4568 | 2.85 | 711 | .44 | 4862 | 3.04 |
+| NC_036498.1 | Adenocalymma cristicalyx voucher L.G. Lohmann 705 chloroplast  complete genome | 159010 | 0 | 0 | 4870 | 3.06 | 490 | .30 | 5115 | 3.21 |
+| NC_036499.1 | Adenocalymma hatschbachii voucher L.H.M. Fonseca 262 chloroplast  complete genome | 158786 | 0 | 0 | 5459 | 3.43 | 760 | .47 | 5851 | 3.68 |
+| NC_036500.1 | Adenocalymma pedunculatum voucher L.H.M. Fonseca 267 chloroplast  complete genome | 158103 | 0 | 0 | 4243 | 2.68 | 564 | .35 | 4488 | 2.83 |
+| NC_036501.1 | Adenocalymma peregrinum voucher L.H.M. Fonseca 444 chloroplast  complete genome | 159187 | 0 | 0 | 4125 | 2.59 | 490 | .30 | 4419 | 2.77 |
+| NC_036502.1 | Adenocalymma subspicatum voucher R.G. Udulutsch 2758 chloroplast  complete genome | 157089 | 0 | 0 | 4222 | 2.68 | 539 | .34 | 4467 | 2.84 |
+| NC_036503.1 | Neojobertia candolleana voucher L.G. Lohmann 363 chloroplast  complete genome | 158409 | 0 | 0 | 4976 | 3.14 | 539 | .34 | 5270 | 3.32 |
+| NC_036504.1 | Achyrachaena mollis chloroplast  complete genome | 150468 | 0 | 0 | 5450 | 3.62 | 1227 | .81 | 6063 | 4.02 |
+| NC_036505.1 | Cucurbita maxima chloroplast  complete genome | 157204 | 0 | 0 | 6039 | 3.84 | 1252 | .79 | 6604 | 4.20 |
+| NC_036509.1 | Vitis cordifolia chloroplast INRA:8029Mtp1 DNA  complete genome | 161018 | 0 | 0 | 5556 | 3.45 | 1744 | 1.08 | 6440 | 3.99 |
+| NC_036510.1 | Vitis ficifolia chloroplast USDA:NCGR:DVIT 1160 genomic DNA  complete genome | 160983 | 0 | 0 | 5832 | 3.62 | 1573 | .97 | 6373 | 3.95 |
+| NC_036610.1 | Hirsutella vermicola isolate AS3.7877 mitochondrion  complete genome | 53793 | 0 | 0 | 2701 | 5.02 | 932 | 1.73 | 3216 | 5.97 |
+| NC_036614.1 | Cymbomonas tetramitiformis strain PLY262 mitochondrion  complete genome | 73520 | 0 | 0 | 3776 | 5.13 | 858 | 1.16 | 4021 | 5.46 |
+| NC_036637.1 | Kappaphycus alvarezii chloroplast  complete genome | 178205 | 0 | 0 | 5433 | 3.04 | 760 | .42 | 5923 | 3.32 |
+| NC_036658.1 | Tacca leontopetaloides voucher PDBK TA2015-0007 chloroplast  complete genome | 162477 | 0 | 0 | 5723 | 3.52 | 1080 | .66 | 6140 | 3.77 |
+| NC_036659.1 | Pectinodesmus pectinatus mitochondrion  complete genome | 32195 | 0 | 0 | 694 | 2.15 | 539 | 1.67 | 1086 | 3.37 |
+| NC_036660.1 | Burmannia coelestis voucher PDBK TCA2009-1384 chloroplast  complete genome | 156223 | 0 | 0 | 9780 | 6.26 | 2828 | 1.81 | 10515 | 6.73 |
+| NC_036661.1 | Burmannia disticha voucher PDBK TCA2014-1698 chloroplast  complete genome | 156422 | 0 | 0 | 8170 | 5.22 | 1474 | .94 | 8710 | 5.56 |
+| NC_036662.1 | Burmannia cryptopetala voucher PDBK 2014-1549 chloroplast  complete genome | 107771 | 0 | 0 | 6473 | 6.00 | 1253 | 1.16 | 6936 | 6.43 |
+| NC_036663.1 | Burmannia championii voucher PDBK TC2011-1107 chloroplast  complete genome | 85868 | 0 | 0 | 4537 | 5.28 | 784 | .91 | 4929 | 5.74 |
+| NC_036664.1 | Burmannia oblonga voucher PDBK TCA2014-1668 chloroplast  complete genome | 39386 | 0 | 0 | 3588 | 9.10 | 712 | 1.80 | 3929 | 9.97 |
+| NC_036667.1 | Clonostachys rosea strain 6792 mitochondrion  complete genome | 40921 | 0 | 0 | 1420 | 3.47 | 392 | .95 | 1628 | 3.97 |
+| NC_036668.1 | Pectinodesmus pectinatus chloroplast  complete genome | 196809 | 0 | 0 | 7640 | 3.88 | 3090 | 1.57 | 9475 | 4.81 |
+| NC_036670.1 | Burmannia nepalensis voucher CB-3406(HHU) chloroplast  complete genome | 98706 | 0 | 0 | 7241 | 7.33 | 1693 | 1.71 | 8099 | 8.20 |
+| NC_036677.1 | Saussurea chabyoungsanica chloroplast  complete genome | 152446 | 0 | 0 | 4620 | 3.03 | 564 | .36 | 4890 | 3.20 |
+| NC_036681.1 | Cortaderia selloana voucher ISC:Robinson:s.n. plastid  complete genome | 133885 | 0 | 0 | 4476 | 3.34 | 661 | .49 | 4868 | 3.63 |
+| NC_036682.1 | Enneapogon oblongus voucher USDA:PI 238297 chloroplast  complete genome | 133433 | 0 | 0 | 4520 | 3.38 | 642 | .48 | 4937 | 3.69 |
+| NC_036683.1 | Streptogyna americana voucher US:J. G. Sanchez-Ken:657 chloroplast  complete genome | 140761 | 0 | 0 | 4466 | 3.17 | 737 | .52 | 4809 | 3.41 |
+| NC_036684.1 | Apluda mutica plastid  complete genome | 140299 | 0 | 0 | 4518 | 3.22 | 714 | .50 | 4861 | 3.46 |
+| NC_036685.1 | Eustachys glauca voucher ISC<USA-IA>:Clark et al. 1701 chloroplast  complete genome | 135053 | 0 | 0 | 4869 | 3.60 | 613 | .45 | 4869 | 3.60 |
+| NC_036686.1 | Gastridium ventricosum voucher USDA:PI 442495 chloroplast  complete genome | 136606 | 0 | 0 | 4728 | 3.46 | 663 | .48 | 5096 | 3.73 |
+| NC_036687.1 | Gynerium sagittatum voucher MO:M. Mejia-Saules 15588 chloroplast  complete genome | 140453 | 0 | 0 | 4648 | 3.30 | 319 | .22 | 4746 | 3.37 |
 | NZ_AP014881.1 | Acetobacter pasteurianus NBRC 101655 DNA  complete genome | 2902389 | 0 | 0 | 16491 | .56 | 1181 | .04 | 17225 | .59 |
 | NZ_AP014882.1 | Acetobacter pasteurianus NBRC 101655 plasmid plasmid1 DNA  complete genome | 187193 | 0 | 0 | 421 | .22 | 447 | .23 | 519 | .27 |
 | NZ_AP014883.1 | Acetobacter pasteurianus NBRC 101655 plasmid plasmid2 DNA  complete genome | 6331 | 0 | 0 | 34 | .53 | 49 | .77 | 83 | 1.31 |
@@ -5325,6 +6867,145 @@
 | NZ_AP017308.1 | Leptolyngbya sp. NIES-3755 DNA  complete genome | 6244812 | 0 | 0 | 16203 | .25 | 1397 | .02 | 17232 | .27 |
 | NZ_AP017309.1 | Leptolyngbya sp. NIES-3755 plasmid plasmid1 DNA  complete genome | 325675 | 0 | 0 | 960 | .29 | 98 | .03 | 1058 | .32 |
 | NZ_AP017310.1 | Leptolyngbya sp. NIES-3755 plasmid plasmid2 DNA  complete genome | 98206 | 0 | 0 | 142 | .14 | 49 | .04 | 191 | .19 |
+| NZ_AP017375.1 | Stanieria sp. NIES-3757 DNA  complete genome | 5319768 | 0 | 0 | 32209 | .60 | 6593 | .12 | 37355 | .70 |
+| NZ_AP017376.1 | Stanieria sp. NIES-3757 plasmid plasmid1 DNA  complete genome | 143540 | 0 | 0 | 565 | .39 | 98 | .06 | 663 | .46 |
+| NZ_AP017959.1 | Synechococcus sp. NIES-970 DNA  complete genome | 2836539 | 0 | 0 | 7064 | .24 | 368 | .01 | 7432 | .26 |
+| NZ_AP018166.1 | Anabaena cylindrica PCC 7122 DNA  nearly complete genome | 6351103 | 0 | 0 | 60827 | .95 | 23694 | .37 | 65992 | 1.03 |
+| NZ_AP018167.1 | Anabaena cylindrica PCC 7122 plasmid plasmid1 DNA  complete genome | 259925 | 0 | 0 | 1472 | .56 | 245 | .09 | 1619 | .62 |
+| NZ_AP018168.1 | Anabaena cylindrica PCC 7122 plasmid plasmid2 DNA  complete genome | 177682 | 0 | 0 | 328 | .18 | 245 | .13 | 524 | .29 |
+| NZ_AP018169.1 | Anabaena cylindrica PCC 7122 plasmid plasmid3 DNA  complete genome | 93804 | 0 | 0 | 471 | .50 | 147 | .15 | 618 | .65 |
+| NZ_AP018170.1 | Anabaena cylindrica PCC 7122 plasmid plasmid4 DNA  nearly complete genome | 89054 | 0 | 0 | 2235 | 2.50 | 1962 | 2.20 | 2382 | 2.67 |
+| NZ_AP018171.1 | Anabaena cylindrica PCC 7122 plasmid plasmid5 DNA  complete genome | 54068 | 0 | 0 | 204 | .37 | 49 | .09 | 253 | .46 |
+| NZ_AP018172.1 | Calothrix sp. NIES-2098 DNA  complete genome | 8656060 | 0 | 0 | 46889 | .54 | 5981 | .06 | 50417 | .58 |
+| NZ_AP018173.1 | Calothrix sp. NIES-2098 plasmid plasmid1 DNA  complete genome | 222568 | 0 | 0 | 463 | .20 | 270 | .12 | 733 | .32 |
+| NZ_AP018174.1 | Anabaenopsis circularis NIES-21 DNA  nearly complete genome | 6565356 | 0 | 0 | 57668 | .87 | 22485 | .34 | 60682 | .92 |
+| NZ_AP018175.1 | Anabaenopsis circularis NIES-21 plasmid plasmid1 DNA  complete genome | 214824 | 0 | 0 | 321 | .14 | 49 | .02 | 370 | .17 |
+| NZ_AP018176.1 | Anabaenopsis circularis NIES-21 plasmid plasmid2 DNA  nearly complete genome | 254982 | 0 | 0 | 5327 | 2.08 | 5074 | 1.98 | 5622 | 2.20 |
+| NZ_AP018177.1 | Anabaenopsis circularis NIES-21 plasmid plasmid3 DNA  complete genome | 34823 | 0 | 0 | 242 | .69 | 147 | .42 | 340 | .97 |
+| NZ_AP018178.1 | Calothrix sp. NIES-2100 DNA  nearly complete genome | 9909373 | 0 | 0 | 116578 | 1.17 | 25478 | .25 | 122460 | 1.23 |
+| NZ_AP018179.1 | Calothrix sp. NIES-2100 plasmid plasmid1 DNA  complete genome | 53730 | 0 | 0 | 673 | 1.25 | 246 | .45 | 722 | 1.34 |
+| NZ_AP018180.1 | Nostoc carneum NIES-2107 DNA  nearly complete genome | 8352649 | 0 | 0 | 129252 | 1.54 | 33732 | .40 | 134154 | 1.60 |
+| NZ_AP018181.1 | Nostoc carneum NIES-2107 plasmid plasmid1 DNA  nearly complete genome | 553734 | 0 | 0 | 10827 | 1.95 | 2901 | .52 | 11317 | 2.04 |
+| NZ_AP018182.1 | Nostoc carneum NIES-2107 plasmid plasmid2 DNA  complete genome | 221468 | 0 | 0 | 354 | .15 | 196 | .08 | 501 | .22 |
+| NZ_AP018183.1 | Nostoc carneum NIES-2107 plasmid plasmid3 DNA  complete genome | 231372 | 0 | 0 | 312 | .13 | 343 | .14 | 508 | .21 |
+| NZ_AP018184.1 | Nostoc sp. NIES-2111 DNA  nearly complete genome | 6522801 | 0 | 0 | 75578 | 1.15 | 19029 | .29 | 80180 | 1.22 |
+| NZ_AP018185.1 | Nostoc sp. NIES-2111 plasmid plasmid1 DNA  complete genome | 366120 | 0 | 0 | 794 | .21 | 294 | .08 | 941 | .25 |
+| NZ_AP018186.1 | Nostoc sp. NIES-2111 plasmid plasmid2 DNA  complete genome | 320476 | 0 | 0 | 869 | .27 | 302 | .09 | 1065 | .33 |
+| NZ_AP018187.1 | Nostoc sp. NIES-2111 plasmid plasmid3 DNA  complete genome | 328926 | 0 | 0 | 770 | .23 | 172 | .05 | 868 | .26 |
+| NZ_AP018188.1 | Nostoc sp. NIES-2111 plasmid plasmid4 DNA  complete genome | 115375 | 0 | 0 | 309 | .26 | 294 | .25 | 554 | .48 |
+| NZ_AP018189.1 | Nostoc sp. NIES-2111 plasmid plasmid5 DNA  complete genome | 43969 | 0 | 0 | 121 | .27 | 49 | .11 | 170 | .38 |
+| NZ_AP018190.1 | Nostoc sp. NIES-2111 plasmid plasmid6 DNA  complete genome | 48626 | 0 | 0 | 81 | .16 | 49 | .10 | 130 | .26 |
+| NZ_AP018191.1 | Nostoc sp. NIES-2111 plasmid plasmid7 DNA  complete genome | 44859 | 0 | 0 | 467 | 1.04 | 98 | .21 | 516 | 1.15 |
+| NZ_AP018192.1 | Nostoc sp. NIES-2111 plasmid plasmid8 DNA  complete genome | 47392 | 0 | 0 | 175 | .36 | 221 | .46 | 298 | .62 |
+| NZ_AP018193.1 | Nostoc sp. NIES-2111 plasmid plasmid9 DNA  complete genome | 38211 | 0 | 0 | 0 | 0 | 98 | .25 | 0 | 0 |
+| NZ_AP018194.1 | Scytonema sp. HK-05 DNA  nearly complete genome | 8819141 | 0 | 0 | 89919 | 1.01 | 45626 | .51 | 95682 | 1.08 |
+| NZ_AP018195.1 | Scytonema sp. HK-05 plasmid plasmid1 DNA  nearly complete genome | 831926 | 0 | 0 | 11504 | 1.38 | 8895 | 1.06 | 11749 | 1.41 |
+| NZ_AP018196.1 | Scytonema sp. HK-05 plasmid plasmid2 DNA  complete genome | 22602 | 0 | 0 | 44 | .19 | 49 | .21 | 93 | .41 |
+| NZ_AP018197.1 | Scytonema sp. HK-05 plasmid plasmid3 DNA  nearly complete genome | 30118 | 0 | 0 | 1090 | 3.61 | 996 | 3.30 | 1139 | 3.78 |
+| NZ_AP018198.1 | Scytonema sp. HK-05 plasmid plasmid4 DNA  complete genome | 16296 | 0 | 0 | 1544 | 9.47 | 49 | .30 | 1593 | 9.77 |
+| NZ_AP018199.1 | Scytonema sp. HK-05 plasmid plasmid5 DNA  complete genome | 18933 | 0 | 0 | 138 | .72 | 49 | .25 | 187 | .98 |
+| NZ_AP018200.1 | Scytonema sp. HK-05 plasmid plasmid6 DNA  complete genome | 17328 | 0 | 0 | 46 | .26 | 49 | .28 | 95 | .54 |
+| NZ_AP018201.1 | Scytonema sp. HK-05 plasmid plasmid7 DNA  complete genome | 6622 | 0 | 0 | 0 | 0 | 49 | .73 | 0 | 0 |
+| NZ_AP018203.1 | Leptolyngbya boryana NIES-2135 DNA  complete genome | 6255463 | 0 | 0 | 18338 | .29 | 1299 | .02 | 19024 | .30 |
+| NZ_AP018204.1 | Leptolyngbya boryana NIES-2135 plasmid plasmid1 DNA  complete genome | 411362 | 0 | 0 | 629 | .15 | 49 | .01 | 678 | .16 |
+| NZ_AP018205.1 | Leptolyngbya boryana NIES-2135 plasmid plasmid2 DNA  complete genome | 553673 | 0 | 0 | 1216 | .21 | 49 | 0 | 1216 | .21 |
+| NZ_AP018206.1 | Leptolyngbya boryana NIES-2135 plasmid plasmid3 DNA  complete genome | 13170 | 0 | 0 | 1247 | 9.46 | 49 | .37 | 1296 | 9.84 |
+| NZ_AP018207.1 | Calothrix brevissima NIES-22 DNA  nearly complete genome | 8527291 | 0 | 0 | 123259 | 1.44 | 28992 | .33 | 130605 | 1.53 |
+| NZ_AP018208.1 | Calothrix brevissima NIES-22 plasmid plasmid1 DNA  complete genome | 157982 | 0 | 0 | 539 | .34 | 196 | .12 | 735 | .46 |
+| NZ_AP018209.1 | Calothrix brevissima NIES-22 plasmid plasmid2 DNA  complete genome | 207970 | 0 | 0 | 613 | .29 | 444 | .21 | 957 | .46 |
+| NZ_AP018210.1 | Calothrix brevissima NIES-22 plasmid plasmid3 DNA  complete genome | 33326 | 0 | 0 | 156 | .46 | 49 | .14 | 205 | .61 |
+| NZ_AP018211.1 | Calothrix brevissima NIES-22 plasmid plasmid4 DNA  complete genome | 190194 | 0 | 0 | 993 | .52 | 147 | .07 | 1091 | .57 |
+| NZ_AP018212.1 | Calothrix brevissima NIES-22 plasmid plasmid5 DNA  complete genome | 57802 | 0 | 0 | 45 | .07 | 98 | .16 | 143 | .24 |
+| NZ_AP018213.1 | Calothrix brevissima NIES-22 plasmid plasmid6 DNA  complete genome | 35884 | 0 | 0 | 92 | .25 | 147 | .40 | 239 | .66 |
+| NZ_AP018214.1 | Calothrix brevissima NIES-22 plasmid plasmid7 DNA  complete genome | 25761 | 0 | 0 | 197 | .76 | 147 | .57 | 295 | 1.14 |
+| NZ_AP018215.1 | Calothrix brevissima NIES-22 plasmid plasmid8 DNA  complete genome | 21270 | 0 | 0 | 53 | .24 | 49 | .23 | 102 | .47 |
+| NZ_AP018216.1 | Anabaena variabilis NIES-23 DNA  nearly complete genome | 6411850 | 0 | 0 | 62649 | .97 | 17493 | .27 | 65663 | 1.02 |
+| NZ_AP018217.1 | Anabaena variabilis NIES-23 plasmid plasmid1 DNA  nearly complete genome | 391340 | 0 | 0 | 14014 | 3.58 | 13487 | 3.44 | 14210 | 3.63 |
+| NZ_AP018218.1 | Anabaena variabilis NIES-23 plasmid plasmid2 DNA  nearly complete genome | 287209 | 0 | 0 | 910 | .31 | 246 | .08 | 1008 | .35 |
+| NZ_AP018219.1 | Anabaena variabilis NIES-23 plasmid plasmid3 DNA  nearly complete genome | 255223 | 0 | 0 | 5485 | 2.14 | 5176 | 2.02 | 5877 | 2.30 |
+| NZ_AP018220.1 | Anabaena variabilis NIES-23 plasmid plasmid4 DNA  nearly complete genome | 111184 | 0 | 0 | 3267 | 2.93 | 3027 | 2.72 | 3316 | 2.98 |
+| NZ_AP018221.1 | Anabaena variabilis NIES-23 plasmid plasmid5 DNA  complete genome | 16019 | 0 | 0 | 0 | 0 | 49 | .30 | 0 | 0 |
+| NZ_AP018222.1 | Nostoc linckia NIES-25 DNA  nearly complete genome | 6452482 | 0 | 0 | 95229 | 1.47 | 30072 | .46 | 101514 | 1.57 |
+| NZ_AP018223.1 | Nostoc linckia NIES-25 plasmid plasmid1 DNA  nearly complete genome | 1784048 | 0 | 0 | 23781 | 1.33 | 8201 | .45 | 25913 | 1.45 |
+| NZ_AP018224.1 | Nostoc linckia NIES-25 plasmid plasmid2 DNA  complete genome | 227385 | 0 | 0 | 467 | .20 | 147 | .06 | 565 | .24 |
+| NZ_AP018225.1 | Nostoc linckia NIES-25 plasmid plasmid3 DNA  complete genome | 89634 | 0 | 0 | 367 | .40 | 147 | .16 | 416 | .46 |
+| NZ_AP018226.1 | Nostoc linckia NIES-25 plasmid plasmid4 DNA  complete genome | 36491 | 0 | 0 | 84 | .23 | 49 | .13 | 133 | .36 |
+| NZ_AP018227.1 | Calothrix parasitica NIES-267 DNA  nearly complete genome | 8952435 | 0 | 0 | 177004 | 1.97 | 45396 | .50 | 188248 | 2.10 |
+| NZ_AP018228.1 | Calothrix parasitica NIES-267 plasmid plasmid1 DNA  complete genome | 271562 | 0 | 0 | 2442 | .89 | 909 | .33 | 2712 | .99 |
+| NZ_AP018229.1 | Calothrix parasitica NIES-267 plasmid plasmid2 DNA  complete genome | 111662 | 0 | 0 | 568 | .50 | 98 | .08 | 617 | .55 |
+| NZ_AP018230.1 | Calothrix parasitica NIES-267 plasmid plasmid3 DNA  complete genome | 75777 | 0 | 0 | 173 | .22 | 147 | .19 | 320 | .42 |
+| NZ_AP018231.1 | Calothrix parasitica NIES-267 plasmid plasmid4 DNA  complete genome | 64695 | 0 | 0 | 918 | 1.41 | 49 | .07 | 967 | 1.49 |
+| NZ_AP018232.1 | Calothrix parasitica NIES-267 plasmid plasmid5 DNA  complete genome | 15610 | 0 | 0 | 0 | 0 | 49 | .31 | 0 | 0 |
+| NZ_AP018233.1 | Fremyella diplosiphon NIES-3275 DNA  nearly complete genome | 8894230 | 0 | 0 | 173805 | 1.95 | 68396 | .76 | 180775 | 2.03 |
+| NZ_AP018234.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid01 DNA  complete genome | 214996 | 0 | 0 | 524 | .24 | 147 | .06 | 671 | .31 |
+| NZ_AP018235.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid02 DNA  complete genome | 194818 | 0 | 0 | 777 | .39 | 245 | .12 | 973 | .49 |
+| NZ_AP018236.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid03 DNA  nearly complete genome | 152957 | 0 | 0 | 3014 | 1.97 | 1365 | .89 | 3428 | 2.24 |
+| NZ_AP018237.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid04 DNA  nearly complete genome | 175368 | 0 | 0 | 4278 | 2.43 | 4053 | 2.31 | 4425 | 2.52 |
+| NZ_AP018238.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid05 DNA  complete genome | 84811 | 0 | 0 | 375 | .44 | 49 | .05 | 424 | .49 |
+| NZ_AP018239.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid06 DNA  complete genome | 93764 | 0 | 0 | 265 | .28 | 172 | .18 | 314 | .33 |
+| NZ_AP018240.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid07 DNA  complete genome | 55884 | 0 | 0 | 121 | .21 | 98 | .17 | 219 | .39 |
+| NZ_AP018241.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid08 DNA  complete genome | 46852 | 0 | 0 | 182 | .38 | 49 | .10 | 231 | .49 |
+| NZ_AP018242.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid09 DNA  complete genome | 38931 | 0 | 0 | 45 | .11 | 49 | .12 | 94 | .24 |
+| NZ_AP018243.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid10 DNA  complete genome | 39434 | 0 | 0 | 43 | .10 | 49 | .12 | 92 | .23 |
+| NZ_AP018244.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid11 DNA  complete genome | 39300 | 0 | 0 | 116 | .29 | 172 | .43 | 288 | .73 |
+| NZ_AP018245.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid12 DNA  complete genome | 29106 | 0 | 0 | 108 | .37 | 49 | .16 | 157 | .53 |
+| NZ_AP018246.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid13 DNA  complete genome | 36507 | 0 | 0 | 0 | 0 | 98 | .26 | 0 | 0 |
+| NZ_AP018247.1 | Fremyella diplosiphon NIES-3275 plasmid plasmid14 DNA  complete genome | 29597 | 0 | 0 | 209 | .70 | 98 | .33 | 307 | 1.03 |
+| NZ_AP018248.1 | Tolypothrix tenuis PCC 7101 DNA  nearly complete genome | 8700819 | 0 | 0 | 121570 | 1.39 | 25914 | .29 | 125969 | 1.44 |
+| NZ_AP018249.1 | Tolypothrix tenuis PCC 7101 plasmid plasmid1 DNA  complete genome | 292325 | 0 | 0 | 645 | .22 | 172 | .05 | 817 | .27 |
+| NZ_AP018250.1 | Tolypothrix tenuis PCC 7101 plasmid plasmid2 DNA  complete genome | 216164 | 0 | 0 | 307 | .14 | 147 | .06 | 454 | .21 |
+| NZ_AP018251.1 | Tolypothrix tenuis PCC 7101 plasmid plasmid3 DNA  complete genome | 56669 | 0 | 0 | 231 | .40 | 49 | .08 | 280 | .49 |
+| NZ_AP018252.1 | Tolypothrix tenuis PCC 7101 plasmid plasmid4 DNA  complete genome | 45978 | 0 | 0 | 216 | .46 | 147 | .31 | 363 | .78 |
+| NZ_AP018253.1 | Tolypothrix tenuis PCC 7101 plasmid plasmid5 DNA  complete genome | 40278 | 0 | 0 | 82 | .20 | 49 | .12 | 131 | .32 |
+| NZ_AP018255.1 | Calothrix sp. NIES-4071 DNA  complete genome | 11064963 | 0 | 0 | 67382 | .60 | 13004 | .11 | 74828 | .67 |
+| NZ_AP018256.1 | Calothrix sp. NIES-4071 plasmid plasmid1 DNA  complete genome | 394732 | 0 | 0 | 1758 | .44 | 319 | .08 | 1979 | .50 |
+| NZ_AP018257.1 | Calothrix sp. NIES-4071 plasmid plasmid2 DNA  complete genome | 365907 | 0 | 0 | 1756 | .47 | 638 | .17 | 2222 | .60 |
+| NZ_AP018258.1 | Calothrix sp. NIES-4071 plasmid plasmid3 DNA  complete genome | 105312 | 0 | 0 | 398 | .37 | 98 | .09 | 447 | .42 |
+| NZ_AP018259.1 | Calothrix sp. NIES-4071 plasmid plasmid4 DNA  complete genome | 73113 | 0 | 0 | 281 | .38 | 98 | .13 | 330 | .45 |
+| NZ_AP018260.1 | Calothrix sp. NIES-4071 plasmid plasmid5 DNA  complete genome | 18433 | 0 | 0 | 38 | .20 | 49 | .26 | 87 | .47 |
+| NZ_AP018261.1 | Calothrix sp. NIES-4071 plasmid plasmid6 DNA  complete genome | 13693 | 0 | 0 | 126 | .92 | 49 | .35 | 175 | 1.27 |
+| NZ_AP018262.1 | Calothrix sp. NIES-4071 plasmid plasmid7 DNA  complete genome | 4312 | 0 | 0 | 0 | 0 | 49 | 1.13 | 0 | 0 |
+| NZ_AP018263.1 | Calothrix sp. NIES-4071 plasmid plasmid8 DNA  complete genome | 8809 | 0 | 0 | 29 | .32 | 98 | 1.11 | 78 | .88 |
+| NZ_AP018264.1 | Scytonema sp. NIES-4073 plasmid plasmid1 DNA  complete genome | 234762 | 0 | 0 | 528 | .22 | 98 | .04 | 577 | .24 |
+| NZ_AP018265.1 | Scytonema sp. NIES-4073 plasmid plasmid2 DNA  complete genome | 76644 | 0 | 0 | 198 | .25 | 98 | .12 | 296 | .38 |
+| NZ_AP018266.1 | Scytonema sp. NIES-4073 plasmid plasmid3 DNA  complete genome | 59631 | 0 | 0 | 0 | 0 | 49 | .08 | 0 | 0 |
+| NZ_AP018267.1 | Scytonema sp. NIES-4073 plasmid plasmid4 DNA  complete genome | 28083 | 0 | 0 | 35 | .12 | 98 | .34 | 133 | .47 |
+| NZ_AP018268.1 | Scytonema sp. NIES-4073 DNA  nearly complete genome | 9448901 | 0 | 0 | 97313 | 1.02 | 48801 | .51 | 102705 | 1.08 |
+| NZ_AP018281.1 | Chondrocystis sp. NIES-4102 DNA  complete genome | 4516676 | 0 | 0 | 46232 | 1.02 | 7925 | .17 | 49565 | 1.09 |
+| NZ_AP018282.1 | Chondrocystis sp. NIES-4102 plasmid plasmid1 DNA  complete genome | 161734 | 0 | 0 | 363 | .22 | 98 | .06 | 461 | .28 |
+| NZ_AP018283.1 | Chondrocystis sp. NIES-4102 plasmid plasmid2 DNA  complete genome | 123154 | 0 | 0 | 1473 | 1.19 | 564 | .45 | 1988 | 1.61 |
+| NZ_AP018284.1 | Chondrocystis sp. NIES-4102 plasmid plasmid3 DNA  complete genome | 149096 | 0 | 0 | 491 | .32 | 147 | .09 | 589 | .39 |
+| NZ_AP018285.1 | Chondrocystis sp. NIES-4102 plasmid plasmid4 DNA  complete genome | 22161 | 0 | 0 | 0 | 0 | 49 | .22 | 0 | 0 |
+| NZ_AP018286.1 | Chondrocystis sp. NIES-4102 plasmid plasmid5 DNA  complete genome | 18150 | 0 | 0 | 99 | .54 | 49 | .26 | 148 | .81 |
+| NZ_AP018287.1 | Chondrocystis sp. NIES-4102 plasmid plasmid6 DNA  complete genome | 11549 | 0 | 0 | 0 | 0 | 49 | .42 | 0 | 0 |
+| NZ_AP018288.1 | Nostoc sp. NIES-4103 DNA  nearly complete genome | 8419969 | 0 | 0 | 171184 | 2.03 | 64271 | .76 | 182325 | 2.16 |
+| NZ_AP018289.1 | Nostoc sp. NIES-4103 plasmid plasmid1 DNA  nearly complete genome | 170638 | 0 | 0 | 2766 | 1.62 | 786 | .46 | 3060 | 1.79 |
+| NZ_AP018290.1 | Calothrix sp. NIES-4105 DNA  nearly complete genome | 11062175 | 0 | 0 | 71377 | .64 | 17131 | .15 | 78675 | .71 |
+| NZ_AP018291.1 | Calothrix sp. NIES-4105 plasmid plasmid1 DNA  complete genome | 394733 | 0 | 0 | 1758 | .44 | 368 | .09 | 1954 | .49 |
+| NZ_AP018292.1 | Calothrix sp. NIES-4105 plasmid plasmid2 DNA  complete genome | 365907 | 0 | 0 | 1753 | .47 | 466 | .12 | 2023 | .55 |
+| NZ_AP018293.1 | Calothrix sp. NIES-4105 plasmid plasmid3 DNA  complete genome | 105312 | 0 | 0 | 530 | .50 | 123 | .11 | 579 | .54 |
+| NZ_AP018294.1 | Calothrix sp. NIES-4105 plasmid plasmid4 DNA  complete genome | 73113 | 0 | 0 | 281 | .38 | 98 | .13 | 330 | .45 |
+| NZ_AP018295.1 | Calothrix sp. NIES-4105 plasmid plasmid5 DNA  complete genome | 18433 | 0 | 0 | 0 | 0 | 49 | .26 | 0 | 0 |
+| NZ_AP018296.1 | Calothrix sp. NIES-4105 plasmid plasmid6 DNA  complete genome | 13693 | 0 | 0 | 180 | 1.31 | 49 | .35 | 229 | 1.67 |
+| NZ_AP018297.1 | Calothrix sp. NIES-4105 plasmid plasmid7 DNA  complete genome | 4312 | 0 | 0 | 0 | 0 | 49 | 1.13 | 0 | 0 |
+| NZ_AP018298.1 | Fischerella sp. NIES-4106 DNA  nearly complete genome | 6177244 | 0 | 0 | 78016 | 1.26 | 13406 | .21 | 81571 | 1.32 |
+| NZ_AP018299.1 | Fischerella sp. NIES-4106 plasmid plasmid1 DNA  nearly complete genome | 550801 | 0 | 0 | 2980 | .54 | 1811 | .32 | 3323 | .60 |
+| NZ_AP018300.1 | Fischerella sp. NIES-4106 plasmid plasmid2 DNA  complete genome | 312401 | 0 | 0 | 2004 | .64 | 736 | .23 | 2396 | .76 |
+| NZ_AP018301.1 | Fischerella sp. NIES-4106 plasmid plasmid3 DNA  complete genome | 78672 | 0 | 0 | 962 | 1.22 | 294 | .37 | 1109 | 1.40 |
+| NZ_AP018302.1 | Fischerella sp. NIES-4106 plasmid plasmid4 DNA  complete genome | 39362 | 0 | 0 | 59 | .14 | 49 | .12 | 108 | .27 |
+| NZ_AP018303.1 | Fischerella sp. NIES-4106 plasmid plasmid5 DNA  complete genome | 24478 | 0 | 0 | 116 | .47 | 221 | .90 | 214 | .87 |
+| NZ_AP018304.1 | Fischerella sp. NIES-4106 plasmid plasmid6 DNA  complete genome | 24589 | 0 | 0 | 43 | .17 | 98 | .39 | 141 | .57 |
+| NZ_AP018305.1 | Fischerella sp. NIES-4106 plasmid plasmid7 DNA  complete genome | 22631 | 0 | 0 | 82 | .36 | 49 | .21 | 131 | .57 |
+| NZ_AP018306.1 | Fischerella sp. NIES-4106 plasmid plasmid8 DNA  complete genome | 20666 | 0 | 0 | 57 | .27 | 49 | .23 | 106 | .51 |
+| NZ_AP018307.1 | Aulosira laxa NIES-50 DNA  nearly complete genome | 8460156 | 0 | 0 | 125018 | 1.47 | 30796 | .36 | 129748 | 1.53 |
+| NZ_AP018308.1 | Aulosira laxa NIES-50 plasmid plasmid1 DNA  complete genome | 292325 | 0 | 0 | 761 | .26 | 147 | .05 | 908 | .31 |
+| NZ_AP018309.1 | Aulosira laxa NIES-50 plasmid plasmid2 DNA  complete genome | 241484 | 0 | 0 | 854 | .35 | 515 | .21 | 1001 | .41 |
+| NZ_AP018310.1 | Aulosira laxa NIES-50 plasmid plasmid3 DNA  complete genome | 216164 | 0 | 0 | 372 | .17 | 196 | .09 | 568 | .26 |
+| NZ_AP018311.1 | Aulosira laxa NIES-50 plasmid plasmid4 DNA  complete genome | 56669 | 0 | 0 | 231 | .40 | 49 | .08 | 280 | .49 |
+| NZ_AP018312.1 | Aulosira laxa NIES-50 plasmid plasmid5 DNA  complete genome | 45978 | 0 | 0 | 255 | .55 | 147 | .31 | 402 | .87 |
+| NZ_AP018313.1 | Aulosira laxa NIES-50 plasmid plasmid6 DNA  complete genome | 40278 | 0 | 0 | 82 | .20 | 49 | .12 | 131 | .32 |
+| NZ_AP018314.1 | Sphaerospermopsis kisseleviana NIES-73 DNA  nearly complete genome | 5354839 | 0 | 0 | 203324 | 3.79 | 130982 | 2.44 | 209766 | 3.91 |
+| NZ_AP018315.1 | Sphaerospermopsis kisseleviana NIES-73 plasmid plasmid1 DNA  complete genome | 255152 | 0 | 0 | 1265 | .49 | 196 | .07 | 1461 | .57 |
 | NZ_CP006975.1 | Chlamydia muridarum str. Nigg CM972  complete genome | 1072952 | 0 | 0 | 5093 | .47 | 858 | .07 | 5755 | .53 |
 | NZ_CP007244.1 | Bacillus amyloliquefaciens subsp. plantarum TrigoCor1448  complete genome | 3957904 | 0 | 0 | 18225 | .46 | 1789 | .04 | 19622 | .49 |
 | NZ_CP010451.1 | Corynebacterium glutamicum strain B253  complete genome | 3207539 | 0 | 0 | 16673 | .51 | 540 | .01 | 16967 | .52 |
