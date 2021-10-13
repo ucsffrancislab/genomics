@@ -34,6 +34,19 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 		~/.local/bin/bbduk.bash in1=${r1} in2=${r2} out1=${outbase}.R1.fastq.gz out2=${outbase}.R2.fastq.gz minavgquality=30 )
 		#~/.local/bin/bbduk.bash in1=${r1} in2=${r2} out1=${outbase}.R1.fastq.gz out2=${outbase}.R2.fastq.gz minavgquality=15 )
 		echo $qid
+
+#	could also use this with cutadapt, although never tested ...
+#  -q [5'CUTOFF,]3'CUTOFF, --quality-cutoff [5'CUTOFF,]3'CUTOFF
+#                        Trim low-quality bases from 5' and/or 3' ends of each read before adapter
+#                        removal. Applied to both reads if data is paired. If one value is given, only
+#                        the 3' end is trimmed. If two comma-separated cutoffs are given, the 5' end is
+#                        trimmed with the first cutoff, the 3' end with the second.
+
+#	Look into this? As some polyAs are salted with Gs. Is this for that?
+#  --nextseq-trim 3'CUTOFF
+#                        NextSeq-specific quality trimming (each read). Trims also dark cycles appearing
+#                        as high-quality G bases.
+
 	fi
 
 
@@ -108,6 +121,15 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 		echo $t1id
 	fi
 
+#	Stop trimming short reads as lose the mate pair? Check this.
+#	Add another script that checks lengths, drops short reads, keeps mates as singles.
+
+
+
+
+
+
+
 #	Using the full adapter is more accurate, but there are misses. Shortening from 34bp to 20bp
 #				-a CTGTCTCTTATACACATCTC \ 		#CGAGCCCACGAGAC \
 #				-A CTGTCTCTTATACACATCTC \ 		#CGAGCCCACGAGAC \
@@ -158,6 +180,7 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 				--match-read-wildcards -n 5 \
 				--error-rate 0.20 \
 				-a A{10} \
+				-a A{150} \
 				-G T{10} \
 				-G T{150} \
 				-m 15 --trim-n \
