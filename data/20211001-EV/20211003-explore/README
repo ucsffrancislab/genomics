@@ -240,5 +240,15 @@ done
 
 
 
+Are reads with the same UMI actually the same?
+
+for umi in $( zcat out/SFHH008A.quality.format.consolidate.R2.fastq.gz | paste - - - - | cut -f1 | cut -f1 -d' ' | sed 's/^@//' | awk -F_ '($2>2){print $1}' ) ; do
+echo $umi
+zcat out/SFHH008A.quality.format.R2.fastq.gz | paste - - - - | cut -f2 | grep "^${umi}"
+paste <( zcat out/SFHH008A.quality.format.R2.fastq.gz | paste - - - - | cut -f2 ) <( zcat out/SFHH008A.quality.format.R1.fastq.gz | paste - - - - | cut -f2 ) | grep "^${umi}" | awk '{print $2}'
+done
+
+
+
 
 
