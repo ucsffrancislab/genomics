@@ -30,19 +30,19 @@ for filename in args.files:
 	d = pandas.read_csv(filename,
 		skipinitialspace=True, sep=" ",
 		header=None,
-		names=["count","length"])
+		names=["length"])
 
 	print(d.head())
-	print(d)
+#	print(d)
 #	print(d['count'].value_counts())
 
 	if len(d) > 0:
-		d.plot(
-			x='length',
-			y='count',
-			title="Count chart of "+basename,
-			kind='bar')
-		plt.savefig(basename+".png")
+		d.plot.hist(bins=40)
+#			x='length',
+#			y='count',
+#			title="Count chart of "+basename,
+#			kind='bar')
+		plt.savefig(basename+".hist.png")
 		plt.close()
 
 
