@@ -261,9 +261,24 @@ curl -netrc -X MKCOL "${BOX}/"
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20211001-EV/20211003-explore"
 curl -netrc -X MKCOL "${BOX}/"
 
+for f in out/*fastqc*; do
+echo $f
+curl -netrc -T $f "${BOX}/"
+done
+
+for f in out/SFHH008?.quality.format.consolidate.t1.t2.t3.R?.fastq.gz out/*q; do
+echo $f
+curl -netrc -T $f "${BOX}/"
+done
+
+
 for f in out/SFHH008?.quality.format.R?.fastq.gz ; do
 curl -netrc -T $f "${BOX}/"
 done
+
+
+
+
 ```
 
 
