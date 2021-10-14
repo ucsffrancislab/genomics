@@ -293,28 +293,12 @@ wc -l /francislab/data1/refs/refseq/complete-20210920/complete_genomes.txt
 47 pages
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash --page 1
-
-
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash --page 2
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash --page 15
 
 
 
-
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash --page 3
-
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash --page 4
-
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=300 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash --page 5
-
-
-
-
-grep -l "No such file or directory" array.*.out
+grep -l "No such file or directory" array.*.out  | wc -l
+ll out/masks/*cat.all | wc -l
 
 
 
