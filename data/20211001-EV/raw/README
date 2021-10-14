@@ -18,3 +18,16 @@ lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl
 
 
 
+
+
+```
+zcat *R1_001.fastq.gz | paste - - - - | cut -f2 | grep ATCTCGTATGCCGTCTTCTGCTTG > ATCTCGTATGCCGTCTTCTGCTTG.reads.txt
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211001-EV"
+curl -netrc -X MKCOL "${BOX}/"
+
+curl -netrc -T ATCTCGTATGCCGTCTTCTGCTTG.reads.txt "${BOX}/"
+```
+
+
