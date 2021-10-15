@@ -23,7 +23,7 @@ for i in 1 2 3 4 5 ; do
 
 	for model in ${model_base}/output_models/*.pickle ; do
 		model_name=${model%.pickle}
-		singularity exec ${img} predict.py ${model_base}/topredict.tsv ${model} ${model_name}.tmp | awk ' NR > 1 {print}' > ${model_name}.predictions.tsv
+		singularity exec ${img} predict.py ${model_base}/topredict.tsv ${model} ${model_name}.predictions.json | awk ' NR > 1 {print}' > ${model_name}.predictions.tsv
 	done
 
 	echo 'predictions completed'
