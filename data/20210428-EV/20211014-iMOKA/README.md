@@ -50,10 +50,6 @@ for i in 1 2 3 4 5 ; do
 done ; done
 ```
 
-
-
-
-
-Could ...
+Could have done something like ...
 /c4/home/gwendt/github/ucsffrancislab/genomics/data/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/iMOKA_scratch.bash
 
