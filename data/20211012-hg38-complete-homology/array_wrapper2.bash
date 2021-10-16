@@ -258,10 +258,11 @@ for line in $( seq ${start} ${stop} ) ; do
 					i="${dir}/split.${a}/${b}.split.${s}.sam"
 					if [ -f "${i}" ] ; then
 						echo samtools sort -n -O SAM -o - ${i}
-						samtools sort -n -O SAM -o - ${i} | awk -v s=${s} -v ref=${b%.masked} '{
+						samtools sort -n -O SAM -o - ${i} | awk -v s=${s} -v ref=${b%.masked} '(/^split/){
 							sub(/^split/,"",$1);
 							a=1+s*$1
-							b=a+(2*s-1)
+							#b=a+(2*s-1)
+							b=a+(length($10)-1)
 							print ref"\t"a"\t"b
 						}' | awk -v ext=0 'BEGIN{FS=OFS="\t"}{
 							if( r == "" ){
@@ -287,6 +288,7 @@ for line in $( seq ${start} ${stop} ) ; do
 					echo "Bed exists. Skipping."
 				fi
 		
+				#	not sure if i use this
 				o=${dir}/split.${a}/${b}.split.${s}.mask.masked_length.txt
 				if [ ! -f ${o} ] ; then
 					i=${dir}/split.${a}/${b}.split.${s}.mask.bed
@@ -302,7 +304,7 @@ for line in $( seq ${start} ${stop} ) ; do
 		
 				# always the same reference here so no need to actually compare?
 		
-				o=${dir}/split.${a}/${b}.split.${s}.fasta
+				o=${dir}/split.${a}/${b}.split.${s}.mask.fasta
 				if [ ! -f ${o} ] ; then
 					i=${dir}/split.${a}/${b}.split.${s}.mask.bed
 					if [ -f ${i} ] ; then
@@ -317,7 +319,7 @@ for line in $( seq ${start} ${stop} ) ; do
 				fi
 	
 	
-				for fa in ${f} ${dir}/split.${a}/${b}.split.${s}.fasta ; do
+				for fa in ${f} ${dir}/split.${a}/${b}.split.${s}.mask.fasta ; do
 					o=${fa}.base_count.txt
 					if [ ! -f ${o} ] ; then
 						if [ -f ${fa} ] ; then

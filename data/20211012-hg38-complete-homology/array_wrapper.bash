@@ -225,10 +225,11 @@ for f in ${l} ${m} ; do
 			if [ ! -f ${o} ] ; then
 				#samtools view split.${a}/${b}.split.${s}.sam | awk -v s=${s} -v ref=${b%.masked} '{
 				echo samtools sort -n -O SAM -o - ${dir}/split.${a}/${b}.split.${s}.sam
-				samtools sort -n -O SAM -o - ${dir}/split.${a}/${b}.split.${s}.sam | awk -v s=${s} -v ref=${b%.masked} '{
+				samtools sort -n -O SAM -o - ${dir}/split.${a}/${b}.split.${s}.sam | awk -v s=${s} -v ref=${b%.masked} '(/^split/){
 					sub(/^split/,"",$1);
 					a=1+s*$1
-					b=a+(2*s-1)
+					#b=a+(2*s-1)
+					b=a+(length($10)-1)
 					print ref"\t"a"\t"b
 				}' | awk -v ext=0 'BEGIN{FS=OFS="\t"}{
 					if( r == "" ){
@@ -249,6 +250,7 @@ for f in ${l} ${m} ; do
 				chmod -w ${o}
 			fi
 	
+			#	not sure if i use this
 			o=${dir}/split.${a}/${b}.split.${s}.mask.masked_length.txt
 			if [ ! -f ${o} ] ; then
 				awk -F"\t" 'BEGIN{s=0}(length($0)>2){s+=($3-$2+1)}END{print s}' ${dir}/split.${a}/${b}.split.${s}.mask.bed > ${o}

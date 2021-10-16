@@ -150,3 +150,16 @@ NC_023955
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 ```
 
+
+
+
+```
+find out/split.vsl -name *.fasta* -exec rm -f {} \;
+find out/split.vsl -name *.mask.* -exec rm -f {} \;
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211012-hg38-complete-homology/array_wrapper2.bash
+
+```
+
+
