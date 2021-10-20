@@ -100,5 +100,6 @@ int main(int argc, char *argv[]) {
 gcc -o difference difference.c
 
 time ./difference -t=15/preprocess/19-2629-01A/19-2629-01A.normalized.tsv -n=15/preprocess/19-2629-10A/19-2629-10A.normalized.tsv -o=15/preprocess/19-2629/19-2629.tsv
+20 minutes!
 
 */
