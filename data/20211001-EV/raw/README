@@ -30,4 +30,16 @@ curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T ATCTCGTATGCCGTCTTCTGCTTG.reads.txt "${BOX}/"
 ```
 
+```
+cat ATCTCGTATGCCGTCTTCTGCTTG.reads.txt | awk '{
+ i=index($1,"ATCTCGTATGCCGTCTTCTGCTTG")	
+ print(substr($1,i+length("ATCTCGTATGCCGTCTTCTGCTTG")))
+}' | sort > ATCTCGTATGCCGTCTTCTGCTTG.after_sequence.txt
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211001-EV"
+curl -netrc -T ATCTCGTATGCCGTCTTCTGCTTG.after_sequence.txt "${BOX}/"
+```
+
+
 
