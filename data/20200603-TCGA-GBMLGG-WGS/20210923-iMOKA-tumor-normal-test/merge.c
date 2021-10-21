@@ -74,15 +74,15 @@ int main(int argc, char *argv[]) {
 
 		if(ret < 0) {
 			//printf("tumor is less than normal\n");
-			fprintf(outfile,"%s\t%f\n",tumorsequence,tumorcount);
+			fprintf(outfile,"%s\t%f\t%f\n",tumorsequence,tumorcount,0.0);
 			tumorread=fscanf(tumorfile, "%s\t%f", tumorsequence, &tumorcount);
 		} else if(ret > 0) {
 			//printf("normal is less than tumor\n");
-			fprintf(outfile,"%s\t%f\n",normalsequence,-normalcount);
+			fprintf(outfile,"%s\t%f\t%f\n",normalsequence,0.0,normalcount);
 			normalread=fscanf(normalfile, "%s\t%f", normalsequence, &normalcount);
 		} else {
 			//printf("normal is equal to tumor\n");
-			fprintf(outfile,"%s\t%f\n",tumorsequence,tumorcount-normalcount);
+			fprintf(outfile,"%s\t%f\t%f\n",tumorsequence,tumorcount,normalcount);
 			tumorread=fscanf(tumorfile, "%s\t%f", tumorsequence, &tumorcount);
 			normalread=fscanf(normalfile, "%s\t%f", normalsequence, &normalcount);
 		}
@@ -97,9 +97,9 @@ int main(int argc, char *argv[]) {
 }
 /*
 
-gcc -o difference difference.c
+gcc -o merge merge.c
 
-time ./difference -t=15/preprocess/19-2629-01A/19-2629-01A.normalized.tsv -n=15/preprocess/19-2629-10A/19-2629-10A.normalized.tsv -o=15/preprocess/19-2629/19-2629.difference.tsv
+time ./merge -t=15/preprocess/19-2629-01A/19-2629-01A.normalized.tsv -n=15/preprocess/19-2629-10A/19-2629-10A.normalized.tsv -o=15/preprocess/19-2629/19-2629.merge.tsv
 20 minutes!
 
 */
