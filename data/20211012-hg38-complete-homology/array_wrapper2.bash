@@ -361,5 +361,9 @@ grep -l "No such file or directory" array.*.out  | wc -l
 ll out/masks/*cat.all | wc -l
 
 
+grep "Running line" array.*.out | wc -l ; date
+
+
+
 
 
