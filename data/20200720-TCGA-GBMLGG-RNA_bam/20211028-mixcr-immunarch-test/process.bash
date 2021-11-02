@@ -9,9 +9,13 @@ date=$( date "+%Y%m%d%H%M%S" )
 threads=8
 
 
+#	Should have made this an array script like the complete genome processing
+#	/francislab/data1/working/20211012-hg38-complete-homology/array_wrapper.bash 
+
+
 #	sadly there are a couple duplicates which complicate things, so take just the first
 
-for sample in $( ls /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/[2-9]?-????-01?-*1_R1*z | xargs -I% basename % | cut -d- -f1,2,3 | uniq ) ; do
+for sample in $( ls /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/??-????-01?-*1_R1*z | xargs -I% basename % | cut -d- -f1,2,3 | uniq ) ; do
 
 	r1=$( ls /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/${sample}-*1_R1*z | head -1 )
 	echo $r1
