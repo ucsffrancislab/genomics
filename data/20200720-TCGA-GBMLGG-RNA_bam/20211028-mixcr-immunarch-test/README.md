@@ -23,10 +23,16 @@ mkdir out
 
 
 
-
-
+Old way
 ```
 ./process.bash
+```
+
+
+New hotness
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-689%10 --job-name="MiXCR" --output="${PWD}/array.${date}-%A_%a.out" --time=480 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test/array_wrapper.bash
 
 
 mkdir data
