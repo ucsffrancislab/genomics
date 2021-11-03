@@ -38,7 +38,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-689%10 --jo
 mkdir data
 cp out/??-????-???.txt data/
 ./make_metadata.bash > data/metadata.txt
-cd ..
 ```
 
 
@@ -57,7 +56,6 @@ repOverlap(immdata$data) %>% vis()
 geneUsage(immdata$data[[1]]) %>% vis()
 repDiversity(immdata$data) %>% vis(.by = "IDH", .meta = immdata$meta)
 ```
-
 
 
 
