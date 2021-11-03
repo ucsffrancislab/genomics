@@ -33,11 +33,12 @@ echo $sample
 #	Actually don't think this is true here as I processed all samples
 #	There are a couple +2 and +3 files
 
-r1=$( ls /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20200827-preprocess/fastq-nodots/${sample}+1_R1.fastq.gz | head -1 )
+r1=$( ls /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20200910-bamtofastq/out/${sample}_R1.fastq.gz | head -1 )
 echo $r1
 
 r2=${r1/_R1./_R2.}
-b=$( basename $r1 +1_R1.fastq.gz )
+b=$( basename $r1 _R1.fastq.gz )
+#b=$( basename $r1 +1_R1.fastq.gz )
 #b=${b%-*}
 #b=${b%-*}
 #b=${b%-*}
