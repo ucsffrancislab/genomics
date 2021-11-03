@@ -1,7 +1,7 @@
 #	Testing 2-kupl on TCGA sample
 
 
-Started Oct 29 21:50
+Started Nov 3, 7:15
 
 ```
 python3 -m pip install --user --upgrade pydna
