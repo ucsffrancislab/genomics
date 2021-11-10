@@ -163,3 +163,47 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1000%10 --j
 ```
 
 
+
+
+
+
+##	20211109
+
+Create Torque_teno masked non-homologous reference
+
+cat $( find /francislab/data1/refs/refseq/complete-20210920/complete_genomes -name \*Torque_teno\* | xargs -I% basename % | cut -d_ -f1,2 | awk '{print "out/split.vsl/"$1".masked.split.25.mask.fasta"}' ) > Torque_teno.masked-nonhomologous.fa
+
+Not all exist
+
+bowtie2-build Torque_teno.masked-nonhomologous.fa Torque_teno.masked-nonhomologous
+
+
+
+cat $( find /francislab/data1/refs/refseq/complete-20210920/complete_genomes -name \*Torque_teno\* | xargs -I% basename % | cut -d_ -f1,2 | awk '{print "out/masks/"$1".masked.fasta"}' ) > Torque_teno.masked.fa
+
+bowtie2-build Torque_teno.masked.fa Torque_teno.masked
+
+Not all exist!
+
+
+for a in $( find /francislab/data1/refs/refseq/complete-20210920/complete_genomes -name \*Torque_teno\* | xargs -I% basename % | cut -d_ -f1,2 ); do
+if [ -f "out/masks/${a}.masked.fasta" ] ; then
+cat out/masks/${a}.masked.fasta
+else 
+cat out/raw/${a}.fasta
+fi
+done > Torque_teno.mostly_masked.fa
+
+bowtie2-build Torque_teno.mostly_masked.fa Torque_teno.mostly_masked
+
+for a in $( find /francislab/data1/refs/refseq/complete-20210920/complete_genomes -name \*anello\* | xargs -I% basename % | cut -d_ -f1,2 ); do
+if [ -f "out/masks/${a}.masked.fasta" ] ; then
+cat out/masks/${a}.masked.fasta
+else 
+cat out/raw/${a}.fasta
+fi
+done > anello.mostly_masked.fa
+
+bowtie2-build anello.mostly_masked.fa anello.mostly_masked
+
+
