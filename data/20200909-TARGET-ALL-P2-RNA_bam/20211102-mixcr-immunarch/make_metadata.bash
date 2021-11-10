@@ -9,11 +9,12 @@ h=$( head -1 ${meta} )
 
 echo -e "Sample\t${h}"
 
-for f in data/??-??????-???-???.txt ; do
+#for f in data/??-??????-???-???.txt ; do
+for f in data/*.txt ; do
 	s=$( basename $f .txt )
 	b=${s%-*}
 	b=${b%-*}
-	l=$( grep "TARGET-${b}" ${meta} )
+	l=$( grep -m 1 "TARGET-${b}" ${meta} )
 	if [ -n "${l}" ] ; then
 		echo -e "$s\t$l"
 	fi

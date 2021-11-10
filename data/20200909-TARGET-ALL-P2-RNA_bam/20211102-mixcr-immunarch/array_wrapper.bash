@@ -50,8 +50,9 @@ f=${outbase}.vdjca
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
+	\rm -f ${f}
 	~/.local/mixcr-3.0.13/mixcr align --threads ${threads} --species human ${r1} ${r2} ${f}
-	chmod -w ${f}*
+	chmod -w ${f}
 fi
 
 assemble=""
@@ -59,8 +60,9 @@ f=${outbase}.clns
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
+	\rm -f ${f}
 	~/.local/mixcr-3.0.13/mixcr assemble --threads ${threads} ${outbase}.vdjca ${f}
-	chmod -w ${f}*
+	chmod -w ${f}
 fi
 
 exportClones=""
@@ -68,8 +70,9 @@ f=${outbase}.txt
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
+	\rm -f ${f}
 	~/.local/mixcr-3.0.13/mixcr exportClones ${outbase}.clns ${f}
-	chmod -w ${f}*
+	chmod -w ${f}
 fi
 
 
@@ -83,4 +86,11 @@ ls /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20200910-bamtofastq/
 
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-532%10 --job-name="MiXCR" --output="${PWD}/array.${date}-%A_%a.out" --time=480 --nodes=1 --ntasks=8 --mem=60G ${PWD}/array_wrapper.bash
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=11-532%4 --job-name="MiXCR" --output="${PWD}/array.${date}-%A_%a.out" --time=480 --nodes=1 --ntasks=8 --mem=60G ${PWD}/array_wrapper.bash
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=45-532%5 --job-name="MiXCR" --output="${PWD}/array.${date}-%A_%a.out" --time=480 --nodes=1 --ntasks=8 --mem=60G ${PWD}/array_wrapper.bash
 

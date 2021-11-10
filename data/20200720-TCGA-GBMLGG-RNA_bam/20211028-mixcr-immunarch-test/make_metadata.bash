@@ -6,10 +6,11 @@ h=$( head -1 ${meta} )
 
 echo -e "Sample\t${h}"
 
-for f in data/??-????-???.txt ; do
+#for f in data/??-????-???.txt ; do
+for f in data/*.txt ; do
 	s=$( basename $f .txt )
 	b=${s%-*}
-	l=$( grep "^TCGA-${b}" ${meta} )
+	l=$( grep -m 1 "^TCGA-${b}" ${meta} )
 	echo -e "$s\t$l"
 done
 
