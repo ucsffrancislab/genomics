@@ -34,29 +34,12 @@ New hotness
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-689%10 --job-name="MiXCR" --output="${PWD}/array.${date}-%A_%a.out" --time=480 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test/array_wrapper.bash
 
+cp out/??-????-???.txt data/
+
+
 
 mkdir data
-cp out/??-????-???.txt data/
+cp -u out/*.txt data/
 ./make_metadata.bash > data/metadata.txt
 ```
-
-
-#	immunarch test
-
-```
-module load r
-R
-
-library(immunarch)
-immdata <- repLoad("data")
-
-repExplore(immdata$data, "lens") %>% vis()
-repClonality(immdata$data, "homeo") %>% vis()
-repOverlap(immdata$data) %>% vis()
-geneUsage(immdata$data[[1]]) %>% vis()
-repDiversity(immdata$data) %>% vis(.by = "IDH", .meta = immdata$meta)
-```
-
-
-
 
