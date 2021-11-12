@@ -1,0 +1,69 @@
+
+
+
+TARGET RNA masked, non-human-homologous alignment (complete genomes or all viral?)
+
+
+
+Prepping viral reference
+/francislab/data1/working/20211111-hg38-viral-homology
+
+
+
+
+
+MiXCR on TARGET RNA datasets
+/francislab/data1/working/20200822-TARGET-RNA_fastq/20211102-mixcr-immunarch
+~/github/ucsffrancislab/genomics/data/20200822-TARGET-RNA_fastq/20211102-mixcr-immunarch
+
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20211102-mixcr-immunarch
+~/github/ucsffrancislab/genomics/data/20200909-TARGET-ALL-P2-RNA_bam/20211102-mixcr-immunarch
+
+MiXCR on TCGA RNA dataset
+/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test
+~/github/ucsffrancislab/genomics/data/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test
+
+Tumor normal difference kmer matrices
+2-kupl test run
+/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20211021-2kupl-test/2-kupl/script
+
+
+
+
+
+/francislab/data1/working/20211012-hg38-complete-homology
+Jupyter
+~/github/ucsffrancislab/genomics/data/20211012-hg38-complete-homology
+
+~/github/ucsffrancislab/genomics/data/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/mateonly
+/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20201029-hkle-chimera/mateonly
+
+
+
+
+
+????
+~/tmp/20210428-EV/20210818-kallisto
+
+
+/Users/jake/github/ucsffrancislab/genomics/data/20210428-EV/20210909-RetroElement
+/francislab/data1/working/20210428-EV/20210909-RetroElement
+
+
+
+/francislab/data1/working/20211001-EV/20211021-polyA-test
+
+
+
+/francislab/data1/raw/20211001-EV
+/francislab/data1/working/20211001-EV/20211003-explore
+
+
+
+iMOKA runs
+/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20210923-iMOKA-tumor-normal-test
+
+iMOKA for difference matrices?
+
+
+
