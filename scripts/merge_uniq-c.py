@@ -54,7 +54,7 @@ for filename in args.files:
 		basename=os.path.basename(filename)
 
 		#sample=basename.split(".")[0]	#	everything before the first "."
-		sample=basename	#.split(".")[0]	#	everything before the first "."
+		sample=basename.split(".")[0]	#	everything before the first "."
 
 		print("Reading "+filename+": Sample "+sample)
 
@@ -74,14 +74,17 @@ for filename in args.files:
 
 		d = pd.read_csv(filename,
 			skipinitialspace=True,
+			sep="\s+",
 			header=None,
-			names=['sequence'])
-		d[[sample,'sequence']] = d['sequence'].str.split(" ", 1, expand=True)
+			names=[sample,'item'])
+		#d[[sample,'sequence']] = d['sequence'].str.split(" ", 1, expand=True)
 
 		if args.seqint:
-			d['sequence']=d['sequence'].astype(int)
+			d[sample]=d[sample].astype(int)
+			#d['sequence']=d['sequence'].astype(int)
 
-		d.set_index('sequence',inplace=True)
+		#d.set_index('sequence',inplace=True)
+		d.set_index('item',inplace=True)
 		print(d.head())
 
 		print("Appending")
@@ -111,7 +114,8 @@ if len(data_frames) > 0:
 
 	print("Writing CSV")
 	#df.to_csv(output,index_label=['chromosome','position'])
-	df.to_csv(output,index_label=['sequence'])
+	#df.to_csv(output,index_label=['sequence'])
+	df.to_csv(output,index_label=['item'])
 
 else:
 	print("No data.")
