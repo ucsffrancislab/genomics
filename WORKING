@@ -1,29 +1,32 @@
 
 
+Masking homologous reference regions to minimize ambiguous alignments
+
+
+
+/francislab/data1/working/20210428-EV/20211117-double_masked_viral
 
 TARGET RNA masked, non-human-homologous alignment (complete genomes or all viral?)
+/francislab/data1/working/20200822-TARGET-RNA_fastq/20211115-double_masked_viral/
 
-/francislab/data1/working/20211111-hg38-viral-homology/double_masked_viral
+
+
+
+
 
 
 
 Prepping viral reference
 /francislab/data1/working/20211111-hg38-viral-homology
-
-
-
-
+/francislab/data1/working/20211111-hg38-viral-homology/double_masked_viral
 
 MiXCR on TARGET RNA datasets
 /francislab/data1/working/20200822-TARGET-RNA_fastq/20211102-mixcr-immunarch
 ~/github/ucsffrancislab/genomics/data/20200822-TARGET-RNA_fastq/20211102-mixcr-immunarch
+Rerunning 3 failed
 
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20211102-mixcr-immunarch
 ~/github/ucsffrancislab/genomics/data/20200909-TARGET-ALL-P2-RNA_bam/20211102-mixcr-immunarch
-
-MiXCR on TCGA RNA dataset
-/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test
-~/github/ucsffrancislab/genomics/data/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test
 
 Tumor normal difference kmer matrices
 2-kupl test run
@@ -31,7 +34,13 @@ Tumor normal difference kmer matrices
 
 
 
+--------------------------------------------------
 
+
+
+MiXCR on TCGA RNA dataset
+/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test
+~/github/ucsffrancislab/genomics/data/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test
 
 /francislab/data1/working/20211012-hg38-complete-homology
 Jupyter
