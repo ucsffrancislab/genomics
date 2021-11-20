@@ -17,3 +17,13 @@ while IFS=, read -r id ; do
 ls -1 /francislab/data1/raw/20200822-TARGET-RNA_fastq/fastq/${id}*_R1.fastq.gz 2> /dev/null
 done < ALL-P2_ids.txt > ALL-P2.fastq_files.txt
 
+
+
+
+Where'd the fastq-nodots come from?
+	There was a temporary modification to pre_process_paired.bash script
+
+fastq-nodots/corrupt/10-PAPNNX-09A-01R+1_R1.fastq.gz
+
+
+
