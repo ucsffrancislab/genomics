@@ -94,3 +94,19 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=11-532%4 --jo
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=45-532%5 --job-name="MiXCR" --output="${PWD}/array.${date}-%A_%a.out" --time=480 --nodes=1 --ntasks=8 --mem=60G ${PWD}/array_wrapper.bash
 
+
+
+... scontrol update ArrayTaskThrottle=6 JobId=314630
+
+
+
+grep CANCELLED array.*
+array.20211105150737-314630_167.out:slurmstepd: error: *** JOB 319566 ON c4-n17 CANCELLED AT 2021-11-10T16:08:32 DUE TO TIME LIMIT ***
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=167%1 --job-name="MiXCR-rerun" --output="${PWD}/array.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G ${PWD}/array_wrapper.bash
+
+
+
+
