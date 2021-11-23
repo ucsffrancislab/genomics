@@ -168,6 +168,10 @@ if( r1 ){ print(s); }
 
 
 
+Did the bam files include unaligned?
+
+Does this data include non-human?
+
 
 
 
