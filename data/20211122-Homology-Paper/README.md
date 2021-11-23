@@ -118,4 +118,56 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 ```
 
 
+```
+mkdir bowtie2
+module load bowtie2
+
+ls out/raw/*.fasta | wc -l
+ls out/split.vsl/*.?.split.25.mask.fasta | wc -l
+ls out/split.vsl/*.masked.split.25.mask.fasta | wc -l
+ls out/masks/*fasta | wc -l
+
+cat out/raw/*.fasta > out/raw.fasta
+bowtie2-build out/raw.fasta bowtie2/raw
+
+cat out/split.vsl/*.?.split.25.mask.fasta > out/hg38masked.fasta
+bowtie2-build out/hg38masked.fasta bowtie2/hg38masked
+
+cat out/split.vsl/*.masked.split.25.mask.fasta > out/RMhg38masked.fasta
+bowtie2-build out/RMhg38masked.fasta bowtie2/RMhg38masked
+
+cat out/masks/*fasta > out/RM.fasta
+bowtie2-build out/RM.fasta bowtie2/RM
+
+chmod -w bowtie2/*
+```
+
+
+
+```
+
+awk -F, '($2 ~ /^..-....-1/) && ($6 == "Broad Institute of MIT and Harvard") {
+s=substr($2, 1, 20);
+cmd="ls /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/"s"*R1.fastq.gz 2> /dev/null";
+cmd|getline r1;
+close(cmd);
+if( r1 ){ print($0); }
+}' /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv > metadata.csv
+
+
+awk -F, '($2 ~ /^..-....-1/) && ($6 == "Broad Institute of MIT and Harvard") {
+s=substr($2, 1, 20);
+cmd="ls /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/"s"*R1.fastq.gz 2> /dev/null";
+cmd|getline r1;
+close(cmd);
+if( r1 ){ print(s); }
+}' /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv > TCGA_normal_samples.txt
+
+```
+
+
+
+
+
+
 
