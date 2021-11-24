@@ -88,6 +88,7 @@ awk -F, '( $2 ~ /[Hh]uman/ ) && ( $12 > 0 ){system("ls /francislab/data1/refs/re
 
 ```
 awk -F, '( $2 ~ /[Hh]uman/ ) && ( $12 > 0 ){system("ls /francislab/data1/refs/refseq/viral-20210916/split/"$1"*.fa")}' /francislab/data1/working/20211111-hg38-viral-homology/report.csv > select_viruses.txt
+cat select_viruses.txt | xargs -I% basename % .fa | awk 'BEGIN{FS=OFS="_"}{d=substr($0,13);print $1,$2"\t"d}' > select_viruses.csv
 ```
 
 
