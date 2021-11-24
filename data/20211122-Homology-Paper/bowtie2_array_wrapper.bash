@@ -77,7 +77,10 @@ wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_normal_samples.txt
 126
 
 
+ 900 = 15 hours
+1440 = 24 hours
 
+May need to bump it up a bit
 
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="${PWD}/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/bowtie2_array_wrapper.bash
