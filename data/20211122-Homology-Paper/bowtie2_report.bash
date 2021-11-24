@@ -34,12 +34,12 @@ for sample in $( cat TCGA_normal_samples.txt ); do
 	#	Once complete, normalize to hits per billion reads?
 
 
-	raw_counts=""
-	f=${PWD}/aligned/raw/${sample}.bam
-	if [ -f ${f} ] && [ ! -w ${f} ] ; then
-		raw_counts=$( samtools view ${f} | awk -F"\t" '{print $3}' | uniq -c )
-	fi
-
+#	raw_counts=""
+#	f=${PWD}/aligned/raw/${sample}.bam
+#	if [ -f ${f} ] && [ ! -w ${f} ] ; then
+#		raw_counts=$( samtools view ${f} | awk -F"\t" '{print $3}' | uniq -c )
+#	fi
+#
 #	RM_counts=""
 #	f=${PWD}/aligned/RM/${sample}.bam
 #	if [ -f ${f} ] && [ ! -w ${f} ] ; then
@@ -70,21 +70,21 @@ for sample in $( cat TCGA_normal_samples.txt ); do
 		n=''
 		#n=$( echo "${RM_counts}" | awk -v accession=${accession} '($1 == accession ){print $2}' )
 		if [ -f aligned/RM/${sample}.bam.aligned_sequence_counts.txt ] ; then
-			n=$( awk -v accession=${accession} '($1 == accession ){print $2}' aligned/RM/${sample}.bam.aligned_sequence_counts.txt )
+			n=$( awk -v accession=${accession} '($2 == accession ){print $1}' aligned/RM/${sample}.bam.aligned_sequence_counts.txt )
 		fi
 		echo -n " ${n:-0} |"
 
 		n=''
 		#n=$( echo "${hg38masked_counts}" | awk -v accession=${accession} '($1 == accession ){print $2}' )
 		if [ -f aligned/hg38masked/${sample}.bam.aligned_sequence_counts.txt ] ; then
-			n=$( awk -v accession=${accession} '($1 == accession ){print $2}' aligned/hg38masked/${sample}.bam.aligned_sequence_counts.txt )
+			n=$( awk -v accession=${accession} '($2 == accession ){print $1}' aligned/hg38masked/${sample}.bam.aligned_sequence_counts.txt )
 		fi
 		echo -n " ${n:-0} |"
 
 		n=''
 		#n=$( echo "${RMhg38masked_counts}" | awk -v accession=${accession} '($1 == accession ){print $2}' )
 		if [ -f aligned/RMhg38masked/${sample}.bam.aligned_sequence_counts.txt ] ; then
-			n=$( awk -v accession=${accession} '($1 == accession ){print $2}' aligned/RMhg38masked/${sample}.bam.aligned_sequence_counts.txt )
+			n=$( awk -v accession=${accession} '($2 == accession ){print $1}' aligned/RMhg38masked/${sample}.bam.aligned_sequence_counts.txt )
 		fi
 		echo -n " ${n:-0} |"
 
