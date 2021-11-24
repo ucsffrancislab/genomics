@@ -168,6 +168,13 @@ if( r1 ){ print(s); }
 
 
 
+```
+./bowtie2_report.bash > bowtie2_report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' bowtie2_report.md > bowtie2_report.csv
+```
+
+## Big questions
+
 Did the bam files include unaligned?
 
 Does this data include non-human?
