@@ -162,10 +162,22 @@ cmd="ls /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/o
 cmd|getline r1;
 close(cmd);
 if( r1 ){ print(s); }
-}' /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv > TCGA_normal_samples.txt
+}' /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv > TCGA_WGS/TCGA_normal_samples.txt
+
+
+
+&& ($6 == "Broad Institute of MIT and Harvard") {
+
+awk -F, '($2 ~ /^..-....-01/) { 
+s=substr($2, 1, 10);
+prints
+cmd="ls /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/"s"*_R1.fastq.gz 2> /dev/null";
+cmd|getline r1;
+if( r1 ) print r1 ;
+close(cmd);
+}' /francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv | uniq > TCGA_RNA/TCGA_normal_samples.txt
 
 ```
-
 
 
 
@@ -173,6 +185,44 @@ if( r1 ){ print(s); }
 ./bowtie2_report.bash > bowtie2_report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' bowtie2_report.md > bowtie2_report.csv
 ```
+
+
+
+
+
+
+```
+mkdir bowtie2
+module load bowtie2
+
+mkdir bowtie2/raw
+mkdir bowtie2/RM
+mkdir bowtie2/hg38
+mkdir bowtie2/RMhg38
+
+for f in out/raw/*.fasta ; do
+bowtie2-build $f bowtie2/raw/$( basename $f .fasta )
+done
+
+for f in out/masks/*fasta ; do
+bowtie2-build $f bowtie2/RM/$( basename $f .masked.fasta )
+done
+
+for f in out/split.vsl/*.?.split.25.mask.fasta ; do
+bowtie2-build $f bowtie2/hg38/$( basename $f .split.25.mask.fasta )
+done
+
+for f in out/split.vsl/*.masked.split.25.mask.fasta ; do
+bowtie2-build $f bowtie2/RMhg38/$( basename $f .masked.split.25.mask.fasta )
+done
+
+chmod -w bowtie2/*/*bt2
+```
+
+
+
+
+
 
 ## Big questions
 
