@@ -92,3 +92,18 @@ curl -netrc -T 81/output.json "${BOX}/"
 
 
 
+
+
+
+
+```
+for k in 31 41 51 61 71 81 91 ; do
+echo "${k}"
+jq -r ".best_feature_models[].models[].acc" ${k}/output.json 2> /dev/null | sort -n | tail -1
+done
+```
+
+
+
+
+
