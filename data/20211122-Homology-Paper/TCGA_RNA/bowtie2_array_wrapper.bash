@@ -16,7 +16,7 @@ fi
 #set -x  #       print expanded command before executing it
 
 
-dir="/francislab/data1/working/20211122-Homology-Paper/aligned"
+dir="/francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/aligned"
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -35,7 +35,7 @@ echo "Running line :${line}:"
 
 #	Use a 1 based index since there is no line 0.
 
-sample=$( sed -n "$line"p /francislab/data1/working/20211122-Homology-Paper/TCGA_normal_samples.txt )
+sample=$( sed -n "$line"p /francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/TCGA_normal_samples.txt )
 echo $sample
 
 if [ -z "${sample}" ] ; then
@@ -44,9 +44,11 @@ if [ -z "${sample}" ] ; then
 fi
 
 
-r1=/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/${sample}_R1.fastq.gz
-r2=${r1/_R1/_R2} #/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/${sample}_R2.fastq.gz
+#r1=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/${sample}_R1.fastq.gz
+r1=${sample}
+r2=${r1/_R1/_R2}
 
+sample=$( basename ${sample} _R1.fastq.gz )
 
 
 for i in raw RM hg38masked RMhg38masked ; do
@@ -73,8 +75,8 @@ done
 exit
 
 
-wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_normal_samples.txt
-126
+wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/TCGA_normal_samples.txt
+118
 
 
  900 = 15 hours
@@ -83,7 +85,9 @@ wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_normal_samples.txt
 May need to bump it up a bit
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="${PWD}/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/bowtie2_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/bowtie2_array_wrapper.bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-118%8 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/TCGA_RNA/bowtie2_array_wrapper.bash
 
 
 
