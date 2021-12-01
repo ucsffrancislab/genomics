@@ -56,7 +56,8 @@ done
 for i in raw RM hg38 RMhg38 ; do
 	echo ${i}
 
-	for v in $( cut -f1 /francislab/data1/working/20211122-Homology-Paper/select_viruses.csv ) ; do
+	#for v in $( cut -f1 /francislab/data1/working/20211122-Homology-Paper/select_viruses.csv ) ; do
+	for v in $( cut -f1 /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS2/select_viruses.csv ) ; do
 		echo ${v}
 		mkdir -p ${dir}/${i}/${v}
 		o=${dir}/${i}/${v}/${sample}.bam
@@ -87,9 +88,9 @@ wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS2/TCGA_normal_sa
 
 May need to bump it up a bit
 
-mkdir ${PWD}/TCGA_WGS2/logs
+mkdir /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS2/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="${PWD}/TCGA_WGS2/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS2/bowtie2_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_WGS2/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS2/bowtie2_array_wrapper.bash
 
 
 

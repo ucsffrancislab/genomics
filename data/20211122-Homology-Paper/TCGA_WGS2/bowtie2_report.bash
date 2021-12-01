@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #accessions=$( cat select_viruses.txt | xargs -I% basename % | awk 'BEGIN{FS=OFS="_"}{print $1,$2}' )
-accessions=$( cut -f1 ../select_viruses.csv )
+accessions=$( cut -f1 select_viruses.csv )
 
 echo -n "| sample | read count | average length |"
 for accession in $accessions ; do

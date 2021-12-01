@@ -222,7 +222,7 @@ chmod -w bowtie2/*/*bt2
 
 
 
-
+nohup time bowtie2.bash --all --sort --no-unal --xeq --threads 8 --very-sensitive -x /francislab/data1/working/20211122-Homology-Paper/bowtie2/raw -1 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/02-2483-10A-01D-1494_R1.fastq.gz -2 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/02-2483-10A-01D-1494_R2.fastq.gz -o 02-2483-10A-01D-1494.raw.all.bam > raw.all.out 2> raw.all.err &
 
 ## Big questions
 
