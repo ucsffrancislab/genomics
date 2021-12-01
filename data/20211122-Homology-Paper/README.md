@@ -233,3 +233,23 @@ Does this data include non-human?
 
 
 
+
+
+
+```
+for bam in TCGA_WGS3/aligned/raw/*bam ; do
+echo $bam
+o=${bam}.uniq_counts.txt
+if [ -f ${o} ] && [ ! -w ${o} ] ; then
+echo "${o} exists. Skipping alignment."
+else
+echo "go"
+mv ${o} ${o}.old
+samtools view ${bam} | cut -f3,1 | uniq | sort | uniq | cut -f2 | sort | uniq -c > ${o}
+chmod -w ${o}
+fi
+done
+```
+
+
+

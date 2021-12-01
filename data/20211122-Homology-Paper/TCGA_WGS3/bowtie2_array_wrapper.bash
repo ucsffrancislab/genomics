@@ -60,7 +60,21 @@ for i in raw RM hg38masked RMhg38masked ; do
 		bowtie2.bash --all --sort --no-unal --xeq --threads 8 --very-sensitive \
 			-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/${i} \
 			-1 ${r1} -2 ${r2} -o ${o}
-		samtools view ${o} | cut -f3,1 | uniq | sort | uniq | cut -f2 | uniq -c > ${o}.uniq_counts.txt
+	else
+		echo "${o} exists. Skipping alignment."
+	fi
+
+	bam=${dir}/${i}/${sample}.bam
+	o=${dir}/${i}/${sample}.bam.uniq_counts.txt
+	if [ ! -f ${o} ] ; then
+
+		#	cut field order selection is ignored. Provided in numeric order. (ie -f3,1 returns 1,3)
+		#samtools view ${o} | cut -f3,1 | uniq | sort | uniq | cut -f2 | uniq -c > ${o}.uniq_counts.txt
+		samtools view ${bam} | cut -f3,1 | uniq | sort | uniq | cut -f2 | sort | uniq -c > ${o}
+#nohup samtools view 02-2483-10A-01D-1494.raw.all.bam 
+#                      | cut -f3,1 | uniq | sort | uniq | cut -f2 | sort | uniq -c > 02-2483-10A-01D-1494.raw.all.bam.uniq_counts.txt &
+		chmod -w ${o}
+
 	else
 		echo "${o} exists. Skipping alignment."
 	fi
