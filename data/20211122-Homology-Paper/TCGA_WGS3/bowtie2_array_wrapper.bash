@@ -56,27 +56,33 @@ done
 for i in raw RM hg38masked RMhg38masked ; do
 	echo ${i}
 	o=${dir}/${i}/${sample}.bam
-	if [ ! -f ${o} ] ; then
-		bowtie2.bash --all --sort --no-unal --xeq --threads 8 --very-sensitive \
+	if [ -f ${o} ] && [ ! -w ${o} ] ; then
+		echo "${o} exists. Skipping alignment."
+	else
+		#bowtie2.bash --all --sort --no-unal --xeq --threads 8 --very-sensitive \
+		bowtie2.bash --all --no-unal --xeq --threads 8 --very-sensitive \
 			-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/${i} \
 			-1 ${r1} -2 ${r2} -o ${o}
-	else
-		echo "${o} exists. Skipping alignment."
 	fi
 
 	bam=${dir}/${i}/${sample}.bam
 	o=${dir}/${i}/${sample}.bam.uniq_counts.txt
-	if [ ! -f ${o} ] ; then
+	if [ -f ${o} ] && [ ! -w ${o} ] ; then
+		echo "${o} exists. Skipping alignment."
+	else
 
 		#	cut field order selection is ignored. Provided in numeric order. (ie -f3,1 returns 1,3)
 		#samtools view ${o} | cut -f3,1 | uniq | sort | uniq | cut -f2 | uniq -c > ${o}.uniq_counts.txt
+
+		if [ -f ${o} ] ; then
+			mv ${o} ${o}.old
+		fi
+
 		samtools view ${bam} | cut -f3,1 | uniq | sort | uniq | cut -f2 | sort | uniq -c > ${o}
+
 #nohup samtools view 02-2483-10A-01D-1494.raw.all.bam 
 #                      | cut -f3,1 | uniq | sort | uniq | cut -f2 | sort | uniq -c > 02-2483-10A-01D-1494.raw.all.bam.uniq_counts.txt &
 		chmod -w ${o}
-
-	else
-		echo "${o} exists. Skipping alignment."
 	fi
 
 done
