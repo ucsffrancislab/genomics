@@ -34,7 +34,8 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-trap "{ chmod -R a+w $TMPDIR ; }" EXIT
+#trap "{ chmod -R a+w $TMPDIR ; }" EXIT
+trap "{ chmod -R +w $TMPDIR ; }" EXIT
 
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
