@@ -60,9 +60,18 @@ for i in raw RM hg38masked RMhg38masked ; do
 		echo "${o} exists. Skipping alignment."
 	else
 		#bowtie2.bash --all --sort --no-unal --xeq --threads 8 --very-sensitive \
-		bowtie2.bash --all --no-unal --xeq --threads 8 --very-sensitive \
+		#bowtie2.bash --all --no-unal --xeq --threads 8 --very-sensitive \
+		date
+		# will using scratch make this any faster?
+		bowtie2_scratch.bash --all --no-unal --xeq --threads 8 --very-sensitive \
 			-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/${i} \
 			-1 ${r1} -2 ${r2} -o ${o}
+		date
+		#	Scatch run will likely will fail without cleanup.
+		#	This is excessive.
+		#/bin/rm -rf ${TMPDIR}/*
+		/bin/rm -rf ${TMPDIR}/*bam*
+		/bin/rm -rf ${TMPDIR}/*bt2
 	fi
 
 	bam=${dir}/${i}/${sample}.bam
@@ -70,7 +79,7 @@ for i in raw RM hg38masked RMhg38masked ; do
 	if [ -f ${o} ] && [ ! -w ${o} ] ; then
 		echo "${o} exists. Skipping alignment."
 	else
-
+		date
 		#	cut field order selection is ignored. Provided in numeric order. (ie -f3,1 returns 1,3)
 		#samtools view ${o} | cut -f3,1 | uniq | sort | uniq | cut -f2 | uniq -c > ${o}.uniq_counts.txt
 
@@ -83,6 +92,7 @@ for i in raw RM hg38masked RMhg38masked ; do
 #nohup samtools view 02-2483-10A-01D-1494.raw.all.bam 
 #                      | cut -f3,1 | uniq | sort | uniq | cut -f2 | sort | uniq -c > 02-2483-10A-01D-1494.raw.all.bam.uniq_counts.txt &
 		chmod -w ${o}
+		date
 	fi
 
 done
@@ -98,15 +108,12 @@ wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/TCGA_normal_sa
 126
 
 
- 900 = 15 hours
-1440 = 24 hours
-
-May need to bump it up a bit
-
 mkdir -p /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/bowtie2_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/bowtie2_array_wrapper.bash
 
+
+scontrol update ArrayTaskThrottle=3 JobId=314636
 
 
 grep -l "No such file or directory" array.*.out  | wc -l
