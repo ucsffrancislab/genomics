@@ -251,5 +251,8 @@ fi
 done
 ```
 
+scontrol update ArrayTaskThrottle=3 JobId=314636
+
+
 
 
