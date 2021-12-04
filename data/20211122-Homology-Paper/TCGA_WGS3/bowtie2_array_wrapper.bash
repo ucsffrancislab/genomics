@@ -63,6 +63,7 @@ for i in raw RM hg38masked RMhg38masked ; do
 		#bowtie2.bash --all --no-unal --xeq --threads 8 --very-sensitive \
 		date
 		# will using scratch make this any faster?
+		#	it will copy in the data files every time.
 		bowtie2_scratch.bash --all --no-unal --xeq --threads 8 --very-sensitive \
 			-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/${i} \
 			-1 ${r1} -2 ${r2} -o ${o}
