@@ -15,7 +15,7 @@ done
 echo
 
 
-for sample in $( head -29 TCGA_normal_samples.txt ); do
+for sample in $( cat TCGA_normal_samples.txt ); do
 
 	raw_reads=$( cat /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/${sample}_R1.fastq.gz.read_count.txt )
 
