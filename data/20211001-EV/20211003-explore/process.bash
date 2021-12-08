@@ -188,6 +188,7 @@ for r1 in ${IN}/SFHH0*_R1_*.fastq.gz ; do
 				-p ${outbase}.R2.fastq.gz \
 				${inbase}.R1.fastq.gz \
 				${inbase%.t2}.R2.fastq.gz )
+		#	NOTE that R2 is from two steps prior as only R1 had UMI removed.
 		echo $t3id
 	fi
 
