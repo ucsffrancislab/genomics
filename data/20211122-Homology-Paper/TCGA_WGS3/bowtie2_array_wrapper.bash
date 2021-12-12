@@ -111,7 +111,7 @@ wc -l /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/TCGA_normal_sa
 
 mkdir -p /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/logs/bowtie2.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/bowtie2_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-126%8 --job-name="align" --output="/francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/logs/bowtie2.${date}-%A_%a.out" --time=2880 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211122-Homology-Paper/TCGA_WGS3/bowtie2_array_wrapper.bash
 
 
 
