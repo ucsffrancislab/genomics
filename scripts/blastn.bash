@@ -47,6 +47,9 @@ while [ $# -gt 0 ] ; do
 			elif [ ${query: -4} == 'q.gz' ]; then
 				querybase=${query%.*q.gz}
 				query="<(zcat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/;1~4p;2~4p' )"
+			elif [ ${query: -4} == 'fqgz' ]; then
+				querybase=${query%.*fqgz}
+				query="<(zcat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/;1~4p;2~4p' )"
 			elif [ ${query: -1} == 'q' ]; then
 				querybase=${query%.*q}
 				query="<( cat ${query} | sed -n -E '1~4s/^@/>/;1~4s/ ([[:digit:]]):.*$/\/\1/;1~4p;2~4p' )"

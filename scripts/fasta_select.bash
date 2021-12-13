@@ -31,13 +31,13 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	echo "Creating $f"
 
-	if [ "${input: -3}" == ".gz" ] ; then
+	if [ "${input: -2}" == "gz" ] ; then
 		command="zcat ${input} "
 	else
 		command="cat ${input} "
 	fi
 
-	if [ "${input: -4}" == "q.gz" ] ; then
+	if [ "${input: -4}" == "q.gz" ] || [ "${input: -4}" == "fqgz" ] ; then
 		command="${command} | grep -A 3 \"${pattern}\" "
 	else
 		command="${command} | grep -A 1 \"${pattern}\" "

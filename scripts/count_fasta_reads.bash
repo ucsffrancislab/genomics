@@ -35,6 +35,8 @@ while [ $# -gt 0 ] ; do
 
 		if [ "${1: -4}" == "q.gz" ] ; then
 			command="zcat ${1} | paste - - - - "
+		elif [ "${1: -4}" == "fqgz" ] ; then
+			command="zcat ${1} | paste - - - - "
 		elif [ "${1: -1}" == "q" ] ; then
 			command="cat ${1} | paste - - - - "
 		elif [ "${1: -4}" == "a.gz" ] ; then
