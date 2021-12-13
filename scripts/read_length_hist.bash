@@ -18,7 +18,7 @@ else
 #	sort can use a lot of tmp disk space on a hige list
 #	so counting the reads myself
 
-	if [ ${input: -4} == "q.gz" ] ; then
+	if [ ${input: -4} == "q.gz" ] || [ ${input: -4} == "fqgz" ]; then
 		zcat ${input} \
 			| paste - - - - \
 			| cut -f 2 \

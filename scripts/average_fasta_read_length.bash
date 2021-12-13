@@ -22,12 +22,12 @@ while [ $# -gt 0 ] ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 		echo "Creating $f"
-		if [ "${1: -3}" == ".gz" ] ; then
+		if [ "${1: -2}" == "gz" ] ; then
 			command="zcat ${1} "
 		else
 			command="cat ${1} "
 		fi
-		if [ "${1: -4}" == "q.gz" ] ; then
+		if [ "${1: -4}" == "q.gz" ] || [ "${1: -4}" == "fqgz" ] ; then
 			command="${command} | paste - - - - "
 		else
 			command="${command} | paste - - "
