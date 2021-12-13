@@ -14,6 +14,9 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%8 --job-
 ```
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
+
+./noumi_report.bash > noumi_report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' noumi_report.md > noumi_report.csv
 ```
 
 
@@ -21,8 +24,13 @@ Something is wonky
 
 ```
 
-~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A_R1.fastq.gz -2 out/SFHH009A_R2.fastq.gz -o SFHH009A.phiX.bam --un-conc-gz SFHH009A.notphiX.fqgz
+~/.local/bin/bowtie2.bash --no-unal --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A_R1.fastq.gz -2 out/SFHH009A_R2.fastq.gz -o SFHH009A.phiX.bam &
 
+~/.local/bin/bowtie2.bash --no-unal --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A.quality.R1.fastq.gz -2 out/SFHH009A.quality.R2.fastq.gz -o SFHH009A.quality.phiX.bam &
+
+~/.local/bin/bowtie2.bash --no-unal --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A.quality.format.R1.fastq.gz -2 out/SFHH009A.quality.format.R2.fastq.gz -o SFHH009A.quality.format.phiX.bam &
+
+~/.local/bin/bowtie2.bash --no-unal --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A.quality.format.consolidate.R1.fastq.gz -2 out/SFHH009A.quality.format.consolidate.R2.fastq.gz -o SFHH009A.quality.format.consolidate.phiX.bam &
 
 ```
 
