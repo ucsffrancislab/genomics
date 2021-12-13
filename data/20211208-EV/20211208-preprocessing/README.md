@@ -13,9 +13,41 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%8 --job-
 
 ```
 ./report.bash > report.md
-sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '/---/d' report.md > report.csv
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 ```
 
+
+Something is wonky
+
+```
+
+~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A_R1.fastq.gz -2 out/SFHH009A_R2.fastq.gz -o SFHH009A.phiX.bam --un-conc-gz SFHH009A.notphiX.fqgz
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+for f in out/SFHH008?.quality.format.consolidate.R1.fastq.gz ; do
+echo $f
+b=$( basename $f .quality.format.consolidate.R1.fastq.gz )
+zcat $f | paste - - - - | cut -f1 | cut -d' ' -f1 | cut -d'_' -f2 | sort -n > ${b}.umi_counts
+done
+```
 
 
 
