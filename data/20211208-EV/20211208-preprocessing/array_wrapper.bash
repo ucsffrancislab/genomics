@@ -124,6 +124,9 @@ f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
+
+#	add --cores 8
+
 	~/.local/bin/cutadapt.bash \
 		--match-read-wildcards -n 4 \
 		-a CTGTCTCTTATACACATCTC \
@@ -133,7 +136,7 @@ else
 		-o ${outbase}.R1.fastq.gz \
 		-p ${outbase}.R2.fastq.gz \
 		${inbase}.R1.fastq.gz \
-		${inbase}.R2.fastq.gz )
+		${inbase}.R2.fastq.gz
 fi
 
 #	Stop trimming short reads as lose the mate pair? Check this.
@@ -158,6 +161,17 @@ fi
 #	R2 Trailing CTGTCTCTTATACACATCTCCGAGCCCACGAGAC
 
 
+
+
+
+#	THIS ONLY TRIMS THE ACTUAL 9BP UMI
+
+#	VERY SLOW
+
+#	REWRITE USING CUTADAPT? CAN'T AS EACH READ UMI ARE DIFFERENT.
+
+
+
 inbase=${outbase}
 outbase="${outbase}.t2" #"${OUT}/${s}.quality.format.consolidate.t1"
 f=${outbase}.R1.fastq.gz
@@ -166,9 +180,15 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	${PWD}/trim_rc_umi_from_end.bash \
 		${inbase}.R1.fastq.gz \
-		${outbase}.R1.fastq.gz )
+		${outbase}.R1.fastq.gz
 fi
 
+
+
+#  -j CORES, --cores CORES
+#                        Number of CPU cores to use. Use 0 to auto-detect. Default: 1
+
+#	add --cores 8
 
 inbase=${outbase}
 outbase="${outbase}.t3"
@@ -194,40 +214,55 @@ fi
 
 #	Filter out phiX
 inbase=${outbase}
-outbase="${outbase}.phiX"
+outbase="${outbase}.phiX"	#.fastq.gz"
 f=${outbase}.bam
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
-	~/.local/bin/bowtie2.bash --sort --threads 4 -x /francislab/data1/refs/bowtie2/phiX \
-		--very-sensitive-local -1 ${inbase}.R1.fastq.gz -2 ${inbase}.R2.fastq.gz -o ${f} --un-conc ${outbase}
-#	gzip ${outbase}.fastq
+	~/.local/bin/bowtie2.bash --sort --threads 8 -x /francislab/data1/refs/bowtie2/phiX \
+		--very-sensitive-local -1 ${inbase}.R1.fastq.gz -2 ${inbase}.R2.fastq.gz -o ${f} --un-conc-gz ${outbase%.phiX}.notphiX.fqgz
+
+	chmod -w ${outbase%.phiX}.notphiX.?.fqgz
+
+fi
+
+r1r=${outbase%.phiX}.notphiX.1.fqgz
+r2r=${outbase%.phiX}.notphiX.2.fqgz
+outbase=${outbase%.phiX}.notphiX.hg38
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash --sort --threads 8 \
+		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
+		--very-sensitive-local -1 ${r1r} -2 ${r2r} -o ${f} --un-conc-gz ${outbase%.hg38}.nothg38.fqgz
+
+	chmod -w ${outbase%.hg38}.nothg38.?.fqgz
+
+fi
+
+
+
+r1r=${outbase%.hg38}.nothg38.1.fqgz
+r2r=${outbase%.hg38}.nothg38.2.fqgz
+outbase=${outbase%.hg38}.nothg38.viral
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash --sort --threads 8 \
+		-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/RMhg38masked \
+		--very-sensitive-local -1 ${r1r} -2 ${r2r} -o ${f} --un-conc-gz ${outbase%.viral}.notviral.fqgz
+
+	chmod -w ${outbase%.viral}.notviral.?.fqgz
+
 fi
 
 
 
 
-#		hg38id=""
-#		inbase=${outbase}
-#		outbase="${OUT}/${s}.quality.format.consolidate.trimmed.phiX.salmon.burk.hg38"
-#		f=${outbase}.bam
-#		if [ -f $f ] && [ ! -w $f ] ; then
-#			echo "Write-protected $f exists. Skipping."
-#		else
-#			if [ -z ${burkid} ] ; then
-#				depend=""
-#			else
-#				depend=" --dependency=afterok:${burkid} "
-#			fi
-#			hg38id=$( ${sbatch} ${depend} --job-name=h${s} --time=30 --ntasks=8 --mem=60G \
-#				--output=${outbase}.${date}.txt \
-#				~/.local/bin/bowtie2.bash --sort --threads 8 \
-#				-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
-#				--very-sensitive-local -U ${inbase}.fastq -o ${f} --un ${outbase}.fastq )
-#		fi
-#	
 
-done
+#done
 
 #	minavgquality=10
 #	out/SFHH008A.out.txt:Total Removed:          	0 reads (0.00%) 	0 bases (0.00%)
@@ -270,7 +305,12 @@ exit
 
 mkdir -p /francislab/data1/working/20211208-EV/20211208-preprocessing/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%8 --job-name="preproc" --output="/francislab/data1/working/20211208-EV/20211208-preprocessing/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211208-EV/20211208-preprocessing/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%8 --job-name="preproc" --output="/francislab/data1/working/20211208-EV/20211208-preprocessing/logs/preprocess.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211208-EV/20211208-preprocessing/array_wrapper.bash
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1,3-6,8-13%3 --job-name="preproc" --output="/francislab/data1/working/20211208-EV/20211208-preprocessing/logs/preprocess.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211208-EV/20211208-preprocessing/array_wrapper.bash
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
+
+
 
