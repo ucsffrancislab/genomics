@@ -124,10 +124,8 @@ f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
-
-#	add --cores 8 ?
-
 	~/.local/bin/cutadapt.bash \
+		--cores 8 \
 		--match-read-wildcards -n 4 \
 		-a CTGTCTCTTATACACATCTC \
 		-A CTGTCTCTTATACACATCTC \
@@ -185,10 +183,6 @@ fi
 
 
 
-#  -j CORES, --cores CORES
-#                        Number of CPU cores to use. Use 0 to auto-detect. Default: 1
-
-#	add --cores 8 ?
 
 inbase=${outbase}
 outbase="${outbase}.t3"
@@ -197,6 +191,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	~/.local/bin/cutadapt.bash \
+		--cores 8 \
 		--match-read-wildcards -n 5 \
 		--error-rate 0.20 \
 		-a A{10} \
