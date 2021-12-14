@@ -224,6 +224,8 @@ else
 
 	chmod -w ${outbase%.phiX}.notphiX.?.fqgz
 
+	count_fasta_reads.bash ${outbase%.phiX}.notphiX.?.fqgz
+
 fi
 
 r1r=${outbase%.phiX}.notphiX.1.fqgz
@@ -238,6 +240,8 @@ else
 		--very-sensitive-local -1 ${r1r} -2 ${r2r} -o ${f} --un-conc-gz ${outbase%.hg38}.nothg38.fqgz
 
 	chmod -w ${outbase%.hg38}.nothg38.?.fqgz
+
+	count_fasta_reads.bash ${outbase%.hg38}.nothg38.?.fqgz
 
 fi
 
@@ -256,6 +260,8 @@ else
 
 	chmod -w ${outbase%.viral}.notviral.?.fqgz
 
+	count_fasta_reads.bash ${outbase%.viral}.notviral.?.fqgz
+	
 fi
 
 
