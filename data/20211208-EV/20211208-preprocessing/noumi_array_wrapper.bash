@@ -234,6 +234,10 @@ else
 
 fi
 
+##################################################
+
+#	outbase=SFHH009N.quality.format.t1.t3.phiX
+
 r1r=${outbase%.phiX}.notphiX.1.fqgz
 r2r=${outbase%.phiX}.notphiX.2.fqgz
 outbase=${outbase%.phiX}.notphiX.hg38
@@ -250,8 +254,6 @@ else
 
 fi
 
-
-
 r1r=${outbase%.hg38}.nothg38.1.fqgz
 r2r=${outbase%.hg38}.nothg38.2.fqgz
 outbase=${outbase%.hg38}.nothg38.viral
@@ -259,7 +261,7 @@ f=${outbase}.bam
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
-	~/.local/bin/bowtie2.bash --sort --threads 8 \
+	~/.local/bin/bowtie2.bash --threads 8 \
 		-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/RMhg38masked \
 		--very-sensitive-local -1 ${r1r} -2 ${r2r} -o ${f} --un-conc-gz ${outbase%.viral}.notviral.fqgz
 
@@ -267,6 +269,47 @@ else
 	count_fasta_reads.bash ${outbase%.viral}.notviral.?.fqgz
 
 fi
+
+##################################################
+
+#	outbase=SFHH009N.quality.format.t1.t3.phiX
+
+outbase="${OUT}/${s}.quality.format.t1.t3.phiX"
+outbase=${outbase/out/out_noumi}
+
+r1r=${outbase%.phiX}.notphiX.1.fqgz
+r2r=${outbase%.phiX}.notphiX.2.fqgz
+outbase=${outbase%.phiX}.notphiX.viral
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash --threads 8 \
+		-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/RMhg38masked \
+		--very-sensitive-local -1 ${r1r} -2 ${r2r} -o ${f} --un-conc-gz ${outbase%.viral}.notviral.fqgz
+
+	chmod -w ${outbase%.viral}.notviral.?.fqgz
+	count_fasta_reads.bash ${outbase%.viral}.notviral.?.fqgz
+
+fi
+
+
+r1r=${outbase%.viral}.notviral.1.fqgz
+r2r=${outbase%.viral}.notviral.2.fqgz
+outbase=${outbase%.viral}.notviral.hg38
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash --sort --threads 8 \
+		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
+		--very-sensitive-local -1 ${r1r} -2 ${r2r} -o ${f} --un-conc-gz ${outbase%.hg38}.nothg38.fqgz
+
+	chmod -w ${outbase%.hg38}.nothg38.?.fqgz
+	count_fasta_reads.bash ${outbase%.hg38}.nothg38.?.fqgz
+
+fi
+
 
 
 

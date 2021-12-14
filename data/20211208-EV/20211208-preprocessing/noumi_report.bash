@@ -211,42 +211,9 @@ echo
 
 
 
-echo -n "| HG38 Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.hg38.bam.aligned_count.txt 2> /dev/null )
-	c=$( echo "scale=0;  ${c} / 2" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| HG38 % Read Count |"
-for s in ${samples} ; do
-	a=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.hg38.bam.aligned_count.txt 2> /dev/null )
-	u=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.hg38.bam.unaligned_count.txt 2> /dev/null )
-	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| Not hg38 Paired R1 Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.1.fqgz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| Not hg38 Paired R2 Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.2.fqgz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-
-
 echo -n "| Viral Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.viral.bam.aligned_count.txt 2> /dev/null )
+	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.viral.bam.aligned_count.txt 2> /dev/null )
 	c=$( echo "scale=0;  ${c} / 2" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
 done
@@ -254,8 +221,8 @@ echo
 
 echo -n "| Viral % Read Count |"
 for s in ${samples} ; do
-	a=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.viral.bam.aligned_count.txt 2> /dev/null )
-	u=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.viral.bam.unaligned_count.txt 2> /dev/null )
+	a=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.viral.bam.aligned_count.txt 2> /dev/null )
+	u=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.viral.bam.unaligned_count.txt 2> /dev/null )
 	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
 done
@@ -263,17 +230,118 @@ echo
 
 echo -n "| Not viral Paired R1 Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.notviral.1.fqgz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.1.fqgz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
 echo -n "| Not viral Paired R2 Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.notviral.2.fqgz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.2.fqgz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
+
+
+echo -n "| HG38 Read Count |"
+for s in ${samples} ; do
+	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.hg38.bam.aligned_count.txt 2> /dev/null )
+	c=$( echo "scale=0;  ${c} / 2" | bc -l 2> /dev/null)
+	echo -n " ${c} |"
+done
+echo
+
+echo -n "| HG38 % Read Count |"
+for s in ${samples} ; do
+	a=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.hg38.bam.aligned_count.txt 2> /dev/null )
+	u=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.hg38.bam.unaligned_count.txt 2> /dev/null )
+	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
+	echo -n " ${c} |"
+done
+echo
+
+echo -n "| Not hg38 Paired R1 Read Count |"
+for s in ${samples} ; do
+	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.nothg38.1.fqgz.read_count.txt 2> /dev/null)
+	echo -n " ${c} |"
+done
+echo
+
+echo -n "| Not hg38 Paired R2 Read Count |"
+for s in ${samples} ; do
+	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.notviral.nothg38.2.fqgz.read_count.txt 2> /dev/null)
+	echo -n " ${c} |"
+done
+echo
+
+
+
+
+
+
+#echo -n "| HG38 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.hg38.bam.aligned_count.txt 2> /dev/null )
+#	c=$( echo "scale=0;  ${c} / 2" | bc -l 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| HG38 % Read Count |"
+#for s in ${samples} ; do
+#	a=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.hg38.bam.aligned_count.txt 2> /dev/null )
+#	u=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.hg38.bam.unaligned_count.txt 2> /dev/null )
+#	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Not hg38 Paired R1 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.1.fqgz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Not hg38 Paired R2 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.2.fqgz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#
+#
+#echo -n "| Viral Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.viral.bam.aligned_count.txt 2> /dev/null )
+#	c=$( echo "scale=0;  ${c} / 2" | bc -l 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Viral % Read Count |"
+#for s in ${samples} ; do
+#	a=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.viral.bam.aligned_count.txt 2> /dev/null )
+#	u=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.viral.bam.unaligned_count.txt 2> /dev/null )
+#	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Not viral Paired R1 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.notviral.1.fqgz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Not viral Paired R2 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.format.t1.t3.notphiX.nothg38.notviral.2.fqgz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
 
 
