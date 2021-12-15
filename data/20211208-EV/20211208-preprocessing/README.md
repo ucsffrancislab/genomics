@@ -20,7 +20,7 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' noumi_report.md > noumi_report.csv
 ```
 
 
-Something is wonky
+Something is wonky. Awful consolidation
 
 ```
 
@@ -33,17 +33,6 @@ Something is wonky
 ~/.local/bin/bowtie2.bash --no-unal --threads 8 -x /francislab/data1/refs/bowtie2/phiX --very-sensitive-local -1 out/SFHH009A.quality.format.consolidate.R1.fastq.gz -2 out/SFHH009A.quality.format.consolidate.R2.fastq.gz -o SFHH009A.quality.format.consolidate.phiX.bam &
 
 ```
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -66,9 +55,9 @@ ln -s /francislab/data1/refs/sources/mirbase.org/pub/mirbase/CURRENT/hsa.v22.hg3
 
 
 
-featureCounts -a mirna.gff -t miRNA_primary_transcript -g Name -o feature_counts.mirna.tsv out/*hg38.bam
+featureCounts -a mirna.gff -t miRNA_primary_transcript -g Name -o feature_counts.mirna.tsv out_noumi/*.quality.format.t1.t3.notphiX.notviral.hg38.bam
 
-featureCounts -a genes.gff -t transcript -g gene_name -o feature_counts.genes.tsv out/*hg38.bam
+featureCounts -a genes.gff -t transcript -g gene_name -o feature_counts.genes.tsv out_noumi/*.quality.format.t1.t3.notphiX.notviral.hg38.bam
 ```
 
 
@@ -80,6 +69,13 @@ BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV"
 curl -netrc -X MKCOL "${BOX}/"
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211208-preprocessing"
 curl -netrc -X MKCOL "${BOX}/"
+
+
+curl -netrc -T feature_counts.genes.tsv "${BOX}/"
+curl -netrc -T feature_counts.genes.tsv.summary.tsv "${BOX}/"
+
+curl -netrc -T feature_counts.mirna.tsv "${BOX}/"
+curl -netrc -T feature_counts.mirna.tsv.summary.tsv "${BOX}/"
 
 for f in out/*fastqc*; do
 echo $f
