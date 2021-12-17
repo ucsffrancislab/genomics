@@ -86,3 +86,34 @@ done
 
 
 
+
+
+
+
+
+```
+for gtf in /francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/*gtf ; do
+echo $gtf
+g=$( basename $gtf .gtf )
+featureCounts -a ${gtf} -t feature -g feature_name -o feature_counts.${g}.tsv out_noumi/*.quality.format.t1.t3.notphiX.notviral.hg38.bam
+
+mv feature_counts.${g}.tsv.summary feature_counts.${g}.summary.tsv
+sed -i -e "1s'out_noumi/''g" -e "1s'.quality.format.t1.t3.notphiX.notviral.hg38.bam''g" feature_counts.${g}.summary.tsv
+sed -i -e "1,2s'out_noumi/''g" -e "1,2s'.quality.format.t1.t3.notphiX.notviral.hg38.bam''g" feature_counts.${g}.tsv
+tail -n +3 feature_counts.${g}.tsv | awk 'BEGIN{FS=OFS="\t"}{s=0;for(i=7;i<=NF;i++)s+=$i;print s"\t"$0}' | sort -k1nr | cut -f2- >> feature_counts.${g}.sorted.tsv 
+done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211208-preprocessing"
+
+for gtf in /francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/*gtf ; do
+g=$( basename $gtf .gtf )
+echo $g
+curl -netrc -T feature_counts.${g}.tsv "${BOX}/"
+curl -netrc -T feature_counts.${g}.sorted.tsv "${BOX}/"
+curl -netrc -T feature_counts.${g}.summary.tsv "${BOX}/"
+done
+```
+
+
