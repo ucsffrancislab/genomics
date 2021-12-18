@@ -45,4 +45,44 @@ done
 
 ```
 
+```
+echo "id,cc" > metadata.csv
+awk 'BEGIN{FS=OFS=","}($5 ~ /(IPMN|MCN)/){print $1,$5}' /francislab/data1/raw/20211208-EV/adapter\ and\ indexes\ for\ QB3_NovaSeq\ SP\ 150PE_SFHH009\ S\ Francis_11-16-2021.csv >> metadata.csv
+```
+
+
+
+NO 7 ( RE_all_repClass_1_raw_counts.RDS ) here or in previous runs?
+Removing from R script expections so now 1-9 instead of 1-10
+```
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/metadata.csv ${PWD}/results id cc NA NA 6 0.5 0.2 k15
+```
+
+
+
+```
+module load r
+
+mkdir -p ${PWD}/results
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/metadata.csv ${PWD}/results id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf results/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/metadata.csv ${PWD}/results id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf results/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/results"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in results/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+
+```
+
 

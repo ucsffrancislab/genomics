@@ -149,7 +149,11 @@ library('gridExtra')
 library(RColorBrewer)
 options(max.print=1000000)
 
-filetypes <- c("GENE", "RE_intron", "RE_exon", "RE_intergenic", "RE_all", "RE_all_repFamily", "RE_all_repClass", "RE_intron_repFamily", "RE_exon_repFamily", "RE_intergenic_repFamily", "")
+#filetypes <- c("GENE", "RE_intron", "RE_exon", "RE_intergenic", "RE_all", "RE_all_repFamily", "RE_all_repClass", "RE_intron_repFamily", "RE_exon_repFamily", "RE_intergenic_repFamily", "")
+#
+#	Rollup Never produces RE_all_repClass???
+#
+filetypes <- c("GENE", "RE_intron", "RE_exon", "RE_intergenic", "RE_all", "RE_all_repFamily", "RE_intron_repFamily", "RE_exon_repFamily", "RE_intergenic_repFamily", "")
 datatypes <-c("_1_raw_counts", "")
 user_filename <-""
 #case_ID_col="RE_names"
@@ -203,6 +207,10 @@ for(i in c(1:nrow(RE_disc$samples))){
 	#	message("ref_id")
 	#	message(ref_id)
 
+
+	#	Filter out samples that have been rolled up but not included in metadata file.
+
+
 	if(length(ref_id)==1){
 		#	message("length ref_id == 1")
 		group_list[i,1] = as.character(covar_groups[ref_id,1])
@@ -238,10 +246,11 @@ if(Cov_check ==TRUE){
 	}
 }
 
+
 # Remove the not present samples 
 if(length(not.present) >=1){
   print(paste("Number of samples not found in covariate file = ", length(not.present), sep = ""))
-  groups_less = group_list[-not.present,1]
+  groups_less = group_list[-not.present,1]	#	????? Typo? Unused? Comment out?
   #second_less = group_list[-not.present,2]
   RE_disc= RE_disc[,-not.present]
   group_less =group_list[-not.present,]
@@ -264,7 +273,15 @@ if(Cov_check == TRUE){
 	RE_disc$samples$group = as.factor(group_less[,1])
 }else{
 	#RE_disc$samples$group = as.factor(group_less) #	JAKE - groups get lost if this is used? All NA. Then all filtered. Then crash.
-	RE_disc$samples$group = as.factor(group_less[,1]) 
+	#message(group_less)	#	IPMNMCNIPMNMCNIPMNMCNIPMNIPMNIPMN
+
+	#RE_disc$samples$group = as.factor(group_less[,1]) 
+	#	Error in h(simpleError(msg, call)) : 
+	#	  error in evaluating the argument 'x' in selecting a method for function 'as.factor': incorrect number of dimensions
+	#	Calls: as.factor ... [ -> [.factor -> NextMethod -> .handleSimpleError -> h
+	#	Execution halted
+	RE_disc$samples$group = as.factor(group_less)
+
 }
 #RE_disc$samples$second = as.factor(group_less[,2])
 
