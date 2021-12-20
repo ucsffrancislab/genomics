@@ -20,9 +20,9 @@ https://www.ncbi.nlm.nih.gov/sra/docs/submitmeta/
 
 ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/
 
-wget ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/NCBI_SRA_Metadata_Full_20211218.tar.gz 
-wget ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/SRA_Accessions.tab 
-wget ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/SRA_Run_Members.tab 
+wget ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/NCBI_SRA_Metadata_Full_20211218.tar.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/SRA_Accessions.tab
+wget ftp://ftp.ncbi.nlm.nih.gov/sra/reports/Metadata/SRA_Run_Members.tab
 
 esearch -db sra -query SRR5070677 | efetch -format runinfo
 
