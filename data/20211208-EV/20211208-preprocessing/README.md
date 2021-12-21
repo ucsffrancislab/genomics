@@ -117,3 +117,20 @@ done
 ```
 
 
+
+KWIP/KHMER test
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time=1440 --nodes=1 --ntasks=16 --mem=120G --job-name="SFHH009H" --output="${PWD}/SFHH009H.khmer.log" load-into-counting.py --max-memory-usage 100G --ksize 13 --threads 16 ${PWD}/out_noumi/SFHH009H.quality.format.t1.t3.notphiX.notviral.1.ct.gz ${PWD}/out_noumi/SFHH009H.quality.format.t1.t3.notphiX.notviral.1.fqgz
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time=1440 --nodes=1 --ntasks=16 --mem=120G --job-name="SFHH009M" --output="${PWD}/SFHH009M.khmer.log" load-into-counting.py --max-memory-usage 100G --ksize 13 --threads 16 ${PWD}/out_noumi/SFHH009M.quality.format.t1.t3.notphiX.notviral.1.ct.gz ${PWD}/out_noumi/SFHH009M.quality.format.t1.t3.notphiX.notviral.1.fqgz
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time=1440 --nodes=1 --ntasks=16 --mem=120G --job-name="SFHH009N" --output="${PWD}/SFHH009N.khmer.log" load-into-counting.py --max-memory-usage 100G --ksize 13 --threads 16 ${PWD}/out_noumi/SFHH009N.quality.format.t1.t3.notphiX.notviral.1.ct.gz ${PWD}/out_noumi/SFHH009N.quality.format.t1.t3.notphiX.notviral.1.fqgz
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time=1440 --nodes=1 --ntasks=64 --mem=499G --job-name="kwip" --output="${PWD}/kwip.log" --wrap="kwip -t 64 -k ${PWD}/test.kern -d ${PWD}/test.dist ${PWD}/out_noumi/SFHH009*.1.ct.gz"
+
+```
+
+
