@@ -27,7 +27,7 @@ while [ $# -gt 0 ] ; do
 #			shift; u=$1; shift;;
 		-o)
 			shift; f=$1; shift;;
-		-r|--ref)
+		-x|-r|--ref)
 			shift; ref=$1; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
@@ -98,6 +98,12 @@ else
 			( !and($2,4) || !and($2,8) ){ print }' > ${TMPDIR}/select.sam
 
 	samtools sort --threads $((threads-1)) -n -o ${scratch_bam} ${TMPDIR}/select.sam
+
+	samtools view -F4 ${scratch_bam} | awk '{print $3}' | gzip > ${scratch_bam}.aligned_sequences.txt.gz
+	chmod a-w ${scratch_bam}.aligned_sequences.txt.gz
+
+	zcat ${scratch_bam}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${scratch_bam}.aligned_sequence_counts.txt
+	chmod a-w ${scratch_bam}.aligned_sequence_counts.txt
 
 	#	Assuming output file is a .bam file
 	scratch_base=${scratch_bam%.bam}
