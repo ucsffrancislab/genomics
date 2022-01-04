@@ -401,6 +401,11 @@ plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 #legend("top", u_groups, col=1:length(u_groups), pch=20)
 
+plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black", labels=RE_disc$samples$sample)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
+#legend("top", u_groups, col=1:length(u_groups), pch=20)
+
 
 
 message("logFC")
@@ -411,13 +416,23 @@ plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 
+plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p, labels=RE_disc$samples$sample)
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
+
 
 
 #Normalization for PCA and t-SNE, not exactly the same 
 normcounts = 1e6*cpm(RE_disc, normalized.lib.sizes=T)
 message("PCA")
+
 ## Perform PCA analysis and make plot
 plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
+plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
+legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
+
+## Perform PCA analysis and make plot
+plotPCA(normcounts, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 
@@ -458,10 +473,9 @@ plotBCV(d1)
 
 # Design Matrix -----------------------------------------------------------------------
 if(Cov_check ==TRUE){
-design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group",covs)]  )
+	design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group",covs)]  )
 }else{
   design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group")]  )
-  
 }
 head(design.mat)
 
@@ -484,30 +498,26 @@ colnames(contrasts)= colnames(design.mat)
 for(nc in c(1:n_contrasts)){
   contrasts[nc,combos[nc,1]] =1
   contrasts[nc,combos[nc,2]] =-1
-  
-  
 }
 
 sig_trans = c()
 
 for(nc in c(1:n_contrasts)){
-lrt <- glmLRT(fit, contrast=contrasts[nc,])
-glmt = topTags(lrt, n=1000)
-#glmt = glmt[glmt$table$FDR <alpha_thresh,]
-#glmt = glmt[which(abs(glmt$table$logFC)>logFC_thresh),]
+	lrt <- glmLRT(fit, contrast=contrasts[nc,])
+	glmt = topTags(lrt, n=1000)
+	#glmt = glmt[glmt$table$FDR <alpha_thresh,]
+	#glmt = glmt[which(abs(glmt$table$logFC)>logFC_thresh),]
 
-print(glmt[,-which(colnames(glmt) == "LR")])
+	print(glmt[,-which(colnames(glmt) == "LR")])
 
-
-#sig_trans = c(sig_trans, row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])   )
-pass_logFC= row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])
-pass_alpha = row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])
-pass_both = intersect(pass_logFC, pass_alpha)
-if(length(pass_both) > 0){
-sig_trans = c(sig_trans, pass_both)
-}
-#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
-
+	#sig_trans = c(sig_trans, row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])   )
+	pass_logFC= row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])
+	pass_alpha = row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])
+	pass_both = intersect(pass_logFC, pass_alpha)
+	if(length(pass_both) > 0){
+		sig_trans = c(sig_trans, pass_both)
+	}
+	#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
 }
 
 
@@ -529,11 +539,8 @@ for( gene in to_plot){
     geom_jitter(color="black", size=0.4, alpha=0.7) +
     theme(axis.text.x = element_blank())+
     labs(fill = group_col)
-  
-  
+ 
   message(p)
-  
-  
 }
 
 
@@ -548,60 +555,62 @@ sig.loc = mat.or.vec(length(sig.results), 1)
 
 if(length(sig.loc) >1){
   
+	for(i in c(1:length(sig.results))){
   
-for(i in c(1:length(sig.results))){
-  
-  sig.loc[i] = which(row.names(normcounts) == sig.results[i])
-}
-normcounts = normcounts[sig.loc,]
+  	sig.loc[i] = which(row.names(normcounts) == sig.results[i])
+	}
+	normcounts = normcounts[sig.loc,]
 
-gaps =c()
-# Need to reorder the data so that it is collected by group
-ordered= c()
-for(k in c(1:length(col_groups))){
-  ordered = c(ordered,which(RE_disc$samples$group ==col_groups[k]) )
-  if(k!=length(col_groups)){
-  gaps=c(gaps,length(ordered))
-  }
-}
-normcounts = normcounts[,as.integer(ordered)]
-Groups = RE_disc$samples$group
-names(Groups) = rownames(RE_disc$samples)
+	gaps =c()
+	# Need to reorder the data so that it is collected by group
+	ordered= c()
+	for(k in c(1:length(col_groups))){
+  	ordered = c(ordered,which(RE_disc$samples$group ==col_groups[k]) )
+  	if(k!=length(col_groups)){
+  		gaps=c(gaps,length(ordered))
+  	}
+	}
+	normcounts = normcounts[,as.integer(ordered)]
+	Groups = RE_disc$samples$group
+	names(Groups) = rownames(RE_disc$samples)
 
-##if(strsplit(filename, split ="")[[1]][1] =="R" ){
-  ##family colors 
-  ##fams = RE_disc$genes$repFamily[sig.loc]
-  ##classes = RE_disc$genes$repClass[sig.loc]
+	##if(strsplit(filename, split ="")[[1]][1] =="R" ){
+  	##family colors 
+  	##fams = RE_disc$genes$repFamily[sig.loc]
+  	##classes = RE_disc$genes$repClass[sig.loc]
+ 	 
+  	##repFamilies= data.frame(as.factor(fams))
+  	##repFamilies$repClass = as.factor(classes)
+  	##row.names(repFamilies)=sig.results
+  	##colnames(repFamilies)= c("repFamily", "repClass")
+  	##repFamilies = repFamilies[,c(2,1)]
+  	##heatmap(normcounts, Colv= NA, ColSideColors = colSide, scale = "row", col=brewer.pal(11,"RdBu"))
   
-  ##repFamilies= data.frame(as.factor(fams))
-  ##repFamilies$repClass = as.factor(classes)
-  ##row.names(repFamilies)=sig.results
-  ##colnames(repFamilies)= c("repFamily", "repClass")
-  ##repFamilies = repFamilies[,c(2,1)]
-  ##heatmap(normcounts, Colv= NA, ColSideColors = colSide, scale = "row", col=brewer.pal(11,"RdBu"))
-  
-##  pheat.plot=pheatmap(normcounts, cluster_rows = T,scale="row", cluster_cols = F,annotation_col = data.frame(Groups),col=brewer.pal(11,"RdYlGn"), annotation_row=data.frame(repFamilies)  )
+	##  pheat.plot=pheatmap(normcounts, cluster_rows = T,scale="row", cluster_cols = F,annotation_col = data.frame(Groups),col=brewer.pal(11,"RdYlGn"), annotation_row=data.frame(repFamilies)  )
+
   colorpal= rev(brewer.pal(11,"RdBu"))
-##}else{
+
+	##}else{
+
   pheat.plot=pheatmap(log(normcounts+0.01,base = 2), cluster_rows = T,scale="row", cluster_cols = F,annotation_col = data.frame(Groups),col=colorpal,show_colnames = FALSE ,gaps_col=gaps, main = paste(group_col, ": log_2 REdiscoverTE ", filetypes[filetype], sep ="") )
   pheat.plot.clust = pheatmap(log(normcounts+0.01,base = 2), cluster_rows = T,scale="row", cluster_cols = T,annotation_col = data.frame(Groups),col=colorpal,show_colnames = FALSE ,gaps_col=gaps, main = paste(group_col, ": log_2 REdiscoverTE ", filetypes[filetype], " clustered", sep ="") )
   
-##}
+	##}
 
-message("See corresponding PDF for a better version of this heatmap.")
-save_pheatmap_pdf <- function(z, filename, width=30, height=20) {
-  stopifnot(!missing(z))
-  stopifnot(!missing(filename))
-  pdf(filename, width=width, height=height)
-  grid::grid.newpage()
-  grid::grid.draw(z$gtable)
-  dev.off()
-}
-save_pheatmap_pdf(pheat.plot,  paste(out_dir,"/",date,".",group_col,".",user_filename,filetypes[filetype],".alpha_",alpha_thresh,".logFC_",logFC_thresh,".NoQuestion.heatmap.pdf", sep=""))
-save_pheatmap_pdf(pheat.plot.clust,  paste(out_dir,"/",date,".",group_col,".",user_filename,filetypes[filetype],".alpha_",alpha_thresh,".logFC_",logFC_thresh,".NoQuestion.clustered.heatmap.pdf", sep=""))
+	message("See corresponding PDF for a better version of this heatmap.")
+	save_pheatmap_pdf <- function(z, filename, width=30, height=20) {
+  	stopifnot(!missing(z))
+  	stopifnot(!missing(filename))
+  	pdf(filename, width=width, height=height)
+  	grid::grid.newpage()
+  	grid::grid.draw(z$gtable)
+  	dev.off()
+	}
+	save_pheatmap_pdf(pheat.plot,  paste(out_dir,"/",date,".",group_col,".",user_filename,filetypes[filetype],".alpha_",alpha_thresh,".logFC_",logFC_thresh,".NoQuestion.heatmap.pdf", sep=""))
+	save_pheatmap_pdf(pheat.plot.clust,  paste(out_dir,"/",date,".",group_col,".",user_filename,filetypes[filetype],".alpha_",alpha_thresh,".logFC_",logFC_thresh,".NoQuestion.clustered.heatmap.pdf", sep=""))
 
 }else{
-  message("Not enough significant results at these thresholds to plot a heatmap.")
+ 	message("Not enough significant results at these thresholds to plot a heatmap.")
 }
 
 # # -------------------- Pie Charts -------------------------------------------------
