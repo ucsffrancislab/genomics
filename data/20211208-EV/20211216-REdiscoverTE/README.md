@@ -82,7 +82,171 @@ for f in results/* ; do
 echo $f
 curl -netrc -T ${f} "${BOX}/"
 done
+```
 
+
+
+```
+module load r
+
+mkdir -p ${PWD}/high_low_1
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low.csv ${PWD}/high_low_1 id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf high_low/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low.csv ${PWD}/high_low_1 id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf high_low_1/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/high_low_1"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in high_low.csv high_low_1/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+
+```
+module load r
+
+mkdir -p ${PWD}/high_low_plus_1
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low_plus.csv ${PWD}/high_low_plus_1 id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf high_low_plus/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low_plus.csv ${PWD}/high_low_plus_1 id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf high_low_plus_1/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/high_low_plus_1"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in high_low_plus.csv high_low_plus_1/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+
+
+
+
+```
+module load r
+
+mkdir -p ${PWD}/high_low_2
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low.csv ${PWD}/high_low_2 id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf high_low/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low.csv ${PWD}/high_low_2 id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf high_low_2/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/high_low_2"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in high_low.csv high_low_2/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+```
+module load r
+
+mkdir -p ${PWD}/high_low_plus_2
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low_plus.csv ${PWD}/high_low_plus_2 id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf high_low_plus_2/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/high_low_plus.csv ${PWD}/high_low_plus_2 id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf high_low_plus_2/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/high_low_plus_2"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in high_low_plus.csv high_low_plus_2/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+```
+module load r
+
+mkdir -p ${PWD}/plot_1
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/plot.csv ${PWD}/plot_1 id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf plot_1/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/plot.csv ${PWD}/plot_1 id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf plot_1/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/plot_1"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in plot.csv plot_1/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+```
+module load r
+
+mkdir -p ${PWD}/plot_2
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/plot_2.csv ${PWD}/plot_2 id cc NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf plot_2/k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup ${PWD}/plot_2.csv ${PWD}/plot_2 id cc NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf plot_2/k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE/plot_2"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in plot_2.csv plot_2/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
 ```
 
 
