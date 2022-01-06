@@ -66,23 +66,88 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 	~/.local/bin/paired_reads_select_scratch.bash \
 		--threads 8 \
-		-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/RMhg38masked \
+		-x /francislab/data1/working/20211111-hg38-viral-homology/double_masked_viral \
 		--very-sensitive-local -1 ${r1} -2 ${r2} -o ${f%.R1.fastq.gz}.bam
+		#-x /francislab/data1/working/20211122-Homology-Paper/bowtie2/RMhg38masked \
 fi
 
 
-ir1=${f}
-ir2=${f%.R1.fastq.gz}.R2.fastq.gz
+#ir1=${f}
+#ir2=${f%.R1.fastq.gz}.R2.fastq.gz
+#
+#outbase=${outbase}.hg38
+#f=${outbase}.bam
+#if [ -f $f ] && [ ! -w $f ] ; then
+#	echo "Write-protected $f exists. Skipping."
+#else
+#	~/.local/bin/bowtie2.bash --sort --threads 8 \
+#		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
+#		--very-sensitive-local -1 ${ir1} -2 ${ir2} -o ${f}
+#fi
 
-outbase=${outbase}.hg38
-f=${outbase}.bam
-if [ -f $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
+
+
+#vbam=${OUT}/${s}.viral.bam
+#
+#viruses=$( cat ${vbam}.aligned_sequence_counts.txt | awk '{print $2}' | sort | uniq )
+#
+#for v in ${viruses} ; do
+#
+#	f=${vbam%.bam}.hg38.bam.${v}.count.txt
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		echo "Creating $f"
+#
+#		samtools view ${vbam} 2> /dev/null | grep ${v} | awk '{print "^"$1"\t"}' | uniq > ${vbam}.${v}.seqs
+#
+#		samtools view -f64 ${vbam%.bam}.hg38.bam 2> /dev/null | grep -f ${vbam}.${v}.seqs | gawk '( !and($2,4) || !and($2,8) ){ print }' | wc -l > ${f}
+#
+#		chmod a-w $f
+#	fi
+#
+#done
+
+#outbase=${OUT}/${s}.viral
+
+f=${outbase}
+if [ -d $f ] ; then
+	echo "Dir $f exists. Skipping."
 else
-	~/.local/bin/bowtie2.bash --sort --threads 8 \
-		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
-		--very-sensitive-local -1 ${ir1} -2 ${ir2} -o ${f}
+	echo "Creating $f"
+	${PWD}/bam_to_fastq_by_refseq.bash ${f}.bam
 fi
+
+inbase=${outbase}
+for r1 in ${inbase}/*.R1.fastq.gz ; do
+
+	outbase=${r1%.R1.fastq.gz}
+
+	f=${outbase}.hg38.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+
+		~/.local/bin/bowtie2.bash --sort --threads 8 \
+			-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_no_alts \
+			--very-sensitive-local -1 ${r1} -2 ${r1/.R1./.R2.} -o ${f}
+
+	fi
+
+	f=${outbase}.hg38.bam.mapped_pair_read_count.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+
+		~/.local/bin/count_mapped_paired_reads.bash ${outbase}.hg38.bam
+
+	fi
+
+done
+
+
 
 date
 exit
