@@ -101,3 +101,15 @@ rename tsv.summary summary.tsv *summary
 
 
 
+
+
+
+
+```BASH
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210909-RetroElement"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in *tsv ;do echo $f; curl -netrc -T $f "${BOX}/" ; done
+```
+
+
