@@ -25,7 +25,7 @@ rawdir=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofast
 #	done
 
 
-samples=$( ls -1 ${rawdir}/0*_R1.fastq.gz | xargs -I% basename % _R1.fastq.gz )
+samples=$( ls -1 ${rawdir}/*_R1.fastq.gz | xargs -I% basename % _R1.fastq.gz )
 
 #ls -1 /francislab/data1/raw/20211208-EV/S*_R1_*fastq.gz | awk -F/ '{print $NF}' | awk -F_ '{print $1}'
 #samples="SFHH008A SFHH008B SFHH008C SFHH008D SFHH008E SFHH008F"
@@ -79,8 +79,8 @@ echo
 
 
 #viruses=$( zcat ${dir}/*.viral.bam.aligned_sequences.txt.gz | uniq | sort | uniq )	 #	too long
-#viruses=$( cat out/0*.viral.bam.aligned_sequence_counts.txt | awk '{print $2}' | sort | uniq )	#	~6000
-viruses="NC_000898.1 NC_001664.4 NC_001716.2 NC_001798.2 NC_001806.2 NC_006273.2 NC_006577.2 NC_007605.1 NC_009333.1 NC_009334.1"
+viruses=$( cat out/*.viral.bam.aligned_sequence_counts.txt | awk '{print $2}' | sort | uniq )	#	~6000
+#viruses="NC_000898.1 NC_001664.4 NC_001716.2 NC_001798.2 NC_001806.2 NC_006273.2 NC_006577.2 NC_007605.1 NC_009333.1 NC_009334.1"
 for v in ${viruses} ; do
 	echo -n "| ${v} Count |"
 	for s in ${samples} ; do
