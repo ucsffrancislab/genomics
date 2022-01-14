@@ -79,8 +79,8 @@ echo
 
 
 #viruses=$( zcat ${dir}/*.viral.bam.aligned_sequences.txt.gz | uniq | sort | uniq )	 #	too long
-#viruses=$( cat out/*.viral.bam.aligned_sequence_counts.txt | awk '{print $2}' | sort | uniq )	#	~6000
-viruses="NC_000898.1 NC_001664.4 NC_001716.2 NC_001798.2 NC_001806.2 NC_006273.2 NC_006577.2 NC_007605.1 NC_009333.1 NC_009334.1"
+viruses=$( cat out/*.viral.bam.aligned_sequence_counts.txt | awk '{print $2}' | sort | uniq )	#	~6000
+#viruses="NC_000898.1 NC_001664.4 NC_001716.2 NC_001798.2 NC_001806.2 NC_006273.2 NC_006577.2 NC_007605.1 NC_009333.1 NC_009334.1"
 for v in ${viruses} ; do
 	echo -n "| ${v} Count |"
 	for s in ${samples} ; do
