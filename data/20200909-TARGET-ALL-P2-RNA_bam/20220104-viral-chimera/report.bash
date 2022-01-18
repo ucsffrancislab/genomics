@@ -10,19 +10,19 @@ dir=out
 
 rawdir=/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20200910-bamtofastq/out
 
-#	for fastq in ${rawdir}/*_R1.fastq.gz ; do
-#		basename=$( basename $fastq .fastq.gz )
-#	#	basename=${basename%%_*}
-#	#	basename=${basename%_001}
-#		r=${basename##*_}
-#		basename=${basename%%_*}
-#		#\rm {dir}/${basename}_${r}.fastq.gz 2> /dev/null
-#		ln -s ${fastq} ${dir}/${basename}_${r}.fastq.gz 2> /dev/null
-#		#\rm ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
-#		ln -s ${fastq}.read_count.txt ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
-#	
-#		ln -s ${fastq}.average_length.txt ${dir}/${basename}_${r}.fastq.gz.average_length.txt 2> /dev/null
-#	done
+for fastq in ${rawdir}/*_R1.fastq.gz ; do
+	basename=$( basename $fastq .fastq.gz )
+#	basename=${basename%%_*}
+#	basename=${basename%_001}
+	r=${basename##*_}
+	basename=${basename%%_*}
+	#\rm {dir}/${basename}_${r}.fastq.gz 2> /dev/null
+	ln -s ${fastq} ${dir}/${basename}_${r}.fastq.gz 2> /dev/null
+	#\rm ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
+	ln -s ${fastq}.read_count.txt ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
+
+#	ln -s ${fastq}.average_length.txt ${dir}/${basename}_${r}.fastq.gz.average_length.txt 2> /dev/null
+done
 
 
 samples=$( ls -1 ${rawdir}/*_R1.fastq.gz | xargs -I% basename % _R1.fastq.gz )
@@ -72,7 +72,8 @@ echo -n "| HG38 aligned pair Count |"
 for s in ${samples} ; do
 #	c=$( samtools view -f64 -F4 -c ${dir}/${s}.viral.hg38.bam 2> /dev/null)	#	ehh
 #	c=$( samtools view -f64 ${dir}/${s}.viral.hg38.bam 2> /dev/null | gawk '( !and($2,4) || !and($2,8) ){ print }' | wc -l )
-	c=$( cat ${dir}/${s}.viral.hg38.bam.mapped_pair_read_count.txt 2> /dev/null )
+#	c=$( cat ${dir}/${s}.viral.hg38.bam.mapped_pair_read_count.txt 2> /dev/null )
+	c=$( cat ${dir}/${s}.viral/*.hg38.bam.mapped_pair_read_count.txt 2> /dev/null | awk '{s+=$1}END{print s}' )
 	echo -n " ${c} |"
 done
 echo
@@ -82,7 +83,7 @@ echo
 viruses=$( cat out/*.viral.bam.aligned_sequence_counts.txt | awk '{print $2}' | sort | uniq )	#	~6000
 #viruses="NC_000898.1 NC_001664.4 NC_001716.2 NC_001798.2 NC_001806.2 NC_006273.2 NC_006577.2 NC_007605.1 NC_009333.1 NC_009334.1"
 for v in ${viruses} ; do
-	echo -n "| ${v} Count |"
+	echo -n "| ${v} |"
 	for s in ${samples} ; do
 		#c=$( samtools view -F68 -c ${dir}/${s}.viral.hg38.bam 2> /dev/null)
 		#samtools view out/02-0047-01A-01R-1849-01+2.viral.bam | grep NC_001806.2 | awk '{print $1}' | uniq
