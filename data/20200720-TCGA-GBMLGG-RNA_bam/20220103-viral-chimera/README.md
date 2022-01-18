@@ -14,7 +14,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-895%8 --job
 ```
 
 
-./report.bash > report.md
+nohup ./report.bash > report.md &
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 
 

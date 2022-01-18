@@ -16,6 +16,8 @@ set -x
 
 #	bam_to_fastq_by_refseq.bash *.viral.bam
 
+#	Split aligned reads into separate fastq files by aligned reference sequences.
+
 #	Expecting sorted by name to preserve synchronicity of pair
 
 while [ $# -gt 0 ] ; do
