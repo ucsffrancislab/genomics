@@ -251,7 +251,33 @@ fi
 done
 ```
 
+```
 scontrol update ArrayTaskThrottle=3 JobId=314636
+```
+
+
+
+
+
+
+
+Evaluate masked region sizes
+
+```
+cat /francislab/data1/working/20211111-hg38-viral-homology/out/split.vsl/AC_000002.1.split.25.mask.bed |  awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$3-$2+1}'
+
+for f in $( find /francislab/data1/working/20211111-hg38-viral-homology/out/raw_beds/ -name \*.split.25.mask.bed ) ; do awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$3-$2+1}' $f ; done > bed_files_with_region_lengths.raw.txt &
+for f in $( find /francislab/data1/working/20211111-hg38-viral-homology/out/mask_beds/ -name \*.split.25.mask.bed ) ; do awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$3-$2+1}' $f ; done > bed_files_with_region_lengths.masked.txt &
+
+
+
+awk '($2=="N"){s+=$1}END{print s}' /francislab/data1/working/20211111-hg38-viral-homology/out/raw_base_count/*.base_count.txt
+1055822
+
+awk '($2=="N"){s+=$1}END{print s}' /francislab/data1/working/20211111-hg38-viral-homology/out/mask_base_count/*.base_count.txt
+3998708
+
+```
 
 
 
