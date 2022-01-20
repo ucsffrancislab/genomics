@@ -1,0 +1,39 @@
+
+
+
+
+shred.sh in=B.fa out=shredded.fa length=80 minlength=70 overlap=40
+bbmap.sh ref=A.fa in=shredded.fa outm=mapped.sam minid=0.85 maxindel=2
+bbmask.sh in=A.fa out=masked.fa entropy=0.7 sam=mapped.sam
+
+
+
+
+
+shred.sh in=B.fa out=Bshredded.fa length=80 minlength=70 overlap=40
+bbmap.sh ref=A.fa in=Bshredded.fa outm=Bmapped.sam minid=0.85 maxindel=2
+bbmask.sh in=A.fa out=Amasked.fa entropy=0.7 sam=Bmapped.sam
+
+
+
+
+
+#~/.local/BBMap/shred.sh in=chr21.fa out=shredded/chr21.fa length=50 minlength=30 overlap=25
+#~/.local/BBMap/bbmap.sh ref=/francislab/data1/refs/bowtie2/SVAs_and_HERVs_KWHE/SVAs_and_HERVs_KWHE/HERVK113.fa in=shredded/chr21.fa outm=shredded/chr21.sam minid=0.85 maxindel=2
+#~/.local/BBMap/bbmask.sh in=chr21.fa out=shredded/chr21masked.fa entropy=0.7 sam=shredded/chr21.sam fastawrap=50
+#~/.local/BBMap/bbmask.sh in=/francislab/data1/refs/bowtie2/SVAs_and_HERVs_KWHE/SVAs_and_HERVs_KWHE/HERVK113.fa out=shredded/chr21maskedx.fa entropy=0.7 sam=shredded/chr21.sam fastawrap=50
+
+
+Something is off. Doesn't map as much as I'd expect and there are gaps.
+
+
+~/.local/BBMap/shred.sh in=/francislab/data1/refs/bowtie2/SVAs_and_HERVs_KWHE/SVAs_and_HERVs_KWHE/HERVK113.fa out=shredded/HERVK113.fa length=50 minlength=30 overlap=25
+
+~/.local/BBMap/bbmap.sh ref=chr21.fa in=shredded/HERVK113.fa outm=shredded/HERVK113.chr21.sam minid=0.85 maxindel=2 ambiguous=all
+
+~/.local/BBMap/bbmask.sh in=chr21.fa out=shredded/masked/chr21.fa entropy=0.7 sam=shredded/HERVK113.chr21.sam fastawrap=50
+
+~/.local/BBMap/bbmap.sh ref=chr6.fa in=shredded/HERVK113.fa outm=shredded/HERVK113.chr6.sam minid=0.85 maxindel=2 ambiguous=all
+
+~/.local/BBMap/bbmask.sh in=chr6.fa out=shredded/masked/chr6.fa entropy=0.7 sam=shredded/HERVK113.chr6.sam fastawrap=50
+
