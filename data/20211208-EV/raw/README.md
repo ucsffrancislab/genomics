@@ -60,3 +60,28 @@ done
 
 
 
+
+
+
+```
+for l in 4 6 8 10 12 14 16 18 20 22 24 26 28 30 ; do
+for s in A B ; do
+for r in 1 2 ; do
+A=$( printf %${l}s | tr " " "A" )
+T=$( printf %${l}s | tr " " "T" )
+f=$( ls SFHH009${s}*_L001_R${r}_001.fastq.gz )
+echo ${r} - ${s} - ${l} - ${A} - ${f}
+zcat $f | sed -n '2~4p' | egrep -c "${A}|${T}" > ${f}.${l}AT_count.txt
+done ; done ; done
+
+```
+
+
+
+```
+./polyAT.bash > polyAT.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' polyAT.md > polyAT.csv
+```
+
+
+
