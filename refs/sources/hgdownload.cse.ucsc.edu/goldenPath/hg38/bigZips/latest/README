@@ -38,6 +38,9 @@ sbatch --time=3600 --ntasks=16 --mem=120G --job-name alts --output ${PWD}/alts.o
 sbatch --time=3600 --ntasks=64 --mem=490G --job-name build --output ${PWD}/hg38.chrXYM_alts.viral.txt ${PWD}/bowtie2-build.bash --threads 64 ${PWD}/hg38.chrXYM_alts.fa.gz,/francislab/data1/refs/refseq/viral-20210916/viral.genomic.fna.gz ${PWD}/hg38.chrXYM_alts.viral
 
 
+sbatch --time=3600 --ntasks=64 --mem=490G --job-name build --output ${PWD}/hg38.chrXYM_alts.dblmaskviral.txt ${PWD}/bowtie2-build.bash --threads 64 ${PWD}/hg38.chrXYM_alts.fa.gz,/francislab/data1/working/20211111-hg38-viral-homology/for_reference.fasta ${PWD}/hg38.chrXYM_alts.dblmaskviral
+
+
 
 
 
