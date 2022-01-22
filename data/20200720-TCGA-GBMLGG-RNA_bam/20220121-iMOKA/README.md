@@ -1,6 +1,28 @@
 
 
-Reference /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA
+Reference `/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA`
+
+
+`/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/WY-A85E-01A-11R-A36H-07+1_R1.fastq.gz`
+
+Tumors only. Did I check this? Make sure that these samples are only 01
+```
+while read subject field; do
+s=${subject#TCGA-}
+f=$( ls ${PWD}/raw/${s}-01* 2> /dev/null | paste -sd";" )
+if [ -n "${f}" ] ; then
+field=${field/,/}
+field=${field/ /_}
+echo -e "${s}\t${field}\t${f}"
+fi
+done < <( tail -n +2 TCGA.Glioma.metadata.tsv | awk 'BEGIN{FS=OFS="\t"}{print $1,$8}' ) > source.IDH.check.tsv
+```
+
+
+
+
+
+
 
 
 
