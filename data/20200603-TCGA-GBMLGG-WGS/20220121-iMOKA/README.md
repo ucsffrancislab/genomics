@@ -22,7 +22,7 @@ ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/??
 ```
 while read subject field; do
 s=${subject#TCGA-}
-f=$( ls /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/${s}-01* 2> /dev/null | paste -sd";" )
+f=$( ls /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/${s}-01*fastq.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 field=${field/,/}
 field=${field/ /_}
@@ -76,7 +76,8 @@ shuf --head-count ${mc} source.IDH.WT.tsv >> source.IDH.80b.tsv
 shuf --head-count ${mc} source.IDH.WT.tsv >> source.IDH.80c.tsv
 ```
 
-
+Create subdirs
+Link preprocess dir from previous runs.
 ```
 for k in 11 21 31 ; do
 for s in 80a 80b 80c ; do
@@ -112,27 +113,25 @@ done ; done
 
 
 
-
-
-
-
+Prepare create_matrix.tsv for each dir
+```
+for k in 11 21 31 ; do
+for s in 80a 80b 80c ; do
+dir1=${PWD}/IDH.${k}
+dir2=${PWD}/IDH.${k}.${s}
+sed "s'${dir1}'${dir2}'" ${dir1}/create_matrix.tsv > ${dir2}/create_matrix.tsv
+done ; done
+```
 
 ```
 date=$( date "+%Y%m%d%H%M%S" )
-mkdir ${PWD}/11.IDH
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=11.IDH --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/11.IDH/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/11.IDH --source-file ${PWD}/source.IDH.tsv
 
-
-
-
-
-
-./iMOKA_scratch.bash --step create --field IDH --k 31 --subset 80a
-./iMOKA_scratch.bash --step create --field IDH --k 31 --subset 80b
-
-./iMOKA_scratch.bash --step create --field IDH --k 21 --subset 80a
-
-./iMOKA_scratch.bash --step create --field IDH --k 11 --subset 80a
+for k in 11 ; do
+for s in a b c ; do
+sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G \
+ --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
+ ${PWD}/iMOKA_scratch.bash --dir ${PWD}/IDH.${k}.80${s} --source-file ${PWD}/source.IDH.80${s}.tsv -k ${k} --step create
+done ; done
 
 ```
 
