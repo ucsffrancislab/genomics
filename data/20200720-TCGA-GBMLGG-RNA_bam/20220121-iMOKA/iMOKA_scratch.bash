@@ -13,11 +13,11 @@ fi
 set -x
 
 threads=${SLURM_NTASKS:-1}
-img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.4.img
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 k=31
 mem=7		#	per thread (keep 7)
 step="preprocess"
-source_file="${PWD}/source.tsv"
+#source_file="${PWD}/source.tsv"
 
 
 export SINGULARITY_BINDPATH=/francislab,/scratch
@@ -32,8 +32,8 @@ while [ $# -gt 0 ] ; do
 			shift; dir=$1; shift;;
 		--k)
 			shift; k=$1; shift;;
-		--source_file)
-			shift; source_file=$1; shift;;
+#		--source_file)
+#			shift; source_file=$1; shift;;
 		--step)
 			shift; step=$1; shift;;
 		--threads)
@@ -48,6 +48,7 @@ trap "{ chmod -R a+w $TMPDIR ; }" EXIT
 
 date
 
+cp config.json ${dir}/
 cp ${dir}/config.json ${TMPDIR}/
 
 
