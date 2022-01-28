@@ -46,14 +46,23 @@ samtools fastq -1 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2
 bowtie2.bash -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/chr14 -1 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive -o NC_038858.1-and-chr14.merged.hg38viral.chimeric.chr14.bam
 bowtie2.bash -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts -1 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive -o NC_038858.1-and-chr14.merged.hg38viral.chimeric.hg38.chrXYM_alts.bam
  
-
-
-
 samtools view -h merged.hg38viral.chimeric.bam | awk -F"\t" '( /^@/ ) || ( ( $3 == "chr14" ) && ( $7 == "NC_001506.1" ) ) || ( ( $3 == "NC_001506.1" ) && ( $7 == "chr14" ) )' | samtools sort -n -o NC_001506.1-and-chr14.merged.hg38viral.chimeric.bam -
 samtools fastq -1 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz NC_001506.1-and-chr14.merged.hg38viral.chimeric.bam
 bowtie2.bash -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/chr14 -1 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive -o NC_001506.1-and-chr14.merged.hg38viral.chimeric.chr14.bam
 bowtie2.bash -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts -1 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive -o NC_001506.1-and-chr14.merged.hg38viral.chimeric.hg38.chrXYM_alts.bam
+
+
+bowtie2.bash --sort -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/chr14 -1 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive-local -o NC_038858.1-and-chr14.merged.hg38viral.chimeric.chr14.local.bam
+bowtie2.bash --sort -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/chr14 -1 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive-local -o NC_001506.1-and-chr14.merged.hg38viral.chimeric.chr14.local.bam
+
+bowtie2.bash --sort -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/chr14 -1 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive -o NC_038858.1-and-chr14.merged.hg38viral.chimeric.chr14.test.bam --score-min C,-60,0 
+bowtie2.bash --sort -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/chr14 -1 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz --very-sensitive -o NC_001506.1-and-chr14.merged.hg38viral.chimeric.chr14.test.bam --score-min C,-60,0 
 ```
+
+
+--score-min L,-0.6,-0.6  default
+
+--score-min C,-60,0
 
 
 
