@@ -23,8 +23,6 @@ done < <( tail -n +2 TCGA.Glioma.metadata.tsv | awk 'BEGIN{FS=OFS="\t"}{print $1
 Create source.IDH.tsv for ALL IDH samples that are either Mutant or Wildtype ...
 ```
 awk -F"\t" '( $2 != "NA" )' /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA/source.IDH.tsv > source.IDH.tsv
-awk -F"\t" '( $2 == "Mutant" )' source.IDH.tsv > source.IDH.Mutant.tsv
-awk -F"\t" '( $2 == "WT" )' source.IDH.tsv > source.IDH.WT.tsv
 ```
 
 
@@ -108,27 +106,27 @@ Extract mers in feature importance file. (Raw and Scaled)
 Assuming that high feature importance is good.
 Better version after prediction. See below.
 ```
-export SINGULARITY_BINDPATH=/francislab
-export OMP_NUM_THREADS=16
-export IMOKA_MAX_MEM_GB=96
-img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
-for k in 11 21 31 ; do
-for s in 80a 80b 80c ; do
-tail -q -n +2 IDH.${k}.${s}/output_fi.tsv | sort -k2gr | head -100 | awk '{print $1}' | sort | uniq > ${k}.${s}.mers.txt
-dir=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20220121-iMOKA
-for f in ${dir}/IDH.${k}/preprocess/*/*json ; do
-echo $f
-singularity exec ${img} iMOKA_core extract --raw --input ${dir}/${k}.${s}.mers.txt --source ${f} --output ${f}.${s}.raw.mer_counts.txt
-singularity exec ${img} iMOKA_core extract --input ${dir}/${k}.${s}.mers.txt --source ${f} --output ${f}.${s}.scaled.mer_counts.txt
-done ; done ; done
-```
-then Merge
-```
-for k in 11 21 31 ; do
-for s in 80a 80b 80c ; do
-python3 ./merge.py --int --output ${k}.${s}.raw.merged.csv.gz IDH.${k}/preprocess/*/*.${s}.raw.mer_counts.txt
-python3 ./merge.py --output ${k}.${s}.scaled.merged.csv.gz IDH.${k}/preprocess/*/*.${s}.scaled.mer_counts.txt
-done ; done
+#	export SINGULARITY_BINDPATH=/francislab
+#	export OMP_NUM_THREADS=16
+#	export IMOKA_MAX_MEM_GB=96
+#	img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
+#	for k in 11 21 31 ; do
+#	for s in 80a 80b 80c ; do
+#	tail -q -n +2 IDH.${k}.${s}/output_fi.tsv | sort -k2gr | head -100 | awk '{print $1}' | sort | uniq > ${k}.${s}.mers.txt
+#	dir=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20220121-iMOKA
+#	for f in ${dir}/IDH.${k}/preprocess/*/*json ; do
+#	echo $f
+#	singularity exec ${img} iMOKA_core extract --raw --input ${dir}/${k}.${s}.mers.txt --source ${f} --output ${f}.${s}.raw.mer_counts.txt
+#	singularity exec ${img} iMOKA_core extract --input ${dir}/${k}.${s}.mers.txt --source ${f} --output ${f}.${s}.scaled.mer_counts.txt
+#	done ; done ; done
+#	```
+#	then Merge
+#	```
+#	for k in 11 21 31 ; do
+#	for s in 80a 80b 80c ; do
+#	python3 ./merge.py --int --output ${k}.${s}.raw.merged.csv.gz IDH.${k}/preprocess/*/*.${s}.raw.mer_counts.txt
+#	python3 ./merge.py --output ${k}.${s}.scaled.merged.csv.gz IDH.${k}/preprocess/*/*.${s}.scaled.mer_counts.txt
+#	done ; done
 ```
 
 
@@ -172,30 +170,7 @@ nohup ./matrices_of_select_kmers.bash > matrices_of_select_kmers.out &
 
 Upload.
 ```
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20220121-iMOKA"
-curl -netrc -X MKCOL "${BOX}/"
-
-for f in metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv TCGA.Glioma.metadata.tsv ; do
-echo $f
-curl -netrc -T ${f} "${BOX}/"
-done
-
-for k in 11 21 31 ; do
-
-for s in 80a 80b 80c ; do
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20200720-TCGA-GBMLGG-RNA_bam/20220121-iMOKA/IDH.${k}.${s}"
-curl -netrc -X MKCOL "${BOX}/"
-
-curl -netrc -T ${k}.${s}.mers.txt "${BOX}/"
-curl -netrc -T ${k}.${s}.raw.merged.csv.gz "${BOX}/"
-curl -netrc -T ${k}.${s}.scaled.merged.csv.gz "${BOX}/"
-
-for f in create_matrix.tsv aggregated.json output.json output_fi.tsv ; do
-echo $f
-curl -netrc -T IDH.${k}.${s}/${f} "${BOX}/"
-done ; done ; done
+./upload.bash
 ```
-
-
 
 
