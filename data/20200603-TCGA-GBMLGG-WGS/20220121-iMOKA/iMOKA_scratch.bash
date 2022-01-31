@@ -13,11 +13,12 @@ fi
 set -x
 
 threads=${SLURM_NTASKS:-1}
-img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.4.img
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 k=31
 mem=7		#	per thread (keep 7)
 step="preprocess"
-source_file="${PWD}/source.tsv"
+#source_file="${PWD}/source.tsv"
+scratch=true
 
 
 export SINGULARITY_BINDPATH=/francislab,/scratch
@@ -32,23 +33,31 @@ while [ $# -gt 0 ] ; do
 			shift; dir=$1; shift;;
 		--k)
 			shift; k=$1; shift;;
-		--source_file)
-			shift; source_file=$1; shift;;
+#		--source_file)
+#			shift; source_file=$1; shift;;
 		--step)
 			shift; step=$1; shift;;
 		--threads)
 			shift; threads=$1; shift;;
+		--scratch)
+			scratch=true; shift;;
+		--local)
+			scratch=false; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
 
-
-trap "{ chmod -R a+w $TMPDIR ; }" EXIT
-
 date
 
-cp ${dir}/config.json ${TMPDIR}/
+cp config.json ${dir}/
+if ${scratch} ; then
+	trap "{ chmod -R a+w $TMPDIR ; }" EXIT
+	cp ${dir}/config.json ${TMPDIR}/
+	workdir=${TMPDIR}
+else
+	workdir=${dir}
+fi
 
 
 if [ "${step}" == "preprocess" ] ; then
@@ -66,8 +75,10 @@ if [ "${step}" == "preprocess" ] ; then
 	step="create"
 else
 	echo "Skipping preprocessing. Copying in data."
-	sed "s'${dir}'${TMPDIR}'" ${dir}/create_matrix.tsv > ${TMPDIR}/create_matrix.tsv
-	cp -Lr ${dir}/preprocess ${TMPDIR}/
+	if ${scratch} ; then
+		sed "s'${dir}'${TMPDIR}'" ${dir}/create_matrix.tsv > ${TMPDIR}/create_matrix.tsv
+		cp -Lr ${dir}/preprocess ${TMPDIR}/
+	fi
 fi
 
 date
@@ -75,13 +86,17 @@ date
 if [ "${step}" == "create" ] ; then
 	echo "Creating"
 	singularity exec ${img} iMOKA_core create \
-		--input ${TMPDIR}/create_matrix.tsv \
-		--output ${TMPDIR}/matrix.json
-	cp ${TMPDIR}/matrix.json ${dir}/
+		--input ${workdir}/create_matrix.tsv \
+		--output ${workdir}/matrix.json
+	if ${scratch} ; then
+		cp ${TMPDIR}/matrix.json ${dir}/
+	fi
 	step="reduce"
 else
 	echo "Skipping create. Copying in matrix.json"
-	sed "s'/scratch/gwendt/[[:digit:]]*/'${TMPDIR}/'g" ${dir}/matrix.json > ${TMPDIR}/matrix.json
+	if ${scratch} ; then
+		sed "s'/scratch/gwendt/[[:digit:]]*/'${TMPDIR}/'g" ${dir}/matrix.json > ${TMPDIR}/matrix.json
+	fi
 fi
 
 date
@@ -89,14 +104,18 @@ date
 if [ "${step}" == "reduce" ] ; then
 	echo "Reducing"
 	singularity exec ${img} iMOKA_core reduce \
-		--input ${TMPDIR}/matrix.json \
-		--output ${TMPDIR}/reduced.matrix
-	cp ${TMPDIR}/reduced.matrix* ${dir}/
+		--input ${workdir}/matrix.json \
+		--output ${workdir}/reduced.matrix
+	if ${scratch} ; then
+		cp ${TMPDIR}/reduced.matrix* ${dir}/
+	fi
 	step="aggregate"
 else
 	echo "Skipping reduce. Copying in reduced matrix"
-	sed "s'/scratch/gwendt/[[:digit:]]*/'${TMPDIR}/'g" ${dir}/reduced.matrix.json > ${TMPDIR}/reduced.matrix.json
-	sed "1s'/scratch/gwendt/[[:digit:]]*/'${TMPDIR}/'g" ${dir}/reduced.matrix > ${TMPDIR}/reduced.matrix
+	if ${scratch} ; then
+		sed "s'/scratch/gwendt/[[:digit:]]*/'${TMPDIR}/'g" ${dir}/reduced.matrix.json > ${TMPDIR}/reduced.matrix.json
+		sed "1s'/scratch/gwendt/[[:digit:]]*/'${TMPDIR}/'g" ${dir}/reduced.matrix > ${TMPDIR}/reduced.matrix
+	fi
 fi
 
 date
@@ -104,11 +123,13 @@ date
 if [ "${step}" == "aggregate" ] ; then
 	echo "Aggregating"
 	singularity exec ${img} iMOKA_core aggregate \
-		--input ${TMPDIR}/reduced.matrix \
-		--count-matrix ${TMPDIR}/matrix.json \
-		--mapper-config ${TMPDIR}/config.json \
-		--output ${TMPDIR}/aggregated
-	cp ${TMPDIR}/aggregated* ${dir}/
+		--input ${workdir}/reduced.matrix \
+		--count-matrix ${workdir}/matrix.json \
+		--mapper-config ${workdir}/config.json \
+		--output ${workdir}/aggregated
+	if ${scratch} ; then
+		cp ${TMPDIR}/aggregated* ${dir}/
+	fi
 	step="random_forest"
 #else
 fi
@@ -121,8 +142,10 @@ if [ "${step}" == "random_forest" ] ; then
 	singularity exec ${img} random_forest.py \
 		--rounds 50 \
 		--threads ${threads} \
-		${TMPDIR}/aggregated.kmers.matrix ${TMPDIR}/output
-	cp -r ${TMPDIR}/output* ${dir}/
+		${workdir}/aggregated.kmers.matrix ${workdir}/output
+	if ${scratch} ; then
+		cp -r ${TMPDIR}/output* ${dir}/
+	fi
 #else
 fi
 #  -r ROUNDS, --rounds ROUNDS
