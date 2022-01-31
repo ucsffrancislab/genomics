@@ -52,7 +52,7 @@ cp ${PWD}/config.json ${dir}/
 cd ${dir}	# preprocess creates a dir "preprocess" in working dir
 
 ${sbatch} --export=SINGULARITY_BINDPATH --parsable --job-name=${k}iMOKApreprocess \
-	--time=14400 --nodes=1 --ntasks=${threads} --mem=${sbatch_mem} --output=${dir}/iMOKA.preprocess.${date}.txt \
+	--time=5760 --nodes=1 --ntasks=${threads} --mem=${sbatch_mem} --output=${dir}/iMOKA.preprocess.${date}.txt \
 	--wrap="singularity exec ${img} preprocess.sh --input-file ${dir}/source.tsv --kmer-length ${k} --ram $((threads*mem)) --threads ${threads}"
 
 
