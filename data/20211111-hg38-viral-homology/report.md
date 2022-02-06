@@ -5,7 +5,7 @@
 | AC_000003.1 | Canine adenovirus 1  complete genome | 30536 | 0 | 0 | 41 | .13 | 0 | 0 | 41 | .13 | 0 | 0 |
 | AC_000004.1 | Duck adenovirus A  complete genome | 33213 | 0 | 0 | 47 | .14 | 0 | 0 | 47 | .14 | 0 | 0 |
 | AC_000005.1 | Human mastadenovirus A  complete genome | 34125 | 0 | 0 | 208 | .60 | 49 | .14 | 257 | .75 | 49 | .14 |
-| AC_000006.1 | Human adenovirus D  complete genome | 35100 | 0 | 0 | 502 | 1.43 | 1 | 0 | 502 | 1.43 | 0 | 0 |
+| AC_000006.1 | Human adenovirus D  complete genome | 35100 | 1 | 0 | 502 | 1.43 | 1 | 0 | 502 | 1.43 | 0 | 0 |
 | AC_000007.1 | Human adenovirus 2  complete genome | 35937 | 0 | 0 | 321 | .89 | 147 | .40 | 370 | 1.02 | 49 | .13 |
 | AC_000008.1 | Human adenovirus 5  complete genome | 35938 | 0 | 0 | 342 | .95 | 0 | 0 | 342 | .95 | 0 | 0 |
 | AC_000009.1 | Porcine adenovirus C  complete genome | 32621 | 0 | 0 | 50 | .15 | 49 | .15 | 50 | .15 | 0 | 0 |
@@ -63,7 +63,7 @@
 | NC_001332.1 | Enterobacteria phage I2-2  complete genome | 6744 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001335.1 | Mycobacterium phage L5 complete genome | 52297 | 0 | 0 | 404 | .77 | 0 | 0 | 404 | .77 | 0 | 0 |
 | NC_001338.1 | Sulfolobus virus 1 complete genome (provirus) | 15465 | 0 | 0 | 223 | 1.44 | 98 | .63 | 223 | 1.44 | 0 | 0 |
-| NC_001339.1 | Artichoke mottled crinkle virus  complete genome | 4789 | 0 | 0 | 42 | .87 | 1 | .02 | 42 | .87 | 0 | 0 |
+| NC_001339.1 | Artichoke mottled crinkle virus  complete genome | 4789 | 1 | .02 | 42 | .87 | 1 | .02 | 42 | .87 | 0 | 0 |
 | NC_001340.1 | Apple scar skin viroid  complete genome | 329 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001341.1 | Acholeplasma phage MV-L1  complete genome | 4491 | 0 | 0 | 54 | 1.20 | 0 | 0 | 54 | 1.20 | 0 | 0 |
 | NC_001343.1 | Commelina yellow mottle virus  complete genome | 7489 | 0 | 0 | 36 | .48 | 0 | 0 | 36 | .48 | 0 | 0 |
@@ -96,7 +96,7 @@
 | NC_001409.1 | Apple chlorotic leaf spot virus  complete genome | 7555 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001410.1 | Avocado sunblotch viroid  complete genome | 247 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001411.2 | Black beetle virus  complete genome | 3106 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_001412.1 | Beet curly top virus - California [Logan]  complete genome | 2994 | 0 | 0 | 0 | 0 | 50 | 1.67 | 0 | 0 | 0 | 0 |
+| NC_001412.1 | Beet curly top virus - California [Logan]  complete genome | 2994 | 1 | .03 | 1 | .03 | 50 | 1.67 | 0 | 0 | 0 | 0 |
 | NC_001413.1 | Bovine immunodeficiency-like virus  complete proviral genome | 8482 | 0 | 0 | 492 | 5.80 | 49 | .57 | 541 | 6.37 | 49 | .57 |
 | NC_001414.1 | Bovine leukemia virus  complete genome | 8419 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001416.1 | Enterobacteria phage lambda  complete genome | 48502 | 0 | 0 | 97 | .19 | 0 | 0 | 97 | .19 | 0 | 0 |
@@ -135,7 +135,7 @@
 | NC_001466.1 | Chloris striate mosaic virus  complete genome | 2750 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001467.1 | African cassava mosaic virus isolate West Kenyan 844 segment DNA1  complete sequence | 2779 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001468.1 | African cassava mosaic virus isolate West Kenyan 844 segment DNA2  complete sequence | 2724 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_001469.1 | Cucumber necrosis virus  complete genome | 4701 | 0 | 0 | 0 | 0 | 2 | .04 | 0 | 0 | 0 | 0 |
+| NC_001469.1 | Cucumber necrosis virus  complete genome | 4701 | 2 | .04 | 2 | .04 | 2 | .04 | 0 | 0 | 0 | 0 |
 | NC_001471.1 | Coconut tinangaja viroid  complete genome | 254 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001472.1 | Human enterovirus B  complete genome | 7389 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001474.2 | Dengue virus 2  complete genome | 10723 | 0 | 0 | 29 | .27 | 0 | 0 | 29 | .27 | 0 | 0 |
@@ -164,7 +164,7 @@
 | NC_001501.1 | Moloney murine leukemia virus  complete genome | 8332 | 0 | 0 | 3215 | 38.58 | 0 | 0 | 3215 | 38.58 | 0 | 0 |
 | NC_001502.1 | Moloney murine sarcoma virus  complete genome | 5833 | 0 | 0 | 1522 | 26.09 | 123 | 2.10 | 1645 | 28.20 | 123 | 2.10 |
 | NC_001503.1 | Mouse mammary tumor virus  complete genome | 8805 | 0 | 0 | 1695 | 19.25 | 0 | 0 | 1695 | 19.25 | 0 | 0 |
-| NC_001504.1 | Melon necrotic spot virus  genome | 4266 | 0 | 0 | 30 | .70 | 1 | .02 | 30 | .70 | 0 | 0 |
+| NC_001504.1 | Melon necrotic spot virus  genome | 4266 | 1 | .02 | 30 | .70 | 1 | .02 | 30 | .70 | 0 | 0 |
 | NC_001505.2 | Murine pneumotropic virus  complete genome | 4754 | 0 | 0 | 63 | 1.32 | 49 | 1.03 | 112 | 2.35 | 49 | 1.03 |
 | NC_001506.1 | Murine osteosarcoma virus  complete genome | 3811 | 0 | 0 | 91 | 2.38 | 445 | 11.67 | 509 | 13.35 | 418 | 10.96 |
 | NC_001507.1 | Tomato golden mosaic virus DNA A  complete sequence | 2588 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -176,7 +176,7 @@
 | NC_001514.1 | Squirrel monkey retrovirus - HLB  complete genome | 8785 | 0 | 0 | 2350 | 26.75 | 0 | 0 | 2350 | 26.75 | 0 | 0 |
 | NC_001515.2 | Murine polyomavirus strain BG  complete genome | 5307 | 0 | 0 | 19 | .35 | 0 | 0 | 19 | .35 | 0 | 0 |
 | NC_001517.1 | Pepper mottle virus  complete genome | 9640 | 0 | 0 | 39 | .40 | 0 | 0 | 39 | .40 | 0 | 0 |
-| NC_001522.1 | Bovine papillomavirus - 1  complete genome | 7945 | 0 | 0 | 22 | .27 | 1 | .01 | 22 | .27 | 0 | 0 |
+| NC_001522.1 | Bovine papillomavirus - 1  complete genome | 7945 | 1 | .01 | 22 | .27 | 1 | .01 | 22 | .27 | 0 | 0 |
 | NC_001523.1 | Deer papillomavirus  complete genome | 8374 | 0 | 0 | 86 | 1.02 | 49 | .58 | 135 | 1.61 | 49 | .58 |
 | NC_001524.1 | European elk papillomavirus  complete genome | 8095 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001526.4 | Human papillomavirus type 16  complete genome | 7906 | 0 | 0 | 258 | 3.26 | 74 | .93 | 258 | 3.26 | 0 | 0 |
@@ -187,7 +187,7 @@
 | NC_001541.1 | Cottontail rabbit papillomavirus  complete genome | 7868 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001542.1 | Rabies virus  complete genome | 11932 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001543.1 | Rabbit hemorrhagic disease virus-FRG  complete genome | 7437 | 0 | 0 | 45 | .60 | 0 | 0 | 45 | .60 | 0 | 0 |
-| NC_001544.1 | Ross River virus  complete genome | 11657 | 0 | 0 | 159 | 1.36 | 55 | .47 | 159 | 1.36 | 0 | 0 |
+| NC_001544.1 | Ross River virus  complete genome | 11657 | 55 | .47 | 159 | 1.36 | 55 | .47 | 159 | 1.36 | 0 | 0 |
 | NC_001545.2 | Rubella virus  complete genome | 9762 | 0 | 0 | 83 | .85 | 0 | 0 | 83 | .85 | 0 | 0 |
 | NC_001546.1 | Arabis mosaic virus small satellite RNA  complete genome | 300 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001547.1 | Sindbis virus  complete genome | 11703 | 0 | 0 | 40 | .34 | 0 | 0 | 40 | .34 | 0 | 0 |
@@ -195,7 +195,7 @@
 | NC_001550.1 | Mason-Pfizer monkey virus  complete genome | 8557 | 0 | 0 | 3582 | 41.86 | 123 | 1.43 | 3582 | 41.86 | 0 | 0 |
 | NC_001552.1 | Sendai virus genomic RNA  antisense  complete sequence | 15384 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001553.1 | Tomato apical stunt viroid  complete genome | 360 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_001554.1 | Tomato bushy stunt virus  complete genome | 4776 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_001554.1 | Tomato bushy stunt virus  complete genome | 4776 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_001555.1 | Tobacco etch virus  complete genome | 9494 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001556.1 | Tobacco mild green mosaic virus  complete genome | 6355 | 0 | 0 | 82 | 1.29 | 0 | 0 | 82 | 1.29 | 0 | 0 |
 | NC_001557.1 | Tobacco necrosis satellite virus  complete genome | 1239 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -293,7 +293,7 @@
 | NC_001781.1 | Human orthopneumovirus Subgroup B  complete genome | 15225 | 0 | 0 | 245 | 1.60 | 0 | 0 | 245 | 1.60 | 0 | 0 |
 | NC_001782.1 | Saccharomyces cerevisiae killer virus M1  complete genome | 1801 | 0 | 0 | 214 | 11.88 | 174 | 9.66 | 214 | 11.88 | 0 | 0 |
 | NC_001785.1 | Papaya ringspot virus  complete genome | 10326 | 0 | 0 | 0 | 0 | 49 | .47 | 0 | 0 | 0 | 0 |
-| NC_001786.1 | Barmah Forest virus  complete genome | 11488 | 0 | 0 | 70 | .60 | 2 | .01 | 70 | .60 | 0 | 0 |
+| NC_001786.1 | Barmah Forest virus  complete genome | 11488 | 2 | .01 | 70 | .60 | 2 | .01 | 70 | .60 | 0 | 0 |
 | NC_001789.1 | Ovine papillomavirus - 1  complete genome | 7761 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001792.2 | Porcine circovirus 1  complete genome | 1758 | 0 | 0 | 0 | 0 | 49 | 2.78 | 0 | 0 | 0 | 0 |
 | NC_001793.1 | Oat blue dwarf virus complete genome | 6509 | 0 | 0 | 98 | 1.50 | 0 | 0 | 98 | 1.50 | 0 | 0 |
@@ -308,7 +308,7 @@
 | NC_001812.1 | Cymbidium mosaic virus  complete genome | 6227 | 0 | 0 | 0 | 0 | 49 | .78 | 0 | 0 | 0 | 0 |
 | NC_001813.1 | Duck adenovirus A  complete genome | 33213 | 0 | 0 | 47 | .14 | 0 | 0 | 47 | .14 | 0 | 0 |
 | NC_001814.1 | Ryegrass mosaic virus  complete genome | 9535 | 0 | 0 | 47 | .49 | 0 | 0 | 47 | .49 | 0 | 0 |
-| NC_001815.1 | Simian T-lymphotropic virus 2  complete genome | 8855 | 0 | 0 | 289 | 3.26 | 1 | .01 | 289 | 3.26 | 0 | 0 |
+| NC_001815.1 | Simian T-lymphotropic virus 2  complete genome | 8855 | 1 | .01 | 289 | 3.26 | 1 | .01 | 289 | 3.26 | 0 | 0 |
 | NC_001818.1 | Galinsoga mosaic virus  complete genome | 3803 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001822.1 | Leek white stripe virus  complete genome | 3662 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001824.1 | Lymphocystis disease virus 1  complete genome | 102653 | 0 | 0 | 883 | .86 | 343 | .33 | 1226 | 1.19 | 343 | .33 |
@@ -333,7 +333,7 @@
 | NC_001868.1 | Sugarcane streak Egypt virus - [Giza]  complete genome | 2706 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001873.1 | Turnip vein-clearing virus  complete genome | 6311 | 0 | 0 | 54 | .85 | 0 | 0 | 54 | .85 | 0 | 0 |
 | NC_001874.1 | Rhopalosiphum padi virus  complete genome | 10011 | 0 | 0 | 32 | .31 | 0 | 0 | 32 | .31 | 0 | 0 |
-| NC_001875.2 | Orgyia pseudotsugata MNPV  complete genome | 131995 | 0 | 0 | 1328 | 1.00 | 696 | .52 | 1724 | 1.30 | 396 | .30 |
+| NC_001875.2 | Orgyia pseudotsugata MNPV  complete genome | 131995 | 2 | 0 | 1328 | 1.00 | 696 | .52 | 1724 | 1.30 | 396 | .30 |
 | NC_001876.1 | Bovine adenovirus 3 complete genome | 34446 | 0 | 0 | 155 | .44 | 246 | .71 | 253 | .73 | 98 | .28 |
 | NC_001884.1 | Bacillus phage SPBc2  complete genome | 134416 | 0 | 0 | 615 | .45 | 98 | .07 | 713 | .53 | 98 | .07 |
 | NC_001885.3 | Gibbon ape leukemia virus gag  pol  and env genes  complete cds | 8088 | 0 | 0 | 4159 | 51.42 | 98 | 1.21 | 4159 | 51.42 | 0 | 0 |
@@ -365,7 +365,7 @@
 | NC_001933.1 | Indian cassava mosaic virus DNA B  complete sequence | 2645 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001934.1 | Potato yellow mosaic virus DNA A  complete sequence | 2593 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001935.1 | Potato yellow mosaic virus DNA B  complete sequence | 2547 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_001936.1 | Squash leaf curl virus A component DNA  complete sequence | 2634 | 0 | 0 | 0 | 0 | 1 | .03 | 0 | 0 | 0 | 0 |
+| NC_001936.1 | Squash leaf curl virus A component DNA  complete sequence | 2634 | 1 | .03 | 1 | .03 | 1 | .03 | 0 | 0 | 0 | 0 |
 | NC_001937.1 | Squash leaf curl virus B component DNA  complete sequence | 2607 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001938.1 | Tomato mottle virus DNA A  complete sequence | 2601 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001939.1 | Tomato mottle virus DNA B  complete sequence | 2544 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -374,7 +374,7 @@
 | NC_001943.1 | Human astrovirus  complete genome | 6813 | 0 | 0 | 60 | .88 | 0 | 0 | 60 | .88 | 0 | 0 |
 | NC_001944.1 | Beak and feather disease virus  complete genome | 1993 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001946.1 | Sour cherry green ring mottle virus  complete genome | 8372 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_001948.1 | Rupestris stem pitting associated virus-1  complete genome | 8744 | 0 | 0 | 19 | .21 | 44 | .50 | 19 | .21 | 0 | 0 |
+| NC_001948.1 | Rupestris stem pitting associated virus-1  complete genome | 8744 | 1 | .01 | 19 | .21 | 44 | .50 | 19 | .21 | 0 | 0 |
 | NC_001954.1 | Enterobacteria phage If1  complete genome | 8454 | 0 | 0 | 37 | .43 | 0 | 0 | 37 | .43 | 0 | 0 |
 | NC_001956.1 | Vibrio phage fs2  complete genome | 8651 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001958.1 | Hemorrhagic enteritis virus  complete genome | 26263 | 0 | 0 | 193 | .73 | 0 | 0 | 193 | .73 | 0 | 0 |
@@ -385,7 +385,7 @@
 | NC_001964.1 | Sphaeropsis sapinea RNA virus 2  complete genome | 5202 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001973.1 | Lymantria dispar MNPV  complete genome | 161046 | 0 | 0 | 4605 | 2.85 | 1156 | .71 | 4851 | 3.01 | 246 | .15 |
 | NC_001977.1 | Erysimum latent virus  complete genome | 6035 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_001978.3 | Bacteriophage phi-C31 complete genome | 41491 | 0 | 0 | 582 | 1.40 | 2 | 0 | 582 | 1.40 | 0 | 0 |
+| NC_001978.3 | Bacteriophage phi-C31 complete genome | 41491 | 2 | 0 | 582 | 1.40 | 2 | 0 | 582 | 1.40 | 0 | 0 |
 | NC_001981.1 | Helicoverpa armigera stunt virus RNA 1  complete sequence | 5312 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_001982.1 | Helicoverpa armigera stunt virus RNA 2  complete sequence | 2478 | 0 | 0 | 45 | 1.81 | 0 | 0 | 45 | 1.81 | 0 | 0 |
 | NC_001983.1 | Mungbean yellow mosaic virus DNA A  complete sequence | 2723 | 0 | 0 | 42 | 1.54 | 0 | 0 | 42 | 1.54 | 0 | 0 |
@@ -447,7 +447,7 @@
 | NC_002188.1 | Fowlpox virus  complete genome | 288539 | 0 | 0 | 2964 | 1.02 | 907 | .31 | 3650 | 1.26 | 686 | .23 |
 | NC_002190.2 | Infectious hypodermal and hematopoietic necrosis virus  complete genome | 3909 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_002194.1 | Chlamydia phage Chp2  complete genome | 4563 | 0 | 0 | 44 | .96 | 0 | 0 | 44 | .96 | 0 | 0 |
-| NC_002195.1 | Torque teno mini virus 9  complete genome | 2915 | 0 | 0 | 0 | 0 | 6 | .20 | 0 | 0 | 0 | 0 |
+| NC_002195.1 | Torque teno mini virus 9  complete genome | 2915 | 6 | .20 | 6 | .20 | 6 | .20 | 0 | 0 | 0 | 0 |
 | NC_002198.2 | Cereal yellow dwarf virus-RPS  complete genome | 5662 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_002199.1 | Tupaia paramyxovirus  complete genome | 17904 | 0 | 0 | 40 | .22 | 0 | 0 | 40 | .22 | 0 | 0 |
 | NC_002200.1 | Mumps orthorubulavirus genomic RNA  complete genome | 15384 | 0 | 0 | 37 | .24 | 0 | 0 | 37 | .24 | 0 | 0 |
@@ -497,7 +497,7 @@
 | NC_002512.2 | Rat cytomegalovirus Maastricht  complete genome | 230138 | 0 | 0 | 6293 | 2.73 | 861 | .37 | 6465 | 2.80 | 172 | .07 |
 | NC_002513.1 | Bovine adenovirus type 2  complete genome | 33034 | 0 | 0 | 38 | .11 | 49 | .14 | 87 | .26 | 49 | .14 |
 | NC_002515.1 | Mycoplasma phage P1  complete genome | 11660 | 0 | 0 | 0 | 0 | 49 | .42 | 0 | 0 | 0 | 0 |
-| NC_002519.1 | Roseophage SIO1 complete genome | 39898 | 0 | 0 | 77 | .19 | 55 | .13 | 126 | .31 | 49 | .12 |
+| NC_002519.1 | Roseophage SIO1 complete genome | 39898 | 6 | .01 | 77 | .19 | 55 | .13 | 126 | .31 | 49 | .12 |
 | NC_002520.1 | Amsacta moorei entomopoxvirus 'L'  complete genome | 232392 | 0 | 0 | 7181 | 3.09 | 7661 | 3.29 | 13588 | 5.84 | 6407 | 2.75 |
 | NC_002526.1 | Bovine ephemeral fever virus  complete genome | 14900 | 0 | 0 | 104 | .69 | 0 | 0 | 104 | .69 | 0 | 0 |
 | NC_002531.1 | Alcelaphine herpesvirus 1  complete genome | 130608 | 0 | 0 | 993 | .76 | 619 | .47 | 1091 | .83 | 98 | .07 |
@@ -662,7 +662,7 @@
 | NC_003356.1 | Enterobacteria phage phiP27  complete genome | 42575 | 0 | 0 | 147 | .34 | 0 | 0 | 147 | .34 | 0 | 0 |
 | NC_003357.1 | Soybean crinkle leaf virus  complete genome | 2737 | 0 | 0 | 23 | .84 | 0 | 0 | 23 | .84 | 0 | 0 |
 | NC_003369.1 | Bean leafroll virus  complete genome | 5964 | 0 | 0 | 131 | 2.19 | 0 | 0 | 131 | 2.19 | 0 | 0 |
-| NC_003375.1 | Garlic virus A  complete genome | 8660 | 0 | 0 | 32 | .36 | 3 | .03 | 32 | .36 | 0 | 0 |
+| NC_003375.1 | Garlic virus A  complete genome | 8660 | 3 | .03 | 32 | .36 | 3 | .03 | 32 | .36 | 0 | 0 |
 | NC_003376.1 | Garlic virus C  complete genome | 8405 | 0 | 0 | 0 | 0 | 49 | .58 | 0 | 0 | 0 | 0 |
 | NC_003377.1 | Maize dwarf mosaic virus  complete genome | 9515 | 0 | 0 | 0 | 0 | 39 | .40 | 0 | 0 | 0 | 0 |
 | NC_003378.1 | Tobacco vein clearing virus  complete genome | 7767 | 0 | 0 | 182 | 2.34 | 0 | 0 | 182 | 2.34 | 0 | 0 |
@@ -722,7 +722,7 @@
 | NC_003481.1 | Barley stripe mosaic virus RNA 2  complete sequence | 3289 | 0 | 0 | 87 | 2.64 | 74 | 2.24 | 87 | 2.64 | 0 | 0 |
 | NC_003482.1 | Barley mild mosaic virus RNA2  complete sequence | 3524 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003483.1 | Barley mild mosaic virus RNA 1  complete sequence | 7262 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003487.1 | Tobacco necrosis virus D  complete genome | 3762 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_003487.1 | Tobacco necrosis virus D  complete genome | 3762 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_003491.1 | Beet mild yellowing virus  complete genome | 5722 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003492.1 | Bean yellow mosaic virus  complete genome | 9532 | 0 | 0 | 30 | .31 | 0 | 0 | 30 | .31 | 0 | 0 |
 | NC_003493.2 | Bean yellow dwarf virus putative genes V1  V2  C1  C1:C2 | 2561 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -731,7 +731,7 @@
 | NC_003496.1 | Bean pod mottle virus RNA 1  complete sequence | 5995 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003497.1 | Bamboo mosaic virus satellite RNA  complete genome | 836 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003498.1 | Carnation etched ring virus  complete genome | 7932 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003499.1 | Blueberry scorch virus  complete genome | 8512 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_003499.1 | Blueberry scorch virus  complete genome | 8512 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_003500.3 | Carnation Italian ringspot virus genomic sequence for ORF1-5 | 4763 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003501.1 | Brome streak mosaic virus  complete genome | 9672 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003502.1 | Blackcurrant reversion virus RNA 2  complete sequence | 6405 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -754,11 +754,11 @@
 | NC_003524.1 | Clostridium phage phi3626  complete genome | 33507 | 0 | 0 | 403 | 1.20 | 98 | .29 | 452 | 1.34 | 49 | .14 |
 | NC_003529.1 | Mamestra configurata NPV-A  complete genome | 155060 | 0 | 0 | 1424 | .91 | 344 | .22 | 1522 | .98 | 98 | .06 |
 | NC_003530.1 | Carnation ringspot virus fusion protein polymerase (p88K)  p27K  p57K  capsid protein (p37K) and p11K genes  complete cds | 3840 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003531.1 | Carnation ringspot virus RNA 2  complete sequence | 1403 | 0 | 0 | 0 | 0 | 1 | .07 | 0 | 0 | 0 | 0 |
-| NC_003532.1 | Cymbidium ringspot virus  complete genome | 4733 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_003531.1 | Carnation ringspot virus RNA 2  complete sequence | 1403 | 1 | .07 | 1 | .07 | 1 | .07 | 0 | 0 | 0 | 0 |
+| NC_003532.1 | Cymbidium ringspot virus  complete genome | 4733 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_003533.1 | Cereal yellow dwarf virus-RPV satellite RNA  complete genome | 322 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003534.1 | Cryphonectria hypovirus 2  genome | 12507 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
-| NC_003535.1 | Cowpea mottle virus  complete genome | 4029 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_003534.1 | Cryphonectria hypovirus 2  genome | 12507 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 |
+| NC_003535.1 | Cowpea mottle virus  complete genome | 4029 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_003536.1 | Clover yellow vein virus  complete genome | 9584 | 0 | 0 | 65 | .67 | 0 | 0 | 65 | .67 | 0 | 0 |
 | NC_003537.1 | Dasheen mosaic virus  complete genome | 10038 | 0 | 0 | 166 | 1.65 | 62 | .61 | 166 | 1.65 | 0 | 0 |
 | NC_003538.1 | Columnea latent viroid  complete genome | 370 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -817,10 +817,10 @@
 | NC_003623.1 | Grapevine Fanleaf virus (GFLV-F13) RNA2 encoding capsid protein | 3774 | 0 | 0 | 0 | 0 | 49 | 1.29 | 0 | 0 | 0 | 0 |
 | NC_003624.1 | Impatiens necrotic spot virus segment S  complete sequence | 2992 | 0 | 0 | 225 | 7.52 | 223 | 7.45 | 225 | 7.52 | 0 | 0 |
 | NC_003625.1 | Impatiens necrotic spot virus segment L  complete sequence | 8776 | 0 | 0 | 53 | .60 | 49 | .55 | 102 | 1.16 | 49 | .55 |
-| NC_003626.1 | Maize chlorotic dwarf virus  complete genome | 11832 | 0 | 0 | 55 | .46 | 32 | .27 | 55 | .46 | 0 | 0 |
+| NC_003626.1 | Maize chlorotic dwarf virus  complete genome | 11832 | 1 | 0 | 55 | .46 | 32 | .27 | 55 | .46 | 0 | 0 |
 | NC_003627.1 | Maize chlorotic mottle virus genomic RNA  isolate KS1 | 4437 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003628.1 | Parsnip yellow fleck virus  complete genome | 9871 | 0 | 0 | 0 | 0 | 49 | .49 | 0 | 0 | 0 | 0 |
-| NC_003629.1 | Pea enation mosaic virus-1  complete genome | 5706 | 0 | 0 | 35 | .61 | 1 | .01 | 35 | .61 | 0 | 0 |
+| NC_003629.1 | Pea enation mosaic virus-1  complete genome | 5706 | 1 | .01 | 35 | .61 | 1 | .01 | 35 | .61 | 0 | 0 |
 | NC_003630.1 | Pepper mild mottle virus  complete genome | 6357 | 0 | 0 | 83 | 1.30 | 0 | 0 | 83 | 1.30 | 0 | 0 |
 | NC_003631.1 | Satellite virus of maize white line mosaic virus  complete genome | 1168 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003632.1 | Potato aucuba mosaic virus  complete genome | 7059 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -843,7 +843,7 @@
 | NC_003649.1 | Pelargonium zonate spot virus RNA 1  complete genome | 3383 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003650.1 | Pelargonium zonate spot virus RNA 2  complete genome | 2435 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003651.1 | Pelargonium zonate spot virus RNA 3  complete genome | 2659 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003652.1 | Nilaparvata lugens reovirus segment 10  complete sequence | 1430 | 0 | 0 | 0 | 0 | 2 | .13 | 0 | 0 | 0 | 0 |
+| NC_003652.1 | Nilaparvata lugens reovirus segment 10  complete sequence | 1430 | 2 | .13 | 2 | .13 | 2 | .13 | 0 | 0 | 0 | 0 |
 | NC_003653.1 | Nilaparvata lugens reovirus segment 8  complete sequence | 1802 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003654.1 | Nilaparvata lugens reovirus segment 1  complete sequence | 4391 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003655.1 | Nilaparvata lugens reovirus segment 2  complete sequence | 3732 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -968,7 +968,7 @@
 | NC_003792.2 | Cycas necrotic stunt virus RNA 2  complete sequence | 4667 | 0 | 0 | 62 | 1.32 | 98 | 2.09 | 62 | 1.32 | 0 | 0 |
 | NC_003793.1 | Spiroplasma phage 1-C74  complete genome | 7768 | 0 | 0 | 350 | 4.50 | 74 | .95 | 424 | 5.45 | 74 | .95 |
 | NC_003794.1 | Strawberry mild yellow edge virus  complete genome | 5966 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003795.1 | Shallot virus X  complete genome | 8832 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_003795.1 | Shallot virus X  complete genome | 8832 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_003797.1 | Sweet potato mild mottle virus  complete genome | 10818 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003798.1 | Lucerne transient streak virus satellite RNA  complete genome | 324 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003799.1 | Squash mosaic virus RNA 1  complete sequence | 5865 | 0 | 0 | 46 | .78 | 0 | 0 | 46 | .78 | 0 | 0 |
@@ -998,7 +998,7 @@
 | NC_003823.1 | Ustilago maydis virus H1  complete genome | 6099 | 0 | 0 | 45 | .73 | 0 | 0 | 45 | .73 | 0 | 0 |
 | NC_003824.1 | Trichomonas vaginalis virus  complete genome | 4647 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003825.1 | Tomato pseudo-curly top virus  complete genome | 2861 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_003826.1 | Tomato bushy stunt virus satellite RNA B1  complete genome | 822 | 0 | 0 | 0 | 0 | 1 | .12 | 0 | 0 | 0 | 0 |
+| NC_003826.1 | Tomato bushy stunt virus satellite RNA B1  complete genome | 822 | 1 | .12 | 1 | .12 | 1 | .12 | 0 | 0 | 0 | 0 |
 | NC_003828.1 | Tomato yellow leaf curl Sardinia virus  complete genome | 2773 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003830.1 | Chino del tomate virus DNA A  complete sequence | 2634 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003831.1 | Chino del tomate virus DNA B  complete sequence | 2579 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1010,7 +1010,7 @@
 | NC_003837.1 | Tomato aspermy virus RNA 1  complete sequence | 3410 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003838.1 | Tomato aspermy virus RNA 2  complete sequence | 3074 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003839.2 | Tomato ringspot virus RNA 2  complete sequence | 7271 | 0 | 0 | 57 | .78 | 49 | .67 | 106 | 1.45 | 49 | .67 |
-| NC_003840.1 | Tomato ringspot virus RNA 1  complete sequence | 8214 | 0 | 0 | 27 | .32 | 51 | .62 | 27 | .32 | 0 | 0 |
+| NC_003840.1 | Tomato ringspot virus RNA 1  complete sequence | 8214 | 2 | .02 | 27 | .32 | 51 | .62 | 27 | .32 | 0 | 0 |
 | NC_003841.1 | Watermelon silver mottle virus segment M  complete sequence | 4880 | 0 | 0 | 245 | 5.02 | 123 | 2.52 | 245 | 5.02 | 0 | 0 |
 | NC_003842.1 | Tobacco streak virus putative viral polymerase and putative 2b protein genes  complete cds | 2926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003843.1 | Watermelon silver mottle virus segment S  complete sequence | 3534 | 0 | 0 | 345 | 9.76 | 149 | 4.21 | 345 | 9.76 | 0 | 0 |
@@ -1060,7 +1060,7 @@
 | NC_003907.2 | Vibrio phage VpV262  complete genome | 46012 | 0 | 0 | 58 | .12 | 0 | 0 | 58 | .12 | 0 | 0 |
 | NC_003908.1 | Western equine encephalomyelitis virus  complete genome | 11484 | 0 | 0 | 0 | 0 | 58 | .50 | 0 | 0 | 0 | 0 |
 | NC_003924.1 | Cricket paralysis virus nonstructural polyprotein and structural polyprotein genes  complete cds | 9185 | 0 | 0 | 129 | 1.40 | 0 | 0 | 129 | 1.40 | 0 | 0 |
-| NC_003930.1 | Salmon pancreas disease virus  complete genome | 11919 | 0 | 0 | 206 | 1.72 | 75 | .62 | 206 | 1.72 | 0 | 0 |
+| NC_003930.1 | Salmon pancreas disease virus  complete genome | 11919 | 1 | 0 | 206 | 1.72 | 75 | .62 | 206 | 1.72 | 0 | 0 |
 | NC_003971.1 | Chicory yellow mottle virus satellite RNA  complete genome | 457 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_003973.1 | Psittacus erithacus timneh papillomavirus  complete genome | 7304 | 0 | 0 | 88 | 1.20 | 0 | 0 | 88 | 1.20 | 0 | 0 |
 | NC_003976.2 | Ljungan virus  complete genome | 7590 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1090,7 +1090,7 @@
 | NC_004019.1 | Gremmeniella abietina RNA virus MS1 putative coat protein gene  complete cds | 1586 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004020.1 | Gremmeniella abietina RNA virus MS1 unknown gene | 1186 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004033.1 | Turnip crinkle virus satellite RNA  complete genome | 230 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_004034.1 | Trichomonas vaginalis virus 3  complete genome | 4844 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_004034.1 | Trichomonas vaginalis virus 3  complete genome | 4844 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_004035.1 | Sorghum mosaic virus  complete genome | 9624 | 0 | 0 | 168 | 1.74 | 0 | 0 | 168 | 1.74 | 0 | 0 |
 | NC_004036.1 | Mirabilis mosaic virus  complete genome | 7857 | 0 | 0 | 46 | .58 | 49 | .62 | 95 | 1.20 | 49 | .62 |
 | NC_004037.2 | Ovine adenovirus 7  complete genome | 29576 | 0 | 0 | 56 | .18 | 49 | .16 | 105 | .35 | 49 | .16 |
@@ -1125,7 +1125,7 @@
 | NC_004091.1 | Stachytarpheta leaf curl virus  complete genome | 2749 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004092.1 | Hollyhock leaf crumple virus satellite DNA  complete genome | 741 | 0 | 0 | 86 | 11.60 | 0 | 0 | 86 | 11.60 | 0 | 0 |
 | NC_004093.1 | OkLCV satDNA 10  complete genome | 1305 | 0 | 0 | 100 | 7.66 | 0 | 0 | 100 | 7.66 | 0 | 0 |
-| NC_004096.1 | Pepper golden mosaic virus DNA B  complete sequence | 2595 | 0 | 0 | 0 | 0 | 2 | .07 | 0 | 0 | 0 | 0 |
+| NC_004096.1 | Pepper golden mosaic virus DNA B  complete sequence | 2595 | 2 | .07 | 2 | .07 | 2 | .07 | 0 | 0 | 0 | 0 |
 | NC_004097.1 | Macroptilium mosaic Puerto Rico virus DNA A  complete sequence | 2615 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004098.1 | Macroptilium mosaic Puerto Rico virus DNA B  complete sequence | 2571 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004099.1 | Macroptilium yellow mosaic Florida virus DNA A  complete sequence | 2642 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1149,7 +1149,7 @@
 | NC_004124.1 | Sweet potato chlorotic stunt virus RNA 2  complete sequence | 8223 | 0 | 0 | 51 | .62 | 0 | 0 | 51 | .62 | 0 | 0 |
 | NC_004142.1 | Boolarra virus RNA 1  complete sequence | 3096 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004144.1 | Flock house virus  complete genome | 1400 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_004145.1 | Boolarra virus RNA 2  complete sequence | 1305 | 0 | 0 | 0 | 0 | 1 | .07 | 0 | 0 | 0 | 0 |
+| NC_004145.1 | Boolarra virus RNA 2  complete sequence | 1305 | 1 | .07 | 1 | .07 | 1 | .07 | 0 | 0 | 0 | 0 |
 | NC_004146.1 | Flock house virus RNA 1  complete sequence | 3107 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004147.1 | Papaya leaf curl virus  complete genome | 2746 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004153.1 | Tomato leaf curl Vietnam virus DNA A  complete genome | 2745 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1261,7 +1261,7 @@
 | NC_004451.1 | Simian sapelovirus 1  complete genome | 8126 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004452.3 | Beet black scorch virus  complete genome | 3644 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004455.1 | Simian immunodeficiency virus 2 isolate SIVmnd-2  complete genome | 9518 | 0 | 0 | 88 | .92 | 0 | 0 | 88 | .92 | 0 | 0 |
-| NC_004456.1 | Vibrio phage VHML  complete genome | 43198 | 0 | 0 | 0 | 0 | 51 | .11 | 0 | 0 | 0 | 0 |
+| NC_004456.1 | Vibrio phage VHML  complete genome | 43198 | 2 | 0 | 2 | 0 | 51 | .11 | 0 | 0 | 0 | 0 |
 | NC_004462.2 | Thermus thermophilus phage IN93  complete genome | 19604 | 0 | 0 | 217 | 1.10 | 0 | 0 | 217 | 1.10 | 0 | 0 |
 | NC_004466.2 | Pseudomonas aeruginosa phage PaP3  complete genome | 45503 | 0 | 0 | 228 | .50 | 0 | 0 | 228 | .50 | 0 | 0 |
 | NC_004500.1 | Human papillomavirus type 92  complete genome | 7461 | 0 | 0 | 185 | 2.47 | 0 | 0 | 185 | 2.47 | 0 | 0 |
@@ -1289,14 +1289,14 @@
 | NC_004588.1 | Streptococcus prophage 315.5  complete genome | 38206 | 0 | 0 | 161 | .42 | 98 | .25 | 210 | .54 | 49 | .12 |
 | NC_004589.1 | Streptococcus prophage 315.6  complete genome | 40014 | 0 | 0 | 60 | .14 | 49 | .12 | 60 | .14 | 0 | 0 |
 | NC_004607.1 | Cotton leaf curl Multan virus  complete genome | 2751 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_004608.1 | Mungbean yellow mosaic India virus DNA A  complete sequence | 2745 | 0 | 0 | 0 | 0 | 2 | .07 | 0 | 0 | 0 | 0 |
+| NC_004608.1 | Mungbean yellow mosaic India virus DNA A  complete sequence | 2745 | 2 | .07 | 2 | .07 | 2 | .07 | 0 | 0 | 0 | 0 |
 | NC_004609.1 | Mungbean yellow mosaic India virus DNA B  complete sequence | 2616 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004611.1 | Tomato leaf curl New Delhi virus DNA A  complete sequence | 2739 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004612.1 | Tomato leaf curl New Delhi virus DNA B  complete sequence | 2696 | 0 | 0 | 90 | 3.33 | 0 | 0 | 90 | 3.33 | 0 | 0 |
 | NC_004613.1 | Tomato leaf curl Laos virus  complete genome | 2748 | 0 | 0 | 32 | 1.16 | 0 | 0 | 32 | 1.16 | 0 | 0 |
 | NC_004614.1 | Tomato leaf curl Bangladesh virus  complete genome | 2761 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004615.1 | Staphylococcus phage 11  complete genome | 43604 | 0 | 0 | 281 | .64 | 49 | .11 | 281 | .64 | 0 | 0 |
-| NC_004616.1 | Staphylococcus prophage phi 12  complete genome | 44970 | 0 | 0 | 164 | .36 | 50 | .11 | 213 | .47 | 49 | .10 |
+| NC_004616.1 | Staphylococcus prophage phi 12  complete genome | 44970 | 1 | 0 | 164 | .36 | 50 | .11 | 213 | .47 | 49 | .10 |
 | NC_004617.1 | Staphylococcus prophage phi 13  complete genome | 42722 | 0 | 0 | 316 | .73 | 98 | .22 | 414 | .96 | 98 | .22 |
 | NC_004618.1 | Chayote yellow mosaic virus  complete genome | 2787 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004625.1 | East African cassava mosaic Cameroon virus DNA A  complete sequence | 2802 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1365,7 +1365,7 @@
 | NC_004740.1 | Staphylococcus prophage phiN315  complete genome | 44082 | 0 | 0 | 221 | .50 | 147 | .33 | 368 | .83 | 147 | .33 |
 | NC_004745.1 | Yersinia phage L-413C  complete genome | 30728 | 0 | 0 | 144 | .46 | 0 | 0 | 144 | .46 | 0 | 0 |
 | NC_004746.1 | Lactococcus phage 4268  complete genome | 36596 | 0 | 0 | 170 | .46 | 98 | .26 | 219 | .59 | 49 | .13 |
-| NC_004750.1 | Barley yellow dwarf virus - PAV  complete genome | 5677 | 0 | 0 | 144 | 2.53 | 1 | .01 | 144 | 2.53 | 0 | 0 |
+| NC_004750.1 | Barley yellow dwarf virus - PAV  complete genome | 5677 | 1 | .01 | 144 | 2.53 | 1 | .01 | 144 | 2.53 | 0 | 0 |
 | NC_004751.1 | Cereal yellow dwarf virus-RPV  complete genome | 5723 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004752.1 | Yam mosaic virus  complete genome | 9608 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_004755.1 | Sugarcane streak virus reunion  complete genome | 2735 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1757,7 +1757,7 @@
 | NC_006503.1 | Infectious salmon anemia virus segment 2  complete sequence | 2185 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006504.1 | Thogoto virus segment 6  complete sequence | 955 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006505.1 | Infectious salmon anemia virus segment 1  complete sequence | 2169 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_006506.1 | Thogoto virus segment 4  complete sequence | 1574 | 0 | 0 | 0 | 0 | 1 | .06 | 0 | 0 | 0 | 0 |
+| NC_006506.1 | Thogoto virus segment 4  complete sequence | 1574 | 1 | .06 | 1 | .06 | 1 | .06 | 0 | 0 | 0 | 0 |
 | NC_006507.1 | Thogoto virus segment 5  complete sequence | 1418 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006508.1 | Thogoto virus segment 1  complete sequence | 2375 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006548.1 | Pseudomonas phage B3  complete genome | 38439 | 0 | 0 | 30 | .07 | 0 | 0 | 30 | .07 | 0 | 0 |
@@ -1768,7 +1768,7 @@
 | NC_006553.1 | Avian sapelovirus  complete genome | 8289 | 0 | 0 | 108 | 1.30 | 88 | 1.06 | 108 | 1.30 | 0 | 0 |
 | NC_006554.1 | Sapovirus C12 strain C12 | 7476 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006555.1 | Dendrolimus punctatus densovirus  complete genome | 5039 | 0 | 0 | 138 | 2.73 | 49 | .97 | 138 | 2.73 | 0 | 0 |
-| NC_006556.1 | Thermoproteus tenax spherical virus 1  complete genome | 20933 | 0 | 0 | 0 | 0 | 3 | .01 | 0 | 0 | 0 | 0 |
+| NC_006556.1 | Thermoproteus tenax spherical virus 1  complete genome | 20933 | 3 | .01 | 3 | .01 | 3 | .01 | 0 | 0 | 0 | 0 |
 | NC_006557.1 | Bacillus phage BCJA1c  complete genome | 41092 | 0 | 0 | 158 | .38 | 0 | 0 | 158 | .38 | 0 | 0 |
 | NC_006558.1 | Getah virus  complete genome | 11597 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006559.1 | Solenopsis invicta virus 1  complete genome | 8026 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1776,7 +1776,7 @@
 | NC_006561.1 | Muscovy duck circovirus  complete genome | 1988 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006563.1 | Trichechus manatus latirostris papillomavirus 1  complete genome | 7722 | 0 | 0 | 0 | 0 | 49 | .63 | 0 | 0 | 0 | 0 |
 | NC_006564.1 | Canine papillomavirus 2  complete genome | 8101 | 0 | 0 | 108 | 1.33 | 49 | .60 | 108 | 1.33 | 0 | 0 |
-| NC_006565.1 | Lactobacillus phage LP65  complete genome | 131522 | 0 | 0 | 790 | .60 | 178 | .13 | 913 | .69 | 123 | .09 |
+| NC_006565.1 | Lactobacillus phage LP65  complete genome | 131522 | 6 | 0 | 790 | .60 | 178 | .13 | 913 | .69 | 123 | .09 |
 | NC_006566.1 | Fragaria chiloensis latent virus RNA 1  complete genome | 3431 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006567.1 | Fragaria chiloensis latent virus RNA 2  complete genome | 2570 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006568.1 | Fragaria chiloensis latent virus RNA 3  complete sequence | 2484 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -1793,7 +1793,7 @@
 | NC_006633.1 | Cotesia congregata virus complete genome  segment Circle1 | 27346 | 0 | 0 | 480 | 1.75 | 442 | 1.61 | 627 | 2.29 | 147 | .53 |
 | NC_006634.1 | Cotesia congregata virus complete genome  segment Circle2 | 14975 | 0 | 0 | 282 | 1.88 | 98 | .65 | 380 | 2.53 | 98 | .65 |
 | NC_006635.1 | Cotesia congregata virus complete genome  segment Circle3 | 29874 | 0 | 0 | 249 | .83 | 197 | .65 | 347 | 1.16 | 98 | .32 |
-| NC_006636.1 | Cotesia congregata virus complete genome  segment Circle4 | 15876 | 0 | 0 | 500 | 3.14 | 148 | .93 | 549 | 3.45 | 49 | .30 |
+| NC_006636.1 | Cotesia congregata virus complete genome  segment Circle4 | 15876 | 1 | 0 | 500 | 3.14 | 148 | .93 | 549 | 3.45 | 49 | .30 |
 | NC_006637.1 | Cotesia congregata virus complete genome  segment Circle5 | 14489 | 0 | 0 | 135 | .93 | 172 | 1.18 | 184 | 1.26 | 49 | .33 |
 | NC_006638.1 | Cotesia congregata virus complete genome  segment Circle6 | 15230 | 0 | 0 | 179 | 1.17 | 49 | .32 | 228 | 1.49 | 49 | .32 |
 | NC_006639.1 | Cotesia congregata virus complete genome  segment Circle7 | 24748 | 0 | 0 | 778 | 3.14 | 469 | 1.89 | 876 | 3.53 | 98 | .39 |
@@ -1839,7 +1839,7 @@
 | NC_006942.1 | Taro vein chlorosis virus  complete genome | 12020 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_006943.1 | Hydrangea ringspot virus  complete genome | 6185 | 0 | 0 | 49 | .79 | 74 | 1.19 | 123 | 1.98 | 74 | 1.19 |
 | NC_006944.1 | Mint virus 1  complete genome | 15450 | 0 | 0 | 92 | .59 | 49 | .31 | 92 | .59 | 0 | 0 |
-| NC_006945.1 | Bacillus phage GIL16c  complete genome | 14844 | 0 | 0 | 102 | .68 | 52 | .35 | 102 | .68 | 0 | 0 |
+| NC_006945.1 | Bacillus phage GIL16c  complete genome | 14844 | 3 | .02 | 102 | .68 | 52 | .35 | 102 | .68 | 0 | 0 |
 | NC_006946.1 | Apricot pseudo-chlorotic leaf spot virus  complete genome | 7494 | 0 | 0 | 29 | .38 | 0 | 0 | 29 | .38 | 0 | 0 |
 | NC_006948.1 | Mint virus X  complete genome | 5914 | 0 | 0 | 46 | .77 | 49 | .82 | 46 | .77 | 0 | 0 |
 | NC_006949.1 | Enterobacteria phage ES18  complete genome | 46900 | 0 | 0 | 134 | .28 | 49 | .10 | 183 | .39 | 49 | .10 |
@@ -1875,21 +1875,21 @@
 | NC_007021.1 | Staphylococcus phage Twort  complete genome | 130706 | 0 | 0 | 1882 | 1.43 | 760 | .58 | 2544 | 1.94 | 662 | .50 |
 | NC_007022.1 | Aeromonas phage 31  complete genome | 172963 | 0 | 0 | 301 | .17 | 0 | 0 | 301 | .17 | 0 | 0 |
 | NC_007023.1 | Enterobacteria phage RB43  complete genome | 180500 | 0 | 0 | 267 | .14 | 49 | .02 | 316 | .17 | 49 | .02 |
-| NC_007024.1 | Xanthomonas phage Xp15  complete genome | 55770 | 0 | 0 | 101 | .18 | 9 | .01 | 101 | .18 | 0 | 0 |
+| NC_007024.1 | Xanthomonas phage Xp15  complete genome | 55770 | 9 | .01 | 101 | .18 | 9 | .01 | 101 | .18 | 0 | 0 |
 | NC_007026.1 | Human picobirnavirus RNA segment 1  complete sequence | 2525 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007027.1 | Human picobirnavirus RNA segment 2  complete sequence | 1745 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_007028.1 | Microplitis demolitor bracovirus segment A  complete genome | 3611 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_007028.1 | Microplitis demolitor bracovirus segment A  complete genome | 3611 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_007029.1 | Microplitis demolitor bracovirus segment B  complete genome | 6307 | 0 | 0 | 53 | .84 | 49 | .77 | 53 | .84 | 0 | 0 |
-| NC_007030.2 | Microplitis demolitor bracovirus segment E  partial sequence | 4576 | 0 | 0 | 57 | 1.24 | 1 | .02 | 57 | 1.24 | 0 | 0 |
+| NC_007030.2 | Microplitis demolitor bracovirus segment E  partial sequence | 4576 | 1 | .02 | 57 | 1.24 | 1 | .02 | 57 | 1.24 | 0 | 0 |
 | NC_007031.1 | Microplitis demolitor bracovirus segment C  complete genome | 7228 | 0 | 0 | 24 | .33 | 49 | .67 | 24 | .33 | 0 | 0 |
 | NC_007032.1 | Microplitis demolitor bracovirus segment F  complete genome | 9604 | 0 | 0 | 35 | .36 | 0 | 0 | 35 | .36 | 0 | 0 |
 | NC_007033.1 | Microplitis demolitor bracovirus segment D  complete genome | 7823 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007034.1 | Microplitis demolitor bracovirus segment G  complete genome | 10790 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007035.1 | Microplitis demolitor bracovirus segment H  complete genome | 11238 | 0 | 0 | 29 | .25 | 0 | 0 | 29 | .25 | 0 | 0 |
 | NC_007036.1 | Microplitis demolitor bracovirus segment J  complete genome | 13704 | 0 | 0 | 28 | .20 | 49 | .35 | 28 | .20 | 0 | 0 |
-| NC_007037.1 | Microplitis demolitor bracovirus segment K  complete genome | 15058 | 0 | 0 | 50 | .33 | 173 | 1.14 | 148 | .98 | 98 | .65 |
+| NC_007037.1 | Microplitis demolitor bracovirus segment K  complete genome | 15058 | 1 | 0 | 50 | .33 | 173 | 1.14 | 148 | .98 | 98 | .65 |
 | NC_007038.1 | Microplitis demolitor bracovirus segment M  complete genome | 15218 | 0 | 0 | 81 | .53 | 0 | 0 | 81 | .53 | 0 | 0 |
-| NC_007039.1 | Microplitis demolitor bracovirus segment N  complete genome | 17355 | 0 | 0 | 171 | .98 | 99 | .57 | 269 | 1.54 | 98 | .56 |
+| NC_007039.1 | Microplitis demolitor bracovirus segment N  complete genome | 17355 | 1 | 0 | 171 | .98 | 99 | .57 | 269 | 1.54 | 98 | .56 |
 | NC_007040.1 | Microplitis demolitor bracovirus segment L  complete genome | 15096 | 0 | 0 | 31 | .20 | 0 | 0 | 31 | .20 | 0 | 0 |
 | NC_007041.1 | Microplitis demolitor bracovirus segment I  complete sequence | 13279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007044.1 | Microplitis demolitor bracovirus segment O  complete genome | 34334 | 0 | 0 | 810 | 2.35 | 98 | .28 | 810 | 2.35 | 0 | 0 |
@@ -1929,7 +1929,7 @@
 | NC_007158.1 | Fiji disease virus segment 3  complete genome | 3623 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007159.1 | Fiji disease virus segment 1  complete genome | 4532 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007160.1 | Fiji disease virus segment 5  complete genome | 3150 | 0 | 0 | 54 | 1.71 | 0 | 0 | 54 | 1.71 | 0 | 0 |
-| NC_007161.1 | Fiji disease virus segment 8  complete genome | 1959 | 0 | 0 | 0 | 0 | 1 | .05 | 0 | 0 | 0 | 0 |
+| NC_007161.1 | Fiji disease virus segment 8  complete genome | 1959 | 1 | .05 | 1 | .05 | 1 | .05 | 0 | 0 | 0 | 0 |
 | NC_007162.1 | Fiji disease virus segment 10  complete genome | 1819 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007163.1 | Fiji disease virus segment 7  complete sequence | 2194 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007180.1 | Thunberg fritillary virus  complete genome | 9723 | 0 | 0 | 67 | .68 | 0 | 0 | 67 | .68 | 0 | 0 |
@@ -1974,7 +1974,7 @@
 | NC_007372.1 | Influenza A virus (A New York 392 2004(H3N2)) segment 2  complete sequence | 2341 | 0 | 0 | 78 | 3.33 | 0 | 0 | 78 | 3.33 | 0 | 0 |
 | NC_007373.1 | Influenza A virus (A New York 392 2004(H3N2)) segment 1  complete sequence | 2341 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007374.1 | Influenza A virus (A Korea 426 1968(H2N2)) segment 4  complete sequence | 1773 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_007375.1 | Influenza A virus (A Korea 426 1968(H2N2)) segment 2  complete sequence | 2341 | 0 | 0 | 0 | 0 | 1 | .04 | 0 | 0 | 0 | 0 |
+| NC_007375.1 | Influenza A virus (A Korea 426 1968(H2N2)) segment 2  complete sequence | 2341 | 1 | .04 | 1 | .04 | 1 | .04 | 0 | 0 | 0 | 0 |
 | NC_007376.1 | Influenza A virus (A Korea 426 1968(H2N2)) segment 3  complete sequence | 2233 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007377.1 | Influenza A virus (A Korea 426 1968(H2N2)) segment 7  complete sequence | 1027 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007378.1 | Influenza A virus (A Korea 426 1968(H2N2)) segment 1  complete sequence | 2341 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -2110,7 +2110,7 @@
 | NC_007724.1 | Malvastrum leaf curl virus - [G87]  complete genome | 2745 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007725.1 | Malvastrum leaf curl virus-associated defective DNA beta  complete genome | 895 | 0 | 0 | 59 | 6.59 | 0 | 0 | 59 | 6.59 | 0 | 0 |
 | NC_007726.1 | Tomato yellow spot virus DNA-A  complete genome | 2674 | 0 | 0 | 41 | 1.53 | 0 | 0 | 41 | 1.53 | 0 | 0 |
-| NC_007727.1 | Tomato yellow spot virus DNA-B  complete genome | 2626 | 0 | 0 | 0 | 0 | 1 | .03 | 0 | 0 | 0 | 0 |
+| NC_007727.1 | Tomato yellow spot virus DNA-B  complete genome | 2626 | 1 | .03 | 1 | .03 | 1 | .03 | 0 | 0 | 0 | 0 |
 | NC_007728.1 | East Asian Passiflora virus  complete genome | 10046 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007729.1 | Maize necrotic streak virus isolate Arizona  complete genome | 4094 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007730.2 | Vernonia yellow vein virus DNA-A  complete genome | 2745 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -2198,14 +2198,14 @@
 | NC_007998.1 | Campoletis sonorensis ichnovirus segment O1  complete genome | 11285 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_007999.1 | Campoletis sonorensis ichnovirus segment P  complete genome | 11841 | 0 | 0 | 149 | 1.25 | 0 | 0 | 149 | 1.25 | 0 | 0 |
 | NC_008000.1 | Campoletis sonorensis ichnovirus segment T  complete genome | 14531 | 0 | 0 | 92 | .63 | 0 | 0 | 92 | .63 | 0 | 0 |
-| NC_008001.1 | Campoletis sonorensis ichnovirus segment U  complete genome | 14825 | 0 | 0 | 96 | .64 | 12 | .08 | 96 | .64 | 0 | 0 |
+| NC_008001.1 | Campoletis sonorensis ichnovirus segment U  complete genome | 14825 | 12 | .08 | 96 | .64 | 12 | .08 | 96 | .64 | 0 | 0 |
 | NC_008002.1 | Campoletis sonorensis ichnovirus segment Z  complete genome | 19557 | 0 | 0 | 143 | .73 | 74 | .37 | 143 | .73 | 0 | 0 |
-| NC_008003.1 | Campoletis sonorensis ichnovirus segment V  complete genome | 15510 | 0 | 0 | 46 | .29 | 54 | .34 | 95 | .61 | 49 | .31 |
+| NC_008003.1 | Campoletis sonorensis ichnovirus segment V  complete genome | 15510 | 5 | .03 | 46 | .29 | 54 | .34 | 95 | .61 | 49 | .31 |
 | NC_008004.1 | Campoletis sonorensis ichnovirus segment F  complete genome | 7887 | 0 | 0 | 75 | .95 | 0 | 0 | 75 | .95 | 0 | 0 |
 | NC_008005.1 | Campoletis sonorensis ichnovirus segment A2  complete sequence | 6283 | 0 | 0 | 38 | .60 | 0 | 0 | 38 | .60 | 0 | 0 |
 | NC_008006.1 | Campoletis sonorensis ichnovirus segment N  complete genome | 10757 | 0 | 0 | 82 | .76 | 0 | 0 | 82 | .76 | 0 | 0 |
 | NC_008007.1 | Campoletis sonorensis ichnovirus chromosome segment W  complete genome | 15812 | 0 | 0 | 88 | .55 | 0 | 0 | 88 | .55 | 0 | 0 |
-| NC_008008.1 | Campoletis sonorensis ichnovirus segment D  complete genome | 7604 | 0 | 0 | 71 | .93 | 1 | .01 | 71 | .93 | 0 | 0 |
+| NC_008008.1 | Campoletis sonorensis ichnovirus segment D  complete genome | 7604 | 1 | .01 | 71 | .93 | 1 | .01 | 71 | .93 | 0 | 0 |
 | NC_008017.1 | Sugarcane bacilliform Mor virus  complete genome | 7568 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008018.1 | Banana streak virus Acuminata Yunnan  complete genome | 7722 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008020.1 | Daphne virus S  complete genome | 8739 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -2279,7 +2279,7 @@
 | NC_008283.1 | Pepper yellow leaf curl Indonesia virus DNA-A  complete genome | 2750 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008284.1 | Pepper yellow leaf curl Indonesia virus DNA-B  complete genome | 2726 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008291.1 | Taterapox virus  complete genome | 198050 | 0 | 0 | 2274 | 1.14 | 1558 | .78 | 2446 | 1.23 | 172 | .08 |
-| NC_008292.1 | Passiflora latent carlavirus  complete genome | 8386 | 0 | 0 | 0 | 0 | 36 | .42 | 0 | 0 | 0 | 0 |
+| NC_008292.1 | Passiflora latent carlavirus  complete genome | 8386 | 1 | .01 | 1 | .01 | 36 | .42 | 0 | 0 | 0 | 0 |
 | NC_008293.1 | Clanis bilineata nucleopolyhedrosis virus  complete genome | 135454 | 0 | 0 | 1623 | 1.19 | 737 | .54 | 1966 | 1.45 | 343 | .25 |
 | NC_008294.1 | Pseudomonas phage PRR1  complete genome | 3573 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008296.2 | Synechococcus phage syn9  complete genome | 177300 | 0 | 0 | 1151 | .64 | 49 | .02 | 1200 | .67 | 49 | .02 |
@@ -2364,7 +2364,7 @@
 | NC_008721.2 | Streptococcus phage SMP  complete genome | 36019 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008722.1 | Staphylococcus phage CNPH82  complete genome | 43420 | 0 | 0 | 214 | .49 | 0 | 0 | 214 | .49 | 0 | 0 |
 | NC_008723.1 | Staphylococcus phage PH15  complete genome | 44041 | 0 | 0 | 360 | .81 | 74 | .16 | 360 | .81 | 0 | 0 |
-| NC_008724.1 | Acanthocystis turfacea Chlorella virus 1  complete genome | 288047 | 0 | 0 | 2177 | .75 | 592 | .20 | 2275 | .78 | 98 | .03 |
+| NC_008724.1 | Acanthocystis turfacea Chlorella virus 1  complete genome | 288047 | 1 | 0 | 2177 | .75 | 592 | .20 | 2275 | .78 | 98 | .03 |
 | NC_008725.1 | Maruca vitrata MNPV  complete genome | 111953 | 0 | 0 | 1139 | 1.01 | 368 | .32 | 1188 | 1.06 | 49 | .04 |
 | NC_008728.1 | Mal de Rio Cuarto virus segment S8  complete sequence | 1931 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_008729.1 | Mal de Rio Cuarto virus segment S4  complete sequence | 3566 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -2695,7 +2695,7 @@
 | NC_009821.1 | Enterobacteria phage Phi1  complete genome | 164270 | 0 | 0 | 247 | .15 | 49 | .02 | 296 | .18 | 49 | .02 |
 | NC_009823.1 | Hepatitis C virus genotype 2  complete genome | 9711 | 0 | 0 | 166 | 1.70 | 149 | 1.53 | 166 | 1.70 | 0 | 0 |
 | NC_009824.1 | Hepatitis C virus genotype 3  genome | 9456 | 0 | 0 | 31 | .32 | 55 | .58 | 31 | .32 | 0 | 0 |
-| NC_009825.1 | Hepatitis C virus genotype 4  genome | 9355 | 0 | 0 | 63 | .67 | 30 | .32 | 63 | .67 | 0 | 0 |
+| NC_009825.1 | Hepatitis C virus genotype 4  genome | 9355 | 1 | .01 | 63 | .67 | 30 | .32 | 63 | .67 | 0 | 0 |
 | NC_009826.1 | Hepatitis C virus genotype 5  genome | 9343 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_009827.1 | Hepatitis C virus genotype 6  complete genome | 9628 | 0 | 0 | 63 | .65 | 124 | 1.28 | 63 | .65 | 0 | 0 |
 | NC_009875.1 | Staphylococcus phage SAP-2  complete genome | 17938 | 0 | 0 | 280 | 1.56 | 98 | .54 | 378 | 2.10 | 98 | .54 |
@@ -2742,7 +2742,7 @@
 | NC_010147.1 | Staphylococcus phage phiMR11  complete genome | 43011 | 0 | 0 | 33 | .07 | 49 | .11 | 82 | .19 | 49 | .11 |
 | NC_010148.1 | Tomato leaf curl Bangalore virus-[Ban5] satellite DNA beta  complete genome | 1361 | 0 | 0 | 0 | 0 | 98 | 7.20 | 0 | 0 | 0 | 0 |
 | NC_010152.1 | Acidianus filamentous virus 6  complete genome | 39577 | 0 | 0 | 773 | 1.95 | 49 | .12 | 822 | 2.07 | 49 | .12 |
-| NC_010153.1 | Acidianus filamentous virus 7  complete genome | 36895 | 0 | 0 | 608 | 1.64 | 3 | 0 | 608 | 1.64 | 0 | 0 |
+| NC_010153.1 | Acidianus filamentous virus 7  complete genome | 36895 | 3 | 0 | 608 | 1.64 | 3 | 0 | 608 | 1.64 | 0 | 0 |
 | NC_010154.1 | Acidianus filamentous virus 8  complete genome | 38179 | 0 | 0 | 434 | 1.13 | 123 | .32 | 508 | 1.33 | 74 | .19 |
 | NC_010155.1 | Acidianus filamentous virus 3  partial viral genome | 40449 | 0 | 0 | 373 | .92 | 147 | .36 | 422 | 1.04 | 49 | .12 |
 | NC_010165.1 | Citrus viroid V  complete genome | 294 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -2997,7 +2997,7 @@
 | NC_011142.1 | Iodobacteriophage phiPLPE  complete genome | 47453 | 0 | 0 | 108 | .22 | 98 | .20 | 108 | .22 | 0 | 0 |
 | NC_011165.1 | Pseudomonas phage LBL3  complete genome | 64427 | 0 | 0 | 192 | .29 | 0 | 0 | 192 | .29 | 0 | 0 |
 | NC_011166.1 | Pseudomonas phage LMA2  complete genome | 66530 | 0 | 0 | 135 | .20 | 49 | .07 | 184 | .27 | 49 | .07 |
-| NC_011167.1 | Bacillus phage IEBH  complete genome | 53104 | 0 | 0 | 35 | .06 | 2 | 0 | 35 | .06 | 0 | 0 |
+| NC_011167.1 | Bacillus phage IEBH  complete genome | 53104 | 2 | 0 | 35 | .06 | 2 | 0 | 35 | .06 | 0 | 0 |
 | NC_011181.1 | Okra mottle virus - [Brazil:okra] DNA A  complete sequence | 2660 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_011182.1 | Okra mottle virus - [Brazil:okra] DNA B  complete sequence | 2653 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_011183.1 | Feldmannia species virus  complete genome | 154641 | 0 | 0 | 2078 | 1.34 | 196 | .12 | 2127 | 1.37 | 49 | .03 |
@@ -3031,13 +3031,13 @@
 | NC_011317.1 | Anopheles gambiae densonucleosis virus  complete genome | 4139 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_011318.1 | Clostridium phage 39-O  complete genome | 38753 | 0 | 0 | 343 | .88 | 147 | .37 | 441 | 1.13 | 98 | .25 |
 | NC_011335.1 | Complete DpAV4 genome | 119343 | 0 | 0 | 232 | .19 | 98 | .08 | 330 | .27 | 98 | .08 |
-| NC_011344.1 | Staphylococcus phage phi2958PVL  complete genome | 47342 | 0 | 0 | 283 | .59 | 148 | .31 | 430 | .90 | 147 | .31 |
+| NC_011344.1 | Staphylococcus phage phi2958PVL  complete genome | 47342 | 1 | 0 | 283 | .59 | 148 | .31 | 430 | .90 | 147 | .31 |
 | NC_011345.1 | Agrotis ipsilon multiple nucleopolyhedrovirus  complete genome | 155122 | 0 | 0 | 3086 | 1.98 | 1867 | 1.20 | 3233 | 2.08 | 147 | .09 |
 | NC_011346.1 | Clerodendrum golden mosaic China virus DNA A  complete genome | 2776 | 0 | 0 | 33 | 1.18 | 0 | 0 | 33 | 1.18 | 0 | 0 |
 | NC_011347.1 | Clerodendrum golden mosaic China virus DNA B  complete genome | 2739 | 0 | 0 | 76 | 2.77 | 0 | 0 | 76 | 2.77 | 0 | 0 |
 | NC_011348.1 | Tomato yellow leaf distortion virus DNA A  complete genome | 2630 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_011349.1 | Seneca valley virus  complete genome | 7310 | 0 | 0 | 30 | .41 | 59 | .80 | 30 | .41 | 0 | 0 |
-| NC_011356.1 | Enterobacteria phage YYZ-2008  complete prophage genome | 54896 | 0 | 0 | 86 | .15 | 8 | .01 | 86 | .15 | 0 | 0 |
+| NC_011356.1 | Enterobacteria phage YYZ-2008  complete prophage genome | 54896 | 8 | .01 | 86 | .15 | 8 | .01 | 86 | .15 | 0 | 0 |
 | NC_011357.1 | Stx2-converting phage 1717  complete prophage genome | 62147 | 0 | 0 | 143 | .23 | 49 | .07 | 192 | .30 | 49 | .07 |
 | NC_011362.1 | Mulberry small circular viroid-like RNA 1  complete genome | 356 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_011372.2 | Botrytis cinerea mitovirus 1 RNA-dependent RNA polymerase (RDRP) gene  complete cds | 2804 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3202,7 +3202,7 @@
 | NC_012671.1 | Quang Binh virus  complete genome | 10865 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012685.1 | Culex pipiens densovirus  complete genome | 5759 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012696.1 | Roseophage EE36P1  complete genome | 73325 | 0 | 0 | 182 | .24 | 49 | .06 | 231 | .31 | 49 | .06 |
-| NC_012697.1 | Roseophage DSS3P2  complete genome | 74611 | 0 | 0 | 97 | .13 | 1 | 0 | 97 | .13 | 0 | 0 |
+| NC_012697.1 | Roseophage DSS3P2  complete genome | 74611 | 1 | 0 | 97 | .13 | 1 | 0 | 97 | .13 | 0 | 0 |
 | NC_012698.2 | Cassava brown streak virus  complete genome | 8995 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012699.1 | Calicivirus pig AB90 CAN  complete genome | 6434 | 0 | 0 | 25 | .38 | 58 | .90 | 25 | .38 | 0 | 0 |
 | NC_012702.1 | Midway virus  complete genome | 11752 | 0 | 0 | 423 | 3.59 | 147 | 1.25 | 423 | 3.59 | 0 | 0 |
@@ -3214,7 +3214,7 @@
 | NC_012741.1 | Enterobacteria phage JS10  complete genome | 171451 | 0 | 0 | 291 | .16 | 196 | .11 | 487 | .28 | 196 | .11 |
 | NC_012742.1 | Xanthomonas phage phiL7  complete genome | 44080 | 0 | 0 | 80 | .18 | 0 | 0 | 80 | .18 | 0 | 0 |
 | NC_012743.2 | Burkholderia phage BcepIL02  complete genome | 62715 | 0 | 0 | 693 | 1.10 | 0 | 0 | 693 | 1.10 | 0 | 0 |
-| NC_012749.1 | Enterobacteria phage WV8  complete genome | 88487 | 0 | 0 | 392 | .44 | 50 | .05 | 441 | .49 | 49 | .05 |
+| NC_012749.1 | Enterobacteria phage WV8  complete genome | 88487 | 1 | 0 | 392 | .44 | 50 | .05 | 441 | .49 | 49 | .05 |
 | NC_012753.1 | Streptococcus phage 5093  complete genome | 37184 | 0 | 0 | 178 | .47 | 123 | .33 | 178 | .47 | 0 | 0 |
 | NC_012754.1 | Stretch Lagoon orbivirus segment 1  complete genome | 3933 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012755.1 | Stretch Lagoon orbivirus segment 2  complete genome | 2792 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3223,7 +3223,7 @@
 | NC_012776.1 | Lujo virus segment S  complete genome | 3189 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012777.1 | Lujo virus segment L  complete genome | 7163 | 0 | 0 | 113 | 1.57 | 0 | 0 | 113 | 1.57 | 0 | 0 |
 | NC_012783.2 | Cercopithecine herpesvirus 5 strain 2715  complete genome | 226205 | 0 | 0 | 1477 | .65 | 443 | .19 | 1575 | .69 | 98 | .04 |
-| NC_012784.1 | Staphylococcus phage phiPVL-CN125  complete genome | 44492 | 0 | 0 | 173 | .38 | 50 | .11 | 222 | .49 | 49 | .11 |
+| NC_012784.1 | Staphylococcus phage phiPVL-CN125  complete genome | 44492 | 1 | 0 | 173 | .38 | 50 | .11 | 222 | .49 | 49 | .11 |
 | NC_012786.1 | Passionfruit severe leaf distortion virus DNA-A  complete genome | 2672 | 0 | 0 | 32 | 1.19 | 0 | 0 | 32 | 1.19 | 0 | 0 |
 | NC_012787.1 | Passionfruit severe leaf distortion virus DNA-B  complete genome | 2644 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012788.1 | Mycobacterium phage Angel  complete genome | 41441 | 0 | 0 | 1166 | 2.81 | 0 | 0 | 1166 | 2.81 | 0 | 0 |
@@ -3231,7 +3231,7 @@
 | NC_012798.1 | Human cosavirus E1  complete genome | 6580 | 0 | 0 | 18 | .27 | 29 | .44 | 18 | .27 | 0 | 0 |
 | NC_012799.1 | Triticum mosaic virus  complete genome | 10282 | 0 | 0 | 68 | .66 | 31 | .30 | 68 | .66 | 0 | 0 |
 | NC_012800.1 | Cosavirus A strain HCoSV-A1 polyprotein gene  complete cds | 7632 | 0 | 0 | 48 | .62 | 49 | .64 | 48 | .62 | 0 | 0 |
-| NC_012801.1 | Human cosavirus B1  complete genome | 7205 | 0 | 0 | 35 | .48 | 1 | .01 | 35 | .48 | 0 | 0 |
+| NC_012801.1 | Human cosavirus B1  complete genome | 7205 | 1 | .01 | 35 | .48 | 1 | .01 | 35 | .48 | 0 | 0 |
 | NC_012802.1 | Human cosavirus D1  complete genome | 7215 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012805.1 | Coleus blumei viroid 6  complete genome | 342 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_012812.1 | Bovine viral diarrhea virus 3 Th 04 KhonKaen  complete genome | 12337 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3328,7 +3328,7 @@
 | NC_013266.1 | Melandrium yellow fleck virus genomic RNA  segment RNA1  complete sequence  strain: KU1 | 3249 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_013267.1 | Melandrium yellow fleck virus genomic RNA  segment RNA2  complete sequence  strain: KU1 | 2862 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_013268.1 | Melandrium yellow fleck virus genomic RNA  segment RNA3  complete sequence  strain: KU1 | 2424 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_013288.1 | Ostreococcus tauri virus 1 complete genome | 191761 | 0 | 0 | 800 | .41 | 174 | .09 | 849 | .44 | 49 | .02 |
+| NC_013288.1 | Ostreococcus tauri virus 1 complete genome | 191761 | 2 | 0 | 800 | .41 | 174 | .09 | 849 | .44 | 49 | .02 |
 | NC_013396.1 | Epizootic hemorrhagic disease virus (serotype 1   strain New Jersey) segment 1 | 3942 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_013397.1 | Epizootic hemorrhagic disease virus (serotype 1   strain New Jersey) segment 2 | 2968 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_013398.1 | Epizootic hemorrhagic disease virus (serotype 1   strain New Jersey) segment 3 | 2768 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3409,7 +3409,7 @@
 | NC_013936.1 | Mycobacterium phage Ardmore  complete genome | 52141 | 0 | 0 | 141 | .27 | 49 | .09 | 190 | .36 | 49 | .09 |
 | NC_013953.1 | Lymantria xylina MNPV  complete genome | 156344 | 0 | 0 | 1612 | 1.03 | 566 | .36 | 1857 | 1.18 | 245 | .15 |
 | NC_013955.1 | Ngaingan virus  complete genome | 15764 | 0 | 0 | 20 | .12 | 0 | 0 | 20 | .12 | 0 | 0 |
-| NC_013999.1 | Phlebiopsis gigantea mycovirus dsRNA 1  complete genome | 11563 | 0 | 0 | 0 | 0 | 3 | .02 | 0 | 0 | 0 | 0 |
+| NC_013999.1 | Phlebiopsis gigantea mycovirus dsRNA 1  complete genome | 11563 | 3 | .02 | 3 | .02 | 3 | .02 | 0 | 0 | 0 | 0 |
 | NC_014036.1 | Klebsiella phage KP15  complete genome | 174436 | 0 | 0 | 143 | .08 | 0 | 0 | 143 | .08 | 0 | 0 |
 | NC_014037.1 | Sugarcane streak mosaic virus  complete genome | 9782 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014038.1 | Sunflower chlorotic mottle virus  complete genome | 9965 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3430,17 +3430,17 @@
 | NC_014079.1 | Torque teno virus 26  complete genome | 3798 | 0 | 0 | 221 | 5.81 | 0 | 0 | 221 | 5.81 | 0 | 0 |
 | NC_014080.1 | Torque teno virus 7  complete genome | 3736 | 0 | 0 | 80 | 2.14 | 0 | 0 | 80 | 2.14 | 0 | 0 |
 | NC_014081.1 | Torque teno virus 3  complete genome | 3748 | 0 | 0 | 102 | 2.72 | 0 | 0 | 102 | 2.72 | 0 | 0 |
-| NC_014082.1 | Torque teno mini virus 7  complete genome | 2952 | 0 | 0 | 0 | 0 | 51 | 1.72 | 0 | 0 | 0 | 0 |
+| NC_014082.1 | Torque teno mini virus 7  complete genome | 2952 | 2 | .06 | 2 | .06 | 51 | 1.72 | 0 | 0 | 0 | 0 |
 | NC_014083.1 | Torque teno virus 25  complete genome | 3763 | 0 | 0 | 37 | .98 | 0 | 0 | 37 | .98 | 0 | 0 |
 | NC_014084.1 | Torque teno virus 8  complete genome | 3790 | 0 | 0 | 61 | 1.60 | 0 | 0 | 61 | 1.60 | 0 | 0 |
 | NC_014085.1 | Torque teno tamarin virus  complete genome | 3371 | 0 | 0 | 105 | 3.11 | 0 | 0 | 105 | 3.11 | 0 | 0 |
-| NC_014086.1 | Torque teno mini virus 2  complete genome | 2765 | 0 | 0 | 0 | 0 | 1 | .03 | 0 | 0 | 0 | 0 |
+| NC_014086.1 | Torque teno mini virus 2  complete genome | 2765 | 1 | .03 | 1 | .03 | 1 | .03 | 0 | 0 | 0 | 0 |
 | NC_014087.1 | Torque teno douroucouli virus  complete genome | 3718 | 0 | 0 | 136 | 3.65 | 0 | 0 | 136 | 3.65 | 0 | 0 |
-| NC_014088.1 | Torque teno mini virus 3  complete genome | 2897 | 0 | 0 | 0 | 0 | 1 | .03 | 0 | 0 | 0 | 0 |
+| NC_014088.1 | Torque teno mini virus 3  complete genome | 2897 | 1 | .03 | 1 | .03 | 1 | .03 | 0 | 0 | 0 | 0 |
 | NC_014089.1 | Torque teno mini virus 5  complete genome | 2908 | 0 | 0 | 64 | 2.20 | 0 | 0 | 64 | 2.20 | 0 | 0 |
 | NC_014090.1 | Torque teno mini virus 4  complete genome | 2785 | 0 | 0 | 60 | 2.15 | 0 | 0 | 60 | 2.15 | 0 | 0 |
 | NC_014091.1 | Torque teno virus 16  complete genome | 3818 | 0 | 0 | 122 | 3.19 | 0 | 0 | 122 | 3.19 | 0 | 0 |
-| NC_014092.2 | Torque teno sus virus k2a isolate 2p  complete genome | 2735 | 0 | 0 | 0 | 0 | 27 | .98 | 0 | 0 | 0 | 0 |
+| NC_014092.2 | Torque teno sus virus k2a isolate 2p  complete genome | 2735 | 27 | .98 | 27 | .98 | 27 | .98 | 0 | 0 | 0 | 0 |
 | NC_014093.1 | Torque teno midi virus 2  complete genome | 3253 | 0 | 0 | 104 | 3.19 | 49 | 1.50 | 104 | 3.19 | 0 | 0 |
 | NC_014094.1 | Torque teno virus 6  complete genome | 3705 | 0 | 0 | 61 | 1.64 | 0 | 0 | 61 | 1.64 | 0 | 0 |
 | NC_014095.1 | Torque teno mini virus 6  complete genome | 2897 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3473,12 +3473,12 @@
 | NC_014245.1 | Broome virus segment S4  complete genome | 808 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014252.1 | Panax virus Y  complete genome | 9750 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014260.1 | Enterobacteria phage IME08  complete genome | 172253 | 0 | 0 | 271 | .15 | 147 | .08 | 418 | .24 | 147 | .08 |
-| NC_014321.1 | Hyperthermophilic Archaeal Virus 2  complete genome | 17666 | 0 | 0 | 51 | .28 | 148 | .83 | 149 | .84 | 98 | .55 |
+| NC_014321.1 | Hyperthermophilic Archaeal Virus 2  complete genome | 17666 | 1 | 0 | 51 | .28 | 148 | .83 | 149 | .84 | 98 | .55 |
 | NC_014322.1 | Hyperthermophilic Archaeal Virus 1  complete genome | 22743 | 0 | 0 | 173 | .76 | 49 | .21 | 222 | .97 | 49 | .21 |
 | NC_014324.1 | Turnip curly top virus  complete genome | 2981 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014325.1 | Bidens mottle virus  complete genome | 9741 | 0 | 0 | 125 | 1.28 | 65 | .66 | 125 | 1.28 | 0 | 0 |
 | NC_014326.1 | Mus musculus papillomavirus type 1 isolate MusPV  complete genome | 7510 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_014327.1 | Pepper yellow mosaic virus RNA  complete genome  strain: DF | 9745 | 0 | 0 | 40 | .41 | 1 | .01 | 40 | .41 | 0 | 0 |
+| NC_014327.1 | Pepper yellow mosaic virus RNA  complete genome  strain: DF | 9745 | 1 | .01 | 40 | .41 | 1 | .01 | 40 | .41 | 0 | 0 |
 | NC_014357.1 | Fenneropenaeus chinensis hepatopancreatic densovirus  complete genome | 6085 | 0 | 0 | 128 | 2.10 | 0 | 0 | 128 | 2.10 | 0 | 0 |
 | NC_014358.1 | Bocavirus gorilla GBoV1 2009  complete genome | 4944 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014359.1 | Spissistilus festinus virus 1  complete genome | 7951 | 0 | 0 | 120 | 1.50 | 0 | 0 | 120 | 1.50 | 0 | 0 |
@@ -3539,7 +3539,7 @@
 | NC_014529.1 | UNVERIFIED: Great Island virus isolate CanAr 42 segment 8  complete sequence | 1172 | 0 | 0 | 34 | 2.90 | 0 | 0 | 34 | 2.90 | 0 | 0 |
 | NC_014530.1 | Great Island virus segment 9  complete genome | 1056 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014531.1 | Great Island virus segment 10  complete genome | 703 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_014536.1 | Brugmansia suaveolens mottle virus  complete genome | 9870 | 0 | 0 | 32 | .32 | 2 | .02 | 32 | .32 | 0 | 0 |
+| NC_014536.1 | Brugmansia suaveolens mottle virus  complete genome | 9870 | 2 | .02 | 32 | .32 | 2 | .02 | 32 | .32 | 0 | 0 |
 | NC_014542.1 | Tomato leaf curl Oman virus  complete genome | 2763 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014545.1 | Cotton leafroll dwarf virus  complete genome | 5866 | 0 | 0 | 50 | .85 | 0 | 0 | 50 | .85 | 0 | 0 |
 | NC_014546.1 | Frangipani mosaic virus  complete genome | 6643 | 0 | 0 | 109 | 1.64 | 0 | 0 | 109 | 1.64 | 0 | 0 |
@@ -3571,7 +3571,7 @@
 | NC_014646.1 | Cleome leaf crumple virus associated DNA 1  complete genome | 1351 | 0 | 0 | 83 | 6.14 | 49 | 3.62 | 83 | 6.14 | 0 | 0 |
 | NC_014647.1 | Malvastrum yellow vein Changa Manga virus  complete genome | 2754 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014648.1 | Pineapple bacilliform comosus virus  complete genome | 7543 | 0 | 0 | 25 | .33 | 0 | 0 | 25 | .33 | 0 | 0 |
-| NC_014649.1 | Acanthamoeba polyphaga mimivirus  complete genome | 1181549 | 0 | 0 | 19376 | 1.63 | 4195 | .35 | 22024 | 1.86 | 2648 | .22 |
+| NC_014649.1 | Acanthamoeba polyphaga mimivirus  complete genome | 1181549 | 1 | 0 | 19376 | 1.63 | 4195 | .35 | 22024 | 1.86 | 2648 | .22 |
 | NC_014660.1 | Acinetobacter phage Ac42  complete genome | 167716 | 0 | 0 | 55 | .03 | 147 | .08 | 202 | .12 | 147 | .08 |
 | NC_014661.1 | Acinetobacter phage Acj61  complete genome | 164093 | 0 | 0 | 411 | .25 | 147 | .08 | 556 | .33 | 145 | .08 |
 | NC_014662.1 | Enterobacteria phage CC31  complete genome | 165540 | 0 | 0 | 517 | .31 | 49 | .02 | 566 | .34 | 49 | .02 |
@@ -3602,7 +3602,7 @@
 | NC_014765.1 | Bathycoccus sp. RCC1105 virus BpV1  complete genome | 198519 | 0 | 0 | 2675 | 1.34 | 1183 | .59 | 2724 | 1.37 | 49 | .02 |
 | NC_014766.1 | Ostreococcus lucimarinus virus OlV1  complete genome | 194022 | 0 | 0 | 805 | .41 | 172 | .08 | 928 | .47 | 123 | .06 |
 | NC_014767.1 | Micromonas sp. RCC1109 virus MpV1  complete genome | 184095 | 0 | 0 | 1450 | .78 | 319 | .17 | 1597 | .86 | 147 | .07 |
-| NC_014789.1 | Ostreococcus tauri virus 2  complete genome | 184409 | 0 | 0 | 725 | .39 | 150 | .08 | 823 | .44 | 98 | .05 |
+| NC_014789.1 | Ostreococcus tauri virus 2  complete genome | 184409 | 3 | 0 | 725 | .39 | 150 | .08 | 823 | .44 | 98 | .05 |
 | NC_014790.2 | Passion fruit woodiness virus  complete genome | 9682 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014791.1 | Ugandan cassava brown streak virus  complete genome | 9070 | 0 | 0 | 109 | 1.20 | 0 | 0 | 109 | 1.20 | 0 | 0 |
 | NC_014792.1 | Enterobacteria phage vB EcoM-VR7  complete genome | 169285 | 0 | 0 | 366 | .21 | 0 | 0 | 366 | .21 | 0 | 0 |
@@ -3640,7 +3640,7 @@
 | NC_014956.1 | Human papillomavirus type 134  complete genome | 7309 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014967.1 | Honeysuckle ringspot virus  complete genome | 3956 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014968.1 | Sweet potato leaf curl Uganda virus-[Uganda:Kampala:2008]  complete genome | 2799 | 0 | 0 | 50 | 1.78 | 0 | 0 | 50 | 1.78 | 0 | 0 |
-| NC_014969.1 | Fowl adenovirus E  complete genome | 44055 | 0 | 0 | 681 | 1.54 | 247 | .56 | 681 | 1.54 | 0 | 0 |
+| NC_014969.1 | Fowl adenovirus E  complete genome | 44055 | 1 | 0 | 681 | 1.54 | 247 | .56 | 681 | 1.54 | 0 | 0 |
 | NC_014977.1 | Penaeus vannamei nodavirus RNA-2  complete genome | 1183 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_014978.1 | Penaeus vannamei nodavirus RNA-1  complete genome | 3111 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_015043.1 | Sida mosaic Bolivia virus 2 DNA-A  complete genome | 2679 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3685,9 +3685,9 @@
 | NC_015230.1 | Maverick-related virus strain Spezl  complete genome | 19063 | 0 | 0 | 594 | 3.11 | 123 | .64 | 643 | 3.37 | 49 | .25 |
 | NC_015249.1 | Enterobacteria phage 285P  complete genome | 39270 | 0 | 0 | 101 | .25 | 0 | 0 | 101 | .25 | 0 | 0 |
 | NC_015250.1 | Acinetobacter phage 133  complete genome | 159801 | 0 | 0 | 546 | .34 | 49 | .03 | 595 | .37 | 49 | .03 |
-| NC_015251.1 | Aeromonas phage 65  complete genome | 235229 | 0 | 0 | 1012 | .43 | 52 | .02 | 1061 | .45 | 49 | .02 |
+| NC_015251.1 | Aeromonas phage 65  complete genome | 235229 | 3 | 0 | 1012 | .43 | 52 | .02 | 1061 | .45 | 49 | .02 |
 | NC_015252.1 | Brochothrix phage NF5  complete genome | 36953 | 0 | 0 | 65 | .17 | 49 | .13 | 114 | .30 | 49 | .13 |
-| NC_015253.1 | Brochothrix phage A9  complete genome | 127065 | 0 | 0 | 1666 | 1.31 | 446 | .35 | 1715 | 1.34 | 49 | .03 |
+| NC_015253.1 | Brochothrix phage A9  complete genome | 127065 | 2 | 0 | 1666 | 1.31 | 446 | .35 | 1715 | 1.34 | 49 | .03 |
 | NC_015254.1 | Brochothrix phage BL3  complete genome | 41518 | 0 | 0 | 74 | .17 | 147 | .35 | 172 | .41 | 98 | .23 |
 | NC_015262.1 | Clostridium phage phiCD6356  complete genome | 37664 | 0 | 0 | 623 | 1.65 | 172 | .45 | 795 | 2.11 | 172 | .45 |
 | NC_015263.1 | Lactococcus phage 949  complete genome | 114768 | 0 | 0 | 1129 | .98 | 392 | .34 | 1423 | 1.23 | 294 | .25 |
@@ -3708,7 +3708,7 @@
 | NC_015282.1 | Synechococcus phage S-SM1  complete genome | 174079 | 0 | 0 | 730 | .41 | 49 | .02 | 779 | .44 | 49 | .02 |
 | NC_015283.1 | Prochlorococcus phage P-RSM4  complete genome | 176428 | 0 | 0 | 930 | .52 | 98 | .05 | 979 | .55 | 49 | .02 |
 | NC_015284.1 | Prochlorococcus phage P-HM2  complete genome | 183806 | 0 | 0 | 742 | .40 | 98 | .05 | 840 | .45 | 98 | .05 |
-| NC_015285.1 | Prochlorococcus phage Syn33  complete genome | 174285 | 0 | 0 | 691 | .39 | 52 | .02 | 740 | .42 | 49 | .02 |
+| NC_015285.1 | Prochlorococcus phage Syn33  complete genome | 174285 | 3 | 0 | 691 | .39 | 52 | .02 | 740 | .42 | 49 | .02 |
 | NC_015286.1 | Synechococcus phage Syn19  complete genome | 175230 | 0 | 0 | 658 | .37 | 0 | 0 | 658 | .37 | 0 | 0 |
 | NC_015287.1 | Synechococcus phage S-SSM7  complete genome | 232878 | 0 | 0 | 830 | .35 | 147 | .06 | 928 | .39 | 98 | .04 |
 | NC_015288.1 | Prochlorococcus phage Syn1  complete genome | 191195 | 0 | 0 | 996 | .52 | 49 | .02 | 1045 | .54 | 49 | .02 |
@@ -3733,7 +3733,7 @@
 | NC_015328.1 | Sweet potato caulimo-like virus  complete genome | 7723 | 0 | 0 | 308 | 3.98 | 49 | .63 | 308 | 3.98 | 0 | 0 |
 | NC_015373.1 | Candiru virus segment M  complete genome | 4326 | 0 | 0 | 30 | .69 | 0 | 0 | 30 | .69 | 0 | 0 |
 | NC_015374.1 | Candiru virus segment L  complete genome | 6327 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_015375.1 | Candiru virus segment S  complete genome | 1842 | 0 | 0 | 0 | 0 | 56 | 3.04 | 0 | 0 | 0 | 0 |
+| NC_015375.1 | Candiru virus segment S  complete genome | 1842 | 7 | .38 | 7 | .38 | 56 | 3.04 | 0 | 0 | 0 | 0 |
 | NC_015393.1 | Celery mosaic virus  complete genome | 9999 | 0 | 0 | 49 | .49 | 0 | 0 | 49 | .49 | 0 | 0 |
 | NC_015394.2 | Hardenbergia mosaic virus  complete genome | 9682 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_015395.1 | Hardenbergia virus A  complete genome | 6942 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3787,7 +3787,7 @@
 | NC_015584.1 | Mycobacterium virus Faith1  complete genome | 75960 | 0 | 0 | 539 | .70 | 49 | .06 | 539 | .70 | 0 | 0 |
 | NC_015585.1 | Pantoea phage LIMEzero  complete genome | 43032 | 0 | 0 | 98 | .22 | 0 | 0 | 98 | .22 | 0 | 0 |
 | NC_015586.1 | Stenotrophomonas phage phiSHP2  complete genome | 5819 | 0 | 0 | 191 | 3.28 | 0 | 0 | 191 | 3.28 | 0 | 0 |
-| NC_015626.1 | Pigeon picornavirus B  complete genome | 7801 | 0 | 0 | 79 | 1.01 | 52 | .66 | 79 | 1.01 | 0 | 0 |
+| NC_015626.1 | Pigeon picornavirus B  complete genome | 7801 | 2 | .02 | 79 | 1.01 | 52 | .66 | 79 | 1.01 | 0 | 0 |
 | NC_015627.1 | Tobacco yellow crinkle virus DNA A  complete genome | 2601 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_015628.1 | Tobacco yellow crinkle virus DNA B  complete genome | 2553 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_015629.1 | Tuber aestivum mitovirus  complete genome | 3480 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3804,7 +3804,7 @@
 | NC_015721.1 | Bdellovibrio phage phi1402  complete genome | 23931 | 0 | 0 | 30 | .12 | 0 | 0 | 30 | .12 | 0 | 0 |
 | NC_015780.1 | Wiseana iridescent virus  complete genome | 205791 | 0 | 0 | 2123 | 1.03 | 1251 | .60 | 3227 | 1.56 | 1104 | .53 |
 | NC_015782.2 | Grapevine Pinot gris virus complete genome  genomic RNA | 7259 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_015783.1 | Torque teno virus  complete genome | 3725 | 0 | 0 | 78 | 2.09 | 16 | .42 | 78 | 2.09 | 0 | 0 |
+| NC_015783.1 | Torque teno virus  complete genome | 3725 | 16 | .42 | 78 | 2.09 | 16 | .42 | 78 | 2.09 | 0 | 0 |
 | NC_015784.2 | Grapevine vein-clearing virus  complete genome | 7753 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_015785.1 | Microvirus CA82  complete genome | 5514 | 0 | 0 | 20 | .36 | 0 | 0 | 20 | .36 | 0 | 0 |
 | NC_015843.2 | Tembusu virus flavivirus polyprotein (flavivirus polyprotein gene) gene  complete cds | 10990 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3833,7 +3833,7 @@
 | NC_015960.1 | Yoka poxvirus  complete genome | 175699 | 0 | 0 | 3967 | 2.25 | 1523 | .86 | 4703 | 2.67 | 736 | .41 |
 | NC_015961.1 | Tomato chlorotic leaf distortion virus-[Venezuela:Zulia:2004] DNA B  complete genome | 2605 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_015962.1 | Tomato chlorotic leaf distortion virus-[Venezuela:Zulia:2004] segment DNA A  complete sequence | 2625 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_016003.1 | Tamus red mosaic virus isolate IT  complete genome | 6495 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_016003.1 | Tamus red mosaic virus isolate IT  complete genome | 6495 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_016013.1 | Morelia spilota papillomavirus 1 isolate Zurich 2009  complete genome | 7048 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_016014.1 | Canine papillomavirus 8  complete genome | 7784 | 0 | 0 | 74 | .95 | 0 | 0 | 74 | .95 | 0 | 0 |
 | NC_016031.1 | Porcine bocavirus 3  complete genome | 5278 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -3842,11 +3842,11 @@
 | NC_016038.2 | Brassica yellows virus isolate BrYV-ABJ  complete genome | 5666 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_016044.1 | Chilli ringspot virus  complete genome | 9595 | 0 | 0 | 29 | .30 | 44 | .45 | 29 | .30 | 0 | 0 |
 | NC_016071.1 | Salmonella phage PVP-SE1  complete genome | 145964 | 0 | 0 | 603 | .41 | 0 | 0 | 603 | .41 | 0 | 0 |
-| NC_016072.1 | Megavirus chiliensis  complete genome | 1259197 | 0 | 0 | 45516 | 3.61 | 13330 | 1.05 | 52189 | 4.14 | 6673 | .52 |
+| NC_016072.1 | Megavirus chiliensis  complete genome | 1259197 | 184 | .01 | 45516 | 3.61 | 13330 | 1.05 | 52189 | 4.14 | 6673 | .52 |
 | NC_016073.1 | Salmonella phage SFP10  complete genome | 157950 | 0 | 0 | 379 | .23 | 74 | .04 | 379 | .23 | 0 | 0 |
 | NC_016074.1 | Canine papillomavirus 9  complete genome | 7873 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_016075.1 | Canine papillomavirus 10  complete genome | 7774 | 0 | 0 | 34 | .43 | 0 | 0 | 34 | .43 | 0 | 0 |
-| NC_016080.1 | Mirabilis jalapa mottle virus  complete genome | 8315 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_016080.1 | Mirabilis jalapa mottle virus  complete genome | 8315 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_016081.1 | Grapevine leafroll-associated virus 5  complete genome | 13384 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_016082.1 | Sida yellow mottle virus strain Cuba:Sancti Spiritus159-1:2009 segment DNA-A  complete sequence | 2621 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_016083.1 | Sida yellow mottle virus strain Cuba:Sancti Spiritus159-1:2009 segment DNA-B  complete sequence | 2601 | 0 | 0 | 36 | 1.38 | 0 | 0 | 36 | 1.38 | 0 | 0 |
@@ -3929,7 +3929,7 @@
 | NC_016656.1 | Cyanophage P-SSP2  complete genome | 45890 | 0 | 0 | 185 | .40 | 172 | .37 | 283 | .61 | 98 | .21 |
 | NC_016657.1 | Cyanophage 9515-10a  complete genome | 47055 | 0 | 0 | 59 | .12 | 98 | .20 | 157 | .33 | 98 | .20 |
 | NC_016658.1 | Cyanophage NATL1A-7  complete genome | 47741 | 0 | 0 | 332 | .69 | 0 | 0 | 332 | .69 | 0 | 0 |
-| NC_016659.1 | Cyanophage NATL2A-133  complete genome | 47536 | 0 | 0 | 253 | .53 | 99 | .20 | 351 | .73 | 98 | .20 |
+| NC_016659.1 | Cyanophage NATL2A-133  complete genome | 47536 | 1 | 0 | 253 | .53 | 99 | .20 | 351 | .73 | 98 | .20 |
 | NC_016660.1 | Eclipta yellow vein virus clone EcYVV-[PK Fai 06]  complete genome | 2740 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_016744.1 | Eidolon helvum parvovirus 1  complete genome | 5065 | 0 | 0 | 70 | 1.38 | 0 | 0 | 70 | 1.38 | 0 | 0 |
 | NC_016752.1 | Artibeus jamaicensis parvovirus 1  complete genome | 4595 | 0 | 0 | 45 | .97 | 0 | 0 | 45 | .97 | 0 | 0 |
@@ -4009,7 +4009,7 @@
 | NC_017823.1 | Feline bocavirus  complete genome | 5331 | 0 | 0 | 62 | 1.16 | 0 | 0 | 62 | 1.16 | 0 | 0 |
 | NC_017824.1 | Tomato necrotic stunt virus  complete genome | 10057 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_017825.1 | Chimpanzee adenovirus Y25  complete genome | 36711 | 0 | 0 | 378 | 1.02 | 49 | .13 | 378 | 1.02 | 0 | 0 |
-| NC_017826.1 | Equid herpesvirus 8  complete genome | 149332 | 0 | 0 | 769 | .51 | 356 | .23 | 769 | .51 | 0 | 0 |
+| NC_017826.1 | Equid herpesvirus 8  complete genome | 149332 | 33 | .02 | 769 | .51 | 356 | .23 | 769 | .51 | 0 | 0 |
 | NC_017828.1 | Wheat dwarf India virus  complete genome | 2783 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_017829.1 | Cotton leaf curl virus betasatellite  complete genome | 1436 | 0 | 0 | 127 | 8.84 | 49 | 3.41 | 176 | 12.25 | 49 | 3.41 |
 | NC_017830.1 | Fig badnavirus 1  complete genome | 7140 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -4122,7 +4122,7 @@
 | NC_018455.1 | Chinese yam necrotic mosaic virus  complete genome | 8224 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_018456.1 | Soybean chlorotic spot virus DNA-B  complete sequence | 2585 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_018457.1 | Soybean chlorotic spot virus DNA-A  complete sequence | 2623 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_018458.1 | Grapevine virus F  complete genome | 7551 | 0 | 0 | 0 | 0 | 28 | .37 | 0 | 0 | 0 | 0 |
+| NC_018458.1 | Grapevine virus F  complete genome | 7551 | 3 | .03 | 3 | .03 | 28 | .37 | 0 | 0 | 0 | 0 |
 | NC_018459.1 | Aino virus Gn-Gc-NSm gene for M polyprotein  segment M  genomic RNA  isolate 38K | 4335 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_018460.1 | Aino virus N and NSs genes  segment S  genomic RNA  isolate 38K | 834 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_018461.1 | Sathuperi virus RdRp gene for RNA-dependent RNA polymerase  segment L  genomic RNA | 6861 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -4253,7 +4253,7 @@
 | NC_019442.1 | Escherichia phage TL-2011c  complete genome | 60523 | 0 | 0 | 74 | .12 | 49 | .08 | 123 | .20 | 49 | .08 |
 | NC_019443.1 | Synechococcus phage metaG-MbCM1  complete genome | 172879 | 0 | 0 | 415 | .24 | 49 | .02 | 464 | .26 | 49 | .02 |
 | NC_019444.1 | Synechococcus phage S-MbCM6  complete genome | 176043 | 0 | 0 | 742 | .42 | 98 | .05 | 791 | .44 | 49 | .02 |
-| NC_019445.1 | Escherichia phage TL-2011b  complete genome | 44784 | 0 | 0 | 72 | .16 | 51 | .11 | 121 | .27 | 49 | .10 |
+| NC_019445.1 | Escherichia phage TL-2011b  complete genome | 44784 | 2 | 0 | 72 | .16 | 51 | .11 | 121 | .27 | 49 | .10 |
 | NC_019446.1 | Brucella phage Tb  complete genome | 41148 | 0 | 0 | 41 | .09 | 0 | 0 | 41 | .09 | 0 | 0 |
 | NC_019447.1 | Brucella phage Pr  complete genome | 38253 | 0 | 0 | 41 | .10 | 0 | 0 | 41 | .10 | 0 | 0 |
 | NC_019448.1 | Staphylococcus phage GH15  complete genome | 139806 | 0 | 0 | 1604 | 1.14 | 245 | .17 | 1800 | 1.28 | 196 | .14 |
@@ -4320,7 +4320,7 @@
 | NC_019541.1 | Acinetobacter phage YMC 09 02 B1251 ABA BP  complete genome | 45364 | 0 | 0 | 42 | .09 | 0 | 0 | 42 | .09 | 0 | 0 |
 | NC_019542.1 | Pectobacterium phage PP1  complete genome | 44400 | 0 | 0 | 96 | .21 | 0 | 0 | 96 | .21 | 0 | 0 |
 | NC_019543.1 | Aeromonas phage Aes508  complete genome | 160646 | 0 | 0 | 280 | .17 | 196 | .12 | 427 | .26 | 147 | .09 |
-| NC_019544.1 | Deep-sea thermophilic phage D6E  complete genome | 49335 | 0 | 0 | 129 | .26 | 129 | .26 | 178 | .36 | 49 | .09 |
+| NC_019544.1 | Deep-sea thermophilic phage D6E  complete genome | 49335 | 6 | .01 | 129 | .26 | 129 | .26 | 178 | .36 | 49 | .09 |
 | NC_019545.1 | Salmonella phage SPN3UB  complete genome | 47355 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_019546.1 | Ageratum yellow vein India alphasatellite isolate NBRI  complete sequence | 1389 | 0 | 0 | 35 | 2.51 | 49 | 3.52 | 35 | 2.51 | 0 | 0 |
 | NC_019547.1 | Ageratum enation alphasatellite  complete genome | 1378 | 0 | 0 | 35 | 2.53 | 49 | 3.55 | 35 | 2.53 | 0 | 0 |
@@ -4328,7 +4328,7 @@
 | NC_019549.1 | Liberibacter phage SC1  complete genome | 40048 | 0 | 0 | 61 | .15 | 0 | 0 | 61 | .15 | 0 | 0 |
 | NC_019550.1 | Liberibacter phage SC2  complete genome | 38997 | 0 | 0 | 116 | .29 | 49 | .12 | 116 | .29 | 0 | 0 |
 | NC_019559.2 | Murid herpesvirus 8 isolate England  complete genome | 202949 | 0 | 0 | 2478 | 1.22 | 123 | .06 | 2478 | 1.22 | 0 | 0 |
-| NC_019568.1 | Bean chlorosis virus isolate Venezuela:La Barinesa 459:2006 segment DNA-B  complete sequence | 2632 | 0 | 0 | 0 | 0 | 4 | .15 | 0 | 0 | 0 | 0 |
+| NC_019568.1 | Bean chlorosis virus isolate Venezuela:La Barinesa 459:2006 segment DNA-B  complete sequence | 2632 | 4 | .15 | 4 | .15 | 4 | .15 | 0 | 0 | 0 | 0 |
 | NC_019569.1 | Bean chlorosis virus isolate Venezuela:La Barinesa 459:2006 segment DNA-A  complete sequence | 2647 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_019704.1 | Enterobacteria phage mEp237  complete genome | 44375 | 0 | 0 | 62 | .13 | 0 | 0 | 62 | .13 | 0 | 0 |
 | NC_019705.1 | Enterobacteria phage mEpX2  complete genome | 38759 | 0 | 0 | 0 | 0 | 49 | .12 | 0 | 0 | 0 | 0 |
@@ -4342,7 +4342,7 @@
 | NC_019713.1 | Vibrio phage vB VpaS MAR10  complete genome | 78751 | 0 | 0 | 240 | .30 | 49 | .06 | 289 | .36 | 49 | .06 |
 | NC_019714.1 | Enterobacteria phage HK446  complete genome | 39026 | 0 | 0 | 133 | .34 | 0 | 0 | 133 | .34 | 0 | 0 |
 | NC_019715.1 | Enterobacterial phage mEp234  complete genome | 39578 | 0 | 0 | 179 | .45 | 0 | 0 | 179 | .45 | 0 | 0 |
-| NC_019716.1 | Enterobacteria phage mEp460  complete genome | 44510 | 0 | 0 | 46 | .10 | 2 | 0 | 46 | .10 | 0 | 0 |
+| NC_019716.1 | Enterobacteria phage mEp460  complete genome | 44510 | 2 | 0 | 46 | .10 | 2 | 0 | 46 | .10 | 0 | 0 |
 | NC_019717.1 | Enterobacteria phage HK225  complete genome | 45366 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_019718.1 | Enterobacteria phage vB EcoS Rogue1  complete genome | 45805 | 0 | 0 | 217 | .47 | 49 | .10 | 217 | .47 | 0 | 0 |
 | NC_019719.1 | Enterobacteria phage HK633  complete genome | 41528 | 0 | 0 | 124 | .29 | 0 | 0 | 124 | .29 | 0 | 0 |
@@ -4356,7 +4356,7 @@
 | NC_019767.1 | Enterobacteria phage HK544  complete genome | 40155 | 0 | 0 | 274 | .68 | 0 | 0 | 274 | .68 | 0 | 0 |
 | NC_019768.1 | Enterobacteria phage HK106  complete genome | 41468 | 0 | 0 | 95 | .22 | 0 | 0 | 95 | .22 | 0 | 0 |
 | NC_019769.1 | Enterobacteria phage HK542  complete genome | 38964 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_019782.1 | Lactobacillus phage AQ113  complete genome | 36566 | 0 | 0 | 171 | .46 | 78 | .21 | 245 | .67 | 74 | .20 |
+| NC_019782.1 | Lactobacillus phage AQ113  complete genome | 36566 | 4 | .01 | 171 | .46 | 78 | .21 | 245 | .67 | 74 | .20 |
 | NC_019813.1 | Pseudomonas phage vB PaeP p2-10 Or1  complete genome | 44030 | 0 | 0 | 190 | .43 | 0 | 0 | 190 | .43 | 0 | 0 |
 | NC_019843.3 | Middle East respiratory syndrome-related coronavirus isolate HCoV-EMC 2012  complete genome | 30119 | 0 | 0 | 36 | .11 | 0 | 0 | 36 | .11 | 0 | 0 |
 | NC_019844.1 | Chlorocebus pygerythrus polyomavirus 1 DNA  complete genome  isolate: VMS96 | 5157 | 0 | 0 | 0 | 0 | 49 | .95 | 0 | 0 | 0 | 0 |
@@ -4378,7 +4378,7 @@
 | NC_019915.1 | Staphylococcus phage StB20  complete genome | 40917 | 0 | 0 | 337 | .82 | 147 | .35 | 435 | 1.06 | 98 | .23 |
 | NC_019916.1 | Lactobacillus phage ATCC 8014-B1  complete genome | 38002 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_019917.1 | Burkholderia phage BcepMigl  complete genome | 62952 | 0 | 0 | 571 | .90 | 0 | 0 | 571 | .90 | 0 | 0 |
-| NC_019918.1 | Pseudomonas phage vB PaeM C2-10 Ab1 complete genome | 92777 | 0 | 0 | 248 | .26 | 1 | 0 | 248 | .26 | 0 | 0 |
+| NC_019918.1 | Pseudomonas phage vB PaeM C2-10 Ab1 complete genome | 92777 | 1 | 0 | 248 | .26 | 1 | 0 | 248 | .26 | 0 | 0 |
 | NC_019919.2 | Yersinia phage phiR201 complete genome | 122696 | 0 | 0 | 266 | .21 | 49 | .03 | 315 | .25 | 49 | .03 |
 | NC_019920.1 | Enterobacteria phage C-1 INW-2012  complete sequence | 3523 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_019921.1 | Staphylococcus phage phi5967PVL DNA  complete genome | 42461 | 0 | 0 | 183 | .43 | 147 | .34 | 330 | .77 | 147 | .34 |
@@ -4433,7 +4433,7 @@
 | NC_020197.1 | Streptococcus phage TP-J34 complete genome | 45606 | 0 | 0 | 92 | .20 | 123 | .26 | 141 | .30 | 49 | .10 |
 | NC_020198.1 | Pseudomonas phage JBD30  complete genome | 36947 | 0 | 0 | 252 | .68 | 0 | 0 | 252 | .68 | 0 | 0 |
 | NC_020199.1 | Staphylococcus phage phi7401PVL DNA  complete genome | 47252 | 0 | 0 | 360 | .76 | 49 | .10 | 409 | .86 | 49 | .10 |
-| NC_020200.1 | Pseudomonas phage JBD88a  complete genome | 36429 | 0 | 0 | 327 | .89 | 108 | .29 | 327 | .89 | 0 | 0 |
+| NC_020200.1 | Pseudomonas phage JBD88a  complete genome | 36429 | 108 | .29 | 327 | .89 | 108 | .29 | 327 | .89 | 0 | 0 |
 | NC_020201.1 | Pectobacterium phage phiTE  complete genome | 142349 | 0 | 0 | 114 | .08 | 98 | .06 | 212 | .14 | 98 | .06 |
 | NC_020202.1 | Pseudomonas phage JBD5  complete genome | 37740 | 0 | 0 | 172 | .45 | 0 | 0 | 172 | .45 | 0 | 0 |
 | NC_020203.1 | Pseudomonas phage JBD24  complete genome | 37095 | 0 | 0 | 202 | .54 | 0 | 0 | 202 | .54 | 0 | 0 |
@@ -4482,7 +4482,7 @@
 | NC_020486.1 | Synechococcus phage S-RIM8 A.HR1  complete genome | 171211 | 0 | 0 | 659 | .38 | 147 | .08 | 757 | .44 | 98 | .05 |
 | NC_020487.1 | Titi monkey adenovirus ECC-2011  complete genome | 36838 | 0 | 0 | 561 | 1.52 | 98 | .26 | 610 | 1.65 | 49 | .13 |
 | NC_020488.1 | Vibrio phage VvAW1  complete genome | 38682 | 0 | 0 | 39 | .10 | 74 | .19 | 39 | .10 | 0 | 0 |
-| NC_020489.1 | Rhodobacter phage RcapNL  complete genome | 40489 | 0 | 0 | 374 | .92 | 51 | .12 | 374 | .92 | 0 | 0 |
+| NC_020489.1 | Rhodobacter phage RcapNL  complete genome | 40489 | 2 | 0 | 374 | .92 | 51 | .12 | 374 | .92 | 0 | 0 |
 | NC_020490.2 | Staphylococcus phage StB12  complete genome | 44714 | 0 | 0 | 284 | .63 | 49 | .10 | 284 | .63 | 0 | 0 |
 | NC_020498.1 | TTV-like mini virus isolate TTMV LY1  complete genome | 2912 | 0 | 0 | 50 | 1.71 | 0 | 0 | 50 | 1.71 | 0 | 0 |
 | NC_020499.1 | Canine bocavirus 1 isolate Con-161  complete genome | 5413 | 0 | 0 | 59 | 1.08 | 0 | 0 | 59 | 1.08 | 0 | 0 |
@@ -4504,7 +4504,7 @@
 | NC_020840.1 | Tetraselmis viridis virus S20 genomic sequence | 38987 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_020841.1 | Psychrobacter phage pOW20-A genomic sequence | 40803 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_020842.1 | Cellulophaga phage phiST genomic sequence | 79114 | 0 | 0 | 631 | .79 | 319 | .40 | 778 | .98 | 147 | .18 |
-| NC_020843.1 | Vibrio phage 11895-B1 genomic sequence | 126434 | 0 | 0 | 220 | .17 | 148 | .11 | 367 | .29 | 147 | .11 |
+| NC_020843.1 | Vibrio phage 11895-B1 genomic sequence | 126434 | 1 | 0 | 220 | .17 | 148 | .11 | 367 | .29 | 147 | .11 |
 | NC_020844.1 | Salicola phage CGphi29 genomic sequence | 40695 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_020845.1 | Cyanophage MED4-213  complete genome | 180977 | 0 | 0 | 551 | .30 | 147 | .08 | 649 | .35 | 98 | .05 |
 | NC_020846.1 | Vibrio phage pYD21-A genomic sequence | 46917 | 0 | 0 | 130 | .27 | 0 | 0 | 130 | .27 | 0 | 0 |
@@ -4576,11 +4576,11 @@
 | NC_021094.1 | White clover cryptic virus 2 isolate IPP Lirepa segment RNA 1  complete sequence | 2435 | 0 | 0 | 39 | 1.60 | 0 | 0 | 39 | 1.60 | 0 | 0 |
 | NC_021095.1 | White clover cryptic virus 2 isolate IPP Lirepa segment RNA 2  complete sequence | 2348 | 0 | 0 | 77 | 3.27 | 97 | 4.13 | 77 | 3.27 | 0 | 0 |
 | NC_021096.1 | Red clover cryptic virus 2 isolate IPP Nemaro segment RNA 1  complete sequence | 2430 | 0 | 0 | 38 | 1.56 | 0 | 0 | 38 | 1.56 | 0 | 0 |
-| NC_021097.1 | Red clover cryptic virus 2 isolate IPP Nemaro segment RNA 2  complete sequence | 2353 | 0 | 0 | 75 | 3.18 | 103 | 4.37 | 75 | 3.18 | 0 | 0 |
+| NC_021097.1 | Red clover cryptic virus 2 isolate IPP Nemaro segment RNA 2  complete sequence | 2353 | 1 | .04 | 75 | 3.18 | 103 | 4.37 | 75 | 3.18 | 0 | 0 |
 | NC_021098.1 | Hop trefoil cryptic virus 2 isolate IPP GelbSK segment RNA 1  complete sequence | 2431 | 0 | 0 | 34 | 1.39 | 55 | 2.26 | 34 | 1.39 | 0 | 0 |
 | NC_021099.1 | Hop trefoil cryptic virus 2 isolate IPP GelbSK segment RNA 2  complete sequence | 2349 | 0 | 0 | 77 | 3.27 | 98 | 4.17 | 77 | 3.27 | 0 | 0 |
 | NC_021147.1 | Dill cryptic virus 2 isolate IPP hortorum segment RNA 1  complete sequence | 2430 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_021148.1 | Dill cryptic virus 2 isolate IPP hortorum segment RNA 2  complete sequence | 2354 | 0 | 0 | 75 | 3.18 | 104 | 4.41 | 75 | 3.18 | 0 | 0 |
+| NC_021148.1 | Dill cryptic virus 2 isolate IPP hortorum segment RNA 2  complete sequence | 2354 | 1 | .04 | 75 | 3.18 | 104 | 4.41 | 75 | 3.18 | 0 | 0 |
 | NC_021153.1 | Rodent hepacivirus  complete genome | 8879 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_021154.1 | Rodent pegivirus isolate CC61  complete genome | 11279 | 0 | 0 | 49 | .43 | 0 | 0 | 49 | .43 | 0 | 0 |
 | NC_021168.1 | Simian adenovirus C isolate BaAdV-2  complete genome | 34391 | 0 | 0 | 140 | .40 | 49 | .14 | 140 | .40 | 0 | 0 |
@@ -4669,7 +4669,7 @@
 | NC_021533.1 | Mycobacterium phage BTCU-1  complete genome | 45942 | 0 | 0 | 255 | .55 | 0 | 0 | 255 | .55 | 0 | 0 |
 | NC_021534.1 | Vibrio phage pYD38-A genomic sequence | 47552 | 0 | 0 | 103 | .21 | 0 | 0 | 103 | .21 | 0 | 0 |
 | NC_021535.1 | Mycobacterium phage Jobu08  complete genome | 50679 | 0 | 0 | 242 | .47 | 0 | 0 | 242 | .47 | 0 | 0 |
-| NC_021536.1 | Synechococcus phage S-IOM18 genomic sequence | 171797 | 0 | 0 | 623 | .36 | 50 | .02 | 623 | .36 | 0 | 0 |
+| NC_021536.1 | Synechococcus phage S-IOM18 genomic sequence | 171797 | 1 | 0 | 623 | .36 | 50 | .02 | 623 | .36 | 0 | 0 |
 | NC_021537.1 | Halorubrum phage CGphi46 genomic sequence | 39784 | 0 | 0 | 363 | .91 | 0 | 0 | 363 | .91 | 0 | 0 |
 | NC_021538.1 | Mycobacterium phage Job42  complete genome | 59626 | 0 | 0 | 136 | .22 | 98 | .16 | 136 | .22 | 0 | 0 |
 | NC_021539.2 | Listeria phage LP-030-2  complete genome | 38275 | 0 | 0 | 90 | .23 | 49 | .12 | 139 | .36 | 49 | .12 |
@@ -4690,7 +4690,7 @@
 | NC_021558.1 | Paenibacillus phage PG1 genomic sequence | 37644 | 0 | 0 | 49 | .13 | 0 | 0 | 49 | .13 | 0 | 0 |
 | NC_021559.1 | Prochlorococcus phage P-SSM3 genomic sequence | 179063 | 0 | 0 | 893 | .49 | 0 | 0 | 893 | .49 | 0 | 0 |
 | NC_021560.1 | Rhizobium phage RR1-A genomic sequence | 53102 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_021561.1 | Vibrio phage pYD38-B genomic sequence | 37324 | 0 | 0 | 52 | .13 | 1 | 0 | 52 | .13 | 0 | 0 |
+| NC_021561.1 | Vibrio phage pYD38-B genomic sequence | 37324 | 1 | 0 | 52 | .13 | 1 | 0 | 52 | .13 | 0 | 0 |
 | NC_021562.1 | Vibrio phage VFJ  complete genome | 8555 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_021563.1 | Serratia phage Eta  complete genome | 42724 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_021564.1 | Citrus vein enation virus  isolate VE-1  complete genome | 5983 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -4777,8 +4777,8 @@
 | NC_021863.1 | Staphylococcus phage SA13  complete genome | 42652 | 0 | 0 | 156 | .36 | 49 | .11 | 205 | .48 | 49 | .11 |
 | NC_021864.1 | Puniceispirillum phage HMO-2011  complete genome | 55282 | 0 | 0 | 153 | .27 | 0 | 0 | 153 | .27 | 0 | 0 |
 | NC_021865.1 | Paenibacillus phage phiIBB Pl23  complete genome | 41294 | 0 | 0 | 228 | .55 | 0 | 0 | 228 | .55 | 0 | 0 |
-| NC_021866.1 | Ralstonia phage RSS20 DNA | 7219 | 0 | 0 | 2485 | 34.42 | 2447 | 33.89 | 2485 | 34.42 | 0 | 0 |
-| NC_021867.1 | Flavobacterium phage 6H  complete genome | 46978 | 0 | 0 | 389 | .82 | 100 | .21 | 487 | 1.03 | 98 | .20 |
+| NC_021866.1 | Ralstonia phage RSS20 DNA | 7219 | 2447 | 33.89 | 2485 | 34.42 | 2447 | 33.89 | 2485 | 34.42 | 0 | 0 |
+| NC_021867.1 | Flavobacterium phage 6H  complete genome | 46978 | 2 | 0 | 389 | .82 | 100 | .21 | 487 | 1.03 | 98 | .20 |
 | NC_021868.1 | Streptococcus phage SP-QS1 complete genome | 58305 | 0 | 0 | 53 | .09 | 0 | 0 | 53 | .09 | 0 | 0 |
 | NC_021873.1 | Ustilaginoidea virens partitivirus 2 isolate Uv0901 segment 1  complete sequence | 1712 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_021874.1 | Ustilaginoidea virens partitivirus 2 isolate Uv0901 segment 2  complete sequence | 1352 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -4995,7 +4995,7 @@
 | NC_022977.1 | Mycobacterium phage Artemis2UCLA  complete genome | 52344 | 0 | 0 | 346 | .66 | 49 | .09 | 346 | .66 | 0 | 0 |
 | NC_022978.1 | Carnation yellow fleck virus  complete genome | 15602 | 0 | 0 | 0 | 0 | 49 | .31 | 0 | 0 | 0 | 0 |
 | NC_022979.1 | Mycobacterium phage Graduation  complete genome | 52823 | 0 | 0 | 343 | .64 | 0 | 0 | 343 | .64 | 0 | 0 |
-| NC_022980.1 | Brevibacillus phage Davies  complete genome | 45798 | 0 | 0 | 53 | .11 | 4 | 0 | 53 | .11 | 0 | 0 |
+| NC_022980.1 | Brevibacillus phage Davies  complete genome | 45798 | 4 | 0 | 53 | .11 | 4 | 0 | 53 | .11 | 0 | 0 |
 | NC_022981.1 | Mycobacterium phage HufflyPuff  complete genome | 76323 | 0 | 0 | 650 | .85 | 0 | 0 | 650 | .85 | 0 | 0 |
 | NC_022982.1 | Xylella phage Paz  complete genome | 43869 | 0 | 0 | 241 | .54 | 0 | 0 | 241 | .54 | 0 | 0 |
 | NC_022983.1 | Mycobacterium phage Bernardo  complete genome | 68196 | 0 | 0 | 588 | .86 | 49 | .07 | 588 | .86 | 0 | 0 |
@@ -5010,7 +5010,7 @@
 | NC_023006.1 | Pseudomonas phage PPpW-3 DNA  complete sequence | 43564 | 0 | 0 | 415 | .95 | 0 | 0 | 415 | .95 | 0 | 0 |
 | NC_023007.1 | Bacillus phage vB BanS-Tsamsa  complete genome | 168876 | 0 | 0 | 958 | .56 | 370 | .21 | 1328 | .78 | 370 | .21 |
 | NC_023008.1 | Butcherbird polyomavirus isolate AWH19840  complete genome | 5084 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_023009.1 | Staphylococcus phage Sb-1  complete genome | 127188 | 0 | 0 | 2192 | 1.72 | 699 | .54 | 2339 | 1.83 | 147 | .11 |
+| NC_023009.1 | Staphylococcus phage Sb-1  complete genome | 127188 | 4 | 0 | 2192 | 1.72 | 699 | .54 | 2339 | 1.83 | 147 | .11 |
 | NC_023014.1 | Bidens mosaic virus isolate SP01  complete genome | 9557 | 0 | 0 | 0 | 0 | 49 | .51 | 0 | 0 | 0 | 0 |
 | NC_023015.1 | Hedyotis uncinella yellow mosaic betasatellite isolate VN1  complete genome | 1348 | 0 | 0 | 112 | 8.30 | 98 | 7.27 | 112 | 8.30 | 0 | 0 |
 | NC_023016.1 | Lamium mild mosaic virus isolate DSMZ PV-0454 segment RNA1  complete sequence | 6080 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -5075,7 +5075,7 @@
 | NC_023432.1 | Dragonfly larvae associated circular virus-6 isolate DflaCV-6 NZ-PG9-LD  complete genome | 1700 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023433.1 | Dragonfly larvae associated circular virus-7 isolate DflaCV-7 NZ-PG5-LH  complete genome | 2253 | 0 | 0 | 29 | 1.28 | 49 | 2.17 | 29 | 1.28 | 0 | 0 |
 | NC_023434.1 | Dragonfly larvae associated circular virus-8 isolate DflaCV-8 NZ-PG5-LS  complete genome | 1628 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_023435.1 | Dragonfly larvae associated circular virus-9 isolate DflaCV-9 NZ-PG10-LD  complete genome | 1722 | 0 | 0 | 0 | 0 | 1 | .05 | 0 | 0 | 0 | 0 |
+| NC_023435.1 | Dragonfly larvae associated circular virus-9 isolate DflaCV-9 NZ-PG10-LD  complete genome | 1722 | 1 | .05 | 1 | .05 | 1 | .05 | 0 | 0 | 0 | 0 |
 | NC_023436.1 | Dragonfly larvae associated circular virus-10 isolate DflaCV-10 NZ-XZ1-LH  complete genome | 2259 | 0 | 0 | 49 | 2.16 | 0 | 0 | 49 | 2.16 | 0 | 0 |
 | NC_023439.1 | Kama virus strain LEIV-20776Tat polyprotein gene  complete cds | 10688 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023440.1 | Wallerfield virus strain TR7904  complete genome | 9023 | 0 | 0 | 76 | .84 | 47 | .52 | 76 | .84 | 0 | 0 |
@@ -5130,7 +5130,7 @@
 | NC_023572.1 | Mycobacterium phage MichelleMyBell  complete genome | 42240 | 0 | 0 | 904 | 2.14 | 49 | .11 | 953 | 2.25 | 49 | .11 |
 | NC_023573.1 | Staphylococcus phage phiSA012 DNA  complete genome | 142094 | 0 | 0 | 1988 | 1.39 | 245 | .17 | 2086 | 1.46 | 98 | .06 |
 | NC_023574.1 | Lactococcus phage phiL47  complete genome | 128546 | 0 | 0 | 1109 | .86 | 515 | .40 | 1354 | 1.05 | 245 | .19 |
-| NC_023575.1 | Pseudomonas phage vB PaeP Tr60 Ab31 | 45550 | 0 | 0 | 38 | .08 | 2 | 0 | 38 | .08 | 0 | 0 |
+| NC_023575.1 | Pseudomonas phage vB PaeP Tr60 Ab31 | 45550 | 2 | 0 | 38 | .08 | 2 | 0 | 38 | .08 | 0 | 0 |
 | NC_023576.1 | Citrobacter phage CR44b complete genome | 39207 | 0 | 0 | 0 | 0 | 49 | .12 | 0 | 0 | 0 | 0 |
 | NC_023577.1 | Mycobacterium phage Obama12  complete genome | 51797 | 0 | 0 | 75 | .14 | 0 | 0 | 75 | .14 | 0 | 0 |
 | NC_023578.1 | Mycobacterium phage Oaker  complete genome | 69099 | 0 | 0 | 880 | 1.27 | 0 | 0 | 880 | 1.27 | 0 | 0 |
@@ -5182,11 +5182,11 @@
 | NC_023636.1 | Porcine astrovirus 5 isolate AstV5-US-IA122  complete genome | 6500 | 0 | 0 | 21 | .32 | 49 | .75 | 21 | .32 | 0 | 0 |
 | NC_023637.1 | Posavirus 1  complete genome | 9840 | 0 | 0 | 95 | .96 | 39 | .39 | 95 | .96 | 0 | 0 |
 | NC_023638.1 | Posavirus 2  complete genome | 10220 | 0 | 0 | 29 | .28 | 44 | .43 | 29 | .28 | 0 | 0 |
-| NC_023639.1 | Mimivirus terra2 genome | 1168989 | 0 | 0 | 21040 | 1.79 | 5818 | .49 | 23858 | 2.04 | 2818 | .24 |
+| NC_023639.1 | Mimivirus terra2 genome | 1168989 | 1700 | .14 | 21040 | 1.79 | 5818 | .49 | 23858 | 2.04 | 2818 | .24 |
 | NC_023641.1 | Lagenaria siceraria endornavirus-California isolate FB  complete genome | 15088 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023673.1 | Porcine bocavirus isolate swBoV CH437  complete genome | 5275 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023674.1 | Porcine astrovirus 2 strain 43 USA  complete genome | 6318 | 0 | 0 | 66 | 1.04 | 42 | .66 | 66 | 1.04 | 0 | 0 |
-| NC_023675.1 | Porcine astrovirus 4 strain 35 USA  complete genome | 6639 | 0 | 0 | 31 | .46 | 64 | .96 | 31 | .46 | 0 | 0 |
+| NC_023675.1 | Porcine astrovirus 4 strain 35 USA  complete genome | 6639 | 1 | .01 | 31 | .46 | 64 | .96 | 31 | .46 | 0 | 0 |
 | NC_023676.1 | Spodoptera exigua iflavirus 2 isolate Korean  complete genome | 9501 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023677.1 | Chimpanzee alpha-1 herpesvirus strain 105640  complete genome | 153158 | 0 | 0 | 4040 | 2.63 | 1626 | 1.06 | 4579 | 2.98 | 539 | .35 |
 | NC_023680.1 | Fusarium graminearum hypovirus 1 isolate HN10  complete genome | 13023 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -5262,7 +5262,7 @@
 | NC_023762.1 | Boa arenavirus NL isolate 3 segment L  complete sequence | 6932 | 0 | 0 | 28 | .40 | 0 | 0 | 28 | .40 | 0 | 0 |
 | NC_023763.1 | Merino Walk virus Z protein and L genes  complete cds | 7198 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023764.1 | Merino Walk virus GP (GP) and NP (NP) genes  complete cds | 3364 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_023765.1 | University of Helsinki virus strain UHV-1 segment L  complete sequence | 6935 | 0 | 0 | 0 | 0 | 5 | .07 | 0 | 0 | 0 | 0 |
+| NC_023765.1 | University of Helsinki virus strain UHV-1 segment L  complete sequence | 6935 | 5 | .07 | 5 | .07 | 5 | .07 | 0 | 0 | 0 | 0 |
 | NC_023766.1 | University of Helsinki virus strain UHV-1 segment S  complete sequence | 3399 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023812.1 | Madariaga virus strain MADV Cebus apella BRA BEAN5122 1956  complete genome | 11624 | 0 | 0 | 86 | .73 | 48 | .41 | 86 | .73 | 0 | 0 |
 | NC_023813.1 | Reptilian orthoreovirus strain 47 02 segment L1  complete sequence | 3970 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -5280,7 +5280,7 @@
 | NC_023843.1 | Nepavirus isolate NepaV  complete genome | 2818 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023844.1 | Cassava associated gemycircularvirus 1 isolate G14  complete genome | 2220 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023845.1 | Raccoon polyomavirus strain R45  complete genome | 5016 | 0 | 0 | 25 | .49 | 98 | 1.95 | 74 | 1.47 | 49 | .97 |
-| NC_023848.1 | Anopheles minimus irodovirus isolate AMIV  complete genome | 163023 | 0 | 0 | 1607 | .98 | 689 | .42 | 2122 | 1.30 | 515 | .31 |
+| NC_023848.1 | Anopheles minimus irodovirus isolate AMIV  complete genome | 163023 | 2 | 0 | 1607 | .98 | 689 | .42 | 2122 | 1.30 | 515 | .31 |
 | NC_023849.1 | Pouzolzia golden mosaic virus isolate TY01 segment DNA-A  complete sequence | 2723 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023850.1 | Baminivirus isolate BamiV  complete genome | 2806 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023851.1 | Niminivirus isolate NimiV  complete genome | 2383 | 0 | 0 | 40 | 1.67 | 0 | 0 | 40 | 1.67 | 0 | 0 |
@@ -5320,7 +5320,7 @@
 | NC_023887.1 | Turkey associated porprismacovirus 1  complete genome | 2479 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023888.1 | Circo-like virus-Brazil hs1  complete genome | 2526 | 0 | 0 | 77 | 3.04 | 49 | 1.93 | 77 | 3.04 | 0 | 0 |
 | NC_023891.1 | Human papillomavirus type 178  complete genome | 7314 | 0 | 0 | 39 | .53 | 49 | .66 | 39 | .53 | 0 | 0 |
-| NC_023892.1 | Gaillardia latent virus isolate 5 18-05-2010  complete genome | 8659 | 0 | 0 | 0 | 0 | 34 | .39 | 0 | 0 | 0 | 0 |
+| NC_023892.1 | Gaillardia latent virus isolate 5 18-05-2010  complete genome | 8659 | 1 | .01 | 1 | .01 | 34 | .39 | 0 | 0 | 0 | 0 |
 | NC_023893.1 | Sclerotinia sclerotiorum betaendornavirus 1 isolate 11691  complete genome | 10513 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_023894.1 | Pygoscelis adeliae papillomavirus isolate Crozier 2013  complete genome | 7637 | 0 | 0 | 45 | .58 | 0 | 0 | 45 | .58 | 0 | 0 |
 | NC_023895.1 | Rupicapra rupicapra papillomavirus 1  complete genome | 7256 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -5407,7 +5407,7 @@
 | NC_024304.1 | Solanum mosaic Bolivia virus segment DNA-A  complete sequence | 2602 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024305.1 | Solanum mosaic Bolivia virus segment DNA-B  complete sequence | 2594 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024306.1 | Fruit bat alphaherpesvirus 1 DNA  complete genome | 149459 | 0 | 0 | 2189 | 1.46 | 296 | .19 | 2189 | 1.46 | 0 | 0 |
-| NC_024329.1 | Podovirus Lau218 strain Abe  complete genome | 39425 | 0 | 0 | 735 | 1.86 | 310 | .78 | 882 | 2.23 | 147 | .37 |
+| NC_024329.1 | Podovirus Lau218 strain Abe  complete genome | 39425 | 16 | .04 | 735 | 1.86 | 310 | .78 | 882 | 2.23 | 147 | .37 |
 | NC_024330.1 | Pseudomonas phage JD024  complete genome | 37380 | 0 | 0 | 139 | .37 | 0 | 0 | 139 | .37 | 0 | 0 |
 | NC_024354.1 | Cronobacter phage CR8  complete genome | 149162 | 0 | 0 | 581 | .38 | 49 | .03 | 630 | .42 | 49 | .03 |
 | NC_024355.1 | Staphylococcus phage 6ec  complete genome | 93794 | 0 | 0 | 1601 | 1.70 | 515 | .54 | 1993 | 2.12 | 392 | .41 |
@@ -5419,7 +5419,7 @@
 | NC_024361.1 | Streptococcus phage DCC1738  complete sequence | 38392 | 0 | 0 | 87 | .22 | 0 | 0 | 87 | .22 | 0 | 0 |
 | NC_024362.1 | Pseudomonas phage phiPSA2  complete genome | 40472 | 0 | 0 | 188 | .46 | 0 | 0 | 188 | .46 | 0 | 0 |
 | NC_024363.1 | Mycobacterium phage Manad  complete genome | 68807 | 0 | 0 | 907 | 1.31 | 0 | 0 | 907 | 1.31 | 0 | 0 |
-| NC_024364.1 | Listeria phage List-36  complete genome | 131952 | 0 | 0 | 1038 | .78 | 322 | .24 | 1161 | .87 | 123 | .09 |
+| NC_024364.1 | Listeria phage List-36  complete genome | 131952 | 1 | 0 | 1038 | .78 | 322 | .24 | 1161 | .87 | 123 | .09 |
 | NC_024365.1 | Pseudomonas phage phiPSA1  complete genome | 51090 | 0 | 0 | 26 | .05 | 49 | .09 | 26 | .05 | 0 | 0 |
 | NC_024366.1 | Mycobacterium phage OkiRoe  complete genome | 62661 | 0 | 0 | 436 | .69 | 0 | 0 | 436 | .69 | 0 | 0 |
 | NC_024367.1 | Dinoroseobacter phage DFL12phi1  complete genome | 75028 | 0 | 0 | 105 | .13 | 49 | .06 | 154 | .20 | 49 | .06 |
@@ -5435,7 +5435,7 @@
 | NC_024378.1 | Leuconostoc phage phiLNTR3  complete genome | 28015 | 0 | 0 | 121 | .43 | 0 | 0 | 121 | .43 | 0 | 0 |
 | NC_024379.1 | Escherichia phage PE3-1  complete genome | 39093 | 0 | 0 | 163 | .41 | 0 | 0 | 163 | .41 | 0 | 0 |
 | NC_024380.1 | Leuconostoc phage phiLN6B  complete genome | 25740 | 0 | 0 | 52 | .20 | 172 | .66 | 150 | .58 | 98 | .38 |
-| NC_024381.1 | Pseudomonas phage vB PaeS SCH Ab26  complete genome | 43056 | 0 | 0 | 152 | .35 | 1 | 0 | 152 | .35 | 0 | 0 |
+| NC_024381.1 | Pseudomonas phage vB PaeS SCH Ab26  complete genome | 43056 | 1 | 0 | 152 | .35 | 1 | 0 | 152 | .35 | 0 | 0 |
 | NC_024382.1 | Alcelaphine herpesvirus 2 isolate topi-AlHV-2  complete genome | 137090 | 0 | 0 | 742 | .54 | 1020 | .74 | 1615 | 1.17 | 873 | .63 |
 | NC_024383.1 | Listeria phage LP-083-2  complete genome | 135831 | 0 | 0 | 899 | .66 | 221 | .16 | 997 | .73 | 98 | .07 |
 | NC_024384.1 | Listeria phage LP-030-3  complete genome | 41156 | 0 | 0 | 184 | .44 | 104 | .25 | 184 | .44 | 0 | 0 |
@@ -5451,7 +5451,7 @@
 | NC_024444.1 | Horseshoe bat hepatitis B virus isolate HBHBV GB09-403 Rhi alc GAB 2009  complete genome | 3377 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024445.1 | Tent-making bat hepatitis B virus isolate TBHBV Pan372 Uro bil PAN 2010  complete genome | 3149 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024446.1 | Penguinpox virus isolate PSan92  complete genome | 306862 | 0 | 0 | 3567 | 1.16 | 1349 | .43 | 4547 | 1.48 | 980 | .31 |
-| NC_024447.1 | Pigeonpox virus isolate FeP2  complete genome | 282356 | 0 | 0 | 3073 | 1.08 | 1106 | .39 | 3710 | 1.31 | 637 | .22 |
+| NC_024447.1 | Pigeonpox virus isolate FeP2  complete genome | 282356 | 1 | 0 | 3073 | 1.08 | 1106 | .39 | 3710 | 1.31 | 637 | .22 |
 | NC_024449.1 | Cherry twisted leaf associated virus isolate CTLV 8431  complete genome | 8431 | 0 | 0 | 40 | .47 | 0 | 0 | 40 | .47 | 0 | 0 |
 | NC_024450.1 | Falconid herpesvirus 1 strain S-18  complete genome | 204054 | 0 | 0 | 9427 | 4.61 | 2882 | 1.41 | 9672 | 4.73 | 245 | .12 |
 | NC_024451.1 | Armadillidium vulgare iridescent virus complete genome | 220222 | 0 | 0 | 2925 | 1.32 | 1326 | .60 | 3513 | 1.59 | 588 | .26 |
@@ -5476,7 +5476,7 @@
 | NC_024484.1 | McMurdo Ice Shelf pond-associated circular DNA virus-8 isolate alg49-57  complete genome | 2911 | 0 | 0 | 28 | .96 | 49 | 1.68 | 28 | .96 | 0 | 0 |
 | NC_024485.1 | Rosellinia necatrix fusarivirus 1 genomic RNA  complete genome  strain: NW10 | 6286 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024486.1 | Duck adenovirus 2 strain GR  complete genome | 43734 | 0 | 0 | 445 | 1.01 | 198 | .45 | 494 | 1.12 | 49 | .11 |
-| NC_024487.1 | Drosophila subobscura Nora virus  complete genome | 12276 | 0 | 0 | 28 | .22 | 1 | 0 | 28 | .22 | 0 | 0 |
+| NC_024487.1 | Drosophila subobscura Nora virus  complete genome | 12276 | 1 | 0 | 28 | .22 | 1 | 0 | 28 | .22 | 0 | 0 |
 | NC_024488.1 | Drosophila immigrans Nora virus  complete genome | 12265 | 0 | 0 | 72 | .58 | 0 | 0 | 72 | .58 | 0 | 0 |
 | NC_024489.1 | Asterionellopsis glacialis RNA virus genomic RNA  complete genome  isolate: AglaRNAV | 8842 | 0 | 0 | 50 | .56 | 0 | 0 | 50 | .56 | 0 | 0 |
 | NC_024490.1 | Mirabilis leaf curl India virus associated betasatellite complete sequence  isolate Pragpur | 1406 | 0 | 0 | 246 | 17.49 | 49 | 3.48 | 246 | 17.49 | 0 | 0 |
@@ -5543,12 +5543,12 @@
 | NC_024778.1 | Loveridges garter snake virus 1 strain 251327  complete genome | 8884 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024779.1 | Dolichos yellow mosaic virus isolate DA segment DNA B  complete sequence | 2733 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_024781.1 | Marburg marburgvirus isolate Ravn virus H.sapiens-tc KEN 1987 Kitum Cave-810040  complete genome | 19114 | 0 | 0 | 33 | .17 | 0 | 0 | 33 | .17 | 0 | 0 |
-| NC_024782.1 | Pseudomonas phage MP48  complete genome | 36838 | 0 | 0 | 181 | .49 | 5 | .01 | 181 | .49 | 0 | 0 |
+| NC_024782.1 | Pseudomonas phage MP48  complete genome | 36838 | 5 | .01 | 181 | .49 | 5 | .01 | 181 | .49 | 0 | 0 |
 | NC_024783.1 | Enterobacteria phage EK99P-1  complete genome | 44332 | 0 | 0 | 182 | .41 | 0 | 0 | 182 | .41 | 0 | 0 |
 | NC_024784.1 | Escherichia phage bV EcoS AHS24  complete genome | 46440 | 0 | 0 | 215 | .46 | 98 | .21 | 215 | .46 | 0 | 0 |
 | NC_024785.1 | Acinetobacter phage YMC-13-01-C62  complete genome | 44844 | 0 | 0 | 184 | .41 | 0 | 0 | 184 | .41 | 0 | 0 |
 | NC_024786.1 | Escherichia phage vB EcoP PhAPEC5  complete genome | 71248 | 0 | 0 | 124 | .17 | 49 | .06 | 173 | .24 | 49 | .06 |
-| NC_024787.1 | Listeria phage LMTA-148  complete genome | 132541 | 0 | 0 | 1084 | .81 | 498 | .37 | 1231 | .92 | 147 | .11 |
+| NC_024787.1 | Listeria phage LMTA-148  complete genome | 132541 | 4 | 0 | 1084 | .81 | 498 | .37 | 1231 | .92 | 147 | .11 |
 | NC_024788.1 | Bacillus phage Riley  complete genome | 162816 | 0 | 0 | 905 | .55 | 294 | .18 | 1101 | .67 | 196 | .12 |
 | NC_024789.1 | Escherichia phage bV EcoS AKS96  complete genome | 45746 | 0 | 0 | 222 | .48 | 49 | .10 | 222 | .48 | 0 | 0 |
 | NC_024790.1 | Escherichia phage vB EcoP PhAPEC7  complete genome | 71778 | 0 | 0 | 63 | .08 | 49 | .06 | 112 | .15 | 49 | .06 |
@@ -5704,7 +5704,7 @@
 | NC_025437.1 | Shigella phage Shf125875  complete genome | 169062 | 0 | 0 | 368 | .21 | 98 | .05 | 466 | .27 | 98 | .05 |
 | NC_025438.1 | Mycobacterium phage Soto  complete genome | 67744 | 0 | 0 | 890 | 1.31 | 0 | 0 | 890 | 1.31 | 0 | 0 |
 | NC_025439.1 | Idiomarinaceae phage 1N2-2  complete genome | 34773 | 0 | 0 | 119 | .34 | 0 | 0 | 119 | .34 | 0 | 0 |
-| NC_025440.1 | Listeria phage WIL-1  complete genome | 134369 | 0 | 0 | 1151 | .85 | 250 | .18 | 1249 | .92 | 98 | .07 |
+| NC_025440.1 | Listeria phage WIL-1  complete genome | 134369 | 10 | 0 | 1151 | .85 | 250 | .18 | 1249 | .92 | 98 | .07 |
 | NC_025441.1 | Escherichia phage ECML-117  complete genome | 66854 | 0 | 0 | 176 | .26 | 0 | 0 | 176 | .26 | 0 | 0 |
 | NC_025442.1 | Salmonella phage Chi  complete genome | 59578 | 0 | 0 | 259 | .43 | 0 | 0 | 259 | .43 | 0 | 0 |
 | NC_025443.1 | Salmonella phage 9NA  complete genome | 52869 | 0 | 0 | 348 | .65 | 99 | .18 | 348 | .65 | 0 | 0 |
@@ -5712,7 +5712,7 @@
 | NC_025445.1 | Enterobacteria phage J8-65  complete genome | 40981 | 0 | 0 | 457 | 1.11 | 0 | 0 | 457 | 1.11 | 0 | 0 |
 | NC_025446.1 | Escherichia phage ECML-4  complete genome | 157308 | 0 | 0 | 305 | .19 | 0 | 0 | 305 | .19 | 0 | 0 |
 | NC_025447.1 | Escherichia phage 121Q  complete genome | 348532 | 0 | 0 | 1500 | .43 | 294 | .08 | 1647 | .47 | 147 | .04 |
-| NC_025448.1 | Enterobacteria phage RB27  complete genome | 165179 | 0 | 0 | 635 | .38 | 50 | .03 | 684 | .41 | 49 | .02 |
+| NC_025448.1 | Enterobacteria phage RB27  complete genome | 165179 | 1 | 0 | 635 | .38 | 50 | .03 | 684 | .41 | 49 | .02 |
 | NC_025449.1 | Escherichia phage ECML-134  complete genome | 166783 | 0 | 0 | 827 | .49 | 147 | .08 | 974 | .58 | 147 | .08 |
 | NC_025450.1 | Lelliottia phage phD2B  complete genome | 44366 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025451.1 | Yersinia phage vB YenP AP5  complete genome | 38646 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -5759,7 +5759,7 @@
 | NC_025672.1 | Norway rat hepacivirus 1  complete sequence | 8976 | 0 | 0 | 30 | .33 | 0 | 0 | 30 | .33 | 0 | 0 |
 | NC_025673.1 | Norway rat hepacivirus 2  complete sequence | 8568 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025674.1 | Macrophomina phaseolina tobamo-like virus strain IL-01 2013  complete genome | 9524 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_025675.1 | Norway rat hunnivirus isolate NrHuV NYC-E21 polyprotein gene  complete cds | 7496 | 0 | 0 | 0 | 0 | 2 | .02 | 0 | 0 | 0 | 0 |
+| NC_025675.1 | Norway rat hunnivirus isolate NrHuV NYC-E21 polyprotein gene  complete cds | 7496 | 2 | .02 | 2 | .02 | 2 | .02 | 0 | 0 | 0 | 0 |
 | NC_025676.1 | San Miguel sea lion virus 8  complete genome | 8489 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025677.1 | Norway rat pestivirus isolate NrPV NYC-D23 polyprotein gene  complete cds | 12983 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025678.1 | Simian adenovirus DM-2014 isolate 23336  complete genome | 32661 | 0 | 0 | 189 | .57 | 123 | .37 | 238 | .72 | 49 | .15 |
@@ -5769,25 +5769,25 @@
 | NC_025682.1 | Po-Circo-like virus 21  complete genome | 3912 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025683.1 | Po-Circo-like virus 41  complete genome | 2904 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025684.1 | Po-Circo-like virus 51  complete genome | 2833 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_025705.1 | Circoviridae 1 LDMD-2013  complete genome | 4023 | 0 | 0 | 0 | 0 | 4 | .09 | 0 | 0 | 0 | 0 |
+| NC_025705.1 | Circoviridae 1 LDMD-2013  complete genome | 4023 | 4 | .09 | 4 | .09 | 4 | .09 | 0 | 0 | 0 | 0 |
 | NC_025706.1 | Circoviridae 2 LDMD-2013  complete genome | 3584 | 0 | 0 | 107 | 2.98 | 49 | 1.36 | 107 | 2.98 | 0 | 0 |
-| NC_025707.1 | Bacillariodnavirus LDMD-2013  complete genome | 5749 | 0 | 0 | 0 | 0 | 5 | .08 | 0 | 0 | 0 | 0 |
-| NC_025708.1 | Circoviridae 3 LDMD-2013  complete genome | 2389 | 0 | 0 | 42 | 1.75 | 1 | .04 | 42 | 1.75 | 0 | 0 |
+| NC_025707.1 | Bacillariodnavirus LDMD-2013  complete genome | 5749 | 5 | .08 | 5 | .08 | 5 | .08 | 0 | 0 | 0 | 0 |
+| NC_025708.1 | Circoviridae 3 LDMD-2013  complete genome | 2389 | 1 | .04 | 42 | 1.75 | 1 | .04 | 42 | 1.75 | 0 | 0 |
 | NC_025709.1 | Circoviridae 4 LDMD-2013  complete genome | 3393 | 0 | 0 | 119 | 3.50 | 49 | 1.44 | 119 | 3.50 | 0 | 0 |
-| NC_025710.1 | Circoviridae 5 LDMD-2013  complete genome | 2603 | 0 | 0 | 0 | 0 | 3 | .11 | 0 | 0 | 0 | 0 |
+| NC_025710.1 | Circoviridae 5 LDMD-2013  complete genome | 2603 | 3 | .11 | 3 | .11 | 3 | .11 | 0 | 0 | 0 | 0 |
 | NC_025711.1 | Circoviridae 6 LDMD-2013  complete genome | 2711 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_025712.1 | Circoviridae 7 LDMD-2013  complete genome | 4715 | 0 | 0 | 0 | 0 | 5 | .10 | 0 | 0 | 0 | 0 |
+| NC_025712.1 | Circoviridae 7 LDMD-2013  complete genome | 4715 | 5 | .10 | 5 | .10 | 5 | .10 | 0 | 0 | 0 | 0 |
 | NC_025713.1 | Circoviridae 8 LDMD-2013  complete genome | 3999 | 0 | 0 | 54 | 1.35 | 0 | 0 | 54 | 1.35 | 0 | 0 |
 | NC_025714.1 | Circoviridae 9 LDMD-2013  complete genome | 3175 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_025715.1 | Circoviridae 10 LDMD-2013  complete genome | 3333 | 0 | 0 | 0 | 0 | 2 | .06 | 0 | 0 | 0 | 0 |
-| NC_025716.1 | Circoviridae 11 LDMD-2013  complete genome | 2917 | 0 | 0 | 0 | 0 | 2 | .06 | 0 | 0 | 0 | 0 |
+| NC_025715.1 | Circoviridae 10 LDMD-2013  complete genome | 3333 | 2 | .06 | 2 | .06 | 2 | .06 | 0 | 0 | 0 | 0 |
+| NC_025716.1 | Circoviridae 11 LDMD-2013  complete genome | 2917 | 2 | .06 | 2 | .06 | 2 | .06 | 0 | 0 | 0 | 0 |
 | NC_025717.1 | Circoviridae 13 LDMD-2013  complete genome | 2658 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_025718.1 | Circoviridae 14 LDMD-2013  complete genome | 3161 | 0 | 0 | 0 | 0 | 1 | .03 | 0 | 0 | 0 | 0 |
-| NC_025719.1 | Circoviridae 15 LDMD-2013  complete genome | 2676 | 0 | 0 | 0 | 0 | 4 | .14 | 0 | 0 | 0 | 0 |
-| NC_025720.1 | Circoviridae 16 LDMD-2013  complete genome | 2262 | 0 | 0 | 0 | 0 | 4 | .17 | 0 | 0 | 0 | 0 |
-| NC_025722.1 | Circoviridae 18 LDMD-2013  complete genome | 2834 | 0 | 0 | 40 | 1.41 | 3 | .10 | 40 | 1.41 | 0 | 0 |
-| NC_025723.1 | Circoviridae 19 LDMD-2013  complete genome | 1064 | 0 | 0 | 0 | 0 | 1 | .09 | 0 | 0 | 0 | 0 |
-| NC_025724.1 | Circoviridae 21 LDMD-2013  complete genome | 2296 | 0 | 0 | 0 | 0 | 1 | .04 | 0 | 0 | 0 | 0 |
+| NC_025718.1 | Circoviridae 14 LDMD-2013  complete genome | 3161 | 1 | .03 | 1 | .03 | 1 | .03 | 0 | 0 | 0 | 0 |
+| NC_025719.1 | Circoviridae 15 LDMD-2013  complete genome | 2676 | 4 | .14 | 4 | .14 | 4 | .14 | 0 | 0 | 0 | 0 |
+| NC_025720.1 | Circoviridae 16 LDMD-2013  complete genome | 2262 | 4 | .17 | 4 | .17 | 4 | .17 | 0 | 0 | 0 | 0 |
+| NC_025722.1 | Circoviridae 18 LDMD-2013  complete genome | 2834 | 3 | .10 | 40 | 1.41 | 3 | .10 | 40 | 1.41 | 0 | 0 |
+| NC_025723.1 | Circoviridae 19 LDMD-2013  complete genome | 1064 | 1 | .09 | 1 | .09 | 1 | .09 | 0 | 0 | 0 | 0 |
+| NC_025724.1 | Circoviridae 21 LDMD-2013  complete genome | 2296 | 1 | .04 | 1 | .04 | 1 | .04 | 0 | 0 | 0 | 0 |
 | NC_025725.1 | Jatropha leaf crumple virus isolate SKJ1  complete genome | 2735 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025726.1 | Torque teno mini virus ALA22  complete genome | 2914 | 0 | 0 | 89 | 3.05 | 0 | 0 | 89 | 3.05 | 0 | 0 |
 | NC_025727.1 | Torque teno mini virus ALH8  complete genome | 2855 | 0 | 0 | 34 | 1.19 | 0 | 0 | 34 | 1.19 | 0 | 0 |
@@ -5836,7 +5836,7 @@
 | NC_025831.1 | Leopards Hill virus cRNA  segment: L  complete sequence  strain: 11SB17 | 12037 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025832.1 | Leopards Hill virus cRNA  segment: M  complete sequence  strain: 11SB17 | 4571 | 0 | 0 | 0 | 0 | 49 | 1.07 | 0 | 0 | 0 | 0 |
 | NC_025833.1 | Leopards Hill virus cRNA  segment: S  complete sequence  strain: 11SB17 | 1760 | 0 | 0 | 35 | 1.98 | 0 | 0 | 35 | 1.98 | 0 | 0 |
-| NC_025834.1 | Switchgrass mosaic-associated virus 1 isolate Cloud Nine movement protein  capsid protein  replication-associated protein RepB  and replication-associated protein genes  complete cds | 2739 | 0 | 0 | 0 | 0 | 2 | .07 | 0 | 0 | 0 | 0 |
+| NC_025834.1 | Switchgrass mosaic-associated virus 1 isolate Cloud Nine movement protein  capsid protein  replication-associated protein RepB  and replication-associated protein genes  complete cds | 2739 | 2 | .07 | 2 | .07 | 2 | .07 | 0 | 0 | 0 | 0 |
 | NC_025835.1 | Dinocampus coccinellae paralysis virus strain Quebec2013  complete genome | 10192 | 0 | 0 | 72 | .70 | 41 | .40 | 72 | .70 | 0 | 0 |
 | NC_025836.1 | Fisavirus 1 strain HAL1  complete genome | 8712 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025837.1 | Sauropus yellowing virus isolate THSP1-B P0  P1-P2 fusion protein  P1  P3-P5 readthrough protein  P3  and P4 genes  complete cds | 5820 | 0 | 0 | 26 | .44 | 0 | 0 | 26 | .44 | 0 | 0 |
@@ -5871,7 +5871,7 @@
 | NC_025960.1 | Agrotis segetum nucleopolyhedrovirus B isolate English  complete genome | 148981 | 0 | 0 | 2965 | 1.99 | 1056 | .70 | 3063 | 2.05 | 98 | .06 |
 | NC_025961.1 | Cosavirus JMY-2014 isolate Cosa-CHN  complete genome | 7213 | 0 | 0 | 39 | .54 | 0 | 0 | 39 | .54 | 0 | 0 |
 | NC_025962.1 | Psittacine adenovirus 3 isolate HKU Parrot19  complete genome | 31735 | 0 | 0 | 122 | .38 | 0 | 0 | 122 | .38 | 0 | 0 |
-| NC_025963.1 | Parapoxvirus red deer HL953 strain HL953  complete genome | 139981 | 0 | 0 | 3243 | 2.31 | 353 | .25 | 3341 | 2.38 | 98 | .07 |
+| NC_025963.1 | Parapoxvirus red deer HL953 strain HL953  complete genome | 139981 | 9 | 0 | 3243 | 2.31 | 353 | .25 | 3341 | 2.38 | 98 | .07 |
 | NC_025964.1 | Catharanthus yellow mosaic virus complete genome  isolate DR-151 | 2752 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025965.1 | Porcine parvovirus 2 strain BR GO ion 09 PPV-2 2011  complete genome | 5426 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_025966.1 | Rodent Torque teno virus 2 isolate RN 2 Se15  complete genome | 2572 | 0 | 0 | 85 | 3.30 | 0 | 0 | 85 | 3.30 | 0 | 0 |
@@ -5970,7 +5970,7 @@
 | NC_026427.1 | Influenza A virus (A Shanghai 02 2013(H7N9)) segment 7 matrix protein 2 (M2) and matrix protein 1 (M1) genes  complete cds | 985 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026428.1 | Influenza A virus (A Shanghai 02 2013(H7N9)) segment 8 nuclear export protein (NEP) and nonstructural protein 1 (NS1) genes  complete cds | 841 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026429.1 | Influenza A virus (A Shanghai 02 2013(H7N9)) segment 6 neuraminidase (NA) gene  complete cds | 1398 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_026430.1 | Condylorrhiza vestigialis MNPV  complete genome | 125767 | 0 | 0 | 1190 | .94 | 492 | .39 | 1435 | 1.14 | 245 | .19 |
+| NC_026430.1 | Condylorrhiza vestigialis MNPV  complete genome | 125767 | 2 | 0 | 1190 | .94 | 492 | .39 | 1435 | 1.14 | 245 | .19 |
 | NC_026431.1 | Influenza A virus (A California 07 2009(H1N1)) segment 7 matrix protein 2 (M2) and matrix protein 1 (M1) genes  complete cds | 982 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026432.1 | Influenza A virus (A California 07 2009(H1N1)) segment 8 nuclear export protein (NEP) and nonstructural protein 1 (NS1) genes  complete cds | 863 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026433.1 | Influenza A virus (A California 07 2009(H1N1)) segment 4 hemagglutinin (HA) gene  complete cds | 1701 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -5980,9 +5980,9 @@
 | NC_026437.1 | Influenza A virus (A California 07 2009(H1N1)) segment 3 polymerase PA (PA) gene  complete cds | 2151 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026438.1 | Influenza A virus (A California 07 2009(H1N1)) segment 1 polymerase PB2 (PB2) gene  complete cds | 2280 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026439.1 | Forest pouched giant rat arterivirus isolate PREDICT-06509  complete genome | 14953 | 0 | 0 | 35 | .23 | 0 | 0 | 35 | .23 | 0 | 0 |
-| NC_026440.1 | Pandoravirus inopinatum isolate KlaHel  complete genome | 2243109 | 0 | 0 | 42100 | 1.87 | 15326 | .68 | 45997 | 2.05 | 3897 | .17 |
+| NC_026440.1 | Pandoravirus inopinatum isolate KlaHel  complete genome | 2243109 | 33 | 0 | 42100 | 1.87 | 15326 | .68 | 45997 | 2.05 | 3897 | .17 |
 | NC_026470.1 | African bat icavirus A isolate PREDICT-06105  complete genome | 8096 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_026472.1 | Yacon necrotic mottle virus isolate YV1  complete genome | 7661 | 0 | 0 | 50 | .65 | 8 | .10 | 50 | .65 | 0 | 0 |
+| NC_026472.1 | Yacon necrotic mottle virus isolate YV1  complete genome | 7661 | 8 | .10 | 50 | .65 | 8 | .10 | 50 | .65 | 0 | 0 |
 | NC_026473.1 | Meles meles polyomavirus 1 isolate French  complete genome | 5187 | 0 | 0 | 55 | 1.06 | 49 | .94 | 104 | 2.00 | 49 | .94 |
 | NC_026508.1 | Cucurbit aphid borne yellows virus associated RNA RNA-dependent RNA polymerase and putative 25K replicase component genes  complete cds | 2934 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_026509.1 | DeBrazzas monkey arterivirus isolate PREDICT-06530  complete genome | 15684 | 0 | 0 | 28 | .17 | 33 | .21 | 28 | .17 | 0 | 0 |
@@ -6130,7 +6130,7 @@
 | NC_027026.1 | Sapovirus Hu Nagoya NGY-1 2012 JPN genomic RNA  complete genome | 7521 | 0 | 0 | 45 | .59 | 0 | 0 | 45 | .59 | 0 | 0 |
 | NC_027040.1 | Ageratum yellow vein virus strain Guam 12-02 segment A  complete sequence | 2750 | 0 | 0 | 23 | .83 | 0 | 0 | 23 | .83 | 0 | 0 |
 | NC_027054.1 | Porcine kobuvirus isolate JS-02a-CHN 2014 China  complete genome | 8121 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_027059.1 | Torque teno sus virus 1b isolate 1p  complete genome | 2872 | 0 | 0 | 61 | 2.12 | 63 | 2.19 | 61 | 2.12 | 0 | 0 |
+| NC_027059.1 | Torque teno sus virus 1b isolate 1p  complete genome | 2872 | 14 | .48 | 61 | 2.12 | 63 | 2.19 | 61 | 2.12 | 0 | 0 |
 | NC_027117.1 | Desmodus rotundus endogenous retrovirus isolate 824  complete genome | 10485 | 0 | 0 | 2017 | 19.23 | 98 | .93 | 2017 | 19.23 | 0 | 0 |
 | NC_027118.1 | Vibrio phage phiVC8  complete genome | 39422 | 0 | 0 | 290 | .73 | 0 | 0 | 290 | .73 | 0 | 0 |
 | NC_027119.1 | Salmonella phage Det7  complete genome | 157498 | 0 | 0 | 170 | .10 | 0 | 0 | 170 | .10 | 0 | 0 |
@@ -6142,7 +6142,7 @@
 | NC_027125.1 | Flavobacterium phage FCL-2  complete genome | 47142 | 0 | 0 | 798 | 1.69 | 196 | .41 | 945 | 2.00 | 147 | .31 |
 | NC_027126.1 | Kilifi Virus putative polyprotein gene  complete cds | 8865 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027127.1 | Thika virus putative polyprotein gene  complete cds | 9108 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_027128.1 | La Jolla virus putative polyprotein gene  complete cds | 9786 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_027128.1 | La Jolla virus putative polyprotein gene  complete cds | 9786 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_027129.1 | Hollyhock yellow vein mosaic Islamabad virus complete genome  isolate 3AK | 2741 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027130.1 | Synechococcus phage ACG-2014b isolate Syn7803C100  complete genome | 172688 | 0 | 0 | 748 | .43 | 98 | .05 | 846 | .48 | 98 | .05 |
 | NC_027131.1 | Grapevine roditis leaf discoloration-associated virus complete genome  isolate w4 | 6988 | 0 | 0 | 26 | .37 | 49 | .70 | 26 | .37 | 0 | 0 |
@@ -6248,7 +6248,7 @@
 | NC_027396.1 | Streptococcus phage SpSL1  complete genome | 33756 | 0 | 0 | 113 | .33 | 98 | .29 | 211 | .62 | 98 | .29 |
 | NC_027397.1 | Vibrio phage QH  complete genome | 39725 | 0 | 0 | 230 | .57 | 0 | 0 | 230 | .57 | 0 | 0 |
 | NC_027398.1 | Enterobacteria phage Sf101  complete genome | 38742 | 0 | 0 | 105 | .27 | 0 | 0 | 105 | .27 | 0 | 0 |
-| NC_027399.1 | Klebsiella phage K64-1 DNA  complete genome | 346602 | 0 | 0 | 2450 | .70 | 623 | .17 | 2940 | .84 | 490 | .14 |
+| NC_027399.1 | Klebsiella phage K64-1 DNA  complete genome | 346602 | 35 | .01 | 2450 | .70 | 623 | .17 | 2940 | .84 | 490 | .14 |
 | NC_027400.1 | Propionibacterium phage PHL055N00  complete genome | 29264 | 0 | 0 | 452 | 1.54 | 0 | 0 | 452 | 1.54 | 0 | 0 |
 | NC_027401.1 | Propionibacterium phage PHL095N00  complete genome | 29751 | 0 | 0 | 225 | .75 | 49 | .16 | 225 | .75 | 0 | 0 |
 | NC_027402.1 | Salmonella phage SPN3US  complete genome | 240413 | 0 | 0 | 177 | .07 | 98 | .04 | 177 | .07 | 0 | 0 |
@@ -6347,7 +6347,7 @@
 | NC_027704.1 | Trichomonas vaginalis virus dsRNA satellite S1'  complete sequence | 532 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027705.1 | Equine adenovirus 2 isolate EAdV2.385 75.9  complete genome | 33090 | 0 | 0 | 76 | .22 | 0 | 0 | 76 | .22 | 0 | 0 |
 | NC_027706.1 | Lettuce italian necrotic virus  complete genome | 9829 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_027707.1 | Salmon gill poxvirus  complete genome | 241564 | 0 | 0 | 1359 | .56 | 668 | .27 | 1727 | .71 | 368 | .15 |
+| NC_027707.1 | Salmon gill poxvirus  complete genome | 241564 | 4 | 0 | 1359 | .56 | 668 | .27 | 1727 | .71 | 368 | .15 |
 | NC_027708.1 | Skunk adenovirus PB1  complete genome | 31848 | 0 | 0 | 70 | .21 | 49 | .15 | 119 | .37 | 49 | .15 |
 | NC_027709.1 | Spanish goat encephalitis virus isolate AstGoatIREC2011  complete genome | 10870 | 0 | 0 | 88 | .80 | 0 | 0 | 88 | .80 | 0 | 0 |
 | NC_027710.2 | Opium poppy mosaic virus isolate PHEL5235  complete genome | 4230 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -6395,7 +6395,7 @@
 | NC_027807.1 | Fengkai orbivirus isolate D181 2008 segment 10  complete sequence | 833 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027808.1 | Grapevine Cabernet Sauvignon reovirus isolate CS-BR p3a gene  complete cds | 3826 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027809.1 | Grapevine Cabernet Sauvignon reovirus isolate CS-BR nonstructural protein NSP5 gene  complete cds | 2457 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_027810.1 | Grapevine Cabernet Sauvignon reovirus isolate CS-BR p10a gene  complete cds | 1110 | 0 | 0 | 0 | 0 | 4 | .36 | 0 | 0 | 0 | 0 |
+| NC_027810.1 | Grapevine Cabernet Sauvignon reovirus isolate CS-BR p10a gene  complete cds | 1110 | 4 | .36 | 4 | .36 | 4 | .36 | 0 | 0 | 0 | 0 |
 | NC_027811.2 | Fengkai orbivirus isolate D181 2008 segment 2  complete sequence | 2900 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027812.1 | Fengkai orbivirus isolate D181 2008 segment 3  complete sequence | 2761 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027813.1 | Fengkai orbivirus isolate D181 2008 segment 4  complete sequence | 1979 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -6419,9 +6419,9 @@
 | NC_027920.1 | Hot pepper endornavirus isolate CS  complete genome | 14729 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027921.1 | Binucleate Rhizoctonia mitovirus K1 isolate FAS2909W  complete genome | 2794 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027922.1 | White sucker hepadnavirus isolate RR173  complete genome | 3542 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_027923.1 | Perigonia lusca single nucleopolyhedrovirus  complete genome | 132831 | 0 | 0 | 1485 | 1.11 | 773 | .58 | 1680 | 1.26 | 195 | .14 |
+| NC_027923.1 | Perigonia lusca single nucleopolyhedrovirus  complete genome | 132831 | 41 | .03 | 1485 | 1.11 | 773 | .58 | 1680 | 1.26 | 195 | .14 |
 | NC_027924.1 | Atractylodes mild mottle virus isolate AMMV-ES  complete genome | 8105 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_027925.1 | Apis mellifera filamentous virus isolate CH-CO5  partial genome | 496396 | 0 | 0 | 17307 | 3.48 | 1536 | .30 | 17898 | 3.60 | 591 | .11 |
+| NC_027925.1 | Apis mellifera filamentous virus isolate CH-CO5  partial genome | 496396 | 109 | .02 | 17307 | 3.48 | 1536 | .30 | 17898 | 3.60 | 591 | .11 |
 | NC_027926.1 | Tomato necrotic dwarf virus  RNA1  complete sequence | 7244 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_027927.1 | Tomato necrotic dwarf virus  RNA2  complete sequence | 4904 | 0 | 0 | 88 | 1.79 | 28 | .57 | 88 | 1.79 | 0 | 0 |
 | NC_027928.1 | Privet ringsport virus isolate Win-01 segment RNA1  complete sequence | 3415 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -6438,7 +6438,7 @@
 | NC_027987.1 | Leuconostoc phage 1-A4  complete genome | 29508 | 0 | 0 | 55 | .18 | 49 | .16 | 55 | .18 | 0 | 0 |
 | NC_027988.2 | Citrobacter phage CVT22  complete genome | 47636 | 0 | 0 | 207 | .43 | 0 | 0 | 207 | .43 | 0 | 0 |
 | NC_027989.1 | Campylobacter phage vB CcoM-IBB 35 clone Contig1  complete genome | 53237 | 0 | 0 | 1344 | 2.52 | 639 | 1.20 | 1614 | 3.03 | 270 | .50 |
-| NC_027990.1 | Lactobacillus phage LBR48  complete genome | 48211 | 0 | 0 | 102 | .21 | 8 | .01 | 102 | .21 | 0 | 0 |
+| NC_027990.1 | Lactobacillus phage LBR48  complete genome | 48211 | 8 | .01 | 102 | .21 | 8 | .01 | 102 | .21 | 0 | 0 |
 | NC_027991.1 | Staphylococcus phage SA1  complete genome | 147303 | 0 | 0 | 372 | .25 | 98 | .06 | 470 | .31 | 98 | .06 |
 | NC_027992.1 | Pseudomonas phage JBD25  complete genome | 39552 | 0 | 0 | 59 | .14 | 0 | 0 | 59 | .14 | 0 | 0 |
 | NC_027993.1 | Escherichia phage K1G  complete genome | 43587 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -6609,7 +6609,7 @@
 | NC_028488.1 | Red clover powdery mildew-associated totivirus 7 genomic RNA  complete genome  isolate: RPaTV7 75-7 | 4942 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028489.1 | Daeseongdong virus 2 strain A12.2549 ROK 2012  complete genome | 4742 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028490.1 | Red clover powdery mildew-associated totivirus 9 gene for polyprotein  complete cds  isolate: RPaTV9 85-21 | 5997 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_028491.1 | Diatraea saccharalis granulovirus  complete genome | 98392 | 0 | 0 | 1432 | 1.45 | 1086 | 1.10 | 1579 | 1.60 | 147 | .14 |
+| NC_028491.1 | Diatraea saccharalis granulovirus  complete genome | 98392 | 5 | 0 | 1432 | 1.45 | 1086 | 1.10 | 1579 | 1.60 | 147 | .14 |
 | NC_028492.1 | Rattus norvegicus papillomavirus 3 isolate Rat 60S  complete genome | 7707 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028493.1 | Penicillium aurantiogriseum bipartite virus 1 segment RNA 2 35 kDa protein and 20 kDa protein genes  complete cds | 1802 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028494.1 | Penicillium aurantiogriseum partitivirus 1 RNA 2  complete sequence | 1576 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -6623,16 +6623,16 @@
 | NC_028636.1 | Sucra jujuba nucleopolyhedrovirus isolate 473  complete genome | 135952 | 0 | 0 | 526 | .38 | 147 | .10 | 673 | .49 | 147 | .10 |
 | NC_028649.1 | Actinidia virus X strain RV-3124 RNA-dependent RNA polymerase  triple gene block protein 1  triple gene block protein 2  triple gene block protein 3  coat protein  and putative 10 kDa protein genes  complete cds | 6888 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028650.1 | Rat bufavirus SY-2015 isolate 791102  partial genome | 4634 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_028651.1 | Hydrogenobaculum phage 1 strain HP1  complete genome | 19351 | 0 | 0 | 117 | .60 | 57 | .29 | 117 | .60 | 0 | 0 |
+| NC_028651.1 | Hydrogenobaculum phage 1 strain HP1  complete genome | 19351 | 8 | .04 | 117 | .60 | 57 | .29 | 117 | .60 | 0 | 0 |
 | NC_028652.1 | Pseudomonas phage C11  complete genome | 94109 | 0 | 0 | 294 | .31 | 0 | 0 | 294 | .31 | 0 | 0 |
 | NC_028653.1 | Gordonia phage GTE8  complete genome | 67617 | 0 | 0 | 996 | 1.47 | 147 | .21 | 996 | 1.47 | 0 | 0 |
 | NC_028654.1 | Mycobacterium phage Sparkdehlily  complete genome | 56275 | 0 | 0 | 400 | .71 | 98 | .17 | 400 | .71 | 0 | 0 |
 | NC_028655.1 | Yersinia phage vB YenP AP10  complete genome | 39235 | 0 | 0 | 35 | .08 | 0 | 0 | 35 | .08 | 0 | 0 |
-| NC_028656.1 | Enterobacteria phage VT2phi 272  complete sequence | 65955 | 0 | 0 | 116 | .17 | 51 | .07 | 165 | .25 | 49 | .07 |
+| NC_028656.1 | Enterobacteria phage VT2phi 272  complete sequence | 65955 | 2 | 0 | 116 | .17 | 51 | .07 | 165 | .25 | 49 | .07 |
 | NC_028657.1 | Pseudomonas phage YMC11 02 R656  complete genome | 60919 | 0 | 0 | 300 | .49 | 74 | .12 | 374 | .61 | 74 | .12 |
 | NC_028658.1 | Mycobacterium phage Swish  complete genome | 68735 | 0 | 0 | 905 | 1.31 | 0 | 0 | 905 | 1.31 | 0 | 0 |
 | NC_028659.1 | Klebsiella phage vB KpnM KB57  complete genome | 142987 | 0 | 0 | 578 | .40 | 98 | .06 | 676 | .47 | 98 | .06 |
-| NC_028660.1 | Escherichia phage phi191  complete genome | 61035 | 0 | 0 | 106 | .17 | 81 | .13 | 155 | .25 | 49 | .08 |
+| NC_028660.1 | Escherichia phage phi191  complete genome | 61035 | 32 | .05 | 106 | .17 | 81 | .13 | 155 | .25 | 49 | .08 |
 | NC_028661.1 | Pseudomonas phage PPPL-1  complete genome | 41149 | 0 | 0 | 38 | .09 | 0 | 0 | 38 | .09 | 0 | 0 |
 | NC_028662.1 | Mycobacterium phage Phlei  complete genome | 50418 | 0 | 0 | 130 | .25 | 0 | 0 | 130 | .25 | 0 | 0 |
 | NC_028663.1 | Cyanophage P-TIM40  complete genome | 188632 | 0 | 0 | 804 | .42 | 0 | 0 | 804 | .42 | 0 | 0 |
@@ -6679,7 +6679,7 @@
 | NC_028743.1 | Mannheimia phage vB MhS 587AP2  complete genome | 48594 | 0 | 0 | 166 | .34 | 0 | 0 | 166 | .34 | 0 | 0 |
 | NC_028744.1 | Mycobacterium phage LadyBird  complete genome | 53141 | 0 | 0 | 219 | .41 | 0 | 0 | 219 | .41 | 0 | 0 |
 | NC_028745.1 | Pseudomonas phage DL60  complete genome | 66103 | 0 | 0 | 265 | .40 | 0 | 0 | 265 | .40 | 0 | 0 |
-| NC_028746.1 | Paenibacillus phage Harrison  complete genome | 44249 | 0 | 0 | 76 | .17 | 2 | 0 | 76 | .17 | 0 | 0 |
+| NC_028746.1 | Paenibacillus phage Harrison  complete genome | 44249 | 2 | 0 | 76 | .17 | 2 | 0 | 76 | .17 | 0 | 0 |
 | NC_028747.1 | Mycobacterium phage Brusacoram  complete genome | 47618 | 0 | 0 | 771 | 1.61 | 0 | 0 | 771 | 1.61 | 0 | 0 |
 | NC_028748.2 | Bacillus phage vB BtS BMBtp3  complete genome | 51366 | 0 | 0 | 274 | .53 | 49 | .09 | 323 | .62 | 49 | .09 |
 | NC_028749.1 | Brevibacillus phage Sundance  complete genome | 134270 | 0 | 0 | 406 | .30 | 270 | .20 | 676 | .50 | 270 | .20 |
@@ -6734,7 +6734,7 @@
 | NC_028806.1 | Swine enteric coronavirus strain Italy 213306 2009  complete genome | 28111 | 0 | 0 | 147 | .52 | 0 | 0 | 147 | .52 | 0 | 0 |
 | NC_028807.1 | Streptomyces phage SF1  complete genome | 43150 | 0 | 0 | 872 | 2.02 | 0 | 0 | 872 | 2.02 | 0 | 0 |
 | NC_028808.2 | Escherichia phage SUSP1  complete genome | 90743 | 0 | 0 | 247 | .27 | 49 | .05 | 296 | .32 | 49 | .05 |
-| NC_028809.1 | Pseudomonas phage PaMx74  partial genome | 58637 | 0 | 0 | 671 | 1.14 | 10 | .01 | 671 | 1.14 | 0 | 0 |
+| NC_028809.1 | Pseudomonas phage PaMx74  partial genome | 58637 | 10 | .01 | 671 | 1.14 | 10 | .01 | 671 | 1.14 | 0 | 0 |
 | NC_028810.1 | Mycobacterium phage Rufus  complete genome | 52357 | 0 | 0 | 258 | .49 | 49 | .09 | 258 | .49 | 0 | 0 |
 | NC_028811.1 | BtMr-AlphaCoV SAX2011  complete genome | 27935 | 0 | 0 | 24 | .08 | 0 | 0 | 24 | .08 | 0 | 0 |
 | NC_028812.1 | Proteus phage pPM 01  complete genome | 58546 | 0 | 0 | 101 | .17 | 0 | 0 | 101 | .17 | 0 | 0 |
@@ -6847,15 +6847,15 @@
 | NC_028928.1 | Mycobacterium phage Nerujay  complete genome | 53455 | 0 | 0 | 141 | .26 | 0 | 0 | 141 | .26 | 0 | 0 |
 | NC_028929.1 | Listeria phage vB LmoS 293  complete genome | 40759 | 0 | 0 | 116 | .28 | 0 | 0 | 116 | .28 | 0 | 0 |
 | NC_028930.1 | Paenibacillus phage Tripp  complete genome | 54439 | 0 | 0 | 283 | .51 | 0 | 0 | 283 | .51 | 0 | 0 |
-| NC_028931.1 | Pseudomonas phage PaMx28  partial genome | 55108 | 0 | 0 | 452 | .82 | 100 | .18 | 452 | .82 | 0 | 0 |
+| NC_028931.1 | Pseudomonas phage PaMx28  partial genome | 55108 | 100 | .18 | 452 | .82 | 100 | .18 | 452 | .82 | 0 | 0 |
 | NC_028932.1 | Mycobacterium phage Serenity  complete genome | 52088 | 0 | 0 | 241 | .46 | 0 | 0 | 241 | .46 | 0 | 0 |
 | NC_028933.1 | Pseudomonas phage PhiCHU  complete genome | 45626 | 0 | 0 | 263 | .57 | 0 | 0 | 263 | .57 | 0 | 0 |
 | NC_028934.1 | Mycobacterium phage Vincenzo  complete genome | 72139 | 0 | 0 | 1149 | 1.59 | 98 | .13 | 1149 | 1.59 | 0 | 0 |
 | NC_028935.2 | Escherichia phage SUSP2  complete genome | 88698 | 0 | 0 | 396 | .44 | 49 | .05 | 445 | .50 | 49 | .05 |
 | NC_028936.1 | Mycobacterium phage Enkosi  complete genome | 59052 | 0 | 0 | 693 | 1.17 | 0 | 0 | 693 | 1.17 | 0 | 0 |
 | NC_028937.1 | Mycobacterium phage Ovechkin  complete genome | 58338 | 0 | 0 | 293 | .50 | 49 | .08 | 293 | .50 | 0 | 0 |
-| NC_028938.1 | Acidianus bottle-shaped virus 2 strain ABV2  complete genome | 22613 | 0 | 0 | 133 | .58 | 4 | .01 | 133 | .58 | 0 | 0 |
-| NC_028939.1 | Pseudomonas phage vB Pae PS44  complete genome | 68871 | 0 | 0 | 154 | .22 | 52 | .07 | 203 | .29 | 49 | .07 |
+| NC_028938.1 | Acidianus bottle-shaped virus 2 strain ABV2  complete genome | 22613 | 4 | .01 | 133 | .58 | 4 | .01 | 133 | .58 | 0 | 0 |
+| NC_028939.1 | Pseudomonas phage vB Pae PS44  complete genome | 68871 | 3 | 0 | 154 | .22 | 52 | .07 | 203 | .29 | 49 | .07 |
 | NC_028940.1 | Pectobacterium bacteriophage PM2  complete genome | 170286 | 0 | 0 | 381 | .22 | 98 | .05 | 430 | .25 | 49 | .02 |
 | NC_028941.1 | Mycobacterium phage Turj99  complete genome | 51161 | 0 | 0 | 268 | .52 | 0 | 0 | 268 | .52 | 0 | 0 |
 | NC_028942.1 | Mycobacterium phage Phipps  complete sequence | 68293 | 0 | 0 | 911 | 1.33 | 0 | 0 | 911 | 1.33 | 0 | 0 |
@@ -6908,16 +6908,16 @@
 | NC_028989.1 | Pepper yellow leaf curl Thailand virus isolate KON-KG5 segment DNA-A  complete sequence | 2742 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028990.1 | Enterococcus phage vB EfaS IME196  complete genome | 38886 | 0 | 0 | 152 | .39 | 0 | 0 | 152 | .39 | 0 | 0 |
 | NC_028991.1 | Clostridium phage phiCT453A  complete genome | 42158 | 0 | 0 | 648 | 1.53 | 147 | .34 | 746 | 1.76 | 98 | .23 |
-| NC_028992.1 | Sulfolobales Virus YNP2 strain SYV2  complete genome | 34783 | 0 | 0 | 219 | .62 | 80 | .22 | 268 | .77 | 49 | .14 |
+| NC_028992.1 | Sulfolobales Virus YNP2 strain SYV2  complete genome | 34783 | 31 | .08 | 219 | .62 | 80 | .22 | 268 | .77 | 49 | .14 |
 | NC_028993.1 | Gokushovirinae GAIR4  complete sequence | 4468 | 0 | 0 | 58 | 1.29 | 0 | 0 | 58 | 1.29 | 0 | 0 |
 | NC_028994.1 | Gokushovirinae GNX3R  complete sequence | 4273 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_028995.1 | Acinetobacter phage phiAC-1  complete genome | 43216 | 0 | 0 | 173 | .40 | 0 | 0 | 173 | .40 | 0 | 0 |
-| NC_028996.1 | Clostridium phage phiCDHM19  complete genome | 54295 | 0 | 0 | 938 | 1.72 | 339 | .62 | 938 | 1.72 | 0 | 0 |
+| NC_028996.1 | Clostridium phage phiCDHM19  complete genome | 54295 | 339 | .62 | 938 | 1.72 | 339 | .62 | 938 | 1.72 | 0 | 0 |
 | NC_028997.1 | Enterobacteria phage JenP2  complete genome | 59802 | 0 | 0 | 198 | .33 | 0 | 0 | 198 | .33 | 0 | 0 |
 | NC_028998.1 | Phormidium phage MIS-PhV1B  complete genome | 41291 | 0 | 0 | 671 | 1.62 | 294 | .71 | 720 | 1.74 | 49 | .11 |
 | NC_028999.1 | Pseudomonas phage PhiPA3  complete genome | 309208 | 0 | 0 | 525 | .16 | 98 | .03 | 623 | .20 | 98 | .03 |
 | NC_029000.1 | Stenotrophomonas phage IME13  complete genome | 162327 | 0 | 0 | 464 | .28 | 49 | .03 | 464 | .28 | 0 | 0 |
-| NC_029001.1 | Clostridium phage phiCDHM11 complete genome | 32000 | 0 | 0 | 1190 | 3.71 | 844 | 2.63 | 1190 | 3.71 | 0 | 0 |
+| NC_029001.1 | Clostridium phage phiCDHM11 complete genome | 32000 | 844 | 2.63 | 1190 | 3.71 | 844 | 2.63 | 1190 | 3.71 | 0 | 0 |
 | NC_029002.1 | Microcystis phage MaMV-DC  complete genome | 169223 | 0 | 0 | 511 | .30 | 0 | 0 | 511 | .30 | 0 | 0 |
 | NC_029003.2 | Salmonella phage SEN1  complete genome | 29733 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029004.1 | Clostridium phage phiCT453B  complete genome | 36712 | 0 | 0 | 675 | 1.83 | 98 | .26 | 724 | 1.97 | 49 | .13 |
@@ -6927,7 +6927,7 @@
 | NC_029008.1 | Bacillus phage phi4J1  complete genome | 41486 | 0 | 0 | 122 | .29 | 0 | 0 | 122 | .29 | 0 | 0 |
 | NC_029009.1 | Enterococcus phage EFDG1  complete genome | 147589 | 0 | 0 | 1400 | .94 | 295 | .19 | 1498 | 1.01 | 98 | .06 |
 | NC_029010.1 | Staphylococcus phage SA97  complete genome | 40592 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_029011.1 | Sulfolobus monocaudavirus SMV4  complete genome | 51711 | 0 | 0 | 478 | .92 | 110 | .21 | 478 | .92 | 0 | 0 |
+| NC_029011.1 | Sulfolobus monocaudavirus SMV4  complete genome | 51711 | 110 | .21 | 478 | .92 | 110 | .21 | 478 | .92 | 0 | 0 |
 | NC_029012.1 | Parabacteroides phage YZ-2015a  complete genome | 4623 | 0 | 0 | 43 | .93 | 0 | 0 | 43 | .93 | 0 | 0 |
 | NC_029013.1 | Citrobacter phage IME-CF2  complete genome | 177688 | 0 | 0 | 188 | .10 | 98 | .05 | 286 | .16 | 98 | .05 |
 | NC_029014.1 | Parabacteroides phage YZ-2015b  complete genome | 5001 | 0 | 0 | 30 | .59 | 0 | 0 | 30 | .59 | 0 | 0 |
@@ -6936,14 +6936,14 @@
 | NC_029017.1 | Pseudomonas phage KPP21 DNA  complete genome | 73420 | 0 | 0 | 212 | .28 | 0 | 0 | 212 | .28 | 0 | 0 |
 | NC_029018.2 | Mycobacterium phage Anubis  complete genome | 50854 | 0 | 0 | 446 | .87 | 0 | 0 | 446 | .87 | 0 | 0 |
 | NC_029019.1 | Stenotrophomonas phage vB SmaS-DLP 2  complete genome | 42593 | 0 | 0 | 161 | .37 | 49 | .11 | 161 | .37 | 0 | 0 |
-| NC_029020.1 | Sulfolobus monocaudavirus SMV2  complete genome | 50918 | 0 | 0 | 462 | .90 | 392 | .76 | 511 | 1.00 | 49 | .09 |
+| NC_029020.1 | Sulfolobus monocaudavirus SMV2  complete genome | 50918 | 295 | .57 | 462 | .90 | 392 | .76 | 511 | 1.00 | 49 | .09 |
 | NC_029021.1 | Enterobacteria phage JenK1  complete genome | 60747 | 0 | 0 | 387 | .63 | 0 | 0 | 387 | .63 | 0 | 0 |
 | NC_029022.1 | Clostridium phage phiCT9441A  complete genome | 46895 | 0 | 0 | 549 | 1.17 | 196 | .41 | 647 | 1.37 | 98 | .20 |
 | NC_029023.1 | Escherichia phage JH2  complete genome | 87712 | 0 | 0 | 172 | .19 | 49 | .05 | 221 | .25 | 49 | .05 |
 | NC_029024.1 | Bacillus phage 250  complete genome | 56505 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029025.1 | Staphylococcus phage IME-SA4  complete genome | 41843 | 0 | 0 | 160 | .38 | 0 | 0 | 160 | .38 | 0 | 0 |
 | NC_029026.1 | Enterococcus phage EFLK1  complete genome | 130952 | 0 | 0 | 708 | .54 | 368 | .28 | 855 | .65 | 147 | .11 |
-| NC_029027.1 | Sulfolobales virus YNP1 strain SYV1  complete genome | 40860 | 0 | 0 | 401 | .98 | 211 | .51 | 450 | 1.10 | 49 | .11 |
+| NC_029027.1 | Sulfolobales virus YNP1 strain SYV1  complete genome | 40860 | 162 | .39 | 401 | .98 | 211 | .51 | 450 | 1.10 | 49 | .11 |
 | NC_029028.1 | Enterobacteria phage JenP1  complete genome | 60754 | 0 | 0 | 223 | .36 | 99 | .16 | 223 | .36 | 0 | 0 |
 | NC_029029.1 | Brevibacillus phage Abouo  complete genome | 45552 | 0 | 0 | 46 | .10 | 49 | .10 | 46 | .10 | 0 | 0 |
 | NC_029030.1 | Streptococcus phage APCM01  complete genome | 31075 | 0 | 0 | 430 | 1.38 | 196 | .63 | 479 | 1.54 | 49 | .15 |
@@ -6968,7 +6968,7 @@
 | NC_029054.2 | Potiskum virus strain IBAN 10069 polyprotein gene  complete cds | 10173 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029055.1 | Spondweni virus  complete genome | 10290 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029056.1 | Alternaria brassicicola fusarivirus 1 isolate 817-14  complete genome | 6656 | 0 | 0 | 96 | 1.44 | 30 | .45 | 96 | 1.44 | 0 | 0 |
-| NC_029057.1 | Vibrio phage qdvp001  partial genome | 134742 | 0 | 0 | 1347 | .99 | 1299 | .96 | 1396 | 1.03 | 49 | .03 |
+| NC_029057.1 | Vibrio phage qdvp001  partial genome | 134742 | 1152 | .85 | 1347 | .99 | 1299 | .96 | 1396 | 1.03 | 49 | .03 |
 | NC_029058.1 | Lactobacillus phage LfeInf  complete genome | 106071 | 0 | 0 | 837 | .78 | 0 | 0 | 837 | .78 | 0 | 0 |
 | NC_029059.1 | Mycobacterium phage Edtherson  complete genome | 51492 | 0 | 0 | 195 | .37 | 0 | 0 | 195 | .37 | 0 | 0 |
 | NC_029060.1 | Gordonia phage GordDuk1  complete genome | 76276 | 0 | 0 | 172 | .22 | 49 | .06 | 221 | .28 | 49 | .06 |
@@ -6989,7 +6989,7 @@
 | NC_029078.1 | Erysipelothrix phage SE-1  complete genome | 34997 | 0 | 0 | 175 | .50 | 0 | 0 | 175 | .50 | 0 | 0 |
 | NC_029079.1 | Mycobacterium phage Dusk  complete genome | 75339 | 0 | 0 | 502 | .66 | 0 | 0 | 502 | .66 | 0 | 0 |
 | NC_029080.1 | Staphylococcus phage 812  complete genome | 142096 | 0 | 0 | 1677 | 1.18 | 245 | .17 | 1873 | 1.31 | 196 | .13 |
-| NC_029081.1 | Pectobacterium phage Peat1  complete genome | 45633 | 0 | 0 | 137 | .30 | 56 | .12 | 137 | .30 | 0 | 0 |
+| NC_029081.1 | Pectobacterium phage Peat1  complete genome | 45633 | 7 | .01 | 137 | .30 | 56 | .12 | 137 | .30 | 0 | 0 |
 | NC_029082.1 | Arrabida virus strain PoSFPhlebV 126 2008 segment L  complete sequence | 6391 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029083.1 | Pseudomonas phage PaoP5  complete genome | 93464 | 0 | 0 | 181 | .19 | 0 | 0 | 181 | .19 | 0 | 0 |
 | NC_029084.1 | Bacteriophage Rani  complete genome | 37990 | 0 | 0 | 128 | .33 | 49 | .12 | 177 | .46 | 49 | .12 |
@@ -7010,7 +7010,7 @@
 | NC_029100.1 | Pseudoalteromonas phage Pq0  complete genome | 33399 | 0 | 0 | 197 | .58 | 0 | 0 | 197 | .58 | 0 | 0 |
 | NC_029101.1 | Pseudomonas phage YH30  complete genome | 72192 | 0 | 0 | 114 | .15 | 0 | 0 | 114 | .15 | 0 | 0 |
 | NC_029102.1 | Enterobacter phage E-2  complete genome | 36051 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_029103.1 | Sulfolobus monocaudavirus SMV3  complete genome | 64323 | 0 | 0 | 699 | 1.08 | 528 | .82 | 846 | 1.31 | 147 | .22 |
+| NC_029103.1 | Sulfolobus monocaudavirus SMV3  complete genome | 64323 | 332 | .51 | 699 | 1.08 | 528 | .82 | 846 | 1.31 | 147 | .22 |
 | NC_029104.1 | Brevibacillus phage Jimmer1  complete genome | 54312 | 0 | 0 | 90 | .16 | 98 | .18 | 188 | .34 | 98 | .18 |
 | NC_029105.1 | Pavonia yellow mosaic virus isolate BR-Alb51-14 segment DNA-A  complete sequence | 2700 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029106.1 | Achromobacter phage phiAxp-2  complete genome | 62220 | 0 | 0 | 548 | .88 | 49 | .07 | 548 | .88 | 0 | 0 |
@@ -7037,7 +7037,7 @@
 | NC_029128.1 | Adana virus strain 195 segment M  complete sequence | 4229 | 0 | 0 | 48 | 1.13 | 0 | 0 | 48 | 1.13 | 0 | 0 |
 | NC_029129.1 | Adana virus strain 195 segment S  complete sequence | 1755 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029131.1 | Delisea pulchra RNA virus isolate Delisea predicted replication-associated polyprotein and predicted structural polyprotein genes  complete cds | 9581 | 0 | 0 | 74 | .77 | 74 | .77 | 74 | .77 | 0 | 0 |
-| NC_029132.1 | Macropodid herpesvirus 1 isolate MaHV1.3076 08  complete genome | 140122 | 0 | 0 | 807 | .57 | 519 | .37 | 1227 | .87 | 420 | .29 |
+| NC_029132.1 | Macropodid herpesvirus 1 isolate MaHV1.3076 08  complete genome | 140122 | 1 | 0 | 807 | .57 | 519 | .37 | 1227 | .87 | 420 | .29 |
 | NC_029133.1 | Rat bocavirus strain HK1S  complete genome | 5212 | 0 | 0 | 30 | .57 | 0 | 0 | 30 | .57 | 0 | 0 |
 | NC_029255.1 | Myotis gammaherpesvirus 8 strain My-HV8 Myotis velifer incautus USA FCGHV 2011  partial genome | 129563 | 0 | 0 | 929 | .71 | 395 | .30 | 978 | .75 | 49 | .03 |
 | NC_029300.1 | Bat bocavirus isolate YNJH  complete genome | 5203 | 0 | 0 | 34 | .65 | 27 | .51 | 61 | 1.17 | 27 | .51 |
@@ -7050,7 +7050,7 @@
 | NC_029308.1 | Marine RNA virus PAL438  complete genome | 7047 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029309.1 | Marine RNA virus PAL473  complete genome | 6360 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029310.1 | Marine RNA virus PAL E4  complete genome | 8187 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_029311.1 | Leporid herpesvirus 4 isolate LHV4012612  complete genome | 124049 | 0 | 0 | 1895 | 1.52 | 255 | .20 | 2091 | 1.68 | 196 | .15 |
+| NC_029311.1 | Leporid herpesvirus 4 isolate LHV4012612  complete genome | 124049 | 10 | 0 | 1895 | 1.52 | 255 | .20 | 2091 | 1.68 | 196 | .15 |
 | NC_029312.1 | Camponotus nipponicus virus genes for capsid protein  RdRp  complete cds  strain: SS-2014a | 5713 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029313.1 | Bhindi yellow vein alphasatellite replication protein gene  complete cds | 1361 | 0 | 0 | 29 | 2.13 | 0 | 0 | 29 | 2.13 | 0 | 0 |
 | NC_029314.1 | Acidianus rod-shaped virus 2 strain ARV2  complete genome | 29763 | 0 | 0 | 300 | 1.00 | 0 | 0 | 300 | 1.00 | 0 | 0 |
@@ -7155,7 +7155,7 @@
 | NC_029691.1 | Ixeridium yellow mottle virus 1 isolate Bonghwa  complete genome | 6017 | 0 | 0 | 60 | .99 | 0 | 0 | 60 | .99 | 0 | 0 |
 | NC_029692.1 | Brazilian marseillevirus strain BH2014  complete genome | 362276 | 0 | 0 | 860 | .23 | 49 | .01 | 860 | .23 | 0 | 0 |
 | NC_029782.1 | Phytophthora infestans RNA virus 4 isolate FLa2005  complete genome | 2984 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_029783.1 | Grapevine leafroll-associated virus 13 genomic RNA  complete genome  isolate: a177 | 17608 | 0 | 0 | 119 | .67 | 1 | 0 | 119 | .67 | 0 | 0 |
+| NC_029783.1 | Grapevine leafroll-associated virus 13 genomic RNA  complete genome  isolate: a177 | 17608 | 1 | 0 | 119 | .67 | 1 | 0 | 119 | .67 | 0 | 0 |
 | NC_029797.1 | Megabat bufavirus 1 NS1  VP1  VP2 genes for nonstructural protein 1  capsid protein VP1  capsid protein VP2  complete cds  isolate: MAG12-57 | 4765 | 0 | 0 | 28 | .58 | 0 | 0 | 28 | .58 | 0 | 0 |
 | NC_029799.1 | Iris yellow spot virus segment L  complete sequence | 8880 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_029800.1 | Iris yellow spot virus non-structural protein (NSs) and nucleoprotein (N) genes  complete cds | 3105 | 0 | 0 | 176 | 5.66 | 198 | 6.37 | 225 | 7.24 | 49 | 1.57 |
@@ -7260,11 +7260,11 @@
 | NC_030162.1 | Sclerotinia sclerotiorum mycoreovirus 4 isolate SX10 segment 3  complete sequence | 3307 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_030163.1 | Sclerotinia sclerotiorum mycoreovirus 4 isolate SX10 segment 5  complete sequence | 2084 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_030199.1 | Avian-like circovirus isolate A1 replication-associated protein gene  complete cds | 1939 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_030200.1 | Macaca nemestrina herpesvirus 7  complete genome | 137448 | 0 | 0 | 2527 | 1.83 | 1976 | 1.43 | 2723 | 1.98 | 196 | .14 |
+| NC_030200.1 | Macaca nemestrina herpesvirus 7  complete genome | 137448 | 1032 | .75 | 2527 | 1.83 | 1976 | 1.43 | 2723 | 1.98 | 196 | .14 |
 | NC_030201.1 | Fusarium poae dsRNA virus 2 isolate SX63  complete genome | 9518 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_030202.1 | Fusarium poae dsRNA virus 3 isolate SX63  complete genome | 9419 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_030203.1 | Sclerotinia sclerotiorum umbra-like virus 1 isolate IL1 RNA-dependent RNA polymerase and replication-associated protein genes  complete cds | 4483 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_030204.1 | Lonestar tick chuvirus 1 isolate RTS21  complete genome | 11163 | 0 | 0 | 0 | 0 | 3 | .02 | 0 | 0 | 0 | 0 |
+| NC_030204.1 | Lonestar tick chuvirus 1 isolate RTS21  complete genome | 11163 | 3 | .02 | 3 | .02 | 3 | .02 | 0 | 0 | 0 | 0 |
 | NC_030205.1 | Water chestnut soymovirus 1 isolate TuanFeng  complete genome | 7535 | 0 | 0 | 193 | 2.56 | 0 | 0 | 193 | 2.56 | 0 | 0 |
 | NC_030224.1 | Nigrospora oryzae victorivirus 1  complete genome | 5100 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_030225.1 | Pepo aphid-borne yellows virus isolate RSA BB Marrow  complete genome | 5813 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -7491,7 +7491,7 @@
 | NC_030935.1 | Gordonia phage GRU3  complete genome | 17727 | 0 | 0 | 248 | 1.39 | 0 | 0 | 248 | 1.39 | 0 | 0 |
 | NC_030936.1 | Gordonia phage Bachita  complete genome | 93843 | 0 | 0 | 539 | .57 | 0 | 0 | 539 | .57 | 0 | 0 |
 | NC_030937.1 | Xanthomonas phage f30-Xaj  complete genome | 44262 | 0 | 0 | 397 | .89 | 0 | 0 | 397 | .89 | 0 | 0 |
-| NC_030938.1 | Rosellinia necatrix endornavirus 1 genomic RNA  complete genome  strain: W1141 | 9639 | 0 | 0 | 0 | 0 | 2 | .02 | 0 | 0 | 0 | 0 |
+| NC_030938.1 | Rosellinia necatrix endornavirus 1 genomic RNA  complete genome  strain: W1141 | 9639 | 2 | .02 | 2 | .02 | 2 | .02 | 0 | 0 | 0 | 0 |
 | NC_030939.1 | Gordonia phage GMA4  complete genome | 45537 | 0 | 0 | 571 | 1.25 | 0 | 0 | 571 | 1.25 | 0 | 0 |
 | NC_030940.1 | Pseudomonas phage phi3  complete genome | 32637 | 0 | 0 | 278 | .85 | 0 | 0 | 278 | .85 | 0 | 0 |
 | NC_030941.1 | Gordonia phage Cozz  complete genome | 46600 | 0 | 0 | 185 | .39 | 0 | 0 | 185 | .39 | 0 | 0 |
@@ -7578,7 +7578,7 @@
 | NC_031070.1 | Bacillus phage Nemo  complete genome | 162375 | 0 | 0 | 576 | .35 | 196 | .12 | 723 | .44 | 147 | .09 |
 | NC_031071.1 | Lactococcus phage D4410  complete genome | 22825 | 0 | 0 | 217 | .95 | 99 | .43 | 217 | .95 | 0 | 0 |
 | NC_031072.1 | Gordonia phage CaptainKirk2  complete genome | 47898 | 0 | 0 | 677 | 1.41 | 0 | 0 | 677 | 1.41 | 0 | 0 |
-| NC_031073.1 | Pseudomonas phage vB PaeM MAG1  complete genome | 94555 | 0 | 0 | 184 | .19 | 1 | 0 | 184 | .19 | 0 | 0 |
+| NC_031073.1 | Pseudomonas phage vB PaeM MAG1  complete genome | 94555 | 1 | 0 | 184 | .19 | 1 | 0 | 184 | .19 | 0 | 0 |
 | NC_031074.1 | Gordonia phage Bantam  complete genome | 92580 | 0 | 0 | 577 | .62 | 0 | 0 | 577 | .62 | 0 | 0 |
 | NC_031075.1 | Lactococcus phage M5938  complete genome | 22240 | 0 | 0 | 122 | .54 | 0 | 0 | 122 | .54 | 0 | 0 |
 | NC_031076.1 | Propionibacterium phage PFR1  complete genome | 38071 | 0 | 0 | 197 | .51 | 49 | .12 | 197 | .51 | 0 | 0 |
@@ -7757,7 +7757,7 @@
 | NC_031326.1 | Simian retrovirus 8 strain SRV8 SUZ 2012  complete genome | 8126 | 0 | 0 | 2911 | 35.82 | 49 | .60 | 2911 | 35.82 | 0 | 0 |
 | NC_031327.1 | Anopheles flavivirus variant 1  complete genome | 10588 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_031336.1 | Winged bean alphaendornavirus 1 genomic RNA  complete genome | 14623 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_031338.1 | Moku virus isolate Big Island  complete genome | 10056 | 0 | 0 | 107 | 1.06 | 81 | .80 | 107 | 1.06 | 0 | 0 |
+| NC_031338.1 | Moku virus isolate Big Island  complete genome | 10056 | 1 | 0 | 107 | 1.06 | 81 | .80 | 107 | 1.06 | 0 | 0 |
 | NC_031339.1 | Euphorbia ringspot virus isolate PV-0902  complete genome | 10154 | 0 | 0 | 66 | .64 | 0 | 0 | 66 | .64 | 0 | 0 |
 | NC_031340.1 | Grapevine geminivirus A isolate Tamar  complete genome | 2905 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_031341.1 | Privet leaf blotch-associated virus segment RNA1 | 5377 | 0 | 0 | 77 | 1.43 | 0 | 0 | 77 | 1.43 | 0 | 0 |
@@ -7777,7 +7777,7 @@
 | NC_031461.1 | Ceratobasidium endornavirus C isolate Murdoch-3 polyprotein and ORF2 genes  complete cds | 21004 | 0 | 0 | 27 | .12 | 0 | 0 | 27 | .12 | 0 | 0 |
 | NC_031462.1 | Ceratobasidium endornavirus A isolate Murdoch-1 polyprotein gene  complete cds | 15207 | 0 | 0 | 38 | .24 | 0 | 0 | 38 | .24 | 0 | 0 |
 | NC_031463.1 | Ceratobasidium endornavirus B isolate Murdoch-2 polyprotein and ORF2 genes  complete cds | 23635 | 0 | 0 | 138 | .58 | 0 | 0 | 138 | .58 | 0 | 0 |
-| NC_031464.1 | Ceratobasidium endornavirus G isolate Murdoch-7 polyprotein and ORF2 genes  complete cds | 19293 | 0 | 0 | 0 | 0 | 2 | .01 | 0 | 0 | 0 | 0 |
+| NC_031464.1 | Ceratobasidium endornavirus G isolate Murdoch-7 polyprotein and ORF2 genes  complete cds | 19293 | 2 | .01 | 2 | .01 | 2 | .01 | 0 | 0 | 0 | 0 |
 | NC_031465.1 | Golden Marseillevirus  complete genome | 360610 | 0 | 0 | 1126 | .31 | 441 | .12 | 1518 | .42 | 392 | .10 |
 | NC_031466.1 | Lisianthus enation leaf curl virus DNA  complete genome  isolate: BG-1 | 2759 | 0 | 0 | 23 | .83 | 0 | 0 | 23 | .83 | 0 | 0 |
 | NC_031503.1 | Pigeon adenovirus 2 isolate YPDS-Y-V1.A19.11-2013  complete genome | 41981 | 0 | 0 | 151 | .35 | 49 | .11 | 151 | .35 | 0 | 0 |
@@ -7822,10 +7822,10 @@
 | NC_031907.1 | Streptococcus phage phiARI0746  complete genome | 33181 | 0 | 0 | 245 | .73 | 49 | .14 | 294 | .88 | 49 | .14 |
 | NC_031908.1 | Pseudoalteromonas phage PH1  complete genome | 42685 | 0 | 0 | 109 | .25 | 0 | 0 | 109 | .25 | 0 | 0 |
 | NC_031909.1 | Campylobacter phage PC14  complete genome | 134927 | 0 | 0 | 1488 | 1.10 | 663 | .49 | 2053 | 1.52 | 565 | .41 |
-| NC_031910.1 | Streptococcus phage phiARI0031  complete genome | 41887 | 0 | 0 | 175 | .41 | 1 | 0 | 175 | .41 | 0 | 0 |
+| NC_031910.1 | Streptococcus phage phiARI0031  complete genome | 41887 | 1 | 0 | 175 | .41 | 1 | 0 | 175 | .41 | 0 | 0 |
 | NC_031911.1 | Flavobacterium phage 1H  complete genome | 39290 | 0 | 0 | 387 | .98 | 98 | .24 | 436 | 1.10 | 49 | .12 |
 | NC_031912.1 | Flavobacterium phage Fpv20  complete genome | 89937 | 0 | 0 | 984 | 1.09 | 294 | .32 | 1229 | 1.36 | 245 | .27 |
-| NC_031913.1 | Streptococcus phage phiARI0460-1  complete genome | 41807 | 0 | 0 | 242 | .57 | 50 | .11 | 242 | .57 | 0 | 0 |
+| NC_031913.1 | Streptococcus phage phiARI0460-1  complete genome | 41807 | 1 | 0 | 242 | .57 | 50 | .11 | 242 | .57 | 0 | 0 |
 | NC_031914.1 | Flavobacterium phage Fpv1  complete genome | 88994 | 0 | 0 | 976 | 1.09 | 294 | .33 | 1221 | 1.37 | 245 | .27 |
 | NC_031915.1 | Streptococcus phage phiARI0468-4  complete genome | 37395 | 0 | 0 | 144 | .38 | 0 | 0 | 144 | .38 | 0 | 0 |
 | NC_031916.1 | Hepacivirus L  complete genome | 8916 | 0 | 0 | 83 | .93 | 0 | 0 | 83 | .93 | 0 | 0 |
@@ -7835,7 +7835,7 @@
 | NC_031920.1 | Streptococcus phage phiARI0004  complete genome | 41105 | 0 | 0 | 87 | .21 | 0 | 0 | 87 | .21 | 0 | 0 |
 | NC_031921.1 | Flavobacterium phage Fpv5  complete genome | 42696 | 0 | 0 | 455 | 1.06 | 196 | .45 | 695 | 1.62 | 240 | .56 |
 | NC_031922.1 | Synechococcus phage S-CAM9 isolate 1109NB16  complete genome | 174830 | 0 | 0 | 493 | .28 | 98 | .05 | 591 | .33 | 98 | .05 |
-| NC_031923.1 | Streptococcus phage phiARI0468-2  complete genome | 42186 | 0 | 0 | 34 | .08 | 99 | .23 | 83 | .19 | 49 | .11 |
+| NC_031923.1 | Streptococcus phage phiARI0468-2  complete genome | 42186 | 1 | 0 | 34 | .08 | 99 | .23 | 83 | .19 | 49 | .11 |
 | NC_031924.1 | Salmonella phage IME207  complete genome | 47564 | 0 | 0 | 153 | .32 | 98 | .20 | 251 | .52 | 98 | .20 |
 | NC_031925.1 | Salmonella phage BPS11Q3  complete genome | 43788 | 0 | 0 | 0 | 0 | 49 | .11 | 0 | 0 | 0 | 0 |
 | NC_031926.1 | Flavobacterium phage 2A  complete genome | 46575 | 0 | 0 | 492 | 1.05 | 98 | .21 | 541 | 1.16 | 49 | .10 |
@@ -7880,7 +7880,7 @@
 | NC_032105.1 | Simian mastadenovirus WIV19  complete genome | 33562 | 0 | 0 | 165 | .49 | 0 | 0 | 165 | .49 | 0 | 0 |
 | NC_032106.1 | Saccharomyces kudriavzevii virus L-A1 isolate 1  complete genome | 4580 | 0 | 0 | 44 | .96 | 0 | 0 | 44 | .96 | 0 | 0 |
 | NC_032107.1 | NL63-related bat coronavirus strain BtKYNL63-9a  complete genome | 28363 | 0 | 0 | 33 | .11 | 0 | 0 | 33 | .11 | 0 | 0 |
-| NC_032108.1 | Cedratvirus A11 genome assembly  complete genome: monopartite | 589068 | 0 | 0 | 16778 | 2.84 | 15641 | 2.65 | 16974 | 2.88 | 196 | .03 |
+| NC_032108.1 | Cedratvirus A11 genome assembly  complete genome: monopartite | 589068 | 15150 | 2.57 | 16778 | 2.84 | 15641 | 2.65 | 16974 | 2.88 | 196 | .03 |
 | NC_032111.1 | BeAn 58058 virus  complete genome | 163005 | 0 | 0 | 4227 | 2.59 | 1476 | .90 | 5036 | 3.08 | 809 | .49 |
 | NC_032112.1 | Bivalve RNA virus G1  partial genome | 9756 | 0 | 0 | 52 | .53 | 30 | .30 | 52 | .53 | 0 | 0 |
 | NC_032113.1 | Bivalve RNA virus G2  partial genome | 8051 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -8335,7 +8335,7 @@
 | NC_032760.1 | Beihai sphaeromadae virus 2 strain BHTSS26432 hypothetical protein gene  complete cds | 3518 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_032761.1 | Changjiang picorna-like virus 4 strain CJLX29654 hypothetical protein 1 and hypothetical protein 2 genes  complete cds | 8923 | 0 | 0 | 33 | .36 | 0 | 0 | 33 | .36 | 0 | 0 |
 | NC_032762.1 | Shahe narna-like virus 5 strain SHWC0209c20055 RNA-dependent RNA polymerase gene  complete cds | 1684 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_032763.1 | Wenling nido-like virus 1 strain WLJQ99370 hypothetical protein  putative glycoprotein 1  and putative glycoprotein 2 genes  complete cds | 24854 | 0 | 0 | 77 | .30 | 35 | .14 | 77 | .30 | 0 | 0 |
+| NC_032763.1 | Wenling nido-like virus 1 strain WLJQ99370 hypothetical protein  putative glycoprotein 1  and putative glycoprotein 2 genes  complete cds | 24854 | 35 | .14 | 77 | .30 | 35 | .14 | 77 | .30 | 0 | 0 |
 | NC_032764.1 | Hubei tick virus 1 strain tick109202 hypothetical protein gene  complete cds | 9487 | 0 | 0 | 46 | .48 | 74 | .78 | 46 | .48 | 0 | 0 |
 | NC_032765.1 | Hubei virga-like virus 9 strain SCM51642 RdRp  hypothetical protein  putative capsid protein  and hypothetical protein genes  complete cds | 10976 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_032766.1 | Hubei orthoptera virus 1 strain ZCM21319 hypothetical protein 1 and hypothetical protein 2 genes  complete cds | 9555 | 0 | 0 | 78 | .81 | 29 | .30 | 107 | 1.11 | 29 | .30 |
@@ -9080,7 +9080,7 @@
 | NC_033775.1 | Noumeavirus isolate NMV1  complete genome | 376207 | 0 | 0 | 556 | .14 | 270 | .07 | 826 | .21 | 270 | .07 |
 | NC_033776.1 | Bat sapovirus isolate Bat-SaV Limbe65 CAM 2014 polyprotein and putative minor structural protein genes  complete cds | 7475 | 0 | 0 | 18 | .24 | 49 | .65 | 18 | .24 | 0 | 0 |
 | NC_033777.1 | Clematis chlorotic mottle virus  complete genome | 3880 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_033778.1 | Leptopilina boulardi filamentous virus isolate Valence Gotheron  partial genome | 111453 | 0 | 0 | 9391 | 8.42 | 7840 | 7.03 | 11133 | 9.98 | 1742 | 1.56 |
+| NC_033778.1 | Leptopilina boulardi filamentous virus isolate Valence Gotheron  partial genome | 111453 | 3617 | 3.24 | 9391 | 8.42 | 7840 | 7.03 | 11133 | 9.98 | 1742 | 1.56 |
 | NC_033779.1 | Tomato leaf curl Burkina Faso virus isolate Burkina Faso:Loumbila:Tomate51B1:2013  complete genome | 2784 | 0 | 0 | 23 | .82 | 0 | 0 | 23 | .82 | 0 | 0 |
 | NC_033780.2 | Mythimna unipuncta granulovirus B isolate MyunGV#8  complete genome | 144673 | 0 | 0 | 2225 | 1.53 | 1253 | .86 | 2225 | 1.53 | 0 | 0 |
 | NC_033781.1 | Human papillomavirus type 156 isolate GC01  complete genome | 7329 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -9188,7 +9188,7 @@
 | NC_034246.1 | Cowpea polerovirus 1 isolate BE167  complete genome | 5845 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034247.1 | Cowpea polerovirus 2 isolate BE179  complete genome | 5945 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034248.1 | Rhizobium phage RHEph10  complete genome | 115042 | 0 | 0 | 438 | .38 | 0 | 0 | 438 | .38 | 0 | 0 |
-| NC_034249.1 | Kaumoebavirus isolate Sc  complete genome | 350731 | 0 | 0 | 301 | .08 | 252 | .07 | 497 | .14 | 196 | .05 |
+| NC_034249.1 | Kaumoebavirus isolate Sc  complete genome | 350731 | 7 | 0 | 301 | .08 | 252 | .07 | 497 | .14 | 196 | .05 |
 | NC_034250.1 | Tomato leaf curl Pakistan betasatellite complete sequence  clone HZ4 | 1374 | 0 | 0 | 153 | 11.13 | 0 | 0 | 153 | 11.13 | 0 | 0 |
 | NC_034251.1 | Vicugna pacos polyomavirus 1 isolate UCD1  complete genome | 5052 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034252.1 | Wisteria badnavirus 1 isolate ZT-1  complete genome | 7326 | 0 | 0 | 53 | .72 | 0 | 0 | 53 | .72 | 0 | 0 |
@@ -9205,7 +9205,7 @@
 | NC_034263.1 | Dhori virus isolate Dhori 1313 61 segment 2  complete sequence | 2224 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034264.1 | Arracacha virus V isolate CNPH  complete genome | 7398 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034265.1 | Tobacco virus 2  complete genome | 5979 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_034266.1 | Columbid alphaherpesvirus 1 strain HLJ  complete genome | 204237 | 0 | 0 | 9287 | 4.54 | 2859 | 1.39 | 9479 | 4.64 | 192 | .09 |
+| NC_034266.1 | Columbid alphaherpesvirus 1 strain HLJ  complete genome | 204237 | 1 | 0 | 9287 | 4.54 | 2859 | 1.39 | 9479 | 4.64 | 192 | .09 |
 | NC_034267.1 | Enterovirus goat JL14  complete genome | 7461 | 0 | 0 | 51 | .68 | 60 | .80 | 51 | .68 | 0 | 0 |
 | NC_034268.1 | Botryosphaeria dothidea chrysovirus 1 strain G1 segment 1 putative RNA-dependent RNA polymerase gene  complete cds | 3528 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034269.1 | Botryosphaeria dothidea chrysovirus 1 strain G1 segment 3 hypothetical protein gene  complete cds | 2583 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -9373,7 +9373,7 @@
 | NC_034569.1 | Castlerea virus isolate P59341  complete genome | 9403 | 0 | 0 | 52 | .55 | 0 | 0 | 52 | .55 | 0 | 0 |
 | NC_034614.1 | Zostera marina amalgavirus 1 isolate SRP035489-1  complete genome | 3383 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034615.1 | Zostera marina amalgavirus 2 isolate SRP035489-2  complete genome | 3316 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_034616.1 | Human papillomavirus type 85 isolate 114B  complete genome | 7812 | 0 | 0 | 0 | 0 | 152 | 1.94 | 0 | 0 | 0 | 0 |
+| NC_034616.1 | Human papillomavirus type 85 isolate 114B  complete genome | 7812 | 152 | 1.94 | 152 | 1.94 | 152 | 1.94 | 0 | 0 | 0 | 0 |
 | NC_034617.1 | Harrier picornavirus 1 strain harrier MR-01 HUN 2014  complete genome | 8541 | 0 | 0 | 35 | .40 | 0 | 0 | 35 | .40 | 0 | 0 |
 | NC_034618.1 | Ranid herpesvirus 3 isolate FO1 2015  complete genome | 207914 | 0 | 0 | 324 | .15 | 49 | .02 | 373 | .17 | 49 | .02 |
 | NC_034619.1 | Sulfolobus islandicus rod-shaped virus 7  partial genome | 34190 | 0 | 0 | 972 | 2.84 | 172 | .50 | 1046 | 3.05 | 74 | .21 |
@@ -9385,7 +9385,7 @@
 | NC_034625.1 | Sulfolobus islandicus rod-shaped virus 10  partial genome | 32735 | 0 | 0 | 1155 | 3.52 | 368 | 1.12 | 1302 | 3.97 | 147 | .44 |
 | NC_034626.1 | Bat mastadenovirus WIV17  complete genome | 29923 | 0 | 0 | 185 | .61 | 98 | .32 | 283 | .94 | 98 | .32 |
 | NC_034627.1 | Sulfolobus islandicus rod-shaped virus 6  partial genome | 35439 | 0 | 0 | 728 | 2.05 | 147 | .41 | 777 | 2.19 | 49 | .13 |
-| NC_034628.1 | Sulfolobus islandicus rod-shaped virus 4  partial genome | 35035 | 0 | 0 | 1061 | 3.02 | 322 | .91 | 1159 | 3.30 | 98 | .27 |
+| NC_034628.1 | Sulfolobus islandicus rod-shaped virus 4  partial genome | 35035 | 3 | 0 | 1061 | 3.02 | 322 | .91 | 1159 | 3.30 | 98 | .27 |
 | NC_034629.1 | Pepper yellow dwarf virus - Mexico strain PepYDV-Curto  complete genome | 2971 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034630.1 | Sweetpotato symptomless mastrevirus 1 isolate Z01057b  complete genome | 2886 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_034631.1 | Wolkberg virus isolate 2562 SA3 segment M glycoprotein gene  complete cds | 4461 | 0 | 0 | 39 | .87 | 0 | 0 | 39 | .87 | 0 | 0 |
@@ -9440,7 +9440,7 @@
 | NC_035136.1 | Torque teno Leptonychotes weddellii virus-1 isolate TTLwV-1 gt2 wsp20  complete genome | 2119 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_035137.1 | Bemisia-associated genomovirus AdDF  complete genome | 2199 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_035138.1 | Bemisia-associated genomovirus AdO  complete genome | 2211 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_035139.1 | Bemisia-associated genomovirus NfO  complete genome | 2231 | 0 | 0 | 0 | 0 | 1 | .04 | 0 | 0 | 0 | 0 |
+| NC_035139.1 | Bemisia-associated genomovirus NfO  complete genome | 2231 | 1 | .04 | 1 | .04 | 1 | .04 | 0 | 0 | 0 | 0 |
 | NC_035179.1 | Sugarcane striate virus isolate SCStV GP TC9-3 2013  complete genome | 2749 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_035180.1 | Ungulate tetraparvovirus 3 isolate Tedej  complete genome | 5533 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_035181.1 | Giant panda polyomavirus isolate GPPyV1  complete genome | 5144 | 0 | 0 | 134 | 2.60 | 0 | 0 | 134 | 2.60 | 0 | 0 |
@@ -9570,7 +9570,7 @@
 | NC_036591.1 | Tomato apical leaf curl virus isolate AR:Yuto:Tom420:08  complete genome | 2873 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_036592.1 | Pleurochrysis carterae circular virus isolate PcCV-1  complete genome | 2255 | 0 | 0 | 100 | 4.43 | 124 | 5.49 | 100 | 4.43 | 0 | 0 |
 | NC_036593.1 | Porcine circovirus-like virus P1 isolate PZ1  complete sequence | 648 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_036594.1 | Orpheovirus IHUMI-LCC2 genome assembly  complete genome: monopartite | 1473573 | 0 | 0 | 69952 | 4.74 | 36877 | 2.50 | 93364 | 6.33 | 23412 | 1.58 |
+| NC_036594.1 | Orpheovirus IHUMI-LCC2 genome assembly  complete genome: monopartite | 1473573 | 100 | 0 | 69952 | 4.74 | 36877 | 2.50 | 93364 | 6.33 | 23412 | 1.58 |
 | NC_036595.1 | Aeropyrum globular virus 1 genomic DNA  complete genome | 18222 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_036596.1 | Fusarium graminearum alternavirus 1 isolate FgAV1 AH11 segment RNA1  complete sequence | 3524 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_036597.1 | Rice hoja blanca tenuivirus segment RNA1  complete sequence | 8999 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -9712,12 +9712,12 @@
 | NC_038298.1 | Bayou virus nucleocapsid protein  complete cds | 1958 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038299.1 | Bayou virus isolate HV F0260003 segment L  complete sequence | 6554 | 0 | 0 | 34 | .51 | 49 | .74 | 34 | .51 | 0 | 0 |
 | NC_038300.1 | Bayou virus glycoprotein precursor  complete cds | 3677 | 0 | 0 | 24 | .65 | 49 | 1.33 | 73 | 1.98 | 49 | 1.33 |
-| NC_038301.1 | Lygus lineolaris virus 1 isolate LlV-1  complete genome | 9655 | 0 | 0 | 73 | .75 | 30 | .31 | 73 | .75 | 0 | 0 |
+| NC_038301.1 | Lygus lineolaris virus 1 isolate LlV-1  complete genome | 9655 | 1 | .01 | 73 | .75 | 30 | .31 | 73 | .75 | 0 | 0 |
 | NC_038302.1 | Nilaparvata lugens honeydew virus-1 genomic RNA  complete genome  isolate: Izumo | 10967 | 0 | 0 | 30 | .27 | 139 | 1.26 | 128 | 1.16 | 98 | .89 |
 | NC_038303.1 | Bovine rhinitis A virus strain Sd-1 polyprotein gene  complete cds | 7245 | 0 | 0 | 19 | .26 | 44 | .60 | 19 | .26 | 0 | 0 |
 | NC_038304.1 | Turkey avisivirus isolate USA-IN1  complete genome | 7373 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038305.1 | Boone cardiovirus 1 isolate BCV-1 polyprotein gene  complete cds | 8530 | 0 | 0 | 26 | .30 | 54 | .63 | 26 | .30 | 0 | 0 |
-| NC_038306.1 | Human coxsackievirus A2 strain Fleetwood  complete genome | 7398 | 0 | 0 | 0 | 0 | 3 | .04 | 0 | 0 | 0 | 0 |
+| NC_038306.1 | Human coxsackievirus A2 strain Fleetwood  complete genome | 7398 | 3 | .04 | 3 | .04 | 3 | .04 | 0 | 0 | 0 | 0 |
 | NC_038307.1 | Coxsackievirus B3 mRNA  complete genome | 7399 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038308.1 | Human enterovirus 68 strain Fermon  complete genome | 7367 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038309.1 | Simian enterovirus SV4 strain 1715 UWB  complete genome | 7295 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -9867,7 +9867,7 @@
 | NC_038453.1 | Pouzolzia mosaic Guangdong virus isolate GD1 segment DNA-A  complete sequence | 2739 | 0 | 0 | 41 | 1.49 | 0 | 0 | 41 | 1.49 | 0 | 0 |
 | NC_038454.1 | Premna leaf curl virus isolate VN7 segment DNA-A  complete sequence | 2753 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038455.1 | Sauropus leaf curl virus isolate AFSP5e segment A  complete sequence | 2762 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038456.1 | Sida ciliaris golden mosaic virus strain Venezuela:Lara:M3:2009 segment DNA-A  complete sequence | 2638 | 0 | 0 | 0 | 0 | 1 | .03 | 0 | 0 | 0 | 0 |
+| NC_038456.1 | Sida ciliaris golden mosaic virus strain Venezuela:Lara:M3:2009 segment DNA-A  complete sequence | 2638 | 1 | .03 | 1 | .03 | 1 | .03 | 0 | 0 | 0 | 0 |
 | NC_038457.1 | Sida common mosaic virus isolate BR:Coi4:07 segment DNA-A  complete sequence | 2687 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038458.1 | Sida golden mosaic Braco virus-[Jamaica:Liguanea:2008] clone pBrA4  complete genome | 2600 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038459.1 | Sida golden mosaic Lara virus strain Venezuela:Lara:M1:2009 segment DNA-A  complete sequence | 2633 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -9956,11 +9956,11 @@
 | NC_038542.1 | Pig-tailed macaque parvovirus long terminal repeat  partial sequence; NS protein and capsid protein genes  complete cds; and long terminal repeat  partial sequence | 5049 | 0 | 0 | 34 | .67 | 0 | 0 | 34 | .67 | 0 | 0 |
 | NC_038543.1 | Chipmunk parvovirus NS1  NS2  VP1  and VP2 genes  complete cds | 5205 | 0 | 0 | 22 | .42 | 0 | 0 | 22 | .42 | 0 | 0 |
 | NC_038544.1 | Primate protoparvovirus 1 strain BF.86 NS1  putative VP1  hypothetical protein  and VP2 genes  complete cds | 4822 | 0 | 0 | 86 | 1.78 | 0 | 0 | 86 | 1.78 | 0 | 0 |
-| NC_038545.1 | Rat parvovirus 1a nonstructural protein (NS1) and nonstructural protein (NS2) genes  complete cds | 4936 | 0 | 0 | 82 | 1.66 | 81 | 1.64 | 82 | 1.66 | 0 | 0 |
+| NC_038545.1 | Rat parvovirus 1a nonstructural protein (NS1) and nonstructural protein (NS2) genes  complete cds | 4936 | 7 | .14 | 82 | 1.66 | 81 | 1.64 | 82 | 1.66 | 0 | 0 |
 | NC_038546.1 | Porcine hokovirus strain HK7 non-structural protein (NS1)  minor structural protein (VP1)  and major structural protein (VP2) genes  complete cds | 5114 | 0 | 0 | 46 | .89 | 0 | 0 | 46 | .89 | 0 | 0 |
 | NC_038547.1 | Ovine hokovirus 1 strain HK-S01 non-structural protein (NS1)  minor structural protein (VP2)  and major structural protein (VP2) genes  complete cds | 5249 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038550.1 | Paramecium bursaria Chlorella virus IL3A deoxyuridine triphosphatase gene  complete cds | 426 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038553.1 | Heterosigma akashiwo virus 01 isolate HaV53  complete genome | 274793 | 0 | 0 | 7434 | 2.70 | 3247 | 1.18 | 8857 | 3.22 | 1423 | .51 |
+| NC_038553.1 | Heterosigma akashiwo virus 01 isolate HaV53  complete genome | 274793 | 1 | 0 | 7434 | 2.70 | 3247 | 1.18 | 8857 | 3.22 | 1423 | .51 |
 | NC_038554.1 | Bat polyomavirus 5b DNA  complete genome  isolate: 5b-2 | 5040 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038555.1 | Artibeus planirostris polyomavirus 2 isolate A1055  complete genome | 5019 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038556.1 | Artibeus planirostris polyomavirus 3 isolate A504  complete genome | 5187 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -10040,7 +10040,7 @@
 | NC_038630.1 | Green River chinook virus segment 1  complete sequence | 3944 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038631.1 | Green River chinook virus segment 7  complete sequence | 1367 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038632.1 | Green River chinook virus segment 10  complete sequence | 976 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038633.1 | Green River chinook virus segment 2  complete sequence | 674 | 0 | 0 | 0 | 0 | 1 | .14 | 0 | 0 | 0 | 0 |
+| NC_038633.1 | Green River chinook virus segment 2  complete sequence | 674 | 1 | .14 | 1 | .14 | 1 | .14 | 0 | 0 | 0 | 0 |
 | NC_038634.1 | Scophthalmus maximus reovirus segment L2  complete sequence | 3866 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038635.1 | Scophthalmus maximus reovirus segment L3  complete sequence | 3687 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038636.1 | Scophthalmus maximus reovirus segment M5  complete sequence | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -10058,7 +10058,7 @@
 | NC_038648.1 | Choristoneura occidentalis cypovirus 16 segment 2  complete sequence | 3768 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038649.1 | Choristoneura occidentalis cypovirus 16 segment 3  complete sequence | 3690 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038650.1 | Choristoneura occidentalis cypovirus 16 segment 10  complete sequence | 1171 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038651.1 | Choristoneura occidentalis cypovirus 16 segment 7  complete sequence | 1946 | 0 | 0 | 0 | 0 | 1 | .05 | 0 | 0 | 0 | 0 |
+| NC_038651.1 | Choristoneura occidentalis cypovirus 16 segment 7  complete sequence | 1946 | 1 | .05 | 1 | .05 | 1 | .05 | 0 | 0 | 0 | 0 |
 | NC_038652.1 | Choristoneura occidentalis cypovirus 16 segment 4  complete sequence | 3290 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038653.1 | Oat sterile dwarf virus genomic RNA segment 9 with one ORF  complete cds | 1893 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038654.1 | Oat sterile dwarf virus genomic RNA segement 10 with two ORFs  complete cds | 1761 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -10152,9 +10152,9 @@
 | NC_038742.1 | Koongol virus strain MRM31 polyprotein gene  complete cds | 3415 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038743.1 | Koongol virus strain MRM31 nucleocapsid protein gene  complete cds | 882 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038744.1 | Andean potato mottle virus polyprotein encoding small and large coat proteins and potential movement protein mRNA  complete cds | 3671 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038745.1 | Nome phantom virus strain TE13 RNA-dependent RNA polymerase (RdRp) gene  partial cds | 4457 | 0 | 0 | 76 | 1.70 | 29 | .65 | 76 | 1.70 | 0 | 0 |
+| NC_038745.1 | Nome phantom virus strain TE13 RNA-dependent RNA polymerase (RdRp) gene  partial cds | 4457 | 29 | .65 | 76 | 1.70 | 29 | .65 | 76 | 1.70 | 0 | 0 |
 | NC_038746.1 | Nome phantom virus strain TE13 nucleoprotein (N) gene  complete cds | 2667 | 0 | 0 | 51 | 1.91 | 0 | 0 | 51 | 1.91 | 0 | 0 |
-| NC_038747.1 | Nome phantom virus strain TE13 glycoprotein precursor (GnGc) gene  complete cds | 2533 | 0 | 0 | 62 | 2.44 | 15 | .59 | 62 | 2.44 | 0 | 0 |
+| NC_038747.1 | Nome phantom virus strain TE13 glycoprotein precursor (GnGc) gene  complete cds | 2533 | 15 | .59 | 62 | 2.44 | 15 | .59 | 62 | 2.44 | 0 | 0 |
 | NC_038748.1 | Iranian wheat stripe virus segment RNA2  complete sequence | 3469 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038749.1 | Iranian wheat stripe virus segment RNA4  complete sequence | 1831 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038750.1 | Iranian wheat stripe virus segment RNA3  complete sequence | 2337 | 0 | 0 | 109 | 4.66 | 49 | 2.09 | 109 | 4.66 | 0 | 0 |
@@ -10270,7 +10270,7 @@
 | NC_038860.1 | Pongine herpesvirus 2 (Orangutan herpesvirus) gB gene for glycoprotein B gene | 2580 | 0 | 0 | 38 | 1.47 | 0 | 0 | 38 | 1.47 | 0 | 0 |
 | NC_038861.1 | Transmissible gastroenteritis virus complete genome  genomic RNA | 28586 | 0 | 0 | 145 | .50 | 0 | 0 | 145 | .50 | 0 | 0 |
 | NC_038862.1 | Artichoke yellow ringspot virus partial gene for polyprotein  genomic RNA  from Allium cepa | 5873 | 0 | 0 | 49 | .83 | 0 | 0 | 49 | .83 | 0 | 0 |
-| NC_038863.1 | Olive latent ringspot virus genomic RNA for polyprotein gene | 3969 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_038863.1 | Olive latent ringspot virus genomic RNA for polyprotein gene | 3969 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_038864.1 | Garlic mite-borne filamentous virus gene encoding coat protein | 762 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038865.1 | Carnation latent virus RNA  3' terminal region | 1313 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038866.1 | Belladonna mottle virus VP gene for virion protein and ORF | 615 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -10327,7 +10327,7 @@
 | NC_038917.1 | Ophiostoma partitivirus 1 CP gene for capsid protein | 1567 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038918.1 | Ophiostoma partitivirus 1 RdRp gene for RNA-dependent RNA polymerase | 1744 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038919.1 | Rabbit picobirnavirus genomic segment 1 (large)  ORF1 for hypothetical protein | 2362 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038920.1 | Tomato mild mottle virus gene for polyprotein  genomic RNA | 9283 | 0 | 0 | 0 | 0 | 2 | .02 | 0 | 0 | 0 | 0 |
+| NC_038920.1 | Tomato mild mottle virus gene for polyprotein  genomic RNA | 9283 | 2 | .02 | 2 | .02 | 2 | .02 | 0 | 0 | 0 | 0 |
 | NC_038921.1 | M.melolontha Entomopoxvirus Fusolin gene | 1686 | 0 | 0 | 114 | 6.76 | 49 | 2.90 | 163 | 9.66 | 49 | 2.90 |
 | NC_038922.1 | Avian sarcoma virus CT10 genomic sequence | 2428 | 0 | 0 | 0 | 0 | 74 | 3.04 | 0 | 0 | 0 | 0 |
 | NC_038923.1 | Hardy-Zuckermann 4 feline sarcoma virus (H24-FeSV) kit oncogene | 2473 | 0 | 0 | 0 | 0 | 719 | 29.07 | 0 | 0 | 0 | 0 |
@@ -10335,7 +10335,7 @@
 | NC_038925.1 | Tomato leaf curl Laos betasatellite C1 gene  clone l171-1 | 1348 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038926.1 | Tomato leaf curl Nepal betasatellite C1 gene  clone nept4-12 | 1350 | 0 | 0 | 75 | 5.55 | 49 | 3.62 | 75 | 5.55 | 0 | 0 |
 | NC_038927.1 | Neckar river virus cp gene for coat protein  genomic RNA | 1305 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_038928.1 | Aspergillus foetidus slow virus 1 CP gene and RdRp gene  genomic RNA | 5194 | 0 | 0 | 0 | 0 | 2 | .03 | 0 | 0 | 0 | 0 |
+| NC_038928.1 | Aspergillus foetidus slow virus 1 CP gene and RdRp gene  genomic RNA | 5194 | 2 | .03 | 2 | .03 | 2 | .03 | 0 | 0 | 0 | 0 |
 | NC_038929.1 | Beauveria bassiana victorivirus 1  complete genome | 5228 | 0 | 0 | 38 | .72 | 0 | 0 | 38 | .72 | 0 | 0 |
 | NC_038930.1 | Epichloe festucae virus 1 CP gene for outative coat protein and RdRp gene for RNA dependent RNA polymerase gene  genomic RNA  strain P23 | 5109 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_038931.1 | Thermoproteus tenax virus 1 (TTV1) genome | 13669 | 0 | 0 | 204 | 1.49 | 0 | 0 | 204 | 1.49 | 0 | 0 |
@@ -10436,7 +10436,7 @@
 | NC_039026.1 | Japanese macaque simian foamy virus proviral DNA  complete genome  clone: JM356 | 12957 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_039027.1 | Spider monkey foamy virus strain ATCC VR-940  complete genome | 12212 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_039028.1 | Squirrel monkey foamy virus isolate 1224  complete genome | 11684 | 0 | 0 | 100 | .85 | 0 | 0 | 100 | .85 | 0 | 0 |
-| NC_039029.1 | Western lowland gorilla simian foamy virus  complete genome | 12258 | 0 | 0 | 0 | 0 | 2 | .01 | 0 | 0 | 0 | 0 |
+| NC_039029.1 | Western lowland gorilla simian foamy virus  complete genome | 12258 | 2 | .01 | 2 | .01 | 2 | .01 | 0 | 0 | 0 | 0 |
 | NC_039030.1 | White-tufted-ear marmoset simian foamy virus  complete genome | 11744 | 0 | 0 | 71 | .60 | 0 | 0 | 71 | .60 | 0 | 0 |
 | NC_039031.1 | Yellow-breasted capuchin simian foamy virus isolate Z17  complete genome | 11764 | 0 | 0 | 106 | .90 | 0 | 0 | 106 | .90 | 0 | 0 |
 | NC_039032.1 | Psittacine aviadenovirus B isolate CS15-4016  complete genome | 40930 | 0 | 0 | 286 | .69 | 147 | .35 | 335 | .81 | 49 | .11 |
@@ -10444,7 +10444,7 @@
 | NC_039034.1 | Common midwife toad ranavirus isolate Pelophylax kl. esculentus 2013 NL  complete genome | 107772 | 0 | 0 | 722 | .66 | 273 | .25 | 722 | .66 | 0 | 0 |
 | NC_039035.1 | Barley yellow dwarf virus-GPV isolate 05YC3 coat protein gene  complete cds | 606 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_039036.1 | Giraffa camelopardalis papillomavirus 1 isolate GC2011  complete genome | 7688 | 0 | 0 | 40 | .52 | 0 | 0 | 40 | .52 | 0 | 0 |
-| NC_039037.1 | Pudu puda papillomavirus type 1  complete genome | 7138 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_039037.1 | Pudu puda papillomavirus type 1  complete genome | 7138 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_039038.1 | Talpa europaea papillomavirus isolate Bruges 2009 22  complete genome | 7497 | 0 | 0 | 59 | .78 | 0 | 0 | 59 | .78 | 0 | 0 |
 | NC_039039.1 | Peromyscus papillomavirus type 1 strain M-14 PmPV1  complete genome | 7704 | 0 | 0 | 112 | 1.45 | 49 | .63 | 112 | 1.45 | 0 | 0 |
 | NC_039040.1 | Myotis ricketti papillomavirus 1  complete genome | 7339 | 0 | 0 | 35 | .47 | 0 | 0 | 35 | .47 | 0 | 0 |
@@ -10780,7 +10780,7 @@
 | NC_040508.1 | Wheat spindle streak mosaic virus isolate WSSMV South segment RNA1  complete sequence | 7557 | 0 | 0 | 36 | .47 | 0 | 0 | 36 | .47 | 0 | 0 |
 | NC_040509.1 | Zea mays chrysovirus 1 strain 74 putative coat protein gene  complete cds | 4220 | 0 | 0 | 43 | 1.01 | 0 | 0 | 43 | 1.01 | 0 | 0 |
 | NC_040510.1 | Zea mays chrysovirus 1 strain 74 putative RNA-dependent RNA polymerase gene  complete cds | 3713 | 0 | 0 | 66 | 1.77 | 0 | 0 | 66 | 1.77 | 0 | 0 |
-| NC_040511.1 | Zea mays chrysovirus 1 strain 74 hypothetical protein gene  complete cds | 3373 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_040511.1 | Zea mays chrysovirus 1 strain 74 hypothetical protein gene  complete cds | 3373 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_040512.1 | Great Saltee virus strain RML 59972-6 segment L  complete sequence | 12049 | 0 | 0 | 31 | .25 | 0 | 0 | 31 | .25 | 0 | 0 |
 | NC_040513.1 | Great Saltee virus strain RML 59972-6 segment M  complete sequence | 4365 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040514.1 | Great Saltee virus strain RML 59972-6 segment S  complete sequence | 2123 | 0 | 0 | 129 | 6.07 | 0 | 0 | 129 | 6.07 | 0 | 0 |
@@ -10788,7 +10788,7 @@
 | NC_040516.1 | Stemphylium lycopersici mycovirus segment 2  complete sequence | 2770 | 0 | 0 | 20 | .72 | 44 | 1.58 | 20 | .72 | 0 | 0 |
 | NC_040517.1 | Stemphylium lycopersici mycovirus segment 4  complete sequence | 1420 | 0 | 0 | 22 | 1.54 | 44 | 3.09 | 22 | 1.54 | 0 | 0 |
 | NC_040518.1 | Stemphylium lycopersici mycovirus segment 3  complete sequence | 2567 | 0 | 0 | 24 | .93 | 41 | 1.59 | 24 | .93 | 0 | 0 |
-| NC_040519.1 | Zirqa virus strain Por 7866 segment L  complete sequence | 12184 | 0 | 0 | 101 | .82 | 1 | 0 | 101 | .82 | 0 | 0 |
+| NC_040519.1 | Zirqa virus strain Por 7866 segment L  complete sequence | 12184 | 1 | 0 | 101 | .82 | 1 | 0 | 101 | .82 | 0 | 0 |
 | NC_040520.1 | Zirqa virus strain Por 7866 segment M  complete sequence | 4474 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040521.1 | Zirqa virus strain Por 7866 segment S  complete sequence | 1833 | 0 | 0 | 22 | 1.20 | 49 | 2.67 | 22 | 1.20 | 0 | 0 |
 | NC_040522.1 | Odonata-associated circular virus-8 isolate OdasCV-8-US-1739LM1-12  complete genome | 2445 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -10843,10 +10843,10 @@
 | NC_040571.1 | Blechomonas maslovi narnavirus 1 strain OSU7 RNA-dependent RNA polymerase gene  complete cds | 2945 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040572.1 | Rehmannia virus 1 isolate Rg  complete genome | 15322 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040573.1 | Myocastor coypus polyomavirus 1  complete genome | 5422 | 0 | 0 | 62 | 1.14 | 49 | .90 | 62 | 1.14 | 0 | 0 |
-| NC_040574.1 | Culex Iflavi-like virus 4 strain CIVL Kern  complete genome | 9673 | 0 | 0 | 0 | 0 | 2 | .02 | 0 | 0 | 0 | 0 |
-| NC_040575.1 | Culex-associated Tombus-like virus strain CaTomVL Santa Cruz  complete genome | 2645 | 0 | 0 | 0 | 0 | 10 | .37 | 0 | 0 | 0 | 0 |
-| NC_040576.1 | Culex circovirus-like virus strain CCirVL Butte  complete genome | 2104 | 0 | 0 | 0 | 0 | 21 | .99 | 0 | 0 | 0 | 0 |
-| NC_040577.1 | Linepithema humile entomopoxvirus 1 putative tryptophan repeat family protein  putative RNA polymerase-associated transcription-specificity factor RAP94  putative virion membrane protein M25  putative mRNA-capping enzyme catalytic subuni | 46321 | 0 | 0 | 1136 | 2.45 | 534 | 1.15 | 1479 | 3.19 | 343 | .74 |
+| NC_040574.1 | Culex Iflavi-like virus 4 strain CIVL Kern  complete genome | 9673 | 2 | .02 | 2 | .02 | 2 | .02 | 0 | 0 | 0 | 0 |
+| NC_040575.1 | Culex-associated Tombus-like virus strain CaTomVL Santa Cruz  complete genome | 2645 | 10 | .37 | 10 | .37 | 10 | .37 | 0 | 0 | 0 | 0 |
+| NC_040576.1 | Culex circovirus-like virus strain CCirVL Butte  complete genome | 2104 | 21 | .99 | 21 | .99 | 21 | .99 | 0 | 0 | 0 | 0 |
+| NC_040577.1 | Linepithema humile entomopoxvirus 1 putative tryptophan repeat family protein  putative RNA polymerase-associated transcription-specificity factor RAP94  putative virion membrane protein M25  putative mRNA-capping enzyme catalytic subuni | 46321 | 68 | .14 | 1136 | 2.45 | 534 | 1.15 | 1479 | 3.19 | 343 | .74 |
 | NC_040578.1 | Canine papillomavirus 21 strain Lab P1  complete genome | 8225 | 0 | 0 | 153 | 1.86 | 49 | .59 | 153 | 1.86 | 0 | 0 |
 | NC_040579.1 | Canine papillomavirus 22 strain Mas P6  complete genome | 8300 | 0 | 0 | 74 | .89 | 98 | 1.18 | 123 | 1.48 | 49 | .59 |
 | NC_040580.1 | Erethizon dorsatum papillomavirus 2 isolate AZ-SWCC-2016  complete genome | 8809 | 0 | 0 | 225 | 2.55 | 98 | 1.11 | 225 | 2.55 | 0 | 0 |
@@ -10863,7 +10863,7 @@
 | NC_040591.1 | Medicago sativa amalgavirus 1 strain MsAV1-Maverick genomic sequence | 3423 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040592.1 | Erigeron breviscapus amalgavirus 1 strain EbAV1-SMMU genomic sequence | 3433 | 0 | 0 | 0 | 0 | 49 | 1.42 | 0 | 0 | 0 | 0 |
 | NC_040593.1 | Erigeron breviscapus amalgavirus 2 strain EbAV2-SMMU genomic sequence | 3408 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_040594.1 | Picalivirus A isolate PicaV-A  complete genome | 8966 | 0 | 0 | 78 | .86 | 42 | .46 | 78 | .86 | 0 | 0 |
+| NC_040594.1 | Picalivirus A isolate PicaV-A  complete genome | 8966 | 3 | .03 | 78 | .86 | 42 | .46 | 78 | .86 | 0 | 0 |
 | NC_040595.1 | Odonata-associated circular virus-1 isolate OdasCV-1-US-504LB-12  complete genome | 1989 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040596.1 | Odonata-associated circular virus-2 isolate OdasCV-2-US-364BC-12  complete genome | 1740 | 0 | 0 | 70 | 4.02 | 0 | 0 | 70 | 4.02 | 0 | 0 |
 | NC_040597.1 | Odonata-associated circular virus-3 isolate OdasCV-3-US-221LB1-12  complete genome | 1639 | 0 | 0 | 44 | 2.68 | 0 | 0 | 44 | 2.68 | 0 | 0 |
@@ -10875,7 +10875,7 @@
 | NC_040603.1 | Red-crowned crane parvovirus isolate yc-7  complete genome | 5515 | 0 | 0 | 85 | 1.54 | 0 | 0 | 85 | 1.54 | 0 | 0 |
 | NC_040604.1 | Rodent papillomavirus isolate RtRn-PV GD2014  complete genome | 7373 | 0 | 0 | 47 | .63 | 0 | 0 | 47 | .63 | 0 | 0 |
 | NC_040605.1 | Marmot sapelovirus 1 strain HT5  complete genome | 7726 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_040606.1 | Malacosoma neustria nucleopolyhedrovirus isolate ManeNPV-T2  complete genome | 130202 | 0 | 0 | 2067 | 1.58 | 1070 | .82 | 2387 | 1.83 | 320 | .24 |
+| NC_040606.1 | Malacosoma neustria nucleopolyhedrovirus isolate ManeNPV-T2  complete genome | 130202 | 12 | 0 | 2067 | 1.58 | 1070 | .82 | 2387 | 1.83 | 320 | .24 |
 | NC_040607.1 | Rhinolophus simulator polyomavirus 1 DNA  complete genome  strain: SUB13#17 | 5249 | 0 | 0 | 93 | 1.77 | 0 | 0 | 93 | 1.77 | 0 | 0 |
 | NC_040608.1 | Pythium polare RNA virus 1 PpRV1-OPU1176 genomic RNA  complete genome | 5397 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040609.1 | Rhizoctonia solani endornavirus 1 isolate GD-2  complete genome | 19936 | 0 | 0 | 25 | .12 | 49 | .24 | 25 | .12 | 0 | 0 |
@@ -10884,7 +10884,7 @@
 | NC_040612.1 | Cherax quadricarinatus iridovirus strain CQIV-CN01  complete genome | 165695 | 0 | 0 | 1795 | 1.08 | 490 | .29 | 2187 | 1.31 | 392 | .23 |
 | NC_040613.1 | Nephila clavipes virus 3 isolate SC  complete genome | 8138 | 0 | 0 | 102 | 1.25 | 0 | 0 | 102 | 1.25 | 0 | 0 |
 | NC_040614.1 | Nephila clavipes virus 4 isolate SC  complete genome | 11919 | 0 | 0 | 162 | 1.35 | 0 | 0 | 162 | 1.35 | 0 | 0 |
-| NC_040615.1 | Eptesicus fuscus gammaherpesvirus  complete genome | 166748 | 0 | 0 | 3496 | 2.09 | 1210 | .72 | 3594 | 2.15 | 98 | .05 |
+| NC_040615.1 | Eptesicus fuscus gammaherpesvirus  complete genome | 166748 | 1 | 0 | 3496 | 2.09 | 1210 | .72 | 3594 | 2.15 | 98 | .05 |
 | NC_040616.1 | Grapevine virus G isolate VID561  complete genome | 7496 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040617.1 | Rodent Torque teno virus 3 isolate 2  complete genome | 3433 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040618.1 | Rodent Torque teno virus 6 isolate 2404  complete genome | 2505 | 0 | 0 | 65 | 2.59 | 0 | 0 | 65 | 2.59 | 0 | 0 |
@@ -10895,7 +10895,7 @@
 | NC_040623.1 | Rhinolophus pusillus bocaparvovirus 1 strain Rp-BtBoV1 48C MJ YN 2012  complete genome | 4880 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040624.1 | Coconut foliar decay alphasatellite 3 isolate CFDA3-[VU-89]  complete sequence | 1252 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040625.1 | Rhynchobatus djiddensis adomavirus 1 isolate UGA1  complete genome | 21527 | 0 | 0 | 588 | 2.73 | 321 | 1.49 | 588 | 2.73 | 0 | 0 |
-| NC_040626.1 | Bombus cryptarum densovirus isolate bcry3  complete genome | 3977 | 0 | 0 | 0 | 0 | 10 | .25 | 0 | 0 | 0 | 0 |
+| NC_040626.1 | Bombus cryptarum densovirus isolate bcry3  complete genome | 3977 | 10 | .25 | 10 | .25 | 10 | .25 | 0 | 0 | 0 | 0 |
 | NC_040627.1 | Lettuce chordovirus 1 isolate JG1  complete genome | 8536 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040628.1 | Halhan virus 3 replicative protein and structural protein genes  complete cds | 8620 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040629.1 | Mizyes virus 1 polyprotein gene  complete cds | 6208 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -10906,7 +10906,7 @@
 | NC_040634.1 | Potamochoerus porcus polyomavirus 1 isolate 9780 PI225  complete genome | 4825 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040635.1 | Birch leaf roll-associated virus isolate BpubFin407507  complete genome | 7864 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040636.1 | Ying Kou virus strain YK1714  complete genome | 9784 | 0 | 0 | 0 | 0 | 33 | .33 | 0 | 0 | 0 | 0 |
-| NC_040637.1 | Ecklonia radiata-associated virus 8 Rep-B gene  complete cds | 2997 | 0 | 0 | 48 | 1.60 | 2 | .06 | 48 | 1.60 | 0 | 0 |
+| NC_040637.1 | Ecklonia radiata-associated virus 8 Rep-B gene  complete cds | 2997 | 2 | .06 | 48 | 1.60 | 2 | .06 | 48 | 1.60 | 0 | 0 |
 | NC_040638.1 | Trematomus bernacchii polyomavirus 1 isolate BIS330  complete genome | 5541 | 0 | 0 | 39 | .70 | 0 | 0 | 39 | .70 | 0 | 0 |
 | NC_040639.1 | Chicken associated cyclovirus 2 strain RS BR 2015 4R  complete genome | 1778 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040640.1 | Human papillomavirus type 203 isolate SE369  complete genome | 7372 | 0 | 0 | 32 | .43 | 0 | 0 | 32 | .43 | 0 | 0 |
@@ -10914,9 +10914,9 @@
 | NC_040642.1 | Rhimavirus A  complete genome | 7456 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040643.1 | Panax ginseng flexivirus 1 isolate Changbai  complete genome | 9002 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040644.1 | Turtle grass virus X isolate TB 2016  complete genome | 6278 | 0 | 0 | 26 | .41 | 52 | .82 | 26 | .41 | 0 | 0 |
-| NC_040645.1 | Culex Flavi-like virus strain CFVL San Francisco  complete genome | 10609 | 0 | 0 | 0 | 0 | 51 | .48 | 0 | 0 | 0 | 0 |
-| NC_040646.1 | Culex Iflavi-like virus 1 strain CIVL1 Sutter  complete genome | 10310 | 0 | 0 | 0 | 0 | 6 | .05 | 0 | 0 | 0 | 0 |
-| NC_040647.1 | Culex Bastrovirus-like virus strain CAVL Fresno  complete genome | 5415 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_040645.1 | Culex Flavi-like virus strain CFVL San Francisco  complete genome | 10609 | 51 | .48 | 51 | .48 | 51 | .48 | 0 | 0 | 0 | 0 |
+| NC_040646.1 | Culex Iflavi-like virus 1 strain CIVL1 Sutter  complete genome | 10310 | 6 | .05 | 6 | .05 | 6 | .05 | 0 | 0 | 0 | 0 |
+| NC_040647.1 | Culex Bastrovirus-like virus strain CAVL Fresno  complete genome | 5415 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_040648.1 | Bovine serum-associated circular virus strain 349 hypothetical protein gene  complete cds | 507 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040649.1 | Sclerotinia sclerotiorum deltaflexivirus 2 isolate 228  complete genome | 6735 | 0 | 0 | 64 | .95 | 34 | .50 | 64 | .95 | 0 | 0 |
 | NC_040650.1 | Pleione flower breaking virus isolate CZ-Wharf1  complete genome | 9952 | 0 | 0 | 76 | .76 | 0 | 0 | 76 | .76 | 0 | 0 |
@@ -10976,7 +10976,7 @@
 | NC_040704.1 | Sogatella furcifera totivirus 2  complete genome | 6303 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040705.1 | Philantomba monticola polyomavirus 1 isolate 9781 GN365  complete genome | 5034 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040706.1 | Passion fruit chlorotic mottle virus isolate CDS MS BR 2014  complete genome | 3743 | 0 | 0 | 37 | .98 | 0 | 0 | 37 | .98 | 0 | 0 |
-| NC_040707.1 | Ecklonia radiata-associated virus 1 Rep-B gene  complete cds | 2480 | 0 | 0 | 0 | 0 | 1 | .04 | 0 | 0 | 0 | 0 |
+| NC_040707.1 | Ecklonia radiata-associated virus 1 Rep-B gene  complete cds | 2480 | 1 | .04 | 1 | .04 | 1 | .04 | 0 | 0 | 0 | 0 |
 | NC_040708.1 | Yerba mate-associated circular DNA virus 1 isolate Obera  complete genome | 2707 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040709.1 | Macaca mulatta papillomavirus 2 isolate PM069S3c168082  complete genome | 7876 | 0 | 0 | 169 | 2.14 | 49 | .62 | 169 | 2.14 | 0 | 0 |
 | NC_040710.1 | Sogatella furcifera hepe-like virus isolate Guangdong  complete genome | 7312 | 0 | 0 | 28 | .38 | 36 | .49 | 28 | .38 | 0 | 0 |
@@ -10986,7 +10986,7 @@
 | NC_040714.1 | Porcine polyomavirus strain 180230  complete genome | 4978 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040715.1 | Akodon montensis polyomavirus isolate 1b  complete genome | 6052 | 0 | 0 | 78 | 1.28 | 0 | 0 | 78 | 1.28 | 0 | 0 |
 | NC_040716.1 | Culex Iflavi-like virus 4 strain CIVL4 Fresno  complete genome | 9698 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_040717.1 | Culex Tetra-like virus strain CTetVL Riverside  complete genome | 2066 | 0 | 0 | 0 | 0 | 11 | .53 | 0 | 0 | 0 | 0 |
+| NC_040717.1 | Culex Tetra-like virus strain CTetVL Riverside  complete genome | 2066 | 11 | .53 | 11 | .53 | 11 | .53 | 0 | 0 | 0 | 0 |
 | NC_040718.1 | Bovine serum-associated circular virus strain 281 hypothetical protein gene  complete cds | 501 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040719.1 | Domestic cat hepadnavirus isolate Sydney2016  complete genome | 3187 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040720.1 | Ashy storm petrel gyrovirus isolate a12a1 528  complete genome | 2394 | 0 | 0 | 86 | 3.59 | 0 | 0 | 86 | 3.59 | 0 | 0 |
@@ -11031,7 +11031,7 @@
 | NC_040759.1 | Yongsan bunyavirus 1 strain YBV1 16-0052 ROK 2016 RNA-dependent RNA polymerase gene  complete cds | 6464 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040760.1 | Wheat stripe mosaic virus isolate WhSMV:BR:Everest segment RNA 1  complete sequence | 6597 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040761.1 | Wheat stripe mosaic virus isolate WhSMV:BR:Everest segment RNA 2  complete sequence | 4892 | 0 | 0 | 38 | .77 | 0 | 0 | 38 | .77 | 0 | 0 |
-| NC_040762.1 | Apore mammarenavirus strain LBCE 12071 segment S  complete sequence | 3400 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_040762.1 | Apore mammarenavirus strain LBCE 12071 segment S  complete sequence | 3400 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_040763.1 | Apore mammarenavirus strain LBCE 12071 segment L  complete sequence | 7217 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040764.1 | Leptomonas seymouri Narna-like virus 1 segment L  complete sequence | 2914 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040765.1 | Leptomonas seymouri Narna-like virus 1 segment S  complete sequence | 1455 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11063,7 +11063,7 @@
 | NC_040791.1 | Neofusicoccum luteum fusarivirus 1 isolate CAP037  complete genome | 6244 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040792.1 | Rice latent virus 1 isolate AU-NA63-2015  complete genome | 2757 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040793.1 | Alternaria arborescens victorivirus 1 genomic RNA  complete genome | 5206 | 0 | 0 | 39 | .74 | 0 | 0 | 39 | .74 | 0 | 0 |
-| NC_040794.1 | Adonis mosaic virus DNA  complete genome  isolate: HSP-2 | 3991 | 0 | 0 | 41 | 1.02 | 1 | .02 | 41 | 1.02 | 0 | 0 |
+| NC_040794.1 | Adonis mosaic virus DNA  complete genome  isolate: HSP-2 | 3991 | 1 | .02 | 41 | 1.02 | 1 | .02 | 41 | 1.02 | 0 | 0 |
 | NC_040795.1 | Shinobi tetravirus RNA  complete genome  strain: shinobi | 4962 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040796.1 | Avian paramyxovirus 20 isolate APMV-20 gull Kazakhstan 5976 2014  complete genome | 15954 | 0 | 0 | 0 | 0 | 49 | .30 | 0 | 0 | 0 | 0 |
 | NC_040797.1 | Ribes americanum virus A isolate Oregon  complete genome | 7106 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11093,7 +11093,7 @@
 | NC_040821.1 | Glis glis polyomavirus 1 isolate 3327 ID3a  complete genome | 5338 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040822.1 | Panthera leo polyomavirus 1 isolate 3884  complete genome | 5018 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040823.1 | Ecklonia radiata-associated virus 3 Rep-C gene  complete cds | 1886 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_040824.1 | Ecklonia radiata-associated virus 5 Rep-A and capsid-like protein genes  complete cds | 2046 | 0 | 0 | 0 | 0 | 50 | 2.44 | 0 | 0 | 0 | 0 |
+| NC_040824.1 | Ecklonia radiata-associated virus 5 Rep-A and capsid-like protein genes  complete cds | 2046 | 1 | .04 | 1 | .04 | 50 | 2.44 | 0 | 0 | 0 | 0 |
 | NC_040825.1 | Cluster bean endornavirus 1 isolate 593049  complete genome | 12895 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040826.1 | Dragonfly associated cyclovirus isolate DfCyV-FZ1  complete genome | 1899 | 0 | 0 | 45 | 2.36 | 0 | 0 | 45 | 2.36 | 0 | 0 |
 | NC_040827.1 | Macaca mulatta papillomavirus 3 isolate PM084S3c177403  complete genome | 8051 | 0 | 0 | 124 | 1.54 | 0 | 0 | 124 | 1.54 | 0 | 0 |
@@ -11102,7 +11102,7 @@
 | NC_040830.1 | Phytophthora infestans RNA virus 2 isolate US940480  complete genome | 11170 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040831.2 | Porcine serum associated circular DNA virus 2 isolate 2B RS BR  complete genome | 1900 | 0 | 0 | 33 | 1.73 | 0 | 0 | 33 | 1.73 | 0 | 0 |
 | NC_040832.1 | Culex Iflavi-like virus 4 strain CIVL4-Sonoma  complete genome | 10319 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_040833.1 | Culex circovirus-like virus strain CCirVL Fresno  complete genome | 2224 | 0 | 0 | 0 | 0 | 15 | .67 | 0 | 0 | 0 | 0 |
+| NC_040833.1 | Culex circovirus-like virus strain CCirVL Fresno  complete genome | 2224 | 15 | .67 | 15 | .67 | 15 | .67 | 0 | 0 | 0 | 0 |
 | NC_040834.1 | Blackcurrant-associated closterovirus 1 isolate BC  complete genome | 17320 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040835.1 | Rana hepevirus strain agile forg RD6 2015 HUN  complete genome | 7188 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040836.1 | Areca palm necrotic spindle-spot virus isolate HNBT  complete genome | 9437 | 0 | 0 | 46 | .48 | 49 | .51 | 46 | .48 | 0 | 0 |
@@ -11118,7 +11118,7 @@
 | NC_040846.1 | Ustilaginoidea virens nonsegmented virus 2 isolate GZ-2 fusion protein  hypothetical protein  and RNA-dependent RNA polymerase genes  complete cds | 2887 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040847.1 | Guangxi orbivirus strain V172 GX 2015 segment 4  complete sequence | 2000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_040876.1 | Norovirus GII.P7 GII.6  complete genome | 7521 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_041831.1 | Campylobacter phage vB CcoM-IBB 35 clone Contig3  complete sequence | 27985 | 0 | 0 | 571 | 2.04 | 320 | 1.14 | 767 | 2.74 | 196 | .70 |
+| NC_041831.1 | Campylobacter phage vB CcoM-IBB 35 clone Contig3  complete sequence | 27985 | 1 | 0 | 571 | 2.04 | 320 | 1.14 | 767 | 2.74 | 196 | .70 |
 | NC_041832.1 | Campylobacter phage vB CcoM-IBB 35 clone Contig4  complete sequence | 14701 | 0 | 0 | 447 | 3.04 | 0 | 0 | 447 | 3.04 | 0 | 0 |
 | NC_041833.1 | Campylobacter phage vB CcoM-IBB 35 clone Contig2  complete sequence | 51534 | 0 | 0 | 369 | .71 | 147 | .28 | 516 | 1.00 | 147 | .28 |
 | NC_041834.1 | Campylobacter phage vB CcoM-IBB 35 clone Contig5  complete sequence | 24608 | 0 | 0 | 733 | 2.97 | 196 | .79 | 880 | 3.57 | 147 | .59 |
@@ -11145,7 +11145,7 @@
 | NC_041856.1 | Streptomyces phage phiCAM  complete genome | 50348 | 0 | 0 | 204 | .40 | 0 | 0 | 204 | .40 | 0 | 0 |
 | NC_041857.1 | Acinetobacter phage IME-AB2  complete genome | 43665 | 0 | 0 | 102 | .23 | 0 | 0 | 102 | .23 | 0 | 0 |
 | NC_041858.1 | Bacillus phage Taylor  complete genome | 49492 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_041859.1 | Flavobacterium phage 23T  complete genome | 43226 | 0 | 0 | 392 | .90 | 103 | .23 | 441 | 1.02 | 49 | .11 |
+| NC_041859.1 | Flavobacterium phage 23T  complete genome | 43226 | 5 | .01 | 392 | .90 | 103 | .23 | 441 | 1.02 | 49 | .11 |
 | NC_041860.1 | Streptomyces phage Danzina  complete genome | 50773 | 0 | 0 | 85 | .16 | 0 | 0 | 85 | .16 | 0 | 0 |
 | NC_041861.1 | Enterococcus phage VD13  complete genome | 55073 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_041862.1 | Listeria phage LP-064  complete genome | 135279 | 0 | 0 | 1359 | 1.00 | 398 | .29 | 1457 | 1.07 | 98 | .07 |
@@ -11305,7 +11305,7 @@
 | NC_042016.1 | Streptomyces phage DrGrey  complete genome | 56076 | 0 | 0 | 265 | .47 | 0 | 0 | 265 | .47 | 0 | 0 |
 | NC_042017.1 | Shigella phage Sf13  complete genome | 87570 | 0 | 0 | 245 | .27 | 98 | .11 | 343 | .39 | 98 | .11 |
 | NC_042018.1 | Erwinia phage vB EamM RisingSun  complete genome | 235108 | 0 | 0 | 293 | .12 | 0 | 0 | 293 | .12 | 0 | 0 |
-| NC_042019.1 | Aeromonas phage AS-gz  complete genome | 162422 | 0 | 0 | 347 | .21 | 7 | 0 | 347 | .21 | 0 | 0 |
+| NC_042019.1 | Aeromonas phage AS-gz  complete genome | 162422 | 7 | 0 | 347 | .21 | 7 | 0 | 347 | .21 | 0 | 0 |
 | NC_042020.1 | Arthrobacter phage Adat  complete genome | 45428 | 0 | 0 | 39 | .08 | 0 | 0 | 39 | .08 | 0 | 0 |
 | NC_042021.1 | Enterococcus phage phiSHEF2  complete genome | 41712 | 0 | 0 | 246 | .58 | 0 | 0 | 246 | .58 | 0 | 0 |
 | NC_042022.1 | Enterococcus phage phiSHEF4  complete genome | 41081 | 0 | 0 | 166 | .40 | 74 | .18 | 240 | .58 | 74 | .18 |
@@ -11323,12 +11323,12 @@
 | NC_042035.1 | Mycobacterium phage Zemanar  complete sequence | 71092 | 0 | 0 | 926 | 1.30 | 49 | .06 | 926 | 1.30 | 0 | 0 |
 | NC_042036.1 | Mycobacterium phage Rockstar  complete genome | 47780 | 0 | 0 | 160 | .33 | 0 | 0 | 160 | .33 | 0 | 0 |
 | NC_042037.1 | Aeromonas phage pIS4-A genomic sequence | 47624 | 0 | 0 | 104 | .21 | 0 | 0 | 104 | .21 | 0 | 0 |
-| NC_042038.1 | Enterobacteriophage phiKP26  complete genome | 47285 | 0 | 0 | 332 | .70 | 272 | .57 | 332 | .70 | 0 | 0 |
+| NC_042038.1 | Enterobacteriophage phiKP26  complete genome | 47285 | 149 | .31 | 332 | .70 | 272 | .57 | 332 | .70 | 0 | 0 |
 | NC_042039.1 | Shigella phage Sf22  complete genome | 166283 | 0 | 0 | 805 | .48 | 49 | .02 | 854 | .51 | 49 | .02 |
 | NC_042040.1 | Rhodococcus phage Trina  complete genome | 139262 | 0 | 0 | 727 | .52 | 0 | 0 | 727 | .52 | 0 | 0 |
 | NC_042041.1 | Klebsiella phage vB KpnM KpV79  complete genome | 47760 | 0 | 0 | 146 | .30 | 98 | .20 | 195 | .40 | 49 | .10 |
 | NC_042042.1 | Streptomyces phage Scap1  complete genome | 43060 | 0 | 0 | 235 | .54 | 0 | 0 | 235 | .54 | 0 | 0 |
-| NC_042043.1 | Escherichia phage SRT8  complete genome | 49579 | 0 | 0 | 61 | .12 | 1 | 0 | 61 | .12 | 0 | 0 |
+| NC_042043.1 | Escherichia phage SRT8  complete genome | 49579 | 1 | 0 | 61 | .12 | 1 | 0 | 61 | .12 | 0 | 0 |
 | NC_042044.1 | Salmonella phage Melville  complete genome | 159323 | 0 | 0 | 779 | .48 | 98 | .06 | 877 | .55 | 98 | .06 |
 | NC_042045.1 | Gordonia phage Lennon  complete genome | 60237 | 0 | 0 | 996 | 1.65 | 0 | 0 | 996 | 1.65 | 0 | 0 |
 | NC_042046.1 | Escherichia phage C119  complete genome | 47319 | 0 | 0 | 125 | .26 | 98 | .20 | 125 | .26 | 0 | 0 |
@@ -11343,7 +11343,7 @@
 | NC_042055.1 | Mycobacterium phage Pipsqueaks  complete genome | 43679 | 0 | 0 | 568 | 1.30 | 0 | 0 | 568 | 1.30 | 0 | 0 |
 | NC_042056.1 | Erwinia phage vB EamM Machina  complete genome | 241654 | 0 | 0 | 442 | .18 | 0 | 0 | 442 | .18 | 0 | 0 |
 | NC_042057.1 | Enterobacteria phage DE3  complete genome | 42925 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_042058.1 | Mycobacterium phage Wonder  complete genome | 48491 | 0 | 0 | 267 | .55 | 42 | .08 | 267 | .55 | 0 | 0 |
+| NC_042058.1 | Mycobacterium phage Wonder  complete genome | 48491 | 42 | .08 | 267 | .55 | 42 | .08 | 267 | .55 | 0 | 0 |
 | NC_042060.1 | Pseudomonas phage PA7  partial genome | 266743 | 0 | 0 | 637 | .23 | 49 | .01 | 686 | .25 | 49 | .01 |
 | NC_042061.1 | Salmonella phage STML-13-1  partial genome | 157235 | 0 | 0 | 654 | .41 | 0 | 0 | 654 | .41 | 0 | 0 |
 | NC_042062.1 | Salmonella phage FSL SP-069 hypothetical proteins  RdgC exonuclease  hypothetical proteins  TerL  hypothetical proteins  deoxyuridine 5'-triphosphate nucleotidohydrolase  hypothetical proteins  NinH  head morphogenesis protein  hypotheti | 41391 | 0 | 0 | 289 | .69 | 0 | 0 | 289 | .69 | 0 | 0 |
@@ -11382,7 +11382,7 @@
 | NC_042095.1 | Vibrio phage Thalassa  complete genome | 128602 | 0 | 0 | 729 | .56 | 0 | 0 | 729 | .56 | 0 | 0 |
 | NC_042096.1 | Salmonella phage BPS17L1  complete genome | 84916 | 0 | 0 | 289 | .34 | 98 | .11 | 387 | .45 | 98 | .11 |
 | NC_042097.1 | Salmonella phage BPS17W1  complete genome | 87609 | 0 | 0 | 302 | .34 | 0 | 0 | 302 | .34 | 0 | 0 |
-| NC_042098.1 | Erwinia phage vB EamM Desertfox  complete genome | 272458 | 0 | 0 | 419 | .15 | 49 | .01 | 467 | .17 | 48 | .01 |
+| NC_042098.1 | Erwinia phage vB EamM Desertfox  complete genome | 272458 | 1 | 0 | 419 | .15 | 49 | .01 | 467 | .17 | 48 | .01 |
 | NC_042099.1 | Microbacterium phage Dismas  complete genome | 41593 | 0 | 0 | 223 | .53 | 0 | 0 | 223 | .53 | 0 | 0 |
 | NC_042100.1 | Vibrio phage Aphrodite1  complete genome | 237722 | 0 | 0 | 179 | .07 | 49 | .02 | 228 | .09 | 49 | .02 |
 | NC_042101.1 | Enterococcus phage PMBT2  complete genome | 41489 | 0 | 0 | 163 | .39 | 0 | 0 | 163 | .39 | 0 | 0 |
@@ -11418,14 +11418,14 @@
 | NC_042131.1 | Pectobacterium phage vB PatP CB5  complete genome | 44549 | 0 | 0 | 375 | .84 | 148 | .33 | 375 | .84 | 0 | 0 |
 | NC_042132.1 | Gordonia phage Sour  complete genome | 61670 | 0 | 0 | 441 | .71 | 0 | 0 | 441 | .71 | 0 | 0 |
 | NC_042133.1 | Bacillus phage SIOphi  partial genome | 146698 | 0 | 0 | 691 | .47 | 147 | .10 | 740 | .50 | 49 | .03 |
-| NC_042134.1 | Enterococcus phage AUEF3  partial genome | 41257 | 0 | 0 | 286 | .69 | 100 | .24 | 286 | .69 | 0 | 0 |
-| NC_042135.1 | Pseudomonas phage JBD67  partial genome | 38232 | 0 | 0 | 316 | .82 | 200 | .52 | 316 | .82 | 0 | 0 |
-| NC_042136.1 | Vibrio phage VP4B  partial genome | 236053 | 0 | 0 | 336 | .14 | 167 | .07 | 336 | .14 | 0 | 0 |
+| NC_042134.1 | Enterococcus phage AUEF3  partial genome | 41257 | 100 | .24 | 286 | .69 | 100 | .24 | 286 | .69 | 0 | 0 |
+| NC_042135.1 | Pseudomonas phage JBD67  partial genome | 38232 | 200 | .52 | 316 | .82 | 200 | .52 | 316 | .82 | 0 | 0 |
+| NC_042136.1 | Vibrio phage VP4B  partial genome | 236053 | 167 | .07 | 336 | .14 | 167 | .07 | 336 | .14 | 0 | 0 |
 | NC_042137.1 | Acinetobacter phage vB AbaS Loki genome assembly  complete genome: monopartite | 41308 | 0 | 0 | 95 | .22 | 0 | 0 | 95 | .22 | 0 | 0 |
 | NC_042138.1 | Klebsiella phage PMBT1 genome assembly  complete genome: monopartite | 175206 | 0 | 0 | 105 | .05 | 49 | .02 | 154 | .08 | 49 | .02 |
 | NC_042139.2 | Corynebacterium phage Poushou  complete genome | 40353 | 0 | 0 | 222 | .55 | 0 | 0 | 222 | .55 | 0 | 0 |
 | NC_042140.1 | Bacillus virus BM15  complete genome | 165213 | 0 | 0 | 1083 | .65 | 294 | .17 | 1279 | .77 | 196 | .11 |
-| NC_042307.1 | Escherichia virus H8  complete genome  *** SEQUENCING IN PROGRESS *** | 104373 | 0 | 0 | 367 | .35 | 99 | .09 | 465 | .44 | 98 | .09 |
+| NC_042307.1 | Escherichia virus H8  complete genome  *** SEQUENCING IN PROGRESS *** | 104373 | 1 | 0 | 367 | .35 | 99 | .09 | 465 | .44 | 98 | .09 |
 | NC_042308.1 | Mycobacterium virus Backyardigan  complete genome | 51308 | 0 | 0 | 196 | .38 | 0 | 0 | 196 | .38 | 0 | 0 |
 | NC_042309.1 | Mycobacterium virus Gladiator  complete genome | 52213 | 0 | 0 | 322 | .61 | 0 | 0 | 322 | .61 | 0 | 0 |
 | NC_042310.1 | Mycobacterium virus JHC117  complete genome | 50877 | 0 | 0 | 339 | .66 | 0 | 0 | 339 | .66 | 0 | 0 |
@@ -11529,7 +11529,7 @@
 | NC_043078.1 | Dandelion yellow mosaic virus isolate DSM2 RNA-dependent RNA polymerase gene  partial cds | 788 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043079.1 | Lagenaria mild mosaic virus RdRP  TGB1  TGB2  TGB3  CP genes  partial and complete cds | 3860 | 0 | 0 | 33 | .85 | 0 | 0 | 33 | .85 | 0 | 0 |
 | NC_043080.1 | Caper latent virus isolate L7 RNA-dependent RNA polymerase (RdRp) gene  partial cds | 1120 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043081.1 | Cucumber vein-clearing virus RNA-dependent RNA polymerase gene  partial cds; and triple gene block protein 1  triple gene block protein 2  triple gene block protein 3  coat protein  and nucleic acid binding protein genes  complete cds | 5218 | 0 | 0 | 0 | 0 | 51 | .97 | 0 | 0 | 0 | 0 |
+| NC_043081.1 | Cucumber vein-clearing virus RNA-dependent RNA polymerase gene  partial cds; and triple gene block protein 1  triple gene block protein 2  triple gene block protein 3  coat protein  and nucleic acid binding protein genes  complete cds | 5218 | 2 | .03 | 2 | .03 | 51 | .97 | 0 | 0 | 0 | 0 |
 | NC_043082.1 | Helleborus mosaic virus replicase polyprotein gene  partial cds; and triple gene block protein 1  triple gene block protein 2  triple gene block protein 3  capsid protein  and putative nucleic acid binding protein genes  complete cds | 3030 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043083.1 | Phlox Virus M isolate PhlVM-CA triple gene block 3 protein gene  partial cds; and coat protein and nucleic acid binding protein genes  complete cds | 1408 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043084.1 | Sint-Jan's onion latent virus isolate IPO-DLO nonfunctional RNA-dependent RNA polymerase gene  partial sequence | 276 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11577,10 +11577,10 @@
 | NC_043126.1 | Longquan virus strain Longquan-Rs-32 nucleocapsid gene  complete cds | 1564 | 0 | 0 | 48 | 3.06 | 74 | 4.73 | 48 | 3.06 | 0 | 0 |
 | NC_043127.1 | Longquan virus strain Longquan-Rs-32 glycoprotein gene  complete cds | 3619 | 0 | 0 | 40 | 1.10 | 49 | 1.35 | 89 | 2.45 | 49 | 1.35 |
 | NC_043128.1 | Ectocarpus virus 63124 coat protein (gp-1) gene  partial cds | 692 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043129.1 | Micromonas pusilla virus SP1  complete genome  *** SEQUENCING IN PROGRESS ***  2 unordered pieces | 173451 | 0 | 0 | 1876 | 1.08 | 591 | .34 | 1974 | 1.13 | 98 | .05 |
+| NC_043129.1 | Micromonas pusilla virus SP1  complete genome  *** SEQUENCING IN PROGRESS ***  2 unordered pieces | 173451 | 100 | .05 | 1876 | 1.08 | 591 | .34 | 1974 | 1.13 | 98 | .05 |
 | NC_043130.1 | Chrysochromulina brevifilum virus PW1 DNA polymerase gene  partial cds | 719 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043131.1 | Cotesia kariyai bracovirus clone 5 cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043132.1 | Alpinia mosaic virus polyprotein gene  partial cds | 1731 | 0 | 0 | 0 | 0 | 5 | .28 | 0 | 0 | 0 | 0 |
+| NC_043132.1 | Alpinia mosaic virus polyprotein gene  partial cds | 1731 | 5 | .28 | 5 | .28 | 5 | .28 | 0 | 0 | 0 | 0 |
 | NC_043133.1 | Maclura mosaic virus polyprotein mRNA  partial NIb and complete coat protein region  partial cds | 2413 | 0 | 0 | 74 | 3.06 | 0 | 0 | 74 | 3.06 | 0 | 0 |
 | NC_043134.1 | Narcissus latent virus polyprotein gene  partial cds | 1815 | 0 | 0 | 108 | 5.95 | 39 | 2.14 | 108 | 5.95 | 0 | 0 |
 | NC_043135.1 | Alstroemeria mosaic virus NIb CP gene for nuclear inclusion protein b coat protein  partial cds | 1867 | 0 | 0 | 29 | 1.55 | 0 | 0 | 29 | 1.55 | 0 | 0 |
@@ -11589,7 +11589,7 @@
 | NC_043138.1 | Angelica virus Y isolate AnVY-g polyprotein gene  partial cds | 1888 | 0 | 0 | 38 | 2.01 | 62 | 3.28 | 38 | 2.01 | 0 | 0 |
 | NC_043139.1 | Araujia mosaic virus isolate ARG1973 polyprotein gene  partial cds | 1719 | 0 | 0 | 0 | 0 | 43 | 2.50 | 0 | 0 | 0 | 0 |
 | NC_043140.1 | Calanthe mild mosaic potyvirus RNA for polyprotein (NIb CP region)  partial cds | 1306 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043141.1 | Carnation vein mottle virus gene for plyprotein  partial cds and 3'-terminal region | 2326 | 0 | 0 | 55 | 2.36 | 75 | 3.22 | 55 | 2.36 | 0 | 0 |
+| NC_043141.1 | Carnation vein mottle virus gene for plyprotein  partial cds and 3'-terminal region | 2326 | 1 | .04 | 55 | 2.36 | 75 | 3.22 | 55 | 2.36 | 0 | 0 |
 | NC_043142.1 | Carrot virus Y country Australia polyprotein gene  partial cds | 1754 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043143.1 | Ceratobium mosaic potyvirus strain CerMV-13 polyprotein (NIb CP) gene  partial cds | 1720 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043144.1 | Chinese artichoke mosaic virus gene for polyprotein  partial cds | 1675 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11681,7 +11681,7 @@
 | NC_043232.1 | Thosea asigna virus RNA-dependent RNA polymerase (RdRp) gene  complete cds; and capsid protein gene  partial cds | 3858 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043233.1 | Chlorella virus NC-1A M.CviBIII gene for DNA methyltransferase | 2083 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043234.1 | Chlorella virus NC1A mcvibi (cvibim) gene  complete cds | 1024 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043235.1 | Paramecium bursaria Chlorella virus NYs1  partial genome | 348463 | 0 | 0 | 4164 | 1.19 | 1390 | .39 | 4213 | 1.20 | 49 | .01 |
+| NC_043235.1 | Paramecium bursaria Chlorella virus NYs1  partial genome | 348463 | 800 | .22 | 4164 | 1.19 | 1390 | .39 | 4213 | 1.20 | 49 | .01 |
 | NC_043236.1 | Paramecium bursaria Chlorella virus NYs-1 cytosine methyltransferase (M.CviPI) gene  complete cds | 1141 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043237.1 | Chlorella virus SC-1A DNA adenine methyltransferase (M.CviSIII) gene  complete cds | 1174 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043238.1 | Chlorella virus SC-1A DNA 5-methylcytosine methyltransferase (M.CviSVI) pseudogene  complete cds | 1204 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11720,12 +11720,12 @@
 | NC_043271.1 | Chelonus inanitus virus 14g1 gene for recombinase  14g2 gene and ORF3  segment CiV14 | 14159 | 0 | 0 | 210 | 1.48 | 49 | .34 | 259 | 1.82 | 49 | .34 |
 | NC_043272.1 | Chelonus inanitus Bracovirus proviral CiV21 right terminal repeat | 312 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043273.1 | Chelonus inanitus bracovirus 21g1 gene  exons 1-5  segment CiV21 | 21376 | 0 | 0 | 152 | .71 | 147 | .68 | 201 | .94 | 49 | .22 |
-| NC_043274.1 | Chelonus inanitus Bracovirus proviral CiV16.8 right terminal repeat | 330 | 0 | 0 | 0 | 0 | 1 | .30 | 0 | 0 | 0 | 0 |
+| NC_043274.1 | Chelonus inanitus Bracovirus proviral CiV16.8 right terminal repeat | 330 | 1 | .30 | 1 | .30 | 1 | .30 | 0 | 0 | 0 | 0 |
 | NC_043275.1 | Cotesia flavipes bracovirus clone 8 cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043276.1 | Cotesia flavipes bracovirus clone D cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043277.1 | Cotesia flavipes bracovirus clone F cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043278.1 | Cotesia flavipes bracovirus clone 9 cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043279.1 | Cotesia flavipes bracovirus partial PTP H gene for protein tyrosine phosphatase  clone 1 | 828 | 0 | 0 | 0 | 0 | 1 | .12 | 0 | 0 | 0 | 0 |
+| NC_043279.1 | Cotesia flavipes bracovirus partial PTP H gene for protein tyrosine phosphatase  clone 1 | 828 | 1 | .12 | 1 | .12 | 1 | .12 | 0 | 0 | 0 | 0 |
 | NC_043280.1 | Cotesia flavipes bracovirus partial PTP Y gene for protein tyrosine phosphatase  clone 1 | 839 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043281.1 | Cotesia flavipes bracovirus clone 5 cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043282.1 | Cotesia flavipes bracovirus clone 7 cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11739,7 +11739,7 @@
 | NC_043290.1 | Cotesia glomerata bracovirus ELP1-like protein gene  partial cds | 654 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043291.1 | Cotesia glomerata bracovirus partial PTP H gene for protein tyrosine phosphatase  clone 1 | 846 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043292.1 | Cotesia glomerata bracovirus putative histone 4 gene  complete cds | 426 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043293.1 | Cotesia glomerata bracovirus partial PTP gene for protein tyrosine phosphatase  clone 1 | 722 | 0 | 0 | 0 | 0 | 1 | .13 | 0 | 0 | 0 | 0 |
+| NC_043293.1 | Cotesia glomerata bracovirus partial PTP gene for protein tyrosine phosphatase  clone 1 | 722 | 1 | .13 | 1 | .13 | 1 | .13 | 0 | 0 | 0 | 0 |
 | NC_043294.1 | Bracovirus cystatin gene  partial cds | 279 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043295.1 | Cotesia glomerata bracovirus host translation inhibitory factor III mRNA  complete cds | 554 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043296.1 | Cotesia glomerata bracovirus host translation inhibitory factor II mRNA  partial cds | 467 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11850,18 +11850,18 @@
 | NC_043401.1 | Poa semilatent virus gamma genomic segment gamma-A gene  partial cds and gamma-B protein gene  complete cds | 1519 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043402.1 | Trocara virus non structural polyprotein gene  partial cds; and structural polyprotein gene  complete cds | 12052 | 0 | 0 | 124 | 1.02 | 101 | .83 | 124 | 1.02 | 0 | 0 |
 | NC_043403.1 | Una virus non structural polyprotein gene  partial cds; and structural polyprotein gene  complete cds | 11964 | 0 | 0 | 97 | .81 | 211 | 1.76 | 146 | 1.22 | 49 | .40 |
-| NC_043404.1 | Avian myeloblastosis virus RNA-dependent DNA polymerase gene  partial cds; transforming protein gene  complete cds; and long terminal repeat  complete sequence | 1928 | 0 | 0 | 0 | 0 | 149 | 7.72 | 0 | 0 | 0 | 0 |
+| NC_043404.1 | Avian myeloblastosis virus RNA-dependent DNA polymerase gene  partial cds; transforming protein gene  complete cds; and long terminal repeat  complete sequence | 1928 | 1 | .05 | 1 | .05 | 149 | 7.72 | 0 | 0 | 0 | 0 |
 | NC_043405.1 | Great tit adenovirus 1 IVa2 gene  partial cds; DNA polymerase  pTP  52K protein  pIIIa  pIII  pVII  pX  and pVI genes  complete cds; and hexon gene  partial cds | 13628 | 0 | 0 | 61 | .44 | 0 | 0 | 61 | .44 | 0 | 0 |
-| NC_043406.1 | Pineapple mealybug wilt-associated virus 3 ORF1a and RNA dependent RNA polymerase (RdRp) genes  partial cds; p6 gene  complete sequence; and mall hydrophobic 5.65 kDa protein  heat shock 70-like protein (hsp70h)  61.0 kDa protein (p61)   | 11872 | 0 | 0 | 0 | 0 | 2 | .01 | 0 | 0 | 0 | 0 |
+| NC_043406.1 | Pineapple mealybug wilt-associated virus 3 ORF1a and RNA dependent RNA polymerase (RdRp) genes  partial cds; p6 gene  complete sequence; and mall hydrophobic 5.65 kDa protein  heat shock 70-like protein (hsp70h)  61.0 kDa protein (p61)   | 11872 | 2 | .01 | 2 | .01 | 2 | .01 | 0 | 0 | 0 | 0 |
 | NC_043407.1 | Necocli virus strain HV O0020002 RNA-dependent RNA polymerase gene  partial cds | 403 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043408.1 | Necocli virus strain HV O0020002 segment M  complete sequence | 3637 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043409.1 | Necocli virus strain HV O0020002 segment S  complete sequence | 1960 | 0 | 0 | 82 | 4.18 | 0 | 0 | 82 | 4.18 | 0 | 0 |
-| NC_043410.1 | Phocid herpesvirus-1  strain PB84 Us2 gene (partial)  Us3 gene  Us4 gene  Us6 gene  Us7 gene  Us8 gene  Us8.5 gene and Us9 gene | 9578 | 0 | 0 | 191 | 1.99 | 50 | .52 | 240 | 2.50 | 49 | .51 |
+| NC_043410.1 | Phocid herpesvirus-1  strain PB84 Us2 gene (partial)  Us3 gene  Us4 gene  Us6 gene  Us7 gene  Us8 gene  Us8.5 gene and Us9 gene | 9578 | 1 | .01 | 191 | 1.99 | 50 | .52 | 240 | 2.50 | 49 | .51 |
 | NC_043411.1 | Apricot latent ringspot virus partial mRNA for capsid protein | 2218 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043412.1 | Phlomis mottle virus RdRpol gene (partial)  MP gene  CP gene and ORF4  genomic RNA | 3035 | 0 | 0 | 35 | 1.15 | 0 | 0 | 35 | 1.15 | 0 | 0 |
 | NC_043413.1 | Sequence 187 from Patent WO0028039 | 3249 | 0 | 0 | 49 | 1.50 | 0 | 0 | 49 | 1.50 | 0 | 0 |
 | NC_043414.1 | Sequence 75 from Patent WO0028039 | 3313 | 0 | 0 | 81 | 2.44 | 0 | 0 | 81 | 2.44 | 0 | 0 |
-| NC_043415.1 | Sequence 1 from Patent WO0142299 | 3847 | 0 | 0 | 39 | 1.01 | 5 | .12 | 39 | 1.01 | 0 | 0 |
+| NC_043415.1 | Sequence 1 from Patent WO0142299 | 3847 | 5 | .12 | 39 | 1.01 | 5 | .12 | 39 | 1.01 | 0 | 0 |
 | NC_043416.1 | Astrovirus dogfaeces Italy 2005 partial RNA-dependant RNA polymerase  genomic RNA | 2756 | 0 | 0 | 76 | 2.75 | 0 | 0 | 76 | 2.75 | 0 | 0 |
 | NC_043417.1 | Olive leaf yellowing associated virus partial RdRp gene  ORF 1-3 and partial ORF4  genomic RNA | 4605 | 0 | 0 | 37 | .80 | 49 | 1.06 | 37 | .80 | 0 | 0 |
 | NC_043418.1 | Eupatorium yellow vein virus-[MNS2] complete genome  isolate Fukuoka-MNS2 | 2765 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11900,7 +11900,7 @@
 | NC_043451.1 | Severe fever with thrombocytopenia syndrome virus strain HNXH segment M  complete sequence | 3336 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043452.1 | Severe fever with thrombocytopenia syndrome virus strain HNXH segment S  complete sequence | 1681 | 0 | 0 | 24 | 1.42 | 0 | 0 | 24 | 1.42 | 0 | 0 |
 | NC_043453.1 | Cordyline virus 2 polyprotein gene  partial cds; and RNA-dependent RNA polymerase  4.2 kDa transmembrane protein  heat shock protein 70-like protein  9.3 kDa protein  60.6 kDa protein  coat protein  minor coat protein  25.9 kDa protein   | 15107 | 0 | 0 | 132 | .87 | 74 | .48 | 132 | .87 | 0 | 0 |
-| NC_043454.1 | Diachasmimorpha longicaudata entomopoxvirus putative membrane protein gene  complete cds | 878 | 0 | 0 | 0 | 0 | 28 | 3.18 | 0 | 0 | 0 | 0 |
+| NC_043454.1 | Diachasmimorpha longicaudata entomopoxvirus putative membrane protein gene  complete cds | 878 | 1 | .11 | 1 | .11 | 28 | 3.18 | 0 | 0 | 0 | 0 |
 | NC_043455.1 | Diachasmimorpha longicaudata entomopoxvirus unknown gene | 1340 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043456.1 | Diachasmimorpha longicaudata entomopoxvirus putative transcription factor  putative transcription factor  putative DNA helicase  and putative oligoribonuclease genes  complete cds; and unknown genes | 5640 | 0 | 0 | 44 | .78 | 0 | 0 | 44 | .78 | 0 | 0 |
 | NC_043457.1 | Diachasmimorpha longicaudata entomopoxvirus putative late transcription factor gene  complete cds | 842 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -11966,7 +11966,7 @@
 | NC_043517.1 | Pepper leafroll virus isolate PE:P107:pep:2009 segment DNA A  complete sequence | 2568 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043518.1 | Marine RNA virus SF-2 gp1 and gp2 genes  complete cds | 9321 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043519.1 | Marine RNA virus SF-3 polyprotein gene  complete cds | 8648 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_043520.1 | Lonomia obliqua multiple nucleopolyhedrovirus isolate SP 2000  complete genome | 120023 | 0 | 0 | 2010 | 1.67 | 853 | .71 | 2182 | 1.81 | 172 | .14 |
+| NC_043520.1 | Lonomia obliqua multiple nucleopolyhedrovirus isolate SP 2000  complete genome | 120023 | 18 | .01 | 2010 | 1.67 | 853 | .71 | 2182 | 1.81 | 172 | .14 |
 | NC_043521.1 | Soybean leaf-associated ourmiavirus 1 isolate SaOurV1-1  partial sequence | 3010 | 0 | 0 | 0 | 0 | 49 | 1.62 | 0 | 0 | 0 | 0 |
 | NC_043522.1 | Soybean leaf-associated ourmiavirus 2 isolate SaOurV2-1  partial sequence | 1589 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_043523.1 | Angelica bushy stunt virus isolate AD  complete genome | 8300 | 0 | 0 | 43 | .51 | 0 | 0 | 43 | .51 | 0 | 0 |
@@ -12019,7 +12019,7 @@
 | NC_043571.1 | Sororoca virus strain BeAr32149 polyprotein gene  complete cds | 4621 | 0 | 0 | 153 | 3.31 | 49 | 1.06 | 153 | 3.31 | 0 | 0 |
 | NC_043572.1 | Sororoca virus strain BeAr32149 nucleocapsid protein gene  complete cds | 1018 | 0 | 0 | 107 | 10.51 | 124 | 12.18 | 107 | 10.51 | 0 | 0 |
 | NC_043573.1 | Cachoeira Porteira virus strain BeAr328208 polyprotein gene  complete cds | 4652 | 0 | 0 | 0 | 0 | 74 | 1.59 | 0 | 0 | 0 | 0 |
-| NC_043574.1 | Cachoeira Porteira virus strain BeAr328208 nucleocapsid protein gene  complete cds | 1016 | 0 | 0 | 55 | 5.41 | 99 | 9.74 | 55 | 5.41 | 0 | 0 |
+| NC_043574.1 | Cachoeira Porteira virus strain BeAr328208 nucleocapsid protein gene  complete cds | 1016 | 1 | .09 | 55 | 5.41 | 99 | 9.74 | 55 | 5.41 | 0 | 0 |
 | NC_043575.1 | Cachoeira Porteira virus strain BeAr328208 RNA-dependent RNA polymerase gene  complete cds | 6892 | 0 | 0 | 28 | .40 | 49 | .71 | 77 | 1.11 | 49 | .71 |
 | NC_043576.1 | Jatobal virus nucleocapsid protein and nonstructural protein genes  complete cds | 940 | 0 | 0 | 61 | 6.48 | 0 | 0 | 61 | 6.48 | 0 | 0 |
 | NC_043577.1 | Jatobal virus isolate BeAn 423380 polyprotein gene  complete cds | 4403 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -12156,7 +12156,7 @@
 | NC_044932.1 | Norovirus GII GII.NA2[PNA2]  complete sequence | 7525 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_044934.1 | Recombinant adenovirus and mutant adenovirus induced from bovine adenovirus type 1 | 34185 | 0 | 0 | 56 | .16 | 0 | 0 | 56 | .16 | 0 | 0 |
 | NC_044936.1 | Tree shrew adenovirus 1  complete genome | 33501 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_044937.1 | Paramecium bursaria Chlorella virus CVA-1  partial genome | 326592 | 0 | 0 | 3743 | 1.14 | 1659 | .50 | 3891 | 1.19 | 148 | .04 |
+| NC_044937.1 | Paramecium bursaria Chlorella virus CVA-1  partial genome | 326592 | 700 | .21 | 3743 | 1.14 | 1659 | .50 | 3891 | 1.19 | 148 | .04 |
 | NC_044938.1 | Heliothis virescens ascovirus 3f isolate LD135790  complete genome | 198157 | 0 | 0 | 664 | .33 | 123 | .06 | 664 | .33 | 0 | 0 |
 | NC_044939.1 | Heliothis virescens ascovirus 3g  complete genome | 199721 | 0 | 0 | 441 | .22 | 148 | .07 | 515 | .25 | 74 | .03 |
 | NC_044940.1 | Pectobacterium phage PEAT2  complete genome | 48659 | 0 | 0 | 202 | .41 | 0 | 0 | 202 | .41 | 0 | 0 |
@@ -12177,7 +12177,7 @@
 | NC_044955.1 | African swine fever virus isolate 47 Ss 2008  complete genome | 184638 | 0 | 0 | 1127 | .61 | 331 | .17 | 1372 | .74 | 245 | .13 |
 | NC_044956.1 | African swine fever virus Benin 97 1 pathogenic isolate  complete genome | 182284 | 0 | 0 | 1083 | .59 | 294 | .16 | 1377 | .75 | 294 | .16 |
 | NC_044957.1 | African swine fever virus OURT 88 3 (avirulent field isolate)  complete genome | 171719 | 0 | 0 | 1017 | .59 | 270 | .15 | 1287 | .74 | 270 | .15 |
-| NC_044958.1 | African swine fever virus E75 complete genome  strain E75 | 181187 | 0 | 0 | 1074 | .59 | 296 | .16 | 1368 | .75 | 294 | .16 |
+| NC_044958.1 | African swine fever virus E75 complete genome  strain E75 | 181187 | 2 | 0 | 1074 | .59 | 296 | .16 | 1368 | .75 | 294 | .16 |
 | NC_044959.2 | African swine fever virus isolate ASFV Georgia 2007 1 genome assembly  complete genome: monopartite | 190584 | 0 | 0 | 620 | .32 | 343 | .17 | 914 | .47 | 294 | .15 |
 | NC_044960.1 | Bottlenose dolphin adenovirus 1 isolate BdAdV-1 2014 genome assembly  chromosome: I | 34080 | 0 | 0 | 84 | .24 | 49 | .14 | 133 | .39 | 49 | .14 |
 | NC_045425.1 | Thermus phage phiOH3 genomic DNA  complete genome | 5688 | 0 | 0 | 38 | .66 | 0 | 0 | 38 | .66 | 0 | 0 |
@@ -12235,7 +12235,7 @@
 | NC_047737.1 | Vibrio phage AS51  complete genome | 42542 | 0 | 0 | 205 | .48 | 0 | 0 | 205 | .48 | 0 | 0 |
 | NC_047738.1 | Rhizobium phage RHEph01  complete genome | 43444 | 0 | 0 | 108 | .24 | 0 | 0 | 108 | .24 | 0 | 0 |
 | NC_047739.1 | Lactobacillus phage ATCC 8014-B2  complete genome | 80617 | 0 | 0 | 628 | .77 | 147 | .18 | 677 | .83 | 49 | .06 |
-| NC_047740.1 | Enterobacteria phage phiJLA23  complete genome | 43017 | 0 | 0 | 181 | .42 | 109 | .25 | 181 | .42 | 0 | 0 |
+| NC_047740.1 | Enterobacteria phage phiJLA23  complete genome | 43017 | 11 | .02 | 181 | .42 | 109 | .25 | 181 | .42 | 0 | 0 |
 | NC_047741.1 | Vibrio phage JSF7  complete genome | 46318 | 0 | 0 | 82 | .17 | 0 | 0 | 82 | .17 | 0 | 0 |
 | NC_047742.1 | Enterobacteria phage IME EC2  complete genome | 41510 | 0 | 0 | 129 | .31 | 0 | 0 | 129 | .31 | 0 | 0 |
 | NC_047743.1 | Burkholderia phage Bp-AMP1 complete genome | 42409 | 0 | 0 | 492 | 1.16 | 0 | 0 | 492 | 1.16 | 0 | 0 |
@@ -12264,7 +12264,7 @@
 | NC_047766.1 | Escherichia phage ECA2  complete genome | 38890 | 0 | 0 | 68 | .17 | 0 | 0 | 68 | .17 | 0 | 0 |
 | NC_047767.1 | Staphylococcus phage vB SscM-1  complete genome | 139681 | 0 | 0 | 1631 | 1.16 | 637 | .45 | 2219 | 1.58 | 588 | .42 |
 | NC_047768.1 | Phage MedPE-SWcel-C56  complete genome | 45260 | 0 | 0 | 191 | .42 | 0 | 0 | 191 | .42 | 0 | 0 |
-| NC_047769.1 | Escherichia virus AAPEc6  complete genome | 44559 | 0 | 0 | 118 | .26 | 1 | 0 | 118 | .26 | 0 | 0 |
+| NC_047769.1 | Escherichia virus AAPEc6  complete genome | 44559 | 1 | 0 | 118 | .26 | 1 | 0 | 118 | .26 | 0 | 0 |
 | NC_047770.1 | Escherichia phage ESCO13  complete genome | 149813 | 0 | 0 | 348 | .23 | 49 | .03 | 397 | .26 | 49 | .03 |
 | NC_047771.1 | Klebsiella phage vB KpnP KpV763  complete genome | 40765 | 0 | 0 | 89 | .21 | 0 | 0 | 89 | .21 | 0 | 0 |
 | NC_047772.1 | Klebsiella phage vB KpnP KpV767  complete genome | 40395 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -12302,7 +12302,7 @@
 | NC_047804.1 | Ralstonia phage RS-PII-1  complete genome | 42042 | 0 | 0 | 161 | .38 | 0 | 0 | 161 | .38 | 0 | 0 |
 | NC_047805.1 | Yersinia phage fHe-Yen3-01  complete genome | 42771 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_047806.1 | Escherichia phage vB EcoP B  complete genome | 44018 | 0 | 0 | 196 | .44 | 172 | .39 | 245 | .55 | 49 | .11 |
-| NC_047807.1 | Escherichia phage vB EcoP C  complete genome | 44970 | 0 | 0 | 94 | .20 | 53 | .11 | 143 | .31 | 49 | .10 |
+| NC_047807.1 | Escherichia phage vB EcoP C  complete genome | 44970 | 4 | 0 | 94 | .20 | 53 | .11 | 143 | .31 | 49 | .10 |
 | NC_047808.1 | Escherichia phage vB EcoP F  complete genome | 39300 | 0 | 0 | 35 | .08 | 0 | 0 | 35 | .08 | 0 | 0 |
 | NC_047809.1 | Escherichia phage vB EcoP K  complete genome | 37775 | 0 | 0 | 191 | .50 | 49 | .12 | 240 | .63 | 49 | .12 |
 | NC_047810.1 | Escherichia phage vB EcoS-IME253  complete genome | 46717 | 0 | 0 | 297 | .63 | 74 | .15 | 297 | .63 | 0 | 0 |
@@ -12351,7 +12351,7 @@
 | NC_047853.1 | Enterococcus phage phiEF24C-P2 DNA  complete genome | 142072 | 0 | 0 | 1272 | .89 | 392 | .27 | 1468 | 1.03 | 196 | .13 |
 | NC_047854.1 | Cronobacter phage ESSI-2  complete genome | 28765 | 0 | 0 | 43 | .14 | 0 | 0 | 43 | .14 | 0 | 0 |
 | NC_047855.1 | Staphylococcus phage PSa3 complete sequence | 17602 | 0 | 0 | 99 | .56 | 147 | .83 | 246 | 1.39 | 147 | .83 |
-| NC_047856.1 | Enterobacter phage KNP3  complete genome | 44911 | 0 | 0 | 10351 | 23.04 | 10273 | 22.87 | 10351 | 23.04 | 0 | 0 |
+| NC_047856.1 | Enterobacter phage KNP3  complete genome | 44911 | 10273 | 22.87 | 10351 | 23.04 | 10273 | 22.87 | 10351 | 23.04 | 0 | 0 |
 | NC_047857.1 | Klebsiella phage phiKpS2  complete genome | 44024 | 0 | 0 | 50 | .11 | 0 | 0 | 50 | .11 | 0 | 0 |
 | NC_047858.1 | Proteus phage PM 116  complete genome | 44601 | 0 | 0 | 66 | .14 | 0 | 0 | 66 | .14 | 0 | 0 |
 | NC_047859.1 | Salmonella phage SP01  complete genome | 117842 | 0 | 0 | 427 | .36 | 147 | .12 | 574 | .48 | 147 | .12 |
@@ -12431,7 +12431,7 @@
 | NC_047933.1 | Pseudomonas phage phiNV3  complete genome | 43184 | 0 | 0 | 88 | .20 | 0 | 0 | 88 | .20 | 0 | 0 |
 | NC_047934.1 | Yersinia phage fPS-9 genome assembly  complete genome: monopartite | 39034 | 0 | 0 | 352 | .90 | 0 | 0 | 352 | .90 | 0 | 0 |
 | NC_047935.1 | Yersinia phage fPS-59 genome assembly  complete genome: monopartite | 38391 | 0 | 0 | 182 | .47 | 0 | 0 | 182 | .47 | 0 | 0 |
-| NC_047936.1 | Yersinia phage fPS-53 genome assembly  complete genome: monopartite | 40694 | 0 | 0 | 395 | .97 | 2 | 0 | 395 | .97 | 0 | 0 |
+| NC_047936.1 | Yersinia phage fPS-53 genome assembly  complete genome: monopartite | 40694 | 2 | 0 | 395 | .97 | 2 | 0 | 395 | .97 | 0 | 0 |
 | NC_047937.1 | Yersinia phage fPS-54-ocr genome assembly  complete genome: monopartite | 40075 | 0 | 0 | 364 | .90 | 0 | 0 | 364 | .90 | 0 | 0 |
 | NC_047938.1 | Escherichia phage SECphi27 genome assembly  complete genome: monopartite | 51811 | 0 | 0 | 94 | .18 | 0 | 0 | 94 | .18 | 0 | 0 |
 | NC_047939.1 | Yersinia phage YpP-Y  complete sequence | 37714 | 0 | 0 | 84 | .22 | 74 | .19 | 84 | .22 | 0 | 0 |
@@ -12440,7 +12440,7 @@
 | NC_047942.1 | Escherichia phage Ebrios  complete genome | 39752 | 0 | 0 | 24 | .06 | 0 | 0 | 24 | .06 | 0 | 0 |
 | NC_047943.1 | Haloarcula hispanica pleomorphic virus 4  complete genome | 15010 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_047944.1 | Klebsiella phage myPSH1235  complete genome | 45135 | 0 | 0 | 191 | .42 | 0 | 0 | 191 | .42 | 0 | 0 |
-| NC_047945.1 | Staphylococcus phage phiSA BS1  complete genome | 142978 | 0 | 0 | 2070 | 1.44 | 371 | .25 | 2364 | 1.65 | 294 | .20 |
+| NC_047945.1 | Staphylococcus phage phiSA BS1  complete genome | 142978 | 3 | 0 | 2070 | 1.44 | 371 | .25 | 2364 | 1.65 | 294 | .20 |
 | NC_047946.1 | Ralstonia phage RsoP1EGY  complete genome | 41297 | 0 | 0 | 106 | .25 | 0 | 0 | 106 | .25 | 0 | 0 |
 | NC_047947.1 | Salmonella phage vB SenS PHB07  complete genome | 51818 | 0 | 0 | 179 | .34 | 0 | 0 | 179 | .34 | 0 | 0 |
 | NC_047948.1 | Staphylococcus phage phiSA BS2  complete genome | 149229 | 0 | 0 | 2223 | 1.48 | 519 | .34 | 2668 | 1.78 | 445 | .29 |
@@ -12462,7 +12462,7 @@
 | NC_047964.1 | Dickeya phage Ninurta  complete genome | 39699 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_047965.1 | Pseudomonas phage 22PfluR64PP  complete genome | 40822 | 0 | 0 | 33 | .08 | 0 | 0 | 33 | .08 | 0 | 0 |
 | NC_047966.1 | Aeromonas phage 25AhydR2PP  complete genome | 42696 | 0 | 0 | 68 | .15 | 0 | 0 | 68 | .15 | 0 | 0 |
-| NC_047967.1 | Pseudomonas phage vB PaeP PAO1 1-15pyo  complete genome | 42750 | 0 | 0 | 36 | .08 | 1 | 0 | 36 | .08 | 0 | 0 |
+| NC_047967.1 | Pseudomonas phage vB PaeP PAO1 1-15pyo  complete genome | 42750 | 1 | 0 | 36 | .08 | 1 | 0 | 36 | .08 | 0 | 0 |
 | NC_047968.1 | Klebsiella virus KP32 isolate 192  complete genome | 40635 | 0 | 0 | 173 | .42 | 0 | 0 | 173 | .42 | 0 | 0 |
 | NC_047969.1 | Klebsiella virus KP32 isolate 194  complete genome | 41161 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_047970.1 | Klebsiella virus KP32 isolate 195  complete genome | 40540 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -12479,7 +12479,7 @@
 | NC_047981.1 | Pseudomonas phage PspYZU08  complete genome | 40184 | 0 | 0 | 89 | .22 | 0 | 0 | 89 | .22 | 0 | 0 |
 | NC_047982.1 | Ralstonia phage RPSC1  complete genome | 39628 | 0 | 0 | 107 | .27 | 0 | 0 | 107 | .27 | 0 | 0 |
 | NC_047983.1 | Lactobacillus phage Lb  complete genome | 43416 | 0 | 0 | 145 | .33 | 49 | .11 | 194 | .44 | 49 | .11 |
-| NC_047984.1 | Escherichia phage vB EcoP S523  complete genome | 39825 | 0 | 0 | 192 | .48 | 1 | 0 | 192 | .48 | 0 | 0 |
+| NC_047984.1 | Escherichia phage vB EcoP S523  complete genome | 39825 | 1 | 0 | 192 | .48 | 1 | 0 | 192 | .48 | 0 | 0 |
 | NC_047985.1 | Escherichia phage LL5  complete genome | 49788 | 0 | 0 | 265 | .53 | 0 | 0 | 265 | .53 | 0 | 0 |
 | NC_047986.1 | Microbacterium phage Krampus  complete genome | 56708 | 0 | 0 | 253 | .44 | 49 | .08 | 302 | .53 | 49 | .08 |
 | NC_047987.1 | Microbacterium phage MementoMori  complete genome | 55572 | 0 | 0 | 659 | 1.18 | 0 | 0 | 659 | 1.18 | 0 | 0 |
@@ -12496,7 +12496,7 @@
 | NC_047998.1 | Shigella phage Sfin-1  complete genome | 50403 | 0 | 0 | 267 | .52 | 49 | .09 | 267 | .52 | 0 | 0 |
 | NC_047999.1 | Salmonella phage SH9  partial genome | 111607 | 0 | 0 | 491 | .43 | 98 | .08 | 540 | .48 | 49 | .04 |
 | NC_048000.1 | Salmonella phage LVR16A  partial genome | 111601 | 0 | 0 | 432 | .38 | 49 | .04 | 481 | .43 | 49 | .04 |
-| NC_048001.1 | Salmonella phage SP3  partial genome | 109306 | 0 | 0 | 774 | .70 | 357 | .32 | 921 | .84 | 147 | .13 |
+| NC_048001.1 | Salmonella phage SP3  partial genome | 109306 | 210 | .19 | 774 | .70 | 357 | .32 | 921 | .84 | 147 | .13 |
 | NC_048002.1 | Escherichia phage SRT7  complete genome | 39883 | 0 | 0 | 133 | .33 | 0 | 0 | 133 | .33 | 0 | 0 |
 | NC_048003.1 | Pseudomonas phage phCDa  complete genome | 72821 | 0 | 0 | 116 | .15 | 0 | 0 | 116 | .15 | 0 | 0 |
 | NC_048004.1 | Salmonella phage 3A 8767  complete genome | 38821 | 0 | 0 | 118 | .30 | 0 | 0 | 118 | .30 | 0 | 0 |
@@ -12545,7 +12545,7 @@
 | NC_048047.1 | Caulobacter phage CcrBL9  complete genome | 322272 | 0 | 0 | 2243 | .69 | 0 | 0 | 2243 | .69 | 0 | 0 |
 | NC_048048.2 | Caulobacter phage CcrSC  complete genome | 317489 | 0 | 0 | 2625 | .82 | 0 | 0 | 2625 | .82 | 0 | 0 |
 | NC_048049.1 | Synechococcus phage S-T4  complete genome | 181082 | 0 | 0 | 656 | .36 | 49 | .02 | 705 | .38 | 49 | .02 |
-| NC_048050.1 | Uncultured Mediterranean phage clone uvDeep1-GF2-KM23-C739 genomic sequence | 33961 | 0 | 0 | 325 | .95 | 117 | .34 | 325 | .95 | 0 | 0 |
+| NC_048050.1 | Uncultured Mediterranean phage clone uvDeep1-GF2-KM23-C739 genomic sequence | 33961 | 68 | .20 | 325 | .95 | 117 | .34 | 325 | .95 | 0 | 0 |
 | NC_048051.1 | Uncultured Mediterranean phage clone uvDeep-GF0-KM16-C193 genomic sequence | 24480 | 0 | 0 | 151 | .61 | 0 | 0 | 151 | .61 | 0 | 0 |
 | NC_048052.1 | Dickeya phage vB DsoP JA10  complete genome | 40131 | 0 | 0 | 37 | .09 | 0 | 0 | 37 | .09 | 0 | 0 |
 | NC_048053.1 | Dickeya phage vB DsoM JA29  complete genome | 253323 | 0 | 0 | 1310 | .51 | 617 | .24 | 1359 | .53 | 49 | .01 |
@@ -12633,11 +12633,11 @@
 | NC_048135.1 | Enterobacter phage EcpYZU01  complete genome | 39767 | 0 | 0 | 42 | .10 | 0 | 0 | 42 | .10 | 0 | 0 |
 | NC_048136.1 | Escherichia phage vB EcoP-Ro45lw  complete genome | 39793 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_048137.1 | Pantoea phage vB PagS AAS23  complete genome | 51170 | 0 | 0 | 83 | .16 | 0 | 0 | 83 | .16 | 0 | 0 |
-| NC_048138.1 | Klebsiella phage Henu1  complete genome | 40352 | 0 | 0 | 22 | .05 | 4 | 0 | 22 | .05 | 0 | 0 |
+| NC_048138.1 | Klebsiella phage Henu1  complete genome | 40352 | 4 | 0 | 22 | .05 | 4 | 0 | 22 | .05 | 0 | 0 |
 | NC_048139.1 | Streptomyces phage Hiyaa  complete genome | 83219 | 0 | 0 | 576 | .69 | 0 | 0 | 576 | .69 | 0 | 0 |
 | NC_048140.1 | Arthrobacter phage Maja  complete genome | 36776 | 0 | 0 | 260 | .70 | 49 | .13 | 260 | .70 | 0 | 0 |
 | NC_048141.1 | Gordonia phage Kenna  complete genome | 53215 | 0 | 0 | 76 | .14 | 0 | 0 | 76 | .14 | 0 | 0 |
-| NC_048142.1 | Acinetobacter phage AbKT21phiIII  complete genome | 40898 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| NC_048142.1 | Acinetobacter phage AbKT21phiIII  complete genome | 40898 | 2 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
 | NC_048143.1 | Klebsiella phage KpKT21phi1  complete genome | 49106 | 0 | 0 | 108 | .21 | 49 | .09 | 108 | .21 | 0 | 0 |
 | NC_048144.1 | Microbacterium phage Schubert  complete genome | 38820 | 0 | 0 | 220 | .56 | 0 | 0 | 220 | .56 | 0 | 0 |
 | NC_048145.1 | Salmonella phage 3-29  complete genome | 110377 | 0 | 0 | 381 | .34 | 123 | .11 | 430 | .38 | 49 | .04 |
@@ -12679,7 +12679,7 @@
 | NC_048181.1 | Raoultella phage RP180  complete genome | 44851 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_048182.1 | Edwardsiella virus pEt-SU  complete genome | 276734 | 0 | 0 | 269 | .09 | 98 | .03 | 367 | .13 | 98 | .03 |
 | NC_048183.1 | Synechococcus phage S-CBP4 genomic sequence | 41824 | 0 | 0 | 34 | .08 | 0 | 0 | 34 | .08 | 0 | 0 |
-| NC_048184.1 | Synechococcus phage S-CBP3  complete genome  *** SEQUENCING IN PROGRESS ***  3 unordered pieces | 47375 | 0 | 0 | 281 | .59 | 200 | .42 | 281 | .59 | 0 | 0 |
+| NC_048184.1 | Synechococcus phage S-CBP3  complete genome  *** SEQUENCING IN PROGRESS ***  3 unordered pieces | 47375 | 200 | .42 | 281 | .59 | 200 | .42 | 281 | .59 | 0 | 0 |
 | NC_048185.1 | Gordonia phage Fairfaxidum  complete genome | 50187 | 0 | 0 | 520 | 1.03 | 0 | 0 | 520 | 1.03 | 0 | 0 |
 | NC_048186.1 | Escherichia phage vB EcoM KWBSE43-6  complete genome | 158607 | 0 | 0 | 396 | .24 | 98 | .06 | 494 | .31 | 98 | .06 |
 | NC_048187.1 | Rheinheimera phage vB RspM Barba5S  complete genome | 82744 | 0 | 0 | 499 | .60 | 49 | .05 | 548 | .66 | 49 | .05 |
@@ -12718,7 +12718,7 @@
 | NC_048626.1 | Pseudomonas phage PA01 DNA  nearly complete genome | 66220 | 0 | 0 | 84 | .12 | 0 | 0 | 84 | .12 | 0 | 0 |
 | NC_048627.1 | Escherichia phage SP15 DNA  complete genome | 110964 | 0 | 0 | 235 | .21 | 147 | .13 | 382 | .34 | 147 | .13 |
 | NC_048628.1 | Bacillus phage BceA1 complete genome | 42932 | 0 | 0 | 186 | .43 | 0 | 0 | 186 | .43 | 0 | 0 |
-| NC_048629.1 | Clostridium phage CpV1 hypothetical proteins  DNA polymerase  hypothetical protein  putative transcriptional regulator  hypothetical proteins  DNA encapsidation protein  collar protein  connector protein  hypothetical protein  endolysin  | 16748 | 0 | 0 | 133 | .79 | 148 | .88 | 280 | 1.67 | 147 | .87 |
+| NC_048629.1 | Clostridium phage CpV1 hypothetical proteins  DNA polymerase  hypothetical protein  putative transcriptional regulator  hypothetical proteins  DNA encapsidation protein  collar protein  connector protein  hypothetical protein  endolysin  | 16748 | 1 | 0 | 133 | .79 | 148 | .88 | 280 | 1.67 | 147 | .87 |
 | NC_048630.1 | Pseudoalteromonas phage HP1  complete genome | 45035 | 0 | 0 | 208 | .46 | 0 | 0 | 208 | .46 | 0 | 0 |
 | NC_048631.1 | Bacillus phage phi105  complete genome | 39318 | 0 | 0 | 98 | .24 | 0 | 0 | 98 | .24 | 0 | 0 |
 | NC_048632.1 | Salmonella phage 35  complete genome | 55391 | 0 | 0 | 97 | .17 | 0 | 0 | 97 | .17 | 0 | 0 |
@@ -12736,7 +12736,7 @@
 | NC_048644.1 | Staphylococcus phage 3 AJ-2017  complete genome | 43922 | 0 | 0 | 352 | .80 | 49 | .11 | 401 | .91 | 49 | .11 |
 | NC_048645.1 | Cronobacter phage vB CsaM leB  complete genome | 177907 | 0 | 0 | 447 | .25 | 0 | 0 | 447 | .25 | 0 | 0 |
 | NC_048646.1 | Cronobacter phage vB CsaM leE  complete genome | 181570 | 0 | 0 | 244 | .13 | 0 | 0 | 244 | .13 | 0 | 0 |
-| NC_048647.1 | Klebsiella phage KNP2 genomic sequence | 146203 | 0 | 0 | 20103 | 13.75 | 19748 | 13.50 | 20152 | 13.78 | 49 | .03 |
+| NC_048647.1 | Klebsiella phage KNP2 genomic sequence | 146203 | 19699 | 13.47 | 20103 | 13.75 | 19748 | 13.50 | 20152 | 13.78 | 49 | .03 |
 | NC_048648.1 | Salmonella phage ST-101  complete genome | 59132 | 0 | 0 | 103 | .17 | 0 | 0 | 103 | .17 | 0 | 0 |
 | NC_048649.1 | Salmonella phage UPF BP2  complete genome | 54894 | 0 | 0 | 382 | .69 | 0 | 0 | 382 | .69 | 0 | 0 |
 | NC_048650.1 | Streptomyces phage BRock  complete genome | 112523 | 0 | 0 | 775 | .68 | 0 | 0 | 775 | .68 | 0 | 0 |
@@ -12754,7 +12754,7 @@
 | NC_048662.1 | Pseudomonas phage R12 DNA  complete genome | 65415 | 0 | 0 | 161 | .24 | 0 | 0 | 161 | .24 | 0 | 0 |
 | NC_048663.1 | Pseudomonas phage R26 DNA  complete genome | 65737 | 0 | 0 | 156 | .23 | 0 | 0 | 156 | .23 | 0 | 0 |
 | NC_048664.1 | Cronobacter phage vB CsaP 009 DNA  complete genome | 92122 | 0 | 0 | 531 | .57 | 0 | 0 | 531 | .57 | 0 | 0 |
-| NC_048665.1 | Clostridium phage phiCDHM14  complete genome | 32651 | 0 | 0 | 1035 | 3.16 | 737 | 2.25 | 1035 | 3.16 | 0 | 0 |
+| NC_048665.1 | Clostridium phage phiCDHM14  complete genome | 32651 | 737 | 2.25 | 1035 | 3.16 | 737 | 2.25 | 1035 | 3.16 | 0 | 0 |
 | NC_048666.1 | Salmonella phage YSD1 strain YSD1 PHAGE genome assembly | 58916 | 0 | 0 | 194 | .32 | 0 | 0 | 194 | .32 | 0 | 0 |
 | NC_048667.1 | Bacillus phage Deep-Purple  complete genome | 36278 | 0 | 0 | 76 | .20 | 0 | 0 | 76 | .20 | 0 | 0 |
 | NC_048668.1 | Serratia phage 2050HW  complete genome | 276025 | 0 | 0 | 363 | .13 | 0 | 0 | 363 | .13 | 0 | 0 |
@@ -12762,8 +12762,8 @@
 | NC_048670.1 | Klebsiella phage KPN N137  complete genome | 59100 | 0 | 0 | 187 | .31 | 0 | 0 | 187 | .31 | 0 | 0 |
 | NC_048671.1 | Lentibacter virus vB LenP ICBM2  complete genome | 40907 | 0 | 0 | 136 | .33 | 0 | 0 | 136 | .33 | 0 | 0 |
 | NC_048672.1 | Lentibacter virus vB LenP ICBM1  complete genome | 40163 | 0 | 0 | 212 | .52 | 0 | 0 | 212 | .52 | 0 | 0 |
-| NC_048673.1 | Aeromonas phage AS-zj  complete genome | 229929 | 0 | 0 | 698 | .30 | 107 | .04 | 796 | .34 | 98 | .04 |
-| NC_048674.1 | Aeromonas phage AS-sw  partial genome | 230024 | 0 | 0 | 1050 | .45 | 406 | .17 | 1148 | .49 | 98 | .04 |
+| NC_048673.1 | Aeromonas phage AS-zj  complete genome | 229929 | 9 | 0 | 698 | .30 | 107 | .04 | 796 | .34 | 98 | .04 |
+| NC_048674.1 | Aeromonas phage AS-sw  partial genome | 230024 | 308 | .13 | 1050 | .45 | 406 | .17 | 1148 | .49 | 98 | .04 |
 | NC_048675.1 | Pseudomonas phage BrSP1  complete genome | 66189 | 0 | 0 | 205 | .30 | 0 | 0 | 205 | .30 | 0 | 0 |
 | NC_048676.1 | Pseudomonas phage SL1  complete genome | 65847 | 0 | 0 | 91 | .13 | 0 | 0 | 91 | .13 | 0 | 0 |
 | NC_048677.1 | Lactobacillus phage LpeD  complete genome | 145162 | 0 | 0 | 742 | .51 | 282 | .19 | 889 | .61 | 147 | .10 |
@@ -12815,12 +12815,12 @@
 | NC_048723.1 | Streptomyces phage LukeCage  complete genome | 133195 | 0 | 0 | 587 | .44 | 49 | .03 | 636 | .47 | 49 | .03 |
 | NC_048724.1 | Streptomyces phage Karimac  complete genome | 131909 | 0 | 0 | 842 | .63 | 0 | 0 | 842 | .63 | 0 | 0 |
 | NC_048725.1 | Bacillus phage Wes44  complete genome | 42248 | 0 | 0 | 95 | .22 | 0 | 0 | 95 | .22 | 0 | 0 |
-| NC_048726.1 | Bacillus phage BSP38  complete genome | 153268 | 0 | 0 | 526 | .34 | 149 | .09 | 624 | .40 | 98 | .06 |
+| NC_048726.1 | Bacillus phage BSP38  complete genome | 153268 | 2 | 0 | 526 | .34 | 149 | .09 | 624 | .40 | 98 | .06 |
 | NC_048727.1 | Salmonella phage Siskin  complete genome | 58476 | 0 | 0 | 130 | .22 | 0 | 0 | 130 | .22 | 0 | 0 |
 | NC_048728.1 | Streptomyces phage Comrade  complete genome | 129015 | 0 | 0 | 570 | .44 | 0 | 0 | 570 | .44 | 0 | 0 |
 | NC_048729.1 | Mycobacterium phage Renaud18  complete genome | 58078 | 0 | 0 | 364 | .62 | 49 | .08 | 364 | .62 | 0 | 0 |
 | NC_048730.1 | Streptomyces phage Yaboi  complete genome | 131250 | 0 | 0 | 1025 | .78 | 0 | 0 | 1025 | .78 | 0 | 0 |
-| NC_048731.1 | Escherichia phage fp01  complete genome | 109515 | 0 | 0 | 468 | .42 | 90 | .08 | 517 | .47 | 49 | .04 |
+| NC_048731.1 | Escherichia phage fp01  complete genome | 109515 | 41 | .03 | 468 | .42 | 90 | .08 | 517 | .47 | 49 | .04 |
 | NC_048732.1 | Klebsiella phage Seifer  complete genome | 58197 | 0 | 0 | 115 | .19 | 0 | 0 | 115 | .19 | 0 | 0 |
 | NC_048733.1 | Microbacterium phage Burro  complete genome | 54473 | 0 | 0 | 372 | .68 | 0 | 0 | 372 | .68 | 0 | 0 |
 | NC_048734.1 | Mycobacterium phage Fowlmouth  complete genome | 69660 | 0 | 0 | 208 | .29 | 49 | .07 | 208 | .29 | 0 | 0 |
@@ -12861,9 +12861,9 @@
 | NC_048769.1 | Aeromonas phage 2-L372D  complete genome | 122963 | 0 | 0 | 829 | .67 | 49 | .03 | 878 | .71 | 49 | .03 |
 | NC_048770.1 | Aeromonas phage 2 L372X  complete genome | 115893 | 0 | 0 | 552 | .47 | 0 | 0 | 552 | .47 | 0 | 0 |
 | NC_048771.1 | Aeromonas phage 4 L372D  complete genome | 138690 | 0 | 0 | 1025 | .73 | 147 | .10 | 1123 | .80 | 98 | .07 |
-| NC_048772.1 | Aeromonas phage 4 L372XY  complete genome | 124279 | 0 | 0 | 617 | .49 | 99 | .07 | 666 | .53 | 49 | .03 |
+| NC_048772.1 | Aeromonas phage 4 L372XY  complete genome | 124279 | 1 | 0 | 617 | .49 | 99 | .07 | 666 | .53 | 49 | .03 |
 | NC_048773.1 | Aeromonas phage 4 4572  complete genome | 102915 | 0 | 0 | 446 | .43 | 147 | .14 | 495 | .48 | 49 | .04 |
-| NC_048774.1 | Aeromonas phage LAh 6  complete genome | 101390 | 0 | 0 | 460 | .45 | 101 | .09 | 509 | .50 | 49 | .04 |
+| NC_048774.1 | Aeromonas phage LAh 6  complete genome | 101390 | 3 | 0 | 460 | .45 | 101 | .09 | 509 | .50 | 49 | .04 |
 | NC_048775.1 | Aeromonas phage LAh 8  complete genome | 97408 | 0 | 0 | 535 | .54 | 98 | .10 | 584 | .59 | 49 | .05 |
 | NC_048776.1 | Aeromonas phage LAh 9  complete genome | 97988 | 0 | 0 | 624 | .63 | 98 | .10 | 673 | .68 | 49 | .05 |
 | NC_048777.1 | Microbacterium phage TinyTimothy  complete genome | 53932 | 0 | 0 | 211 | .39 | 49 | .09 | 211 | .39 | 0 | 0 |
@@ -13004,10 +13004,10 @@
 | NC_049371.1 | Dinoroseobacter phage DS-1410Ws-06  partial genome | 76466 | 0 | 0 | 123 | .16 | 0 | 0 | 123 | .16 | 0 | 0 |
 | NC_049372.1 | Roseobacter phage RD-1410W1-01  partial genome | 72674 | 0 | 0 | 62 | .08 | 0 | 0 | 62 | .08 | 0 | 0 |
 | NC_049373.1 | Lactococcus phage 16W23  complete genome | 32477 | 0 | 0 | 309 | .95 | 0 | 0 | 309 | .95 | 0 | 0 |
-| NC_049374.1 | Lactococcus phage 10W18  complete genome | 32393 | 0 | 0 | 474 | 1.46 | 124 | .38 | 474 | 1.46 | 0 | 0 |
+| NC_049374.1 | Lactococcus phage 10W18  complete genome | 32393 | 1 | 0 | 474 | 1.46 | 124 | .38 | 474 | 1.46 | 0 | 0 |
 | NC_049375.1 | Lactococcus phage i0139  complete genome | 29513 | 0 | 0 | 302 | 1.02 | 98 | .33 | 400 | 1.35 | 98 | .33 |
 | NC_049376.1 | Lactococcus phage 3R16S  complete genome | 30446 | 0 | 0 | 285 | .93 | 49 | .16 | 285 | .93 | 0 | 0 |
-| NC_049377.1 | Lactococcus phage 13W11L  complete genome | 29952 | 0 | 0 | 349 | 1.16 | 51 | .17 | 349 | 1.16 | 0 | 0 |
+| NC_049377.1 | Lactococcus phage 13W11L  complete genome | 29952 | 2 | 0 | 349 | 1.16 | 51 | .17 | 349 | 1.16 | 0 | 0 |
 | NC_049378.1 | Salmonella phage ST-W77  complete genome | 157458 | 0 | 0 | 281 | .17 | 0 | 0 | 281 | .17 | 0 | 0 |
 | NC_049379.1 | Vibrio phage pVa5  complete genome | 78145 | 0 | 0 | 326 | .41 | 98 | .12 | 375 | .47 | 49 | .06 |
 | NC_049380.1 | Vibrio phage JSF3  complete genome | 69396 | 0 | 0 | 211 | .30 | 49 | .07 | 211 | .30 | 0 | 0 |
@@ -13032,7 +13032,7 @@
 | NC_049399.1 | Lactococcus phage 30804  complete genome | 30401 | 0 | 0 | 405 | 1.33 | 147 | .48 | 552 | 1.81 | 147 | .48 |
 | NC_049400.1 | Lactococcus phage 37201  complete genome | 30989 | 0 | 0 | 198 | .63 | 98 | .31 | 296 | .95 | 98 | .31 |
 | NC_049401.1 | Lactococcus phage 38503  complete genome | 27948 | 0 | 0 | 244 | .87 | 196 | .70 | 391 | 1.39 | 147 | .52 |
-| NC_049402.1 | Lactococcus phage 38507  complete genome | 32458 | 0 | 0 | 161 | .49 | 245 | .75 | 405 | 1.24 | 244 | .75 |
+| NC_049402.1 | Lactococcus phage 38507  complete genome | 32458 | 1 | 0 | 161 | .49 | 245 | .75 | 405 | 1.24 | 244 | .75 |
 | NC_049403.1 | Lactococcus phage 51701  complete genome | 32529 | 0 | 0 | 287 | .88 | 49 | .15 | 287 | .88 | 0 | 0 |
 | NC_049404.1 | Lactococcus phage 56003  complete genome | 30926 | 0 | 0 | 388 | 1.25 | 49 | .15 | 388 | 1.25 | 0 | 0 |
 | NC_049405.1 | Lactococcus phage 56301  complete genome | 32555 | 0 | 0 | 411 | 1.26 | 98 | .30 | 460 | 1.41 | 49 | .15 |
@@ -13077,7 +13077,7 @@
 | NC_049444.1 | Klebsiella phage Pylas  complete genome | 70408 | 0 | 0 | 444 | .63 | 49 | .06 | 493 | .70 | 49 | .06 |
 | NC_049445.1 | Acinetobacter phage AbTZA1  complete genome | 168223 | 0 | 0 | 651 | .38 | 49 | .02 | 700 | .41 | 49 | .02 |
 | NC_049446.1 | Lactococcus phage 8V08  complete genome | 32312 | 0 | 0 | 412 | 1.27 | 74 | .22 | 412 | 1.27 | 0 | 0 |
-| NC_049447.1 | Lactococcus phage MV10L  complete genome | 31374 | 0 | 0 | 380 | 1.21 | 1 | 0 | 380 | 1.21 | 0 | 0 |
+| NC_049447.1 | Lactococcus phage MV10L  complete genome | 31374 | 1 | 0 | 380 | 1.21 | 1 | 0 | 380 | 1.21 | 0 | 0 |
 | NC_049448.1 | Klebsiella phage ST437-OXA245phi4.1  complete genome | 39642 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_049449.1 | Klebsiella phage ST437-OXA245phi4.2  complete genome | 18281 | 0 | 0 | 47 | .25 | 0 | 0 | 47 | .25 | 0 | 0 |
 | NC_049450.1 | Klebsiella phage ST16-OXA48phi5.4  complete genome | 38322 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -13144,7 +13144,7 @@
 | NC_049511.1 | Acinetobacter phage AM101  complete genome | 166487 | 0 | 0 | 317 | .19 | 0 | 0 | 317 | .19 | 0 | 0 |
 | NC_049512.1 | Salmonella phage SE14  complete genome | 152926 | 0 | 0 | 514 | .33 | 0 | 0 | 514 | .33 | 0 | 0 |
 | NC_049805.1 | Lactococcus phage phiQ1 DNA  complete genome | 59833 | 0 | 0 | 439 | .73 | 49 | .08 | 439 | .73 | 0 | 0 |
-| NC_049806.1 | Lactococcus phage LW31  complete genome | 60551 | 0 | 0 | 332 | .54 | 1 | 0 | 332 | .54 | 0 | 0 |
+| NC_049806.1 | Lactococcus phage LW31  complete genome | 60551 | 1 | 0 | 332 | .54 | 1 | 0 | 332 | .54 | 0 | 0 |
 | NC_049807.1 | Lactococcus phage AM6  complete genome | 62054 | 0 | 0 | 362 | .58 | 0 | 0 | 362 | .58 | 0 | 0 |
 | NC_049808.1 | Lactococcus phage P596  complete genome | 57909 | 0 | 0 | 325 | .56 | 0 | 0 | 325 | .56 | 0 | 0 |
 | NC_049809.1 | Lactococcus phage Q33  complete genome | 31106 | 0 | 0 | 110 | .35 | 49 | .15 | 110 | .35 | 0 | 0 |
@@ -13251,7 +13251,7 @@
 | NC_049971.1 | Bacillus phage vB Bpu PumA1  complete genome | 18466 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_049972.1 | Bacillus phage vB Bpu PumA2  complete genome | 18932 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_049973.1 | Bacillus virus SRT01hs  complete genome | 20784 | 0 | 0 | 87 | .41 | 0 | 0 | 87 | .41 | 0 | 0 |
-| NC_049974.1 | Bacillus phage Gxv1  complete genome | 21781 | 0 | 0 | 0 | 0 | 9 | .04 | 0 | 0 | 0 | 0 |
+| NC_049974.1 | Bacillus phage Gxv1  complete genome | 21781 | 9 | .04 | 9 | .04 | 9 | .04 | 0 | 0 | 0 | 0 |
 | NC_049975.1 | Bacillus phage vB BsuP-Goe1  complete genome | 18379 | 0 | 0 | 97 | .52 | 0 | 0 | 97 | .52 | 0 | 0 |
 | NC_049976.1 | Bacillus phage Nf  complete genome | 18753 | 0 | 0 | 84 | .44 | 0 | 0 | 84 | .44 | 0 | 0 |
 | NC_049977.1 | Bacteroides phage crAss001  complete genome | 102679 | 0 | 0 | 464 | .45 | 319 | .31 | 562 | .54 | 98 | .09 |
@@ -13292,7 +13292,7 @@
 | NC_051599.1 | Mycobacterium phage Unicorn  complete genome | 61208 | 0 | 0 | 464 | .75 | 0 | 0 | 464 | .75 | 0 | 0 |
 | NC_051600.1 | Mycobacterium phage Bryler  complete genome | 57666 | 0 | 0 | 607 | 1.05 | 49 | .08 | 607 | 1.05 | 0 | 0 |
 | NC_051601.1 | Mycobacterium phage Krueger  complete genome | 60321 | 0 | 0 | 659 | 1.09 | 0 | 0 | 659 | 1.09 | 0 | 0 |
-| NC_051602.1 | Mycobacterium phage Shandong1  complete genome | 60618 | 0 | 0 | 566 | .93 | 51 | .08 | 615 | 1.01 | 49 | .08 |
+| NC_051602.1 | Mycobacterium phage Shandong1  complete genome | 60618 | 2 | 0 | 566 | .93 | 51 | .08 | 615 | 1.01 | 49 | .08 |
 | NC_051603.1 | Mycobacterium phage Ximenita  complete genome | 61027 | 0 | 0 | 669 | 1.09 | 0 | 0 | 669 | 1.09 | 0 | 0 |
 | NC_051604.1 | Mycobacterium phage Hurricane  complete genome | 61318 | 0 | 0 | 461 | .75 | 0 | 0 | 461 | .75 | 0 | 0 |
 | NC_051605.1 | Mycobacterium phage Amgine  complete genome | 62236 | 0 | 0 | 615 | .98 | 0 | 0 | 615 | .98 | 0 | 0 |
@@ -13550,14 +13550,14 @@
 | NC_052982.1 | Proteus phage P16-2532  complete genome | 58931 | 0 | 0 | 191 | .32 | 0 | 0 | 191 | .32 | 0 | 0 |
 | NC_052983.1 | Escherichia phage E21  complete genome | 58536 | 0 | 0 | 101 | .17 | 0 | 0 | 101 | .17 | 0 | 0 |
 | NC_052984.1 | Aeromonas phage vB AhyS-A18P4  complete genome | 60975 | 0 | 0 | 309 | .50 | 49 | .08 | 309 | .50 | 0 | 0 |
-| NC_052985.1 | Aeromonas phage LAh 7  complete genome | 61426 | 0 | 0 | 90 | .14 | 55 | .08 | 139 | .22 | 49 | .07 |
+| NC_052985.1 | Aeromonas phage LAh 7  complete genome | 61426 | 6 | 0 | 90 | .14 | 55 | .08 | 139 | .22 | 49 | .07 |
 | NC_052986.1 | Aeromonas phage BUCT551  complete genome | 61382 | 0 | 0 | 578 | .94 | 271 | .44 | 627 | 1.02 | 49 | .07 |
 | NC_052987.1 | Klebsiella phage KPN N98  complete genome | 59214 | 0 | 0 | 187 | .31 | 0 | 0 | 187 | .31 | 0 | 0 |
 | NC_052988.1 | Klebsiella phage KPN U2874  complete genome | 59087 | 0 | 0 | 187 | .31 | 0 | 0 | 187 | .31 | 0 | 0 |
 | NC_052989.1 | Cronobacter phage JC01  complete genome | 61736 | 0 | 0 | 620 | 1.00 | 49 | .07 | 669 | 1.08 | 49 | .07 |
 | NC_052990.1 | Salmonella phage Season12  complete genome | 59047 | 0 | 0 | 128 | .21 | 0 | 0 | 128 | .21 | 0 | 0 |
 | NC_052991.1 | Serratia phage KpYy 1 41  complete genome | 54417 | 0 | 0 | 105 | .19 | 0 | 0 | 105 | .19 | 0 | 0 |
-| NC_052992.1 | UNVERIFIED: Salmonella phage KNP6 genomic sequence | 59230 | 0 | 0 | 1021 | 1.72 | 892 | 1.50 | 1021 | 1.72 | 0 | 0 |
+| NC_052992.1 | UNVERIFIED: Salmonella phage KNP6 genomic sequence | 59230 | 892 | 1.50 | 1021 | 1.72 | 892 | 1.50 | 1021 | 1.72 | 0 | 0 |
 | NC_052993.1 | Salmonella phage ER19  complete genome | 58344 | 0 | 0 | 152 | .26 | 0 | 0 | 152 | .26 | 0 | 0 |
 | NC_052994.1 | Salmonella phage BPS1  complete genome | 58852 | 0 | 0 | 93 | .15 | 0 | 0 | 93 | .15 | 0 | 0 |
 | NC_052995.1 | Salmonella phage BPS2  complete genome | 58526 | 0 | 0 | 93 | .15 | 0 | 0 | 93 | .15 | 0 | 0 |
@@ -13664,14 +13664,14 @@
 | NC_054456.1 | Mycobacterium phage Jamie19  complete genome | 41278 | 0 | 0 | 840 | 2.03 | 0 | 0 | 840 | 2.03 | 0 | 0 |
 | NC_054458.1 | Xanthomonas phage XPP1  complete genome | 46195 | 0 | 0 | 195 | .42 | 0 | 0 | 195 | .42 | 0 | 0 |
 | NC_054459.1 | Xanthomonas phage XPV1  complete genome | 46503 | 0 | 0 | 183 | .39 | 0 | 0 | 183 | .39 | 0 | 0 |
-| NC_054460.1 | Xanthomonas phage KPhi1  complete genome | 46077 | 0 | 0 | 262 | .56 | 52 | .11 | 262 | .56 | 0 | 0 |
+| NC_054460.1 | Xanthomonas phage KPhi1  complete genome | 46077 | 3 | 0 | 262 | .56 | 52 | .11 | 262 | .56 | 0 | 0 |
 | NC_054461.1 | Xanthomonas virus phiXaf18  complete genome | 47407 | 0 | 0 | 525 | 1.10 | 172 | .36 | 525 | 1.10 | 0 | 0 |
 | NC_054462.1 | Ralstonia phage Adzire  complete genome | 44732 | 0 | 0 | 234 | .52 | 0 | 0 | 234 | .52 | 0 | 0 |
 | NC_054463.1 | Ralstonia phage Bakoly  complete genome | 44222 | 0 | 0 | 313 | .70 | 0 | 0 | 313 | .70 | 0 | 0 |
 | NC_054464.1 | Edwardsiella phage Edno5  complete genome | 40844 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_054465.1 | Aeromonas phage 2 D05  complete genome | 43233 | 0 | 0 | 83 | .19 | 0 | 0 | 83 | .19 | 0 | 0 |
 | NC_054466.1 | Aeromonas phage 4 D05  complete genome | 42249 | 0 | 0 | 51 | .12 | 0 | 0 | 51 | .12 | 0 | 0 |
-| NC_054636.1 | Shigella phage Sf11 SMD-2017  complete genome | 46454 | 0 | 0 | 113 | .24 | 99 | .21 | 211 | .45 | 98 | .21 |
+| NC_054636.1 | Shigella phage Sf11 SMD-2017  complete genome | 46454 | 1 | 0 | 113 | .24 | 99 | .21 | 211 | .45 | 98 | .21 |
 | NC_054637.1 | Escherichia coli Phage vB EcoS-Sa179lw  complete genome | 46833 | 0 | 0 | 161 | .34 | 49 | .10 | 210 | .44 | 49 | .10 |
 | NC_054638.1 | Salmonella phage vB SenS SB28  complete genome | 45126 | 0 | 0 | 302 | .66 | 0 | 0 | 302 | .66 | 0 | 0 |
 | NC_054639.1 | Salmonella phage Skate  complete genome | 47393 | 0 | 0 | 187 | .39 | 0 | 0 | 187 | .39 | 0 | 0 |
@@ -13794,11 +13794,11 @@
 | NC_054900.1 | Citrobacter phage PhiZZ6  complete genome | 165795 | 0 | 0 | 688 | .41 | 0 | 0 | 688 | .41 | 0 | 0 |
 | NC_054901.1 | Citrobacter phage PhiZZ23  complete genome | 167516 | 0 | 0 | 813 | .48 | 98 | .05 | 911 | .54 | 98 | .05 |
 | NC_054902.1 | Enterobacteria phage Aplg8  complete genome | 168496 | 0 | 0 | 720 | .42 | 98 | .05 | 818 | .48 | 98 | .05 |
-| NC_054903.1 | Enterobacteria phage GiZh  complete genome | 166514 | 0 | 0 | 640 | .38 | 101 | .06 | 738 | .44 | 98 | .05 |
+| NC_054903.1 | Enterobacteria phage GiZh  complete genome | 166514 | 3 | 0 | 640 | .38 | 101 | .06 | 738 | .44 | 98 | .05 |
 | NC_054904.1 | Enterobacteria phage vB EcoM IME340  complete genome | 165549 | 0 | 0 | 750 | .45 | 147 | .08 | 848 | .51 | 98 | .05 |
 | NC_054905.1 | Enterobacteria phage Kha5h  complete genome | 167318 | 0 | 0 | 824 | .49 | 98 | .05 | 922 | .55 | 98 | .05 |
 | NC_054906.1 | Enterobacteria phage RB18  complete genome | 166677 | 0 | 0 | 923 | .55 | 0 | 0 | 923 | .55 | 0 | 0 |
-| NC_054907.1 | Enterobacteria phage T6 DNA  complete genome | 168697 | 0 | 0 | 763 | .45 | 198 | .11 | 910 | .53 | 147 | .08 |
+| NC_054907.1 | Enterobacteria phage T6 DNA  complete genome | 168697 | 2 | 0 | 763 | .45 | 198 | .11 | 910 | .53 | 147 | .08 |
 | NC_054908.1 | Escherichia phage vB EcoM DalCa  complete genome | 166040 | 0 | 0 | 851 | .51 | 147 | .08 | 998 | .60 | 147 | .08 |
 | NC_054909.1 | Escherichia phage EC121  partial genome | 168805 | 0 | 0 | 783 | .46 | 196 | .11 | 979 | .57 | 196 | .11 |
 | NC_054910.1 | Escherichia phage EcNP1  complete genome | 166176 | 0 | 0 | 844 | .50 | 49 | .02 | 893 | .53 | 49 | .02 |
@@ -13831,7 +13831,7 @@
 | NC_054937.1 | Salmonella phage pSe SNUABM 01  complete genome | 172360 | 0 | 0 | 725 | .42 | 245 | .14 | 921 | .53 | 196 | .11 |
 | NC_054938.1 | Serratia phage PhiZZ30  complete genome | 167484 | 0 | 0 | 631 | .37 | 147 | .08 | 778 | .46 | 147 | .08 |
 | NC_054939.1 | Shigella phage CM8  complete genome | 167247 | 0 | 0 | 803 | .48 | 49 | .02 | 803 | .48 | 0 | 0 |
-| NC_054940.1 | Shigella phage JK45  complete genome | 170740 | 0 | 0 | 235 | .13 | 1 | 0 | 235 | .13 | 0 | 0 |
+| NC_054940.1 | Shigella phage JK45  complete genome | 170740 | 1 | 0 | 235 | .13 | 1 | 0 | 235 | .13 | 0 | 0 |
 | NC_054941.1 | Shigella phage Sf23  complete genome | 167678 | 0 | 0 | 675 | .40 | 196 | .11 | 871 | .51 | 196 | .11 |
 | NC_054942.1 | Shigella phage SH7  complete genome | 164870 | 0 | 0 | 982 | .59 | 98 | .05 | 1031 | .62 | 49 | .02 |
 | NC_054943.1 | Yersinia phage fPS-2 genome assembly  chromosome: I | 169060 | 0 | 0 | 751 | .44 | 49 | .02 | 800 | .47 | 49 | .02 |
@@ -13881,7 +13881,7 @@
 | NC_054992.1 | Lactococcus phage 37203  complete genome | 22029 | 0 | 0 | 250 | 1.13 | 49 | .22 | 250 | 1.13 | 0 | 0 |
 | NC_054993.1 | Lactococcus phage 50102  complete genome | 22242 | 0 | 0 | 167 | .75 | 0 | 0 | 167 | .75 | 0 | 0 |
 | NC_054994.1 | Lactococcus phage 50504  complete genome | 21562 | 0 | 0 | 88 | .40 | 0 | 0 | 88 | .40 | 0 | 0 |
-| NC_054995.1 | Lactococcus phage 5171F  complete genome | 21078 | 0 | 0 | 106 | .50 | 54 | .25 | 106 | .50 | 0 | 0 |
+| NC_054995.1 | Lactococcus phage 5171F  complete genome | 21078 | 5 | .02 | 106 | .50 | 54 | .25 | 106 | .50 | 0 | 0 |
 | NC_054996.1 | Lactococcus phage 62402  complete genome | 21980 | 0 | 0 | 281 | 1.27 | 0 | 0 | 281 | 1.27 | 0 | 0 |
 | NC_054997.1 | Lactococcus phage 62403  complete genome | 21704 | 0 | 0 | 220 | 1.01 | 0 | 0 | 220 | 1.01 | 0 | 0 |
 | NC_054998.1 | Lactococcus phage 62606  complete genome | 22185 | 0 | 0 | 155 | .69 | 0 | 0 | 155 | .69 | 0 | 0 |
@@ -13894,14 +13894,14 @@
 | NC_055005.1 | Lactococcus phage vB Llc bIBB94p4  complete genome | 21834 | 0 | 0 | 237 | 1.08 | 49 | .22 | 286 | 1.30 | 49 | .22 |
 | NC_055006.1 | Lactococcus phage CHPC116  complete genome | 21869 | 0 | 0 | 179 | .81 | 49 | .22 | 228 | 1.04 | 49 | .22 |
 | NC_055007.1 | Lactococcus phage CHPC122  complete genome | 22109 | 0 | 0 | 82 | .37 | 0 | 0 | 82 | .37 | 0 | 0 |
-| NC_055008.1 | Lactococcus phage CHPC966  partial genome | 21749 | 0 | 0 | 190 | .87 | 54 | .24 | 190 | .87 | 0 | 0 |
+| NC_055008.1 | Lactococcus phage CHPC966  partial genome | 21749 | 54 | .24 | 190 | .87 | 54 | .24 | 190 | .87 | 0 | 0 |
 | NC_055009.1 | Lactococcus phage CHPC967  complete genome | 22405 | 0 | 0 | 277 | 1.23 | 0 | 0 | 277 | 1.23 | 0 | 0 |
 | NC_055010.1 | Lactococcus phage CHPC972  complete genome | 23281 | 0 | 0 | 176 | .75 | 0 | 0 | 176 | .75 | 0 | 0 |
 | NC_055011.1 | Lactococcus phage CHPC1020  complete genome | 22410 | 0 | 0 | 217 | .96 | 0 | 0 | 217 | .96 | 0 | 0 |
 | NC_055012.1 | Lactococcus phage CHPC1170  complete genome | 21746 | 0 | 0 | 92 | .42 | 0 | 0 | 92 | .42 | 0 | 0 |
 | NC_055013.1 | Lactococcus phage CHPC1182  complete genome | 20751 | 0 | 0 | 109 | .52 | 0 | 0 | 109 | .52 | 0 | 0 |
 | NC_055014.1 | Lactococcus phage CHPC1183  complete genome | 20030 | 0 | 0 | 47 | .23 | 0 | 0 | 47 | .23 | 0 | 0 |
-| NC_055015.1 | Lactococcus phage CHPC1242  partial genome | 21144 | 0 | 0 | 206 | .97 | 36 | .17 | 206 | .97 | 0 | 0 |
+| NC_055015.1 | Lactococcus phage CHPC1242  partial genome | 21144 | 36 | .17 | 206 | .97 | 36 | .17 | 206 | .97 | 0 | 0 |
 | NC_055016.1 | Lactococcus phage vB LacS 15  complete genome | 21006 | 0 | 0 | 124 | .59 | 0 | 0 | 124 | .59 | 0 | 0 |
 | NC_055017.1 | Lactococcus phage PC B1  complete genome | 22099 | 0 | 0 | 115 | .52 | 0 | 0 | 115 | .52 | 0 | 0 |
 | NC_055018.1 | Lactococcus phage PC S1  complete genome | 21629 | 0 | 0 | 213 | .98 | 0 | 0 | 213 | .98 | 0 | 0 |
@@ -13913,7 +13913,7 @@
 | NC_055024.1 | Staphylococcus phage SpT152  complete genome | 41087 | 0 | 0 | 89 | .21 | 0 | 0 | 89 | .21 | 0 | 0 |
 | NC_055025.1 | Staphylococcus phage vB SpsM WIS42  complete genome | 40093 | 0 | 0 | 53 | .13 | 0 | 0 | 53 | .13 | 0 | 0 |
 | NC_055026.1 | Ralstonia phage Dina  complete genome | 39161 | 0 | 0 | 289 | .73 | 0 | 0 | 289 | .73 | 0 | 0 |
-| NC_055027.1 | Lactococcus phage CHPC971  complete genome | 54381 | 0 | 0 | 242 | .44 | 99 | .18 | 291 | .53 | 49 | .09 |
+| NC_055027.1 | Lactococcus phage CHPC971  complete genome | 54381 | 1 | 0 | 242 | .44 | 99 | .18 | 291 | .53 | 49 | .09 |
 | NC_055028.1 | Paenibacillus phage C7Cdelta  complete genome | 55774 | 0 | 0 | 320 | .57 | 0 | 0 | 320 | .57 | 0 | 0 |
 | NC_055029.1 | Paenibacillus phage Halcyone  complete genome | 55560 | 0 | 0 | 125 | .22 | 0 | 0 | 125 | .22 | 0 | 0 |
 | NC_055030.1 | Paenibacillus phage Scottie  complete genome | 55990 | 0 | 0 | 125 | .22 | 0 | 0 | 125 | .22 | 0 | 0 |
@@ -13929,7 +13929,7 @@
 | NC_055040.1 | Staphylococcus phage vB SauS JS02 DNA  complete genome | 46435 | 0 | 0 | 300 | .64 | 49 | .10 | 349 | .75 | 49 | .10 |
 | NC_055041.1 | Staphylococcus phage LH1  complete genome | 46048 | 0 | 0 | 164 | .35 | 49 | .10 | 213 | .46 | 49 | .10 |
 | NC_055042.1 | Staphylococcus phage P240  complete genome | 45985 | 0 | 0 | 338 | .73 | 98 | .21 | 436 | .94 | 98 | .21 |
-| NC_055043.1 | Staphylococcus phage SA137ruMSSAST121PVL  complete genome | 45999 | 0 | 0 | 191 | .41 | 126 | .27 | 289 | .62 | 98 | .21 |
+| NC_055043.1 | Staphylococcus phage SA137ruMSSAST121PVL  complete genome | 45999 | 28 | .06 | 191 | .41 | 126 | .27 | 289 | .62 | 98 | .21 |
 | NC_055044.1 | Staphylococcus phage SAP11  complete genome | 45346 | 0 | 0 | 318 | .70 | 49 | .10 | 367 | .80 | 49 | .10 |
 | NC_055045.1 | Staphylococcus phage phiSa2wa st1  complete genome | 45585 | 0 | 0 | 112 | .24 | 0 | 0 | 112 | .24 | 0 | 0 |
 | NC_055046.1 | Staphylococcus phage phiSa2wa st5  complete genome | 44823 | 0 | 0 | 187 | .41 | 147 | .32 | 334 | .74 | 147 | .32 |
@@ -13985,7 +13985,7 @@
 | NC_055136.1 | Chilli leaf curl Gonda virus isolate India Gonda chilli 2013  complete genome | 2760 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055137.1 | Lepeophtheirus salmonis rhabdovirus No9  partial genome | 11681 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055138.1 | Lepeophtheirus salmonis rhabdovirus No127  partial genome | 11519 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_055139.1 | Harp seal herpesvirus isolate FMV04-1493874  partial genome | 117276 | 0 | 0 | 966 | .82 | 742 | .63 | 1286 | 1.09 | 320 | .27 |
+| NC_055139.1 | Harp seal herpesvirus isolate FMV04-1493874  partial genome | 117276 | 100 | .08 | 966 | .82 | 742 | .63 | 1286 | 1.09 | 320 | .27 |
 | NC_055140.1 | Tomato severe leaf curl Kalakada virus isolate TC101 segment DNA-A  complete sequence | 2755 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055141.1 | Macaca nemestrina rhadinovirus 2 strain J97167  complete genome | 129492 | 0 | 0 | 418 | .32 | 98 | .07 | 516 | .39 | 98 | .07 |
 | NC_055142.1 | Lymphocryptovirus Macaca pfe-lcl-E3  complete genome | 154158 | 0 | 0 | 2219 | 1.43 | 369 | .23 | 2391 | 1.55 | 172 | .11 |
@@ -14027,12 +14027,12 @@
 | NC_055178.1 | Soybean vein necrosis virus isolate TN segment S  complete sequence | 2603 | 0 | 0 | 112 | 4.30 | 148 | 5.68 | 112 | 4.30 | 0 | 0 |
 | NC_055179.1 | Soybean vein necrosis virus isolate TN segment L  complete sequence | 9010 | 0 | 0 | 41 | .45 | 0 | 0 | 41 | .45 | 0 | 0 |
 | NC_055180.1 | Soybean vein necrosis virus isolate TN segment M  complete sequence | 4955 | 0 | 0 | 111 | 2.24 | 0 | 0 | 111 | 2.24 | 0 | 0 |
-| NC_055181.1 | Macaua virus strain BeAr306329 RNA-dependent RNA polymerase gene  complete cds | 6851 | 0 | 0 | 0 | 0 | 1 | .01 | 0 | 0 | 0 | 0 |
+| NC_055181.1 | Macaua virus strain BeAr306329 RNA-dependent RNA polymerase gene  complete cds | 6851 | 1 | .01 | 1 | .01 | 1 | .01 | 0 | 0 | 0 | 0 |
 | NC_055182.1 | Macaua virus strain BeAr306329 nucleocapsid protein gene  complete cds | 1035 | 0 | 0 | 0 | 0 | 74 | 7.14 | 0 | 0 | 0 | 0 |
 | NC_055183.1 | Macaua virus strain BeAr306329 polyprotein gene  complete cds | 4569 | 0 | 0 | 229 | 5.01 | 74 | 1.61 | 229 | 5.01 | 0 | 0 |
 | NC_055184.1 | Facey's Paddock virus isolate Aus Ch 16129 membrane glycoprotein polyprotein gene  complete cds | 4419 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055185.1 | Facey's Paddock virus isolate Aus Ch 16129 RNA polymerase gene  complete cds | 6914 | 0 | 0 | 28 | .40 | 0 | 0 | 28 | .40 | 0 | 0 |
-| NC_055186.1 | Facey's Paddock virus isolate Aus Ch 16129 nucleocapsid protein gene  complete cds | 956 | 0 | 0 | 72 | 7.53 | 80 | 8.36 | 72 | 7.53 | 0 | 0 |
+| NC_055186.1 | Facey's Paddock virus isolate Aus Ch 16129 nucleocapsid protein gene  complete cds | 956 | 6 | .62 | 72 | 7.53 | 80 | 8.36 | 72 | 7.53 | 0 | 0 |
 | NC_055187.1 | Tapirape virus strain BEAN767592 segment M glycoprotein precursor  gene  complete cds | 4446 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055188.1 | Tapirape virus strain BEAN767592 segment L RNA-dependent RNA polymerase gene  complete cds | 6839 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055189.1 | Tapirape virus strain BEAN767592 segment S nucleocapsid protein N gene  complete cds | 949 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14081,7 +14081,7 @@
 | NC_055232.1 | Callitrichine herpesvirus 1 DNA polymerase gene  partial cds | 165 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055233.1 | Wood mouse herpesvirus strain WM8  complete genome | 120108 | 0 | 0 | 232 | .19 | 98 | .08 | 330 | .27 | 98 | .08 |
 | NC_055234.1 | Porcine lymphotropic herpesvirus 3 isolate 489 long unique region  partial sequence | 60326 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_055235.1 | Baboon cytomegalovirus OCOM4-37  complete genome  *** SEQUENCING IN PROGRESS ***  22 unordered pieces | 170275 | 0 | 0 | 5439 | 3.19 | 4443 | 2.60 | 5633 | 3.30 | 194 | .11 |
+| NC_055235.1 | Baboon cytomegalovirus OCOM4-37  complete genome  *** SEQUENCING IN PROGRESS ***  22 unordered pieces | 170275 | 2102 | 1.23 | 5439 | 3.19 | 4443 | 2.60 | 5633 | 3.30 | 194 | .11 |
 | NC_055236.1 | Aglaonema bacilliform virus isolate Minnesota  complete genome | 7178 | 0 | 0 | 68 | .94 | 0 | 0 | 68 | .94 | 0 | 0 |
 | NC_055237.1 | Pineapple bacilliform ER virus clone pAlucsc polyprotein gene  partial cds | 545 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055238.1 | Schefflera ringspot virus isolate Minnesota polyprotein gene  partial cds | 555 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14207,7 +14207,7 @@
 | NC_055358.1 | Odrenisrou virus segment S  complete sequence | 1692 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055359.1 | Odrenisrou virus segment M  complete sequence | 4016 | 0 | 0 | 0 | 0 | 99 | 2.46 | 0 | 0 | 0 | 0 |
 | NC_055360.1 | Salanga virus strain AnB 904a polymerase gene  complete cds | 6513 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_055361.1 | Salanga virus strain AnB 904a polyprotein gene  complete cds | 4412 | 0 | 0 | 0 | 0 | 1 | .02 | 0 | 0 | 0 | 0 |
+| NC_055361.1 | Salanga virus strain AnB 904a polyprotein gene  complete cds | 4412 | 1 | .02 | 1 | .02 | 1 | .02 | 0 | 0 | 0 | 0 |
 | NC_055362.1 | Salanga virus strain AnB 904a nonstructural protein and nucleocapsid genes  complete cds | 1795 | 0 | 0 | 50 | 2.78 | 0 | 0 | 50 | 2.78 | 0 | 0 |
 | NC_055363.1 | Gordil virus isolate Dak ANBr 496d segment L  complete sequence | 6387 | 0 | 0 | 26 | .40 | 0 | 0 | 26 | .40 | 0 | 0 |
 | NC_055364.1 | Gordil virus isolate Dak ANBr 496d segment M  complete sequence | 3422 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14263,7 +14263,7 @@
 | NC_055414.1 | Massilia virus strain W segment L  complete sequence | 6402 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055415.1 | Massilia virus strain W segment S  complete sequence | 1864 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055416.1 | Massilia virus strain W segment M  complete sequence | 4219 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_055417.1 | Karimabad virus isolate 91045-AG segment S  complete sequence | 1685 | 0 | 0 | 0 | 0 | 56 | 3.32 | 0 | 0 | 0 | 0 |
+| NC_055417.1 | Karimabad virus isolate 91045-AG segment S  complete sequence | 1685 | 56 | 3.32 | 56 | 3.32 | 56 | 3.32 | 0 | 0 | 0 | 0 |
 | NC_055418.1 | Karimabad virus isolate 91045-AG segment M  complete sequence | 4556 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055419.1 | Karimabad virus isolate 91045-AG segment L  complete sequence | 6441 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055420.1 | Icoaraci virus isolate BeAn24262 segment L  complete sequence | 6423 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14301,7 +14301,7 @@
 | NC_055452.1 | Lates calcarifer birnavirus isolate A110617 segment A  complete sequence | 3527 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055453.1 | Hyposidra talaca NPV  complete genome | 139089 | 0 | 0 | 2316 | 1.66 | 982 | .70 | 2610 | 1.87 | 294 | .21 |
 | NC_055454.1 | Maize yellow striate virus  complete genome | 12654 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_055455.1 | Spodoptera exempta nucleopolyhedrovirus strain 244.1  complete genome | 129528 | 0 | 0 | 1240 | .95 | 370 | .28 | 1412 | 1.09 | 172 | .13 |
+| NC_055455.1 | Spodoptera exempta nucleopolyhedrovirus strain 244.1  complete genome | 129528 | 2 | 0 | 1240 | .95 | 370 | .28 | 1412 | 1.09 | 172 | .13 |
 | NC_055456.1 | Kwatta virus nucleoprotein  phosphoprotein  hypothetical protein  matrix  hypothetical protein  glycoprotein  and polymerase genes  complete cds | 11211 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055457.1 | New Minto virus nucleoprotein  phosphoprotein  matrix  glycoprotein  and polymerase genes  complete cds | 11156 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055458.1 | Seal parvovirus  partial genome | 4913 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14321,7 +14321,7 @@
 | NC_055472.1 | Tomato chlorotic leaf curl virus isolate BR-Alt1-16 segment DNA-A  complete sequence | 2612 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055473.1 | Holmes Jungle virus isolate DPP1163  complete genome | 13168 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055474.1 | Taiwan bat lyssavirus isolate TWBLV TN 2016  complete genome | 11988 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| NC_055475.1 | Eclipta yellow vein alphasatellite strain AlYVA-S3 clone AlYVA  complete sequence | 1342 | 0 | 0 | 0 | 0 | 55 | 4.09 | 0 | 0 | 0 | 0 |
+| NC_055475.1 | Eclipta yellow vein alphasatellite strain AlYVA-S3 clone AlYVA  complete sequence | 1342 | 6 | .44 | 6 | .44 | 55 | 4.09 | 0 | 0 | 0 | 0 |
 | NC_055476.1 | Malvastrum yellow vein Lahore virus isolate J47  complete genome | 2752 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055477.1 | Ohlsdorf virus strain Germany 2012 Oc.cantans  complete genome | 11624 | 0 | 0 | 44 | .37 | 0 | 0 | 44 | .37 | 0 | 0 |
 | NC_055478.1 | Tomato leaf curl Virudhunagar alphasatellite strain severe  complete sequence | 1361 | 0 | 0 | 73 | 5.36 | 49 | 3.60 | 73 | 5.36 | 0 | 0 |
@@ -14401,13 +14401,13 @@
 | NC_055552.1 | Coconut foliar decay alphasatellite 4 isolate CFDA4-[VU-89]  complete sequence | 1276 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055553.1 | Coconut foliar decay alphasatellite 5 isolate CFDA5-[VU-89]  complete sequence | 1295 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055554.1 | Vombatid gammaherpesvirus 1 strain V3187 11  partial genome | 109717 | 0 | 0 | 351 | .31 | 223 | .20 | 351 | .31 | 0 | 0 |
-| NC_055555.1 | Phascolarctid gammaherpesvirus 1 strain 36M 11  partial genome | 116729 | 0 | 0 | 386 | .33 | 127 | .10 | 431 | .36 | 45 | .03 |
+| NC_055555.1 | Phascolarctid gammaherpesvirus 1 strain 36M 11  partial genome | 116729 | 4 | 0 | 386 | .33 | 127 | .10 | 431 | .36 | 45 | .03 |
 | NC_055556.1 | Apodemus flavicollis polyomavirus 1 isolate 3349  complete genome | 5327 | 0 | 0 | 0 | 0 | 74 | 1.38 | 0 | 0 | 0 | 0 |
 | NC_055557.1 | Capra aegagrus polyomavirus 1 isolate 7515 C-008-11-3B  complete genome | 4700 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055558.1 | Mastomys natalensis polyomavirus 2 isolate 8173 R91  complete genome | 5322 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055559.1 | Canis lupus polyomavirus 1 isolate 8472  complete genome | 5215 | 0 | 0 | 31 | .59 | 0 | 0 | 31 | .59 | 0 | 0 |
 | NC_055560.1 | Emilia yellow vein Fujian betasatellite isolate Zz01  complete sequence | 1333 | 0 | 0 | 140 | 10.50 | 0 | 0 | 140 | 10.50 | 0 | 0 |
-| NC_055561.1 | Cervid alphaherpesvirus 3 strain Canada  partial genome | 136380 | 0 | 0 | 15019 | 11.01 | 6283 | 4.60 | 16666 | 12.22 | 1647 | 1.20 |
+| NC_055561.1 | Cervid alphaherpesvirus 3 strain Canada  partial genome | 136380 | 2200 | 1.61 | 15019 | 11.01 | 6283 | 4.60 | 16666 | 12.22 | 1647 | 1.20 |
 | NC_055562.1 | Polyscias mosaic virus isolate AR3  complete genome | 7592 | 0 | 0 | 31 | .40 | 0 | 0 | 31 | .40 | 0 | 0 |
 | NC_055563.1 | Tomato leaf curl Anand alphasatellite clone pBamA15  complete sequence | 1336 | 0 | 0 | 53 | 3.96 | 49 | 3.66 | 53 | 3.96 | 0 | 0 |
 | NC_055564.1 | Patrinia mild mottle virus  complete genome | 4214 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14491,7 +14491,7 @@
 | NC_055642.1 | Ti ringspot-associated emaravirus isolate UH Manoa segment RNA2  complete sequence | 2399 | 0 | 0 | 70 | 2.91 | 0 | 0 | 70 | 2.91 | 0 | 0 |
 | NC_055643.1 | Ti ringspot-associated emaravirus isolate UH Manoa segment RNA3  complete sequence | 1106 | 0 | 0 | 134 | 12.11 | 74 | 6.69 | 134 | 12.11 | 0 | 0 |
 | NC_055644.1 | Ti ringspot-associated emaravirus isolate UH Manoa segment RNA4  complete sequence | 1342 | 0 | 0 | 114 | 8.49 | 49 | 3.65 | 114 | 8.49 | 0 | 0 |
-| NC_055645.1 | Ti ringspot-associated emaravirus isolate UH Manoa segment RNA5  complete sequence | 1323 | 0 | 0 | 85 | 6.42 | 101 | 7.63 | 183 | 13.83 | 98 | 7.40 |
+| NC_055645.1 | Ti ringspot-associated emaravirus isolate UH Manoa segment RNA5  complete sequence | 1323 | 3 | .22 | 85 | 6.42 | 101 | 7.63 | 183 | 13.83 | 98 | 7.40 |
 | NC_055646.1 | Actinidia emaravirus 2 isolate YD segment RNA3 nucleocapsid protein gene  complete cds | 1387 | 0 | 0 | 46 | 3.31 | 74 | 5.33 | 46 | 3.31 | 0 | 0 |
 | NC_055647.1 | Actinidia emaravirus 2 isolate YD segment RNA1 RNA-dependent RNA polymerase gene  complete cds | 7079 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055648.1 | Actinidia emaravirus 2 isolate YD segment RNA2 glycoprotein gene  complete cds | 2252 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
@@ -14501,22 +14501,22 @@
 | NC_055652.1 | Passion fruit green spot virus isolate PFGSV Snp1 segment RNA2  complete sequence | 4793 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | NC_055653.1 | Passion fruit green spot virus isolate PFGSV Snp1 segment RNA1  complete sequence | 8753 | 0 | 0 | 101 | 1.15 | 0 | 0 | 101 | 1.15 | 0 | 0 |
 | NC_055654.1 | Chrysothrix chrysovirus 1 isolate ZSH segment RNA3  complete sequence | 2879 | 0 | 0 | 44 | 1.52 | 0 | 0 | 44 | 1.52 | 0 | 0 |
-| NC_055655.1 | Chrysothrix chrysovirus 1 isolate ZSH segment RNA1  complete sequence | 3552 | 0 | 0 | 0 | 0 | 50 | 1.40 | 0 | 0 | 0 | 0 |
+| NC_055655.1 | Chrysothrix chrysovirus 1 isolate ZSH segment RNA1  complete sequence | 3552 | 1 | .02 | 1 | .02 | 50 | 1.40 | 0 | 0 | 0 | 0 |
 | NC_055656.1 | Chrysothrix chrysovirus 1 isolate ZSH segment RNA2  complete sequence | 3191 | 0 | 0 | 65 | 2.03 | 0 | 0 | 65 | 2.03 | 0 | 0 |
 | NC_055657.1 | Chrysothrix chrysovirus 1 isolate ZSH segment RNA4  complete sequence | 2760 | 0 | 0 | 84 | 3.04 | 0 | 0 | 84 | 3.04 | 0 | 0 |
 | NC_055706.1 | Azobacteroides phage ProJPt-Bp1 DNA  complete sequence | 99517 | 0 | 0 | 648 | .65 | 98 | .09 | 697 | .70 | 49 | .04 |
 | NC_055707.1 | Mycobacterium phage HC DNA  complete genome | 46305 | 0 | 0 | 647 | 1.39 | 0 | 0 | 647 | 1.39 | 0 | 0 |
 | NC_055708.1 | Enterobacteria phage ATK47  complete genome | 170020 | 0 | 0 | 199 | .11 | 0 | 0 | 199 | .11 | 0 | 0 |
-| NC_055709.1 | Escherichia phage phiE142  complete genome | 121442 | 0 | 0 | 318 | .26 | 9 | 0 | 318 | .26 | 0 | 0 |
+| NC_055709.1 | Escherichia phage phiE142  complete genome | 121442 | 9 | 0 | 318 | .26 | 9 | 0 | 318 | .26 | 0 | 0 |
 | NC_055710.1 | Synechococcus phage S-CAM22 isolate 0210CC35  complete genome | 172230 | 0 | 0 | 533 | .30 | 0 | 0 | 533 | .30 | 0 | 0 |
 | NC_055711.1 | Pseudomonas phage PaMx41  complete genome | 43490 | 0 | 0 | 86 | .19 | 0 | 0 | 86 | .19 | 0 | 0 |
-| NC_055712.1 | Escherichia phage phT4A  partial genome | 171598 | 0 | 0 | 1090 | .63 | 949 | .55 | 1139 | .66 | 49 | .02 |
-| NC_055713.1 | UNVERIFIED: Shigella phage KNP5 genomic sequence | 193624 | 0 | 0 | 29384 | 15.17 | 28424 | 14.67 | 29433 | 15.20 | 49 | .02 |
+| NC_055712.1 | Escherichia phage phT4A  partial genome | 171598 | 900 | .52 | 1090 | .63 | 949 | .55 | 1139 | .66 | 49 | .02 |
+| NC_055713.1 | UNVERIFIED: Shigella phage KNP5 genomic sequence | 193624 | 28375 | 14.65 | 29384 | 15.17 | 28424 | 14.67 | 29433 | 15.20 | 49 | .02 |
 | NC_055714.1 | Mycobacterium phage Fortunato  complete genome | 70679 | 0 | 0 | 949 | 1.34 | 49 | .06 | 949 | 1.34 | 0 | 0 |
 | NC_055715.1 | Klebsiella phage KPV15  complete genome | 167034 | 0 | 0 | 410 | .24 | 49 | .02 | 459 | .27 | 49 | .02 |
 | NC_055716.1 | Yersinia phage fHe-Yen9-01  complete genome | 167773 | 0 | 0 | 371 | .22 | 49 | .02 | 420 | .25 | 49 | .02 |
 | NC_055717.1 | Vibrio phage pVco-5  complete genome | 74325 | 0 | 0 | 92 | .12 | 0 | 0 | 92 | .12 | 0 | 0 |
-| NC_055718.1 | Escherichia phage phiC120  complete genome | 186570 | 0 | 0 | 447 | .23 | 50 | .02 | 496 | .26 | 49 | .02 |
+| NC_055718.1 | Escherichia phage phiC120  complete genome | 186570 | 1 | 0 | 447 | .23 | 50 | .02 | 496 | .26 | 49 | .02 |
 | NC_055719.1 | Synechococcus phage S-H35  complete genome | 174231 | 0 | 0 | 534 | .30 | 74 | .04 | 534 | .30 | 0 | 0 |
 | NC_055720.1 | Pseudomonas phage PspYZU05  complete genome | 166442 | 0 | 0 | 192 | .11 | 0 | 0 | 192 | .11 | 0 | 0 |
 | NC_055721.1 | Escherichia phage EcS1 DNA  complete sequence | 175437 | 0 | 0 | 476 | .27 | 147 | .08 | 623 | .35 | 147 | .08 |
@@ -14524,7 +14524,7 @@
 | NC_055723.1 | Yersinia phage fPS-90 genome assembly  chromosome: I | 167132 | 0 | 0 | 857 | .51 | 98 | .05 | 955 | .57 | 98 | .05 |
 | NC_055724.1 | Yersinia phage fPS-65 genome assembly  chromosome: I | 167058 | 0 | 0 | 758 | .45 | 98 | .05 | 856 | .51 | 98 | .05 |
 | NC_055725.1 | uncultured Caudovirales phage genome assembly | 36306 | 0 | 0 | 27 | .07 | 74 | .20 | 101 | .27 | 74 | .20 |
-| NC_055726.1 | Cronobacter phage Pet-CM3-4 genome assembly  chromosome: I | 171975 | 0 | 0 | 737 | .42 | 112 | .06 | 737 | .42 | 0 | 0 |
+| NC_055726.1 | Cronobacter phage Pet-CM3-4 genome assembly  chromosome: I | 171975 | 63 | .03 | 737 | .42 | 112 | .06 | 737 | .42 | 0 | 0 |
 | NC_055727.1 | Proteus phage PM2  partial genome | 163469 | 0 | 0 | 732 | .44 | 294 | .17 | 977 | .59 | 245 | .14 |
 | NC_055728.1 | Serratia phage X20  complete genome | 172450 | 0 | 0 | 187 | .10 | 147 | .08 | 334 | .19 | 147 | .08 |
 | NC_055729.1 | Uncultured Caudovirales phage clone 2F 1  partial genome | 32618 | 0 | 0 | 46 | .14 | 0 | 0 | 46 | .14 | 0 | 0 |
@@ -14715,7 +14715,7 @@
 | NC_055914.1 | Bacillus phage Thornton  complete genome | 26319 | 0 | 0 | 354 | 1.34 | 74 | .28 | 428 | 1.62 | 74 | .28 |
 | NC_055915.1 | Flavobacterium phage vB FspM immuto 2-6A  complete genome | 160410 | 0 | 0 | 757 | .47 | 245 | .15 | 953 | .59 | 196 | .12 |
 | NC_055916.1 | Staphylococcus phage LSA2366  complete genome | 17056 | 0 | 0 | 221 | 1.29 | 98 | .57 | 270 | 1.58 | 49 | .28 |
-| NC_055917.1 | Bacillus phage WhyPhy  complete genome | 18642 | 0 | 0 | 0 | 0 | 2 | .01 | 0 | 0 | 0 | 0 |
+| NC_055917.1 | Bacillus phage WhyPhy  complete genome | 18642 | 2 | .01 | 2 | .01 | 2 | .01 | 0 | 0 | 0 | 0 |
 | NC_055918.1 | Mycobacterium phage OhShagHennessy  complete genome | 72623 | 0 | 0 | 491 | .67 | 0 | 0 | 491 | .67 | 0 | 0 |
 | NC_055919.1 | Klebsiella phage vB KpnP P184  complete genome | 76617 | 0 | 0 | 212 | .27 | 0 | 0 | 212 | .27 | 0 | 0 |
 | NC_055920.1 | Gordonia phage Phlop  complete genome | 58358 | 0 | 0 | 465 | .79 | 0 | 0 | 465 | .79 | 0 | 0 |

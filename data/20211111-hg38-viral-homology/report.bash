@@ -32,29 +32,29 @@ done ; done
 echo
 
 for a in ${accessions} ; do
-	echo -n "| ${a} |"
+	echo -n "| ${a} |"	#	accession
 
-	d=$( head -1 out/raw/${a}.fasta | sed -e 's/^\S*\s//' -e 's/,/ /g' )
-	echo -n " ${d} |"
+	d=$( head -1 out/raw/${a}.fasta | sed -e 's/^\S*\s//' -e 's/,/ /g' ) 
+	echo -n " ${d} |"	# description
 	l=$( tail -n +2 out/raw/${a}.fasta | tr -d "\n" | wc -c )
-	echo -n " ${l} |"
+	echo -n " ${l} |"	#	length
 
-	if [ -f out/raw/${a}.masked.fasta.base_count.txt ] ; then
-		n=$( awk '($2=="N"){print $1}' out/raw/${a}.masked.fasta.base_count.txt )
-	else
-		n=0
+	if [ -f out/raw/${a}.fasta.base_count.txt ] ; then
+		n=$( awk '($2=="N"){print $1}' out/raw/${a}.fasta.base_count.txt )
+#	else
+#		n=0
 	fi
-	echo -n " ${n} |"
+	echo -n " ${n:=0} |"
 	p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 	echo -n " ${p} |"
 
 	
 	if [ -f out/masks/${a}.masked.fasta.base_count.txt ] ; then
 		n=$( awk '($2=="N"){print $1}' out/masks/${a}.masked.fasta.base_count.txt )
-	else
-		n=0
+#	else
+#		n=0
 	fi
-	echo -n " ${n} |"
+	echo -n " ${n:=0} |"
 	p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 	echo -n " ${p} |"
 
