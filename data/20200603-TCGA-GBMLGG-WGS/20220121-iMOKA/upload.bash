@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200603-TCGA-GBMLGG-WGS"
+curl -netrc -X MKCOL "${BOX}/"
+
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA"
 curl -netrc -X MKCOL "${BOX}/"
 
