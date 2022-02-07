@@ -282,3 +282,26 @@ awk '($2=="N"){s+=$1}END{print s}' /francislab/data1/working/20211111-hg38-viral
 
 
 
+
+```
+sed 's/\t/,/g' bed_files_with_region_lengths.raw.txt > bed_files_with_region_lengths.raw.csv
+sed 's/\t/,/g' bed_files_with_region_lengths.masked.txt > bed_files_with_region_lengths.masked.csv
+
+awk 'BEGIN{FS=OFS=","}(FNR==NR){d[$1]=$2;l[$1]=$3}(FNR!=NR){print $0,l[$1],100*$4/l[$1],d[$1]}' /c4/home/gwendt/github/ucsffrancislab/genomics/data/20211111-hg38-viral-homology/report.csv bed_files_with_region_lengths.raw.csv > bed_files_with_region_lengths.raw.plus.csv
+awk 'BEGIN{FS=OFS=","}(FNR==NR){d[$1]=$2;l[$1]=$3}(FNR!=NR){print $0,l[$1],100*$4/l[$1],d[$1]}' /c4/home/gwendt/github/ucsffrancislab/genomics/data/20211111-hg38-viral-homology/report.csv bed_files_with_region_lengths.masked.csv > bed_files_with_region_lengths.masked.plus.csv
+
+sort -t, -k4nr bed_files_with_region_lengths.raw.plus.csv 
+sort -t, -k4nr bed_files_with_region_lengths.masked.plus.csv 
+
+```
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211122-Homology-Paper"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in bed_files_with_region_lengths.masked.plus.csv ; do
+	echo $f
+	curl -netrc -T ${f} "${BOX}/"
+done
+```
+
