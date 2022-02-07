@@ -155,6 +155,31 @@ done ; done
 
 
 
+Predict.
+```
+nohup ./predict.bash > predict.out &
+```
+
+Better matrix of important kmers.
+```
+nohup ./matrices_of_select_kmers.bash > matrices_of_select_kmers.out &
+```
+
+
+
+
+
+
+
+
+
+
+
+Upload.
+```
+./upload.bash
+```
+
 
 
 
