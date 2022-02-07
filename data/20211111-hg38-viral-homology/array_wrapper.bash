@@ -252,6 +252,25 @@ for line in $( seq ${start} ${stop} ) ; do
 				fi
 	
 				#	Above and below NEED the complete reference (with its version number as it is in the fasta)
+
+
+#	Unlike the coordinate system used by other standards such as GFF, the system used by the BED format is 
+#	zero-based for the coordinate start and 
+#	one-based for the coordinate end.[4] 
+#	Thus, the nucleotide with the coordinate 1 in a genome will have a value of 0 in column 2 and a value of 1 in column 3.
+
+
+#	2. start - The zero-based starting position of the feature in the chromosome.
+#	• The first base in a chromosome is numbered 0.
+#	• The start position in each BED feature is therefore interpreted to be 1 greater than the start position
+#	listed in the feature. For example, start=9, end=20 is interpreted to span bases 10 through 20,
+#	inclusive.
+#	• This column is required.
+#	3. end - The one-based ending position of the feature in the chromosome.
+#	• The end position in each BED feature is one-based. See example above.
+#	• This column is required.
+
+
 	
 				o=${dir}/split.${a}/${b}.split.${s}.mask.bed
 				if [ ! -f ${o} ] ; then
@@ -261,7 +280,6 @@ for line in $( seq ${start} ${stop} ) ; do
 						samtools sort -n -O SAM -o - ${i} | awk -v s=${s} -v ref=${b%.masked} '(/^split/){
 							sub(/^split/,"",$1);
 							a=1+s*$1
-							#b=a+(2*s-1)
 							b=a+(length($10)-1)
 							print ref"\t"a"\t"b
 						}' | awk -v ext=0 'BEGIN{FS=OFS="\t"}{
@@ -274,12 +292,12 @@ for line in $( seq ${start} ${stop} ) ; do
 								if( $2 <= (e+ext+1) ){
 									e=$3+ext
 								}else{
-									print $1,s,e
+									print $1,s-1,e
 									s=$2-ext
 									e=$3+ext
 								} 
 							}
-						}END{ if( r != "" ) print r,s,e }' > ${o}
+						}END{ if( r != "" ) print r,s-1,e }' > ${o}
 						chmod -w ${o}
 					else
 						echo "${i} not found. Not creating bed."
