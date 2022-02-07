@@ -58,3 +58,27 @@ done
 ```
 
 
+
+```
+module load samtools bowtie2
+samtools view -h merged.hg38viral.chimeric.bam | awk -F"\t" '( /^@/ ) || ( ( $3 == "chr14" ) && ( $7 == "NC_001506.1" ) ) || ( ( $3 == "NC_001506.1" ) && ( $7 == "chr14" ) )' | samtools sort -n -o NC_001506.1-and-chr14.merged.hg38viral.chimeric.bam -
+
+samtools view -h merged.hg38viral.chimeric.bam | awk -F"\t" '( /^@/ ) || ( ( $3 == "chr14" ) && ( $7 == "NC_038858.1" ) ) || ( ( $3 == "NC_038858.1" ) && ( $7 == "chr14" ) )' | samtools sort -n -o NC_038858.1-and-chr14.merged.hg38viral.chimeric.bam -
+
+samtools fastq -N -1 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz NC_001506.1-and-chr14.merged.hg38viral.chimeric.bam
+
+samtools fastq -N -1 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz -2 NC_038858.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz NC_038858.1-and-chr14.merged.hg38viral.chimeric.bam
+
+abyss-pe name=NC_001506 K=16 k=96 B=2G in='NC_001506.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz NC_001506.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz'
+
+abyss-pe name=NC_038858 K=16 k=96 B=2G in='NC_038858.1-and-chr14.merged.hg38viral.chimeric.R1.fastq.gz NC_038858.1-and-chr14.merged.hg38viral.chimeric.R2.fastq.gz'
+```
+
+
+```
+~/github/dzerbino/velvet/velveth NC_038858.1/ 31 -fastq.gz NC_038858.1-and-chr14.merged.hg38viral.chimeric.R*
+~/github/dzerbino/velvet/velvetg NC_038858.1/ 
+ 
+~/github/dzerbino/velvet/velveth NC_001506.1/ 31 -fastq.gz NC_001506.1-and-chr14.merged.hg38viral.chimeric.R*
+~/github/dzerbino/velvet/velvetg NC_001506.1/ 
+```
