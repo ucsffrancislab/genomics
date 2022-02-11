@@ -144,12 +144,72 @@ This needs to be done off scratch.
 ```
 date=$( date "+%Y%m%d%H%M%S" )
 
-for k in 21 31 ; do
+for k in 11 21 31 ; do
 for s in a b c ; do
 sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
  --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
  ${PWD}/iMOKA_scratch.bash --local --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step create
 done ; done
+
+```
+
+
+Aggregation failed for k=21. k=31 will likely fail the same way.
+
+Only running 1 k=31 as will likely take way too long.
+
+Waiting for final 21 to fail then rerunning with modified aggregation step.
+
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+
+for k in 21 ; do
+for s in a b c; do
+sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
+ --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
+ ${PWD}/iMOKA_scratch.bash --local --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step aggregate
+done ; done
+
+```
+
+```
+Default (80) - fails
+Step 2 : Building the groups...done.
+	Found 16539 graphs : 
+	  - complex: 16,649
+	  - linear: 16523,126620
+	 Nodes used: 127269/146632 ( 19363 discarded )
+	Space occupied: 98.660Mb
+Step 3 : Extracting the sequences... done. 
+	Found  6021 sequences.
+	[ Average sequence lenght: 36 ]
+
+Change (90) (Better?) - still fails
+Step 2 : Building the groups...done.
+	Found 642 graphs : 
+	  - complex: 10,581
+	  - linear: 632,33144
+	 Nodes used: 33725/146632 ( 112907 discarded )
+	Space occupied: 65.750Mb
+Step 3 : Extracting the sequences... done. 
+	Found  565 sequences.
+	[ Average sequence lenght: 79 ]
+
+Change (95) (perhaps too high?) - still fails
+Step 2 : Building the groups...done.
+	Found 2 graphs : 
+	  - complex: 2,220
+	 Nodes used: 220/146632 ( 146412 discarded )
+	Space occupied: 62.785Mb
+Step 3 : Extracting the sequences... done. 
+	Found  6 sequences.
+	[ Average sequence lenght: 56 ]
+
+
+97 ... 
+98 ... 
+99 ... 
 
 ```
 
