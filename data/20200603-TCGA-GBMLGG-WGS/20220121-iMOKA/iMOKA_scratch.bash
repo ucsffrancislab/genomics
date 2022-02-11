@@ -123,6 +123,8 @@ date
 if [ "${step}" == "aggregate" ] ; then
 	echo "Aggregating"
 	singularity exec ${img} iMOKA_core aggregate \
+		--global-threshold 85 \
+		--origin-threshold 90 \
 		--input ${workdir}/reduced.matrix \
 		--count-matrix ${workdir}/matrix.json \
 		--mapper-config ${workdir}/config.json \
@@ -133,7 +135,20 @@ if [ "${step}" == "aggregate" ] ; then
 	step="random_forest"
 #else
 fi
+#		--origin-threshold 90 \
 #		--origin-threshold 95 \
+#	Try increasing the general threshold (-T) to 90 and the source threshold (-t/origin-threshold) to 95 ( or even 95 and 99 ) 
+#
+#  -t, --origin-threshold arg    Mininum value needed to create a graph
+#                                (default: 80)
+#  -T, --global-threshold arg    Global minimum value for whom the nodes will
+#                                be used to build the graphs (default: 70)
+#
+#        - General threshold= 70
+#        - Source threshold= 80 <---
+#        - Coverage limit= 50
+#        - Correlation thr= 1
+#        - Consistency= 2
 
 date
 
