@@ -64,3 +64,42 @@ done ; done
 
 
 
+
+
+
+
+
+
+Evaluate masked region sizes
+
+```
+cat out/raw.split.HM.vsl/*bed | awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$3-$2}' > bed_files_with_region_lengths.raw.txt 
+
+cat out/RM.split.HM.vsl/*bed | awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$3-$2}' > bed_files_with_region_lengths.masked.txt 
+```
+
+```
+sed 's/\t/,/g' bed_files_with_region_lengths.raw.txt > bed_files_with_region_lengths.raw.csv
+sed 's/\t/,/g' bed_files_with_region_lengths.masked.txt > bed_files_with_region_lengths.masked.csv
+
+awk 'BEGIN{FS=OFS=","}(FNR==NR){d[$1]=$2;l[$1]=$3}(FNR!=NR){print $0,l[$1],100*$4/l[$1],d[$1]}' report.csv bed_files_with_region_lengths.raw.csv > bed_files_with_region_lengths.raw.plus.csv
+awk 'BEGIN{FS=OFS=","}(FNR==NR){d[$1]=$2;l[$1]=$3}(FNR!=NR){print $0,l[$1],100*$4/l[$1],d[$1]}' report.csv bed_files_with_region_lengths.masked.csv > bed_files_with_region_lengths.masked.plus.csv
+
+sort -t, -k4nr bed_files_with_region_lengths.raw.plus.csv 
+sort -t, -k4nr bed_files_with_region_lengths.masked.plus.csv 
+
+```
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20211122-Homology-Paper"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in bed_files_with_region_lengths.masked.plus.csv ; do
+	echo $f
+	curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
