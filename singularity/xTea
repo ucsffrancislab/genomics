@@ -1,42 +1,139 @@
 
-Bootstrap: shub
+Bootstrap: library
+From: ubuntu:20.04
+#GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
 
-From: singularityhub/ubuntu
 
 
 %runscript
 
-    exec echo "The runscript is the containers default runtime command!"
+	exec echo "The runscript is the containers default runtime command!"
 
 
 %files
 
-#   /home/vanessa/Desktop/hello-kitty.txt        # copied to root of container
+#	/home/vanessa/Desktop/hello-kitty.txt        # copied to root of container
 
-#   /home/vanessa/Desktop/party_dinosaur.gif     /opt/the-party-dino.gif #
+#	/home/vanessa/Desktop/party_dinosaur.gif     /opt/the-party-dino.gif #
 
 
 %environment
 
-    VARIABLE=MEATBALLVALUE
+	VARIABLE=MEATBALLVALUE
 
-    export VARIABLE
+	export VARIABLE
 
 
 %labels
 
-   AUTHOR George.Wendt@ucsf.edu
+	AUTHOR George.Wendt@ucsf.edu
 
 
 %post
 
-    apt-get update && apt-get -y install python3 git wget
+	apt-get clean all &&
+	apt-get -y update &&
+	apt-get -y upgrade &&
+	apt-get -y install python3-setuptools bash python3 git wget gcc g++ make bzip2 \
+		libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev &&
+	apt-get -y autoremove
 
-    mkdir /data
-
-    echo "The post section is where you can install, and configure your container."
 
 
-#	singularity remote login --tokenfile ~/sylabs-token 
-#	singularity build --remote  xTea.simg xTea
+
+
+
+#	bwa (version 0.7.17 or later, which requires the -o option), which can be downloaded from https://github.com/lh3/bwa.
+
+
+#	samtools (version 1.0 or later), which can be downloaded from https://github.com/samtools.
+
+	wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+	tar -vxjf samtools-1.9.tar.bz2
+	rm samtools-1.9.tar.bz2
+	cd samtools-1.9
+	make
+	make install
+	cd ..
+	/bin/rm -rf samtools-1.9
+
+
+
+#	minimap2 (for long reads only), which can be downloaded from https://github.com/lh3/minimap2.
+
+#	wtdbg2 (for long reads only), which can be downloaded from https://github.com/ruanjue/wtdbg2.
+
+
+
+
+
+
+
+	python3 -m easy_install install pip
+
+	ln -s python3 /usr/bin/python
+
+	python3 -m pip install --upgrade wheel awscli pip numpy scipy sklearn pandas requests seaborn pandoc boto3 pandarallel modin pysam sortedcontainers
+		#	scikit-learn==0.18.1
+ 
+	git clone https://github.com/parklab/xTea.git
+	mv /xTea/bin/* /usr/bin/
+	/bin/rm -rf /xTea
+
+
+
+
+
+
+
+
+
+#	Wow. What's the point of conda.
+
+
+#	#Installing Anaconda 3 
+#	wget -c https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
+#	/bin/bash Anaconda3-2021.11-Linux-x86_64.sh -bfp /usr/local
+#
+#	/bin/bash /usr/local/bin/activate				#	??
+#
+#	#Conda configuration of channels from .condarc file
+#	#conda config --file /.condarc --add channels defaults
+#	#conda config --file /.condarc --add channels conda-forge
+#
+#	conda config --add channels defaults
+#	conda config --add channels bioconda
+#	conda config --add channels conda-forge
+#	conda config --add channels r
+#
+#	conda update conda
+#
+#	#conda install numpy scikit-learn=0.18.1 pandas -y
+#
+#	#conda install pysam -y
+#
+#	#conda install sortedcontainers -y
+#
+#	#List installed environments
+#	#conda list
+#
+#	#conda install -y xtea=0.1.6
+#
+#
+#	conda create -n xtea xtea=0.1.6
+
+
+
+
+
+
+
+#singularity remote login --tokenfile ~/sylabs-token 
+#singularity build --remote xTea.img xTea
+
+
+#	singularity run-help xTea.img 
+%help
+
+
 

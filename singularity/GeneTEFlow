@@ -1,42 +1,91 @@
 
-Bootstrap: shub
 
-From: singularityhub/ubuntu
+Bootstrap: library
+From: ubuntu:20.04
+#GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
+
 
 
 %runscript
 
-    exec echo "The runscript is the containers default runtime command!"
+	exec echo "The runscript is the containers default runtime command!"
 
 
 %files
 
-#   /home/vanessa/Desktop/hello-kitty.txt        # copied to root of container
+#	/home/vanessa/Desktop/hello-kitty.txt        # copied to root of container
 
-#   /home/vanessa/Desktop/party_dinosaur.gif     /opt/the-party-dino.gif #
+#	/home/vanessa/Desktop/party_dinosaur.gif     /opt/the-party-dino.gif #
 
 
 %environment
 
-    VARIABLE=MEATBALLVALUE
+	VARIABLE=MEATBALLVALUE
 
-    export VARIABLE
+	export VARIABLE
 
 
 %labels
 
-   AUTHOR George.Wendt@ucsf.edu
+	AUTHOR George.Wendt@ucsf.edu
 
 
 %post
 
-    apt-get update && apt-get -y install python3 git wget
+	apt-get clean all &&
+	apt-get -y update &&
+	apt-get -y upgrade &&
+	apt-get -y install python3-setuptools bash python3 git wget gcc g++ make bzip2 \
+		libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev &&
+	apt-get -y autoremove
 
-    mkdir /data
+	python3 -m easy_install install pip
 
-    echo "The post section is where you can install, and configure your container."
+	ln -s python3 /usr/bin/python
 
+	python3 -m pip install --upgrade wheel awscli pip numpy scipy sklearn pandas requests seaborn pandoc boto3 pandarallel modin pysam sortedcontainers
+		#	scikit-learn==0.18.1
+ 
+##install software by conda
+##Search tools listing on https://anaconda.org/
+#RUN conda install -c conda-forge r-base=3.4.1
+#RUN conda install -c conda-forge r-devtools=1.13.6
+#RUN conda install -c conda-forge spyder=3.2.8
+#RUN conda install -c conda-forge r-reshape2=1.4.3
+#RUN conda install -c conda-forge r-ggplot2=3.0.0
+#RUN conda install -c conda-forge r-gridextra=2.3
+#RUN conda install -c conda-forge r-gridbase=0.4_7
+#RUN conda install -c conda-forge r-gtable=0.2.0
+#RUN conda install -c conda-forge r-rcolorbrewer=1.1_2
+#RUN conda install -c conda-forge r-gplots=3.0.1
+#RUN conda install -c bioconda bioconductor-complexheatmap=1.18.1
+#RUN conda install -c conda-forge r-circlize=0.4.4
+#RUN conda install -c conda-forge r-venndiagram=1.6.20
+#RUN conda install -c conda-forge r-survival=2.42_6
+#RUN conda install -c conda-forge r-formula=1.2_3
+#RUN conda install -c conda-forge r-latticeextra=0.6_28
+#RUN conda install -c conda-forge r-cluster=2.0.7_1
+#RUN conda install -c conda-forge r-rpart=4.1_13
+#RUN conda install -c conda-forge r-nnet=7.3_12
+#RUN conda install -c conda-forge r-acepack=1.4.1
+#RUN conda install -c conda-forge r-foreign=0.8_71
+#RUN conda install -c conda-forge r-data.table=1.11.4
+#RUN conda install -c conda-forge r-htmltable=1.12
+#RUN conda install -c conda-forge r-viridislite=0.3.0
+#RUN conda install -c conda-forge r-htmltools=0.3.6
+#RUN conda install -c conda-forge r-base64enc=0.1_3
+#RUN conda install -c conda-forge r-hmisc=4.1_1
+#RUN conda install -c conda-forge r-knitr=1.20
+
+
+	git clone https://github.com/zhongw2/GeneTEFlow.git
+	#mv /xTea/bin/* /usr/bin/
+	#/bin/rm -rf /xTea
+
+
+#	singularity run-help xTea.img 
+%help
 
 #	singularity remote login --tokenfile ~/sylabs-token 
-#	singularity build --remote  GeneTEFlow.simg GeneTEFlow
+#	singularity build --remote GeneTEFlow.simg GeneTEFlow
 
