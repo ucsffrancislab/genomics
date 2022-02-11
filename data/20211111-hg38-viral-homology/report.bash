@@ -39,20 +39,22 @@ for a in ${accessions} ; do
 	l=$( tail -n +2 out/raw/${a}.fasta | tr -d "\n" | wc -c )
 	echo -n " ${l} |"	#	length
 
-	if [ -f out/raw/${a}.fasta.base_count.txt ] ; then
-		n=$( awk '($2=="N"){print $1}' out/raw/${a}.fasta.base_count.txt )
-#	else
-#		n=0
+	f=out/raw/${a}.fasta.base_count.txt
+	if [ -f ${f} ] ; then
+		n=$( awk '($2=="N"){print $1}' ${f} )
+	else
+		n=0
 	fi
 	echo -n " ${n:=0} |"
 	p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 	echo -n " ${p} |"
 
-	
-	if [ -f out/masks/${a}.masked.fasta.base_count.txt ] ; then
-		n=$( awk '($2=="N"){print $1}' out/masks/${a}.masked.fasta.base_count.txt )
-#	else
-#		n=0
+	#f=out/masks/${a}.masked.fasta.base_count.txt
+	f=out/RM/${a}.masked.fasta.base_count.txt
+	if [ -f ${f} ] ; then
+		n=$( awk '($2=="N"){print $1}' ${f} )
+	else
+		n=0
 	fi
 	echo -n " ${n:=0} |"
 	p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
@@ -63,36 +65,42 @@ for a in ${accessions} ; do
 	for split in ${splits} ; do
 
 		n=''
-		if [ -f out/split.${split}/${a}.split.${size}.mask.fasta.base_count.txt ] ; then
-			n=$( awk '($2=="N"){print $1}' out/split.${split}/${a}.split.${size}.mask.fasta.base_count.txt )
-		fi
-		if [ -z "${n}" ] ; then
+		f=out/raw.split.HM.${split}/${a}.split.${size}.mask.fasta.base_count.txt
+		if [ -f ${f} ] ; then
+			n=$( awk '($2=="N"){print $1}' ${f} )
+		else
+#		fi
+#		if [ -z "${n}" ] ; then
 			n=0
 		fi
-		echo -n " ${n} |"
+		echo -n " ${n:=0} |"
 		p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 		echo -n " ${p} |"
 
 		n=''
-		if [ -f out/split.${split}/${a}.masked.split.${size}.mask.fasta.base_count.txt ] ; then
-			n=$( awk '($2=="N"){print $1}' out/split.${split}/${a}.masked.split.${size}.mask.fasta.base_count.txt )
-		fi
-		if [ -z "${n}" ] ; then
+		f=out/RM.split.HM.${split}/${a}.masked.split.${size}.mask.fasta.base_count.txt
+		if [ -f ${f} ] ; then
+			n=$( awk '($2=="N"){print $1}' ${f} )
+		else
+#		fi
+#		if [ -z "${n}" ] ; then
 			n=0
 		fi
-		echo -n " ${n} |"
+		echo -n " ${n:=0} |"
 		p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 		echo -n " ${p} |"
 
 		#	RepeatMasker "misses"
-		if [ -f out/split.${split}/${a}.masked.split.${size}.mask.fasta.base_count.txt ] && [ -f out/masks/${a}.masked.fasta.base_count.txt ] ; then
-			mmn=$( awk '($2=="N"){print $1}' out/split.${split}/${a}.masked.split.${size}.mask.fasta.base_count.txt )
-			rmn=$( awk '($2=="N"){print $1}' out/masks/${a}.masked.fasta.base_count.txt )
+		f1=out/RM.split.HM.${split}/${a}.masked.split.${size}.mask.fasta.base_count.txt
+		f2=out/RM/${a}.masked.fasta.base_count.txt
+		if [ -f ${f1} ] && [ -f ${f1} ] ; then
+			mmn=$( awk '($2=="N"){print $1}' ${f1} )
+			rmn=$( awk '($2=="N"){print $1}' ${f2} )
 			n=$( echo "${mmn} - ${rmn}" | bc -l 2> /dev/null )
 		else
 			n=0
 		fi
-		echo -n " ${n} |"
+		echo -n " ${n:=0} |"
 		p=$( echo "scale=2; 100 * ${n} / ${l}" | bc -l 2> /dev/null )
 		echo -n " ${p} |"
 

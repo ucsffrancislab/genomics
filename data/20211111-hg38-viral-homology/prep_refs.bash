@@ -8,9 +8,9 @@ for genome in $( cat /francislab/data1/refs/refseq/viral-20210916/viral_sequence
 	accession=$( basename $genome | awk 'BEGIN{FS=OFS="_"}{print $1,$2}' )
 #	echo $accession
 
-	mm="out/split.vsl/${accession}.masked.split.25.mask.fasta"
-	m1="out/split.vsl/${accession}.split.25.mask.fasta"
-	m2="out/masks/${accession}.masked.fasta"
+	mm="out/RM.split.HM.vsl/${accession}.masked.split.25.mask.fasta"
+	m1="out/raw.split.HM.vsl/${accession}.split.25.mask.fasta"
+	m2="out/RM/${accession}.masked.fasta"
 	raw="out/raw/${accession}.fasta"
 	if [ -f "${mm}" ] ; then
 		ln -s "../${mm}" for_reference/${accession}.fasta

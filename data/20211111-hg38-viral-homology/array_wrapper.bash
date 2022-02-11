@@ -20,8 +20,8 @@ dir="/francislab/data1/working/20211111-hg38-viral-homology/out"
 #	page=1
 
 mkdir -p ${dir}/raw
-mkdir -p ${dir}/masks
-mkdir -p ${dir}/split
+#mkdir -p ${dir}/masks
+#mkdir -p ${dir}/split
 
 #splits="c20 c19 c18 c17 c16 c15 c14 c13 c12 c11 c10 c9 c8 c7 c6 c5 c4 c3 c2 c1 vsl"
 splits="vsl"
@@ -79,12 +79,20 @@ for line in $( seq ${start} ${stop} ) ; do
 		echo "Local raw ${l} exists. Skipping."
 	fi
 	
-	m=${dir}/masks/$( basename $l )
+
+	#	Run RepeatMasker on Raw data
+
+	mkdir -p ${dir}/RM
+
+	#m=${dir}/masks/$( basename $l )
+	m=${dir}/RM/$( basename $l )
 	#if [ ! -f ${m}.cat ] ; then
 	if [ ! -f ${m}.out ] ; then
 		chmod +w ${l}
-		echo ~/.local/RepeatMasker/RepeatMasker -pa 8 -dir ${dir}/masks $l
-		~/.local/RepeatMasker/RepeatMasker -pa 8 -dir ${dir}/masks $l
+		#echo ~/.local/RepeatMasker/RepeatMasker -pa 8 -dir ${dir}/masks $l
+		#~/.local/RepeatMasker/RepeatMasker -pa 8 -dir ${dir}/masks $l
+		echo ~/.local/RepeatMasker/RepeatMasker -pa 8 -dir ${dir}/RM $l
+		~/.local/RepeatMasker/RepeatMasker -pa 8 -dir ${dir}/RM $l
 		if [ -f ${m}.masked ] ; then
 			mv ${m}.masked ${m%.fasta}.masked.fasta
 		fi
@@ -94,16 +102,27 @@ for line in $( seq ${start} ${stop} ) ; do
 	fi
 	
 	m=${m%.fasta}.masked.fasta
+
+
+	#	Loop over Raw ($l) and RepeatMasked / RM ($m)
 	
 	for f in ${l} ${m} ; do
 		echo $f
 		b=$( basename $f .fasta )
+		d=$( dirname $f )
+	
+
+		#	Loop over fragment half size (only 25 now)
 	
 		#for s in 100 75 50 25 ; do
 		for s in 25 ; do
 		
-			o=${dir}/split/${b}.split.${s}.fa
+			mkdir -p ${d}.split
+			#o=${dir}/split/${b}.split.${s}.fa
+			o=${d}.split/${b}.split.${s}.fa
 			echo $o
+
+			#	Split the Raw or RM fasta file into fragments
 	
 			if [ ! -f ${o} ] ; then
 				if [ -f ${f} ] ; then
@@ -119,6 +138,9 @@ for line in $( seq ${start} ${stop} ) ; do
 			else
 				echo "Split file ${o} exists. Skipping."
 			fi
+
+
+			#	Loop over alignment strategies.
 	
 			for a in ${splits}; do
 				echo ${a}
@@ -132,9 +154,13 @@ for line in $( seq ${start} ${stop} ) ; do
 				# G,20,8 for 50 = 20 + 8*ln(50) = 20 + 8 * 3.91 = 51.29
 				#   -D 40 -R 5 -N 1 -L 20 -i C,1,0 
 	
-				o=${dir}/split.${a}/${b}.split.${s}.sam
+				mkdir -p ${d}.split.HM.${a}
+				#o=${dir}/split.${a}/${b}.split.${s}.sam
+				o=${d}.split.HM.${a}/${b}.split.${s}.sam
+
 				if [ ! -f ${o} ] ; then
-					i="${dir}/split/${b}.split.${s}.fa"
+					#i="${dir}/split/${b}.split.${s}.fa"
+					i="${d}.split/${b}.split.${s}.fa"
 					if [ -f "${i}" ] ; then
 						x=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts
 						if [ ${a} == 'vsl' ] ; then
@@ -271,10 +297,15 @@ for line in $( seq ${start} ${stop} ) ; do
 #	• This column is required.
 
 
+
+				#	Create bed files
 	
-				o=${dir}/split.${a}/${b}.split.${s}.mask.bed
+				#o=${dir}/split.${a}/${b}.split.${s}.mask.bed
+				o=${d}.split.HM.${a}/${b}.split.${s}.mask.bed
+
 				if [ ! -f ${o} ] ; then
-					i="${dir}/split.${a}/${b}.split.${s}.sam"
+					#i="${dir}/split.${a}/${b}.split.${s}.sam"
+					i="${d}.split.HM.${a}/${b}.split.${s}.sam"
 					if [ -f "${i}" ] ; then
 						echo samtools sort -n -O SAM -o - ${i}
 						samtools sort -n -O SAM -o - ${i} | awk -v s=${s} -v ref=${b%.masked} '(/^split/){
@@ -306,25 +337,29 @@ for line in $( seq ${start} ${stop} ) ; do
 					echo "Bed exists. Skipping."
 				fi
 		
-				#	not sure if i use this
-				o=${dir}/split.${a}/${b}.split.${s}.mask.masked_length.txt
-				if [ ! -f ${o} ] ; then
-					i=${dir}/split.${a}/${b}.split.${s}.mask.bed
-					if [ -f ${i} ] ; then
-						awk -F"\t" 'BEGIN{s=0}(length($0)>2){s+=($3-$2+1)}END{print s}' ${i} > ${o}
-						chmod -w ${o}
-					else
-						echo "${i} not found. Not creating masked length."
-					fi
-				else
-					echo "Masked length ${o} exists. Skipping."
-				fi
+#				#	not sure if i use this
+#				#o=${dir}/split.${a}/${b}.split.${s}.mask.masked_length.txt
+#				o=${d}.split.${a}/${b}.split.${s}.mask.masked_length.txt
+#				if [ ! -f ${o} ] ; then
+#					#i=${dir}/split.${a}/${b}.split.${s}.mask.bed
+#					i=${d}.split.${a}/${b}.split.${s}.mask.bed
+#					if [ -f ${i} ] ; then
+#						awk -F"\t" 'BEGIN{s=0}(length($0)>2){s+=($3-$2+1)}END{print s}' ${i} > ${o}
+#						chmod -w ${o}
+#					else
+#						echo "${i} not found. Not creating masked length."
+#					fi
+#				else
+#					echo "Masked length ${o} exists. Skipping."
+#				fi
 		
 				# always the same reference here so no need to actually compare?
 		
-				o=${dir}/split.${a}/${b}.split.${s}.mask.fasta
+				#o=${dir}/split.${a}/${b}.split.${s}.mask.fasta
+				o=${d}.split.HM.${a}/${b}.split.${s}.mask.fasta
 				if [ ! -f ${o} ] ; then
-					i=${dir}/split.${a}/${b}.split.${s}.mask.bed
+					#i=${dir}/split.${a}/${b}.split.${s}.mask.bed
+					i=${d}.split.HM.${a}/${b}.split.${s}.mask.bed
 					if [ -f ${i} ] ; then
 						echo maskFastaFromBed -fi ${f} -fo ${o} -bed ${i} -fullHeader
 						maskFastaFromBed -fi ${f} -fo ${o} -bed ${i} -fullHeader
@@ -337,7 +372,8 @@ for line in $( seq ${start} ${stop} ) ; do
 				fi
 	
 	
-				for fa in ${f} ${dir}/split.${a}/${b}.split.${s}.mask.fasta ; do
+				#for fa in ${f} ${dir}/split.${a}/${b}.split.${s}.mask.fasta ; do
+				for fa in ${f} ${d}.split.HM.${a}/${b}.split.${s}.mask.fasta ; do
 					o=${fa}.base_count.txt
 					if [ ! -f ${o} ] ; then
 						if [ -f ${fa} ] ; then
@@ -370,11 +406,13 @@ exit
 982*15=14730
 
 
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-982%10 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211111-hg38-viral-homology/array_wrapper.bash
+mkdir logs
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=11-982%5 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211111-hg38-viral-homology/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-982%10 --job-name="homology" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211111-hg38-viral-homology/array_wrapper.bash
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=11-982%5 --job-name="homology" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211111-hg38-viral-homology/array_wrapper.bash
 
 
 
@@ -385,6 +423,8 @@ ll out/masks/*cat.all | wc -l
 grep "Running line" array.*.out | wc -l ; date
 
 
+
+scontrol update ArrayTaskThrottle=6 JobId=352083
 
 
 
