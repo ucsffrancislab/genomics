@@ -16,7 +16,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-982%10 --jo
 
 ```
 
-
 ```
 cat for_reference/*.fasta > for_reference.fasta
 
