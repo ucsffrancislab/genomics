@@ -7,17 +7,24 @@ splits="vsl" # c1 c2 c3 c4 c5 c6 c7 c8 c9 c10 c11 c12 c13 c14 c15 c16 c17 c18 c1
 sizes="25" # "25 50 75 100"
 
 
-echo -n "| accession | description | length | raw Ns | raw Ns % | masked Ns | masked Ns % |"
-for size in ${sizes}; do
-for split in ${splits} ; do
-echo -n " ${split}-${size} Ns |"
-echo -n " ${split}-${size} Ns % |"
-echo -n " masked ${split}-${size} Ns |"
-echo -n " masked ${split}-${size} Ns % |"
-echo -n " RM ${split}-${size} missed Ns |"
-echo -n " RM ${split}-${size} missed Ns % |"
-done ; done
-echo
+echo -n "| accession | description | length | Raw Ns | Raw Ns % | RM Ns | RM Ns % |"
+echo -n " HM Ns |"
+echo -n " HM Ns % |"
+echo -n " RM+HM Ns |"
+echo -n " RM+HM Ns % |"
+echo -n " RM+HM - HM Ns |"
+echo -n " RM+HM - HM Ns % |"
+
+#for size in ${sizes}; do
+#for split in ${splits} ; do
+#echo -n " ${split}-${size} Ns |"
+#echo -n " ${split}-${size} Ns % |"
+#echo -n " masked ${split}-${size} Ns |"
+#echo -n " masked ${split}-${size} Ns % |"
+#echo -n " RM ${split}-${size} missed Ns |"
+#echo -n " RM ${split}-${size} missed Ns % |"
+#done ; done
+#echo
 
 echo -n "| --- | --- | --- | --- | --- | --- | --- |"
 for size in ${sizes}; do

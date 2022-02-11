@@ -1,4 +1,4 @@
-accession,description,length,raw Ns,raw Ns %,masked Ns,masked Ns %,vsl-25 Ns,vsl-25 Ns %,masked vsl-25 Ns,masked vsl-25 Ns %,RM vsl-25 missed Ns,RM vsl-25 missed Ns %
+accession,description,length,Raw Ns,Raw Ns %,RM Ns,RM Ns %,HM Ns,HM Ns %,RM+HM Ns,RM+HM Ns %,RM+HM - RM Ns,RM+HM - RM Ns %
 AC_000001.1,Ovine adenovirus A  complete genome,33034,0,0,38,.11,50,.15,88,.26,50,.15
 AC_000002.1,Bovine adenovirus B  complete genome,34446,0,0,155,.44,250,.72,255,.74,100,.29
 AC_000003.1,Canine adenovirus 1  complete genome,30536,0,0,41,.13,0,0,41,.13,0,0
