@@ -24,7 +24,8 @@ mkdir -p ${dir}/raw
 #mkdir -p ${dir}/split
 
 #splits="c20 c19 c18 c17 c16 c15 c14 c13 c12 c11 c10 c9 c8 c7 c6 c5 c4 c3 c2 c1 vsl"
-splits="vsl"
+#splits="vsl"
+splits="bt2 STAR"
 
 for a in ${splits}; do
 	mkdir -p ${dir}/split.${a}
@@ -162,12 +163,52 @@ for line in $( seq ${start} ${stop} ) ; do
 					#i="${dir}/split/${b}.split.${s}.fa"
 					i="${d}.split/${b}.split.${s}.fa"
 					if [ -f "${i}" ] ; then
-						x=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts
-						if [ ${a} == 'vsl' ] ; then
+						xdir=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest
+						#x=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts
+						#if [ ${a} == 'vsl' ] ; then
+
+						if [ ${a} == 'bt2' ] ; then
 							bowtie2 -f -U ${i} --no-unal --threads 8 \
 								--very-sensitive-local \
-								-x ${x} \
+								-x ${xdir}/hg38.chrXYM_alts \
 								-S ${o} 2> ${o%.sam}.summary.txt
+							chmod -w ${o} ${o%.sam}.summary.txt
+						elif [ ${a} == 'STAR' ] ; then
+
+
+
+#	mv split.vsl to split.bt2
+
+
+
+#	load STAR module (note version in reference)
+#	build STAR reference hg38.chrXYM_alts
+#
+#							STAR ....
+#	
+#				~/.local/bin/STAR.bash \
+#					--runMode alignReads \
+#					--runThreadN ${threads} \
+#					--readFilesCommand zcat \
+#					--readFilesIn ${in_base}.fastq.gz \
+#					--genomeDir ${STAR}/${ref} \
+#
+#					--outFileNamePrefix ${outbase}. \
+#
+#					--outSAMtype BAM SortedByCoordinate \
+#					--outSAMtype BAM Unsorted \
+#
+#					--outSAMunmapped Within KeepPairs \
+#					--outSAMunmapped Within \
+
+
+#	--outStd  | samtools view -F 4 -o output.bam -
+
+
+
+						chmod -w ${o} # ${o%.sam}.summary.txt
+
+
 #						elif [ ${a} == 'c20' ] ; then
 #							bowtie2 -f -U ${i} --no-unal --threads 8 \
 #								--local -D 30 -R 4 -N 1 -L 18 -i C,1,0 --score-min C,50,0 \
@@ -269,9 +310,10 @@ for line in $( seq ${start} ${stop} ) ; do
 #								-x ${x} \
 #								-S ${o} 2> ${o%.sam}.summary.txt
 						fi
-						chmod -w ${o} ${o%.sam}.summary.txt
+						#chmod -w ${o} ${o%.sam}.summary.txt
 					else
-						echo "${dir}/split/${b}.split.${s}.fa not found. Not aligning."
+						#echo "${dir}/split/${b}.split.${s}.fa not found. Not aligning."
+						echo "${i} not found. Not aligning."
 					fi
 				else
 					echo "Alignment ${o} exists. Skipping."
@@ -279,24 +321,20 @@ for line in $( seq ${start} ${stop} ) ; do
 	
 				#	Above and below NEED the complete reference (with its version number as it is in the fasta)
 
+				#	Unlike the coordinate system used by other standards such as GFF, the system used by the BED format is 
+				#	zero-based for the coordinate start and 
+				#	one-based for the coordinate end.[4] 
+				#	Thus, the nucleotide with the coordinate 1 in a genome will have a value of 0 in column 2 and a value of 1 in column 3.
 
-#	Unlike the coordinate system used by other standards such as GFF, the system used by the BED format is 
-#	zero-based for the coordinate start and 
-#	one-based for the coordinate end.[4] 
-#	Thus, the nucleotide with the coordinate 1 in a genome will have a value of 0 in column 2 and a value of 1 in column 3.
-
-
-#	2. start - The zero-based starting position of the feature in the chromosome.
-#	• The first base in a chromosome is numbered 0.
-#	• The start position in each BED feature is therefore interpreted to be 1 greater than the start position
-#	listed in the feature. For example, start=9, end=20 is interpreted to span bases 10 through 20,
-#	inclusive.
-#	• This column is required.
-#	3. end - The one-based ending position of the feature in the chromosome.
-#	• The end position in each BED feature is one-based. See example above.
-#	• This column is required.
-
-
+				#	2. start - The zero-based starting position of the feature in the chromosome.
+				#	• The first base in a chromosome is numbered 0.
+				#	• The start position in each BED feature is therefore interpreted to be 1 greater than the start position
+				#	listed in the feature. For example, start=9, end=20 is interpreted to span bases 10 through 20,
+				#	inclusive.
+				#	• This column is required.
+				#	3. end - The one-based ending position of the feature in the chromosome.
+				#	• The end position in each BED feature is one-based. See example above.
+				#	• This column is required.
 
 				#	Create bed files
 	
