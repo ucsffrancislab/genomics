@@ -10,7 +10,7 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
-	module load CBI samtools/1.13 bowtie2/2.4.4 bedtools2/2.30.0
+	module load CBI samtools/1.13 bowtie2/2.4.4 bedtools2/2.30.0 star/2.7.7a
 fi
 #set -x  #       print expanded command before executing it
 
@@ -27,10 +27,9 @@ mkdir -p ${dir}/raw
 #splits="vsl"
 splits="bt2 STAR"
 
-for a in ${splits}; do
-	mkdir -p ${dir}/split.${a}
-done
-
+#for a in ${splits}; do
+#	mkdir -p ${dir}/split.${a}
+#done
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -174,15 +173,29 @@ for line in $( seq ${start} ${stop} ) ; do
 								-S ${o} 2> ${o%.sam}.summary.txt
 							chmod -w ${o} ${o%.sam}.summary.txt
 						elif [ ${a} == 'STAR' ] ; then
-
-
-
-#	mv split.vsl to split.bt2
+							STAR --runMode alignReads --runThreadN 8 \
+								--readFilesIn ${i} \
+								--genomeDir ${xdir}/hg38.chrXYM_alts-2.7.7a/ \
+								--outFileNamePrefix ${o%sam} \
+								--outSAMtype SAM \
+								--outStd SAM | samtools view -h -F 256 -o ${o} -
+							chmod -w ${o} 
 
 
 
 #	load STAR module (note version in reference)
-#	build STAR reference hg38.chrXYM_alts
+
+#	STAR --runMode alignReads --runThreadN 32 --readFilesIn out/raw.split/NC_001716.2.split.25.fa --genomeDir /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts-2.7.7a/ --outFileNamePrefix testing --outSAMtype SAM --outStd SAM | samtools view -F 256 -o testing.output.bam - 
+#
+#	Some overlap between bowtie2, but surprisingly both miss many.
+#	
+#	-rw-r----- 1 gwendt francislab       472 Feb 14 08:55 testingSJ.out.tab
+#	-rw-r----- 1 gwendt francislab       246 Feb 14 08:55 testingLog.progress.out
+#	-rw-r----- 1 gwendt francislab       197 Feb 14 08:55 testingLog.std.out
+#	-rw-r----- 1 gwendt francislab     30662 Feb 14 08:55 testingLog.out
+#	-rw-r----- 1 gwendt francislab      1973 Feb 14 08:55 testingLog.final.out
+#	-rw-r----- 1 gwendt francislab     14372 Feb 14 08:55 testing.output.bam
+#	
 #
 #							STAR ....
 #	
@@ -190,8 +203,17 @@ for line in $( seq ${start} ${stop} ) ; do
 #					--runMode alignReads \
 #					--runThreadN ${threads} \
 #					--readFilesCommand zcat \
-#					--readFilesIn ${in_base}.fastq.gz \
-#					--genomeDir ${STAR}/${ref} \
+#					--readFilesIn ${i} \
+#					--genomeDir /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts-2.7.7a/ \
+#					--outSAMtype BAM SortedByCoordinate \
+
+#	STAR --runMode alignReads --runThreadN 32 --readFilesIn out/raw.split/NC_001716.2.split.25.fa --genomeDir /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts-2.7.7a/ --outSAMtype SAM --outFileNamePrefix testing
+
+#	samtools view -F 256 testingAligned.out.sam
+
+
+#	--outStd  | samtools view -F 4 -o output.bam -
+
 #
 #					--outFileNamePrefix ${outbase}. \
 #
@@ -202,7 +224,6 @@ for line in $( seq ${start} ${stop} ) ; do
 #					--outSAMunmapped Within \
 
 
-#	--outStd  | samtools view -F 4 -o output.bam -
 
 
 
@@ -372,7 +393,7 @@ for line in $( seq ${start} ${stop} ) ; do
 						echo "${i} not found. Not creating bed."
 					fi
 				else
-					echo "Bed exists. Skipping."
+					echo "Bed (${o}) exists. Skipping."
 				fi
 		
 #				#	not sure if i use this
