@@ -1,11 +1,14 @@
 
+Try xTea Demo-like run
+
 Write Paper
 
-Rerun with correct BED positions
-/francislab/data1/working/20211111-hg38-viral-homology
+AWS EC2 - S3 running
 
-Aggregate k=21
+Aggregate k=21 (gonna try AWS)
 20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
+
+
 
 Alternate TE analyses
 Develope singularity containers for each, then test
@@ -28,6 +31,7 @@ Find discordantly aligned read pairs?
 Find discordantly aligned read pairs?
 20200909-TARGET-ALL-P2-RNA_bam/20220121-human-viral-chimera
 
+UK Biobank
 
 
 
@@ -52,6 +56,8 @@ Find discordantly aligned read pairs?
 
 
 
+Rerun with correct BED positions
+/francislab/data1/working/20211111-hg38-viral-homology
 
 20200720-TCGA-GBMLGG-RNA_bam/20220121-iMOKA
 
