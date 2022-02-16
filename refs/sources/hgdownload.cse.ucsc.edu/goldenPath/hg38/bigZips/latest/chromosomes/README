@@ -37,3 +37,55 @@ Something is off. Doesn't map as much as I'd expect and there are gaps.
 
 ~/.local/BBMap/bbmask.sh in=chr6.fa out=shredded/masked/chr6.fa entropy=0.7 sam=shredded/HERVK113.chr6.sam fastawrap=50
 
+
+
+```
+mkdir tmp
+mkdir split
+for fa in *fa ; do
+  echo $fa
+  #faSplit -oneFile -extra=25 size ${fa} 25 tmp/split
+  i=split/${fa%.fa}.split.fa
+  s=${i%.fa}.sam
+  #mv tmp/split.fa ${i}
+  #bowtie2 -f -U ${i} --no-unal --threads 8 \
+  #  --very-sensitive-local \
+  #  -x /francislab/data1/refs/refseq/viral-20210916/viral \
+  #  -S ${s} 2> ${s%.sam}.summary.txt
+
+	b=${s%.sam}.bed
+  samtools sort -n -O SAM -o - ${s} | awk -v s=25 -v ref=${fa%.fa} '(/^split/){
+    sub(/^split/,"",$1);
+    a=1+s*$1
+    b=a+(length($10)-1)
+    print ref"\t"a"\t"b
+  }' | awk -v ext=0 'BEGIN{FS=OFS="\t"}{
+    if( r == "" ){
+      r=$1
+      s=(($2>ext)?$2:(ext+1))-ext
+      e=$3+ext
+    } else {
+      if( $2 <= (e+ext+1) ){
+        e=$3+ext
+      }else{
+        print $1,s-1,e
+        s=$2-ext
+        e=$3+ext
+      } 
+    }
+  }END{ if( r != "" ) print r,s-1,e }' > ${b}
+done
+
+
+cat split/*bed | awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$3-$2}' > bed_files_with_region_lengths.txt 
+
+sed 's/\t/,/g' bed_files_with_region_lengths.txt > bed_files_with_region_lengths.csv
+
+sort -t, -k4nr bed_files_with_region_lengths.csv 
+
+
+```
+
+
+
+

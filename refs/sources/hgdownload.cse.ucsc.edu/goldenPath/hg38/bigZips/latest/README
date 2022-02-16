@@ -42,5 +42,8 @@ sbatch --time=3600 --ntasks=64 --mem=490G --job-name build --output ${PWD}/hg38.
 
 
 
+module load star/2.7.7a
+sbatch --time=3600 --ntasks=32 --mem=240G --job-name alts --output ${PWD}/star.out.txt --wrap "STAR --runThreadN 32 --runMode genomeGenerate --genomeFastaFiles /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa --genomeDir /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts-2.7.7a/"
+
 
 
