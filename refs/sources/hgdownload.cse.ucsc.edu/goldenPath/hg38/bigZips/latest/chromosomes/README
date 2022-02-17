@@ -46,12 +46,12 @@ for fa in *fa ; do
   echo $fa
   #faSplit -oneFile -extra=25 size ${fa} 25 tmp/split
   i=split/${fa%.fa}.split.fa
-  s=${i%.fa}.sam
+  s=${i%.fa}.noherv.sam
   #mv tmp/split.fa ${i}
-  #bowtie2 -f -U ${i} --no-unal --threads 8 \
-  #  --very-sensitive-local \
-  #  -x /francislab/data1/refs/refseq/viral-20210916/viral \
-  #  -S ${s} 2> ${s%.sam}.summary.txt
+  bowtie2 -f -U ${i} --no-unal --threads 8 \
+    --very-sensitive-local \
+    -x /francislab/data1/refs/refseq/viral-20210916/viral.noherv \
+    -S ${s} 2> ${s%.sam}.summary.txt
 
 	b=${s%.sam}.bed
   samtools sort -n -O SAM -o - ${s} | awk -v s=25 -v ref=${fa%.fa} '(/^split/){
