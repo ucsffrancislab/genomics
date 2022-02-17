@@ -214,6 +214,141 @@ Step 3 : Extracting the sequences... done.
 ```
 
 
+OK. So I either run out of memory with too many or seg fault with 0.
+Can't really find a happy middle.
+Gonna try AWS.
+
+
+My `~/.aws/config` and `~/.aws/credentials` are set to use my ucsf profile by default
+
+
+Start AWS session
+```
+aws-adfs login 
+```
+
+Upload to S3
+```
+aws s3 cp --sse aws:kms --sse-kms-key-id alias/managed-s3-key /francislab/data1/refs/singularity/iMOKA_extended-1.1.5.img s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/
+
+cd /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
+for d in IDH.21.80? ; do
+for f in reduced.matrix matrix.json config.json ; do
+aws s3 cp --sse aws:kms --sse-kms-key-id alias/managed-s3-key ${d}/${f} s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/${d}/
+done ; done
+```
+
+Start instance
+Not entirely certain of all differences of the "-dl-" images. They only appear to have larger disk space.
+
+dl == Deep Learning?
+
+```
+ami_id=$( aws ec2 describe-images --owners 013463732445  | jq -r '.Images | map(select(.Name | test("^base-ubuntu-18-ami"))) | sort_by(.CreationDate)[].ImageId' | tail -1 )
+echo $ami_id
+
+subnet_id=$( aws ec2 describe-subnets | jq -r '.Subnets | sort_by(.AvailableIpAddressCount) | reverse[0].SubnetId' )
+echo ${subnet_id}
+
+#security_ids=$( aws ec2 describe-security-groups | jq -r '.SecurityGroups[].GroupId' | paste -sd ' ' )
+#echo $security_ids
+
+ssm_security_group_id=$( aws ec2 describe-security-groups | jq -r '.SecurityGroups | map(select( .GroupName == "managed-ssm" ))[].GroupId' )
+echo $ssm_security_group_id
+
+mns_security_group_id=$( aws ec2 describe-security-groups | jq -r '.SecurityGroups | map(select( .GroupName == "managed-network-services" ))[].GroupId' )
+echo $mns_security_group_id
+
+security_ids=${ssm_security_group_id} ${mns_security_group_id}
+echo $security_ids
+
+
+
+#	instance type? need 1 tb memory
+#
+#     type      Cos/Hr CPU   Mem    Storage / Network
+#  x1e.4xlarge	$3.336  16    488  1 x 480 SSD
+#  x1.16xlarge   6.669  64    976  1 x 1,920  7,000  10
+#  x1.32xlarge  13.338 128  1,952  2 x 1,920  14,000  25
+#  x1e.8xlarge   6.672  32    976  1 x 960  3,500  Up to 10
+#  x1e.16xlarge 13.344  64  1,952  1 x 1,920  7,000  10
+#  x1e.32xlarge 26.688 128  3,904  2 x 1,920  14,000  25
+
+#	disk space?
+#	"--block-device-mappings DeviceName=/dev/xvda,Ebs={VolumeSize=${1},VolumeType=gp2}"
+
+aws ec2 run-instances --image-id ${ami_id} --instance-type t3.micro --subnet-id ${subnet_id} --security-group-ids ${security_ids} --iam-instance-profile Name=managed-service-ec2-standard --dry-run
+
+#	... WAIT A MINUTE TO LET THE INSTANCE SPIN UP ...
+
+instance_id=$( aws ec2 describe-instances | jq -r '.Reservations[].Instances | map(select( .State.Name == "running"))[].InstanceId' )
+echo ${instance_id}
+
+#	... WAIT A MINUTE TO LET THE INSTANCE SPIN UP ...
+
+aws ssm start-session --target ${instance_id}
+
+
+
+
+sudo chown ssm-user $HOME
+cd
+
+
+
+
+
+
+
+#	Looks like apt update runs automatically and can't run 2 at the same time.
+#	There may be collisions. Try rerunning.
+#	Or maybe I'm not supposed to run it at all?
+#	The user guide does use it to install a couple things.
+
+sudo apt-get clean all
+sudo apt-get -y update
+sudo apt-get -y upgrade
+sudo apt-get -y autoremove
+
+
+
+
+
+#install singularity
+
+#download from s3
+
+
+#singularity exec iMOKA_extended-1.1.5.img iMOKA_core aggregate --input reduced.matrix --count-matrix matrix.json --mapper-config config.json --output aggregated > iMOKA_AWS.log
+
+
+
+
+
+
+#upload log and aggregated* to s3
+
+
+
+#download log and aggregated* from s3
+
+
+
+
+
+
+exit
+
+aws ec2 terminate-instances --instance-ids ${instance_id}
+
+aws ec2 describe-instances | jq -r '.Reservations[].Instances[].State.Name'
+```
+
+
+
+
+
+
 
 Predict.
 ```
@@ -225,22 +360,8 @@ Better matrix of important kmers.
 nohup ./matrices_of_select_kmers.bash > matrices_of_select_kmers.out &
 ```
 
-
-
-
-
-
-
-
-
-
-
 Upload.
 ```
 ./upload.bash
 ```
-
-
-
-
 
