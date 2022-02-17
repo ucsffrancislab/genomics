@@ -20,12 +20,6 @@ step="preprocess"
 #source_file="${PWD}/source.tsv"
 scratch=true
 
-
-export SINGULARITY_BINDPATH=/francislab,/scratch
-export OMP_NUM_THREADS=${threads}
-export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
-
-
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -47,6 +41,10 @@ while [ $# -gt 0 ] ; do
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
+
+export SINGULARITY_BINDPATH=/francislab,/scratch
+export OMP_NUM_THREADS=${threads}
+export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
 
 date
 
