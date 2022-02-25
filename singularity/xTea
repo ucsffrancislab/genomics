@@ -1,6 +1,8 @@
 
 Bootstrap: library
-From: ubuntu:20.04
+From: ubuntu:18.04
+#
+#From: ubuntu:20.04
 #GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
 
 
@@ -31,25 +33,46 @@ From: ubuntu:20.04
 
 %post
 
-	apt-get clean all &&
-	apt-get -y update &&
-	apt-get -y upgrade &&
-	apt-get -y install python3-setuptools bash python3 git wget gcc g++ make bzip2 \
-		libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev &&
+	apt-get clean all
+	apt-get -y update
+	apt-get -y upgrade
+#	apt-get -y install software-properties-common
+#	add-apt-repository ppa:deadsnakes/ppa
+#	apt-get -y install python3.6
+	apt-get -y install python3-setuptools bash python3.6 git wget gcc g++ make bzip2 \
+		libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev curl
+#	apt-get -y install python3-pip
 	apt-get -y autoremove
 
+#	Testing with python3.6 to stop all of the "is" / "==" warnings
 
+	ln -s python3.6 /usr/bin/python
 
+#	curl https://bootstrap.pypa.io/get-pip.py | python3.6
 
+	curl https://bootstrap.pypa.io/pip/3.6/get-pip.py | python3.6
 
+	#python3 -m easy_install install pip3.6
 
-#	bwa (version 0.7.17 or later, which requires the -o option), which can be downloaded from https://github.com/lh3/bwa.
+	python3 -m pip install --upgrade wheel awscli pip numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam sortedcontainers
+		#	scikit-learn==0.18.1
+ 
 
+	#	bwa (version 0.7.17 or later, which requires the -o option), which can be downloaded from https://github.com/lh3/bwa.
 
-#	samtools (version 1.0 or later), which can be downloaded from https://github.com/samtools.
+	wget --no-verbose https://github.com/lh3/bwa/releases/download/v0.7.17/bwa-0.7.17.tar.bz2
+	tar xfj bwa-0.7.17.tar.bz2
+	rm bwa-0.7.17.tar.bz2
+	cd bwa-0.7.17
+	make
+	mv bwa /usr/bin/
+	cd ..
+	/bin/rm -rf bwa-0.7.17
 
-	wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
-	tar -vxjf samtools-1.9.tar.bz2
+	#	samtools (version 1.0 or later), which can be downloaded from https://github.com/samtools.
+
+	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+	tar xfj samtools-1.9.tar.bz2
 	rm samtools-1.9.tar.bz2
 	cd samtools-1.9
 	make
@@ -57,27 +80,55 @@ From: ubuntu:20.04
 	cd ..
 	/bin/rm -rf samtools-1.9
 
+	#	minimap2 (for long reads only), which can be downloaded from https://github.com/lh3/minimap2.
+
+#	wget --no-verbose https://github.com/lh3/minimap2/releases/download/v2.24/minimap2-2.24.tar.bz2
+#	tar xjvf minimap2-2.24.tar.bz2
+#	rm minimap2-2.24.tar.bz2
+#	cd minimap2-2.24
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf minimap2-2.24
+
+	wget --no-verbose https://github.com/lh3/minimap2/releases/download/v2.24/minimap2-2.24_x64-linux.tar.bz2
+	tar xfj minimap2-2.24_x64-linux.tar.bz2
+	rm minimap2-2.24_x64-linux.tar.bz2
+	mv minimap2-2.24_x64-linux/* /usr/bin/
+	rmdir minimap2-2.24_x64-linux
+
+	#	wtdbg2 (for long reads only), which can be downloaded from https://github.com/ruanjue/wtdbg2.
+
+	wget --no-verbose https://github.com/ruanjue/wtdbg2/releases/download/v2.5/wtdbg-2.5_x64_linux.tgz
+	tar xfz wtdbg-2.5_x64_linux.tgz
+	rm wtdbg-2.5_x64_linux.tgz
+	mv wtdbg-2.5_x64_linux/* /usr/bin/
+	rmdir wtdbg-2.5_x64_linux
 
 
-#	minimap2 (for long reads only), which can be downloaded from https://github.com/lh3/minimap2.
+	#	Needed but not declared
 
-#	wtdbg2 (for long reads only), which can be downloaded from https://github.com/ruanjue/wtdbg2.
-
-
-
-
-
-
-
-	python3 -m easy_install install pip
-
-	ln -s python3 /usr/bin/python
-
-	python3 -m pip install --upgrade wheel awscli pip numpy scipy sklearn pandas requests seaborn pandoc boto3 pandarallel modin pysam sortedcontainers
-		#	scikit-learn==0.18.1
- 
+	wget --no-verbose https://github.com/samtools/bcftools/releases/download/1.14/bcftools-1.14.tar.bz2
+	tar xfj bcftools-1.14.tar.bz2
+	rm bcftools-1.14.tar.bz2
+	cd bcftools-1.14
+	make
+	make install
+	cd ..
+	/bin/rm -rf bcftools-1.14
+	
 	git clone https://github.com/parklab/xTea.git
 	mv /xTea/bin/* /usr/bin/
+
+	#	add default="/xtea/", to /usr/bin/ ( xtea, xtea_hg19, xtea_long ) ...
+	#    parser.add_option("--xtea", dest="xtea", type="string",
+
+	#	Add a default value to the script
+	sed -i '/--xtea/s/$/default="\/xtea\/",/' /usr/bin/xtea
+	sed -i '/--xtea/s/$/default="\/xtea\/",/' /usr/bin/xtea_hg19
+	sed -i '/--xtea/s/$/default="\/xtea\/",/' /usr/bin/xtea_long
+
+	mv /xTea/xtea /
 	/bin/rm -rf /xTea
 
 
@@ -92,7 +143,7 @@ From: ubuntu:20.04
 
 
 #	#Installing Anaconda 3 
-#	wget -c https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
+#	wget --no-verbose -c https://repo.anaconda.com/archive/Anaconda3-2021.11-Linux-x86_64.sh
 #	/bin/bash Anaconda3-2021.11-Linux-x86_64.sh -bfp /usr/local
 #
 #	/bin/bash /usr/local/bin/activate				#	??
@@ -135,5 +186,59 @@ From: ubuntu:20.04
 #	singularity run-help xTea.img 
 %help
 
+
+	singularity exec xTea.img xtea -h
+
+ Required:
+ 	-i: samples id list (one sample id per line);
+ 	-b: Illumina bam/cram file list (sorted and indexed — one file per line);
+ 	-p: working directory, where the results and temporary files will be saved;
+ 	-l: repeat library directory (directory which contains decompressed files from "rep_lib_annotation.tar.gz");
+ 	-r: reference genome fasta/fa file;
+ 	-y: type of repeats to process (1-L1, 2-Alu, 4-SVA, 8-HERV; sum the number corresponding to the repeat type to process multiple repeats. 
+ 	    For example, to run L1 and SVA only, use `-y 5`. 
+ 	    Each repeat type will be processed separately, however some of the early processing steps are common to multiple repeat types.
+ 	    Thus, when analyzing a large cohort, to improve the efficiency (and save money on the cloud), 
+ 	    it is highly recommended to run the tool on one repeat type first, and subsequently on the rest. 
+ 	    For example, first use '-y 1', and for then use '-y 6' in a second run);
+ 	-f: steps to run. (5907 means run all the steps);
+ 	-g: gene annotation file in gff3 format;
+ 	-o: generated running scripts under the working folder;
+ Optional:
+ 	-n: number of cores (default: 8, should be an integer);
+ 	-m: maximum memory in GB (default: 25, should be an integer);
+ 	-q: cluster partition name;
+ 	-t: job runtime;
+ 	--flklen: flanking region length;
+ 	--lsf: add this option if using an LSF cluster (by default, use of the slurm scheduler is assumed);
+ 	--tumor: indicates the tumor sample in a case-ctrl pair;
+ 	--purity: tumor purity (by default 0.45);
+ 	--blacklist: blacklist file in bed format. Listed regions will be filtered out;
+ 	--slurm: runs using the slurm scheduler. Generates a script header fit for this scheduler;
+ 
+
+wget --no-verbose https://github.com/parklab/xTea/raw/master/rep_lib_annotation.tar.gz
+
+
+sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=sort --time=20160 --nodes=1 --ntasks=64 --mem=495G --output=${PWD}/samtools_sort.txt --wrap "samtools sort --threads 64 -o /francislab/data1/raw/CEPH-ENA-PRJEB3381/NA12878.sorted.bam /francislab/data1/raw/CEPH-ENA-PRJEB3381/NA12878_S1.bam"
+
+
+
+
+export SINGULARITY_BINDPATH=/francislab
+ 
+singularity exec ../xTea.img xtea -i sample_id.txt -b illumina_bam_list.txt -x null -p ${PWD}/tmp/ -o submit_jobs.sh -l rep_lib_annotation/ -r hg38.fa -g hg38.ncbiRefSeq.gtf -f 5907 -y 15 
+...
+chmod +x /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp/10-PAUCDY-09A-01R/L1/run_xTEA_pipeline.sh
+singularity exec ../xTea.img /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaDemo/tmp/NA12878/HERV/run_xTEA_pipeline.sh
+
+
+
+export SINGULARITY_BINDPATH=/francislab
+singularity exec ../xTea.img xtea -i ${PWD}/sample_id.txt -b ${PWD}/illumina_bam_list.txt -x null -p ${PWD}/tmp/ -o submit_jobs.sh -l ${PWD}/rep_lib_annotation/ -r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa -g /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf -f 5907 -y 15 
+
+chmod +x /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp/10-PAUCDY-09A-01R/L1/run_xTEA_pipeline.sh
+
+singularity exec ../xTea.img /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp/10-PAUCDY-09A-01R/L1/run_xTEA_pipeline.sh
 
 

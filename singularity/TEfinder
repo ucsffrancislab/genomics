@@ -45,13 +45,13 @@ From: ubuntu:20.04
 	ln -s python3 /usr/bin/python
  
 
-#	wget https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2
+#	wget --no-verbose https://github.com/samtools/htslib/releases/download/1.9/htslib-1.9.tar.bz2
 #	tar -vxjf htslib-1.9.tar.bz2
 #	cd htslib-1.9
 #	make
 #	cd ..
 
-	wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
 	tar -vxjf samtools-1.9.tar.bz2
 	rm samtools-1.9.tar.bz2
 	cd samtools-1.9
@@ -61,7 +61,7 @@ From: ubuntu:20.04
 	/bin/rm -rf samtools-1.9
 
 
-	wget https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
+	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
 	tar -zxvf bedtools-2.29.1.tar.gz
 	\rm bedtools-2.29.1.tar.gz
 	cd bedtools2
@@ -70,13 +70,17 @@ From: ubuntu:20.04
 	cd ..
 	/bin/rm -rf bedtools2
 
-	wget https://github.com/broadinstitute/picard/releases/download/2.26.10/picard.jar
+	wget --no-verbose https://github.com/broadinstitute/picard/releases/download/2.26.10/picard.jar
 
 
-	wget -O TEfinder-1.0.1.tar.gz https://github.com/VistaSohrab/TEfinder/archive/refs/tags/1.0.1.tar.gz
+	wget --no-verbose -O TEfinder-1.0.1.tar.gz https://github.com/VistaSohrab/TEfinder/archive/refs/tags/1.0.1.tar.gz
 	tar xfvz TEfinder-1.0.1.tar.gz
 	\rm TEfinder-1.0.1.tar.gz
 	mv /TEfinder-1.0.1/TEfinder /usr/bin/
+
+	#	Add better default value for picard.jar (set to /picard.jar)
+	sed -i 's/picard="picard.jar"/picard="\/picard.jar"/' /usr/bin/TEfinder 
+
 	#ln -s /TEfinder-1.0.1/TEfinder /usr/bin/TEfinder
 	/bin/rm -rf /TEfinder-1.0.1/
 
@@ -108,22 +112,53 @@ From: ubuntu:20.04
 
 
 #	the C4 environment makes bash scripts fail
-#
+# ---
 #	/bin/bash: BASH_FUNC_ml(): line 0: syntax error near unexpected token `)'
 #	/bin/bash: BASH_FUNC_ml(): line 0: `BASH_FUNC_ml() () {  eval $($LMOD_DIR/ml_cmd "$@")'
 #	/bin/bash: error importing function definition for `BASH_FUNC_ml'
 #	/bin/bash: BASH_FUNC_module(): line 0: syntax error near unexpected token `)'
 #	/bin/bash: BASH_FUNC_module(): line 0: `BASH_FUNC_module() () {  eval $($LMOD_CMD bash "$@") && eval $(${LMOD_SETTARG_CMD:-:} -s sh)'
 #	/bin/bash: error importing function definition for `BASH_FUNC_module'
-#
+# ---
 #	call with --cleanenv until I figure out exactly what the issue is
 #	singularity exec --cleanenv TEfinder.img TEfinder
 #	singularity exec --cleanenv TEfinder.img env
 #	singularity exec TEfinder.img env
+# ---
+#	upping bash version (or linux version) can also fix
+
 
 
 #	Can either use the picard.jar in the current dir. Or the one in the root dir of the image.
+#	cd ~/github/VistaSohrab/TEfinder/test_dataset
 #	singularity exec TEfinder.img TEfinder -alignment sample.bam -fa reference.fa -gtf TEs.gtf -te List_of_TEs.txt -picard /picard.jar
 
+#	Setting default value of picard to /picard.jar so don't need this.
 
+
+#[gwendt@c4-dev1 /francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk]$ head hg38_rmsk_DNA*gtf
+#==> hg38_rmsk_DNA.gtf <==
+#chr1	source	feature	11678	11780	.	-	.	feature_name "MER5B"
+#chr1	source	feature	27269	27518	.	+	.	feature_name "MER33"
+#chr1	source	feature	30343	30532	.	-	.	feature_name "MER53"
+
+#/francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.gtf
+#/francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/hg38_rmsk_Retroposon.gtf
+
+#	awk -F '\t' '{print $9}' hg38_rmsk_LTR.gtf  | awk -F '"' '{print $2}' | sort | uniq > hg38_rmsk_LTR.txt
+
+#	singularity exec ../TEfinder.img java -jar /picard.jar AddOrReplaceReadGroups \
+    I=input.bam \
+    O=sample.bam \
+    RGID=sample \
+    RGLB=LIB \
+    RGPL=illumina \
+    RGPU=unit1 \
+    RGSM=sample
+
+export SINGULARITY_BINDPATH=/francislab
+singularity exec TEfinder.img TEfinder --threads 8 -alignment /francislab/data1/raw/20200909-TARGET-ALL-P2-RNA_bam/bam/10-PAUCDY-09A-01R.bam -fa ${PWD}/hg38.fa -gtf ${PWD}/hg38_rmsk_LTR.gtf -te ${PWD}/hg38_rmsk_LTR.txt
+
+
+#	find a way to skip sorting. Waste of time to sort a sort bam. Can take hours.
 
