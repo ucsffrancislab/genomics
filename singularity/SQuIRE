@@ -1,0 +1,258 @@
+
+Bootstrap: library
+#From: ubuntu:18.04
+
+From: ubuntu:20.04
+#GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
+
+
+
+#	this is run when `singularity run SQuIRE.img ... ` is called. ( not exec )
+
+%runscript
+
+	exec echo "The runscript is the containers default runtime command!"
+
+
+%files
+
+#	/home/vanessa/Desktop/hello-kitty.txt        # copied to root of container
+
+#	/home/vanessa/Desktop/party_dinosaur.gif     /opt/the-party-dino.gif #
+
+
+%environment
+
+#	data is inserted in image at end of build time and sourced at runtime
+
+#	VARIABLE=MEATBALLVALUE
+
+#	export VARIABLE
+
+
+%labels
+
+   AUTHOR George.Wendt@ucsf.edu
+
+
+%post
+
+	apt-get clean all
+	apt-get -y update
+	apt-get -y upgrade
+	apt-get -y install bash git wget gcc g++ gfortran make curl 
+	apt-get -y install python3 python3-distutils python3-apt
+
+	apt-get -y install bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev 
+
+	apt-get -y install libcurl4-openssl-dev
+
+	apt-get -y install libxml2-dev #	python-configparser
+
+	apt-get -y install libpcre3-dev	#	needed for R-3.4.1 install (with pcre 1)
+
+	apt-get -y autoremove
+
+	curl https://bootstrap.pypa.io/get-pip.py | python3
+
+	ln -s python3 /usr/bin/python
+
+	python3 -m pip install --upgrade pip
+	python3 -m pip install --upgrade wheel awscli numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam 
+
+
+	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+	tar -vxjf samtools-1.9.tar.bz2
+	rm samtools-1.9.tar.bz2
+	cd samtools-1.9
+	make
+	make install
+	cd ..
+	/bin/rm -rf samtools-1.9
+
+
+	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
+	tar -zxvf bedtools-2.29.1.tar.gz
+	\rm bedtools-2.29.1.tar.gz
+	cd bedtools2
+	make
+	make install
+	cd ..
+	/bin/rm -rf bedtools2
+
+	wget --no-verbose https://github.com/alexdobin/STAR/archive/refs/tags/2.5.3a.tar.gz
+	tar xfvz 2.5.3a.tar.gz
+#	cd STAR-2.5.3a
+#	make
+#	make install
+#	cd ..
+	mv /STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin/
+	mv /STAR-2.5.3a/bin/Linux_x86_64/STARlong /usr/bin/
+	#	mv /STAR-2.5.3a/bin/Linux_x86_64_static/STAR /usr/bin/
+	#	mv /STAR-2.5.3a/bin/Linux_x86_64_static/STARlong /usr/bin/
+	/bin/rm -rf 2.5.3a.tar.gz STAR-2.5.3a
+
+
+#	wget --no-verbose https://github.com/gpertea/stringtie/archive/refs/tags/v1.3.4d.tar.gz
+#	tar xfvz v1.3.4d.tar.gz
+#	cd stringtie-1.3.4d
+#	make
+#	make install
+#	cd ..
+#	v1.3.4d.tar.gz stringtie-1.3.4d
+
+	wget --no-verbose http://ccb.jhu.edu/software/stringtie/dl/stringtie-1.3.3b.Linux_x86_64.tar.gz
+	tar xfvz stringtie-1.3.3b.Linux_x86_64.tar.gz
+
+###bedtools 2.27.0
+###samtools 1.1
+###STAR 2.5.3a
+
+#stringtie 1.3.3b
+#DESeq2 1.16.1
+#R 3.4.1
+#Python 2.7
+	
+
+
+#	#wget --no-verbose https://ftp.pcre.org/pub/pcre/pcre2-10.37.tar.gz
+#	wget --no-verbose https://github.com/PhilipHazel/pcre2/releases/download/pcre2-10.39/pcre2-10.39.tar.gz
+#	tar -zxvf pcre2-10.39.tar.gz
+#	cd pcre2-10.39
+#	./configure
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf pcre2-10.39.tar.gz pcre2-10.39
+
+#	https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.bz2/download
+	wget --no-verbose https://versaweb.dl.sourceforge.net/project/pcre/pcre/8.45/pcre-8.45.tar.bz2
+	tar -jxvf pcre-8.45.tar.bz2
+	cd pcre-8.45
+	./configure
+	make
+	make install
+	cd ..
+	/bin/rm -rf pcre-8.45.tar.bz2 pcre-8.45
+
+
+#	wget --no-verbose https://cran.r-project.org/src/base/R-3/R-3.4.1.tar.gz
+#	tar -zxvf R-3.4.1.tar.gz
+#	cd R-3.4.1
+#	./configure --with-x=no --with-readline=no
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf R-3.4.1.tar.gz R-3.4.1
+
+#[   ]	R-3.5.0.tar.gz	2018-04-23 09:04	29M	 
+#[   ]	R-3.5.1.tar.gz	2018-07-02 09:04	28M	 
+#[   ]	R-3.5.2.tar.gz	2018-12-20 09:04	29M	 
+#[   ]	R-3.5.3.tar.gz	2019-03-11 09:04	29M	 
+#[   ]	R-3.6.0.tar.gz	2019-04-26 09:05	29M	 
+#[   ]	R-3.6.1.tar.gz	2019-07-05 09:05	29M	 
+#[   ]	R-3.6.2.tar.gz	2019-12-12 09:05	32M	 
+#[   ]	R-3.6.3.tar.gz	2020-02-29 09:05	32M	 
+
+	wget --no-verbose https://cran.r-project.org/src/base/R-3/R-3.5.0.tar.gz
+	tar -zxvf R-3.5.0.tar.gz
+	cd R-3.5.0
+	./configure --with-x=no --with-readline=no
+	make
+	make install
+	cd ..
+	/bin/rm -rf R-3.5.0.tar.gz R-3.5.0
+
+#DESeq2 1.16.1
+
+	#	Rscript -e 'install.packages("devtools")'
+	#	Rscript -e 'require(devtools);install_version("devtools", version = "1.13.6")'
+
+	#	devtools_1.13.6.tar.gz  2018-06-27 20:57  475K  
+	#wget http://cran.rstudio.com/src/contrib/Archive/devtools/devtools_1.13.6.tar.gz
+	#Rscript -e 'install.packages("devtools_1.13.6.tar.gz", type="source", repos=NULL)'
+	#rm devtools_1.13.6.tar.gz
+
+	#wget http://cran.rstudio.com/src/contrib/Archive/devtools/devtools_1.13.6.tar.gz
+	#Rscript -e 'install.packages("devtools_1.13.6.tar.gz", type="source", repos=NULL)'
+	#rm devtools_1.13.6.tar.gz
+
+	#	https://bioconductor.org/packages/release/bioc/src/contrib/DESeq2_1.34.0.tar.gz
+
+
+	#	wget https://bioconductor.statistik.tu-dortmund.de/packages/3.5/bioc/src/contrib/DESeq2_1.16.1.tar.gz
+	#	Rscript -e 'install.packages("DESeq2_1.16.1.tar.gz", type="source", repos=NULL)'
+	#	rm DESeq2_1.16.1.tar.gz
+	#	ERROR: dependencies 'S4Vectors', 'IRanges', 'GenomicRanges', 'SummarizedExperiment', 'BiocGenerics', 'Biobase', 'BiocParallel', 'genefilter', 'locfit', 'geneplotter', 'ggplot2', 'Hmisc', 'Rcpp', 'RcppArmadillo' are not available for package 'DESeq2'
+
+
+
+	#Rscript -e 'install.packages("devtools")'
+	#Rscript -e 'require(devtools);install_version("DESeq2", version = "1.16.1")'
+
+	#Rscript -e 'source("https://bioconductor.org/biocLite.R");biocLite("DESeq2");'
+	#Rscript -e 'BiocInstaller::biocLite(c("DESeq2"))'
+
+
+
+
+#	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.0.5.tar.gz
+#	tar -zxvf R-4.0.5.tar.gz
+#	\rm R-4.0.5.tar.gz
+#	cd R-4.0.5
+#	./configure --with-x=no --with-readline=no
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf R-4.0.5
+
+
+#	https://www.bioconductor.org/about/release-announcements/#release-versions
+#
+#3.13 (4.1) 3.12 (4.0) 3.11 (4.0) 
+#	3.10 (3.6) 3.9 (3.6) 
+#	3.8 (3.5) 3.7 (3.5) 
+#	3.6 (3.4) 3.5 (3.4) 
+#	3.4 (3.3) 3.3 (3.3) 3.2 (3.2) 3.1 (3.2) 3.0 (3.1) 2.14 (3.1) 2.13 (3.0) 2.12 (3.0) 2.11 (2.15) 2.10 (2.15)
+
+	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
+	#Rscript -e 'BiocManager::install( version = "3.5", update = TRUE, ask = FALSE)'
+	Rscript -e 'BiocManager::install( version = "3.8", ask = FALSE)'
+	Rscript -e 'BiocManager::install("DESeq2", update = TRUE, ask = FALSE)'	#,version="1.16.1")'
+
+#	3.5
+#	ERROR: dependency 'latticeExtra' is not available for package 'Hmisc'
+#	* removing '/usr/local/lib64/R/library/Hmisc'
+#	ERROR: dependency 'Hmisc' is not available for package 'DESeq2'
+#	* removing '/usr/local/lib64/R/library/DESeq2'
+
+
+
+
+
+
+	#	git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python3 -m pip install -e .
+
+
+
+
+
+
+
+
+#	singularity run-help SQuIRE.img 
+%help
+
+	https://github.com/wyang17/SQuIRE
+
+
+
+	singularity remote login --tokenfile ~/sylabs-token 
+
+	singularity build --remote SQuIRE.img SQuIRE
+
+
+	singularity exec --bind /francislab SQuIRE.img ...
+
+
+
