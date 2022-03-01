@@ -1,5 +1,6 @@
 
-Bootstrap: library
+#Bootstrap: library
+Bootstrap: docker
 From: ubuntu:18.04
 #
 #From: ubuntu:20.04
@@ -32,6 +33,10 @@ From: ubuntu:18.04
 
 
 %post
+
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 	apt-get clean all
 	apt-get -y update
@@ -240,5 +245,9 @@ singularity exec ../xTea.img xtea -i ${PWD}/sample_id.txt -b ${PWD}/illumina_bam
 chmod +x /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp/10-PAUCDY-09A-01R/L1/run_xTEA_pipeline.sh
 
 singularity exec ../xTea.img /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp/10-PAUCDY-09A-01R/L1/run_xTEA_pipeline.sh
+
+
+
+	sudo singularity build xTea.img xTea
 
 

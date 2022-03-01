@@ -1,6 +1,7 @@
 
 
-Bootstrap: library
+#Bootstrap: library
+Bootstrap: docker
 From: ubuntu:20.04
 #GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
 
@@ -31,6 +32,10 @@ From: ubuntu:20.04
 
 
 %post
+
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 	apt-get clean all &&
 	apt-get -y update &&
@@ -137,4 +142,6 @@ RUN apt-get install -y  --reinstall procps
 
 #	singularity remote login --tokenfile ~/sylabs-token 
 #	singularity build --remote GeneTEFlow.img GeneTEFlow
+
+	sudo singularity build GeneTEFlow.img GeneTEFlow
 
