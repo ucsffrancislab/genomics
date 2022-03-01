@@ -1,4 +1,5 @@
 *.img
+*.out
 GeneTEFlow.Analysis
 GeneTEFlow.Analysis.old1
 GeneTEFlow.Analysis.old2
@@ -12,3 +13,6 @@ test
 xTeaClusterTest/
 xTeaDemo/
 xTeaTest/
+
+.vagrant/
+Vagrantfile

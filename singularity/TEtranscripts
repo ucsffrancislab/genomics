@@ -1,5 +1,6 @@
 
-Bootstrap: library
+#Bootstrap: library
+Bootstrap: docker
 #From: ubuntu:16.04
 
 From: ubuntu:20.04
@@ -36,6 +37,10 @@ From: ubuntu:20.04
 
 
 %post
+
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 	apt-get clean all
 	apt-get -y update
@@ -78,4 +83,5 @@ From: ubuntu:20.04
 	singularity exec --bind /francislab TEtranscripts.img ...
 
 
+	sudo singularity build TEtranscripts.img TEtranscripts
 

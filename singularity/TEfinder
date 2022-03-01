@@ -1,5 +1,6 @@
 
-Bootstrap: library
+#Bootstrap: library
+Bootstrap: docker
 From: ubuntu:20.04
 #GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
 
@@ -35,6 +36,10 @@ From: ubuntu:20.04
 
 %post
 
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 	apt-get clean all
 	apt-get -y update
 	apt-get -y upgrade
@@ -52,7 +57,8 @@ From: ubuntu:20.04
 #	cd ..
 
 	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
-	tar -vxjf samtools-1.9.tar.bz2
+	#tar -vxjf samtools-1.9.tar.bz2
+	tar -xjf samtools-1.9.tar.bz2
 	rm samtools-1.9.tar.bz2
 	cd samtools-1.9
 	make
@@ -62,7 +68,8 @@ From: ubuntu:20.04
 
 
 	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
-	tar -zxvf bedtools-2.29.1.tar.gz
+	#tar -zxvf bedtools-2.29.1.tar.gz
+	tar -zxf bedtools-2.29.1.tar.gz
 	\rm bedtools-2.29.1.tar.gz
 	cd bedtools2
 	make
@@ -74,7 +81,8 @@ From: ubuntu:20.04
 
 
 	wget --no-verbose -O TEfinder-1.0.1.tar.gz https://github.com/VistaSohrab/TEfinder/archive/refs/tags/1.0.1.tar.gz
-	tar xfvz TEfinder-1.0.1.tar.gz
+	#tar xfvz TEfinder-1.0.1.tar.gz
+	tar xfz TEfinder-1.0.1.tar.gz
 	\rm TEfinder-1.0.1.tar.gz
 	mv /TEfinder-1.0.1/TEfinder /usr/bin/
 
@@ -161,4 +169,7 @@ singularity exec TEfinder.img TEfinder --threads 8 -alignment /francislab/data1/
 
 
 #	find a way to skip sorting. Waste of time to sort a sort bam. Can take hours.
+
+
+	sudo singularity build TEfinder.img TEfinder
 
