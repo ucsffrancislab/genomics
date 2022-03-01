@@ -1,5 +1,6 @@
 
-Bootstrap: library
+#Bootstrap: library
+Bootstrap: docker
 From: ubuntu:16.04
 
 #From: ubuntu:20.04
@@ -37,6 +38,10 @@ From: ubuntu:16.04
 
 %post
 
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 	apt-get clean all
 	apt-get -y update
 	apt-get -y upgrade
@@ -68,7 +73,8 @@ From: ubuntu:16.04
 
 
 	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.3.1/samtools-1.3.1.tar.bz2
-	tar -vxjf samtools-1.3.1.tar.bz2
+	#tar -vxjf samtools-1.3.1.tar.bz2
+	tar -xjf samtools-1.3.1.tar.bz2
 	rm samtools-1.3.1.tar.bz2
 	cd samtools-1.3.1
 	make
@@ -78,7 +84,8 @@ From: ubuntu:16.04
 
 
 	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.25.0/bedtools-2.25.0.tar.gz
-	tar -zxvf bedtools-2.25.0.tar.gz
+	#tar -zxvf bedtools-2.25.0.tar.gz
+	tar -zxf bedtools-2.25.0.tar.gz
 	\rm bedtools-2.25.0.tar.gz
 	cd bedtools2
 	make
@@ -122,4 +129,5 @@ From: ubuntu:16.04
 	singularity exec --bind /francislab RepEnrich2.img ...
 
 
+	sudo singularity build RepEnrich2.img RepEnrich2
 
