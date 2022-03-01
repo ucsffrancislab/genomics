@@ -1,5 +1,6 @@
 
-Bootstrap: library
+#Bootstrap: library
+Bootstrap: docker
 From: ubuntu:20.04
 #GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
 
@@ -35,6 +36,10 @@ From: ubuntu:20.04
 
 %post
 
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 	apt-get clean all
 	apt-get -y update
 	apt-get -y upgrade
@@ -58,7 +63,8 @@ From: ubuntu:20.04
 
 
 	wget --no-verbose https://github.com/PhilipHazel/pcre2/releases/download/pcre2-10.39/pcre2-10.39.tar.gz
-	tar -zxvf pcre2-10.39.tar.gz
+	#tar -zxvf pcre2-10.39.tar.gz
+	tar -zxf pcre2-10.39.tar.gz
 	cd pcre2-10.39
 	./configure
 	make
@@ -68,7 +74,8 @@ From: ubuntu:20.04
 
 
 	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.0.5.tar.gz
-	tar -zxvf R-4.0.5.tar.gz
+	#tar -zxvf R-4.0.5.tar.gz
+	tar -zxf R-4.0.5.tar.gz
 	\rm R-4.0.5.tar.gz
 	cd R-4.0.5
 	./configure --with-x=no --with-readline=no
@@ -103,4 +110,6 @@ From: ubuntu:20.04
 
 	singularity exec --bind /francislab TEtools.img ...
 
+
+	sudo singularity build TEtools.img TEtools
 
