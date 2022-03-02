@@ -191,6 +191,8 @@ From: ubuntu:18.04
 #	singularity run-help xTea.img 
 %help
 
+	From https://github.com/parklab/xTea
+
 
 	singularity exec xTea.img xtea -h
 

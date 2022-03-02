@@ -99,9 +99,8 @@ From: ubuntu:20.04
 #	singularity run-help TEtools.img 
 %help
 
-	does help just print all this stuff?
+	From https://github.com/l-modolo/TEtools
 
-	currently getting nothing by singularity help
 
 	singularity remote login --tokenfile ~/sylabs-token 
 

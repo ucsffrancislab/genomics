@@ -66,12 +66,11 @@ From: ubuntu:20.04
 #	singularity run-help TEfinder.img 
 %help
 
-	https://github.com/mhammell-laboratory/TEtranscripts
+	From https://github.com/mhammell-laboratory/TEtranscripts
 
-	https://pypi.org/project/TEtranscripts/
+	From https://pypi.org/project/TEtranscripts/
 
-	http://hammelllab.labsites.cshl.edu/software/
-
+	From http://hammelllab.labsites.cshl.edu/software/
 
 
 
