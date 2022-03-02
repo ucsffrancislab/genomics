@@ -273,7 +273,7 @@ From: ubuntu:20.04
 #	singularity run-help SQuIRE.img 
 %help
 
-	https://github.com/wyang17/SQuIRE
+	From https://github.com/wyang17/SQuIRE
 
 
 

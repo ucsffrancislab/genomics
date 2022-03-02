@@ -117,9 +117,8 @@ From: ubuntu:16.04
 #	singularity run-help RepEnrich2.img 
 %help
 
-	does help just print all this stuff?
+	From https://github.com/nerettilab/RepEnrich2
 
-	currently getting nothing by singularity help
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
