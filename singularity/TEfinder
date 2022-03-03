@@ -80,17 +80,21 @@ From: ubuntu:20.04
 	wget --no-verbose https://github.com/broadinstitute/picard/releases/download/2.26.10/picard.jar
 
 
-	wget --no-verbose -O TEfinder-1.0.1.tar.gz https://github.com/VistaSohrab/TEfinder/archive/refs/tags/1.0.1.tar.gz
-	#tar xfvz TEfinder-1.0.1.tar.gz
-	tar xfz TEfinder-1.0.1.tar.gz
-	\rm TEfinder-1.0.1.tar.gz
-	mv /TEfinder-1.0.1/TEfinder /usr/bin/
+#	wget --no-verbose -O TEfinder-1.0.1.tar.gz https://github.com/VistaSohrab/TEfinder/archive/refs/tags/1.0.1.tar.gz
+#	#tar xfvz TEfinder-1.0.1.tar.gz
+#	tar xfz TEfinder-1.0.1.tar.gz
+#	\rm TEfinder-1.0.1.tar.gz
+#	mv /TEfinder-1.0.1/TEfinder /usr/bin/
+#	#ln -s /TEfinder-1.0.1/TEfinder /usr/bin/TEfinder
+#	/bin/rm -rf /TEfinder-1.0.1/
+
+
+	wget -O /usr/bin/TEfinder https://raw.githubusercontent.com/ucsffrancislab/TEfinder/master/TEfinder
+	chmod +x /usr/bin/TEfinder
 
 	#	Add better default value for picard.jar (set to /picard.jar)
 	sed -i 's/picard="picard.jar"/picard="\/picard.jar"/' /usr/bin/TEfinder 
 
-	#ln -s /TEfinder-1.0.1/TEfinder /usr/bin/TEfinder
-	/bin/rm -rf /TEfinder-1.0.1/
 
 	mkdir /data
 
@@ -105,6 +109,8 @@ From: ubuntu:20.04
 
 #	singularity run-help TEfinder.img 
 %help
+
+	From https://github.com/ucsffrancislab/TEfinder
 
 	From https://github.com/VistaSohrab/TEfinder
 
@@ -163,12 +169,37 @@ From: ubuntu:20.04
     RGPU=unit1 \
     RGSM=sample
 
-export SINGULARITY_BINDPATH=/francislab
-singularity exec TEfinder.img TEfinder --threads 8 -alignment /francislab/data1/raw/20200909-TARGET-ALL-P2-RNA_bam/bam/10-PAUCDY-09A-01R.bam -fa ${PWD}/hg38.fa -gtf ${PWD}/hg38_rmsk_LTR.gtf -te ${PWD}/hg38_rmsk_LTR.txt
 
 
+#	find way to link instead of copy raw file. not needed.
 #	find a way to skip sorting. Waste of time to sort a sort bam. Can take hours.
+#	I'd rather not fork this repo as it is could still be active but it is looking this way.
+
 
 
 	sudo singularity build TEfinder.img TEfinder
+
+
+	It appears that both the references (fa and gtf) need be sorted in perfect numerical order. 
+	ie. 1, 2, 3, 4 ... not 1, 10, 11, 12 ...
+	Checking. I think that I did this, but can't find what I did.
+
+
+	faSplit byname hg38.fa chromosomes/
+	for c in $( seq 1 22 ) X Y Un ; do
+	cat chromosomes/chr${c}.fa
+	cat chromosomes/chr${c}_*.fa
+	done > hg38.resorted.fa
+
+	awk 'BEGIN{FS=OFS="\t"}{s=substr($1,4); split(s,d,"_"); c=d[1]; if(c=="X")c=23; if(c=="Y")c=24; if(c=="Un")c=25; print c,s,$1,$2,$3,$4,$5,$6,$7,$8,$9}' hg38_rmsk_LTR.gtf | sort -k1n,1 -k2,2 -k6n,6 | awk 'BEGIN{FS=OFS="\t"}{print $3,$4,$5,$6,$7,$8,$9,$10,$11}' > hg38_rmsk_LTR.resorted.gtf
+
+	Oddly, the output IS NOT sorted the same way
+
+	ln -s /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.resorted.fa
+
+	ln -s /francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.resorted.gtf
+
+	awk -F '\t' '{print $9}' hg38_rmsk_LTR.gtf  | awk -F '"' '{print $2}' | sort | uniq > hg38_rmsk_LTR.txt
+
+	sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=10-PAUCDY-09A-01R --time=20160 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/10-PAUCDY-09A-01R.txt --wrap "singularity exec --bind /francislab TEfinder.img TEfinder -threads 8 -alignment /francislab/data1/raw/20200909-TARGET-ALL-P2-RNA_bam/bam/10-PAUCDY-09A-01R.bam -fa ${PWD}/hg38.resorted.fa -gtf ${PWD}/hg38_rmsk_LTR.resorted.gtf -te ${PWD}/hg38_rmsk_LTR.txt"
 
