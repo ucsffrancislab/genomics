@@ -1,11 +1,5 @@
 *.img
 *.out
-GeneTEFlow.Analysis
-GeneTEFlow.Analysis.old1
-GeneTEFlow.Analysis.old2
-GeneTEFlow.Process
-GeneTEFlow.SampleInfo
-GeneTEFlow.TEanalysis
 TEfinderClusterTest/
 TEfinderTest/
 samtools_sort.txt
