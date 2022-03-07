@@ -185,7 +185,7 @@ From: ubuntu:18.04
 
 
 #singularity remote login --tokenfile ~/sylabs-token 
-#singularity build --remote xTea.img xTea
+#singularity build --remote xTea.img xTea.def
 
 
 #	singularity run-help xTea.img 
@@ -250,6 +250,6 @@ singularity exec ../xTea.img /c4/home/gwendt/github/ucsffrancislab/genomics/sing
 
 
 
-	sudo singularity build xTea.img xTea
+	sudo singularity build xTea.img xTea.def
 
 

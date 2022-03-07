@@ -119,9 +119,9 @@ From: ubuntu:16.04
 %help
 
 	singularity remote login --tokenfile ~/sylabs-token 
-	singularity build --remote GeneTEFlow.Process.img GeneTEFlow.Process
+	singularity build --remote GeneTEFlow.Process.img GeneTEFlow.Process.def
 
 	-- or --
 
-	sudo singularity build GeneTEFlow.Process.img GeneTEFlow.Process
+	sudo singularity build GeneTEFlow.Process.img GeneTEFlow.Process.def
 

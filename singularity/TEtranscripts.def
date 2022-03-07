@@ -76,11 +76,11 @@ From: ubuntu:20.04
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
-	singularity build --remote TEtranscripts.img TEtranscripts
+	singularity build --remote TEtranscripts.img TEtranscripts.def
 
 
 	singularity exec --bind /francislab TEtranscripts.img ...
 
 
-	sudo singularity build TEtranscripts.img TEtranscripts
+	sudo singularity build TEtranscripts.img TEtranscripts.def
 

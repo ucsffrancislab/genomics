@@ -122,11 +122,11 @@ From: ubuntu:16.04
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
-	singularity build --remote RepEnrich2.img RepEnrich2
+	singularity build --remote RepEnrich2.img RepEnrich2.def
 
 
 	singularity exec --bind /francislab RepEnrich2.img ...
 
 
-	sudo singularity build RepEnrich2.img RepEnrich2
+	sudo singularity build RepEnrich2.img RepEnrich2.def
 

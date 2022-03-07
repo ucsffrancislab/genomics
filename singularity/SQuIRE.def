@@ -279,11 +279,11 @@ From: ubuntu:20.04
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
-	singularity build --remote SQuIRE.img SQuIRE
+	singularity build --remote SQuIRE.img SQuIRE.def
 
 
 	singularity exec --bind /francislab SQuIRE.img ...
 
 
-	sudo singularity build SQuIRE.img SQuIRE
+	sudo singularity build SQuIRE.img SQuIRE.def
 
