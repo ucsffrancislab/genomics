@@ -100,12 +100,12 @@ From: ubuntu:20.04
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
-	singularity build --remote McClintock.img McClintock
+	singularity build --remote McClintock.img McClintock.def
 
 
 	singularity exec --bind /francislab McClintock.img ...
 
 
-	sudo singularity build McClintock.img McClintock
+	sudo singularity build McClintock.img McClintock.def
 
 

@@ -104,11 +104,11 @@ From: ubuntu:20.04
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
-	singularity build --remote TEtools.img TEtools
+	singularity build --remote TEtools.img TEtools.def
 
 
 	singularity exec --bind /francislab TEtools.img ...
 
 
-	sudo singularity build TEtools.img TEtools
+	sudo singularity build TEtools.img TEtools.def
 

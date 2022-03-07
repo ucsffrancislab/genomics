@@ -117,7 +117,7 @@ From: ubuntu:20.04
 
 	singularity remote login --tokenfile ~/sylabs-token 
 
-	singularity build --remote TEfinder.img TEfinder
+	singularity build --remote TEfinder.img TEfinder.def
 
 	singularity exec --cleanenv TEfinder.img TEfinder ....
 
@@ -177,7 +177,7 @@ From: ubuntu:20.04
 
 
 
-	sudo singularity build TEfinder.img TEfinder
+	sudo singularity build TEfinder.img TEfinder.def
 
 
 	It appears that both the references (fa and gtf) need be sorted in perfect numerical order. 

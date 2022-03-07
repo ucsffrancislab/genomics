@@ -149,9 +149,9 @@ From: ubuntu:16.04
 %help
 
 	singularity remote login --tokenfile ~/sylabs-token 
-	singularity build --remote GeneTEFlow.TEanalysis.img GeneTEFlow.TEanalysis
+	singularity build --remote GeneTEFlow.TEanalysis.img GeneTEFlow.TEanalysis.def
 
 	-- or --
 
-	sudo singularity build GeneTEFlow.TEanalysis.img GeneTEFlow.TEanalysis
+	sudo singularity build GeneTEFlow.TEanalysis.img GeneTEFlow.TEanalysis.def
 
