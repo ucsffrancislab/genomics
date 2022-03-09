@@ -184,14 +184,20 @@ From: ubuntu:18.04
 
 
 
-#singularity remote login --tokenfile ~/sylabs-token 
-#singularity build --remote xTea.img xTea.def
 
 
 #	singularity run-help xTea.img 
 %help
 
 	From https://github.com/parklab/xTea
+
+	singularity remote login --tokenfile ~/sylabs-token 
+	singularity build --remote xTea.img xTea.def
+
+	-- or --
+
+	sudo singularity build xTea.img xTea.def 2>&1 | tee xTea.out
+
 
 
 	singularity exec xTea.img xtea -h
@@ -249,7 +255,5 @@ chmod +x /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp
 singularity exec ../xTea.img /c4/home/gwendt/github/ucsffrancislab/genomics/singularity/xTeaTest/tmp/10-PAUCDY-09A-01R/L1/run_xTEA_pipeline.sh
 
 
-
-	sudo singularity build xTea.img xTea.def
 
 

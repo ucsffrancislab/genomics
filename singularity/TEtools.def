@@ -43,17 +43,30 @@ From: ubuntu:20.04
 	apt-get clean all
 	apt-get -y update
 	apt-get -y upgrade
-	apt-get -y install bash git wget gcc g++ make curl gfortran
-	apt-get -y install python3 python3-distutils python3-apt
-	apt-get -y install bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev 
-	apt-get -y install libssl-dev libcurl4-openssl-dev openssl 
-
-	apt-get -y install libxml2-dev #	python-configparser
+#	apt-get -y install bash git wget gcc g++ make curl gfortran
+#	apt-get -y install python3 python3-distutils python3-apt
+#	apt-get -y install bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev 
+#	apt-get -y install libssl-dev libcurl4-openssl-dev openssl 
+#
+#	apt-get -y install libxml2-dev #	python-configparser
+#
+	apt-get -y install bash git wget gcc g++ gfortran make bzip2 unzip zip \
+		zlib1g libbz2-dev \
+		libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev \
+		libpcre2-dev libpcre3-dev libreadline-dev \
+		libcurl4-openssl-dev curl \
+		libssl-dev openssl  \
+		libjpeg-dev zlib1g-dev libpng-dev \
+		pkg-config libxml2-dev libcurl4-openssl-dev \
+		default-jdk \
+		default-jre perl build-essential gcc-multilib libc6-dev
+		#default-jre perl python build-essential gcc-multilib libc6-dev
 
 	apt-get -y autoremove
 
 
-	ln -s python3 /usr/bin/python
+	apt-get -y install python3 python3-distutils python3-apt
+	#ln -s python3 /usr/bin/python
 	curl https://bootstrap.pypa.io/get-pip.py | python3
 	python3 -m pip install --upgrade pip
 	python3 -m pip install --upgrade wheel awscli pip numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam 
@@ -62,36 +75,36 @@ From: ubuntu:20.04
 	git clone https://github.com/l-modolo/TEtools
 
 
-	wget --no-verbose https://github.com/PhilipHazel/pcre2/releases/download/pcre2-10.39/pcre2-10.39.tar.gz
-	#tar -zxvf pcre2-10.39.tar.gz
-	tar -zxf pcre2-10.39.tar.gz
-	cd pcre2-10.39
-	./configure
+#	wget --no-verbose https://github.com/PhilipHazel/pcre2/releases/download/pcre2-10.39/pcre2-10.39.tar.gz
+#	#tar -zxvf pcre2-10.39.tar.gz
+#	tar -zxf pcre2-10.39.tar.gz
+#	cd pcre2-10.39
+#	./configure
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf pcre2-10.39.tar.gz pcre2-10.39
+
+
+	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.1.2.tar.gz
+	tar -zxf R-4.1.2.tar.gz
+	cd R-4.1.2
+	./configure --with-x=no #--with-readline=no
 	make
 	make install
 	cd ..
-	/bin/rm -rf pcre2-10.39.tar.gz pcre2-10.39
+	/bin/rm -rf R-4.1.2 R-4.1.2.tar.gz
 
 
-	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.0.5.tar.gz
-	#tar -zxvf R-4.0.5.tar.gz
-	tar -zxf R-4.0.5.tar.gz
-	\rm R-4.0.5.tar.gz
-	cd R-4.0.5
-	./configure --with-x=no --with-readline=no
-	make
-	make install
-	cd ..
-	/bin/rm -rf R-4.0.5
-
-
+	Rscript -e 'install.packages(c("devtools"), repos = "https://cloud.r-project.org")'
 	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
-	Rscript -e 'BiocManager::install()'
-	#Rscript -e 'BiocManager::install(c("DESeq2", "gplots","ggplot2","RColorBrewer"))'
-	Rscript -e 'BiocManager::install(c("RColorBrewer"))'
-	Rscript -e 'BiocManager::install(c("gplots"))'
-	Rscript -e 'BiocManager::install(c("ggplot2"))'
-	Rscript -e 'BiocManager::install(c("DESeq2"))'
+	Rscript -e 'BiocManager::install(ask = FALSE)'
+	Rscript -e 'BiocManager::install(c("DESeq2", "gplots","ggplot2","RColorBrewer"), update = TRUE, ask = FALSE )'
+
+	#Rscript -e 'BiocManager::install(c("RColorBrewer"))'
+	#Rscript -e 'BiocManager::install(c("gplots"))'
+	#Rscript -e 'BiocManager::install(c("ggplot2"))'
+	#Rscript -e 'BiocManager::install(c("DESeq2"))'
 
 
 
@@ -106,9 +119,10 @@ From: ubuntu:20.04
 
 	singularity build --remote TEtools.img TEtools.def
 
+	-- or --
+
+	sudo singularity build TEtools.img TEtools.def 2>&1 | tee TEtools.out
+
 
 	singularity exec --bind /francislab TEtools.img ...
-
-
-	sudo singularity build TEtools.img TEtools.def
 

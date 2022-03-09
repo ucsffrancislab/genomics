@@ -50,10 +50,8 @@ From: ubuntu:20.04
 
 	apt-get -y autoremove
 
-	curl https://bootstrap.pypa.io/get-pip.py | python3
-
 	ln -s python3 /usr/bin/python
-
+	curl https://bootstrap.pypa.io/get-pip.py | python3
 	python3 -m pip install --upgrade pip
 	python3 -m pip install --upgrade wheel awscli pip numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam 
 
@@ -77,12 +75,13 @@ From: ubuntu:20.04
 #	conda init
 #	conda update conda
 #	conda install mamba=0.21.2
-#
-#
-#	git clone https://github.com/bergmanlab/mcclintock.git
-#	cd mcclintock
-#	python3 mcclintock.py --install
-#
+
+
+	git clone https://github.com/bergmanlab/mcclintock.git
+	cd mcclintock
+#	python3 mcclintock.py --install		#	<--- seems like it NEEDs conda
+
+
 #	mamba env create -f install/envs/mcclintock.yml --name mcclintock
 #
 #
@@ -102,10 +101,9 @@ From: ubuntu:20.04
 
 	singularity build --remote McClintock.img McClintock.def
 
+	-- or --
+
+	sudo singularity build McClintock.img McClintock.def 2>&1 | tee McClintock.out
 
 	singularity exec --bind /francislab McClintock.img ...
-
-
-	sudo singularity build McClintock.img McClintock.def
-
 

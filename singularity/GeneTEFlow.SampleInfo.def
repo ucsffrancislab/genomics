@@ -1,6 +1,9 @@
 
 Bootstrap: docker
-From: ubuntu:16.04
+From: ubuntu:20.04
+
+#	16 is so old
+#From: ubuntu:16.04
 
 %runscript
 
@@ -44,6 +47,19 @@ From: ubuntu:16.04
 	apt-get clean all
 	apt-get -y update
 	apt-get -y upgrade
+
+	apt-get -y install bash git wget gcc g++ gfortran make bzip2 unzip zip \
+		zlib1g libbz2-dev \
+		libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev \
+		libpcre2-dev libpcre3-dev libreadline-dev \
+		libcurl4-openssl-dev curl \
+		libssl-dev openssl  \
+		libjpeg-dev zlib1g-dev libpng-dev \
+		pkg-config libxml2-dev libcurl4-openssl-dev \
+		default-jdk \
+		default-jre perl build-essential gcc-multilib
+		#default-jre perl python build-essential gcc-multilib
+
 #	apt-get -y install python3-setuptools bash python3 git wget gcc g++ make bzip2 \
 #		apt-utils default-jre perl python build-essential gcc-multilib  make gcc g++ zlib1g-dev zlib1g unzip zip wget \
 #		libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev
@@ -58,18 +74,16 @@ From: ubuntu:16.04
 	#	ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
 	#	dpkg-reconfigure -f noninteractive tzdata
 
-	#install the core libraries and software for ubunt
-	apt-get install --yes  default-jre perl python build-essential gcc-multilib   make gcc g++ zlib1g-dev zlib1g unzip zip wget
 
-	#install conda and update
-	wget https://repo.anaconda.com/archive/Anaconda2-5.2.0-Linux-x86_64.sh -O Anaconda.sh
-	bash Anaconda.sh -b -f -p /usr/local
-	bash /usr/local/bin/activate
-	rm Anaconda.sh
-	conda update -n base conda
-	conda config --system --add channels conda-forge
-	conda config --system --append channels bioconda
-	conda config --system --append channels r
+#	#install conda and update
+#	wget https://repo.anaconda.com/archive/Anaconda2-5.2.0-Linux-x86_64.sh -O Anaconda.sh
+#	bash Anaconda.sh -b -f -p /usr/local
+#	bash /usr/local/bin/activate
+#	rm Anaconda.sh
+#	conda update -n base conda
+#	conda config --system --add channels conda-forge
+#	conda config --system --append channels bioconda
+#	conda config --system --append channels r
 
 
 #	#install software by conda
@@ -86,6 +100,43 @@ From: ubuntu:16.04
 #	
 #	RUN apt-get update
 #	#RUN conda update --all
+
+
+
+	#	spyder???
+	wget --no-verbose https://github.com/spyder-ide/spyder/archive/refs/tags/v5.2.2.tar.gz
+	tar xvfz v5.2.2.tar.gz
+	cd spyder-5.2.2
+
+	# ...
+
+	cd ..
+
+
+
+
+	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.1.2.tar.gz
+	tar xfz R-4.1.2.tar.gz
+	cd R-4.1.2
+	./configure --with-x=no #	--with-readline=no
+	make
+	make install
+	cd ..
+	/bin/rm -rf R-4.1.2.tar.gz R-4.1.2
+
+
+	Rscript -e 'install.packages( c( "devtools", "xlsx", "lattice", "reshape2", "ggplot2", "RColorBrewer", "locfit" ) , repos = "https://cloud.r-project.org")'
+
+	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
+	Rscript -e 'BiocManager::install( ask = FALSE)'
+	#Rscript -e 'BiocManager::install( version = "3.12", ask = FALSE)'
+	#Rscript -e 'BiocManager::install("DESeq2", update = TRUE, ask = FALSE)'
+	#Rscript -e 'BiocManager::install("tximport", update = TRUE, ask = FALSE)'
+	#Rscript -e 'BiocManager::install("GenomeInfoDbData", update = TRUE, ask = FALSE)'
+	Rscript -e 'BiocManager::install( c("DESeq2", "tximport", "GenomeInfoDbData"), update = TRUE, ask = FALSE)'
+
+
+
 
 
 
@@ -106,5 +157,5 @@ From: ubuntu:16.04
 
 	-- or --
 
-	sudo singularity build GeneTEFlow.SampleInfo.img GeneTEFlow.SampleInfo.def
+	sudo singularity build GeneTEFlow.SampleInfo.img GeneTEFlow.SampleInfo.def 2>&1 | tee GeneTEFlow.SampleInfo.out
 

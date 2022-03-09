@@ -1,6 +1,9 @@
 
 Bootstrap: docker
-From: ubuntu:16.04
+From: ubuntu:20.04
+
+# version 16 is so old
+#From: ubuntu:16.04
 
 %runscript
 
@@ -45,6 +48,19 @@ From: ubuntu:16.04
 	apt-get clean all
 	apt-get -y update
 	apt-get -y upgrade
+	apt-get -y install bash git wget gcc g++ gfortran make bzip2 unzip zip \
+		zlib1g libbz2-dev \
+		libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev \
+		libpcre2-dev libpcre3-dev libreadline-dev \
+		libcurl4-openssl-dev curl \
+		libssl-dev openssl  \
+		libjpeg-dev zlib1g-dev libpng-dev \
+		pkg-config libxml2-dev libcurl4-openssl-dev \
+		default-jdk \
+		default-jre perl build-essential gcc-multilib
+		#default-jre perl python build-essential gcc-multilib
+
+
 #	apt-get -y install python3-setuptools bash python3 git wget gcc g++ make bzip2 \
 #		apt-utils default-jre perl python build-essential gcc-multilib  make gcc g++ zlib1g-dev zlib1g unzip zip wget \
 #		libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev
@@ -60,18 +76,18 @@ From: ubuntu:16.04
 #	RUN dpkg-reconfigure -f noninteractive tzdata
 
 	#install the core libraries and software for ubuntu
-	apt-get install --yes  default-jre perl python build-essential gcc-multilib   make gcc g++ zlib1g-dev zlib1g unzip zip wget
 
-	#install conda and update
-	wget https://repo.anaconda.com/archive/Anaconda2-5.2.0-Linux-x86_64.sh -O Anaconda.sh
-	bash Anaconda.sh -b -f -p /usr/local
-	bash /usr/local/bin/activate
-	rm Anaconda.sh
-	conda update -n base conda
-	conda config --system --add channels conda-forge
-	conda config --system --append channels bioconda
-	conda config --system --append channels r
 
+
+#	#install conda and update
+#	wget https://repo.anaconda.com/archive/Anaconda2-5.2.0-Linux-x86_64.sh -O Anaconda.sh
+#	bash Anaconda.sh -b -f -p /usr/local
+#	bash /usr/local/bin/activate
+#	rm Anaconda.sh
+#	conda update -n base conda
+#	conda config --system --add channels conda-forge
+#	conda config --system --append channels bioconda
+#	conda config --system --append channels r
 
 #	#install software by conda
 #	#Search tools listing on https://anaconda.org/
@@ -108,11 +124,42 @@ From: ubuntu:16.04
 #	#RUN conda update --all
 
 
+
+
+	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.1.2.tar.gz
+	tar xfz R-4.1.2.tar.gz
+	cd R-4.1.2
+	./configure --with-x=no #	--with-readline=no
+	make
+	make install
+	cd ..
+	/bin/rm -rf R-4.1.2.tar.gz R-4.1.2
+
+	Rscript -e 'install.packages(c( "devtools", "reshape2", "ggplot2", "gridExtra", "gridBase", "gtable", "RColorBrewer", "gplots", "circlize", "VennDiagram", "survival", "Formula", "latticeExtra", "cluster", "rpart", "nnet", "acepack", "foreign", "data.table", "htmlTable", "viridisLite", "htmltools", "base64enc", "Hmisc", "knitr") , repos = "https://cloud.r-project.org")'
+
+	#	Not sure why this old version matters
 	#install tables_0.8.4 by R
 	#wget https://cran.r-project.org/src/contrib/tables_0.8.8.tar.gz
 	wget https://cran.r-project.org/src/contrib/Archive/tables/tables_0.8.8.tar.gz
 	#RUN R CMD INSTALL tables_0.8.8.tar.gz
 	#RUN rm tables_0.8.8.tar.gz
+	Rscript -e 'install.packages("tables_0.8.8.tar.gz", type="source", repos=NULL)'
+
+	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
+	#Rscript -e 'BiocManager::install( version = "3.12", ask = FALSE)'
+	Rscript -e 'BiocManager::install( ask = FALSE)'
+	Rscript -e 'BiocManager::install("ComplexHeatmap", update = TRUE, ask = FALSE)'
+
+#	Rscript -e 'install.packages("pheatmap", repos = "https://cloud.r-project.org")'
+#	Rscript -e 'install.packages("ggrepel", repos = "https://cloud.r-project.org")'
+#	Rscript -e 'install.packages("hexbin", repos = "https://cloud.r-project.org")'
+
+#	Rscript -e 'install.packages(c( "devtools", "reshape2", "ggplot2", "gridextra", "gridbase", "gtable", "rcolorbrewer", "gplots", "circlize", "venndiagram", "survival", "formula", "latticeextra", "cluster", "rpart", "nnet", "acepack", "foreign", "data.table", "htmltable", "viridislite", "htmltools", "base64enc", "hmisc", "knitr") , repos = "https://cloud.r-project.org")'
+
+
+
+
+
 
 	
 	mkdir -p  /RNASeq
@@ -134,5 +181,5 @@ From: ubuntu:16.04
 
 	-- or --
 
-	sudo singularity build GeneTEFlow.Analysis.img GeneTEFlow.Analysis.def
+	sudo singularity build GeneTEFlow.Analysis.img GeneTEFlow.Analysis.def 2>&1 | tee GeneTEFlow.Analysis.out
 
