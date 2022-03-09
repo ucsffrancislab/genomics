@@ -54,7 +54,7 @@ From: ubuntu:20.04
 #	apt-get -y install libxml2-dev #	python-configparser
 #	apt-get -y install libpcre3-dev	#	needed for R-3.4.1 install (with pcre 1)
 
-	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl python3 python3-distutils python3-apt bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev libssl-dev libxml2-dev libpcre2-dev libpcre3-dev
+	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl python3 python3-distutils python3-apt bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev libssl-dev libxml2-dev libpcre2-dev libpcre3-dev libreadline-dev libjpeg-dev zlib1g-dev libpng-dev
 
 	apt-get -y autoremove
 
@@ -68,22 +68,20 @@ From: ubuntu:20.04
 
 	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
 	tar xfj samtools-1.9.tar.bz2
-	rm samtools-1.9.tar.bz2
 	cd samtools-1.9
 	make
 	make install
 	cd ..
-	/bin/rm -rf samtools-1.9
+	/bin/rm -rf samtools-1.9 samtools-1.9.tar.bz2
 
 
 	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
 	tar xfz bedtools-2.29.1.tar.gz
-	\rm bedtools-2.29.1.tar.gz
 	cd bedtools2
 	make
 	make install
 	cd ..
-	/bin/rm -rf bedtools2
+	/bin/rm -rf bedtools2 bedtools-2.29.1.tar.gz
 
 	wget --no-verbose https://github.com/alexdobin/STAR/archive/refs/tags/2.5.3a.tar.gz
 	tar xfz 2.5.3a.tar.gz
@@ -98,16 +96,7 @@ From: ubuntu:20.04
 	/bin/rm -rf 2.5.3a.tar.gz STAR-2.5.3a
 
 
-#	wget --no-verbose https://github.com/gpertea/stringtie/archive/refs/tags/v1.3.4d.tar.gz
-#	tar xfvz v1.3.4d.tar.gz
-#	cd stringtie-1.3.4d
-#	make
-#	make install
-#	cd ..
-#	v1.3.4d.tar.gz stringtie-1.3.4d
-
 	wget --no-verbose http://ccb.jhu.edu/software/stringtie/dl/stringtie-1.3.3b.Linux_x86_64.tar.gz
-	#tar xfvz stringtie-1.3.3b.Linux_x86_64.tar.gz
 	tar xfz stringtie-1.3.3b.Linux_x86_64.tar.gz
 
 ###bedtools 2.27.0
@@ -179,14 +168,14 @@ From: ubuntu:20.04
 #	cd ..
 #	/bin/rm -rf R-3.6.3.tar.gz R-3.6.3
 
-	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.0.5.tar.gz
-	tar xfz R-4.0.5.tar.gz
-	cd R-4.0.5
-	./configure --with-x=no --with-readline=no
+	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.1.2.tar.gz
+	tar xfz R-4.1.2.tar.gz
+	cd R-4.1.2
+	./configure --with-x=no #	--with-readline=no
 	make
 	make install
 	cd ..
-	/bin/rm -rf R-4.0.5.tar.gz R-4.0.5
+	/bin/rm -rf R-4.1.2.tar.gz R-4.1.2
 
 #DESeq2 1.16.1
 
@@ -242,7 +231,8 @@ From: ubuntu:20.04
 
 	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
 	#Rscript -e 'BiocManager::install( version = "3.5", update = TRUE, ask = FALSE)'
-	Rscript -e 'BiocManager::install( version = "3.12", ask = FALSE)'
+	#Rscript -e 'BiocManager::install( version = "3.12", ask = FALSE)'
+	Rscript -e 'BiocManager::install( ask = FALSE)'
 	Rscript -e 'BiocManager::install("DESeq2", update = TRUE, ask = FALSE)'	#,version="1.16.1")'
 
 #	3.5
@@ -276,14 +266,13 @@ From: ubuntu:20.04
 	From https://github.com/wyang17/SQuIRE
 
 
-
 	singularity remote login --tokenfile ~/sylabs-token 
 
 	singularity build --remote SQuIRE.img SQuIRE.def
 
+	-- or --
+
+	sudo singularity build SQuIRE.img SQuIRE.def 2>&1 | tee SQuIRE.out
 
 	singularity exec --bind /francislab SQuIRE.img ...
-
-
-	sudo singularity build SQuIRE.img SQuIRE.def
 
