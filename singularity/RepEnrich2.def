@@ -102,11 +102,22 @@ From: ubuntu:16.04
 
 
 
+#	# about 4GB only do when really ready
+#	Recommend doing outside the container.
+#
+#	wget --no-verbose https://www.dropbox.com/sh/ovf1t2gn5lvmyla/AAD8FJm28zWy6kVy0WIcpz77a/hg38_repeatmasker_clean.txt.gz
+#	gunzip hg38_repeatmasker_clean.txt.gz
+#
+#	wget --no-verbose https://www.dropbox.com/sh/ovf1t2gn5lvmyla/AAAovLTYE93PjBIlRRToO59la/Repenrich2_setup_hg38.tar.gz
+#
+#	wget --no-verbose https://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz
+#	gunzip hg38.fa.gz
+#
+#
+#	This can take nearly 24 hours
+singularity exec --bind /francislab RepEnrich2.img python /RepEnrich2/RepEnrich2_setup.py ${PWD}/hg38_repeatmasker_clean.txt /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa ${PWD}/setup_folder_hg38
+#	python /RepEnrich2/RepEnrich2_setup.py /hg38_repeatmasker_clean.txt /hg38.fa /setup_folder_hg38
 
-	wget --no-verbose https://www.dropbox.com/sh/ovf1t2gn5lvmyla/AAD8FJm28zWy6kVy0WIcpz77a/hg38_repeatmasker_clean.txt.gz
-
-	# about 3GB only do when really ready
-	wget --no-verbose https://www.dropbox.com/sh/ovf1t2gn5lvmyla/AAAovLTYE93PjBIlRRToO59la/Repenrich2_setup_hg38.tar.gz
 
 
 
@@ -126,4 +137,8 @@ From: ubuntu:16.04
 
 
 	singularity exec --bind /francislab RepEnrich2.img ...
+
+	singularity exec --bind /francislab RepEnrich2.img python /RepEnrich2/RepEnrich2_setup.py hg38_repeatmasker_clean.txt hg38.fa ./setup_folder_hg38
+
+
 
