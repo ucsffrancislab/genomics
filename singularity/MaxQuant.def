@@ -18,8 +18,9 @@ From: ubuntu:20.04
 
 
 %environment
-	export DOTNET_ROOT=/dotnet
-	export PATH=$PATH:/dotnet
+#	not sure either of these are actually necessary now
+#	export DOTNET_ROOT=/dotnet
+#	export PATH=$PATH:/dotnet
 
 
 %post
@@ -53,11 +54,10 @@ From: ubuntu:20.04
 	wget --no-verbose https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 	dpkg -i packages-microsoft-prod.deb
 	rm packages-microsoft-prod.deb
-
 	apt-get update; \
   	apt-get install -y apt-transport-https && \
   	apt-get update && \
-		apt-get install -y dotnet-runtime-3.1
+		apt-get install -y dotnet-runtime-3.1 dotnet-sdk-3.1
 
 	apt-get -y autoremove
 
