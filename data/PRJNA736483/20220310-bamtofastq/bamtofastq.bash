@@ -17,12 +17,12 @@ mkdir -p ${OUTDIR}
 
 #	NEED FULL PATH HERE ON THE CLUSTER
 
-#for bam in ${INDIR}/SRR14773*/*_alignment_bam.bam ; do
-for bam in ${INDIR}/SRR14773640/*_alignment_bam.bam ; do
+for bam in ${INDIR}/SRR14773*/*_alignment_bam.bam ; do
+#for bam in ${INDIR}/SRR14773640/*_alignment_bam.bam ; do
 
 	echo ${bam}
 
-	jobbase=$( basename ${bam} .bam )
+	jobbase=$( basename ${bam} _alignment_bam.bam )
 	echo ${jobbase}
 
 	base=${OUTDIR}/${jobbase}
