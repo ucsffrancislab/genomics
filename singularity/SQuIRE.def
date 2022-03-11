@@ -241,11 +241,14 @@ From: ubuntu:20.04
 #	3.6 (3.4) 3.5 (3.4) 
 #	3.4 (3.3) 3.3 (3.3) 3.2 (3.2) 3.1 (3.2) 3.0 (3.1) 2.14 (3.1) 2.13 (3.0) 2.12 (3.0) 2.11 (2.15) 2.10 (2.15)
 
+	Rscript -e 'install.packages(c( "pheatmap", "ggrepel", "hexbin", "locfit" ), repos = "https://cloud.r-project.org")'
 	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
 	#Rscript -e 'BiocManager::install( version = "3.5", update = TRUE, ask = FALSE)'
 	#Rscript -e 'BiocManager::install( version = "3.12", ask = FALSE)'
 	Rscript -e 'BiocManager::install( ask = FALSE)'
-	Rscript -e 'BiocManager::install("DESeq2", update = TRUE, ask = FALSE)'	#,version="1.16.1")'
+	Rscript -e 'BiocManager::install( c("DESeq2", "vsn", "BiocParallel"), update = TRUE, ask = FALSE)'
+
+
 
 #	3.5
 #	ERROR: dependency 'latticeExtra' is not available for package 'Hmisc'
@@ -259,8 +262,14 @@ From: ubuntu:20.04
 #	Hope that SQuIRE is ok
 
 
-	wget --no-verbose -P /usr/local/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToGtf
-	chmod +x /usr/local/genePredToGtf
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToBed
+	chmod +x /usr/local/bin/genePredToBed
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToGtf
+	chmod +x /usr/local/bin/genePredToGtf
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred
+	chmod +x /usr/local/bin/gtfToGenePred
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
+	chmod +x /usr/local/bin/bedGraphToBigWig
 
 
 
