@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-mkdir for_reference
+mkdir Raw
+mkdir RM
+mkdir RawHM
+mkdir RMHM
 
 for genome in $( cat /francislab/data1/refs/refseq/viral-20210916/viral_sequences.txt ) ; do
 
@@ -8,19 +11,46 @@ for genome in $( cat /francislab/data1/refs/refseq/viral-20210916/viral_sequence
 	accession=$( basename $genome | awk 'BEGIN{FS=OFS="_"}{print $1,$2}' )
 #	echo $accession
 
-	mm="out/RM.split.HM.vsl/${accession}.masked.split.25.mask.fasta"
-	m1="out/raw.split.HM.vsl/${accession}.split.25.mask.fasta"
-	m2="out/RM/${accession}.masked.fasta"
-	raw="out/raw/${accession}.fasta"
-	if [ -f "${mm}" ] ; then
-		ln -s "../${mm}" for_reference/${accession}.fasta
-	elif [ -f "${m1}" ] ; then
-		ln -s "../${m1}" for_reference/${accession}.fasta
-	elif [ -f "${m2}" ] ; then
+	RMHM="out/RM.split.HM.bt2/${accession}.masked.split.25.mask.fasta"
+	RawHM="out/raw.split.HM.bt2/${accession}.split.25.mask.fasta"
+	RM="out/RM/${accession}.masked.fasta"
+	Raw="out/raw/${accession}.fasta"
+
+	if [ -f "${Raw}" ] ; then
+		ln -s "../${Raw}" Raw/${accession}.fasta
+	else
+		echo "${accession} fastas not found"
+	fi
+
+	if [ -f "${RM}" ] ; then
+		ln -s "../${RM}" RM/${accession}.fasta
+	elif [ -f "${Raw}" ] ; then
+		ln -s "../${Raw}" RM/${accession}.fasta
+	else
+		echo "${accession} fastas not found"
+	fi
+
+	if [ -f "${RawHM}" ] ; then
+		ln -s "../${RawHM}" RawHM/${accession}.fasta
+	elif [ -f "${RM}" ] ; then
+		#	Should never really happen
+		#echo "${accesion} masked raw should never happen"
+		ln -s "../${RM}" RawHM/${accession}.fasta
+	elif [ -f "${Raw}" ] ; then
+		ln -s "../${Raw}" RawHM/${accession}.fasta
+	else
+		echo "${accession} fastas not found"
+	fi
+
+	if [ -f "${RMHM}" ] ; then
+		ln -s "../${RMHM}" RMHM/${accession}.fasta
+	elif [ -f "${RawHM}" ] ; then
+		ln -s "../${RawHM}" RMHM/${accession}.fasta
+	elif [ -f "${RM}" ] ; then
 		#	Should never really happen
 		echo "${accesion} masked raw should never happen"
-	elif [ -f "${raw}" ] ; then
-		ln -s "../${raw}" for_reference/${accession}.fasta
+	elif [ -f "${Raw}" ] ; then
+		ln -s "../${Raw}" RMHM/${accession}.fasta
 	else
 		echo "${accession} fastas not found"
 	fi
