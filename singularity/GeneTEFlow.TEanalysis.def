@@ -186,14 +186,14 @@ From: ubuntu:20.04
 
 
 
-	wget --no-verbose -P /usr/local/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToBed
-	chmod +x /usr/local/genePredToBed
-	wget --no-verbose -P /usr/local/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToGtf
-	chmod +x /usr/local/genePredToGtf
-	wget --no-verbose -P /usr/local/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred
-	chmod +x /usr/local/gtfToGenePred
-	wget --no-verbose -P /usr/local/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
-	chmod +x /usr/local/bedGraphToBigWig
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToBed
+	chmod +x /usr/local/bin/genePredToBed
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToGtf
+	chmod +x /usr/local/bin/genePredToGtf
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred
+	chmod +x /usr/local/bin/gtfToGenePred
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
+	chmod +x /usr/local/bin/bedGraphToBigWig
 
 
 	apt-get -y install git

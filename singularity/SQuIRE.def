@@ -54,16 +54,28 @@ From: ubuntu:20.04
 #	apt-get -y install libxml2-dev #	python-configparser
 #	apt-get -y install libpcre3-dev	#	needed for R-3.4.1 install (with pcre 1)
 
-	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl python3 python3-distutils python3-apt bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev libssl-dev libxml2-dev libpcre2-dev libpcre3-dev libreadline-dev libjpeg-dev zlib1g-dev libpng-dev
+	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev libssl-dev libxml2-dev libpcre2-dev libpcre3-dev libreadline-dev libjpeg-dev zlib1g-dev libpng-dev
+
+	apt-get -y install software-properties-common
+	add-apt-repository universe
+	apt-get -y update
+	apt-get -y install python2-minimal
+	apt-get -y install curl 
+	#curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py | python2
+	curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python2
+	python2 -m pip install --upgrade pip
+	ln -s python2 /usr/bin/python
+
+	#	SQuIRE does not seem to like python3, yet
 
 	apt-get -y autoremove
 
-	curl https://bootstrap.pypa.io/get-pip.py | python3
 
-	ln -s python3 /usr/bin/python
-
-	python3 -m pip install --upgrade pip
-	python3 -m pip install --upgrade wheel awscli numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam 
+#	curl https://bootstrap.pypa.io/get-pip.py | python3
+#	ln -s python3 /usr/bin/python
+#	python3 -m pip install --upgrade pip
+#	python3 -m pip install --upgrade wheel awscli numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam 
+#	python -m pip install --upgrade pip
 
 
 	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
@@ -229,11 +241,14 @@ From: ubuntu:20.04
 #	3.6 (3.4) 3.5 (3.4) 
 #	3.4 (3.3) 3.3 (3.3) 3.2 (3.2) 3.1 (3.2) 3.0 (3.1) 2.14 (3.1) 2.13 (3.0) 2.12 (3.0) 2.11 (2.15) 2.10 (2.15)
 
+	Rscript -e 'install.packages(c( "pheatmap", "ggrepel", "hexbin", "locfit" ), repos = "https://cloud.r-project.org")'
 	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
 	#Rscript -e 'BiocManager::install( version = "3.5", update = TRUE, ask = FALSE)'
 	#Rscript -e 'BiocManager::install( version = "3.12", ask = FALSE)'
 	Rscript -e 'BiocManager::install( ask = FALSE)'
-	Rscript -e 'BiocManager::install("DESeq2", update = TRUE, ask = FALSE)'	#,version="1.16.1")'
+	Rscript -e 'BiocManager::install( c("DESeq2", "vsn", "BiocParallel"), update = TRUE, ask = FALSE)'
+
+
 
 #	3.5
 #	ERROR: dependency 'latticeExtra' is not available for package 'Hmisc'
@@ -247,11 +262,20 @@ From: ubuntu:20.04
 #	Hope that SQuIRE is ok
 
 
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToBed
+	chmod +x /usr/local/bin/genePredToBed
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/genePredToGtf
+	chmod +x /usr/local/bin/genePredToGtf
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/gtfToGenePred
+	chmod +x /usr/local/bin/gtfToGenePred
+	wget --no-verbose -P /usr/local/bin/ http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
+	chmod +x /usr/local/bin/bedGraphToBigWig
 
 
 
 
-	git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python3 -m pip install -e .
+	#git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python3 -m pip install -e .
+	git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python2 -m pip install -e .
 
 
 
@@ -275,4 +299,33 @@ From: ubuntu:20.04
 	sudo singularity build SQuIRE.img SQuIRE.def 2>&1 | tee SQuIRE.out
 
 	singularity exec --bind /francislab SQuIRE.img ...
+
+
+	Preparation Stage
+
+		Fetch: Downloads input files from RefGene and generates STAR index Only needs to be done once initially to acquire genomic input files or if a new build is desired.
+
+		Clean: Filters Repeatmasker file for Repeats of interest, collapses overlapping repeats, and returns as BED file.
+
+		*Optional: Incorporation of non-reference TE sequence *
+
+	Quantification Stage
+
+		Map: Aligns RNAseq data
+
+		Count: Quantifies RNAseq reads aligning to TEs
+
+	Analysis Stage
+
+		Call: Compiles and outputs differential expression from multiple alignments
+
+	Follow-up Stage
+
+		Draw: Creates BEDgraphs from RNAseq data
+
+		Seek: Reports individual transposable element sequences
+
+		An example pipeline with sample scripts is described here.
+
+
 
