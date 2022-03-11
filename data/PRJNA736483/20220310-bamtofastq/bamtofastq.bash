@@ -17,7 +17,8 @@ mkdir -p ${OUTDIR}
 
 #	NEED FULL PATH HERE ON THE CLUSTER
 
-for bam in ${INDIR}/SRR14773*/*_alignment_bam.bam ; do
+#for bam in ${INDIR}/SRR14773*/*_alignment_bam.bam ; do
+for bam in ${INDIR}/SRR14773640/*_alignment_bam.bam ; do
 
 	echo ${bam}
 
@@ -43,23 +44,23 @@ for bam in ${INDIR}/SRR14773*/*_alignment_bam.bam ; do
 		echo "Requesting ${scratch} scratch"
 		#	gres=scratch should be about total needed divided by num threads
 
-#		qsub -N ${jobbase}.tofastq -l gres=scratch:${scratch} \
-#			-l feature=nocommunal \
-#			-l nodes=1:ppn=${threads} -l vmem=${vmem}gb \
-#			-j oe -o ${outbase}.${date}.out.txt \
-#			~/.local/bin/bamtofastq_scratch.bash \
-#			-F "collate=1 \
-#				exclude=DUP,QCFAIL,SECONDARY,SUPPLEMENTARY \
-#				filename=${bam} \
-#				inputformat=bam \
-#				gz=1 \
-#				level=5 \
-#				T=${outbase}_TEMP \
-#				F=${outbase}_R1.fastq.gz \
-#				F2=${outbase}_R2.fastq.gz \
-#				S=${outbase}_S1.fastq.gz \
-#				O=${outbase}_O1.fastq.gz \
-#				O2=${outbase}_O2.fastq.gz"
+		sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=${jobbase} --time=1440 \
+			--nodes=1 --ntasks=${threads} --mem=${vmem}G --gres=scratch:${scratch}G \
+			--output=${outbase}.${date}.%j.txt \
+			~/.local/bin/bamtofastq_scratch.bash \
+				collate=1 \
+				exclude=DUP,QCFAIL,SECONDARY,SUPPLEMENTARY \
+				filename=${bam} \
+				inputformat=bam \
+				gz=1 \
+				level=5 \
+				T=${outbase}_TEMP \
+				F=${outbase}_R1.fastq.gz \
+				F2=${outbase}_R2.fastq.gz \
+				S=${outbase}_S1.fastq.gz \
+				O=${outbase}_O1.fastq.gz \
+				O2=${outbase}_O2.fastq.gz
+
 	fi
 
 done	#	for bam in
