@@ -1,7 +1,12 @@
 
-Try xTea Demo-like run
 
 Write Paper
+
+/francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
+
+
+/francislab/data1/working/PRJNA736483
+
 
 AWS EC2 - S3 running
 
@@ -12,9 +17,20 @@ Aggregate k=21 (gonna try AWS)
 
 Alternate TE analyses
 Develope singularity containers for each, then test
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220303-TEtranscripts-test
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220302-TEfinder-test
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220302-xTea-test
 
-k=31
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220309-SQuIRE-test
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220309-RepEnrich2-test
+
+k=31 - trying again
 20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
+
+
+
+
+
 
 Rerun with STAR?
 /francislab/data1/working/20211111-hg38-viral-homology
