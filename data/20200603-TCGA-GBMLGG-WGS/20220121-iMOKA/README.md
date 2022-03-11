@@ -162,7 +162,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 for k in 31 ; do
 for s in a ; do
 sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
- --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
+ --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.%j.txt \
  ${PWD}/iMOKA_scratch.bash --local --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step reduce
 done ; done
 ```
@@ -408,7 +408,9 @@ ebs_size=4000
 
 
 
-
+#	CREATE THE EBS VOLUME DURING INSTANCE CREATION BY ADDING  (64TB maximum)
+#	--block-device-mappings "DeviceName=/dev/nvme,Ebs={VolumeSize=64000,VolumeType=gp2}" 
+#	--block-device-mappings "DeviceName=/dev/xvda,Ebs={VolumeSize=2000,VolumeType=gp2}"
 
 
 
