@@ -68,7 +68,6 @@ else
 	scratch_out=${TMPDIR}/out
 	mkdir -p ${scratch_out}
 
-	#bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
 
 #samtools view -h /francislab/data1/raw/20200720-TCGA-GBMLGG-RNA_bam/bam/08-0386-01A-01R-1849-01+2.bam | awk 'BEGIN{FS=OFS="\t"}(/^@/){print}(!/^@/){sub(/\/[12]$/, "", $1); print}' | head -100
 
@@ -76,10 +75,12 @@ else
 	#	biobambam's bamtofastq does not remove this so it never finds paired reads.
 	#	removing the suffix and feeding bamtofastq through stdin. Testing.
 
-	samtools view -h ${scratch_filename} \
-	| awk 'BEGIN{FS=OFS="\t"}(/^@/){print}(!/^@/){sub(/\/[12]$/, "", $1); print}' \
-	| bamtofastq ${SELECT_ARGS} \
-		inputformat=sam \
+	#samtools view -h ${scratch_filename} \
+	#| awk 'BEGIN{FS=OFS="\t"}(/^@/){print}(!/^@/){sub(/\/[12]$/, "", $1); print}' \
+	#| bamtofastq ${SELECT_ARGS} \
+	#	inputformat=sam \
+
+	bamtofastq ${SELECT_ARGS} filename=${scratch_filename} \
 		T=${TMPDIR}/$( basename $T ) \
 		F=${scratch_out}/$( basename $F ) \
 		F2=${scratch_out}/$( basename $F2 ) \
