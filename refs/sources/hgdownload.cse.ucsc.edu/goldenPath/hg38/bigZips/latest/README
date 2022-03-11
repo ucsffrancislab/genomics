@@ -47,3 +47,20 @@ sbatch --time=3600 --ntasks=32 --mem=240G --job-name alts --output ${PWD}/star.o
 
 
 
+
+
+
+20220302
+need sorted numerically for use with TEfinder
+
+#	previously run
+faSplit byname hg38.fa chromosomes/
+
+for c in $( seq 1 22 ) X Y Un ; do
+cat chromosomes/chr${c}.fa
+cat chromosomes/chr${c}_*.fa
+done > hg38.resorted.fa
+
+
+
+
