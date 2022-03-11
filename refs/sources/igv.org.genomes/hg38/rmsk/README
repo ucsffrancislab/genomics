@@ -1,0 +1,9 @@
+
+
+
+Sort for use with TEfinder.
+
+
+awk 'BEGIN{FS=OFS="\t"}{s=substr($1,4); split(s,d,"_"); c=d[1]; if(c=="X")c=23; if(c=="Y")c=24; if(c=="Un")c=25; print c,s,$1,$2,$3,$4,$5,$6,$7,$8,$9}' hg38_rmsk_LTR.gtf | sort -k1n,1 -k2,2 -k6n,6 | awk 'BEGIN{FS=OFS="\t"}{print $3,$4,$5,$6,$7,$8,$9,$10,$11}' > hg38_rmsk_LTR.resorted.gtf
+
+
