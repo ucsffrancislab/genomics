@@ -17,13 +17,15 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-982%10 --jo
 ```
 
 ```
-cat for_reference/*.fasta > for_reference.fasta
-
-
 module load bowtie2
 
-bowtie2-build --threads 16 for_reference.fasta double_masked_viral 
-chmod -w double_masked*
+for a in Raw RM RawHM RMHM ; do
+echo ${a}
+#cat ${a}/*.fasta > ${a}.fasta
+chmod -w ${a}.fasta
+bowtie2-build --threads 32 ${a}.fasta ${a}
+chmod -w ${a}.*.bt2
+done
 
 ```
 
