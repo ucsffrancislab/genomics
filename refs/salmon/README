@@ -33,6 +33,7 @@ sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=ALL --mem=495G --job-name=R
 sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 --wrap "${PWD}/salmon.bash index -t /francislab/data1/refs/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k15 -k 15"
 
 
+sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 ${PWD}/salmon.bash index -t /francislab/data1/refs/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k21 -k 21
 
 
 
