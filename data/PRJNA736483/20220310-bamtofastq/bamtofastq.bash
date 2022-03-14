@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 
 
+
+
+#	replace with array wrapper script, although this script should still work
+exit
+
+
+
+
+
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail

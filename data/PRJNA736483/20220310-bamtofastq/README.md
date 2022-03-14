@@ -39,12 +39,6 @@ make install
 
 
 
-Probably should've set this up as an array job.
-
-```
-./bamtofastq.bash
-```
-
 
 ```
 ls -1 /francislab/data1/raw/PRJNA736483/SRR14773*/*_alignment_bam.bam | wc -l
