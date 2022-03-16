@@ -275,7 +275,10 @@ From: ubuntu:20.04
 
 
 	#git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python3 -m pip install -e .
-	git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python2 -m pip install -e .
+	#git clone https://github.com/wyang17/SQuIRE; cd SQuIRE; python2 -m pip install -e .
+
+	#	Map.py used a samtools sort command from an old version of samtools. Surprised 
+	git clone https://github.com/ucsffrancislab/SQuIRE; cd SQuIRE; python2 -m pip install -e .
 
 
 
