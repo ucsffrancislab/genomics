@@ -69,6 +69,8 @@ From: ubuntu:16.04
 	#	Currently I am using Python version 2.7.12+, Bedtools version 2.25.0, Bowtie2 version 2.2.9, Samtools version 1.3.1, and BioPython version 1.66-py2.7.
 
 	#	https://biopython.org/wiki/Download
+	#python -m pip install --upgrade numpy==1.10.4 # perhaps 1.11.3 or 1.12.1
+	python -m pip install --upgrade numpy==1.12.1 # perhaps 1.11.3 or 1.12.1
 	python -m pip install --upgrade BioPython==1.66
 
 
@@ -98,6 +100,7 @@ From: ubuntu:16.04
 
 
 	git clone https://github.com/nerettilab/RepEnrich2
+	chmod +x /RepEnrich2/*py
 
 
 
@@ -115,7 +118,7 @@ From: ubuntu:16.04
 #
 #
 #	This can take nearly 24 hours
-singularity exec --bind /francislab RepEnrich2.img python /RepEnrich2/RepEnrich2_setup.py ${PWD}/hg38_repeatmasker_clean.txt /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa ${PWD}/setup_folder_hg38
+#singularity exec --bind /francislab RepEnrich2.img python /RepEnrich2/RepEnrich2_setup.py ${PWD}/hg38_repeatmasker_clean.txt /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa ${PWD}/setup_folder_hg38
 #	python /RepEnrich2/RepEnrich2_setup.py /hg38_repeatmasker_clean.txt /hg38.fa /setup_folder_hg38
 
 
