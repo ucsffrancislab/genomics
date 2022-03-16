@@ -34,7 +34,7 @@ awk -F '\t' '{print $9}' /francislab/data1/refs/sources/igv.org.genomes/hg38/rms
 
 for bam in /francislab/data1/raw/20200909-TARGET-ALL-P2-RNA_bam/bam/10-PAUB*bam ; do
   base=$( basename $bam .bam )
-  sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=${base} --time=1440 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/${base}.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/TEfinder.img TEfinder -threads 16 -alignment ${bam} -fa /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.resorted.fa -gtf /francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.resorted.gtf -te ${PWD}/hg38_rmsk_LTR.ERV.txt -workingdir ${PWD}/${base} -alreadySorted -maxHeapMem 100000"
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${base} --time=1440 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/${base}.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/TEfinder.img TEfinder -threads 16 -alignment ${bam} -fa /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.resorted.fa -gtf /francislab/data1/refs/sources/igv.org.genomes/hg38/rmsk/hg38_rmsk_LTR.resorted.gtf -te ${PWD}/hg38_rmsk_LTR.ERV.txt -workingdir ${PWD}/${base} -alreadySorted -maxHeapMem 100000"
 done
 
 ```

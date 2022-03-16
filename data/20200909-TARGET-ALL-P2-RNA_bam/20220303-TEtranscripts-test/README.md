@@ -22,7 +22,7 @@ Not sure if hg38.ncbiRefSeq.gtf is the correct GTF file.
 ```
 for bam in /francislab/data1/raw/20200909-TARGET-ALL-P2-RNA_bam/bam/10-PAUB*bam ; do
   base=$( basename $bam .bam )
-  sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=${base} --time=1440 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/${base}.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/TEtranscripts.img TEcount --sortByPos --format BAM --mode multi -b ${bam} --project ${base} --GTF /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf --TE ${PWD}/TEtranscripts_TE_GTF/hg38_rmsk_TE.gtf"
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${base} --time=1440 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/${base}.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/TEtranscripts.img TEcount --sortByPos --format BAM --mode multi -b ${bam} --project ${base} --GTF /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf --TE ${PWD}/TEtranscripts_TE_GTF/hg38_rmsk_TE.gtf"
 done
 ```
 

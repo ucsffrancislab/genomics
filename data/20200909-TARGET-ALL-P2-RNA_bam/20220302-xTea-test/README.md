@@ -31,13 +31,13 @@ Why are both needed? Opens up for errors. Software should create one from the ot
 
 
 ```
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=xTea --time=60 --nodes=1 --ntasks=8 --mem=30G --output=${PWD}/xTea.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/xTea.img xtea -i ${PWD}/sample_id.txt -b ${PWD}/bam_list.txt -x null -p ${PWD}/tmp/ -o submit_jobs.sh -l ${PWD}/rep_lib_annotation/ -r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa -g /francislab/data1/refs/sources/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/gencode.v33.chr_patch_hapl_scaff.annotation.gff3 -f 5907 -y 15 -n 16 -m 60"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=xTea --time=60 --nodes=1 --ntasks=8 --mem=30G --output=${PWD}/xTea.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/xTea.img xtea -i ${PWD}/sample_id.txt -b ${PWD}/bam_list.txt -x null -p ${PWD}/tmp/ -o submit_jobs.sh -l ${PWD}/rep_lib_annotation/ -r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa -g /francislab/data1/refs/sources/ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_33/gencode.v33.chr_patch_hapl_scaff.annotation.gff3 -f 5907 -y 15 -n 16 -m 60"
 
 chmod +x /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220302-xTea-test/tmp/*/HERV/run_xTEA_pipeline.sh
 
 for dir in /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220302-xTea-test/tmp/10-PAUB* ; do 
 base=$( basename $dir )
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=${base} --time=1440 --nodes=1 --ntasks=16 --mem=60G --output=${PWD}/${base}.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/xTea.img ${dir}/HERV/run_xTEA_pipeline.sh"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${base} --time=1440 --nodes=1 --ntasks=16 --mem=60G --output=${PWD}/${base}.txt --wrap "singularity exec --bind /francislab /francislab/data1/refs/singularity/xTea.img ${dir}/HERV/run_xTEA_pipeline.sh"
 done
 ```
 
