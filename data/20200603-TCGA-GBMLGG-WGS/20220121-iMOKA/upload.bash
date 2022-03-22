@@ -29,7 +29,7 @@ for k in 11 21 31 ; do
 		#	predict_matrix.tsv - samples not used for models
 		#	topredict.tsv - select kmer counts of unused samples
 		#	matrix.tsv - select kmer counts of input samples
-		for f in create_matrix.tsv aggregated.json output.json output_fi.tsv select_kmers.txt predict_matrix.tsv topredict.tsv matrix.tsv ; do
+		for f in reduced.matrix create_matrix.tsv aggregated.json output.json output_fi.tsv select_kmers.txt predict_matrix.tsv topredict.tsv matrix.tsv ; do
 			echo $f
 			curl -netrc -T IDH.${k}.${s}/${f} "${BOX}/"
 
