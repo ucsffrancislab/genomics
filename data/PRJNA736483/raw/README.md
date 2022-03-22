@@ -18,3 +18,22 @@ aws s3 sync --exclude "*" --include "*_alignment_bam.bam" s3://francislab-backup
 
 89 bam files for 1.1TB 
 
+
+
+
+https://github.com/herandolph/IAV_population-variation
+
+
+https://zenodo.org/record/4273999#.YjjM4BPMKDU
+
+
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/PRJNA736483"
+curl -netrc -X MKCOL "${BOX}/"
+
+curl -netrc -T sample_ancestry.csv "${BOX}/"
+```
+
+
