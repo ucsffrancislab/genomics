@@ -24,15 +24,56 @@ scontrol update ArrayTaskThrottle=6 JobId=352083
 ```
 
 
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/PRJNA736483"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/PRJNA736483/20220314-REdiscoverTE"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in rollup/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+```
+module load r
+
+mkdir -p ${PWD}/results
+for i in $( seq 9 ); do
+iname=$( ls -1 rollup/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+for k in 15 ; do
+./REdiscoverTE_EdgeR.R ${PWD}/rollup /francislab/data1/raw/PRJNA736483/sample_ancestry.csv ${PWD}/results id ancestry NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf results/k${k}.ancestry.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${PWD}/rollup /francislab/data1/raw/PRJNA736483/sample_ancestry.csv ${PWD}/results id ancestry NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf results/k${k}.ancestry.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done
+```
 
 
 
 
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/PRJNA736483"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/PRJNA736483/20220314-REdiscoverTE"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/PRJNA736483/20220314-REdiscoverTE/results"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in results/* ; do
+echo $f
+curl -netrc -T ${f} "${BOX}/"
+done
+```
 
 
+```
+mkdir results2
+./REdiscoverTE_EdgeR.R ${PWD}/rollup /francislab/data1/raw/PRJNA736483/sample_ancestry.csv ${PWD}/results2 id ancestry NA NA 2 0.9 0.5 k15
 
-
-
+```
 
 
 
@@ -44,46 +85,6 @@ scontrol update ArrayTaskThrottle=6 JobId=352083
 
 From 20211208-EV/20211216-REdiscoverTE
 
-
-Link raw files to replace .fqgz to .fastq.gz
-```
-DIR=/francislab/data1/working/20211208-EV/20211208-preprocessing/out_noumi
-RAW=/francislab/data1/working/20211208-EV/20211216-REdiscoverTE/raw
-mkdir -p $RAW
-for f in ${DIR}/*.quality.format.t1.t3.notphiX.notviral.nothg38.1.fqgz ; do
-ln -s $f ${RAW}/$( basename $f .quality.format.t1.t3.notphiX.notviral.nothg38.1.fqgz ).R1.fastq.gz
-done
-for f in ${DIR}/*.quality.format.t1.t3.notphiX.notviral.nothg38.2.fqgz ; do
-ln -s $f ${RAW}/$( basename $f .quality.format.t1.t3.notphiX.notviral.nothg38.2.fqgz ).R2.fastq.gz
-done
-
-```
-
-```
-mkdir -p /francislab/data1/working/20211208-EV/20211216-REdiscoverTE/logs
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%8 --job-name="REdiscoverTE" --output="/francislab/data1/working/20211208-EV/20211216-REdiscoverTE/logs/REdiscoverTE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20211208-EV/20211216-REdiscoverTE/REdiscoverTE_array_wrapper.bash
-```
-
-
-```
-./REdiscoverTE_rollup.bash 
-```
-
-
-
-```
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV"
-curl -netrc -X MKCOL "${BOX}/"
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20211208-EV/20211216-REdiscoverTE"
-curl -netrc -X MKCOL "${BOX}/"
-
-for f in rollup/* ; do
-echo $f
-curl -netrc -T ${f} "${BOX}/"
-done
-
-```
 
 ```
 echo "id,cc" > metadata.csv

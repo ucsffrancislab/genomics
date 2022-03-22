@@ -250,7 +250,7 @@ if(Cov_check ==TRUE){
 # Remove the not present samples 
 if(length(not.present) >=1){
   print(paste("Number of samples not found in covariate file = ", length(not.present), sep = ""))
-  groups_less = group_list[-not.present,1]	#	????? Typo? Unused? Comment out?
+  #groups_less = group_list[-not.present,1]	#	????? Typo? Unused? Comment out?
   #second_less = group_list[-not.present,2]
   RE_disc= RE_disc[,-not.present]
   group_less =group_list[-not.present,]
@@ -269,20 +269,23 @@ if(length(not.present) >=1){
 #	message("as.factor(group_less)")
 #	message(as.factor(group_less))
 
-if(Cov_check == TRUE){
-	RE_disc$samples$group = as.factor(group_less[,1])
-}else{
-	#RE_disc$samples$group = as.factor(group_less) #	JAKE - groups get lost if this is used? All NA. Then all filtered. Then crash.
-	#message(group_less)	#	IPMNMCNIPMNMCNIPMNMCNIPMNIPMNIPMN
+#if(Cov_check == TRUE){
+#	RE_disc$samples$group = as.factor(group_less[,1])
+#}else{
+#	#RE_disc$samples$group = as.factor(group_less) #	JAKE - groups get lost if this is used? All NA. Then all filtered. Then crash.
+#	#message(group_less)	#	IPMNMCNIPMNMCNIPMNMCNIPMNIPMNIPMN
+#
+#	RE_disc$samples$group = as.factor(group_less[,1]) 
+#	#	Error in h(simpleError(msg, call)) : 
+#	#	  error in evaluating the argument 'x' in selecting a method for function 'as.factor': incorrect number of dimensions
+#	#	Calls: as.factor ... [ -> [.factor -> NextMethod -> .handleSimpleError -> h
+#	#	Execution halted
+#	#RE_disc$samples$group = as.factor(group_less)
+#
+#}
+RE_disc$samples$group = as.factor(group_less[,1]) 
 
-	#RE_disc$samples$group = as.factor(group_less[,1]) 
-	#	Error in h(simpleError(msg, call)) : 
-	#	  error in evaluating the argument 'x' in selecting a method for function 'as.factor': incorrect number of dimensions
-	#	Calls: as.factor ... [ -> [.factor -> NextMethod -> .handleSimpleError -> h
-	#	Execution halted
-	RE_disc$samples$group = as.factor(group_less)
 
-}
 #RE_disc$samples$second = as.factor(group_less[,2])
 
 #	message("RE_disc$samples$group")
@@ -392,7 +395,7 @@ shape_p = c()
 for(i in c(1:length(RE_disc$samples$group))){
   color_p = c(color_p, col_groups[which(u_groups == RE_disc$samples$group[i])])
   shape_p = c(shape_p, shape_groups[which(u_groups == RE_disc$samples$group[i])])
-  
+	
 }
 
 message("BCV")
