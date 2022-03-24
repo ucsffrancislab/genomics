@@ -5,14 +5,12 @@ Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
 
 
-/francislab/data1/working/PRJNA736483
+/francislab/data1/working/20220303-FluPaper
+Download the RNASeq Data from NIH - WAITING ON IT TO PREP BUCKET TO RECEIVE
 
-
-AWS EC2 - S3 running
 
 Aggregate k=21 (gonna try AWS)
 20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
-
 
 
 Alternate TE analyses
@@ -20,11 +18,13 @@ Develope singularity containers for each, then test
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220303-TEtranscripts-test
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220302-TEfinder-test
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220302-xTea-test
-
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220309-SQuIRE-test
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220309-RepEnrich2-test
 
-k=31 - trying again
+/francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220317-TEtools-test
+
+
+k=31 - A succeeded. trying B again
 20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
 
 
@@ -71,6 +71,9 @@ UK Biobank
 
 
 
+
+
+AWS EC2 - S3 running
 
 Rerun with correct BED positions
 /francislab/data1/working/20211111-hg38-viral-homology
