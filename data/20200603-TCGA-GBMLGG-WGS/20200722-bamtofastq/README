@@ -89,3 +89,12 @@ done > sequencing_paired_read_counts.csv
 
 
 
+
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200603-TCGA-GBMLGG-WGS"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T sequencing_paired_read_lengths.csv "${BOX}/"
+
