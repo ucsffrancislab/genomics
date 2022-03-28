@@ -229,11 +229,11 @@ Caused by: java.util.concurrent.TimeoutException: Futures timed out after [10000
 Always use 1 piece (others result in too many files opened error)
 
 
-curl -u George.Wendt@ucsf.edu:XXXXXXXXXXXXX -T MetaGO.15.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+curl -u $(tail -1 ~/.forward):XXXXXXXXXXXXX -T MetaGO.15.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
 
-curl -u George.Wendt@ucsf.edu:XXXXXXXXXXXXX -T MetaGO.15.LINE.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+curl -u $(tail -1 ~/.forward):XXXXXXXXXXXXX -T MetaGO.15.LINE.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
 
-curl -u George.Wendt@ucsf.edu:XXXXXXXXXXXXX -T MetaGO.17.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
+curl -u $(tail -1 ~/.forward):XXXXXXXXXXXXX -T MetaGO.17.Alu.Result_tuple_union.csv.gz "https://dav.box.com/dav/Francis _Lab_Share/20201007 20200603-TCGA-GBMLGG-WGS 20201001-bowtie2-hg38_rmsk/" &
 
 
 

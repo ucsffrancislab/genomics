@@ -5,7 +5,7 @@
 #	tail -n 1 avg_length.ssstdev.txt
 #	Avg: 56.6817 	Stddev:	50.6513
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 
 OUT=${PWD}/kallisto
 mkdir -p ${OUT}

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 
 
 #ll /francislab/data1/raw/20210428-EV/Hansen/S*fastq.gz

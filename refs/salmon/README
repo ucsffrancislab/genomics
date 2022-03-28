@@ -28,12 +28,12 @@ done
 
 echo "salmon index -t /home/gwendt/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE" | qsub -l vmem=500gb -N salmon -l nodes=1:ppn=64
 
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 --wrap "salmon index -t /home/gwendt/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k15 -k 15"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 --wrap "salmon index -t /home/gwendt/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k15 -k 15"
 
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 --wrap "${PWD}/salmon.bash index -t /francislab/data1/refs/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k15 -k 15"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 --wrap "${PWD}/salmon.bash index -t /francislab/data1/refs/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k15 -k 15"
 
 
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 ${PWD}/salmon.bash index -t /francislab/data1/refs/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k21 -k 21
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=ALL --mem=495G --job-name=REdiscoverTE --ntasks=64 --time=9999 ${PWD}/salmon.bash index -t /francislab/data1/refs/REdiscoverTE/rollup_annotation/genome.fasta --threads 64 -i /francislab/data1/refs/salmon/REdiscoverTE.k21 -k 21
 
 
 

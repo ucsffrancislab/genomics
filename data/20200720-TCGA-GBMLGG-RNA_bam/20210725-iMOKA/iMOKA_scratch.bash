@@ -134,7 +134,7 @@ exit
 
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 ${sbatch} --job-name=TiMOKAscratch --time=11520 --nodes=1 --ntasks=32 --mem=240G --gres=scratch:1500G --output=${PWD}/iMOKA_scratch.31.gender_test.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.gender_test
 
 
@@ -142,22 +142,22 @@ ${sbatch} --job-name=TiMOKAscratch --time=11520 --nodes=1 --ntasks=32 --mem=240G
 
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 ${sbatch} --job-name=TiMOKAscratch --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/31.primary_diagnosis/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.primary_diagnosis --step create
 
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 ${sbatch} --job-name=WHO_groups --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/31.WHO_groups/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.WHO_groups --step create
 
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 ${sbatch} --job-name=IDH --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/31.IDH/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.IDH --step create
 
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 ${sbatch} --job-name=IDH_1p19q_status --time=20160 --nodes=1 --ntasks=64 --mem=499G --gres=scratch:1500G --output=${PWD}/31.IDH_1p19q_status/iMOKA_scratch.${date}.txt ${PWD}/iMOKA_scratch.bash --dir ${PWD}/31.IDH_1p19q_status --step create
 
 

@@ -30,7 +30,7 @@ if [ $# -gt 0 ] ; then
 else
 
 	INDIR="${PWD}/out"
-	sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+	sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 	date=$( date "+%Y%m%d%H%M%S" )
 	for k in 15 31 ; do for bbduk in 1 2 3 ; do
 		echo "bbduk${bbduk}.k${k}"

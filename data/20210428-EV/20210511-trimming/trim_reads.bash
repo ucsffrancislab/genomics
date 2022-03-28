@@ -4,7 +4,7 @@ mkdir trimmed
 cp /francislab/data1/raw/20210428-EV/Hansen/*.{subject,diagnosis,labkit} trimmed/
 
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 
 date=$( date "+%Y%m%d%H%M%S" )
 

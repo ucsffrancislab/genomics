@@ -4,7 +4,7 @@ SALMON="/francislab/data1/refs/salmon"
 INDIR="/francislab/data1/working/20191008_Stanford71/20210326-preprocessing/output"
 DIR="/francislab/data1/working/20191008_Stanford71/20210413-REdiscoverTE/out"
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${DIR}
@@ -122,7 +122,7 @@ exit
 
 
 INDIR="${PWD}/out"
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 date=$( date "+%Y%m%d%H%M%S" )
 for k in 15 31 ; do for bbduk in 1 2 3 ; do
 echo "bbduk${bbduk}.k${k}"

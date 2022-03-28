@@ -14,7 +14,7 @@ mem=7		#	per thread (keep 7)
 
 img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 
 #The aggregate step always says that it can't find the matrix, but works.
 #	setting SINGULARITY_BINDPATH instead of passing --bind seems to remedy?

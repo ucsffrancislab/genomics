@@ -2,7 +2,7 @@
 
 date=$( date "+%Y%m%d%H%M%S" )
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 
 
 threads=2

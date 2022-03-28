@@ -4,7 +4,7 @@ set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --export=None "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --export=None "
 
 REFS=/francislab/data1/refs
 FASTA=${REFS}/fasta

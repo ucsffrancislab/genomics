@@ -14,7 +14,7 @@ I think we should probably do our own alignments with the WGS and RNA-seq data f
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/( out or sample or make subject )
 
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 date=$( date "+%Y%m%d%H%M%S" )
 
 for f in /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/subject/*R1.fastq.gz; do

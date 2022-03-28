@@ -46,7 +46,7 @@ kdir=${PWD}/${subset}${k}${field}
 
 img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 export SINGULARITY_BINDPATH=/francislab
 export OMP_NUM_THREADS=${threads}
 
