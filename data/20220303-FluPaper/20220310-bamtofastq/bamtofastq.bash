@@ -53,7 +53,7 @@ for bam in ${INDIR}/SRR14773*/*_alignment_bam.bam ; do
 		echo "Requesting ${scratch} scratch"
 		#	gres=scratch should be about total needed divided by num threads
 
-		sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=${jobbase} --time=1440 \
+		sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${jobbase} --time=1440 \
 			--nodes=1 --ntasks=${threads} --mem=${vmem}G --gres=scratch:${scratch}G \
 			--output=${outbase}.${date}.%j.txt \
 			~/.local/bin/bamtofastq_scratch.bash \

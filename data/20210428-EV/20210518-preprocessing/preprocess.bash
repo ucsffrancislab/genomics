@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 
 date=$( date "+%Y%m%d%H%M%S" )
 

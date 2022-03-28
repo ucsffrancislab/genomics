@@ -5,7 +5,7 @@ INDIR="/francislab/data1/working/20210428-EV/20210518-preprocessing/output"
 #DIR="/francislab/data1/working/20210428-EV/20210823-REdiscoverTE/output"
 DIR="${PWD}/output"
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 date=$( date "+%Y%m%d%H%M%S" )
 
 mkdir -p ${DIR}

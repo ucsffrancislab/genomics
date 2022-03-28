@@ -146,7 +146,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 for k in 11 21 31 ; do
 for s in a b c ; do
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
  --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
  ${PWD}/iMOKA_scratch.bash --local --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step create
 done ; done
@@ -161,7 +161,7 @@ Only running 1 k=31 as will likely take way too long.
 date=$( date "+%Y%m%d%H%M%S" )
 for k in 31 ; do
 for s in b c ; do
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
  --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.%j.txt \
  ${PWD}/iMOKA_scratch.bash --local --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step reduce
 done ; done
@@ -175,7 +175,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 for k in 21 ; do
 for s in a b c; do
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=D${k}${s} --time=20160 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
  --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
  ${PWD}/iMOKA_scratch.bash --local --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step aggregate
 done ; done

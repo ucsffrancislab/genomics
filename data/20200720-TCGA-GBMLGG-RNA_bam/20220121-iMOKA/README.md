@@ -92,7 +92,7 @@ date=$( date "+%Y%m%d%H%M%S" )
 
 for k in 11 21 31; do
 for s in a b c ; do
-sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --job-name=R${k}${s} --time=1440 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=R${k}${s} --time=1440 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:1500G \
  --output=${PWD}/IDH.${k}.80${s}/iMOKA_scratch.${date}.txt \
  ${PWD}/iMOKA_scratch.bash --dir ${PWD}/IDH.${k}.80${s} -k ${k} --step create
 done ; done

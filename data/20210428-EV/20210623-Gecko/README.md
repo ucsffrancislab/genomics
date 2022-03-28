@@ -29,7 +29,7 @@ DO NOT USE --export=None with sbatch HERE. IT WILL FAIL.
 
 
 ```
-export sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+export sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 export GECKO=/francislab/data1/working/20210428-EV/20210623-Gecko/GECKO
 export GDATA=/francislab/data1/working/20210428-EV/20210623-Gecko/data
 mkdir ${GDATA}
@@ -169,7 +169,7 @@ done
 ```
 
 ```
-export sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+export sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 export GECKO=/francislab/data1/working/20210428-EV/20210623-Gecko/GECKO
 export GDATA=/francislab/data1/working/20210428-EV/20210623-Gecko/data
 export k=21
@@ -187,7 +187,7 @@ done
 
 
 ```
-export sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+export sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 export GECKO=/francislab/data1/working/20210428-EV/20210623-Gecko/GECKO
 export GDATA=/francislab/data1/working/20210428-EV/20210623-Gecko/data
 export k=21

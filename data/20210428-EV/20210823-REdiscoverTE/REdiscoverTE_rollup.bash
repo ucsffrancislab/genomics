@@ -23,7 +23,7 @@ if [ $# -gt 0 ] ; then
 else
 
 	INDIR="${PWD}/output"
-	sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+	sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 	date=$( date "+%Y%m%d%H%M%S" )
 	for k in 15 ; do for trimmer in bbduk1 bbduk2 bbduk3 cutadapt1 cutadapt2 cutadapt3 ; do
 	#for k in 15 31 ; do for trimmer in bbduk1 bbduk2 bbduk3 cutadapt1 cutadapt2 cutadapt3 ; do

@@ -3,7 +3,7 @@
 OUT="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20211028-mixcr-immunarch-test/out"
 mkdir -p ${OUT}
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL "
 
 date=$( date "+%Y%m%d%H%M%S" )
 threads=8

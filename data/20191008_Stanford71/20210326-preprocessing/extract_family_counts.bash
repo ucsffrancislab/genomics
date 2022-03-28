@@ -40,7 +40,7 @@ else
 		if [ -f $b ] && [ ! -w $b ] ; then
 		echo "Skipping $f"
 		else
-		sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL \
+		sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
 			--job-name=$( basename $f ) --time=999 --ntasks=2 --mem=10G \
 			--output=${f}.${date}.txt \
 			${PWD}/extract_family_counts.bash $f

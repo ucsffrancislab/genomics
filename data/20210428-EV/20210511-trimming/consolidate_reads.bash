@@ -3,7 +3,7 @@
 mkdir output
 cp /francislab/data1/working/20210428-EV/20210511-trimming/trimmed/*.{subject,diagnosis,labkit} output/
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 
 date=$( date "+%Y%m%d%H%M%S" )
 

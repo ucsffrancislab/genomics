@@ -7,7 +7,7 @@
 #	Added to ~/.bash_profile
 #	This doesn't work quite right. 
 
-sbatch="sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable "
+sbatch="sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable "
 
 #	/francislab/data1/raw/20191008_Stanford71/01_R1.fastq.gz
 #	/francislab/data1/raw/20191008_Stanford71/02_R1.fastq.gz
@@ -567,7 +567,7 @@ for r1 in /francislab/data1/raw/20191008_Stanford71/??_R1.fastq.gz ; do
 				depend=""
 			fi
 			#diamond_id=$( sbatch ${depend} --job-name=d-${basename} --time=9999 --ntasks=8 --mem=60G \
-			#	--mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --parsable \
+			#	--mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --parsable \
 			diamond_id=$( ${sbatch} ${depend} --job-name=d-${basename}-${trimmer} --time=9999 --ntasks=8 --mem=60G \
 				--output=${f}.${date}.txt \
 				~/.local/bin/diamond.bash blastx --threads 8 \
