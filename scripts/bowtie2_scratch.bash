@@ -25,7 +25,7 @@ while [ $# -gt 0 ] ; do
 			shift; r2=$1; shift;;
 		-U)
 			shift; u=$1; shift;;
-		-o)
+		-o|--output)
 			shift; f=$1; shift;;
 		-x)
 			shift; x=$1; shift;;
