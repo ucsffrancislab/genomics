@@ -7,15 +7,23 @@ https://hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/
 
 Create sorted uniq lists of chromosomes in each reference file ...
 ```
-cut -f1 genes/hg38.ncbiRefSeq.gtf | sort | uniq > genes/hg38.ncbiRefSeq.gtf.chromosomes
+zcat genes/hg38.refGene.gtf.gz | cut -f1 | sort | uniq > genes/hg38.refGene.gtf.gz.chromosomes
+zcat genes/hg38.knownGene.gtf.gz | cut -f1 | sort | uniq > genes/hg38.knownGene.gtf.gz.chromosomes
+zcat genes/hg38.ensGene.gtf.gz | cut -f1 | sort | uniq > genes/hg38.ensGene.gtf.gz.chromosomes
+zcat genes/hg38.ncbiRefSeq.gtf.gz | cut -f1 | sort | uniq > genes/hg38.ncbiRefSeq.gtf.gz.chromosomes
 
 grep "^>" latest/hg38.fa | sed 's/^>//' | sort > latest/hg38.fa.chromosomes
 
-wc -l genes/hg38.ncbiRefSeq.gtf.chromosomes latest/hg38.fa.chromosomes 
-  421 genes/hg38.ncbiRefSeq.gtf.chromosomes
+wc -l genes/hg38.*.chromosomes latest/hg38.fa.chromosomes
+  270 genes/hg38.ensGene.gtf.gz.chromosomes
+  406 genes/hg38.knownGene.gtf.gz.chromosomes
+  421 genes/hg38.ncbiRefSeq.gtf.gz.chromosomes
+  367 genes/hg38.refGene.gtf.gz.chromosomes
   595 latest/hg38.fa.chromosomes
- 1016 total
+ 2480 total
 ```
+
+NCBI Ref is the largest gtf.
 
 Use comm to compare the lists ...
 ```
@@ -28,7 +36,7 @@ comm -h
 ```
 
 ```
-comm -13 genes/hg38.ncbiRefSeq.gtf.chromosomes latest/hg38.fa.chromosomes 
+comm -13 genes/hg38.ncbiRefSeq.gtf.gz.chromosomes latest/hg38.fa.chromosomes 
 ```
 
 The following sequences are ONLY in hg38.fa (n=174).
@@ -211,11 +219,15 @@ chrY_KZ208923v1_fix
 Is it possible/plausible that all of these do not contain anything worth annotating? Nah.
 
 
-The following sequences are ONLY in hg38.ncbiRefSeq.gtf. (n=0)
+The following sequences are ONLY in hg38.ncbiRefSeq.gtf.gz or any of the gtfs. (n=0)
 ```
-comm -23 genes/hg38.ncbiRefSeq.gtf.chromosomes latest/hg38.fa.chromosomes 
+comm -23 genes/hg38.ncbiRefSeq.gtf.gz.chromosomes latest/hg38.fa.chromosomes
+
+comm -23 genes/hg38.ensGene.gtf.gz.chromosomes latest/hg38.fa.chromosomes
+
+comm -23 genes/hg38.knownGene.gtf.gz.chromosomes latest/hg38.fa.chromosomes
+
+comm -23 genes/hg38.refGene.gtf.gz.chromosomes latest/hg38.fa.chromosomes
 ```
-
-
 
 
