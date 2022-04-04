@@ -42,7 +42,7 @@ else
 
 	#	sed -e '2s"/data/shared/francislab/data/raw/20191008_Stanford71/trimmed/unpaired/""g' -e '2s/.h38au.subread-dna.bam//g' -i ${f}
 	#	strip out just the base name, in this case a number. add an "s" prefix or R will add an "X"
-	sed -e "2s\"${last_arg_dir}\"s\"g" -e "2s\"${last_arg_file_base}\"\"g" -i ${f}
+#	sed -e "2s\"${last_arg_dir}\"s\"g" -e "2s\"${last_arg_file_base}\"\"g" -i ${f}
 
 	chmod a-w $f
 fi
