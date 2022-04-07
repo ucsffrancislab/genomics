@@ -282,19 +282,21 @@ echo $security_ids
 #	instance type? need 1 tb memory
 #
 #     type      Cos/Hr CPU   Mem    Storage / Network
-#  x1.16xlarge   6.669  64    976  1 x 1,920  7,000  10
-#  x1.32xlarge  13.338 128  1,952  2 x 1,920  14,000  25
-#  x1e.4xlarge	$3.336  16    488  1 x 480 SSD
-#  x1e.8xlarge   6.672  32    976  1 x 960  3,500  Up to 10
-#  x1e.16xlarge 13.344  64  1,952  1 x 1,920  7,000  10
-#  x1e.32xlarge 26.688 128  3,904  2 x 1,920  14,000  25
+#  x1.16xlarge   6.669  64    976  1 x 1920  7,000  10
+#  x1.32xlarge  13.338 128  1,952  2 x 1920  14,000  25
+#  x1e.4xlarge   3.336  16    488  1 x  480 SSD
+#  x1e.8xlarge   6.672  32    976  1 x  960  3,500  Up to 10
+#  x1e.16xlarge 13.344  64  1,952  1 x 1920  7,000  10
+#  x1e.32xlarge 26.688 128  3,904  2 x 1920  14,000  25
+#  x2gd.metal    5.344  64   1024  2 x 1900   25 Gigabit     - ARM only
 
 #	disk space?
 #	"--block-device-mappings DeviceName=/dev/xvda,Ebs={VolumeSize=${1},VolumeType=gp2}"
 
 #aws ec2 run-instances --image-id ${ami_id} --instance-type c5.large --subnet-id ${subnet_id} --security-group-ids ${security_ids} --iam-instance-profile Name=managed-service-ec2-standard --dry-run
 
-instance_id=$( aws ec2 run-instances --image-id ${ami_id} --instance-type c5.large --subnet-id ${subnet_id} --security-group-ids ${security_ids} --iam-instance-profile Name=managed-service-ec2-standard  | jq -r '.Instances[].InstanceId' )
+#instance_id=$( aws ec2 run-instances --image-id ${ami_id} --instance-type x1.16xlarge --subnet-id ${subnet_id} --security-group-ids ${security_ids} --iam-instance-profile Name=managed-service-ec2-standard --block-device-mappings "DeviceName=/dev/xvdb,Ebs={VolumeSize=3000,VolumeType=gp2}" | jq -r '.Instances[].InstanceId' )
+instance_id=$( aws ec2 run-instances --image-id ${ami_id} --instance-type x1.32xlarge --subnet-id ${subnet_id} --security-group-ids ${security_ids} --iam-instance-profile Name=managed-service-ec2-standard | jq -r '.Instances[].InstanceId' )
 echo ${instance_id}
 
 #	instance_id=$( aws ec2 describe-instances | jq -r '.Reservations[].Instances | map(select( .State.Name == "running"))[].InstanceId' )
@@ -392,98 +394,98 @@ curl https://raw.githubusercontent.com/ucsffrancislab/genomics/master/aws/ec2_in
 # https://github.com/unreno/genomics/blob/2a2198fe84a5a1186eba6b60068732d6573418b5/scripts/aws_1000genomes_extract_locally_aligned.bash
 
 
-sudo apt-get install -y jq
-
-TOKEN=$( curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") 
-instance_id=$( curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id 2> /dev/null )
-echo $instance_id 
-az=$( curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/placement/availability-zone 2> /dev/null )
-echo $az
-region=$( curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/placement/region 2> /dev/null )
-echo $region
-
-
-# in GB (what is max?)
-ebs_size=4000
-
-
-
-#	CREATE THE EBS VOLUME DURING INSTANCE CREATION BY ADDING  (64TB maximum)
-#	--block-device-mappings "DeviceName=/dev/nvme,Ebs={VolumeSize=64000,VolumeType=gp2}" 
-#	--block-device-mappings "DeviceName=/dev/xvda,Ebs={VolumeSize=2000,VolumeType=gp2}"
-
-
-
-#	no permission to describe or create volumes.
-
-
-
-
-
-command="aws ec2 create-volume --region ${region} --availability-zone ${az} --volume-type gp2 --size ${ebs_size}"
-echo $command
-response=$( $command )
-echo "$response"
-volume_id=$( echo "$response" | jq -r '.VolumeId' )
-echo $volume_id
-
-aws ec2 describe-volumes --region ${region} --volume-id $volume_id
-
-#	device names ... /dev/sd[f-p]
-state="creating"
-echo "Waiting for state to become 'available' ..."
-until [ "$state" == "available" ] ; do
-	state=$( aws ec2 describe-volumes --region ${region} --volume-id ${volume_id} | jq -r '.Volumes[0].State' )
-done
-
-command="aws ec2 attach-volume --region ${region} --device xvdf --instance-id ${instance_id} --volume-id ${volume_id}"
-echo $command
-response=$( $command )
-echo "$response"
-
-state="attaching"
-echo "Waiting for state to become 'in-use' ..."
-until [ "$state" == "in-use" ] ; do
-	state=$( aws ec2 describe-volumes --region ${region} --volume-id ${volume_id} | jq -r '.Volumes[0].State' )
-done
-
-
-
-
-
-aws ec2 describe-volumes --region ${region} --volume-id ${volume_id} 
-
-
-
-
-echo "Waiting for mount point to be created ..."
-until [ -a /dev/xvdf ] ; do
-	sleep 2
-done
-
-#	as it is possible that some mount points may linger, check ?
-#	[ -e /dev/xvdf ] ....
-
-sudo file -s /dev/xvdf
-#	-> data
-#	(/dev/sdf would be a link so not helpful)
-
-#	Need to create file system on volume
-sudo mkfs -t ext4 /dev/xvdf
-
-sudo file -s /dev/xvdf
-#	-> /dev/xvdf: Linux rev 1.0 ext4 filesystem data, UUID=0366fdd8-7691-4b3f-be37-2b03a33586a9 (extents) (large files) (huge files)
-
-sudo mount /dev/xvdf $HOME/data
-
-df -h $HOME/data
-#	Filesystem      Size  Used Avail Use% Mounted on
-#	/dev/xvdf       976M  1.3M  908M   1% /home/ec2-user/ebsdrive
-
-#	Note the loss of 1%
-
-#	Owned by root so only writable by root unless ...
-sudo chmod 777 $HOME/data
+#	sudo apt-get install -y jq
+#	
+#	TOKEN=$( curl -sX PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600") 
+#	instance_id=$( curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/instance-id 2> /dev/null )
+#	echo $instance_id 
+#	az=$( curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/placement/availability-zone 2> /dev/null )
+#	echo $az
+#	region=$( curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/placement/region 2> /dev/null )
+#	echo $region
+#	
+#	
+#	# in GB (what is max?)
+#	ebs_size=4000
+#	
+#	
+#	
+#	#	CREATE THE EBS VOLUME DURING INSTANCE CREATION BY ADDING  (64TB maximum)
+#	#	--block-device-mappings "DeviceName=/dev/nvme,Ebs={VolumeSize=64000,VolumeType=gp2}" 
+#	#	--block-device-mappings "DeviceName=/dev/xvda,Ebs={VolumeSize=2000,VolumeType=gp2}"
+#	
+#	
+#	
+#	#	no permission to describe or create volumes.
+#	
+#	
+#	
+#	
+#	
+#	command="aws ec2 create-volume --region ${region} --availability-zone ${az} --volume-type gp2 --size ${ebs_size}"
+#	echo $command
+#	response=$( $command )
+#	echo "$response"
+#	volume_id=$( echo "$response" | jq -r '.VolumeId' )
+#	echo $volume_id
+#	
+#	aws ec2 describe-volumes --region ${region} --volume-id $volume_id
+#	
+#	#	device names ... /dev/sd[f-p]
+#	state="creating"
+#	echo "Waiting for state to become 'available' ..."
+#	until [ "$state" == "available" ] ; do
+#		state=$( aws ec2 describe-volumes --region ${region} --volume-id ${volume_id} | jq -r '.Volumes[0].State' )
+#	done
+#	
+#	command="aws ec2 attach-volume --region ${region} --device xvdf --instance-id ${instance_id} --volume-id ${volume_id}"
+#	echo $command
+#	response=$( $command )
+#	echo "$response"
+#	
+#	state="attaching"
+#	echo "Waiting for state to become 'in-use' ..."
+#	until [ "$state" == "in-use" ] ; do
+#		state=$( aws ec2 describe-volumes --region ${region} --volume-id ${volume_id} | jq -r '.Volumes[0].State' )
+#	done
+#	
+#	
+#	
+#	
+#	
+#	aws ec2 describe-volumes --region ${region} --volume-id ${volume_id} 
+#	
+#	
+#	
+#	
+#	echo "Waiting for mount point to be created ..."
+#	until [ -a /dev/xvdf ] ; do
+#		sleep 2
+#	done
+#	
+#	#	as it is possible that some mount points may linger, check ?
+#	#	[ -e /dev/xvdf ] ....
+#	
+#	sudo file -s /dev/xvdf
+#	#	-> data
+#	#	(/dev/sdf would be a link so not helpful)
+#	
+#	#	Need to create file system on volume
+#	sudo mkfs -t ext4 /dev/xvdf
+#	
+#	sudo file -s /dev/xvdf
+#	#	-> /dev/xvdf: Linux rev 1.0 ext4 filesystem data, UUID=0366fdd8-7691-4b3f-be37-2b03a33586a9 (extents) (large files) (huge files)
+#	
+#	sudo mount /dev/xvdf $HOME/data
+#	
+#	df -h $HOME/data
+#	#	Filesystem      Size  Used Avail Use% Mounted on
+#	#	/dev/xvdf       976M  1.3M  908M   1% /home/ec2-user/ebsdrive
+#	
+#	#	Note the loss of 1%
+#	
+#	#	Owned by root so only writable by root unless ...
+#	sudo chmod 777 $HOME/data
 
 
 
@@ -501,28 +503,38 @@ sudo chmod 777 $HOME/data
 
 aws s3 ls s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/
 
-aws s3 cp s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/iMOKA_extended-1.1.5.img ./
+#	aws s3 cp s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/iMOKA_extended-1.1.5.img ./
+#	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21/ ./IDH.21/
+#	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80a/ ./IDH.21.80a/
+#	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80b/ ./IDH.21.80b/
+#	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80c/ ./IDH.21.80c/
+
+#aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ ~/
+
+
+#	pre-attached SSD drives are only 1.7TB
+
+#	EBS can be up to 64TB
+
+#	use the SSD drives are probably faster, but gotta split data.
+
+# aws s3 sync --exclude="*" --include="IDH.21/preprocess/T*/*" --dryrun s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ ./testing/
 
 
 
 
 
-aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21/ ./IDH.21/
-aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80a/ ./IDH.21.80a/
-aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80b/ ./IDH.21.80b/
-aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80c/ ./IDH.21.80c/
+
+
+
 
 cd ~/IDH.21.80a
 cd ~/IDH.21.80b
 cd ~/IDH.21.80c
 
-
-
 sed -i "s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80a/'/home/ssm-user/IDH.21/'g" matrix.json
 sed "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/home/ssm-user/'g" reduced.matrix
 sed "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/home/ssm-user/'g" reduced.matrix.json
-
-
 
 
 
@@ -542,11 +554,17 @@ sed "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/home
 #	 To use a different thershold, export the variable before running iMOKA:
 #	export IMOKA_MAX_MEM_GB=2
 
+
+export OMP_NUM_THREADS=64
+export IMOKA_MAX_MEM_GB=900
 date=$( date "+%Y%m%d%H%M%S" )
 singularity exec ~/iMOKA_extended-1.1.5.img iMOKA_core aggregate --input reduced.matrix --count-matrix matrix.json --mapper-config config.json --output aggregated > iMOKA_AWS.${date}.log
 
 
 
+
+
+#	random_forest
 
 
 
