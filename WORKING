@@ -31,6 +31,8 @@ Develope singularity containers for each, then test
 k=31 - A succeeded. Trying B again. Then C. - WAITING ON COMPLETION
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
 
+xTea Demo Test
+/francislab/data1/working/CEPH-ENA-PRJEB3381/20220406-xTea-Demo
 
 
 
