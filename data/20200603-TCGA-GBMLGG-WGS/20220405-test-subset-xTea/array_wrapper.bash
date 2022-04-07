@@ -76,7 +76,7 @@ fi
 
 
 
-date
+echo "Done: $(date)"
 exit
 
 
