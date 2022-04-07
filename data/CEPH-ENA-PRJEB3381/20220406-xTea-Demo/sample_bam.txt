@@ -1,0 +1,1 @@
+NA12878	/francislab/data1/raw/CEPH-ENA-PRJEB3381/NA12878.sorted.bam
