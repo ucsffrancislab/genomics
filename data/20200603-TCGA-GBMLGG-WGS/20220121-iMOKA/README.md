@@ -321,6 +321,8 @@ sudo chown ssm-user $HOME
 cd
 wget https://raw.githubusercontent.com/ucsffrancislab/home/master/.inputrc
 wget https://raw.githubusercontent.com/ucsffrancislab/home/master/.vimrc
+mkdir -p $HOME/.vim/colors
+wget --directory-prefix=$HOME/.vim/colors/ https://raw.githubusercontent.com/ucsffrancislab/home/master/.vim/colors/wendt.vim
 bash
 alias ll="ls -l"
 
@@ -351,7 +353,14 @@ sudo apt-get -y autoremove
 curl https://raw.githubusercontent.com/ucsffrancislab/genomics/master/aws/ec2_install_singularity.bash | bash -s
 
 
+#i-0721775527eac9432
 
+sudo reboot
+
+aws ssm start-session --target ${instance_id}
+bash
+alias ll="ls -l"
+cd
 
 
 
@@ -498,26 +507,13 @@ curl https://raw.githubusercontent.com/ucsffrancislab/genomics/master/aws/ec2_in
 
 
 #			Use "/home/ssm-user/data/"  or simply /data/ ?
-
-
-
-aws s3 ls s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/
-
+#	aws s3 ls s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/
 #	aws s3 cp s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/iMOKA_extended-1.1.5.img ./
 #	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21/ ./IDH.21/
 #	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80a/ ./IDH.21.80a/
 #	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80b/ ./IDH.21.80b/
 #	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80c/ ./IDH.21.80c/
-
-#aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ ~/
-
-
-#	pre-attached SSD drives are only 1.7TB
-
-#	EBS can be up to 64TB
-
-#	use the SSD drives are probably faster, but gotta split data.
-
+#	aws s3 sync s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ ~/
 # aws s3 sync --exclude="*" --include="IDH.21/preprocess/T*/*" --dryrun s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ ./testing/
 
 
@@ -525,40 +521,95 @@ aws s3 ls s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-
 
 
 
+#	pre-attached SSD drives are only 1.7TB
+#	EBS can be up to 64TB
+#	use the SSD drives are probably faster, but gotta split data.
+lsblk
+sudo file -s /dev/xvdb
+sudo mkfs -t ext4 /dev/xvdb
+sudo file -s /dev/xvdb
+sudo mkdir /data1
+sudo mount /dev/xvdb /data1
+sudo chmod 777 /data1
+
+sudo file -s /dev/xvdc
+sudo mkfs -t ext4 /dev/xvdc
+sudo file -s /dev/xvdc
+sudo mkdir /data2
+sudo mount /dev/xvdc /data2
+sudo chmod 777 /data2
 
 
 
-cd ~/IDH.21.80a
-cd ~/IDH.21.80b
-cd ~/IDH.21.80c
 
-sed -i "s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80a/'/home/ssm-user/IDH.21/'g" matrix.json
-sed "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/home/ssm-user/'g" reduced.matrix
-sed "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/home/ssm-user/'g" reduced.matrix.json
 
+#	SSD drive 1
+
+aws s3 sync --exclude="*" --include="IDH.21/preprocess/*/*" --exclude="IDH.21/preprocess/[FIHT]*/*" s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ /data1/
+
+
+
+
+
+#	SSD drive 2
+
+aws s3 sync --exclude="*" --include="IDH.21/preprocess/[FIHT]*/*" s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ /data2/
+
+aws s3 cp s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/iMOKA_extended-1.1.5.img /data2/
+
+aws s3 sync --exclude="*" --include="IDH.21.*" s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/ /data2/
 
 
 #	correct file paths in files
 #	WARNING! Database /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80a/preprocess/27-2523/27-2523.tsv.sorted.bin is empty! 
 
+cd /data2/IDH.21.80a
+cd /data2/IDH.21.80b
+cd /data2/IDH.21.80c
+
+sed -i "s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/IDH.21.80./'/data2/IDH.21/'g" matrix.json
+sed -i "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/data2/'g" reduced.matrix
+sed -i "1s'/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA/'/data2/'g" reduced.matrix.json
 
 
 
 
 
 
-#	Environmental var OMP_NUM_THREADS is not defined. Using 1 thread.
-#	To use a different number of thread, export the variable before running iMOKA:
-#	export OMP_NUM_THREADS=4 
-#	Environmental var IMOKA_MAX_MEM_GB is not defined. Using 2 Gb as default.
-#	 To use a different thershold, export the variable before running iMOKA:
-#	export IMOKA_MAX_MEM_GB=2
 
 
-export OMP_NUM_THREADS=64
-export IMOKA_MAX_MEM_GB=900
+#	link dirs on drive 1
+
+
+
+cd /data2/IDH.21/preprocess
+for f in /data1/IDH.21/preprocess/* ; do ln -s $f; done
+cd /data2
+
+
+
+
+
+
+
+
+
+
+
+
+
+export OMP_NUM_THREADS=128
+export IMOKA_MAX_MEM_GB=1800
+
+
+cd /data2/IDH.21.80a
+cd /data2/IDH.21.80b
+cd /data2/IDH.21.80c
 date=$( date "+%Y%m%d%H%M%S" )
-singularity exec ~/iMOKA_extended-1.1.5.img iMOKA_core aggregate --input reduced.matrix --count-matrix matrix.json --mapper-config config.json --output aggregated > iMOKA_AWS.${date}.log
+singularity exec --bind /data1,/data2 /data2/iMOKA_extended-1.1.5.img iMOKA_core aggregate --input reduced.matrix --count-matrix matrix.json --mapper-config config.json --output aggregated > iMOKA_AWS.aggregate.${date}.log &
+tail -f iMOKA_AWS.aggregate.${date}.log
+
+
 
 
 
@@ -566,15 +617,23 @@ singularity exec ~/iMOKA_extended-1.1.5.img iMOKA_core aggregate --input reduced
 
 #	random_forest
 
+cd /data2/IDH.21.80a
+cd /data2/IDH.21.80b
+cd /data2/IDH.21.80c
+
+date=$( date "+%Y%m%d%H%M%S" )
+singularity exec --bind /data1,/data2 /data2/iMOKA_extended-1.1.5.img random_forest.py --rounds 50 --threads 128 aggregated.kmers.matrix output > iMOKA_AWS.forest.${date}.log &
+tail -f iMOKA_AWS.forest.${date}.log
+
 
 
 #upload log and aggregated* to s3
 
+aws s3 sync --sse aws:kms --sse-kms-key-id alias/managed-s3-key --exclude="*" --include="IDH.21.*" /data2/ s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA-AWS-k21/
 
 
-#download log and aggregated* from s3
 
-
+#	Done
 
 
 
@@ -596,6 +655,10 @@ done
 
 ```
 
+
+
+
+#download log and aggregated* from s3 to cluster
 
 
 
