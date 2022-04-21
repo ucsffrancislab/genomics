@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
 export SINGULARITY_BINDPATH=/francislab
-export OMP_NUM_THREADS=16
-export IMOKA_MAX_MEM_GB=96
+#export OMP_NUM_THREADS=16
+#export IMOKA_MAX_MEM_GB=96
+export OMP_NUM_THREADS=64
+export IMOKA_MAX_MEM_GB=490
 
 img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 
