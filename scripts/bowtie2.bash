@@ -77,3 +77,6 @@ else
 
 fi
 
+echo "Done"
+date
+
