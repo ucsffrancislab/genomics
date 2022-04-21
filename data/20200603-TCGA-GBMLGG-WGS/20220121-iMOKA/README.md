@@ -56,6 +56,7 @@ Preprocess all files for k in 11, 21 and 31 ...
 
 
 
+# ????
 
 ./iMOKA_preprocess.bash --source_file source.IDH.21.tsv --dir ${PWD}/IDH.21 --k 21
 
@@ -679,4 +680,42 @@ Upload.
 ```
 ./upload.bash
 ```
+
+
+
+
+Predict, upload k=21 data predictions processed on AWS
+
+```
+for x in a b c ; do echo $x; for f in ../20220121-iMOKA-AWS-k21/IDH.21.80${x}/agg*; do echo $f; ln -s ../${f} IDH.21.80${x}/;  done ; done
+for x in a b c ; do echo $x; for f in ../20220121-iMOKA-AWS-k21/IDH.21.80${x}/out*; do echo $f; ln -s ../${f} IDH.21.80${x}/;  done ; done
+```
+
+Predict.
+```
+nohup ./predict.bash > predict.out &
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=predict --time=20160 --nodes=1 --ntasks=64 --mem=495G --output=${PWD}/predict.${date}.txt ${PWD}/predict.bash 
+```
+
+Better matrix of important kmers.
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=matrix --time=20160 --nodes=1 --ntasks=64 --mem=495G --output=${PWD}/matrices_of_select_kmers.${date}.txt ${PWD}/matrices_of_select_kmers.bash
+```
+
+```
+./merge_matrices.py --output IDH.21.80a/matrix.tsv IDH.21.80a/matrix.?.tsv
+./merge_matrices.py --output IDH.21.80b/matrix.tsv IDH.21.80b/matrix.?.tsv
+./merge_matrices.py --output IDH.21.80c/matrix.tsv IDH.21.80c/matrix.?.tsv
+```
+
+Upload.
+```
+./upload.bash
+```
+
+
+
 
