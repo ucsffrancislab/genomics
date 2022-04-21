@@ -77,3 +77,7 @@ else
 	#	unnecessary as bowtie2.bash will chmod files if successfull?
 	#chmod a-w ${f}
 fi
+
+echo "Done"
+date
+
