@@ -94,16 +94,20 @@ else
 	
 	#s="B1-c1"
 	
+	#mkdir -p ${outbase}
+	#cd ${outbase}
+	cd ${OUT}
 	cellranger count \
 		--id ${basename} \
 		--sample ${basename}-10X \
 		--fastqs ${IN} \
-		--transcriptome /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/hg38_iav \
+		--transcriptome /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/GCA_000001405.14_GRCh37.p13_genomic-select_iav \
 		--localcores 16 \
 		--localmem 120 \
 		--localvmem 120
 	chmod -w ${f}
 	
+#		--transcriptome /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/hg38_iav \
 	
 	#cellranger mkref --genome=hg38_iav \
 	#--fasta=/francislab/data1/raw/20220303-FluPaper/hg38_iav.fa \

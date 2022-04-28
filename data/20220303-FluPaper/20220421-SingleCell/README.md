@@ -58,16 +58,86 @@ https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/l
 
 
 
+https://www.gencodegenes.org/human/release_38.html
+https://www.gencodegenes.org/human/release_19.html
+
+
 https://www.fludb.org/brc/fluStrainDetails.spg?strainName=A/California/07/2009(H1N1)&decorator=influenza
 
 ```
 #cat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa /francislab/data1/raw/20220303-FluPaper/Influenza_A_virus_A_California_04_2009_H1N1/?/*fa > ${PWD}/hg38_iav.fa
+#cat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa > ${PWD}/hg38_iav.fa
+#awk -F. '{print $1}' /francislab/data1/raw/20220303-FluPaper/Influenza_A_virus_A_California_04_2009_H1N1/?/*fa >> ${PWD}/hg38_iav.fa
 
 
-cat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa > ${PWD}/hg38_iav.fa
+#wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+#mkdir GCF_000001405.40_GRCh38.p14_genomic/
+#faSplit byname GCF_000001405.40_GRCh38.p14_genomic.fna.gz GCF_000001405.40_GRCh38.p14_genomic/
 
-awk -F. '{print $1}' /francislab/data1/raw/20220303-FluPaper/Influenza_A_virus_A_California_04_2009_H1N1/?/*fa >> ${PWD}/hg38_iav.fa
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.29_GRCh38.p14/GCA_000001405.29_GRCh38.p14_genomic.fna.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.29_GRCh38.p14/GCA_000001405.29_GRCh38.p14_genomic.gff.gz
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.29_GRCh38.p14/GCA_000001405.29_GRCh38.p14_genomic.gtf.gz
+mkdir GCA_000001405.29_GRCh38.p14_genomic
+faSplit byname GCA_000001405.29_GRCh38.p14_genomic.fna.gz GCA_000001405.29_GRCh38.p14_genomic/
+
+mkdir GCA_000001405.29_GRCh38.p14_genomic-select
+
+
+
+
+
+
+
+#hg19 has the appropriate matching alternates
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.14_GRCh37.p13/GCA_000001405.14_GRCh37.p13_genomic.fna.gz
+mkdir GCA_000001405.14_GRCh37.p13_genomic
+faSplit byname GCA_000001405.14_GRCh37.p13_genomic.fna.gz GCA_000001405.14_GRCh37.p13_genomic/
+
+mkdir GCA_000001405.14_GRCh37.p13_genomic-select
+cd GCA_000001405.14_GRCh37.p13_genomic-select
+for a in $( samtools view -H /francislab/data1/raw/20220303-FluPaper/PRJNA736483/SRR14773640/HMN83551_alignment_bam.bam | grep "SN:GL" | awk -F: '{print $2}' | awk '{print $1}' ); do echo $a ; ls ../GCA_000001405.14_GRCh37.p13_genomic/${a}.fa; ln -s ../GCA_000001405.14_GRCh37.p13_genomic/${a}.fa; done
+
+zcat ../GCA_000001405.14_GRCh37.p13_genomic.fna.gz | grep "^>" > sequences.txt
+
+grep "Homo sapiens chromosome" sequences.txt | grep "GRCh37 primary reference assembly"
+
+while read -r a c ; do echo $a; echo $c; sed "1s/${a}/${c}/" ../GCA_000001405.14_GRCh37.p13_genomic/${a}.fa > ${c}.fa ; done < <( grep "Homo sapiens chromosome" sequences.txt | grep "GRCh37 primary reference assembly" | sed -e 's/^>//' -e 's/ Homo sapiens chromosome//' -e 's/,.*$//' )
+
+sed '1s/J01415.2/MT/' ../GCA_000001405.14_GRCh37.p13_genomic/J01415.2.fa > MT.fa
+
+cd ..
+
+cat GCA_000001405.14_GRCh37.p13_genomic-select/[1-9].fa > GCA_000001405.14_GRCh37.p13_genomic-select.fa
+cat GCA_000001405.14_GRCh37.p13_genomic-select/1?.fa >> GCA_000001405.14_GRCh37.p13_genomic-select.fa
+cat GCA_000001405.14_GRCh37.p13_genomic-select/2?.fa >> GCA_000001405.14_GRCh37.p13_genomic-select.fa
+cat GCA_000001405.14_GRCh37.p13_genomic-select/[XY].fa >> GCA_000001405.14_GRCh37.p13_genomic-select.fa
+cat GCA_000001405.14_GRCh37.p13_genomic-select/MT.fa >> GCA_000001405.14_GRCh37.p13_genomic-select.fa
+cat GCA_000001405.14_GRCh37.p13_genomic-select/GL000*fa >> GCA_000001405.14_GRCh37.p13_genomic-select.fa
+
+cp GCA_000001405.14_GRCh37.p13_genomic-select.fa GCA_000001405.14_GRCh37.p13_genomic-select_iav.fa
+awk -F. '{print $1}' /francislab/data1/raw/20220303-FluPaper/Influenza_A_virus_A_California_04_2009_H1N1/?/*fa >> GCA_000001405.14_GRCh37.p13_genomic-select_iav.fa
+
+
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz
+zcat gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz | sed -e 's/^chrM/MT/' -e 's/^chr//' > gencode.v19.chr_patch_hapl_scaff.annotation.gtf
 ```
+
+
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=bcftools --time=20160 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/bcftools.${date}.txt ${PWD}/bcftools.bash
+```
+
+
+
+
+
+
+
+
 
 
 
@@ -124,11 +194,19 @@ Still get the warning. Confused as to what the inconsistency is.
 Gonna try adding the new sequences to the gtf file.
 
 ```
-tail -14 hg38_iav.fa.fai | awk 'BEGIN{FS=OFS="\t"}{ print $1,"ncbiRefSeq","transcript",0,$2,".","+",".","gene_id \""$1"\"; transcript_id \""$1"\"; gene_name \""$1"\";"; print $1,"ncbiRefSeq","exon",0,$2,".","+",".","gene_id \""$1"\"; transcript_id \""$1"\"; exon_number \""$1"\"; exon_id \""$1"\"; gene_name \""$1"\";"; }'
+tail -14 hg38_iav.fa.fai | awk 'BEGIN{FS=OFS="\t"}{ print $1,"ncbiRefSeq","transcript",1,$2,".","+",".","gene_id \""$1"\"; transcript_id \""$1"\"; gene_name \""$1"\";"; print $1,"ncbiRefSeq","exon",1,$2,".","+",".","gene_id \""$1"\"; transcript_id \""$1"\"; exon_number \""$1"\"; exon_id \""$1"\"; gene_name \""$1"\";"; }'
+```
 
 
-chr1	ncbiRefSeq	exon	14362	14829	.	-	.	gene_id "WASH7P"; transcript_id "NR_024540.1"; exon_number "1"; exon_id "NR_024540.1.1"; gene_name "WASH7P";
+Still! Cause it doesn't start with chr?
+Does it make any difference?
 
+```
+***** WARNING: File /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/souporcell/depth_merged.bed has inconsistent naming convention for record:
+FJ966080	1	632
+
+***** WARNING: File /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/souporcell/depth_merged.bed has inconsistent naming convention for record:
+FJ966080	1	632
 ```
 
 

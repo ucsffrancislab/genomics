@@ -37,7 +37,11 @@ set -x	#	print expanded command before executing it
 #--fasta=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 #--genes=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf \
 
-cellranger mkref --genome=hg38_iav --nthreads=16 --memgb=120 \
---fasta=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/hg38_iav.fa \
---genes=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/hg38.ncbiRefSeq.iav.gtf
+#cellranger mkref --genome=hg38_iav --nthreads=16 --memgb=120 \
+#--fasta=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/hg38_iav.fa \
+#--genes=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/hg38.ncbiRefSeq.iav.gtf
+
+cellranger mkref --genome=GCA_000001405.14_GRCh37.p13_genomic-select_iav --nthreads=16 --memgb=120 \
+--fasta=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/GCA_000001405.14_GRCh37.p13_genomic-select_iav.fa \
+--genes=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf
 

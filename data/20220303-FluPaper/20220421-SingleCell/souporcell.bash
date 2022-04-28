@@ -59,7 +59,12 @@ singularity exec --bind /francislab /francislab/data1/refs/singularity/souporcel
 	--skip_remap True \
 	--clusters 6
 
-#	trying again with full sample of all 4 L00?
+
+#	--skip_remap True \
+#	kinda curious what remapping will produce. looks like it leaves quite a few fq files
+
+
+#	trying again with full sample of all 4 L00?	 WORKED!?!?!?!
 #	--no_umi True \
 
 #	no_umi needed or no results at all followed by crash
