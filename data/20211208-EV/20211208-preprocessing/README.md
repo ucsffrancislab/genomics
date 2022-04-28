@@ -134,3 +134,11 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time=1440 --nodes=1
 ```
 
 
+
+
+
+```
+featureCounts -T 16 -a genes.gff -t transcript -g gene_name -o feature_counts.genes.noumi.tsv out_noumi/*.quality.format.t1.t3.notphiX.notviral.hg38.bam
+featureCounts -T 16 -a genes.gff -t transcript -g gene_name -o feature_counts.genes.umi.tsv out/*.quality.format.consolidate.t1.t2.t3.notphiX.hg38.bam
+
+```
