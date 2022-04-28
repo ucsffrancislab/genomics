@@ -27,13 +27,39 @@ From: ubuntu:20.04
 
 #	export VARIABLE
 
+#	#	add --no-home to singularity exec call to avoid R using ~/.Renviron and ~/.Rprofile
+#	export R_LIBS=/usr/local/lib/R/library
 
 %labels
 
-   AUTHOR George.Wendt@ucsf.edu
+	AUTHOR George.Wendt@ucsf.edu
 
 
 %post
+
+#	mkdir -p /usr/local/lib/R/etc
+#	echo "R_LIBS=/usr/local/lib/R/library" > /usr/local/lib/R/etc/Renviron.site
+#	echo 'local({' > /usr/local/lib/R/etc/Rprofile.site
+#	echo '	r <- getOption("repos")' >> /usr/local/lib/R/etc/Rprofile.site
+#	echo '	r["CRAN"] <- "https://cloud.r-project.org/"' >> /usr/local/lib/R/etc/Rprofile.site
+#	echo '	options(repos = r)' >> /usr/local/lib/R/etc/Rprofile.site
+#	echo '})' >> /usr/local/lib/R/etc/Rprofile.site
+
+
+#cat ~/.Renviron 
+#R_LIBS=~/.R
+#R_LIBS_USER=~/.R
+##R_LIBS="/Users/jakewendt/.R"
+##R_LIBS_USER="/Users/jakewendt/.R"
+##R_LIBS_SITE="/Users/jakewendt/.R"
+#[gwendt@c4-dev1 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220309-SQuIRE-test]$ cat ~/.Rprofile 
+#local({
+#	r <- getOption("repos")
+##	r["CRAN"] <- "http://cran.cnr.berkeley.edu/"
+#	r["CRAN"] <- "https://cloud.r-project.org/"
+#	options(repos = r)
+#})
+
 
 	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 	export TZ=America/Phoenix
@@ -54,7 +80,10 @@ From: ubuntu:20.04
 #	apt-get -y install libxml2-dev #	python-configparser
 #	apt-get -y install libpcre3-dev	#	needed for R-3.4.1 install (with pcre 1)
 
-	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev libssl-dev libxml2-dev libpcre2-dev libpcre3-dev libreadline-dev libjpeg-dev zlib1g-dev libpng-dev
+	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl \
+		bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev \
+		libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev \
+		libssl-dev libxml2-dev libpcre2-dev libpcre3-dev libreadline-dev libjpeg-dev zlib1g-dev libpng-dev
 
 	apt-get -y install software-properties-common
 	add-apt-repository universe
