@@ -109,12 +109,15 @@ else
 	#--fasta=/francislab/data1/raw/20220303-FluPaper/hg38_iav.fa \
 	#--genes=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf \
 	#--nthreads=32 --memgb=240
+
+#		--fasta /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/hg38_iav.fa \
+#		--common_variants /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/common_variants_grch38.vcf \
 	
 	singularity exec --bind /francislab /francislab/data1/refs/singularity/souporcell_latest.sif souporcell_pipeline.py \
 		--bam ${OUT}/${basename}/outs/possorted_genome_bam.bam \
-		--fasta /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/hg38_iav.fa \
 		--barcodes ${OUT}/${basename}/outs/filtered_feature_bc_matrix/barcodes.tsv.gz \
-		--common_variants /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/common_variants_grch38.vcf \
+		--fasta /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/GCA_000001405.14_GRCh37.p13_genomic-select.fa \
+		--common_variants /francislab/data1/working/20220303-FluPaper/20220421-SingleCell/common_variants_hg19.vcf \
 		--threads 16 \
 		--out_dir ${outbase} \
 		--skip_remap True \
@@ -139,6 +142,6 @@ exit
 
 mkdir -p /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-30%1 --job-name="count" --output="/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/logs/souporcell.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/souporcell_array.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-2%1 --job-name="soc" --output="/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/logs/souporcell.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/souporcell_array.bash
 
 
