@@ -119,9 +119,7 @@ with `souporcell_cluster_genotypes_to_SNP_lists.bash`
 ```
 b=1
 c=1
-for s in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
 ./souporcell_cluster_genotypes_to_SNP_lists.bash out/B${b}-c${c}/souporcell/cluster_genotypes.vcf
-done
 
 out/B1-c1/souporcell/0.snps
 out/B1-c1/souporcell/1.snps
