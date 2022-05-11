@@ -278,3 +278,32 @@ souporcell_pipeline.py --bam /francislab/data1/raw/20220303-FluPaper/B1-c1/outs/
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+```
+ln -s /francislab/data1/raw/20220303-FluPaper/inputs/2_calculate_residuals_and_DE_analyses/individual_meta_data_for_GE_with_scaledCovars_with_CTC.txt metadata.csv
+
+b=3
+c=2
+for s in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
+./souporcell_cluster_genotypes_to_SNP_lists.bash out/B${b}-c${c}/souporcell/cluster_genotypes.vcf 
+./extract -v=out/${s}.call.vcf.gz -p=out/B${b}-c${c}/souporcell/positions > out/B${b}-c${c}/souporcell/${s}.snps
+done
+
+for i in 0 1 2 3 4 5 ; do
+for s in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
+echo -n "${i} - ${s} - "
+sdiff -s out/B${b}-c${c}/souporcell/${i}.snps out/B${b}-c${c}/souporcell/${s}.snps | wc -l
+done ; echo ; done
+
+```
+
