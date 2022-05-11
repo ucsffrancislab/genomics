@@ -294,16 +294,19 @@ ln -s /francislab/data1/raw/20220303-FluPaper/inputs/2_calculate_residuals_and_D
 
 b=3
 c=2
-for s in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
 ./souporcell_cluster_genotypes_to_SNP_lists.bash out/B${b}-c${c}/souporcell/cluster_genotypes.vcf 
+for s in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
 ./extract -v=out/${s}.call.vcf.gz -p=out/B${b}-c${c}/souporcell/positions > out/B${b}-c${c}/souporcell/${s}.snps
 done
 
+for b in 1 2 3 4 ; do
+for c in 1 2 ; do
+echo "B${b} c${c}"
 for i in 0 1 2 3 4 5 ; do
 for s in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
 echo -n "${i} - ${s} - "
 sdiff -s out/B${b}-c${c}/souporcell/${i}.snps out/B${b}-c${c}/souporcell/${s}.snps | wc -l
-done ; echo ; done
+done ; echo ; done ; done ; done
 
 ```
 
