@@ -1,4 +1,7 @@
 
+#	What I Did
+
+##	Raw
 
 The fastq files were renamed as links to suit the cellranger expectations.
 
@@ -13,6 +16,8 @@ ls -1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/fastq/B1-c
 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/fastq/B1-c1-10X_S0_L004_R1_001.fastq.gz
 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/fastq/B1-c1-10X_S0_L004_R2_001.fastq.gz
 ```
+
+##	cellranger
 
 
 cellranger was run (using hg18/GRCh37 because the WGS was with hg19)
@@ -30,6 +35,8 @@ cellranger count \
 	--localmem 120 \
 	--localvmem 120
 ```
+
+##	souporcell
 
 souporcell was run
 
@@ -60,6 +67,7 @@ GT : genotype, encoded as allele values separated by either of / or |. The allel
 * | : genotype phased
 
 
+##	VCF
 
 Generating `out/B1-c1/souporcell/cluster_genotypes.vcf`
 
@@ -190,6 +198,8 @@ head out/B1-c1/souporcell/HMN83551.snps
 1	567726	T/T
 
 ```
+
+##	Comparison and Identification
 
 
 Not all of the variant positions found in the souporcell exist in the WGS VCF files.
@@ -609,3 +619,320 @@ B4 c2
 
 
 ```
+
+
+
+```
+wc -l out/B*-c*/souporcell/positions
+  255036 out/B1-c1/souporcell/positions
+  264418 out/B1-c2/souporcell/positions
+  256192 out/B2-c1/souporcell/positions
+  222611 out/B2-c2/souporcell/positions
+  184901 out/B3-c1/souporcell/positions
+  221335 out/B3-c2/souporcell/positions
+  241032 out/B4-c1/souporcell/positions
+  183124 out/B4-c2/souporcell/positions
+```
+
+
+
+##	Barcodes
+
+
+
+```
+wc -l out/B*-c*/souporcell/clusters.tsv
+    7166 out/B1-c1/souporcell/clusters.tsv
+    8548 out/B1-c2/souporcell/clusters.tsv
+    7043 out/B2-c1/souporcell/clusters.tsv
+    8048 out/B2-c2/souporcell/clusters.tsv
+    6864 out/B3-c1/souporcell/clusters.tsv
+    6573 out/B3-c2/souporcell/clusters.tsv
+    5450 out/B4-c1/souporcell/clusters.tsv
+    7627 out/B4-c2/souporcell/clusters.tsv
+    8377 out/B5-c1/souporcell/clusters.tsv
+    9174 out/B5-c2/souporcell/clusters.tsv
+   74870 total
+
+
+head out/B1-c1/souporcell/clusters.tsv
+barcode	status	assignment	log_prob_singleton	log_prob_doublet	cluster0	cluster1	cluster2	cluster3	cluster4	cluster5
+AAACCTGAGATCGGGT-1	singlet	3	-343.6429272704287	-461.3404226068829	-1432.866719306878	-1138.2397500324737	-1479.010488376096	-343.6429272704287	-1117.691421178331	-1025.9831980984527
+AAACCTGAGCCAGAAC-1	singlet	5	-255.88442650102763	-380.6323239290461	-1013.5583470129377	-918.1108921409218	-985.0782731913291	-759.938456962276	-766.4578240320657	-255.88442650102763
+AAACCTGAGCGTGAAC-1	singlet	4	-505.1085743377245	-713.707236102851	-2128.8263850464587	-1803.7861659256837	-1967.7092385557153	-1809.6304841435153	-505.1085743377245	-1524.4248041980777
+AAACCTGCAAGCCGCT-1	doublet	5/4	-737.8765412391268	-616.9801498824072	-1507.6586532532453	-1322.601686490331	-1370.9845216102033	-1153.491151698463	-930.7596740764774	-737.8765412391268
+AAACCTGCACTTGGAT-1	doublet	4/3	-1502.5516110515669	-1099.3011895741251	-3127.075095343798	-2583.425301016553	-3173.793776978976	-1653.7664511884316	-1502.5516110515669	-2264.5328233331556
+AAACCTGCAGACGCAA-1	singlet	3	-340.5992440127683	-446.5526972425467	-1393.503242315694	-1179.4089671256565	-1463.7158289994427	-340.5992440127683	-1057.8936389526984	-960.8282105371811
+AAACCTGGTAGAGCTG-1	singlet	0	-331.2426341283651	-489.2358273081586	-331.2426341283651	-1422.1725286451936	-1080.2217206822816	-1397.0278235378053	-1416.649580772387	-1315.0149618588116
+AAACCTGGTATAATGG-1	singlet	4	-404.597011929782	-510.5097639015006	-1507.329619633326	-1176.3317309232293	-1495.6847038341687	-1162.6857832807136	-404.597011929782	-1062.4567131590597
+AAACCTGGTCGTCTTC-1	singlet	3	-334.6457978414619	-459.9024976337097	-1350.7472018260403	-1214.9605045147043	-1375.824750486277	-334.6457978414619	-1082.676512645683	-1046.2344313210685
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="splitbam" --output="${PWD}/split_bam_into_barcode_bams.$( date "+%Y%m%d%H%M%S" ).log" --time=4320 --nodes=1 --ntasks=4 --mem=30G ${PWD}/split_bam_into_barcode_bams.bash ${PWD}/out/B1-c1/outs/possorted_genome_bam.bam
+```
+
+
+Still running but currently ...
+
+```
+ll ${PWD}/out/B1-c1/outs/possorted_genome_bam.bam_barcodes | wc -l
+
+321412
+```
+
+`split_bam_into_barcode_bams.bash` killed after 3 days of running. Seriously, 3 days!
+
+
+
+So many barcodes.
+
+
+
+
+
+
+```
+
+
+wc -l ${PWD}/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAG*
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAACCAT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAACCGC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAACCTA-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAACGAG-1
+      11 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAACGCC-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAAGTGG-1
+      15 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAACAACT-1
+      16 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAACTCGG-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAGAAGC-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAGATTC-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAGCCCA-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAGGCCT-1
+      18 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAGGGTA-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAAGGTGA-1
+      10 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAATAGGG-1
+       8 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAATCTCC-1
+      21 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAATGTGT-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAATGTTG-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACAAAGG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACACGAC-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACAGACC-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACGCACA-1
+      13 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACGCTTT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACTAAGT-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACTAGAT-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACTCGGA-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGACTGGGT-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGAACAG-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGACGAA-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGACTAT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGACTTA-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGAGCTC-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGCCTAG-1
+      27 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGCTGCA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGGGATA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGGTTAT-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGTAAGG-1
+      12 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGTAATC-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGTACAT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGTCGGT-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGTCTGG-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGAGTGAGA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATATGCA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATCCCAT-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATCCTGT-1
+      17 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATCGATA-1
+    3975 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATCGGGT-1
+      22 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATGAGAG-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATGCCTT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATGCGAC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATGGGTC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATGTAAC-1
+      10 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCAATATG-1
+      10 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCAGACTG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCAGATCG-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCAGCGTA-1
+      50 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCAGGCTA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCAACAG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCACCTG-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCACTAT-1
+    2691 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCAGAAC-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCAGGAT-1
+      20 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCAGTAG-1
+      10 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCAGTTT-1
+      11 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCATCGC-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCCAATT-1
+      15 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCTATGT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCTCGTG-1
+      14 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCTTGAT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGAGAAA-1
+      12 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGATAGC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGATCCC-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGATGAC-1
+    1529 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGATTCT-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGCCTTG-1
+      23 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGCTCCA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGGATCA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTCAAG-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTCTAT-1
+    5722 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTGAAC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTGAGT-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTTCCG-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTTGCC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTAACAA-1
+      16 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTACCTA-1
+      13 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTAGGCA-1
+      12 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTAGTGG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTATGCT-1
+      14 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTCCTTC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTCTCGG-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTGCCCA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTGCGAA-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTGTTCA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCTTATCG-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAATCGC-1
+      13 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAATGGA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAATTAC-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGACAGAA-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGACATTA-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAGCGAG-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAGCGTT-1
+      20 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAGTACC-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAGTAGA-1
+      11 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGAGTTTA-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGATATAC-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGATGGTC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGATTCGG-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCAGTCA-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCATGGT-1
+       9 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCGATAC-1
+      21 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCGCTCT-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCGTACA-1
+      10 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCTAGAC-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGCTAGGT-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGGCACTA-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGGCATGT-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGGCTTCC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGGTCGAT-1
+      15 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGGTTTCT-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGTAGCTG-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGTCATCT-1
+      25 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGTGCTAG-1
+      10 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGTGGGTT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGTGTGGT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGGTTACCT-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTAACCCT-1
+      11 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTAAGTAC-1
+      17 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTACACCT-1
+      11 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTACCGGA-1
+      23 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTACGATA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTACGCCC-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTACGCGA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTACTTGC-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTAGATGT-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTAGCCGA-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTATCGAA-1
+       3 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTATCTCG-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTATGACA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTATTGGA-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCAAGCG-1
+      21 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCAATAG-1
+      21 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCATGCT-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCCAGGA-1
+      12 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCCATAC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCCCACG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCCGGTC-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCCGTAT-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCGAGTG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTCGTACT-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGAACAT-1
+       7 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGAACGC-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGAAGTT-1
+      17 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGACATA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGATCGG-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGCGTGA-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGGACGT-1
+       9 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGGAGAA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGGGTTG-1
+      20 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGGTAAT-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGGTAGC-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGGTCCC-1
+      21 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGTACCT-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGTACGG-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGTCCAT-1
+      17 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTGTGAAT-1
+       4 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTTAAGTG-1
+       2 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTTATCGC-1
+       6 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTTCCACA-1
+       1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTTCGCGC-1
+       5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGTTGTAGA-1
+
+
+
+So many barcodes with few reads.
+Souporcell discards these.
+
+
+```
+head ${PWD}/out/B1-c1/souporcell/barcodes.tsv 
+AAACCTGAGATCGGGT-1
+AAACCTGAGCCAGAAC-1
+AAACCTGAGCGTGAAC-1
+AAACCTGCAAGCCGCT-1
+AAACCTGCACTTGGAT-1
+AAACCTGCAGACGCAA-1
+AAACCTGGTAGAGCTG-1
+AAACCTGGTATAATGG-1
+AAACCTGGTCGTCTTC-1
+AAACCTGGTGATGCCC-1
+
+```
+
+
+
+
+```
+grep "^AAACCTG" ${PWD}/out/B1-c1/souporcell/barcodes.tsv
+AAACCTGAGATCGGGT-1
+AAACCTGAGCCAGAAC-1
+AAACCTGAGCGTGAAC-1
+AAACCTGCAAGCCGCT-1
+AAACCTGCACTTGGAT-1
+AAACCTGCAGACGCAA-1
+AAACCTGGTAGAGCTG-1
+AAACCTGGTATAATGG-1
+AAACCTGGTCGTCTTC-1
+AAACCTGGTGATGCCC-1
+AAACCTGGTTTGTTGG-1
+AAACCTGTCAAAGACA-1
+AAACCTGTCACATAGC-1
+AAACCTGTCACCACCT-1
+AAACCTGTCCATTCTA-1
+AAACCTGTCTGCTGTC-1
+AAACCTGTCTGGTGTA-1
+AAACCTGTCTTGTTTG-1
+
+wc -l ${PWD}/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTG* | awk '$1 > 2000'
+    3975 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGATCGGGT-1
+    2691 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCCAGAAC-1
+    5722 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGAGCGTGAAC-1
+    4303 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGCAAGCCGCT-1
+   10541 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGCACTTGGAT-1
+    4839 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGCAGACGCAA-1
+    3632 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGGTAGAGCTG-1
+    4188 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGGTATAATGG-1
+    3471 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGGTCGTCTTC-1
+    4689 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGGTGATGCCC-1
+    3334 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGGTTTGTTGG-1
+    4984 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCAAAGACA-1
+    3599 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCACATAGC-1
+    9967 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCACCACCT-1
+    3623 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCCATTCTA-1
+    5485 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCTGCTGTC-1
+    4020 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCTGGTGTA-1
+    8670 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTGTCTTGTTTG-1
+   97733 total
+```
+
+
