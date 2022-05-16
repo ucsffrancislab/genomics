@@ -310,3 +310,12 @@ done ; echo ; done ; done ; done
 
 ```
 
+
+
+No HMN52545 WGS.
+```
+create_compare_matrices.bash
+```
+
+
+
