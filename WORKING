@@ -1,27 +1,12 @@
 
-
-/francislab/data2/working/20220303-FluPaper/20220421-SingleCell
-
-
-
-
-
 Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
 
+/francislab/data2/working/20220303-FluPaper/20220421-SingleCell
 
 TCGA alignment / TE pipeline testing / Gene count normalization
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220405-test-subset-xTea
-
-
-Download the RNASeq Data from NIH - WAITING ON IT TO PREP BUCKET TO RECEIVE
-/francislab/data1/working/20220303-FluPaper
-
-
-Aggregate k=21 (gonna try AWS) - WAITING ON DECISION
-/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
-
 
 Alternate TE analyses
 Develope singularity containers for each, then test
@@ -33,6 +18,13 @@ Develope singularity containers for each, then test
 
 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20220317-TEtools-test
 
+
+
+
+
+
+Aggregate k=21 (gonna try AWS) - WAITING ON DECISION
+/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
 
 k=31 - A succeeded. Trying B again. Then C. - WAITING ON COMPLETION
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
