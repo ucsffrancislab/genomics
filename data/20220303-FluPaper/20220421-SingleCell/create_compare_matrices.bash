@@ -16,15 +16,19 @@ fi
 
 for b in $( seq 1 15 ); do
 for c in 1 2 ; do
-	echo "B${b}_c${c}"
+	echo "B${b}-c${c}"
 
-	matrix="out/B${b}_c${c}.csv"
+	matrix="out/B${b}-c${c}.csv"
 
 	echo -n "sample" > ${matrix}
 	for i in $( seq 0 5 ) ; do
 		echo -n ",${i}" >> ${matrix}
 	done
 	echo  >> ${matrix}
+
+
+	#	Note that the metadata uses an underscore and not a dash
+
 
 	for sample in $( grep "B${b}_c${c}" metadata.csv | awk -F, '{print $2}' ) ; do
 		echo -n "${sample}" >> ${matrix}

@@ -36,6 +36,12 @@ cellranger count \
 	--localvmem 120
 ```
 
+
+cellranger filters down the barcodes.
+souporcell does the clustering.
+
+
+
 ##	souporcell
 
 souporcell was run
@@ -636,6 +642,14 @@ wc -l out/B*-c*/souporcell/positions
 
 
 
+
+```
+create_compare_matrices.bash
+```
+
+
+
+
 ##	Barcodes
 
 
@@ -935,4 +949,68 @@ wc -l ${PWD}/out/B1-c1/outs/possorted_genome_bam.bam_barcodes/AAACCTG* | awk '$1
    97733 total
 ```
 
+
+
+
+
+
+
+
+
+
+```
+mkdir -p /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/logs
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-30%1 --job-name="splitbam" --output="${PWD}/logs/splitbam.${date}-%A_%a.out" --time=10080 --nodes=1 --ntasks=4 --mem=30G --gres=scratch:500G ${PWD}/split_bam_into_barcode_bams_scratch.bash
+```
+
+Each splitting takes a couple days.
+
+
+
+```
+for b in $( seq 1 15 ) ; do
+for c in 1 2 ; do
+link_barcodes_in_subsample.bash B${b}-c${c}
+done
+done
+
+
+for b in $( seq 1 15 ) ; do
+for c in 1 2 ; do
+link_subsamples_to_subject.bash B${b}-c${c}
+done
+done
+```
+
+
+1 subject was not included in the WGS.
+
+
+
+```
+ln -s /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B7-c1/souporcell/1 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B7-c1/souporcell/HMN52545
+
+ln -s /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B7-c2/souporcell/5 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B7-c2/souporcell/HMN52545
+```
+
+
+
+
+
+
+
+
+
+
+
+
+https://broadinstitute.github.io/2020_scWorkshop/data-wrangling-scrnaseq.html
+
+BiocManager::install(c("devtools","Seurat","Matrix","pryr","gdata","dplyr"),update = TRUE, ask = FALSE)
+
+
+
+
+created jupyter notebook to develope and explore
 
