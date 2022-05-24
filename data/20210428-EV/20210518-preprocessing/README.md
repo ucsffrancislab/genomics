@@ -45,3 +45,23 @@ curl -netrc -X MKCOL "${BOX}/"
 
 for f in *csv ;do echo $f; curl -netrc -T $f "${BOX}/" ; done
 ```
+
+
+
+
+
+
+
+featureCounts -t transcript -a /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf -o SFHH005.cutadapt2.gt30.bowtie2.hg38.ncbiRefSeq.transcript.gene_id.tsv SFHH005*.cutadapt2.gt30.bowtie2.hg38.bam
+
+
+
+for f in output/SFHH005*.cutadapt2.gt30.fastq.gz ; do
+echo $f
+bowtie2.bash --no-unal -x pBABE_EGFRvIII -q -U $f -o ${f%%.fastq.gz}.pBABE_EGFRvIII.bam
+done
+
+
+
+
+
