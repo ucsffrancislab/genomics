@@ -15,7 +15,8 @@ fi
 set -x  #       print expanded command before executing it
 
 
-clusters=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/$1/souporcell/clusters.tsv
+#clusters=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/$1/souporcell/clusters.tsv
+clusters=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/$1/souporcell_singlets_and_seurat_filtered_barcodes
 
 barcode_bam_dir=/francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/$1/outs/possorted_genome_bam.bam_barcodes
 
@@ -25,7 +26,8 @@ for i in $( seq 0 5) ; do
 done
 
 
-awk -v idir=${barcode_bam_dir} -v odir=${out_dir} -F"\t" '($2 == "singlet"){print "ln -s "idir"/"$1".bam "odir"/"$3"/"}' ${clusters} | bash
+#awk -v idir=${barcode_bam_dir} -v odir=${out_dir} -F"\t" '($2 == "singlet"){print "ln -s "idir"/"$1".bam "odir"/"$3"/"}' ${clusters} | bash
+awk -v idir=${barcode_bam_dir} -v odir=${out_dir} -F"\t" '{print "ln -s "idir"/"$1".bam "odir"/"$3"/"}' ${clusters} | bash
 
 
 echo "Done"
