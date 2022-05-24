@@ -319,3 +319,41 @@ create_compare_matrices.bash
 
 
 
+
+
+```
+#comm --check-order -12 out/B${b}-c${c}/outs/filtered_feature_bc_matrix.seurat_barcodes <( awk '( ( NR > 1 ) && ( $2 == "singlet" ) ){print $1}' out/B${b}-c${c}/souporcell/clusters.tsv ) > out/B${b}-c${c}/souporcell_singlets_and_seurat_filtered_barcodes
+
+for b in $( seq 1 15 ) ; do
+for c in 1 2 ; do
+echo "B${b} c${c}"
+awk '(FNR==NR){
+  barcodes[$1]++
+  next
+}
+(FNR!=NR){
+  if( ( $1 in barcodes ) && ( $2 == "singlet" ) ){
+    print
+  }
+}' out/B${b}-c${c}/outs/filtered_feature_bc_matrix.seurat_barcodes out/B${b}-c${c}/souporcell/clusters.tsv > out/B${b}-c${c}/souporcell_singlets_and_seurat_filtered_barcodes
+done ; done
+```
+
+
+Should done this before splitting the bam file. A little trickier now.
+
+Need to keep the cluster column
+
+Need awk to load the seurat barcodes and then only print the souporcell line if is singlet and barcode is in seurat list.
+
+ONLY LINK THOSE BARCODES IN THE souporcell_singlets_and_seurat_filtered_barcodes FILE
+
+
+
+
+
+
+
+
+
+
