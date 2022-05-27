@@ -356,4 +356,47 @@ ONLY LINK THOSE BARCODES IN THE souporcell_singlets_and_seurat_filtered_barcodes
 
 
 
+```
+featureCounts.bash -a /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf -g gene_name -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c2/outs/possorted_genome_bam.bam_barcodes.counts.tsv /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B1-c2/outs/possorted_genome_bam.bam_barcodes/*.bam
+
+```
+
+
+Had to open and save the SOUPORCELL_meta_data.csv file
+```
+:set ff=unix
+```
+
+
+```
+for f in out/B*-c?/souporcell/clusters.tsv ; do echo $f; awk -F"\t" '(NR>1 && $2 == "singlet"){print $1 > "'$f'."$3 }' $f; done
+for f in *tsv ; do echo $f; awk -F"\t" '(NR>1 && $2 == "singlet"){print $1 > "'$f'."$3 }' $f; done
+
+for b in $( seq 1 15 ) ; do for c in 1 2 ; do awk 'BEGIN{FS=",";OFS="\t"}(NR>1){maxpos=0;maxvalue=0;for(i=2;i<=NF;i++){if($i>maxvalue){maxpos=i-2;maxvalue=$i}};print "'B${b}_c${c}'",NR-2,maxpos}' B${b}-c${c}_cluster_translation.csv ; done; done > cluster_cluster.tsv 
+
+
+while read -r batch author my ; do
+author_subject=$( grep "^${batch},${author}," from_authors/SOUPORCELL_meta_data.csv | cut -d, -f3 )
+my_subject=$( grep "^${batch},${my}," translation.csv | cut -d, -f3 )
+if [ ${author_subject} == ${my_subject} ] ; then
+echo "${batch} - ${author_subject} : ${my_subject} - SAME"
+else
+echo "${batch} - ${author_subject} : ${my_subject} - DIFFERENT"
+fi
+done < cluster_cluster.tsv
+```
+
+# - ${author_subject} - ${my_subject}"
+
+
+
+
+```
+module load r
+R
+
+allCells_integrated <- readRDS("/francislab/data1/raw/20220303-FluPaper/inputs/1_calculate_pseudobulk/mergedAllCells_withCellTypeIdents_CLEAN.rds")
+
+write.csv(allCells_integrated@meta.data,"./mergedAllCells_withCellTypeIdents_CLEAN.csv",quote=FALSE)
+```
 

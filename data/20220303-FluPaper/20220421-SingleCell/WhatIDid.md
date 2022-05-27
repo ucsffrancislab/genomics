@@ -1007,10 +1007,76 @@ ln -s /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B7-c2/
 
 https://broadinstitute.github.io/2020_scWorkshop/data-wrangling-scrnaseq.html
 
+```
 BiocManager::install(c("devtools","Seurat","Matrix","pryr","gdata","dplyr"),update = TRUE, ask = FALSE)
-
-
-
+```
 
 created jupyter notebook to develope and explore
+
+
+
+seurat to create separate barcode lists
+
+
+create barcode lists from barcodes in both cellranger/souporcell and seurat lists
+
+
+
+Author provided souporcell output `clusters.tsv`. 
+While the numbers were different. 
+The collection of barcodes were the same.
+Identification of individual samples are the same!
+
+
+
+
+
+
+Haven't figured out how they did the cell identification, but we have the results already.
+
+```
+module load r
+R
+
+allCells_integrated <- readRDS("/francislab/data1/raw/20220303-FluPaper/inputs/1_calculate_pseudobulk/mergedAllCells_withCellTypeIdents_CLEAN.rds")
+
+write.csv(allCells_integrated@meta.data,"./mergedAllCells_withCellTypeIdents_CLEAN.csv",quote=FALSE)
+
+quit()
+
+head mergedAllCells_withCellTypeIdents_CLEAN.csv
+,orig.ident,nCount_RNA,nFeature_RNA,batchID,percent.mt,SOC_status,SOC_indiv_ID,SOC_infection_status,SOC_genetic_ancestry,CEU,YRI,nCount_SCT,nFeature_SCT,integrated_snn_res.0.5,cluster_IDs,celltype,sample_condition
+B1_c1_AAACCTGAGATCGGGT,B1_c1,1695,714,B1_c1,1.82890855457227,singlet,HMN83551,NI,EUR,0.99999,1e-05,1641,714,1,1,CD4_T,HMN83551_NI
+B1_c1_AAACCTGCAGACGCAA,B1_c1,2116,822,B1_c1,3.92249527410208,singlet,HMN83551,NI,EUR,0.99999,1e-05,1826,822,1,1,CD4_T,HMN83551_NI
+B1_c1_AAACCTGGTAGAGCTG,B1_c1,1979,597,B1_c1,1.46538655886812,singlet,HMN83558,NI,AFR,0.129114,0.870886,1729,597,0,0,CD4_T,HMN83558_NI
+B1_c1_AAACCTGGTCGTCTTC,B1_c1,1805,680,B1_c1,3.37950138504155,singlet,HMN83551,NI,EUR,0.99999,1e-05,1680,680,0,0,CD4_T,HMN83551_NI
+B1_c1_AAACCTGGTGATGCCC,B1_c1,1966,799,B1_c1,2.03458799593082,singlet,HMN83552,NI,EUR,0.99999,1e-05,1763,799,0,0,CD4_T,HMN83552_NI
+B1_c1_AAACCTGGTTTGTTGG,B1_c1,1742,749,B1_c1,3.09988518943743,singlet,HMN83551,NI,EUR,0.99999,1e-05,1670,749,6,6,CD4_T,HMN83551_NI
+B1_c1_AAACCTGTCAAAGACA,B1_c1,2588,945,B1_c1,6.49149922720247,singlet,HMN83551,NI,EUR,0.99999,1e-05,1940,933,1,1,CD4_T,HMN83551_NI
+B1_c1_AAACCTGTCACATAGC,B1_c1,1590,693,B1_c1,2.89308176100629,singlet,HMN83551,NI,EUR,0.99999,1e-05,1586,693,2,2,CD8_T,HMN83551_NI
+B1_c1_AAACCTGTCCATTCTA,B1_c1,2292,973,B1_c1,4.27574171029668,singlet,HMN83551,NI,EUR,0.99999,1e-05,1903,949,4,4,monocytes,HMN83551_NI
+```
+
+
+We've now run the raw data through cell ranger which produced a bam with all reads.
+We used the filtered_feature_bc_matrix to identify good barcodes.
+We then extracted each good barcode into a separate bam file.
+
+
+
+
+Each bam will now be converted into a fastq file. 
+Perhaps should have skipped the separate bam and gone directly to fastq.
+Souporcell and seurat added more barcode filters.
+
+
+Use our filtered barcodes and their metadata, perhaps as another filter but we have fewer but not necessarily a subset.
+
+All barcode fastq files will be linked in the format B1_c1_AAACCTGTCAAAGACA and then run through REdiscoverTE.
+
+DE by race, cell type, and infection status.
+
+
+
+
 
