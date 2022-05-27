@@ -24,6 +24,15 @@ to use for normalization
 
 
 
+```
+grep 'gene_id "ACTB"' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf > subset.gtf
+grep 'gene_id "ALB"' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf >> subset.gtf
+grep 'gene_id "B2M"' /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/genes/hg38.ncbiRefSeq.gtf >> subset.gtf
+
+
+```
+
+
 
 ```
 date=$( date "+%Y%m%d%H%M%S" )
@@ -31,6 +40,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fc" --out
 
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fc" --output="${PWD}/featureCount.${date}.out" --time=4320 --nodes=1 --ntasks=64 --mem=490G ~/.local/bin/featureCounts.bash -a ${PWD}/subset.gtf -t transcript -g gene_name -T 64 -o ${PWD}/featureCounts.ncbiRefSeq.transcript.csv ${PWD}/out/*bam
+
 ```
 
 
@@ -45,4 +55,14 @@ curl -netrc -X MKCOL "${BOX}/"
 
 curl -netrc -T featureCounts.ncbiRefSeq.transcript.csv "${BOX}/"
 ```
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fc-t" --output="${PWD}/featureCount.${date}.out" --time=4320 --nodes=1 --ntasks=64 --mem=490G ~/.local/bin/featureCounts.bash -a ${PWD}/subset.gtf -t transcript -g gene_name -T 64 -o ${PWD}/featureCounts.ncbiRefSeq.subset.transcript.csv ${PWD}/out/*bam
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fc-x" --output="${PWD}/featureCount.${date}.out" --time=4320 --nodes=1 --ntasks=64 --mem=490G ~/.local/bin/featureCounts.bash -a ${PWD}/subset.gtf -t exon -g gene_name -T 64 -o ${PWD}/featureCounts.ncbiRefSeq.subset.exon.csv ${PWD}/out/*bam
+```
+
+
 
