@@ -10,15 +10,16 @@ basedir=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20220524-iMOKA
 
 #set -x
 
-#for k in 11 21 31 ; do
-for k in 31 ; do
+for k in 11 21 31 ; do
 	for subset in 80a 80b 80c ; do
 		echo $k $subset
 		dir=${basedir}/IDH.${k}.${subset}
 
 		#	Create a list of samples not included in the model creation that we wish to predict.
 		#diff -d ${basedir}/create_matrix.tsv <( sort ${basedir}/create_matrix.${subset}.tsv) | grep "^< " | sed 's/^< //' | sed "s'${basedir}'${dir}'" > ${dir}/predict_matrix.tsv
-		diff -d ${basedir}/create_matrix.tsv <( sort ${basedir}/create_matrix.${subset}.tsv) | grep "^< " | sed 's/^< //' > ${dir}/predict_matrix.tsv
+		#diff -d ${basedir}/create_matrix.tsv <( sort ${basedir}/create_matrix.${subset}.tsv) | grep "^< " | sed 's/^< //' > ${dir}/predict_matrix.tsv
+
+		diff -d ${basedir}/create_matrix.tsv <( sort ${basedir}/create_matrix.${subset}.tsv) | grep "^< " | sed 's/^< //'  | sed "s'${basedir}/IDH.11'${dir}'" > ${dir}/predict_matrix.tsv
 
 		#	Convert this tsv list into a json list
 		#	Note that this json matrix is created with a rescale factor of 1e9 while those individuals are just 1.

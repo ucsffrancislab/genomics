@@ -77,9 +77,9 @@ Disperse.
 ```
 for k in 11 21 31 ; do
 for s in 80a 80b 80c ; do
-dir1=${PWD}
+dir1=${PWD}/IDH.11
 dir2=${PWD}/IDH.${k}.${s}
-sed "s'${dir1}'${dir2}'" ${dir1}/create_matrix.${s}.tsv > ${dir2}/create_matrix.tsv
+sed "s'${dir1}'${dir2}'" ${PWD}/create_matrix.${s}.tsv > ${dir2}/create_matrix.tsv
 done ; done
 ```
 
@@ -97,16 +97,14 @@ done ; done
 ```
 
 
-
-
 Predict.
 ```
-nohup ./predict.bash > predict.out &
+nohup ./predict.bash >> predict.out &
 ```
 
 Better matrix of important kmers.
 ```
-nohup ./matrices_of_select_kmers.bash > matrices_of_select_kmers.out &
+nohup ./matrices_of_select_kmers.bash >> matrices_of_select_kmers.out &
 ```
 
 
