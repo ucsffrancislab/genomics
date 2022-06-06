@@ -44,6 +44,11 @@ else
 	#	strip out just the base name, in this case a number. add an "s" prefix or R will add an "X"
 #	sed -e "2s\"${last_arg_dir}\"s\"g" -e "2s\"${last_arg_file_base}\"\"g" -i ${f}
 
+	if [ ${f:(-3)} == '.gz' ] ; then
+		mv ${f} ${f%.gz}
+		gzip ${f%.gz}
+	fi
+
 	chmod a-w $f
 fi
 
