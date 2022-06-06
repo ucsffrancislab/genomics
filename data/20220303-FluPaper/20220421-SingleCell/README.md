@@ -400,3 +400,75 @@ allCells_integrated <- readRDS("/francislab/data1/raw/20220303-FluPaper/inputs/1
 write.csv(allCells_integrated@meta.data,"./mergedAllCells_withCellTypeIdents_CLEAN.csv",quote=FALSE)
 ```
 
+
+Filter these barcodes on our souporcell and seurat runs.
+
+```
+for b in $( seq 1 15 ) ; do
+for c in 1 2 ; do
+echo "B${b} c${c}"
+awk -F, -v b=$b -v c=$c '(FNR==NR){
+  split($1,a,"-")
+  barcodes[a[1]]++
+}
+(FNR!=NR){
+  split($1,a,"_")
+  if( a[1] == "B"b && a[2] == "c"c && a[3] in barcodes ) {
+    print
+  }
+}' out/B${b}-c${c}/souporcell_singlets_and_seurat_filtered_barcodes mergedAllCells_withCellTypeIdents_CLEAN.csv >> mergedAllCells_withCellTypeIdents_CLEAN.filtered.csv
+done ; done
+```
+
+
+
+
+
+#	FeatureCounts
+
+Arg lists too long
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=19exon --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/logs/featureCounts.19.exon.${date}.txt ~/.local/bin/featureCounts.bash -T 64 -a /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf -g gene_name -t exon -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.19.exon.gene_name.csv $( find /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B*-c?/outs/possorted_genome_bam.bam_barcodes/ -name *.bam )
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=19transcript --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/logs/featureCounts.19.transcript.${date}.txt ~/.local/bin/featureCounts.bash -T 64 -a /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf -g gene_name -t transcript -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.19.transcript.gene_name.csv $( find /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B*-c?/outs/possorted_genome_bam.bam_barcodes/ -name *.bam )
+```
+
+
+/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/genes/hg19.ncbiRefSeq.gtf.gz 
+
+
+```
+for f in $( find /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/out/B*-c?/outs/possorted_genome_bam.bam_barcodes/ -name *.bam ) ; do echo $f ; l=$( echo  $f | awk -F/ '{split($NF,a,"-"); split($8,b,"-"); print b[1]"_"b[2]"_"a[1]}') ; ln -s $f ${l}.bam; done 
+
+for f in $( find ${PWD}/tmp/ -name *.bam ) ; do echo $f ; b=$( basename $f .bam ); c=$( samtools view -c $f ); echo ${b},${c} >> barcode_read_counts.csv; done
+```
+
+
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --chdir=${PWD}/tmp --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=19transcript --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/logs/featureCounts.19.transcript.${date}.txt ~/.local/bin/featureCounts.bash -T 64 -a /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf -g gene_name -t transcript -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.19.transcript.gene_name.csv B1_c1_*.bam
+
+
+date=$( date "+%Y%m%d%H%M%S" )
+for i in $( seq 1 15 ) ; do
+sbatch --chdir=${PWD}/tmp --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=B${i}19transcript --time=360 --nodes=1 --ntasks=32 --mem=240G --output=${PWD}/logs/featureCounts.B${i}.19.transcript.${date}.txt ~/.local/bin/featureCounts.bash -T 32 -a /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf -g gene_name -t transcript -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.B${i}.19.transcript.gene_name.csv.gz B${i}_c*.bam
+done
+```
+
+```
+sed 's/^chr//' /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg19/variations/LTR.gtf > LTR.gtf
+sed 's/^chr//' /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg19/variations/Other.gtf > Other.gtf
+
+date=$( date "+%Y%m%d%H%M%S" )
+for i in $( seq 1 15 ) ; do
+sbatch --chdir=${PWD}/tmp --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=B${i}LTR --time=360 --nodes=1 --ntasks=32 --mem=240G --output=${PWD}/logs/featureCounts.B${i}.LTR.feature.${date}.txt ~/.local/bin/featureCounts.bash -T 32 -a ${PWD}/LTR.gtf -g feature_name -t feature -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.B${i}.LTR.feature.feature_name.csv.gz B${i}_c*.bam
+
+sbatch --chdir=${PWD}/tmp --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=B${i}Other --time=360 --nodes=1 --ntasks=32 --mem=240G --output=${PWD}/logs/featureCounts.B${i}.Other.feature.${date}.txt ~/.local/bin/featureCounts.bash -T 32 -a ${PWD}/Other.gtf -g feature_name -t feature -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.B${i}.Other.feature.feature_name.csv.gz B${i}_c*.bam
+done
+```
+
+
