@@ -1,0 +1,6 @@
+out/
+featureCounts.*
+B1_c1_mergedAllCells_withCellTypeIdents_CLEAN.csv
+B1_c1_mergedAllCells_withCellTypeIdents_CLEAN.sorted.csv
+barcode_read_counts.csv
+mergedAllCells_withCellTypeIdents_CLEAN.csv
