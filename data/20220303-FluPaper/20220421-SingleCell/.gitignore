@@ -1,4 +1,5 @@
-out/
+out/B1-c1/outs
+out/B1-c1/B1_c1_cell_types.csv
 featureCounts.*
 B1_c1_mergedAllCells_withCellTypeIdents_CLEAN.csv
 B1_c1_mergedAllCells_withCellTypeIdents_CLEAN.sorted.csv
