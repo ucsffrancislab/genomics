@@ -471,4 +471,9 @@ sbatch --chdir=${PWD}/tmp --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --j
 done
 ```
 
-
+```
+date=$( date "+%Y%m%d%H%M%S" )
+for i in $( seq 1 15 ) ; do
+sbatch --chdir=${PWD}/tmp --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=B${i}19exon --time=360 --nodes=1 --ntasks=32 --mem=240G --output=${PWD}/logs/featureCounts.B${i}.19.exon.${date}.txt ~/.local/bin/featureCounts.bash -T 32 -a /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/gencode.v19.chr_patch_hapl_scaff.annotation.gtf -g gene_name -t exon -o /francislab/data2/working/20220303-FluPaper/20220421-SingleCell/featureCounts.B${i}.19.exon.gene_name.csv.gz B${i}_c*.bam
+done
+```
