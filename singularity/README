@@ -1,0 +1,17 @@
+
+vagrant up
+
+vagrant ssh
+
+cd /vagrant
+
+
+
+
+
+
+
+
+
+vagrant destroy
+
