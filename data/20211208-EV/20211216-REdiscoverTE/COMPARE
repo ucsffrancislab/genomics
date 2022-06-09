@@ -1,0 +1,178 @@
+
+
+module load r
+
+R
+
+rds=readRDS('rollup/RE_exon_3_TPM.RDS')
+write.table(as.data.frame(rds),file="RE_exon_3_TPM_all.csv", quote=F,sep=",",row.names=F)
+rds=readRDS('rollup1/RE_exon_3_TPM.RDS')
+write.table(as.data.frame(rds),file="RE_exon_3_TPM_1.csv", quote=F,sep=",",row.names=F)
+rds=readRDS('rollup2/RE_exon_3_TPM.RDS')
+write.table(as.data.frame(rds),file="RE_exon_3_TPM_2.csv", quote=F,sep=",",row.names=F)
+
+
+NO
+
+
+a=readRDS('rollup1/RE_exon_3_TPM.RDS')
+b=readRDS('rollup2/RE_exon_3_TPM.RDS')
+c<-merge(a,b,by=c("repName","repFamily","repClass"))
+
+dim(a)
+dim(b)
+dim(c)
+
+
+library(tidyverse)
+
+a=readRDS('rollup1/RE_exon_3_TPM.RDS')
+b=readRDS('rollup2/RE_exon_3_TPM.RDS')
+df_list <- list(a, b)
+
+#merge all data frames together
+df_list %>% reduce(full_join, by=c("repName","repFamily","repClass"))
+
+NO
+
+
+
+a=readRDS('rollup1/RE_exon_3_TPM.RDS')
+b=readRDS('rollup2/RE_exon_3_TPM.RDS')
+c<-merge(a,b,by=c("repName","repFamily","repClass"), all.x = TRUE, all.y = TRUE)
+dim(c)
+
+d=readRDS('rollup/RE_exon_3_TPM.RDS')
+dim(d)
+
+
+NO
+
+
+
+a=readRDS('rollup1/RE_exon_3_TPM.RDS')
+b=readRDS('rollup2/RE_exon_3_TPM.RDS')
+
+removeColumns <- function(data.frame, columns, drop=FALSE) {
+  col.names <- colnames(data.frame)
+  if(!any(columns %in% col.names)) {
+    warning("data.frame does not contain following columns:",
+         setdiff(columns, col.names))
+  }
+  data.frame <- data.frame[,setdiff(col.names, columns), drop=drop]
+  return(data.frame)
+}
+
+mergeDGEList <- function(firstDgeList, secondDgeList,
+                         DGEListLabels=NULL) {
+  stopifnot(is.null(DGEListLabels) || length(DGEListLabels)==2)
+  commonFeat <- intersect(rownames(firstDgeList$counts),
+                          rownames(secondDgeList$counts))
+  commonSampleCols <- intersect(colnames(firstDgeList$samples),
+                                colnames(secondDgeList$samples))
+  
+  mergedCounts <- cbind(firstDgeList$counts[commonFeat,],
+                        secondDgeList$counts[commonFeat,])
+  mergedGenes <- firstDgeList$genes[commonFeat,]
+  mergedSamples <- rbind(firstDgeList$samples[, commonSampleCols],
+                         secondDgeList$samples[, commonSampleCols])
+  if(!is.null(DGEListLabels) & length(DGEListLabels)==2) {
+    labels <- factor(rep(DGEListLabels,
+                     c(nrow(firstDgeList$samples),
+                       nrow(secondDgeList$samples))),
+                     levels=DGEListLabels)
+    mergedSamples$DGEListLabel <- labels
+  }
+  
+  uniqSampleNames <- make.unique(colnames(mergedCounts))
+  colnames(mergedCounts) <- rownames(mergedSamples) <- uniqSampleNames
+  
+  res <- DGEList(counts=mergedCounts,
+                 samples=mergedSamples,
+                 genes=mergedGenes)
+  res$samples <- removeColumns(res$samples,
+                                            c("lib.size.1", "norm.factors.1"))
+  return(res)
+}
+
+
+
+c <- mergeDGEList(a,b)
+
+NO
+
+
+
+
+a=readRDS('rollup1/RE_exon_3_TPM.RDS')
+b=readRDS('rollup2/RE_exon_3_TPM.RDS')
+
+mergedCounts=merge(as.data.frame(a$counts),as.data.frame(b$counts),by = 'row.names', all = TRUE)
+head(mergedCounts)
+row.names(mergedCounts)=mergedCounts$Row.names
+head(mergedCounts)
+mergedCounts= mergedCounts[,!(names(mergedCounts)=='Row.names')]
+head(mergedCounts)
+mergedCounts[is.na(mergedCounts)] = 0
+head(mergedCounts)
+dim(mergedCounts)
+
+mergedSamples=rbind(a$samples,b$samples)
+dim(mergedSamples)
+
+mergedGenes=unique(rbind(a$genes,b$genes))
+dim(mergedGenes)
+
+res <- DGEList(counts=mergedCounts,
+	samples=mergedSamples,
+	genes=mergedGenes)
+res$samples<-res$samples[,!(names(res$samples) %in% c("lib.size.1", "norm.factors.1"))]
+dim(res$counts)
+dim(res$samples)
+dim(res$genes)
+
+write.table(as.data.frame(res$counts),file="merged.csv", quote=F,sep=",",row.names=F)
+
+
+
+z=readRDS('rollup/RE_exon_3_TPM.RDS')
+dim(z$counts)
+dim(z$samples)
+dim(z$genes)
+
+write.table(as.data.frame(z$counts),file="whole.csv", quote=F,sep=",",row.names=F)
+
+
+
+
+
+
+
+
+
+
+a=readRDS('rollup1/GENE_2_counts_normalized.RDS')
+b=readRDS('rollup2/GENE_2_counts_normalized.RDS')
+
+mergedCounts=merge(as.data.frame(a$counts),as.data.frame(b$counts),by = 'row.names', all = TRUE)
+row.names(mergedCounts)=mergedCounts$Row.names
+mergedCounts= mergedCounts[,!(names(mergedCounts)=='Row.names')]
+mergedCounts[is.na(mergedCounts)] = 0
+
+mergedSamples=rbind(a$samples,b$samples)
+
+mergedGenes=unique(rbind(a$genes,b$genes))
+
+res <- DGEList(counts=mergedCounts,
+	samples=mergedSamples,
+	genes=mergedGenes)
+res$samples<-res$samples[,!(names(res$samples) %in% c("lib.size.1", "norm.factors.1"))]
+
+write.table(as.data.frame(res$counts),file="merged.csv", quote=F,sep=",",row.names=F)
+
+
+
+z=readRDS('rollup/GENE_2_counts_normalized.RDS')
+
+write.table(as.data.frame(z$counts),file="whole.csv", quote=F,sep=",",row.names=F)
+
