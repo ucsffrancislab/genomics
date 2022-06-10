@@ -65,10 +65,20 @@ for barcode in $( awk -F, -v batchId=${batchId/-/_} '($2 == batchId){split($1,a,
 
 	out_base=${OUT}/${batchId/-/_}_${barcode}.salmon.REdiscoverTE.k15
 	f=${out_base}
-	if [ -d $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
+	#if [ -d $f ] && [ ! -w $f ] ; then
+	if [ -d $f ] ; then
+		#echo "Write-protected $f exists. Skipping."
+		echo "$f exists. Skipping."
+
+		if [ -f ${f}/quant.sf ] ; then
+			echo "Gzipping"
+			chmod -R +w ${f}
+			gzip ${f}/quant.sf
+			chmod -R -w ${f}
+		fi
+
 	else
-		threads=8
+		#threads=16	#8
 
 		cp ${fasta} ${TMPDIR}/
 		scratch_fasta=${TMPDIR}/$( basename ${fasta} )
@@ -79,7 +89,7 @@ for barcode in $( awk -F, -v batchId=${batchId/-/_} '($2 == batchId){split($1,a,
 			--no-version-check \
 			--libType A --validateMappings \
 			--unmatedReads ${scratch_fasta} \
-			-o ${scratch_out} --threads ${threads}
+			-o ${scratch_out} --threads ${SLURM_NTASKS}
 
 		#	GOTTA move an existing dir or we'll move this INTO it.
 		if [ -d ${f} ] ; then
@@ -87,7 +97,8 @@ for barcode in $( awk -F, -v batchId=${batchId/-/_} '($2 == batchId){split($1,a,
 			mv ${f} ${f}.${date}
 		fi
 
-		chmod +w ${scratch_out}	#	so script can move and delete the contents (not crucial but stops error messages)
+		chmod -R +w ${scratch_out}	#	so script can move and delete the contents (not crucial but stops error messages)
+		gzip ${scratch_out}/quant.sf
 
 		mv ${scratch_out} $( dirname ${f} )
 		chmod -R a-w ${f}
@@ -109,6 +120,8 @@ exit
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-30%1 --job-name="REdiscoverTE" --output="${PWD}/logs/REdiscoverTE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/REdiscoverTE_array_wrapper.bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=29-30%2 --job-name="REdiscoverTE" --output="${PWD}/logs/REdiscoverTE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/REdiscoverTE_array_wrapper.bash
 
 
 
