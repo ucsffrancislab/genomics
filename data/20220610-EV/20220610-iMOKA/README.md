@@ -37,3 +37,20 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( $9 ~ /Primary|Recurrent|control/ ){print 
 
 
 
+
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA"
+curl -netrc -X MKCOL "${BOX}/"
+for d in 16 21 31 ; do
+echo $d
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA/${d}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${d}/aggregated.json "${BOX}/"
+curl -netrc -T ${d}/output.json "${BOX}/"
+done
+```
+
+
+
