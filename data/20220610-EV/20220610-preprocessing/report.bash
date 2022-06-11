@@ -100,36 +100,6 @@ for s in ${samples} ; do
 done
 echo
 
-echo -n "| Trimmed2 Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| Trimmed2 % Read Count |"
-for s in ${samples} ; do
-	n=$(cat ${dir}/${s}.quality.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
-	d=$(cat ${dir}/${s}.quality.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
-	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| Trimmed2 Ave R1 Read Length |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.t1.R1.fastq.gz.average_length.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-#echo -n "| Trimmed2 Ave R2 Read Length |"
-#for s in ${samples} ; do
-#	c=$(cat ${dir}/${s}.quality.t1.R2.fastq.gz.average_length.txt 2> /dev/null)
-#	echo -n " ${c} |"
-#done
-#echo
-
 echo -n "| Trimmed3 Read Count |"
 for s in ${samples} ; do
 	c=$(cat ${dir}/${s}.quality.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
