@@ -10,10 +10,11 @@
 
 dirs=c(
 	'rollup/rollup.00',
-	'rollup/rollup.01',
-	'rollup/rollup.02',
-	'rollup/rollup.03',
-	'rollup/rollup.04')
+	'rollup/rollup.01')
+
+#	'rollup/rollup.02',
+#	'rollup/rollup.03',
+#	'rollup/rollup.04')
 
 files=c(
 	'GENE_1_raw_counts.RDS',
