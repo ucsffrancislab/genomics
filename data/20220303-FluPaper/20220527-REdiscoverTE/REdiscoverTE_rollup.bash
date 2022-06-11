@@ -34,7 +34,7 @@ else
 	ls -1 ${INDIR}/B15_*.salmon.REdiscoverTE.k${k}/quant.sf.gz \
 		| awk -F/ '{split($8,a,".");print a[1]"\t"$0}' > ${OUTBASE}/REdiscoverTE.tsv
 
-	split --lines=300 --numeric-suffixes --additional-suffix=.tsv ${OUTBASE}/REdiscoverTE.tsv ${OUTBASE}/REdiscoverTE.
+	split --lines=1000 --numeric-suffixes --additional-suffix=.tsv ${OUTBASE}/REdiscoverTE.tsv ${OUTBASE}/REdiscoverTE.
 
 	for f in ${OUTBASE}/REdiscoverTE.??.tsv ; do
 		echo $f
