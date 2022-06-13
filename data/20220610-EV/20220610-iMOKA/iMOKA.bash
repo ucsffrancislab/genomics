@@ -236,20 +236,20 @@ exit
 Why did I un-scratch this script?
 
 
-date=$( date "+%Y%m%d%H%M%S" )
+date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/16 --k 16
 
 
-date=$( date "+%Y%m%d%H%M%S" )
+date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/21 --k 21
 
 
-date=$( date "+%Y%m%d%H%M%S" )
+date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/31 --k 31
 
 
 
-date=$( date "+%Y%m%d%H%M%S" )
+date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/11 --k 11 --step reduce
 
 

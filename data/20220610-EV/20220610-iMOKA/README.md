@@ -35,17 +35,27 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( $9 ~ /Primary|Recurrent|control/ ){print 
 ```
 
 
+```
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/16 --k 16
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/21 --k 21
+
+date=$( date "+%Y%m%d%H%M%S" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/31 --k 31
+```
 
 
 
 
 
 ```
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA-PrimaryRecurrentControl"
 curl -netrc -X MKCOL "${BOX}/"
 for d in 16 21 31 ; do
 echo $d
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA/${d}"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA-PrimaryRecurrentControl/${d}"
 curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T ${d}/aggregated.json "${BOX}/"
 curl -netrc -T ${d}/output.json "${BOX}/"
@@ -53,4 +63,45 @@ done
 ```
 
 
+
+
+
+```
+mkdir PrimaryRecurrentControl
+mv source.tsv iMOKA.20220610205* 16 21 31 PrimaryRecurrentControl/
+cat PrimaryRecurrentControl/source.tsv | grep -vs control > source.tsv
+mkdir 16 21 31
+ln -s ../PrimaryRecurrentControl/16/preprocess 16/preprocess
+ln -s ../PrimaryRecurrentControl/21/preprocess 21/preprocess
+ln -s ../PrimaryRecurrentControl/31/preprocess 31/preprocess
+cat PrimaryRecurrentControl/16/create_matrix.tsv | grep -vs control > 16/create_matrix.tsv
+cat PrimaryRecurrentControl/21/create_matrix.tsv | grep -vs control > 21/create_matrix.tsv
+cat PrimaryRecurrentControl/31/create_matrix.tsv | grep -vs control > 31/create_matrix.tsv
+```
+
+
+
+```
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/16 --k 16 --step create
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/21 --k 21 --step create
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/31 --k 31 --step create
+```
+
+
+```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA-PrimaryRecurrent"
+curl -netrc -X MKCOL "${BOX}/"
+for d in 16 21 31 ; do
+echo $d
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA-PrimaryRecurrent/${d}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${d}/aggregated.json "${BOX}/"
+curl -netrc -T ${d}/output.json "${BOX}/"
+done
+```
 
