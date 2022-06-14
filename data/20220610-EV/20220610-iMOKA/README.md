@@ -197,3 +197,43 @@ Predict those not used in models
 ```
 predict.bash
 ```
+
+
+
+
+
+SFHH011CD, SFHH011CE, SFHH011CF, SFHH011CG
+Run Panattoni samples through the GBMWT vs nonGBMWT models from 
+/francislab/data2/working/20210428-EV/20210706-iMoka
+
+
+```
+DIR=/francislab/data1/working/20220610-EV/20220610-iMOKA/raw
+while read subject field; do
+f=$( ls ${DIR}/${subject}.?.fastq.gz 2> /dev/null | paste -sd";" )
+if [ -n "${f}" ] ; then
+echo -e "${subject}\t${field}\t${f}"
+fi
+done < <( awk 'BEGIN{FS=",";OFS="\t"}( $7 == "Panattoni" ){print $1,$9}' /francislab/data1/raw/20220610-EV/Sample\ covariate\ file_ids\ and\ indexes_for\ QB3_NovSeq\ SP\ 150PE_SFHH011\ S\ Francis_5-2-22hmh.csv ) > source.panattoni.tsv
+```
+
+```
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/15 --k 15 --source_file ${PWD}/source.panattoni.tsv
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/20 --k 20 --source_file ${PWD}/source.panattoni.tsv
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/25 --k 25 --source_file ${PWD}/source.panattoni.tsv
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/30 --k 30 --source_file ${PWD}/source.panattoni.tsv
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/35 --k 35 --source_file ${PWD}/source.panattoni.tsv
+```
+
+```
+predict_panattoni_20210706.bash
+```
+
+
+
+
