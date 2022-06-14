@@ -4,7 +4,7 @@ dir=out
 
 
 rawdir=/francislab/data1/raw/20220610-EV
-for fastq in ${rawdir}/S*fastq.gz ; do
+for fastq in ${rawdir}/S*R1_001.fastq.gz ; do
 	basename=$( basename $fastq .fastq.gz )
 #	basename=${basename%%_*}
 	basename=${basename%_001}

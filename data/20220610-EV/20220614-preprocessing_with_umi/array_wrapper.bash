@@ -118,6 +118,32 @@ else
 fi
 
 
+
+
+
+
+
+inbase=${outbase}
+outbase="${inbase}.range"	#	"${OUT}/${s}.quality.format.consolidate"
+f=${outbase}.R1.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	${PWD}/consolidated_range.bash \
+		5 5000 \
+		${inbase}.R1.fastq.gz \
+		${outbase}.R1.fastq.gz
+fi
+
+
+
+
+
+
+
+#cutadapt: error: You used an option that enabled paired-end mode (such as -p, -A, -G, -B, -U), but then you also need to provide two input files (you provided one) or use --interleaved.
+
+
 inbase=${outbase}
 outbase="${inbase}.t1"	#	"${OUT}/${s}.quality.format.consolidate.t1"
 f=${outbase}.R1.fastq.gz
@@ -128,13 +154,13 @@ else
 		--cores ${SLURM_NTASKS:-8} \
 		--match-read-wildcards -n 4 \
 		-a CTGTCTCTTATACACATCTC \
-		-A CTGTCTCTTATACACATCTC \
-		-U 21 \
 		-m 15 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
-		-p ${outbase}.R2.fastq.gz \
-		${inbase}.R1.fastq.gz \
-		${inbase}.R2.fastq.gz
+		${inbase}.R1.fastq.gz
+#		-A CTGTCTCTTATACACATCTC \
+#		-U 21 \
+#		-p ${outbase}.R2.fastq.gz \
+#		${inbase}.R2.fastq.gz
 fi
 
 
@@ -197,32 +223,36 @@ else
 		--error-rate 0.20 \
 		-a A{10} \
 		-a A{150} \
-		-G T{10} \
-		-G T{150} \
 		-m 15 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
-		-p ${outbase}.R2.fastq.gz \
-		${inbase}.R1.fastq.gz \
-		${inbase%.t2}.R2.fastq.gz
+		${inbase}.R1.fastq.gz
+#		-G T{10} \
+#		-G T{150} \
+#		-p ${outbase}.R2.fastq.gz \
+#		${inbase%.t2}.R2.fastq.gz
 		#	NOTE that R2 is from TWO steps prior.
 fi
 
 
-#	Filter out phiX
-inbase=${outbase}
-outbase="${outbase}.phiX"	#.fastq.gz"
-f=${outbase}.bam
-if [ -f $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
-else
-	~/.local/bin/bowtie2.bash --sort --threads ${SLURM_NTASKS:-8} -x /francislab/data1/refs/bowtie2/phiX \
-		--very-sensitive-local -1 ${inbase}.R1.fastq.gz -2 ${inbase}.R2.fastq.gz -o ${f} --un-conc-gz ${outbase%.phiX}.notphiX.fqgz
 
-	chmod -w ${outbase%.phiX}.notphiX.?.fqgz
 
-	count_fasta_reads.bash ${outbase%.phiX}.notphiX.?.fqgz
 
-fi
+
+#	#	Filter out phiX
+#	inbase=${outbase}
+#	outbase="${outbase}.phiX"	#.fastq.gz"
+#	f=${outbase}.bam
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		~/.local/bin/bowtie2.bash --sort --threads ${SLURM_NTASKS:-8} -x /francislab/data1/refs/bowtie2/phiX \
+#			--very-sensitive-local -1 ${inbase}.R1.fastq.gz -2 ${inbase}.R2.fastq.gz -o ${f} --un-conc-gz ${outbase%.phiX}.notphiX.fqgz
+#	
+#		chmod -w ${outbase%.phiX}.notphiX.?.fqgz
+#	
+#		count_fasta_reads.bash ${outbase%.phiX}.notphiX.?.fqgz
+#	
+#	fi
 
 #	r1r=${outbase%.phiX}.notphiX.1.fqgz
 #	r2r=${outbase%.phiX}.notphiX.2.fqgz

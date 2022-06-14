@@ -51,7 +51,7 @@ cat ${out2%.fastq.gz}.tmp | paste - - - - | sort --parallel=8 -k3,3 -k1,1 | tr "
 
 # sort --parallel=8 --temporary-directory=$HOME/.sort_sequences
 
-#\rm ${out1%.fastq.gz}.tmp ${out2%.fastq.gz}.tmp
+\rm ${out1%.fastq.gz}.tmp ${out2%.fastq.gz}.tmp
 
 echo "Consolidating"
 python3 ~/github/ucsffrancislab/umi/consolidate.py ${out1%.fastq.gz}.tmpsorted ${out1%.gz} 15 0.9
@@ -60,7 +60,7 @@ python3 ~/github/ucsffrancislab/umi/consolidate.py ${out2%.fastq.gz}.tmpsorted $
 #	min_qual = 15
 #	min_freq = 0.9
 
-#\rm ${out1%.fastq.gz}.tmpsorted ${out2%.fastq.gz}.tmpsorted
+\rm ${out1%.fastq.gz}.tmpsorted ${out2%.fastq.gz}.tmpsorted
 
 
 gzip ${out1%.gz}
