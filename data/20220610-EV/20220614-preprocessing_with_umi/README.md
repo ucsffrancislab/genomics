@@ -11,6 +11,24 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-
 
 
 ```
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV"
+curl -netrc -X MKCOL "${BOX}/"
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220614-preprocessing_with_umi"
+curl -netrc -X MKCOL "${BOX}/"
+
+for f in out/*fastqc*; do
+echo $f
+curl -netrc -T $f "${BOX}/"
+done
+```
+
+
+
+
+
+
+
+```
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 ```
