@@ -4,6 +4,10 @@ Write Paper
 
 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell
 
+
+/francislab/data2/working/20220610-EV
+
+
 TCGA alignment / TE pipeline testing / Gene count normalization
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220405-test-subset-xTea
@@ -21,8 +25,6 @@ Develope singularity containers for each, then test
 
 
 
-
-
 Aggregate k=21 (gonna try AWS) - WAITING ON DECISION
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
 
@@ -31,9 +33,6 @@ k=31 - A succeeded. Trying B again. Then C. - WAITING ON COMPLETION
 
 xTea Demo Test
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220406-xTea-Demo
-
-
-
 
 
 
@@ -78,6 +77,9 @@ UK Biobank
 
 
 
+
+
+/francislab/data2/working/20200720-TCGA-GBMLGG-RNA_bam/20220524-iMOKA
 
 AWS EC2 - S3 running
 
