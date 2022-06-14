@@ -13,6 +13,12 @@ lftp -c 'set ssl:verify-certificate no set ftp:ssl-protect-data true set ftp:ssl
 
 
 
+MANUALLY EDIT THE COVARIATE FILE
+CHANGE "post recurrence" to "post-recurrence"
+
+
+
+
 
 ```
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV"
