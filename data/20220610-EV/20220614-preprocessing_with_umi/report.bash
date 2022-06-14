@@ -27,7 +27,7 @@ done
 #samples="SFHH009A SFHH009B SFHH009C SFHH009D SFHH009E SFHH009F SFHH009G SFHH009H SFHH009I SFHH009J SFHH009L SFHH009M SFHH009N"
 #samples=$( ls -1 /francislab/data1/raw/20220610-EV/S*_R1_*fastq.gz | awk -F/ '{print $NF}' | awk -F_ '{print $1}' | paste -s -d" " )
 
-samples=$( ls -1 /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/out/SFHH*.quality.consolidate.t1.t3.R1.fastq.gz | xargs -I% basename % .quality.consolidate.t1.t3.R1.fastq.gz | paste -s -d" " )
+samples=$( ls -1 /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/out/SFHH*.quality.consolidate.range.t1.t3.R1.fastq.gz | xargs -I% basename % .quality.consolidate.range.t1.t3.R1.fastq.gz | paste -s -d" " )
 
 
 
@@ -73,47 +73,69 @@ for s in ${samples} ; do
 done
 echo
 
-echo -n "| Trimmed1 Read Count |"
+
+
+
+echo -n "| UMI Range Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.consolidate.range.R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
-echo -n "| Trimmed1 % Read Count |"
+echo -n "| UMI Range % Read Count |"
 for s in ${samples} ; do
-	n=$(cat ${dir}/${s}.quality.consolidate.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
+	n=$(cat ${dir}/${s}.quality.consolidate.range.R1.fastq.gz.read_count.txt 2> /dev/null)
 	d=$(cat ${dir}/${s}.quality.consolidate.R1.fastq.gz.read_count.txt 2> /dev/null)
 	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
-echo -n "| Trimmed1 Ave R1 Read Length |"
+
+
+echo -n "| Trimmed1 Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.R1.fastq.gz.average_length.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
-echo -n "| Trimmed1 Ave R2 Read Length |"
+echo -n "| Trimmed1 % Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.R2.fastq.gz.average_length.txt 2> /dev/null)
+	n=$(cat ${dir}/${s}.quality.consolidate.range.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
+	d=$(cat ${dir}/${s}.quality.consolidate.range.R1.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
+
+
+echo -n "| Trimmed1 Ave R1 Read Length |"
+for s in ${samples} ; do
+	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.R1.fastq.gz.average_length.txt 2> /dev/null)
+	echo -n " ${c} |"
+done
+echo
+
+#	echo -n "| Trimmed1 Ave R2 Read Length |"
+#	for s in ${samples} ; do
+#		c=$(cat ${dir}/${s}.quality.consolidate.range.t1.R2.fastq.gz.average_length.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done
+#	echo
 
 echo -n "| Trimmed3 Read Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
 echo -n "| Trimmed3 % Read Count |"
 for s in ${samples} ; do
-	n=$(cat ${dir}/${s}.quality.consolidate.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
-	d=$(cat ${dir}/${s}.quality.consolidate.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
+	n=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
+	d=$(cat ${dir}/${s}.quality.consolidate.range.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
 	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
 done
@@ -121,46 +143,45 @@ echo
 
 echo -n "| Trimmed3 Ave R1 Read Length |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.t3.R1.fastq.gz.average_length.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.R1.fastq.gz.average_length.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
-echo -n "| Trimmed3 Ave R2 Read Length |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.t3.R2.fastq.gz.average_length.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
+#	echo -n "| Trimmed3 Ave R2 Read Length |"
+#	for s in ${samples} ; do
+#		c=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.R2.fastq.gz.average_length.txt 2> /dev/null)
+#		echo -n " ${c} |"
+#	done
+#	echo
 
-echo -n "| phiX Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.t3.phiX.bam.aligned_count.txt 2> /dev/null )
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| phiX % Read Count |"
-for s in ${samples} ; do
-	a=$(cat ${dir}/${s}.quality.consolidate.t1.t3.phiX.bam.aligned_count.txt 2> /dev/null )
-	u=$(cat ${dir}/${s}.quality.consolidate.t1.t3.phiX.bam.unaligned_count.txt 2> /dev/null )
-	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| Not phiX Paired R1 Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.t3.notphiX.1.fqgz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
-echo -n "| Not phiX Paired R2 Read Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.consolidate.t1.t3.notphiX.2.fqgz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
-
+#echo -n "| phiX Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.phiX.bam.aligned_count.txt 2> /dev/null )
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| phiX % Read Count |"
+#for s in ${samples} ; do
+#	a=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.phiX.bam.aligned_count.txt 2> /dev/null )
+#	u=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.phiX.bam.unaligned_count.txt 2> /dev/null )
+#	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Not phiX Paired R1 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.notphiX.1.fqgz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+#
+#echo -n "| Not phiX Paired R2 Read Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.quality.consolidate.range.t1.t3.notphiX.2.fqgz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
 
