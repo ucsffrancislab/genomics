@@ -9,7 +9,7 @@ for f in metadata.csv ; do
 done
 
 for k in 16 21 31 ; do
-	for s in PrimaryRecurrent PrimaryRecurrentControl ; do
+	for s in PrimaryRecurrent PrimaryRecurrentControl TumorControl ; do
 		BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220610-iMOKA/${s}-${k}"
 		curl -netrc -X MKCOL "${BOX}/"
 
