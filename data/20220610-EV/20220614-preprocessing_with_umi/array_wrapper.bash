@@ -36,7 +36,11 @@ echo "Running line :${line}:"
 
 #	Use a 1 based index since there is no line 0.
 
-r1=$( ls -1 /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | sed -n "$line"p )
+#r1=$( ls -1 /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | sed -n "$line"p )
+sample=$( sed -n "$line"p /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/metadata.csv | awk -F, '{print $1}' )
+r1=$( ls /francislab/data1/raw/20220610-EV/${sample}*R1_001.fastq.gz )
+
+
 echo $r1
 
 if [ -z "${r1}" ] ; then
