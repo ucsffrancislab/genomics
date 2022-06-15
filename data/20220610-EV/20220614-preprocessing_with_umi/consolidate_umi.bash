@@ -47,27 +47,33 @@ echo "and sorting"
 #zcat $input | paste - - - - | awk -v l=${length} -F"\t" '{print $1" "substr($2,0,l); print $2; print $3; print $4}' | paste - - - - | sort --parallel=8 -k3,3 -k1,1 | tr "\t" "\n" | gzip > ${output%.fastq.gz}.sortedbyumi.fastq.gz
 
 cat ${out1%.fastq.gz}.tmp | paste - - - - | sort --parallel=8 -k3,3 -k1,1 | tr "\t" "\n" > ${out1%.fastq.gz}.tmpsorted
-cat ${out2%.fastq.gz}.tmp | paste - - - - | sort --parallel=8 -k3,3 -k1,1 | tr "\t" "\n" > ${out2%.fastq.gz}.tmpsorted
+#cat ${out2%.fastq.gz}.tmp | paste - - - - | sort --parallel=8 -k3,3 -k1,1 | tr "\t" "\n" > ${out2%.fastq.gz}.tmpsorted
+gzip ${out2%.fastq.gz}.tmp
 
 # sort --parallel=8 --temporary-directory=$HOME/.sort_sequences
 
-\rm ${out1%.fastq.gz}.tmp ${out2%.fastq.gz}.tmp
+#\rm ${out1%.fastq.gz}.tmp ${out2%.fastq.gz}.tmp
+\rm ${out1%.fastq.gz}.tmp
 
 echo "Consolidating"
 python3 ~/github/ucsffrancislab/umi/consolidate.py ${out1%.fastq.gz}.tmpsorted ${out1%.gz} 15 0.9
-python3 ~/github/ucsffrancislab/umi/consolidate.py ${out2%.fastq.gz}.tmpsorted ${out2%.gz} 15 0.9
+#python3 ~/github/ucsffrancislab/umi/consolidate.py ${out2%.fastq.gz}.tmpsorted ${out2%.gz} 15 0.9
 
 #	min_qual = 15
 #	min_freq = 0.9
 
-\rm ${out1%.fastq.gz}.tmpsorted ${out2%.fastq.gz}.tmpsorted
+#\rm ${out1%.fastq.gz}.tmpsorted ${out2%.fastq.gz}.tmpsorted
+\rm ${out1%.fastq.gz}.tmpsorted
 
 
 gzip ${out1%.gz}
-gzip ${out2%.gz}
+#gzip ${out2%.gz}
 
-chmod -w $out1 $out2
+#chmod -w $out1 $out2
+#count_fasta_reads.bash $out1 $out2
+#average_fasta_read_length.bash $out1 $out2
 
-count_fasta_reads.bash $out1 $out2
-average_fasta_read_length.bash $out1 $out2
+chmod -w $out1
+count_fasta_reads.bash $out1
+average_fasta_read_length.bash $out1
 
