@@ -38,7 +38,9 @@ echo "Running line :${line}:"
 
 #r1=$( ls -1 /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | sed -n "$line"p )
 sample=$( sed -n "$line"p /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/metadata.csv | awk -F, '{print $1}' )
-r1=$( ls /francislab/data1/raw/20220610-EV/${sample}*R1_001.fastq.gz )
+r1=$( ls /francislab/data1/raw/20220610-EV/${sample}_*R1_001.fastq.gz )
+
+#	Make sure that r1 is unique. NEEDS the UNDERSCORE AFTER SAMPLE!
 
 
 echo $r1
