@@ -119,7 +119,7 @@ fi
 
 
 inbase=${outbase}
-outbase="${inbase}.t1"	#	"${OUT}/${s}.quality.format.consolidate.t1"
+outbase="${inbase}.t1-10"	#	"${OUT}/${s}.quality.format.consolidate.t1"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
@@ -130,11 +130,12 @@ else
 		-a CTGTCTCTTATACACATCTC \
 		-A CTGTCTCTTATACACATCTC \
 		-U 21 \
-		-m 15 --trim-n \
+		-m 10 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
 		-p ${outbase}.R2.fastq.gz \
 		${inbase}.R1.fastq.gz \
 		${inbase}.R2.fastq.gz
+#		-m 15 --trim-n \
 fi
 
 
@@ -186,7 +187,7 @@ fi
 
 
 inbase=${outbase}
-outbase="${outbase}.t3"
+outbase="${outbase}.t3-10"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
@@ -199,12 +200,13 @@ else
 		-a A{150} \
 		-G T{10} \
 		-G T{150} \
-		-m 15 --trim-n \
+		-m 10 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
 		-p ${outbase}.R2.fastq.gz \
 		${inbase}.R1.fastq.gz \
 		${inbase%.t2}.R2.fastq.gz
 		#	NOTE that R2 is from TWO steps prior.
+#		-m 15 --trim-n \
 fi
 
 
@@ -313,7 +315,7 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 
 mkdir -p /francislab/data1/working/20220610-EV/20220610-preprocessing/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220610-preprocessing/logs/preprocess.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220610-preprocessing/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220610-preprocessing/logs/preprocess.${date}-%A_%a.out" --time=60 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220610-preprocessing/array_wrapper.bash
 
 
 date=$( date "+%Y%m%d%H%M%S" )
