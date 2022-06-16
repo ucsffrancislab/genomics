@@ -15,7 +15,7 @@ modelbase=/francislab/data2/working/20210428-EV/20220614-iMOKA
 #set -x
 
 
-for k in 16 21 31 ; do
+for k in 10 16 21 31 ; do
 
 	ddir=${basedir}/${k}
 	odir=${outdir}/${k}
