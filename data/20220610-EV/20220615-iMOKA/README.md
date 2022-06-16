@@ -84,15 +84,15 @@ Preprocess all so can predict later
 
 ```
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/16 --k 16 --source_file ${PWD}/source.all.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/16 --k 16 --source_file ${PWD}/source.all.tsv
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/21 --k 21 --source_file ${PWD}/source.all.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/21 --k 21 --source_file ${PWD}/source.all.tsv
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/31 --k 31 --source_file ${PWD}/source.all.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/31 --k 31 --source_file ${PWD}/source.all.tsv
 ```
 
 
@@ -139,23 +139,23 @@ cat 31/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | awk -F"\t" '(s
 
 ```
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrent/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrent/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrent/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrent/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrent/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrent/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent_control.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrentControl/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrentControl/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrentcontrol.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrentControl/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrentcontrol.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrentControl/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrentcontrol.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrentControl/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.primary_recurrentcontrol.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220615-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220615-iMOKA/PrimaryRecurrentControl/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
 ```
 
 
