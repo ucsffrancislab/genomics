@@ -2,10 +2,21 @@
 Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
 
-/francislab/data2/working/20220303-FluPaper/20220421-SingleCell
 
 
 /francislab/data2/working/20220610-EV
+/francislab/data2/working/20220610-EV/20220610-preprocessing - down to 10bp
+/francislab/data2/working/20220610-EV/20220610-iMOKA
+/francislab/data2/working/20220610-EV/20220614-preprocessing_with_umi - drop range from 5 to say 2
+/francislab/data1/working/20220610-EV/20220615-iMOKA
+
+/francislab/data2/working/20220303-FluPaper/20220527-REdiscoverTE
+
+
+
+/francislab/data2/working/20220303-FluPaper/20220421-SingleCell
+
+
 
 
 TCGA alignment / TE pipeline testing / Gene count normalization
