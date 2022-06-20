@@ -130,13 +130,14 @@ fi
 
 
 inbase=${outbase}
-outbase="${inbase}.range"	#	"${OUT}/${s}.quality.format.consolidate"
+#outbase="${inbase}.range5-5000"	#	"${OUT}/${s}.quality.format.consolidate"
+outbase="${inbase}.range2-5000"	#	"${OUT}/${s}.quality.format.consolidate"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	${PWD}/consolidated_range.bash \
-		5 5000 \
+		2 5000 \
 		${inbase}.R1.fastq.gz \
 		${outbase}.R1.fastq.gz
 fi
