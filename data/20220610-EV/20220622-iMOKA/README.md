@@ -76,6 +76,15 @@ if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
 done < <( awk 'BEGIN{FS=",";OFS="\t"}( $7 == "Panattoni" ){print $1,$9}' /francislab/data1/raw/20220610-EV/Sample\ covariate\ file_ids\ and\ indexes_for\ QB3_NovSeq\ SP\ 150PE_SFHH011\ S\ Francis_5-2-22hmh.csv ) > source.panattoni.tsv
+
+
+DIR=/francislab/data1/working/20220610-EV/20220620-iMOKA/raw
+while read subject field; do
+f=$( ls ${DIR}/${subject}.?.fastq.gz 2> /dev/null | paste -sd";" )
+if [ -n "${f}" ] ; then
+echo -e "${subject}\t${field}\t${f}"
+fi
+done < <( awk 'BEGIN{FS=",";OFS="\t"}( $9 ~ /Primary|Recurrent|control/ ){print $1,$9}' /francislab/data1/raw/20220610-EV/Sample\ covariate\ file_ids\ and\ indexes_for\ QB3_NovSeq\ SP\ 150PE_SFHH011\ S\ Francis_5-2-22hmh.csv ) | sed -E 's/Primary|Recurrent/tumor/' > source.tumorcontrol.tsv
 ```
 
 
@@ -126,12 +135,8 @@ cat 11/create_matrix.tsv | \grep -E "Primary|Recurrent" | awk -F"\t" '(system("t
 cat 16/create_matrix.tsv | \grep -E "Primary|Recurrent" | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' | sort | uniq > PrimaryRecurrent/16/create_matrix.tsv
 cat 21/create_matrix.tsv | \grep -E "Primary|Recurrent" | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' | sort | uniq > PrimaryRecurrent/21/create_matrix.tsv
 cat 31/create_matrix.tsv | \grep -E "Primary|Recurrent" | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' | sort | uniq > PrimaryRecurrent/31/create_matrix.tsv
-```
 
 
-
-
-```
 mkdir -p PrimaryRecurrentControl/11
 mkdir -p PrimaryRecurrentControl/16
 mkdir -p PrimaryRecurrentControl/21
@@ -144,6 +149,20 @@ cat 11/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | awk -F"\t" '(s
 cat 16/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' | sort | uniq > PrimaryRecurrentControl/16/create_matrix.tsv
 cat 21/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' | sort | uniq > PrimaryRecurrentControl/21/create_matrix.tsv
 cat 31/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' | sort | uniq > PrimaryRecurrentControl/31/create_matrix.tsv
+
+
+mkdir -p TumorControl/11
+mkdir -p TumorControl/16
+mkdir -p TumorControl/21
+mkdir -p TumorControl/31
+ln -s ../../11/preprocess TumorControl/11/preprocess
+ln -s ../../16/preprocess TumorControl/16/preprocess
+ln -s ../../21/preprocess TumorControl/21/preprocess
+ln -s ../../31/preprocess TumorControl/31/preprocess
+cat 11/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | sed -E 's/Primary|Recurrent/tumor/' | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' > TumorControl/11/create_matrix.tsv
+cat 16/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | sed -E 's/Primary|Recurrent/tumor/' | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' > TumorControl/16/create_matrix.tsv
+cat 21/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | sed -E 's/Primary|Recurrent/tumor/' | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' > TumorControl/21/create_matrix.tsv
+cat 31/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | sed -E 's/Primary|Recurrent/tumor/' | awk -F"\t" '(system("test -f " $1".sorted.bin")==0)' > TumorControl/31/create_matrix.tsv
 ```
 
 
@@ -174,6 +193,20 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --
 
 date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220620-iMOKA/PrimaryRecurrentControl/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
+
+
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220620-iMOKA/TumorControl/11 --k 11 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220620-iMOKA/TumorControl/16 --k 16 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220620-iMOKA/TumorControl/21 --k 21 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220620-iMOKA/iMOKA.bash --dir /francislab/data1/working/20220610-EV/20220620-iMOKA/TumorControl/31 --k 31 --step create --source_file ${PWD}/source.tumorcontrol.tsv
 ```
 
 
@@ -205,11 +238,8 @@ curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T PrimaryRecurrentControl/${d}/aggregated.json "${BOX}/"
 curl -netrc -T PrimaryRecurrentControl/${d}/output.json "${BOX}/"
 done
-```
 
 
-
-```
 BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220620-iMOKA-PrimaryRecurrent"
 curl -netrc -X MKCOL "${BOX}/"
 for d in 11 16 21 31 ; do
@@ -219,6 +249,18 @@ curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T PrimaryRecurrent/${d}/aggregated.json "${BOX}/"
 curl -netrc -T PrimaryRecurrent/${d}/output.json "${BOX}/"
 done
+
+
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220620-iMOKA-TumorControl"
+curl -netrc -X MKCOL "${BOX}/"
+for d in 11 16 21 31 ; do
+echo $d
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220620-iMOKA-TumorControl/${d}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T TumorControl/${d}/aggregated.json "${BOX}/"
+curl -netrc -T TumorControl/${d}/output.json "${BOX}/"
+done
+
 ```
 
 
@@ -231,6 +273,13 @@ Predict those not used in models
 ```
 predict.bash
 ```
+
+
+
+
+
+
+
 
 
 
