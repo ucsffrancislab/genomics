@@ -88,7 +88,8 @@ echo
 echo -n "| Trimmed1 % Read Count |"
 for s in ${samples} ; do
 	n=$(cat ${dir}/${s}.quality.umi.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
-	d=$(cat ${dir}/${s}.quality.umi.R1.fastq.gz.read_count.txt 2> /dev/null)
+	#d=$(cat ${dir}/${s}.quality.umi.R1.fastq.gz.read_count.txt 2> /dev/null)
+	d=$(cat ${dir}/${s}.quality.R1.fastq.gz.read_count.txt 2> /dev/null)
 	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
 done
