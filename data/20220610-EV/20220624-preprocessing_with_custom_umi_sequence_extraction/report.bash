@@ -142,7 +142,6 @@ for s in ${samples} ; do
 	d=$(cat ${dir}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
 	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 	echo -n " ${c} |"
-	echo -n " ${c} |"
 done
 echo
 
@@ -159,7 +158,6 @@ for s in ${samples} ; do
 	n=$(cat ${dir}/${s}.quality.umi.t1.t3.hg38.bam.unaligned_count.txt 2> /dev/null)
 	d=$(cat ${dir}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
 	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
-	echo -n " ${c} |"
 	echo -n " ${c} |"
 done
 echo
