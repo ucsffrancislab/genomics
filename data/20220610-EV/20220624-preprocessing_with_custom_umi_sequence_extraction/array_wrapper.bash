@@ -418,10 +418,32 @@ f=${outbase}.fasta.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
+
+	index=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa
+	cp ${index} $TMPDIR/
+	cp ${index}.fai $TMPDIR/
+	cp ${inbase}.bam $TMPDIR/
+	scratch_index=${TMPDIR}/$( basename $index )
+	scratch_inbase=${TMPDIR}/$( basename ${inbase} )
+	scratch_f=${TMPDIR}/$( basename $f )
 	while read region ; do
-		samtools faidx /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa $region
-	done < <( samtools view -F 3840 ${inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${f}
+		samtools faidx ${scratch_index} $region
+	done < <( samtools view -F 3844 ${scratch_inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${scratch_f}
+	mv ${scratch_f} ${f}
 	chmod -w ${f}
+
+
+#	3840 results in unaligned reads as ... 
+#	>*:0-0
+#	>*:0-0
+#	>*:0-0
+#	>*:0-0
+#	Changes to 3844
+#	
+#	while read region ; do
+#		samtools faidx ${index} $region
+#	done < <( samtools view -F 3840 ${inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${f}
+#	chmod -w ${f}
 fi
 
 exit
@@ -435,15 +457,8 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 
 mkdir -p /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=720 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=2880 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
-
-
-
-while read region ; do
-samtools faidx /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa $region
-done < <( samtools view SFHH011AR.quality.w_umi.R1.umitag.umi_duplicates.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' | head )
-
 
