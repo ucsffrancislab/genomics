@@ -426,11 +426,38 @@ else
 	scratch_index=${TMPDIR}/$( basename $index )
 	scratch_inbase=${TMPDIR}/$( basename ${inbase} )
 	scratch_f=${TMPDIR}/$( basename $f )
-	while read region ; do
-		samtools faidx ${scratch_index} $region
-	done < <( samtools view -F 3844 ${scratch_inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${scratch_f}
+
+	total_reads=$( cat ${OUT}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt )
+
+	mkdir ${TMPDIR}/split
+	java -jar $PICARD_HOME/picard.jar SplitSamByNumberOfReads \
+		--INPUT ${scratch_inbase}.bam \
+		--OUTPUT ${TMPDIR}/split \
+		--SPLIT_TO_N_FILES ${SLURM_NTASKS:-8} \
+		--TOTAL_READS_IN_INPUT ${total_reads} \
+		--CREATE_INDEX true
+
+	#	NOTE - can't control the number of leading zero's from SplitSamByNumberOfReads(4) or seq(1).
+
+	for i in $( seq ${SLURM_NTASKS:-8} ) ; do
+		i=$( printf "%04d" ${i} )
+		/francislab/data2/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/aligned_regions_to_reference_fasta.bash \
+			--bam ${TMPDIR}/split/shard_${i}.bam \
+			--ref ${scratch_index} \
+			--fasta ${TMPDIR}/split/shard_${i}.fasta &
+	done
+
+	wait < <(jobs -p)
+
+	cat ${TMPDIR}/split/*fasta | gzip > ${scratch_f}
 	mv ${scratch_f} ${f}
 	chmod -w ${f}
+
+#	while read region ; do
+#		samtools faidx ${scratch_index} $region
+#	done < <( samtools view -F 3844 ${scratch_inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${scratch_f}
+#	mv ${scratch_f} ${f}
+#	chmod -w ${f}
 
 
 #	3840 results in unaligned reads as ... 
