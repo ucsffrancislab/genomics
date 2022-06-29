@@ -131,7 +131,7 @@ echo
 
 echo -n "| hg38 aligned Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.umi.t1.t3.hg38.bam.aligned_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
@@ -148,7 +148,7 @@ echo
 
 echo -n "| hg38 unaligned Count |"
 for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
+	c=$(cat ${dir}/${s}.quality.umi.t1.t3.hg38.bam.unaligned_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
