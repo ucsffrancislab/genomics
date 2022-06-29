@@ -44,6 +44,14 @@ for s in ${samples} ; do
 done
 echo
 
+echo -n "| meta |"
+for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}_R1.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( awk -F, -v s=${s} '( $1 == s ){print $10}' metadata.csv )
+	echo -n " ${c} |"
+done
+echo
+
 echo -n "| Paired Raw Read Count |"
 for s in ${samples} ; do
 	c=$(cat ${dir}/${s}_R1.fastq.gz.read_count.txt 2> /dev/null)
