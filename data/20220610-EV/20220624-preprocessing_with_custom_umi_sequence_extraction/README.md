@@ -6,7 +6,7 @@ mkdir -p /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custo
 
 date=$( date "+%Y%m%d%H%M%S%N" )
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=2880 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
 
 ```
 
@@ -52,3 +52,33 @@ done
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 ```
+
+
+
+
+
+
+
+
+```
+for f in *.quality.umi.t1.t3.hg38.rx.marked.reference.fasta.gz ; do echo $f
+if [ ! -f ${f}.read_count.txt ] ; then
+zcat $f | grep -c "^>" > ${f}.read_count.txt
+fi
+done
+
+for f in *.quality.umi.t1.t3.hg38.rx.marked.bam ; do echo $f
+if [ ! -f ${f}.F3844.aligned_count.txt ] ; then
+samtools view -F 3844 -c $f > ${f}.F3844.aligned_count.txt
+fi
+done
+
+
+for f in *.quality.umi.t1.t3.hg38.rx.marked.bam; do echo $f
+cat ${f}.F3844.aligned_count.txt
+cat ${f%.bam}.reference.fasta.gz.read_count.txt
+done
+
+```
+
+

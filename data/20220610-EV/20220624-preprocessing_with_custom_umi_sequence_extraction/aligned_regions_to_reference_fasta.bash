@@ -41,6 +41,15 @@ else
 
 #| gzip > ${scratch_f}
 
+
+#	actually, we should remove 1 from the length? Several get "truncated" because the last number is 1 too big.
+#	[faidx] Truncated sequence: chrUn_KI270442v1:391927-392063
+#	[faidx] Truncated sequence: chrUn_KI270435v1:92861-92984
+#	[faidx] Truncated sequence: chrUn_KI270591v1:5670-5797
+#	Don't want to do anything until this is complete though.
+
+
+
 fi
 
 

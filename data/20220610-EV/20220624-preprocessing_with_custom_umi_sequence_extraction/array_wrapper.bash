@@ -410,6 +410,10 @@ else
 		--METRICS_FILE ${outbase}.metrics.txt \
 		--UMI_METRICS_FILE ${outbase}.umi_metrics.txt
 	chmod -w ${outbase}.*
+
+	samtools view -F 3844 -c ${f} > ${f}.F3844.aligned_count.txt
+	chmod -w ${f}.F3844.aligned_count.txt
+
 fi
 
 inbase=${outbase}
@@ -429,17 +433,22 @@ else
 
 	total_reads=$( cat ${OUT}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt )
 
+	#split_count=$((4*${SLURM_NTASKS:-8}))
+	#split_count=$((2*${SLURM_NTASKS:-8}))
+	#split_count=${SLURM_NTASKS:-8}
+	split_count=$((${SLURM_NTASKS:-8}*3/2)) #	1.5
+
 	mkdir ${TMPDIR}/split
 	java -jar $PICARD_HOME/picard.jar SplitSamByNumberOfReads \
 		--INPUT ${scratch_inbase}.bam \
 		--OUTPUT ${TMPDIR}/split \
-		--SPLIT_TO_N_FILES ${SLURM_NTASKS:-8} \
+		--SPLIT_TO_N_FILES ${split_count} \
 		--TOTAL_READS_IN_INPUT ${total_reads} \
 		--CREATE_INDEX true
 
-	#	NOTE - can't control the number of leading zero's from SplitSamByNumberOfReads(4) or seq(1).
+	#	NOTE - can't control the number of leading zero's from SplitSamByNumberOfReads(4 digits) or seq(no leading zeroes).
 
-	for i in $( seq ${SLURM_NTASKS:-8} ) ; do
+	for i in $( seq ${split_count} ) ; do
 		i=$( printf "%04d" ${i} )
 		/francislab/data2/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/aligned_regions_to_reference_fasta.bash \
 			--bam ${TMPDIR}/split/shard_${i}.bam \
@@ -447,31 +456,22 @@ else
 			--fasta ${TMPDIR}/split/shard_${i}.fasta &
 	done
 
+	echo "Waiting for all jobs to complete"
 	wait < <(jobs -p)
 
+	echo "Concatenating"
 	cat ${TMPDIR}/split/*fasta | gzip > ${scratch_f}
 	mv ${scratch_f} ${f}
 	chmod -w ${f}
 
-#	while read region ; do
-#		samtools faidx ${scratch_index} $region
-#	done < <( samtools view -F 3844 ${scratch_inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${scratch_f}
-#	mv ${scratch_f} ${f}
-#	chmod -w ${f}
+	zcat ${f} | grep -c "^>" > ${f}.read_count.txt
+	chmod -w ${f}.read_count.txt
 
-
-#	3840 results in unaligned reads as ... 
-#	>*:0-0
-#	>*:0-0
-#	>*:0-0
-#	>*:0-0
-#	Changes to 3844
-#	
-#	while read region ; do
-#		samtools faidx ${index} $region
-#	done < <( samtools view -F 3840 ${inbase}.bam | awk -F"\t" '{gsub(/^[[:digit:]]+S/,"",$6);gsub(/[[:digit:]]+S$/,"",$6);gsub(/[[:alpha:]]/,"+",$6);split($6,a,"+");l=0;for(i in a){l+=a[i]}; flag=( and($2,16) )?"-i":""; print flag" "$3":"$4"-"$4+l}' ) | gzip > ${f}
-#	chmod -w ${f}
 fi
+
+
+echo "Done"
+date
 
 exit
 
@@ -484,7 +484,7 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 
 mkdir -p /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=2880 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
