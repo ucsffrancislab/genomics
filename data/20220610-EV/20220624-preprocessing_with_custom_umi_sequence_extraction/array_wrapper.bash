@@ -433,10 +433,13 @@ else
 
 	total_reads=$( cat ${OUT}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt )
 
-	#split_count=$((4*${SLURM_NTASKS:-8}))
-	#split_count=$((2*${SLURM_NTASKS:-8}))
+	#split_count=$((${SLURM_NTASKS:-8}*4))
+	#split_count=$((${SLURM_NTASKS:-8}*2))
+	#split_count=$((${SLURM_NTASKS:-8}*3/2)) #	1.50 (12)
+	#split_count=$((${SLURM_NTASKS:-8}*4/3)) #	1.33 (10)
+	#split_count=$((${SLURM_NTASKS:-8}*5/4)) #	1.25 (10)
+	split_count=$((${SLURM_NTASKS:-8}*6/5))  #	1.20  (9)
 	#split_count=${SLURM_NTASKS:-8}
-	split_count=$((${SLURM_NTASKS:-8}*3/2)) #	1.5
 
 	mkdir ${TMPDIR}/split
 	java -jar $PICARD_HOME/picard.jar SplitSamByNumberOfReads \
