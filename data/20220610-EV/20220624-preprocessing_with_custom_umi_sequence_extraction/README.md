@@ -78,7 +78,16 @@ for f in *.quality.umi.t1.t3.hg38.rx.marked.bam; do echo $f
 cat ${f}.F3844.aligned_count.txt
 cat ${f%.bam}.reference.fasta.gz.read_count.txt
 done
-
 ```
 
 
+```
+module load samtools
+for dir in /scratch/gwendt/* ; do
+b=$( basename ${dir}/SFHH*.quality.umi.t1.t3.hg38.rx.marked.bam .quality.umi.t1.t3.hg38.rx.marked.bam )
+n=$( cat ${dir}/split/*fasta | grep -c "^>" )
+d=$( samtools view -F3844 -c ${dir}/SFHH*.quality.umi.t1.t3.hg38.rx.marked.bam )
+c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+echo "${b} : ${n} / ${d} = ${c}"
+done
+```
