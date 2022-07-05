@@ -10,13 +10,13 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
-	module load CBI samtools/1.13 bowtie2/2.4.4 
+	module load CBI samtools/1.13 bowtie2/2.4.4 picard
 	#bedtools2/2.30.0
 fi
 #set -x  #       print expanded command before executing it
 
 
-OUT="/francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/out"
+OUT="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/out"
 
 #while [ $# -gt 0 ] ; do
 #	case $1 in
@@ -37,7 +37,7 @@ echo "Running line :${line}:"
 #	Use a 1 based index since there is no line 0.
 
 #r1=$( ls -1 /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | sed -n "$line"p )
-sample=$( sed -n "$line"p /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/metadata.csv | awk -F, '{print $1}' )
+sample=$( sed -n "$line"p /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/metadata.csv | awk -F, '{print $1}' )
 r1=$( ls /francislab/data1/raw/20220610-EV/${sample}_*R1_001.fastq.gz )
 
 #	Make sure that r1 is unique. NEEDS the UNDERSCORE AFTER SAMPLE!
@@ -106,42 +106,70 @@ fi
 #			${outbase}.R1.fastq.gz \
 #			${outbase}.R2.fastq.gz
 #	fi
+#	
+#	
+#	
+#	inbase=${outbase}
+#	outbase="${inbase}.consolidate"	#	"${OUT}/${s}.quality.format.consolidate"
+#	f=${outbase}.R1.fastq.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		${PWD}/consolidate_umi.bash \
+#			18 \
+#			${inbase}.R1.fastq.gz \
+#			${inbase}.R2.fastq.gz \
+#			${outbase}.R1.fastq.gz \
+#			${outbase}.R2.fastq.gz
+#	fi
+#	
+#	
+#	
+#	
+#	
+#	
+#	
+#	inbase=${outbase}
+#	#outbase="${inbase}.range5-5000"	#	"${OUT}/${s}.quality.format.consolidate"
+#	outbase="${inbase}.range2-5000"	#	"${OUT}/${s}.quality.format.consolidate"
+#	f=${outbase}.R1.fastq.gz
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		${PWD}/consolidated_range.bash \
+#			2 5000 \
+#			${inbase}.R1.fastq.gz \
+#			${outbase}.R1.fastq.gz
+#	fi
+#	
 
 
+
+
+#	I can't find any aligner that will create a tag from the UMI
+#	so, add to read name NO SPACES so it ends up in the bam
+#	THEN, cut it off the read name and add a tag (RX) as is UmiAwareMarkDuplicatesWithMateCigar's default
+
+length=18
 
 inbase=${outbase}
-outbase="${inbase}.consolidate"	#	"${OUT}/${s}.quality.format.consolidate"
+outbase="${inbase}.umi"	#	"${OUT}/${s}.quality.umi
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
-	${PWD}/consolidate_umi.bash \
-		18 \
-		${inbase}.R1.fastq.gz \
-		${inbase}.R2.fastq.gz \
-		${outbase}.R1.fastq.gz \
-		${outbase}.R2.fastq.gz
+	echo "Adding UMI to read name"
+	paste <( zcat ${inbase}.R1.fastq.gz | paste - - - - ) <( zcat ${inbase}.R2.fastq.gz | paste - - - - ) |
+	awk -F"\t" -v l=${length} '{
+		umi=substr($6,0,l)
+		gsub(/ /,"-",$1)
+		print $1"-"umi
+		print $2
+		print $3
+		print $4
+	}' | gzip > ${f}
+	chmod -w ${f}
 fi
-
-
-
-
-
-
-
-inbase=${outbase}
-#outbase="${inbase}.range5-5000"	#	"${OUT}/${s}.quality.format.consolidate"
-outbase="${inbase}.range2-5000"	#	"${OUT}/${s}.quality.format.consolidate"
-f=${outbase}.R1.fastq.gz
-if [ -f $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
-else
-	${PWD}/consolidated_range.bash \
-		2 5000 \
-		${inbase}.R1.fastq.gz \
-		${outbase}.R1.fastq.gz
-fi
-
 
 
 
@@ -152,7 +180,7 @@ fi
 
 
 inbase=${outbase}
-outbase="${inbase}.t1"	#	"${OUT}/${s}.quality.format.consolidate.t1"
+outbase="${inbase}.t1"	#	"${OUT}/${s}.quality.umi.t1"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
@@ -161,7 +189,7 @@ else
 		--cores ${SLURM_NTASKS:-8} \
 		--match-read-wildcards -n 4 \
 		-a CTGTCTCTTATACACATCTC \
-		-m 15 --trim-n \
+		-m 10 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
 		${inbase}.R1.fastq.gz
 #		-A CTGTCTCTTATACACATCTC \
@@ -219,7 +247,7 @@ fi
 
 
 inbase=${outbase}
-outbase="${outbase}.t3"
+outbase="${outbase}.t3" #	"${OUT}/${s}.quality.umi.t1.t3"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
@@ -230,7 +258,7 @@ else
 		--error-rate 0.20 \
 		-a A{10} \
 		-a A{150} \
-		-m 15 --trim-n \
+		-m 10 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
 		${inbase}.R1.fastq.gz
 #		-G T{10} \
@@ -334,10 +362,119 @@ fi
 #	
 
 
+inbase=${outbase}
+outbase="${inbase}.hg38"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash \
+		--threads ${SLURM_NTASKS:-8} \
+		--very-sensitive-local \
+		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts \
+		-U ${inbase}.R1.fastq.gz \
+		--output ${f} \
+		--rg-id ${sample} --rg SM:${sample} \
+		--sort
+fi
+
+
+inbase=${outbase}
+outbase="${inbase}.rx"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.rx"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	samtools view -h ${inbase}.bam | awk 'BEGIN{FS=OFS="\t"}
+		( /^@/ ){print;next}
+		{ split($1,a,"-"); $1=a[1]; print $0,"RX:Z:"a[3] }' | samtools view -o ${f} -
+	chmod -w ${f}
+fi
 
 
 
 
+
+inbase=${outbase}
+outbase="${inbase}.marked"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.rx.marked"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	--MAX_EDIT_DISTANCE_TO_JOIN 1
+	java -jar $PICARD_HOME/picard.jar UmiAwareMarkDuplicatesWithMateCigar \
+		--TAGGING_POLICY All \
+		--INPUT ${inbase}.bam \
+		--CREATE_INDEX true \
+		--OUTPUT ${outbase}.bam \
+		--METRICS_FILE ${outbase}.metrics.txt \
+		--UMI_METRICS_FILE ${outbase}.umi_metrics.txt
+	chmod -w ${outbase}.*
+
+	samtools view -F 3844 -c ${f} > ${f}.F3844.aligned_count.txt
+	chmod -w ${f}.F3844.aligned_count.txt
+
+fi
+
+inbase=${outbase}
+outbase="${inbase}.reference"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.rx.marked"
+f=${outbase}.fasta.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+
+	index=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa
+	cp ${index} $TMPDIR/
+	cp ${index}.fai $TMPDIR/
+	cp ${inbase}.bam $TMPDIR/
+	scratch_index=${TMPDIR}/$( basename $index )
+	scratch_inbase=${TMPDIR}/$( basename ${inbase} )
+	scratch_f=${TMPDIR}/$( basename $f )
+
+	total_reads=$( cat ${OUT}/${s}.quality.umi.t1.t3.R1.fastq.gz.read_count.txt )
+
+	#split_count=$((${SLURM_NTASKS:-8}*4))
+	#split_count=$((${SLURM_NTASKS:-8}*2))
+	#split_count=$((${SLURM_NTASKS:-8}*3/2)) #	1.50 (12)
+	#split_count=$((${SLURM_NTASKS:-8}*4/3)) #	1.33 (10)
+	#split_count=$((${SLURM_NTASKS:-8}*5/4)) #	1.25 (10)
+	split_count=$((${SLURM_NTASKS:-8}*6/5))  #	1.20  (9)
+	#split_count=${SLURM_NTASKS:-8}
+
+	mkdir ${TMPDIR}/split
+	java -jar $PICARD_HOME/picard.jar SplitSamByNumberOfReads \
+		--INPUT ${scratch_inbase}.bam \
+		--OUTPUT ${TMPDIR}/split \
+		--SPLIT_TO_N_FILES ${split_count} \
+		--TOTAL_READS_IN_INPUT ${total_reads} \
+		--CREATE_INDEX true
+
+	#	NOTE - can't control the number of leading zero's from SplitSamByNumberOfReads(4 digits) or seq(no leading zeroes).
+
+	for i in $( seq ${split_count} ) ; do
+		i=$( printf "%04d" ${i} )
+		/francislab/data2/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/aligned_regions_to_reference_fasta.bash \
+			--bam ${TMPDIR}/split/shard_${i}.bam \
+			--ref ${scratch_index} \
+			--fasta ${TMPDIR}/split/shard_${i}.fasta &
+	done
+
+	echo "Waiting for all jobs to complete"
+	wait < <(jobs -p)
+
+	echo "Concatenating"
+	cat ${TMPDIR}/split/*fasta | gzip > ${scratch_f}
+	mv ${scratch_f} ${f}
+	chmod -w ${f}
+
+	zcat ${f} | grep -c "^>" > ${f}.read_count.txt
+	chmod -w ${f}.read_count.txt
+
+fi
+
+
+echo "Done"
+date
 
 exit
 
@@ -348,15 +485,10 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 86
 
 
-mkdir -p /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/logs
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/array_wrapper.bash
+mkdir -p /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
 
-
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=6,7,10,11%1 --job-name="preproc2" --output="/francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/array_wrapper.bash
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
-
-
 
