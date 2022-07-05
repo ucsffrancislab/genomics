@@ -16,7 +16,7 @@ fi
 #set -x  #       print expanded command before executing it
 
 
-OUT="/francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/out"
+OUT="/francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/out"
 
 #while [ $# -gt 0 ] ; do
 #	case $1 in
@@ -37,7 +37,7 @@ echo "Running line :${line}:"
 #	Use a 1 based index since there is no line 0.
 
 #r1=$( ls -1 /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | sed -n "$line"p )
-sample=$( sed -n "$line"p /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/metadata.csv | awk -F, '{print $1}' )
+sample=$( sed -n "$line"p /francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/metadata.csv | awk -F, '{print $1}' )
 r1=$( ls /francislab/data1/raw/20220610-EV/${sample}_*R1_001.fastq.gz )
 
 #	Make sure that r1 is unique. NEEDS the UNDERSCORE AFTER SAMPLE!
@@ -161,7 +161,7 @@ else
 		--cores ${SLURM_NTASKS:-8} \
 		--match-read-wildcards -n 4 \
 		-a CTGTCTCTTATACACATCTC \
-		-m 15 --trim-n \
+		-m 10 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
 		${inbase}.R1.fastq.gz
 #		-A CTGTCTCTTATACACATCTC \
@@ -230,7 +230,7 @@ else
 		--error-rate 0.20 \
 		-a A{10} \
 		-a A{150} \
-		-m 15 --trim-n \
+		-m 10 --trim-n \
 		-o ${outbase}.R1.fastq.gz \
 		${inbase}.R1.fastq.gz
 #		-G T{10} \
@@ -348,13 +348,13 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 86
 
 
-mkdir -p /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/logs
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/array_wrapper.bash
+mkdir -p /francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/logs
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/array_wrapper.bash
 
 
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=6,7,10,11%1 --job-name="preproc2" --output="/francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220614-preprocessing_with_umi/array_wrapper.bash
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=6,7,10,11%1 --job-name="preproc2" --output="/francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/logs/preprocess.${date}-%A_%a.out" --time=1440 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20220610-EV/20220621-preprocessing_with_umi/array_wrapper.bash
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
 
