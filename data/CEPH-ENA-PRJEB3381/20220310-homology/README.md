@@ -32,3 +32,10 @@ done ; done
 ```
 
 
+BAM to BED for pyGenomeTracks
+
+```
+./pyGenomeTracks.bash
+```
+
+
