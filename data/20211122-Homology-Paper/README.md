@@ -305,3 +305,15 @@ for f in bed_files_with_region_lengths.masked.plus.csv ; do
 done
 ```
 
+
+
+
+
+
+See also ...
+```
+/francislab/data1/working/20211111-hg38-viral-homology
+/francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
+
+```
+
