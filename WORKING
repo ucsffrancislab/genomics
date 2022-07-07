@@ -2,6 +2,17 @@
 Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
 
+/francislab/data2/working/20220303-FluPaper/20220708-REdiscoverTE - merge all barcodes for each cell-type for each subject
+
+/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction -   RUN IMOKA
+
+
+
+
+
+
+
+
 
 
 /francislab/data2/working/20220610-EV
@@ -10,14 +21,9 @@ Write Paper
 /francislab/data2/working/20220610-EV/20220614-preprocessing_with_umi - drop range from 5 to say 2
 /francislab/data1/working/20220610-EV/20220615-iMOKA
 
-/francislab/data2/working/20220303-FluPaper/20220527-REdiscoverTE
-
-
+/francislab/data2/working/20220303-FluPaper/20220527-REdiscoverTE - B15 only
 
 /francislab/data2/working/20220303-FluPaper/20220421-SingleCell
-
-
-
 
 TCGA alignment / TE pipeline testing / Gene count normalization
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38
