@@ -12,7 +12,7 @@ basedir=/francislab/data2/working/20220610-EV/20220707-iMOKA
 
 
 for k in 11 16 21 31 ; do
-	for r in TumorControl ; do #PrimaryRecurrent PrimaryRecurrentControl ; do
+	for r in TumorControl PrimaryRecurrent PrimaryRecurrentControl ; do
 #	for subset in 80a 80b 80c ; do
 #		echo $k $subset
 		dir=${basedir}/${k}

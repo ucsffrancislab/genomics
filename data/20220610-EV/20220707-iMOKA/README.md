@@ -210,6 +210,38 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --
 
 
 
+Predict those not used in models
+
+
+```
+predict.bash
+```
+
+
+```
+matrices_of_select_kmers.bash
+```
+
+
+
+
+
+
+
+
+
+
+
+
+---
+
+
+
+
+
+
+
+
 
 
 
@@ -254,17 +286,6 @@ curl -netrc -T TumorControl/${d}/aggregated.json "${BOX}/"
 curl -netrc -T TumorControl/${d}/output.json "${BOX}/"
 done
 
-```
-
-
-
-
-
-Predict those not used in models
-
-
-```
-predict.bash
 ```
 
 

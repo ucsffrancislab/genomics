@@ -8,7 +8,7 @@ img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
 basedir=/francislab/data1/working/20220610-EV/20220707-iMOKA
 
 for k in 11 16 21 31 ; do
-	for subset in TumorControl ; do #PrimaryRecurrent PrimaryRecurrentControl ; do
+	for subset in TumorControl PrimaryRecurrent PrimaryRecurrentControl ; do
 		dir=${basedir}/${subset}/${k}
 		echo $k $subset
 		#sed -i "s'/[^,]*preprocess'${dir}/preprocess'g" ${dir}/matrix.json 
