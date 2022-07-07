@@ -438,8 +438,8 @@ else
 	#split_count=$((${SLURM_NTASKS:-8}*3/2)) #	1.50 (12)
 	#split_count=$((${SLURM_NTASKS:-8}*4/3)) #	1.33 (10)
 	#split_count=$((${SLURM_NTASKS:-8}*5/4)) #	1.25 (10)
-	split_count=$((${SLURM_NTASKS:-8}*6/5))  #	1.20  (9)
-	#split_count=${SLURM_NTASKS:-8}
+	#split_count=$((${SLURM_NTASKS:-8}*6/5))  #	1.20  (9)
+	split_count=${SLURM_NTASKS:-8}
 
 	mkdir ${TMPDIR}/split
 	java -jar $PICARD_HOME/picard.jar SplitSamByNumberOfReads \
