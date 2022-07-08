@@ -1,0 +1,55 @@
+# Guide to run the EdgeR analysis for REDiscoverTE datasets
+# GG
+# 20210407 
+
+# First, need to install the proper packages in R
+# In R, run these commands
+
+
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("edgeR")
+BiocManager::install("EDASeq")
+install.packages('ggplot2')
+install.packages'RColorBrewer')
+install.packages('pheatmap')
+install.packages('gridExtra')
+
+
+# The script EdgeR_Template.R can be run on the command line by providing 10 command line parameters, in the following order
+1. PATH/TO/REDISCOVER/DATA
+2. PATH/TO/COVARIATE/FILE/covfile.txt ( this needs to be space or tab delimited entries)
+3. PATH/TO/OUTPUT/DIR
+4. Column name in cov file that has the sample ID's that exactly match those in REdiscover (in my covariate files it is RE_names)
+5. Column name in the cov file that has the group membership labels. 
+6. Column names for the adjustment covariates, e.g. c("Age","sex","race"). If no covariates, put NA
+7. Datatypes of the adjustment covariates e.g. c(numeric, factor, factor). If no covariates, put NA
+8. Number (1-10) indicating which REdiscoverTE file to analyze ( see below for which numbers represent what), I typically analyze #6 first 
+9. Alpha threshold, e.g. 0.01 
+10. LogFC threshold, start with 0.25 and increase to reduce the amount of plots which are output 
+11. The date, and any other prefix you want on the output, eg. 20210407 or 20210407_Stanford etc. 
+
+# Example 
+Rscript ./EdgeR_Template.R gguerra/rediscover gguerra/covs/mycovfile.txt gguerra/rediscover/results RE_names groups c("Age","sex","race") c(numeric,factor,factor) 6 0.01 0.25 20210407
+
+# Options for input argument 8
+1. GENE
+2. RE_intron
+3. RE_exon
+4. RE_intergenic
+5. RE_all
+6. RE_all_repFamily
+7. RE_all_repClass
+8. RE_intron_repFamily
+9. RE_exon_repFamily
+10. RE_intergenic_repFamily
+
+## THINGS TO NOTE
+# I don't know how to pipe this script to an Rmarkdown file on the command line yet, I usually do it natively within R. 
+
+# The only thing currently set to output is a high res version of the heatmap at the end of the script. 
+
+# No other plots will save unless the script is piped to an Rmarkdown file. 
+
+# I have never run this script using the command line arguemnts at all, hopefully nothing breaks, the script has examples of input commented out in it. 
