@@ -140,6 +140,7 @@ date = args[11]
 # 
 # # END PARAMETER SETTING 
 # -------------------------------------------
+library('readr')
 library('edgeR')
 require('EDASeq')
 library('ggplot2')
@@ -166,11 +167,15 @@ filename <- paste(data_dir, "/",user_filename, filetypes[filetype], datatypes[da
 
 RE_disc = readRDS(filename)
 #	message("RE_disc")
+#	head(RE_disc)
 #	message(RE_disc)
 
-covars = read.csv(cov_file, sep =",",header = TRUE )
+#covars = read.csv(cov_file, sep =",",header = TRUE , colClasses=c("character","character"))
+#	DON'T USE LEADING ZEROES. IF INTEGERS, LEADING ZEROES ARE DROPPED. THEN CAN'T BE REFERENCED WITH THE LEADING ZERO! (Stanford 71)
+covars = read_csv(cov_file, col_names = TRUE , col_types = cols(.default = "c") )
+
 #	message("covars")
-#	message(covars)
+#	head(covars)
 
 #Establish if there are covariates to include 
 #Cov_check = (is.na(covs) == FALSE)
@@ -262,12 +267,20 @@ if(length(not.present) >=1){
 #	message(group_list)
 #	message("group_less")
 #	message(group_less)
+#	message("group_less[,1]")
+#	message(group_less[,1])
 #	message("RE_disc 0")
 #	message(RE_disc)
 #	message("RE_disc$samples$group")
 #	message(RE_disc$samples$group)
 #	message("as.factor(group_less)")
 #	message(as.factor(group_less))
+#	message("as.factor(group_less[,1])")
+#	message(as.factor(group_less[,1]))
+#	Warning message:
+#	In xtfrm.data.frame(x) : cannot xtfrm data frames
+#	as.factor(group_less[,1])
+
 
 
 
@@ -279,12 +292,50 @@ if(length(not.present) >=1){
 #	Otherwise group_less[,1] ????
 
 if(Cov_check == TRUE){
+	message("Cov_check == TRUE")
 	RE_disc$samples$group = as.factor(group_less[,1])
+}else if( length(group_less) > 1 ){
+	message("length(group_less) > 1")
+	RE_disc$samples$group = as.factor(group_less)
+}else if( is.na(as.factor(group_less)) ){
+	message("is.na(as.factor(group_less))")
+	RE_disc$samples$group = as.factor(group_less[,1]) 
 }else{
-	RE_disc$samples$group = as.factor(group_less) #	JAKE - groups get lost if this is used? All NA. Then all filtered. Then crash.
+	message("OTHER")
+
+	message("group_less")
+	message(group_less)
+	message("length(group_less)")
+	message(length(group_less))
+
+	#	I THINK that if the dataset only contains one of the groups, this gets messy. (ie all are EUR or AFR or something)
+	#	No. I don't get why this does this. Yet.
+	#	Could raise
+	#	Warning message:
+	#	In xtfrm.data.frame(x) : cannot xtfrm data frames
+
+	#message("dim(group_less)")
+	#message(dim(group_less))
+	#message("dim(as.factor(group_less))")
+	#message(dim(as.factor(group_less)))
+	#quit()
+
+
+
+	#if( is.na(as.factor(group_less)) ){
+	#if( length(as.factor(group_less))>0 ){
+	#	RE_disc$samples$group = as.factor(group_less[,1]) 
+	#}else{
+		RE_disc$samples$group = as.factor(group_less)
+	#}
+
+
+
+
+
+#	RE_disc$samples$group = as.factor(group_less) #	JAKE - groups get lost if this is used? All NA. Then all filtered. Then crash.
 	#RE_disc$samples$group = as.factor(group_less) #	JAKE - groups get lost if this is used? All NA. Then all filtered. Then crash.
 #	#message(group_less)	#	IPMNMCNIPMNMCNIPMNMCNIPMNIPMNIPMN
-#
 #	RE_disc$samples$group = as.factor(group_less[,1]) 
 #	#	Error in h(simpleError(msg, call)) : 
 #	#	  error in evaluating the argument 'x' in selecting a method for function 'as.factor': incorrect number of dimensions
@@ -559,7 +610,7 @@ for( gene in to_plot){
     theme(axis.text.x = element_blank())+
     labs(fill = group_col)
  
-  message(p)
+  print(p)
 }
 
 
