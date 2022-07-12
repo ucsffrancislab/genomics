@@ -36,4 +36,29 @@ done
 
 
 
+mkdir ${PWD}/test_results
+for i in $( seq 10 ); do
+for k in 15 31 ; do
+for b in 1 2 3 ; do
+./EdgeR_Template.R ${PWD}/myrollup.bbduk${b}.k${k}/rollup ${PWD}/metadata.csv ${PWD}/test_results id cc NA NA ${i} 0.5 0.2 bbduk${b}.k${k}
+done ; done ; done
+
+
+
+
+module load r
+for k in 15 31 ; do
+for b in 1 2 3 ; do
+indir=${PWD}/myrollup.bbduk${b}.k${k}/rollup
+for i in $( seq 9 ); do
+echo ${k} ${b} ${i}
+outdir=${PWD}/results
+mkdir -p ${outdir}
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+/francislab/data2/working/20220303-FluPaper/20220707-REdiscoverTE/REdiscoverTE_EdgeR.R ${indir} ${PWD}/metadata.csv ${outdir} id cc NA NA ${i} 0.9 0.5 bbduk${b}.k${k}
+mv Rplots.pdf ${outdir}/bbduk${b}.k${k}.cc.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+/francislab/data2/working/20220303-FluPaper/20220707-REdiscoverTE/REdiscoverTE_EdgeR.R ${indir} ${PWD}/metadata.csv ${outdir} id cc NA NA ${i} 0.5 0.2 bbduk${b}.k${k}
+mv Rplots.pdf ${outdir}/bbduk${b}.k${k}.cc.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done ; done ; done
+
 
