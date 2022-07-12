@@ -1,5 +1,9 @@
 #!/usr/bin/env Rscript
 
+library(edgeR)
+library(limma)
+
+
 
 #	module load r
 
@@ -8,9 +12,12 @@
 #	--dirs rollup.00 rollup.01 rollup.02
 #	--out rollup.merged
 
-dirs=c(
-	'rollup/rollup.00',
-	'rollup/rollup.01')
+#dirs=c(
+#	'rollup/rollup.00',
+#	'rollup/rollup.01')
+
+subdirs=list.files("rollup", pattern="rollup.*")
+#[1] "rollup.00" "rollup.01" "rollup.02" "rollup.03" "rollup.04"
 
 #	'rollup/rollup.02',
 #	'rollup/rollup.03',
@@ -57,13 +64,16 @@ dir.create(outdir, showWarnings = TRUE, recursive = FALSE, mode = "0700")
 
 for( file in files ){
 	first=TRUE
-	for( dir in dirs ){
+	message(paste("Reading and merging",file))
+	#for( dir in dirs ){
+	for( subdir in subdirs ){
+		dir=paste("rollup",subdir,sep='/')
 		if( first ){
-			message("Reading first")
+			message(paste("Reading first",subdir))
 			first=FALSE
 			a=readRDS( paste(dir,file,sep='/') )
 		} else {
-			message("Merging")
+			message(paste("Merging",subdir))
 			b = readRDS( paste(dir,file,sep='/') )
 
 			mergedCounts=merge(
@@ -86,7 +96,7 @@ for( file in files ){
 			a=res
 		}
 	}
-	message("Writing MERGED")
+	message(paste("Writing MERGED",outdir,file))
 	saveRDS(res, file=file.path(outdir,file))
 }
 
