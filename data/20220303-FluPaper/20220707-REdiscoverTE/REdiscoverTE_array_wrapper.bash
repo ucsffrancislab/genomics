@@ -40,7 +40,8 @@ echo "Running line :${line}:"
 
 #	Use a 1 based index since there is no line 0.
 
-fasta=$( ls -tr1d ${IN}/*fa.gz | sed -n "$line"p )
+#fasta=$( ls -tr1d ${IN}/*fa.gz | sed -n "$line"p )
+fasta=$( ls -1 ${IN}/*fa.gz | sed -n "$line"p )
 echo $fasta
 
 if [ -z "${fasta}" ] ; then
@@ -108,7 +109,7 @@ exit
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-30%1 --job-name="REdiscoverTE" --output="${PWD}/logs/REdiscoverTE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/REdiscoverTE_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1579%1 --job-name="REdiscoverTE" --output="${PWD}/logs/REdiscoverTE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/REdiscoverTE_array_wrapper.bash
 
 
 
