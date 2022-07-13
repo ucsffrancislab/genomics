@@ -8,26 +8,29 @@
 #	Based on https://stackoverflow.com/questions/64505450/is-it-possible-to-create-a-self-rendering-rmarkdown-document
 
 args <- commandArgs()
+# need all args to include the --file
 fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+#	then call with just trailingOnly to pass on to the markdown
+args <- commandArgs(trailingOnly=TRUE)
 thisfile <- readLines(fname)
 tempfname <- paste0(tempdir(), "/", tools::file_path_sans_ext(basename(fname)) , ".Rmd")
 writeLines(thisfile[-1:-which(thisfile == "quit(\"no\")")], tempfname)
 
-library("optparse")
- 
-option_list = list(
-	make_option(c("-p", "--plot_prefix"), type="character", default=NULL, 
-		help="plot title prefix", metavar="character"),
-	make_option(c("-m", "--manhattan"), type="character", default=NULL, 
-		help="manhattan.plot file name", metavar="character"),
-	make_option(c("-q", "--qq"), type="character", default=NULL, 
-		help="qq file name", metavar="character"),
-	make_option(c("-o", "--outpath"), type="character", default="./", 
-		help="output file name [default= %default]", metavar="character")
-); 
- 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser);
+#library("optparse")
+# 
+#option_list = list(
+#	make_option(c("-p", "--plot_prefix"), type="character", default=NULL, 
+#		help="plot title prefix", metavar="character"),
+#	make_option(c("-m", "--manhattan"), type="character", default=NULL, 
+#		help="manhattan.plot file name", metavar="character"),
+#	make_option(c("-q", "--qq"), type="character", default=NULL, 
+#		help="qq file name", metavar="character"),
+#	make_option(c("-o", "--outpath"), type="character", default="./", 
+#		help="output file name [default= %default]", metavar="character")
+#); 
+# 
+#opt_parser = OptionParser(option_list=option_list);
+#opt = parse_args(opt_parser);
 
 x=123
 
@@ -43,7 +46,7 @@ args
 
 
 ```{r}
-opt
+#opt
 ```
 
 ```{r}
