@@ -80,6 +80,16 @@ done
 
 
 
+
+
+
+mkdir -p ${PWD}/results_case_control_GBM_TEST
+
+./EdgeR_Template.R ${PWD}/rollup ${PWD}/metadata.case_control.GBM.csv ${PWD}/results_case_control_GBM_TEST ID timepoint NA NA 9 0.9 0.5 k15
+
+
+./REdiscoverTE_EdgeR_rmarkdown.R ${PWD}/rollup ${PWD}/metadata.case_control.GBM.csv ${PWD}/results_case_control_GBM_TEST ID timepoint NA NA 9 0.9 0.5 k15
+
 ```
 
 
