@@ -1,0 +1,93 @@
+#!/usr/bin/env Rscript
+
+#	Run this script with parameters.
+#	This bit of code BEFORE the quit("no") is executed
+#	All of the code AFTER the quit("no") is rendered
+#	Variables set in the beginning, including the command line options, are preserved in the Rmd
+#
+#	Based on https://stackoverflow.com/questions/64505450/is-it-possible-to-create-a-self-rendering-rmarkdown-document
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+tempfname <- paste0(tempdir(), "/", tools::file_path_sans_ext(basename(fname)) , ".Rmd")
+writeLines(thisfile[-1:-which(thisfile == "quit(\"no\")")], tempfname)
+
+library("optparse")
+ 
+option_list = list(
+	make_option(c("-p", "--plot_prefix"), type="character", default=NULL, 
+		help="plot title prefix", metavar="character"),
+	make_option(c("-m", "--manhattan"), type="character", default=NULL, 
+		help="manhattan.plot file name", metavar="character"),
+	make_option(c("-q", "--qq"), type="character", default=NULL, 
+		help="qq file name", metavar="character"),
+	make_option(c("-o", "--outpath"), type="character", default="./", 
+		help="output file name [default= %default]", metavar="character")
+); 
+ 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+x=123
+
+rmarkdown::render(tempfname, output_dir = dirname(fname))
+quit("no")
+
+
+
+
+```{r}
+args
+```
+
+
+```{r}
+opt
+```
+
+```{r}
+x
+```
+
+
+---
+title: "Executable Rmarkdown Document Template"
+author: John Doe
+date: 20220712
+output: html_document
+---
+
+File extension is important. 
+
+md is just markdown and the R code won't be executed.
+Rmd is R markdown and the R code WILL be executed.
+
+
+```{r}
+norm <- rnorm(100, mean = 0, sd = 1)
+#message(norm)
+```
+
+
+```{r}
+sessionInfo()
+```
+
+
+Run, but don't show.
+
+```{r, echo = FALSE}
+A <- c("a", "a", "b", "b")
+B <- c(5, 10, 15, 20)
+dataframe <- data.frame(A, B)
+#print(dataframe)
+```
+
+then show it
+```{r}
+print(dataframe)
+```
+
+https://ourcodingclub.github.io/tutorials/rmarkdown/
+
