@@ -59,6 +59,21 @@ mv Rplots.pdf ${outdir}/k${k}.celltype.${iname}.alpha_0.5.logFC_0.2.NoQuestion.p
 done
 
 
+
+module load r
+k=15
+indir=${PWD}/rollup/
+outdir=${PWD}/results_infection
+mkdir -p ${outdir}
+for i in $( seq 9 ); do
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+./REdiscoverTE_EdgeR.R ${indir} ${PWD}/metadata.csv ${outdir} id infection NA NA ${i} 0.9 0.5 k${k}
+mv Rplots.pdf ${outdir}/k${k}.infection.${iname}.alpha_0.9.logFC_0.5.NoQuestion.plots.pdf
+./REdiscoverTE_EdgeR.R ${indir} ${PWD}/metadata.csv ${outdir} id infection NA NA ${i} 0.5 0.2 k${k}
+mv Rplots.pdf ${outdir}/k${k}.infection.${iname}.alpha_0.5.logFC_0.2.NoQuestion.plots.pdf
+done
+
+
 ```
 
 
