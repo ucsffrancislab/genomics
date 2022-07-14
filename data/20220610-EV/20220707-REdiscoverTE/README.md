@@ -94,6 +94,53 @@ mkdir -p ${PWD}/results_case_control_GBM_TEST
 
 
 
+Rmarkdown 
+
+```
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown.R ${PWD}/rollup ${PWD}/metadata.case_control.GBM.csv ${PWD}/results_case_control_GBM_TEST ID timepoint NA NA 8 0.9 0.5 k15
+
+
+
+
+```
+
+
+
+```
+module load r
+k=15
+indir=${PWD}/rollup
+outdir=${PWD}/rmarkdown_results_case_control_timepoint
+mkdir -p ${outdir}
+for i in $( seq 9 ); do
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.case_control.csv ${outdir} ID timepoint NA NA ${i} 0.9 0.5 k${k} 3> ${outdir}/k${k}.timepoint.${iname}.alpha_0.9.logFC_0.5.html
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.case_control.csv ${outdir} ID timepoint NA NA ${i} 0.5 0.2 k${k} 3> ${outdir}/k${k}.timepoint.${iname}.alpha_0.5.logFC_0.2.html
+done
+
+module load r
+k=15
+indir=${PWD}/rollup
+outdir=${PWD}/rmarkdown_results_case_control_status
+mkdir -p ${outdir}
+for i in $( seq 9 ); do
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.case_control.status.csv ${outdir} ID status NA NA ${i} 0.9 0.5 k${k} 3> ${outdir}/k${k}.status.${iname}.alpha_0.9.logFC_0.5.html
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.case_control.status.csv ${outdir} ID status NA NA ${i} 0.5 0.2 k${k} 3> ${outdir}/k${k}.status.${iname}.alpha_0.5.logFC_0.2.html
+done
+
+module load r
+k=15
+indir=${PWD}/rollup
+outdir=${PWD}/rmarkdown_results_case_control_GBM
+mkdir -p ${outdir}
+for i in $( seq 9 ); do
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.case_control.GBM.csv ${outdir} ID timepoint NA NA ${i} 0.9 0.5 k${k} 3> ${outdir}/k${k}.GBM.${iname}.alpha_0.9.logFC_0.5.html
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.case_control.GBM.csv ${outdir} ID timepoint NA NA ${i} 0.5 0.2 k${k} 3> ${outdir}/k${k}.GBM.${iname}.alpha_0.5.logFC_0.2.html
+done
+```
+
 
 
 
