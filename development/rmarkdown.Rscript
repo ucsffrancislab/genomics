@@ -34,9 +34,21 @@ writeLines(thisfile[-1:-which(thisfile == "quit(\"no\")")], tempfname)
 
 x=123
 
+#	without output_dir, I think its the same as the input dir which is temporary so the file is lost
 rmarkdown::render(tempfname, output_dir = dirname(fname))
 quit("no")
 
+
+
+
+
+<!--
+
+This is a comment that will only be rendered as an html comment.
+
+Not sure what happens if output is a pdf document.
+
+-->
 
 
 
