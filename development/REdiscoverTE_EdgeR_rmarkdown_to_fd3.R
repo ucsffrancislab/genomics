@@ -14,7 +14,17 @@ writeLines(thisfile[-1:-which(thisfile == "quit(\"no\")")], tempfname)
 #	could specify the actuall output file here
 #	 output_file = paste('report.', Sys.Date(), '.pdf', sep=''))
 #rmarkdown::render(tempfname, output_dir = dirname(fname))
-rmarkdown::render(tempfname, output_dir = getwd() )
+#rmarkdown::render(tempfname, output_dir = getwd() )
+
+#	render to temp output then cat to fd3
+#	fd0 is stdin
+#	fd1 is stdout and contains most of render's output
+#	fd2 is stderr and sadly contains a tiny bit of render's output
+#	fd3 appears to be unused. So. Use it.
+tempoutput <- paste0(tempdir(), "/", tools::file_path_sans_ext(basename(fname)) , ".html")
+rmarkdown::render(tempfname)
+system(paste("cat",tempoutput,">&3"))
+
 quit("no")
 
 ---
