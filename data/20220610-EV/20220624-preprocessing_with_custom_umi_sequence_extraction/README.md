@@ -91,3 +91,16 @@ c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 echo "${b} : ${n} / ${d} = ${c}"
 done
 ```
+
+
+
+
+
+
+```
+./pear_report.bash > pear_report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' pear_report.md > pear_report.csv
+```
+
+
+
