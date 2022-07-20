@@ -239,7 +239,7 @@ Why did I un-scratch this script? Data size?
 
 date=$( date "+%Y%m%d%H%M%S%N" )
 for k in 16 21 31 ; do
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA${k}" --output="${PWD}/iMOKA.${k}.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/${k} --k ${k}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA${k}" --output="${PWD}/iMOKA.${k}.${date}.out" --time=1440 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA.bash --dir ${PWD}/${k} --k ${k}
 done
 
 
