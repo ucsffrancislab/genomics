@@ -2,11 +2,13 @@
 Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
 
-/francislab/data2/working/20220303-FluPaper/20220708-REdiscoverTE - merge all barcodes for each cell-type for each subject
+/francislab/data2/working/20220303-FluPaper/20220707-REdiscoverTE - merge all barcodes for each cell-type for each subject
 
-/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction -   RUN IMOKA
-/francislab/data1/working/20220610-EV/20220707-iMOKA
-/francislab/data1/working/20220610-EV/20220707-REdiscoverTE
+/francislab/data1/working/20210428-EV/20220719-iMOKA - build new model
+
+/francislab/data1/working/20220610-EV/20220707-iMOKA - predicting based on 20210428-EV/20220719-iMoka models
+
+
 
 
 
@@ -22,6 +24,9 @@ Write Paper
 /francislab/data2/working/20220610-EV/20220610-iMOKA
 /francislab/data2/working/20220610-EV/20220614-preprocessing_with_umi - drop range from 5 to say 2
 /francislab/data1/working/20220610-EV/20220615-iMOKA
+/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction -   RUN IMOKA
+/francislab/data1/working/20220610-EV/20220707-REdiscoverTE
+/francislab/data1/working/20220610-EV/20220707-iMOKA - predicting based on 20210428-EV/20210706-iMoka models
 
 /francislab/data2/working/20220303-FluPaper/20220527-REdiscoverTE - B15 only
 
