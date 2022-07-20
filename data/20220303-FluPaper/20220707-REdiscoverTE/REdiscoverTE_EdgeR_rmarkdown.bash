@@ -49,6 +49,30 @@ else
 
 	done
 
+	for celltype in NK.infected NK.nonfected ; do
+		echo ${celltype}
+		outdir=${PWD}/rmarkdown_results_${celltype}_ancestry
+		mkdir -p ${outdir}
+
+		for i in $( seq 9 ); do
+			echo $i
+
+			sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+				--job-name="Rmd3${d}" \
+				--output="${PWD}/logs/Rmd3.${celltype}.${i}.${date}.out" \
+				--time=4320 --nodes=1 --ntasks=8 --mem=60G \
+				${PWD}/REdiscoverTE_EdgeR_rmarkdown.bash ${indir} ${PWD}/metadata.${celltype}.csv ${outdir} id ancestry NA NA ${i} 0.05 0.5 k${k} 
+
+			sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+				--job-name="Rmd4${d}" \
+				--output="${PWD}/logs/Rmd4.${celltype}.${i}.${date}.out" \
+				--time=4320 --nodes=1 --ntasks=8 --mem=60G \
+				${PWD}/REdiscoverTE_EdgeR_rmarkdown.bash ${indir} ${PWD}/metadata.${celltype}.csv ${outdir} id ancestry NA NA ${i} 0.1 0.2 k${k} 
+
+		done
+
+	done
+
 fi
 
 
