@@ -35,5 +35,21 @@ awk -v pwd=$PWD 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}($4~/Oligo/){print
 
 
 
+Run iMOKA
+
+
+
+
+
+```
+for i in 16 21 31 ; do
+BOX="https://dav.box.com/dav/Francis _Lab_Share/20210428-EV/20210706-iMoka/${s}"
+curl -netrc -X MKCOL "${BOX}/"
+curl -netrc -T ${i}/aggregated.json "${BOX}/"
+curl -netrc -T ${i}/output.json "${BOX}/"
+done
+
+
+
 
 
