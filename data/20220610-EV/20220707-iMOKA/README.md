@@ -290,35 +290,28 @@ done
 
 
 
-
-
-
-
-
-
-
-
-
 SFHH011CD, SFHH011CE, SFHH011CF, SFHH011CG
 Run Panattoni samples through the GBMWT vs nonGBMWT models from 
 /francislab/data2/working/20210428-EV/20210706-iMoka
 
+Run them all.
+
 
 ```
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/15 --k 15 --source_file ${PWD}/source.panattoni.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/15 --k 15 --source_file ${PWD}/source.all.tsv
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/20 --k 20 --source_file ${PWD}/source.panattoni.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/20 --k 20 --source_file ${PWD}/source.all.tsv
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/25 --k 25 --source_file ${PWD}/source.panattoni.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/25 --k 25 --source_file ${PWD}/source.all.tsv
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/30 --k 30 --source_file ${PWD}/source.panattoni.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/30 --k 30 --source_file ${PWD}/source.all.tsv
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/35 --k 35 --source_file ${PWD}/source.panattoni.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/35 --k 35 --source_file ${PWD}/source.all.tsv
 ```
 
 ```
-predict_panattoni_20210706.bash
+predict_from_20210428-EV_20210706-iMoka.bash
 ```
 
 
