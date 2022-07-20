@@ -137,54 +137,66 @@ done
 
 
 
----
-
-
-`ln -s ../20220421-SingleCell/mergedAllCells_withCellTypeIdents_CLEAN.csv`
-
-
-loop over author selected / our souporcell / seurat filtered barcodes?
-
-
-link them in the format `B1_c1_AAACCTGGTCGTCTTC`
-
-This is gonna be about 220,000 or 230,000 fastq files!!!!!
-
-
-
-Use array job to loop over batches
-
-
-
-Run REdiscoverTE on each
-
-Rollup
-
-DE by ancestry, infection status, cell type
-
 
 
 
 
 
 ```
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220303-FluPaper"
-curl -netrc -X MKCOL "${BOX}/"
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220303-FluPaper/20220707-REdiscoverTE"
-curl -netrc -X MKCOL "${BOX}/"
-curl -netrc -T mergedAllCells_withCellTypeIdents_CLEAN.filtered.B15.csv "${BOX}/"
-curl -netrc -T /francislab/data1/raw/20220303-FluPaper/inputs/2_calculate_residuals_and_DE_analyses/individual_meta_data_for_GE_with_scaledCovars_with_CTC.txt "${BOX}/"
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220303-FluPaper/20220707-REdiscoverTE/rollup"
-curl -netrc -X MKCOL "${BOX}/"
+awk '{print $1}' rollup/REdiscoverTE.tsv | awk 'BEGIN{FS="-";OFS=",";print "id","sample","infection","celltype","ancestry"} ( $3 ~ /^(B|CD4_T|CD8_T|NK|monocytes)$/ ){print $0,$1,$2,$3,$4}' > metadata.select.csv
 
-#for d in rollup/rollup.* ; do
-#BOX="https://dav.box.com/dav/Francis _Lab_Share/20220303-FluPaper/20220707-REdiscoverTE/${d}"
-#curl -netrc -X MKCOL "${BOX}/"
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220303-FluPaper/20220707-REdiscoverTE/rollup"
-for f in rollup/rollup.merged/* ; do
-echo $f
-curl -netrc -T ${f} "${BOX}/"
+awk '{print $1}' rollup/REdiscoverTE.tsv | awk 'BEGIN{FS="-";OFS=",";print "id","sample","infection","celltype","ancestry"}(( $3 == "NK" ) && ( $2 == "flu" )){print $0,$1,$2,$3,$4}' > metadata.NK.infected.csv
+awk '{print $1}' rollup/REdiscoverTE.tsv | awk 'BEGIN{FS="-";OFS=",";print "id","sample","infection","celltype","ancestry"}(( $3 == "NK" ) && ( $2 == "NI"  )){print $0,$1,$2,$3,$4}' > metadata.NK.noninfected.csv
+
+
+module load r
+k=15
+indir=${PWD}/rollup/
+outdir=${PWD}/rmarkdown_results_NK_infected_ancestry
+mkdir -p ${outdir}
+for i in $( seq 9 ); do
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.NK.infected.csv ${outdir} id ancestry NA NA ${i} 0.05 0.5 k${k} 3> ${outdir}/k${k}.ancestry.${iname}.alpha_0.05.logFC_0.5.html
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.NK.infected.csv ${outdir} id ancestry NA NA ${i} 0.1 0.2 k${k} 3> ${outdir}/k${k}.ancestry.${iname}.alpha_0.1.logFC_0.2.html
+done
+
+
+module load r
+k=15
+indir=${PWD}/rollup/
+outdir=${PWD}/rmarkdown_results_NK_noninfected_ancestry
+mkdir -p ${outdir}
+for i in $( seq 9 ); do
+iname=$( ls -1 ${indir}/*_1_raw_counts.RDS | xargs -I% basename % _1_raw_counts.RDS | sed -n ${i}p )
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.NK.noninfected.csv ${outdir} id ancestry NA NA ${i} 0.05 0.5 k${k} 3> ${outdir}/k${k}.ancestry.${iname}.alpha_0.05.logFC_0.5.html
+~/github/ucsffrancislab/genomics/development/REdiscoverTE_EdgeR_rmarkdown_to_fd3.R ${indir} ${PWD}/metadata.NK.noninfected.csv ${outdir} id ancestry NA NA ${i} 0.1 0.2 k${k} 3> ${outdir}/k${k}.ancestry.${iname}.alpha_0.1.logFC_0.2.html
 done
 ```
+
+
+```
+for celltype in B CD4_T CD8_T NK monocytes ; do echo $celltype
+awk '{print $1}' rollup/REdiscoverTE.tsv | awk -v celltype=${celltype} 'BEGIN{FS="-";OFS=",";print "id","sample","infection","celltype","ancestry"}( $3 == celltype ){print $0,$1,$2,$3,$4}' > metadata.${celltype}.csv
+done
+awk '{print $1}' rollup/REdiscoverTE.tsv | awk 'BEGIN{FS="-";OFS=",";print "id","sample","infection","celltype","ancestry"}( $3 ~ "monocytes" ){print $0,$1,$2,$3,$4}' > metadata.all_monocytes.csv
+
+./REdiscoverTE_EdgeR_rmarkdown.bash
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
