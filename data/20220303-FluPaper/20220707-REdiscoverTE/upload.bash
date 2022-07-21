@@ -20,7 +20,7 @@ DATA=$( basename $( dirname ${PWD} ) )
 #done
 
 for d in rmarkdown_* ; do
-echo $d
+	echo $d
 	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${d}"
 	curl -netrc -X MKCOL "${BOX}/"
 	for f in ${d}/* ; do

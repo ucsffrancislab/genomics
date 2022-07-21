@@ -49,7 +49,7 @@ else
 
 	done
 
-	for celltype in NK.infected NK.nonfected ; do
+	for celltype in NK.infected NK.noninfected ; do
 		echo ${celltype}
 		outdir=${PWD}/rmarkdown_results_${celltype}_ancestry
 		mkdir -p ${outdir}
