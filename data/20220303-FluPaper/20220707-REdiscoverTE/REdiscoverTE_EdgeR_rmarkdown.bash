@@ -38,7 +38,7 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 
 	#${PWD}/REdiscoverTE_EdgeR_rmarkdown.R $*
 
-	cat <<- "EOF" | R --no-save --no-echo --args $*
+	cat <<- EOF | R --no-save --no-echo --args $args
 
 		args = commandArgs(trailingOnly=TRUE)
 
