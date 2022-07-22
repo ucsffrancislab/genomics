@@ -98,7 +98,9 @@ library('pheatmap')
 library('gridExtra')
 library('grid') # New 20220712
 library('gtable') # New 20220712
-library(RColorBrewer)
+library('RColorBrewer')
+library('biomaRt')
+library('dplyr')
 options(max.print=1000000)
 ```
 
@@ -120,7 +122,78 @@ RE_disc = readRDS(filename)
 #	message("RE_disc")
 #	head(RE_disc)
 #	message(RE_disc)
+```
 
+```{r "Convert Ensemble Gene Ids to HGNC Symbols", include = FALSE}
+if( filetypes[filetype] == "GENE" ){
+#	RE_disc = readRDS("rollup/rollup.merged/GENE_1_raw_counts.RDS")
+	mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
+	biomartCacheClear()
+	ensembl_gene_id=rownames(RE_disc$counts)
+	ensembl_gene_id=as.data.frame(ensembl_gene_id)
+	conversion_table <- getBM(filters = "ensembl_gene_id",attributes = c("ensembl_gene_id","hgnc_symbol"),
+		values = ensembl_gene_id$ensembl_gene_id, mart = mart)
+##	Not all are found. Sometimes return nothing. Sometimes return "<NA>". Sometimes returns duplicates?
+##           
+## > conversion_table[duplicated(conversion_table),]
+##       ensembl_gene_id hgnc_symbol
+## 9482  ENSG00000132207       SLX1A
+## 14218 ENSG00000172058      SERF1A
+## 14219 ENSG00000172062        SMN1
+## 14220 ENSG00000173678     SPDYE2B
+## 17449 ENSG00000214447     FAM187A
+## 18271 ENSG00000223802       CERS1
+## 18954 ENSG00000185829      ARL17A
+## 19795 ENSG00000228960      OR2A9P
+## 20986 ENSG00000233024      NPIPA9
+## 23511 ENSG00000243716      NPIPB5
+## 23647 ENSG00000244306            
+## 23681 ENSG00000244479   OR2A1-AS1
+## 25475 ENSG00000254852      NPIPA2
+## 27388 ENSG00000261052     SULT1A3
+## 28294 ENSG00000205670      SMIM11
+## 28298 ENSG00000230606   LINC02969
+## 28981 ENSG00000268350     FAM156A
+## 30768 ENSG00000274628    CYP4F59P
+## 32590 ENSG00000281856            
+## 
+#
+##	> length(ensembl_gene_id$ensembl_gene_id)
+##	[1] 33200
+##	> length(conversion_table$ensembl_gene_id)
+##	[1] 32920
+##	> length(unique(conversion_table$ensembl_gene_id))
+##	[1] 32899
+
+		joined=dplyr::left_join(ensembl_gene_id,conversion_table,by='ensembl_gene_id')
+
+		##	y=unique(joined)$ensembl_gene_id
+		##	y[duplicated(y)]
+		##	[1] "ENSG00000230417" "ENSG00000276085"
+
+		#	Some ensembl_gene_ids have duplicate hgnc_symbols. Concatenate them.
+		#	> getBM(filters = "ensembl_gene_id",attributes = c("ensembl_gene_id","hgnc_symbol"),values=c("ENSG00000230417","ENSG00000276085"), mart = mart)
+  		#	ensembl_gene_id hgnc_symbol
+		#	1 ENSG00000230417   LINC00595
+		#	2 ENSG00000230417   LINC00856
+		#	3 ENSG00000276085      CCL3L1
+		#	4 ENSG00000276085      CCL3L3
+		joined = joined %>% group_by(ensembl_gene_id) %>% mutate(hgnc_symbol = paste(hgnc_symbol, collapse = ","))
+		joined = as.data.frame(joined)
+		joined = unique(joined)
+
+		#	Some ensembl_gene_ids are not in the biomart. Set hgnc_symbol to ensembl_gene_id.
+		joined$hgnc_symbol <- ifelse( joined$hgnc_symbol == "", joined$ensembl_gene_id, joined$hgnc_symbol )
+		rownames(joined)=joined$ensembl_gene_id
+		joined=joined['hgnc_symbol']
+
+		#	check if you like identical(rownames(RE_disc$counts),rownames(joined))
+
+		rownames(RE_disc$counts)=joined$hgnc_symbol
+}
+```
+
+```{r}
 #covars = read.csv(cov_file, sep =",",header = TRUE , colClasses=c("character","character"))
 #	DON'T USE LEADING ZEROES. IF INTEGERS, LEADING ZEROES ARE DROPPED. THEN CAN'T BE REFERENCED WITH THE LEADING ZERO! (Stanford 71)
 covars = read_csv(cov_file, col_names = TRUE , col_types = cols(.default = "c") )
@@ -218,6 +291,7 @@ if(length(not.present) >=1){
 	group_less = group_list
 }
 ```
+
 ```{r}
 # Cov_check is always FALSE, but if the metadata file contains other columns
 #	group_less needs to be group_less
@@ -530,10 +604,12 @@ for( gene in to_plot){
 	message(gene)
 	plot_data = data.frame(as.numeric(normcounts[which(row.names(normcounts) == gene),]))
 	plot_data$group = RE_disc$samples$group
-	#print(paste("Individual with max value = ", row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
+	#print(paste("Individual with max value = ", 
+	#	row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
 	colnames(plot_data) = c(gene, "group")
 	plot_data$group = as.factor(plot_data$group)
-	p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]), fill=as.factor(plot_data[,2]))) +
+	p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]),
+		fill=as.factor(plot_data[,2]))) +
 		geom_boxplot()+
 		labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
 		theme(legend.position= "right")+
@@ -605,18 +681,3 @@ if(length(sig.loc) >1){
 ```
 
 
-
-```{r "Convert Ensemble Peptide Ids", include = FALSE}
-#	convert ensemble peptide ids to gene names (hgns_symbol)
-#	BiocManager::install()
-#	BiocManager::install('biomaRt')
-#	library('biomaRt')
-#	mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-#	getBM(filters = "ensembl_peptide_id", attributes = c("ensembl_peptide_id", "hgnc_symbol", "description"),values=c("ENSP00000227378"),mart=mart)
-
-#	Can be done on full column
-#	genes <- df$genes
-#G_list <- getBM(filters = "ensembl_peptide_id", 
-#                attributes = c("ensembl_peptide_id", "entrezgene", "description"),
-#                values = genes, mart = mart)
-```
