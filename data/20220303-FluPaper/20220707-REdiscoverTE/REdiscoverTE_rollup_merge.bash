@@ -1,13 +1,16 @@
-#!/usr/bin/env Rscript
+#!/usr/bin/env bash
+
+
+####!/usr/bin/env Rscript
+
+module load r
+
+#	quote EOF to stop variable expansion in the R script 
+
+cat <<- "EOF" | R --no-save --no-echo
 
 library(edgeR)
 library(limma)
-
-
-
-#	module load r
-
-
 
 #	--dirs rollup.00 rollup.01 rollup.02
 #	--out rollup.merged
@@ -99,5 +102,7 @@ for( file in files ){
 	message(paste("Writing MERGED",outdir,file))
 	saveRDS(res, file=file.path(outdir,file))
 }
+
+EOF
 
 
