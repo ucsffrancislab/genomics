@@ -5,6 +5,8 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
+OUTBASE="${PWD}/rollup"
+
 if [ $# -gt 0 ] ; then
 
 	set -e	#	exit if any command fails
@@ -16,11 +18,23 @@ if [ $# -gt 0 ] ; then
 	fi
 	set -x	#	print expanded command before executing it
 
+	line=${SLURM_ARRAY_TASK_ID:-1}
+	echo "Running line :${line}:"
 
-	~/github/ucsffrancislab/REdiscoverTE/rollup.R $*
-	#${PWD}/rollup.R $*
+	metadata=$( ls -1 rollup/REdiscoverTE.??.tsv | sed -n "${line}"p )
 
-		
+	if [ -z "${metadata}" ] ; then
+		echo "No line at :${line}:"
+		exit
+	fi
+
+	d=$( basename $metadata .tsv )
+	d=${d#*.}
+	OUTDIR="${OUTBASE}/rollup.${d}"
+	mkdir -p ${OUTDIR}
+
+	~/github/ucsffrancislab/REdiscoverTE/rollup.R $* --metadata=${metadata} --outdir=${OUTDIR}/
+
 else
 
 	INDIR="${PWD}/out"
@@ -28,7 +42,6 @@ else
 
 	date=$( date "+%Y%m%d%H%M%S" )
 
-	OUTBASE="${PWD}/rollup"
 	mkdir -p ${OUTBASE}
 
 	ls -1 ${INDIR}/*.salmon.REdiscoverTE.k${k}/quant.sf.gz \
@@ -39,32 +52,23 @@ else
 
 	for f in ${OUTBASE}/REdiscoverTE.??.tsv ; do
 		echo $f
-		d=$( basename $f .tsv )
-		d=${d#*.}
-
-		echo $d
-
-		OUTDIR="${OUTBASE}/rollup.${d}"
-
-		mkdir -p ${OUTDIR}
-
-		#echo -e "sample\tquant_sf_path" > ${OUTDIR}/REdiscoverTE.tsv
-
 		sed -i '1i sample\tquant_sf_path' $f
+	done
 
-		sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-			--job-name="Rollup${d}" \
-			--output="${PWD}/logs/REdiscoverTE.${date}.rollup.${d}.out" \
-			--time=4320 --nodes=1 --ntasks=64 --mem=495G \
-			${PWD}/REdiscoverTE_rollup.bash \
-			--metadata=${OUTBASE}/REdiscoverTE.${d}.tsv \
+	max=$( ls -1 ${OUTBASE}/REdiscoverTE.??.tsv | wc -l )
+
+	mkdir ${PWD}/logs/
+	date=$( date "+%Y%m%d%H%M%S%N" )
+	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+		--array=1-${max}%1 --job-name="Rollup" \
+		--output="${PWD}/logs/REdiscoverTE.${date}.rollup.%A_%a.out" \
+		--time=1440 --nodes=1 --ntasks=32 --mem=240G \
+		${PWD}/REdiscoverTE_rollup.bash \
 			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ \
-			--nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/
+			--nozero --threads=32 --assembly=hg38 
 
 #	Question or no question? That is the question.
 #			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion/ \
-
-	done
 
 fi
 
