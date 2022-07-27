@@ -392,6 +392,10 @@ else
 fi
 
 
+#	Would this sed command be faster?
+#	samtools view SFHH011Z.quality.umi.t1.t3.hg38.bam | sed -r "s/^([^,]+)-([ACGTN]{18})(.*)$/\1\3\tRX:Z:\2/"
+
+
 
 
 
