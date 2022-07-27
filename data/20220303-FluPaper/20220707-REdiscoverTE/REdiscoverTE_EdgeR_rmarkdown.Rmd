@@ -128,7 +128,7 @@ RE_disc = readRDS(filename)
 if( filetypes[filetype] == "GENE" ){
 #	RE_disc = readRDS("rollup/rollup.merged/GENE_1_raw_counts.RDS")
 	mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-	biomartCacheClear()
+	#biomartCacheClear()
 	ensembl_gene_id=rownames(RE_disc$counts)
 	ensembl_gene_id=as.data.frame(ensembl_gene_id)
 	conversion_table <- getBM(filters = "ensembl_gene_id",attributes = c("ensembl_gene_id","hgnc_symbol"),
@@ -184,6 +184,36 @@ if( filetypes[filetype] == "GENE" ){
 
 		#	Some ensembl_gene_ids are not in the biomart. Set hgnc_symbol to ensembl_gene_id.
 		joined$hgnc_symbol <- ifelse( joined$hgnc_symbol == "", joined$ensembl_gene_id, joined$hgnc_symbol )
+
+		joined$hgnc_symbol <- ifelse( joined$hgnc_symbol == "NA", joined$ensembl_gene_id, joined$hgnc_symbol )
+#
+#gene
+#ENSG00000212939
+#which(row.names(normcounts) == gene)
+#11523
+#gene
+#SCGB3A1
+#which(row.names(normcounts) == gene)
+#7381
+#gene
+#AIRE
+#which(row.names(normcounts) == gene)
+#7290
+#gene
+#SULF2
+#which(row.names(normcounts) == gene)
+#10758
+#gene
+#ENSG00000280071
+#which(row.names(normcounts) == gene)
+#14357
+#gene
+#NA.80
+#which(row.names(normcounts) == gene)
+#
+#Error in `$<-.data.frame`(`*tmp*`, "group", value = c(2L, 2L, 2L, 2L,  : 
+#  replacement has 1455 rows, data has 0
+
 		rownames(joined)=joined$ensembl_gene_id
 		joined=joined['hgnc_symbol']
 
@@ -298,21 +328,21 @@ if(length(not.present) >=1){
 #	Otherwise group_less[,1] ????
 
 if(Cov_check == TRUE){
-	message("Cov_check == TRUE")
+	print("Cov_check == TRUE")
 	RE_disc$samples$group = as.factor(group_less[,1])
 }else if( length(group_less) > 1 ){
-	message("length(group_less) > 1")
+	print("length(group_less) > 1")
 	RE_disc$samples$group = as.factor(group_less)
 }else if( is.na(as.factor(group_less)) ){
-	message("is.na(as.factor(group_less))")
+	print("is.na(as.factor(group_less))")
 	RE_disc$samples$group = as.factor(group_less[,1]) 
 }else{
-	message("OTHER")
+	print("OTHER")
 
-	message("group_less")
-	message(group_less)
-	message("length(group_less)")
-	message(length(group_less))
+	print("group_less")
+	print(group_less)
+	print("length(group_less)")
+	print(length(group_less))
 
 	RE_disc$samples$group = as.factor(group_less)
 
@@ -599,28 +629,35 @@ for(nc in c(1:n_contrasts)){
 ```{r}
 # Plotting the top results for each pairwise test 
 to_plot = unique(sig_trans)
+print(to_plot)
+```
 
+```{r}
 for( gene in to_plot){
-	message(gene)
-	plot_data = data.frame(as.numeric(normcounts[which(row.names(normcounts) == gene),]))
-	plot_data$group = RE_disc$samples$group
-	#print(paste("Individual with max value = ", 
-	#	row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
-	colnames(plot_data) = c(gene, "group")
-	plot_data$group = as.factor(plot_data$group)
-	p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]),
-		fill=as.factor(plot_data[,2]))) +
-		geom_boxplot()+
-		labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
-		theme(legend.position= "right")+
-		theme(plot.title = element_text(hjust = 0.5))+
-		geom_jitter(color="black", size=0.4, alpha=0.7) +
-		theme(axis.text.x = element_blank())+
-		labs(fill = group_col)
+	w=which(row.names(normcounts) == gene)
+	print(paste0("gene : ",gene," - w=which(row.names(normcounts) == gene) : ",w))
+	#print(paste0("gene : ",gene))
+	if( length(w) > 0 ){
+		plot_data = data.frame(as.numeric(normcounts[w,]))
+		plot_data$group = RE_disc$samples$group
+		#	row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
+		colnames(plot_data) = c(gene, "group")
+		plot_data$group = as.factor(plot_data$group)
 
-	print(p)
+		p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]),
+			fill=as.factor(plot_data[,2]))) +
+			geom_boxplot()+
+			labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
+			theme(legend.position= "right")+
+			theme(plot.title = element_text(hjust = 0.5))+
+			geom_jitter(color="black", size=0.4, alpha=0.7) +
+			theme(axis.text.x = element_blank())+
+			labs(fill = group_col)
+		print(p)
+	} else {
+		print(paste0("0 which(row.names(normcounts) == ",gene," )"))
+	}
 }
-
 ```
 
 ```{r}
@@ -675,7 +712,7 @@ if(length(sig.loc) >1){
 #  save_pheatmap_pdf(pheat.plot.clust,  paste(out_dir,"/",date,".",group_col,".",user_filename,filetypes[filetype],".alpha_",alpha_thresh,".logFC_",logFC_thresh,".NoQuestion.clustered.heatmap.pdf", sep=""))
 
 }else{
-	message("Not enough significant results at these thresholds to plot a heatmap.")
+	print("Not enough significant results at these thresholds to plot a heatmap.")
 }
 
 ```
