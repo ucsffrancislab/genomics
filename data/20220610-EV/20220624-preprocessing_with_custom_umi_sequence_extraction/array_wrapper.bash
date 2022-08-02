@@ -477,6 +477,24 @@ else
 fi
 
 
+inbase=${outbase}
+outbase=${outbase}.rmsk
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash --sort -f \
+		--threads ${SLURM_NTASKS:-8} \
+		-x /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk/rmsk \
+		--very-sensitive-local -U ${inbase}.fasta.gz -o ${f} --un-gz ${outbase}.un.fagz
+
+	chmod -w ${outbase}.un.fagz
+
+	count_fasta_reads.bash ${outbase}.un.fagz
+	
+fi
+
+
 echo "Done"
 date
 
