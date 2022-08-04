@@ -20,12 +20,15 @@ curl -netrc -X MKCOL "${BOX}/"
 #curl -netrc -T ${f} "${BOX}/"
 #done
 
-BOX="${BOX_BASE}/${DATA}/${PROJECT}/out"
-curl -netrc -X MKCOL "${BOX}/"
-for s in SFHH011AC SFHH011BB SFHH011BZ SFHH011CH SFHH011I SFHH011S ; do
-	echo $s
-	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.bam "${BOX}/"
-	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.bai "${BOX}/"
-	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.reference.fasta.gz "${BOX}/"
-done
+#BOX="${BOX_BASE}/${DATA}/${PROJECT}/out"
+#curl -netrc -X MKCOL "${BOX}/"
+#for s in SFHH011AC SFHH011BB SFHH011BZ SFHH011CH SFHH011I SFHH011S ; do
+#	echo $s
+##	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.bam "${BOX}/"
+##	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.bai "${BOX}/"
+##	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.reference.fasta.gz "${BOX}/"
+#	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.reference.rmsk.un.hg38.bam "${BOX}/"
+#	curl -netrc -T out/${s}.quality.umi.t1.t3.hg38.rx.marked.reference.rmsk.un.hg38.bam.bai "${BOX}/"
+#done
 
+curl -netrc -T featureCounts.rmsk.un.hg38.ncbiRefSeq.transcript.gene_name.csv "${BOX}/"

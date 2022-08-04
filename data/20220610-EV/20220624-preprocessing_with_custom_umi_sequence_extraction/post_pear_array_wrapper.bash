@@ -371,8 +371,27 @@ fi
 #	
 
 
+
 inbase=${outbase}
-outbase="${inbase}.hg38"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38"
+outbase=${outbase}.rmsk
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash --sort \
+		--threads ${SLURM_NTASKS:-8} \
+		-x /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk/rmsk \
+		--very-sensitive-local -1 ${inbase}.R1.fastq.gz -2 ${inbase}.R2.fastq.gz -o ${f} --un-conc-gz ${outbase}.un.fqgz
+
+	chmod -w ${outbase}.un.?.fqgz
+
+	count_fasta_reads.bash ${outbase}.un.?.fqgz
+	
+fi
+
+
+inbase=${outbase}.un
+outbase="${inbase}.hg38"	#	"${OUT}/${s}.quality.umi.t1.t3.rmsk.un.hg38"
 f=${outbase}.bam
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
@@ -381,8 +400,8 @@ else
 		--threads ${SLURM_NTASKS:-8} \
 		--very-sensitive-local \
 		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts \
-		-1 ${inbase}.R1.fastq.gz \
-		-2 ${inbase}.R2.fastq.gz \
+		-1 ${inbase}.1.fqgz \
+		-2 ${inbase}.2.fqgz \
 		--output ${f} \
 		--rg-id ${sample} --rg SM:${sample} \
 		--sort
