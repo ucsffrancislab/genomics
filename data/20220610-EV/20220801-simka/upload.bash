@@ -20,7 +20,9 @@ curl -netrc -X MKCOL "${BOX}/"
 #curl -netrc -T ${f} "${BOX}/"
 #done
 
-for d in out? ; do
+#for i in 7 8 ; do
+#	d=out${i}
+for d in out-data* ; do
 	echo $d
 	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${d}"
 	curl -netrc -X MKCOL "${BOX}/"
