@@ -495,6 +495,27 @@ else
 fi
 
 
+
+inbase=${outbase}.un
+outbase="${inbase}.hg38"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.rx.marked.reference.rmsk.un.hg38"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/bowtie2.bash \
+		--threads ${SLURM_NTASKS:-8} \
+		--very-sensitive-local \
+		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts \
+		-f -U ${inbase}.fagz \
+		--output ${f} \
+		--rg-id ${sample} --rg SM:${sample} \
+		--sort
+fi
+
+
+
+
+
 echo "Done"
 date
 
@@ -507,9 +528,9 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 86
 
 
-mkdir -p /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs
+mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="${PWD}/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083

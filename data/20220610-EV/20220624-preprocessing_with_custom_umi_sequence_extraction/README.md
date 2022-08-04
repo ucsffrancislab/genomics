@@ -104,3 +104,20 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' pear_report.md > pear_report.csv
 
 
 
+```
+for f in out/*.quality.umi.t1.t3.hg38.rx.marked.reference.rmsk.bam.unaligned_count.txt ; do b=$( basename $f .quality.umi.t1.t3.hg38.rx.marked.reference.rmsk.bam.unaligned_count.txt ) ; u=$( cat $f ) ; a=$( cat ${f/unalign/align} ); c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null) ; echo ${b} - ${c}; done
+
+```
+
+```
+date=$( date "+%Y%m%d%H%M%S%N" )
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=transcript --time=360 --nodes=1 --ntasks=32 --mem=240G --output=${PWD}/logs/featureCounts.transcript.${date}.txt ~/.local/bin/featureCounts.bash -T 32 -a hg38.ncbiRefSeq.gtf -g gene_name -t transcript -o ${PWD}/featureCounts.rmsk.un.hg38.ncbiRefSeq.transcript.gene_name.csv ${PWD}/pear_out/*.quality.t1.t3.rmsk.un.hg38.bam
+```
+
+awk -F"\t" '{s=0;for(i=7;i<=NF;i++)s+=$i;if(s>100)print}'  featureCounts.rmsk.un.hg38.ncbiRefSeq.transcript.gene_name.csv | wc -l
+
+
+
+
+
