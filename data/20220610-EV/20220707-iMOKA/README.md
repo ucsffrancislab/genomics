@@ -14,6 +14,10 @@ ln -s $f ${RAW}/${l}.fastq.gz
 done
 ```
 
+That should've been fasta.gz. Problem?
+
+
+
 ```
 ln -s /francislab/data1/raw/20220610-EV/Sample\ covariate\ file_ids\ and\ indexes_for\ QB3_NovSeq\ SP\ 150PE_SFHH011\ S\ Francis_5-2-22hmh.csv metadata.csv
 ```
