@@ -28,7 +28,7 @@ Prepare runs
 ```
 DIR=${PWD}/raw
 while read subject field; do
-f=$( ls ${DIR}/${subject}.fastq.gz 2> /dev/null | paste -sd";" )
+f=$( ls ${DIR}/${subject}.fasta.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
@@ -37,7 +37,7 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( /SFHH/ ){print $1,$9}' /francislab/data1/
 
 DIR=${PWD}/raw
 while read subject field; do
-f=$( ls ${DIR}/${subject}.fastq.gz 2> /dev/null | paste -sd";" )
+f=$( ls ${DIR}/${subject}.fasta.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
@@ -46,7 +46,7 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( $9 ~ /Primary|Recurrent|control/ ){print 
 
 DIR=${PWD}/raw
 while read subject field; do
-f=$( ls ${DIR}/${subject}.fastq.gz 2> /dev/null | paste -sd";" )
+f=$( ls ${DIR}/${subject}.fasta.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
@@ -55,7 +55,7 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( $9 ~ /Primary|Recurrent/ ){print $1,$9}' 
 
 DIR=${PWD}/raw
 while read subject field; do
-f=$( ls ${DIR}/${subject}.fastq.gz 2> /dev/null | paste -sd";" )
+f=$( ls ${DIR}/${subject}.fasta.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
@@ -64,7 +64,7 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( $7 == "Panattoni" ){print $1,$9}' /franci
 
 DIR=${PWD}/raw
 while read subject field; do
-f=$( ls ${DIR}/${subject}.?.fastq.gz 2> /dev/null | paste -sd";" )
+f=$( ls ${DIR}/${subject}.fasta.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
