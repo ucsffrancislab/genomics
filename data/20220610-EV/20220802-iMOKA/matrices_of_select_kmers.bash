@@ -5,7 +5,8 @@ export OMP_NUM_THREADS=16
 export IMOKA_MAX_MEM_GB=96
 
 img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
-basedir=/francislab/data1/working/20220610-EV/20220707-iMOKA
+#basedir=/francislab/data1/working/20220610-EV/20220707-iMOKA
+basedir=${PWD}
 
 for k in 11 16 21 31 ; do
 	for subset in TumorControl PrimaryRecurrent PrimaryRecurrentControl ; do
