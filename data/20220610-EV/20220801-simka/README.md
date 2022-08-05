@@ -42,3 +42,9 @@ python3 ~/github/GATB/simka/scripts/visualization/run-visualization.py -in out-d
 
 
 
+tail -n +2 ../20220707-REdiscoverTE/metadata.csv | awk -F, '{print $1": /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/out/"$1".quality.umi.t1.t3.hg38.rx.marked.reference.rmsk.fagz"}' > datasets-rmskonly
+
+python3 ~/github/GATB/simka/scripts/visualization/run-visualization.py -in out-datasets-rmskonly-kmer-size_15_-abundance-min_2_-simple-dist_-complex-dist -out out-datasets-rmskonly-kmer-size_15_-abundance-min_2_-simple-dist_-complex-dist-figures -pca -heatmap -tree
+
+python3 ~/github/GATB/simka/scripts/visualization/run-visualization.py -in out-datasets-rmskonly-kmer-size_31_-abundance-min_2_-simple-dist_-complex-dist -out out-datasets-rmskonly-kmer-size_31_-abundance-min_2_-simple-dist_-complex-dist-figures -pca -heatmap -tree
+

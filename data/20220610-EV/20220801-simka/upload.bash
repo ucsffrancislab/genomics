@@ -22,7 +22,8 @@ curl -netrc -X MKCOL "${BOX}/"
 
 #for i in 7 8 ; do
 #	d=out${i}
-for d in out-data* ; do
+#for d in out-data* ; do
+for d in out-datasets-rmskonly* ; do
 	echo $d
 	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${d}"
 	curl -netrc -X MKCOL "${BOX}/"
