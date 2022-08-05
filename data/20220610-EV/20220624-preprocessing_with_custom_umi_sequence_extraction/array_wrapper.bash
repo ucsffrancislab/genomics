@@ -486,7 +486,8 @@ else
 	~/.local/bin/bowtie2.bash --sort -f \
 		--threads ${SLURM_NTASKS:-8} \
 		-x /francislab/data1/refs/sources/igv.broadinstitute.org/annotations/hg38/rmsk/rmsk \
-		--very-sensitive-local -U ${inbase}.fasta.gz -o ${f} --un-gz ${outbase}.un.fagz
+		--very-sensitive-local -U ${inbase}.fasta.gz -o ${f} \
+		--al-gz ${outbase}.fagz --un-gz ${outbase}.un.fagz
 
 	chmod -w ${outbase}.un.fagz
 
