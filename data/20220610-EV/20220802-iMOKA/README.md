@@ -60,7 +60,7 @@ done < <( awk 'BEGIN{FS=",";OFS="\t"}( $7 == "Panattoni" ){print $1,$9}' /franci
 
 DIR=${PWD}/raw
 while read subject field; do
-f=$( ls ${DIR}/${subject}.?.fasta.gz 2> /dev/null | paste -sd";" )
+f=$( ls ${DIR}/${subject}.fasta.gz 2> /dev/null | paste -sd";" )
 if [ -n "${f}" ] ; then
 echo -e "${subject}\t${field}\t${f}"
 fi
@@ -313,96 +313,12 @@ matrices_of_select_kmers.bash
 ```
 
 
-
-
-
-
-
-
-
-
-
-
----
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Upload results
-
-
-
-
 ```
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220707-iMOKA-PrimaryRecurrentControl"
-curl -netrc -X MKCOL "${BOX}/"
-for d in 11 16 21 31 ; do
-echo $d
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220707-iMOKA-PrimaryRecurrentControl/${d}"
-curl -netrc -X MKCOL "${BOX}/"
-curl -netrc -T PrimaryRecurrentControl/${d}/aggregated.json "${BOX}/"
-curl -netrc -T PrimaryRecurrentControl/${d}/output.json "${BOX}/"
-done
-
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220707-iMOKA-PrimaryRecurrent"
-curl -netrc -X MKCOL "${BOX}/"
-for d in 11 16 21 31 ; do
-echo $d
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220707-iMOKA-PrimaryRecurrent/${d}"
-curl -netrc -X MKCOL "${BOX}/"
-curl -netrc -T PrimaryRecurrent/${d}/aggregated.json "${BOX}/"
-curl -netrc -T PrimaryRecurrent/${d}/output.json "${BOX}/"
-done
-
-
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220707-iMOKA-TumorControl"
-curl -netrc -X MKCOL "${BOX}/"
-for d in 11 16 21 31 ; do
-echo $d
-BOX="https://dav.box.com/dav/Francis _Lab_Share/20220610-EV/20220707-iMOKA-TumorControl/${d}"
-curl -netrc -X MKCOL "${BOX}/"
-curl -netrc -T TumorControl/${d}/aggregated.json "${BOX}/"
-curl -netrc -T TumorControl/${d}/output.json "${BOX}/"
-done
-
+upload.bash
 ```
 
 
 
-SFHH011CD, SFHH011CE, SFHH011CF, SFHH011CG
-Run Panattoni samples through the GBMWT vs nonGBMWT models from 
-/francislab/data2/working/20210428-EV/20210706-iMoka
-
-Run them all.
-
-
-```
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/15 --k 15 --source_file ${PWD}/source.all.tsv
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/20 --k 20 --source_file ${PWD}/source.all.tsv
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/25 --k 25 --source_file ${PWD}/source.all.tsv
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/30 --k 30 --source_file ${PWD}/source.all.tsv
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/35 --k 35 --source_file ${PWD}/source.all.tsv
-```
-
-```
-predict_from_20210428-EV_20210706-iMoka.bash
-```
 
 
 
@@ -420,3 +336,4 @@ singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMO
 date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.dump.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_dump.bash 
 ```
+
