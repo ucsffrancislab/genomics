@@ -62,7 +62,7 @@ cd ${WORKDIR}
 date
 
 
-singularity exec ${img} iMOKA_core dump -i ${PWD}/11/create_matrix.json -o ${PWD}/11/kmer_matrix.tsv
+singularity exec ${img} iMOKA_core dump -i ${PWD}/16/create_matrix.json -o ${PWD}/16/kmer_matrix.tsv
 
 
 echo "Complete"
