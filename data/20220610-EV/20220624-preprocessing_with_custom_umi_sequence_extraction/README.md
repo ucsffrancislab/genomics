@@ -119,5 +119,18 @@ awk -F"\t" '{s=0;for(i=7;i<=NF;i++)s+=$i;if(s>100)print}'  featureCounts.rmsk.un
 
 
 
+```
+zcat SFHH011Z.quality.umi.R1.fastq.gz | sed -n '1~4p' | awk -F- '{print $NF}' | sort | uniq -c | sort -n > SFHH011Z.quality.umi.R1.fastq.gz.umi_counts.txt &
+
+zcat SFHH011Z.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)}' | sort | uniq -c | sort -n > SFHH011Z.quality.R2.fastq.gz.umi_counts.txt &
+zcat SFHH011S.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)}' | sort | uniq -c | sort -n > SFHH011S.quality.R2.fastq.gz.umi_counts.txt &
+zcat SFHH011CH.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)}' | sort | uniq -c | sort -n > SFHH011CH.quality.R2.fastq.gz.umi_counts.txt &
+zcat SFHH011A.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)}' | sort | uniq -c | sort -n > SFHH011A.quality.R2.fastq.gz.umi_counts.txt &
+zcat SFHH011BB.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)}' | sort | uniq -c | sort -n > SFHH011BB.quality.R2.fastq.gz.umi_counts.txt &
+zcat SFHH011CC.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)}' | sort | uniq -c | sort -n > SFHH011CC.quality.R2.fastq.gz.umi_counts.txt &
+```
+
+
+
 
 
