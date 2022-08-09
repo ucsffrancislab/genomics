@@ -38,6 +38,12 @@ x=123
 rmarkdown::render(tempfname, output_dir = dirname(fname))
 quit("no")
 
+---
+title: "Executable Rmarkdown Document Template"
+author: John Doe
+date: 20220712
+output: bookdown::html_document2
+---
 
 
 
@@ -61,17 +67,22 @@ args
 #opt
 ```
 
-```{r}
+```{r , fig.cap = "Testing"}
 x
 ```
 
 
----
-title: "Executable Rmarkdown Document Template"
-author: John Doe
-date: 20220712
-output: html_document
----
+The ref numbers don't work in html. I think that it is latex notation being used which would only be in the pdf.
+
+```{r figs, echo=FALSE, fig.width=7,fig.height=6,fig.cap="\\label{fig:figs}plotting example"}
+par(mfrow=c(2,2))
+plot(1:10, col=2)
+plot(density(runif(100, 0.0, 1.0)))
+plot(runif(100, 0.0, 1.0),type="l")
+```
+
+in Figure \ref{fig:figs} we see examples of plotting in R.
+
 
 File extension is important. 
 
