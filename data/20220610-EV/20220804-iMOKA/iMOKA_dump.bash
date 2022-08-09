@@ -24,7 +24,7 @@ export SINGULARITY_BINDPATH=/francislab,/scratch
 export OMP_NUM_THREADS=${threads}
 export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
 
-dir="/francislab/data1/working/20220610-EV/20220802-iMOKA"	#/out"
+dir="/francislab/data1/working/20220610-EV/20220804-iMOKA"	#/out"
 
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
@@ -62,7 +62,7 @@ cd ${WORKDIR}
 date
 
 
-singularity exec ${img} iMOKA_core dump -i ${PWD}/11/create_matrix.json -o ${PWD}/11/kmer_matrix.tsv
+singularity exec ${img} iMOKA_core dump -i ${PWD}/16/create_matrix.json -o ${PWD}/16/kmer_matrix.tsv
 
 
 echo "Complete"

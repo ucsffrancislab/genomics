@@ -237,6 +237,17 @@ matrices_of_select_kmers.bash
 ```
 
 
+```
+export SINGULARITY_BINDPATH=/francislab
+export OMP_NUM_THREADS=16
+export IMOKA_MAX_MEM_GB=96
+
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core create -i 11/create_matrix.tsv -o 11/create_matrix.json
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.dump.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_dump.bash 
+```
+ 
 
 
 
@@ -247,11 +258,23 @@ matrices_of_select_kmers.bash
 
 
 ```
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=60 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/16 --k 16 --source_file ${PWD}/source.testse.tsv
+
+
+
+
 export SINGULARITY_BINDPATH=/francislab
 export OMP_NUM_THREADS=16
 export IMOKA_MAX_MEM_GB=96
 
-singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core create -i 11/create_matrix.tsv -o 11/create_matrix.json
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core create -i 16/create_matrix.tsv -o 16/create_matrix.json
+
+
+
+
+
 
 date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.dump.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_dump.bash 
