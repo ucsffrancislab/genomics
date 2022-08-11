@@ -393,7 +393,7 @@ fi
 
 
 #	Would this sed command be faster?
-#	samtools view SFHH011Z.quality.umi.t1.t3.hg38.bam | sed -r "s/^([^,]+)-([ACGTN]{18})(.*)$/\1\3\tRX:Z:\2/"
+#	samtools view -h SFHH011Z.quality.umi.t1.t3.hg38.bam | sed -r "s/^([^,]+)-([ACGTN]{18})(.*)$/\1\3\tRX:Z:\2/"
 
 
 
@@ -512,6 +512,60 @@ else
 		--rg-id ${sample} --rg SM:${sample} \
 		--sort
 fi
+
+
+
+
+
+
+#	start from back a bit
+
+inbase="${OUT}/${s}.quality.umi.t1.t3.hg38"
+outbase="${inbase}.umi_filter"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.umi_filter"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	RX:Z:........ is the last thing on the line
+	#	{ split($NF,rx,":");umi=rx[3];
+	samtools view -h ${inbase}.bam | awk 'BEGIN{FS=OFS="\t"}( /^@/ ){print;next}{ split($1,name,"-"); umi=name[3];a=gsub(/[aA]/,"",umi);c=gsub(/[cC]/,"",umi);g=gsub(/[gG]/,"",umi);t=gsub(/[tT]/,"",umi);x=17;if(a<x && c<x && g<x && t<x) print $0,"RX:Z:"name[3] }' | samtools view -o ${f} -
+
+	chmod -w ${f}
+fi
+
+inbase=${outbase}
+outbase="${inbase}.marked"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.umi_filter.marked"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	--MAX_EDIT_DISTANCE_TO_JOIN 1
+	java -jar $PICARD_HOME/picard.jar UmiAwareMarkDuplicatesWithMateCigar \
+		--TAGGING_POLICY All \
+		--INPUT ${inbase}.bam \
+		--CREATE_INDEX true \
+		--OUTPUT ${outbase}.bam \
+		--METRICS_FILE ${outbase}.metrics.txt \
+		--UMI_METRICS_FILE ${outbase}.umi_metrics.txt
+	chmod -w ${outbase}.*
+
+	samtools view -F 3844 -c ${f} > ${f}.F3844.aligned_count.txt
+	chmod -w ${f}.F3844.aligned_count.txt
+
+fi
+
+inbase="${outbase}"
+outbase="${inbase}"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38.umi_filter.marked"
+f=${outbase}.fa.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	samtools fasta -F 3844 ${inbase}.bam | gzip > ${f}
+	chmod -w ${f}
+fi
+
+
+
 
 
 

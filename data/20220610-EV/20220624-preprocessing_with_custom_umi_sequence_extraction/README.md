@@ -134,3 +134,59 @@ zcat SFHH011CC.quality.R2.fastq.gz | sed -n '2~4p' | awk '{print substr($0,0,18)
 
 
 
+
+
+
+
+
+Count already trimmed reads. 
+Count the UMIs.
+
+
+```
+for f in *.quality.umi.t1.t3.R1.fastq.gz ; do echo $f
+if [ ! -f ${f}.umi_counts.txt ] ; then
+zcat $f | sed -n '1~4p' | awk -F- '{print $NF}' | sort | uniq -c | sort -n > ${f}.umi_counts.txt
+fi
+done 
+```
+
+Filter out UMIs with too much homogeneity
+
+
+cat SFHH011AA.quality.umi.t1.t3.R1.fastq.gz.umi_counts.txt | awk '{s=$0;a=gsub(/[aA]/,"");c=gsub(/[cC]/,"");g=gsub(/[gG]/,"");t=gsub(/[tT]/,"");max=16;if(a<=max && c<=max && g<=max && t<=max) print s, a, c, g, t}'
+
+```
+for f in *.quality.umi.t1.t3.R1.fastq.gz.umi_counts.txt ; do echo $f
+if [ ! -f ${f%.txt}.14.txt ] ; then
+cat ${f} | awk 'BEGIN{OFS="\t"}{s=$2;a=gsub(/[aA]/,"");c=gsub(/[cC]/,"");g=gsub(/[gG]/,"");t=gsub(/[tT]/,"");x=14;if(a<x && c<x && g<x && t<x) print $1, s, a, c, g, t}' > ${f%.txt}.14.txt
+fi
+if [ ! -f ${f%.txt}.15.txt ] ; then
+cat ${f} | awk 'BEGIN{OFS="\t"}{s=$2;a=gsub(/[aA]/,"");c=gsub(/[cC]/,"");g=gsub(/[gG]/,"");t=gsub(/[tT]/,"");x=15;if(a<x && c<x && g<x && t<x) print $1, s, a, c, g, t}' > ${f%.txt}.15.txt
+fi
+if [ ! -f ${f%.txt}.16.txt ] ; then
+cat ${f} | awk 'BEGIN{OFS="\t"}{s=$2;a=gsub(/[aA]/,"");c=gsub(/[cC]/,"");g=gsub(/[gG]/,"");t=gsub(/[tT]/,"");x=16;if(a<x && c<x && g<x && t<x) print $1, s, a, c, g, t}' > ${f%.txt}.16.txt
+fi
+if [ ! -f ${f%.txt}.17.txt ] ; then
+cat ${f} | awk 'BEGIN{OFS="\t"}{s=$2;a=gsub(/[aA]/,"");c=gsub(/[cC]/,"");g=gsub(/[gG]/,"");t=gsub(/[tT]/,"");x=17;if(a<x && c<x && g<x && t<x) print $1, s, a, c, g, t}' > ${f%.txt}.17.txt
+fi
+if [ ! -f ${f%.txt}.18.txt ] ; then
+cat ${f} | awk 'BEGIN{OFS="\t"}{s=$2;a=gsub(/[aA]/,"");c=gsub(/[cC]/,"");g=gsub(/[gG]/,"");t=gsub(/[tT]/,"");x=18;if(a<x && c<x && g<x && t<x) print $1, s, a, c, g, t}' > ${f%.txt}.18.txt
+fi
+done
+```
+
+```
+for f in *.quality.umi.t1.t3.R1.fastq.gz.umi_counts{.,.??.}txt ; do echo $f
+if [ ! -f ${f%.txt}.sum.txt ] ; then
+cat ${f} | awk '{sum+=$1}END{print sum}' > ${f%.txt}.sum.txt
+fi
+done
+```
+
+
+```
+./umi_report.bash > umi_report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' umi_report.md > umi_report.csv
+```
+
