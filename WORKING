@@ -5,21 +5,32 @@ Write Paper
 
 
 
-Try to do ... but paired. Extract reference or keep as is?
-/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction
+/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest
+hg38.chrXYM_alts.shredded.length200.minlength150.overlap100.noAllNs.hg38.chrXYM_alts.bam
+hg38.151.fa
+iMOKA on hg38
+
+            811489 francisla  bowtie2   gwendt  R 1-12:25:10      1 c4-n17
+            812921 francisla    iMOKA   gwendt PD       0:00      1 (QOSMaxCpuPerUserLimit)
+[1]+  Running                 nohup reference2regions.bash &
+
+
+
+
 
 Unassembled analysis : Trim / filter / Align paired hg38
 /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/pear
 
-/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction/pear
-
 /francislab/data1/working/20220610-EV
-EV “TestSE” samples ( SFHH011AC SFHH011BB SFHH011BZ SFHH011CH SFHH011I SFHH011S ) (plus 2 random subjects SFHH011Z and SFHH011BO) analysis and comparison 
+EV "TestSE" samples ( SFHH011AC SFHH011BB SFHH011BZ SFHH011CH SFHH011I SFHH011S ) (plus 2 random subjects SFHH011Z and SFHH011BO) analysis and comparison 
 Group hg38 VCF  Bowtie2 --all
 Kmer tables
 Simka
 
 
+
+Try to do ... but paired. Extract reference or keep as is?
+/francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction
 
 
 
