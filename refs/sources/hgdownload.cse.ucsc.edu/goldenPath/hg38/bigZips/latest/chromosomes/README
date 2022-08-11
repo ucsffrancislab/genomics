@@ -89,3 +89,42 @@ sort -t, -k4nr bed_files_with_region_lengths.csv
 
 
 
+
+
+
+  945  bg
+  946  more split/chr21.split.chr21.sam
+
+
+shredd labels the reads MUCH BETTER than faSplit. However it does keep all of the NNNNN reads. Perhaps there's an option for that.
+
+~/.local/BBMap_38.70/shred.sh in=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa out=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length80.minlength70.overlap40.fa length=80 minlength=70 overlap=40 -Xmx=10G
+
+cat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length80.minlength70.overlap40.fa | paste - - - | awk -F"\t" '($2 !~ /^N+$/ && $3 !~ /^N+$/ ){print $1;print $2;print $3}' > /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length80.minlength70.overlap40.noAllNs.fa 
+
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=bowtie2 --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2.shredded.${date}.txt ~/.local/bin/bowtie2.bash --threads 64 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts -f -U /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length80.minlength70.overlap40.noAllNs.fa --all --sort --output /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length80.minlength70.overlap40.noAllNs.hg38.chrXYM_alts.bam
+
+
+
+
+
+
+
+
+
+
+
+
+
+~/.local/BBMap_38.70/shred.sh in=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa out=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length200.minlength150.overlap100.fa length=200 minlength=150 overlap=100 -Xmx=20G
+
+cat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length200.minlength150.overlap100.fa | paste - - - - | awk -F"\t" '($2 !~ /^N+$/ && $3 !~ /^N+$/ && $4 !~ /^N+$/ ){print $1;print $2;print $3;print $4}' > /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length200.minlength150.overlap100.noAllNs.fa 
+
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=bowtie2 --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2.shredded.${date}.txt ~/.local/bin/bowtie2.bash --threads 64 -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts -f -U /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length200.minlength150.overlap100.noAllNs.fa --all --sort --output /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.shredded.length200.minlength150.overlap100.noAllNs.hg38.chrXYM_alts.bam
+
+
+
