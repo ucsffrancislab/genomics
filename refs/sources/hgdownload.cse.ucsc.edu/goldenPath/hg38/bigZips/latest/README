@@ -64,3 +64,33 @@ done > hg38.resorted.fa
 
 
 
+
+
+
+Split reference into unique set of kmers
+Extract with 'samtools faidx'? Probably faster way, but this exists.
+
+loop over hg38.fa.fai
+
+l=151
+while read chr length a b c ; do
+for (( i=1 ; i<=${length}+1-${l} ; i++ )) ; do
+samtools faidx -n ${l} hg38.fa ${chr}:${i}-$((i+l-1))
+done
+done < hg38.fa.fai > hg38.151.fa
+
+
+i=1
+l=200
+chrUn_KI270385v1 990
+
+for (( i=1 ; i<=990+1-$l ; i++ )) ; do
+samtools faidx -n 50 hg38.fa chrUn_KI270385v1:${i}-$((i+l-1))
+done
+
+
+
+
+
+
+
