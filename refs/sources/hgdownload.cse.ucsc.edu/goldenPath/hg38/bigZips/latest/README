@@ -93,4 +93,11 @@ done
 
 
 
+threads=64
+mem=7
+export SINGULARITY_BINDPATH=/francislab,/scratch
+export OMP_NUM_THREADS=${threads}
+export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.txt"  --time=7200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 151 --ram $((threads*mem)) --threads ${threads}"
 
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.txt"  --time=7200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 151 --ram $((threads*mem)) --threads ${threads} --min-counts 1"
