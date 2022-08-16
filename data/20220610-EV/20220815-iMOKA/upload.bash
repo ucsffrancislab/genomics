@@ -16,6 +16,10 @@ for f in metadata.csv ; do
 done
 
 for k in 11 16 21 31 ; do
+	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${k}"
+	curl -netrc -X MKCOL "${BOX}/"
+	curl -netrc -T ${k}/kmer_matrix.tsv.gz "${BOX}/"
+
 	for s in TumorControl PrimaryRecurrent PrimaryRecurrentControl ; do
 		BOX="${BOX_BASE}/${DATA}/${PROJECT}/${s}-${k}"
 		curl -netrc -X MKCOL "${BOX}/"

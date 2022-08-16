@@ -230,12 +230,12 @@ Predict those not used in models
 
 
 ```
-predict.bash
+./predict.bash
 ```
 
 
 ```
-matrices_of_select_kmers.bash
+./matrices_of_select_kmers.bash
 ```
 
 
@@ -271,3 +271,9 @@ BOX="${BOX_BASE}/${DATA}/${PROJECT}/${k}"
 curl -netrc -T 16/kmer_matrix.tsv.gz "${BOX}/"
 ```
  
+
+
+
+```
+./upload.bash
+```
