@@ -100,4 +100,55 @@ export OMP_NUM_THREADS=${threads}
 export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.txt"  --time=7200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 151 --ram $((threads*mem)) --threads ${threads}"
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.txt"  --time=7200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 151 --ram $((threads*mem)) --threads ${threads} --min-counts 1"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.16.txt"  --time=1200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 16 --ram $((threads*mem)) --threads ${threads} --min-counts 1 --keep-files --output-dir ./preprocess-16/"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.151.txt"  --time=1200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 151 --ram $((threads*mem)) --threads ${threads} --min-counts 1 --keep-files --output-dir ./preprocess-151/"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.101.txt"  --time=1200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 101 --ram $((threads*mem)) --threads ${threads} --min-counts 1 --keep-files --output-dir ./preprocess-101/"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.51.txt"  --time=1200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length 51 --ram $((threads*mem)) --threads ${threads} --min-counts 1 --keep-files --output-dir ./preprocess-51/"
+
+
+
+
+
+
+hg38.fa - 1GB
+hg38 bt2 - 4GB
+
+
+hg38.tsv.gz - k=151 - 100GB
+
+hg38.tsv.gz - k=101 -  73GB
+
+hg38.tsv.gz - k=51  -  33GB
+
+hg38.tsv.gz - k=16  -   3GB
+
+
+8TB in fasta. 40TB in bowtie2 indexes
+
+
+threads=64
+mem=7
+export SINGULARITY_BINDPATH=/francislab,/scratch
+export OMP_NUM_THREADS=${threads}
+export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
+k=15
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/iMOKA.preprocess.${k}.txt"  --time=1200 --nodes=1 --ntasks=${threads} --mem=495G --wrap="singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img preprocess.sh --input-file source.tsv --kmer-length ${k} --ram $((threads*mem)) --threads ${threads} --min-counts 1 --keep-files --output-dir ./preprocess-${k}/"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
