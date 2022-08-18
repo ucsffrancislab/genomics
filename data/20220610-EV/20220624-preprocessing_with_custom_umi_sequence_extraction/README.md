@@ -190,3 +190,26 @@ done
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' umi_report.md > umi_report.csv
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+for s in $( grep "^5" SFHH011Z.quality.umi.t1.t3.R1.fastq.gz.umi_counts.17.txt | awk '{print $2}') ; do
+echo $s
+zgrep -A 3 "\-${s}\$" SFHH011Z.quality.umi.t1.t3.R1.fastq.gz | sed -n '2~4p'
+done
+```
+
+
+
