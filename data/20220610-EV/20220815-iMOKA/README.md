@@ -268,6 +268,7 @@ PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) )
 k=16
 BOX="${BOX_BASE}/${DATA}/${PROJECT}/${k}"
+curl -netrc -X MKCOL "${BOX}/"
 curl -netrc -T 16/kmer_matrix.tsv.gz "${BOX}/"
 ```
  
