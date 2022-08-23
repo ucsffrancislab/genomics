@@ -207,8 +207,22 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' umi_report.md > umi_report.csv
 ```
 for s in $( grep "^5" SFHH011Z.quality.umi.t1.t3.R1.fastq.gz.umi_counts.17.txt | awk '{print $2}') ; do
 echo $s
-zgrep -A 3 "\-${s}\$" SFHH011Z.quality.umi.t1.t3.R1.fastq.gz | sed -n '2~4p'
-done
+seqs=$( zgrep --no-group-separator -A 3 "\-${s}\$" SFHH011Z.quality.umi.t1.t3.R1.fastq.gz | sed -n '2~4p' )
+for seq1 in $seqs ; do
+echo ${seq1}
+for seq2 in $seqs ; do
+./levenshtein ${seq1} ${seq2}
+done ; done ; done
+```
+
+
+
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="t3hg38" --output="${PWD}/SFHH011Z.quality.umi.t1.t3.hg38.nonrandomized.bam.log"  --time=6000 --nodes=1 --ntasks=64 --mem=495G ${PWD}/bowtie2_nonrandomized.bash -U ${PWD}/out/SFHH011Z.quality.umi.t1.t3.R1.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive --sort --output ${PWD}/SFHH011Z.quality.umi.t1.t3.hg38.nonrandomized.bam --threads 64
+
 ```
 
 

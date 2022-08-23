@@ -362,6 +362,7 @@ fi
 #	
 
 
+
 inbase=${outbase}
 outbase="${inbase}.hg38"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38"
 f=${outbase}.bam
@@ -377,6 +378,9 @@ else
 		--rg-id ${sample} --rg SM:${sample} \
 		--sort
 fi
+
+
+
 
 
 inbase=${outbase}
@@ -571,6 +575,111 @@ fi
 
 
 
+
+
+inbase="${OUT}/${s}.quality.umi.t1.t3"
+outbase="${inbase}.umifiltered-nonrepeatedumi"	#	"${OUT}/${s}.quality.umi.t1.t3.umifiltered-nonrepeatedumi"
+f=${outbase}.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+#	zcat ${inbase}.R1.fastq.gz \
+#		| paste - - - - \
+#		| awk 'BEGIN{FS=OFS="\t"}{n=split($1,a,"-");print a[n],$0}' \
+#		| sort -k1,1 \
+#		| awk 'BEGIN{FS=OFS="\t"}{current=$0;split(previous,fields,"\t");if(previous && ($1 != fields[1])){print fields[2];print fields[3];print fields[4];print fields[5];repeated=0}else{repeated=1};previous=current}END{split(previous,fields,"\t");if(repeated==0){print fields[2];print fields[3];print fields[4];print fields[5]}}' \
+#		| gzip > ${f}
+
+#zca^CSFHH011Z.quality.umi.t1.t3.R1.fastq.gz | paste - - - - | awk 'BEGIN{FS=OFS="\t"}{n=split($1,a,"-");print a[n],$0}' | head | sort -k1,1 | awk 'BEGIN{FS=OFS="\t"}{current=$0;split(previous,fields,"\t");if(previous && ($1 != fields[1])){print fields[2],fields[3],fields[4],fields[5];repeated=0}else{repeated=1};previous=current}END{split(previous,fields,"\t");if(repeated==0){print fields[2],fields[3],fields[4],fields[5]}}' | wc -l
+
+#awk 'BEGIN{FS=OFS="\t"}( FNR == NR ){kmer[$2]=$1}( FNR != NR ){n=split($1,a,"-");if( kmer[a[n]] == 1 ){print $1; print $2 ; print $3; print $4}' out/SFHH011Z.quality.umi.t1.t3.R1.fastq.gz.umi_counts.17.txt <( zcat out/SFHH011Z.quality.umi.t1.t3.R1.fastq.gz | paste - - - - )
+
+	awk 'BEGIN{FS=OFS="\t"}( FNR == NR ){kmer[$2]=$1}( FNR != NR ){n=split($1,a,"-");if( kmer[a[n]] == 1 ){print $1; print $2 ; print $3; print $4}}' ${inbase}.R1.fastq.gz.umi_counts.17.txt <( zcat ${inbase}.R1.fastq.gz | paste - - - - ) | gzip > ${f}
+
+	chmod -w ${f}
+fi
+
+
+
+
+
+
+
+
+
+
+#	start from back a bit
+
+inbase="${OUT}/${s}.quality.umi.t1.t3"
+outbase="${inbase}.hg38-nonrandomized"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38-nonrandomized"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	${PWD}/bowtie2_nonrandomized.bash \
+		--threads ${SLURM_NTASKS:-8} \
+		--very-sensitive-local \
+		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts \
+		-U ${inbase}.R1.fastq.gz \
+		--output ${f} \
+		--rg-id ${sample} --rg SM:${sample} \
+		--sort
+fi
+
+inbase="${outbase}"
+outbase="${inbase}.umi_filter"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38-nonrandomized.umi_filter"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	RX:Z:........ is the last thing on the line
+	#	{ split($NF,rx,":");umi=rx[3];
+	samtools view -h ${inbase}.bam | awk 'BEGIN{FS=OFS="\t"}( /^@/ ){print;next}{ split($1,name,"-"); umi=name[3];a=gsub(/[aA]/,"",umi);c=gsub(/[cC]/,"",umi);g=gsub(/[gG]/,"",umi);t=gsub(/[tT]/,"",umi);x=17;if(a<x && c<x && g<x && t<x) print $0,"RX:Z:"name[3] }' | samtools view -o ${f} -
+	chmod -w ${f}
+fi
+
+inbase=${outbase}
+outbase="${inbase}.marked"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38-nonrandomized.umi_filter.marked"
+f=${outbase}.bam
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	--MAX_EDIT_DISTANCE_TO_JOIN 1
+	java -jar $PICARD_HOME/picard.jar UmiAwareMarkDuplicatesWithMateCigar \
+		--TAGGING_POLICY All \
+		--INPUT ${inbase}.bam \
+		--CREATE_INDEX true \
+		--OUTPUT ${outbase}.bam \
+		--METRICS_FILE ${outbase}.metrics.txt \
+		--UMI_METRICS_FILE ${outbase}.umi_metrics.txt
+	chmod -w ${outbase}.*
+
+	samtools view -F 3844 -c ${f} > ${f}.F3844.aligned_count.txt
+	chmod -w ${f}.F3844.aligned_count.txt
+
+fi
+
+inbase="${outbase}"
+outbase="${inbase}"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38-nonrandomized.umi_filter.marked"
+f=${outbase}.fa.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	samtools fasta -F 3844 ${inbase}.bam | gzip > ${f}
+	chmod -w ${f}
+fi
+
+
+
+
+
+
+
+
+
+
+
+
 echo "Done"
 date
 
@@ -585,7 +694,7 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="${PWD}/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="${PWD}/logs/preprocess.${date}-%A_%a.out" --time=1400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
