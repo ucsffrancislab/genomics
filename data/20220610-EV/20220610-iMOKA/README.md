@@ -439,3 +439,29 @@ date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.dump.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_dump.bash 
 ```
 
+
+
+
+
+
+
+
+
+
+20220831 - k=16 R1 only matrix
+
+```
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="/francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.${date}.out" --time=2880 --nodes=1 --ntasks=64 --mem=495G /francislab/data1/working/20220610-EV/20220610-iMOKA/iMOKA_just_preprocess.bash --dir /francislab/data1/working/20220610-EV/20220610-iMOKA/16R1 --k 16 --source_file ${PWD}/source.all.R1.tsv
+
+
+export SINGULARITY_BINDPATH=/francislab
+export OMP_NUM_THREADS=16
+export IMOKA_MAX_MEM_GB=96
+
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core create -i 16R1/create_matrix.tsv -o 16R1/create_matrix.json
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.dump.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_dump.bash --k 16R1
+```
+

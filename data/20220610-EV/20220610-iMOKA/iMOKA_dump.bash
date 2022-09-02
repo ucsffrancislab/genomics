@@ -32,7 +32,7 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 		--dir)
 			shift; dir=$1; shift;;
-		--k)
+		-k|--k)
 			shift; k=$1; shift;;
 		--source_file)
 			shift; source_file=$1; shift;;
@@ -63,7 +63,7 @@ cd ${WORKDIR} # important
 date
 
 
-singularity exec ${img} iMOKA_core dump -i ${PWD}/16/create_matrix.json -o ${PWD}/16/kmer_matrix.tsv
+singularity exec ${img} iMOKA_core dump -i ${PWD}/${k}/create_matrix.json -o ${PWD}/${k}/kmer_matrix.tsv
 
 
 echo "Complete"
