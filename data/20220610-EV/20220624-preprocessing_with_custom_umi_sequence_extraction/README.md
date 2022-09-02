@@ -227,3 +227,78 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="t3hg38" -
 
 
 
+SFHH011Z.quality.R2.fastq.gz  average quality filtered (still includes UMI)
+SFHH011Z.quality.t1.R2.fastq.gz  UMI and adapter removed
+SFHH011Z.quality.t1.t3.R2.fastq.gz	Poly T removed
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="R2.vs" --output="${PWD}/SFHH011Z.quality.R2.hg38.vs.bam.log"  --time=6000 --nodes=1 --ntasks=16 --mem=120G ~/.local/bin/bowtie2.bash -U ${PWD}/out/SFHH011Z.quality.R2.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive --sort --output ${PWD}/SFHH011Z.quality.R2.hg38.vs.bam --threads 16
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="t1.R2.vs" --output="${PWD}/SFHH011Z.quality.t1.R2.hg38.vs.bam.log"  --time=6000 --nodes=1 --ntasks=16 --mem=120G ~/.local/bin/bowtie2.bash -U ${PWD}/out/SFHH011Z.quality.t1.R2.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive --sort --output ${PWD}/SFHH011Z.quality.t1.R2.hg38.vs.bam --threads 16
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="t1.t3.R2.vs" --output="${PWD}/SFHH011Z.quality.t1.t3.R2.hg38.vs.bam.log"  --time=6000 --nodes=1 --ntasks=16 --mem=120G ~/.local/bin/bowtie2.bash -U ${PWD}/out/SFHH011Z.quality.t1.t3.R2.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive --sort --output ${PWD}/SFHH011Z.quality.t1.t3.R2.hg38.vs.bam --threads 16
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="R2.vsl" --output="${PWD}/SFHH011Z.quality.R2.hg38.vsl.bam.log"  --time=6000 --nodes=1 --ntasks=16 --mem=120G ~/.local/bin/bowtie2.bash -U ${PWD}/out/SFHH011Z.quality.R2.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive-local --sort --output ${PWD}/SFHH011Z.quality.R2.hg38.vsl.bam --threads 16
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="t1.R2.vsl" --output="${PWD}/SFHH011Z.quality.t1.R2.hg38.vsl.bam.log"  --time=6000 --nodes=1 --ntasks=16 --mem=120G ~/.local/bin/bowtie2.bash -U ${PWD}/out/SFHH011Z.quality.t1.R2.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive-local --sort --output ${PWD}/SFHH011Z.quality.t1.R2.hg38.vsl.bam --threads 16
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="t1.t3.R2.vsl" --output="${PWD}/SFHH011Z.quality.t1.t3.R2.hg38.vsl.bam.log"  --time=6000 --nodes=1 --ntasks=16 --mem=120G ~/.local/bin/bowtie2.bash -U ${PWD}/out/SFHH011Z.quality.t1.t3.R2.fastq.gz -x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts --very-sensitive-local --sort --output ${PWD}/SFHH011Z.quality.t1.t3.R2.hg38.vsl.bam --threads 16
+
+```
+
+
+```
+SFHH011Z.quality.R2.fastq.gz  average quality filtered (still includes UMI)
+
+SFHH011Z.quality.R2.hg38.vs.bam.err.txt ( local )
+6848401 reads; of these:
+  6848401 (100.00%) were unpaired; of these:
+    3968954 (57.95%) aligned 0 times
+    2253777 (32.91%) aligned exactly 1 time
+    625670 (9.14%) aligned >1 times
+42.05% overall alignment rate
+
+SFHH011Z.quality.R2.hg38.vsl.bam.err.txt ( end-to-end )
+6848401 reads; of these:
+  6848401 (100.00%) were unpaired; of these:
+    356023 (5.20%) aligned 0 times
+    1837446 (26.83%) aligned exactly 1 time
+    4654932 (67.97%) aligned >1 times
+94.80% overall alignment rate
+
+
+SFHH011Z.quality.t1.R2.fastq.gz  UMI and adapter removed
+
+SFHH011Z.quality.t1.R2.hg38.vs.bam.err.txt ( local )
+6848148 reads; of these:
+  6848148 (100.00%) were unpaired; of these:
+    3766905 (55.01%) aligned 0 times
+    2290705 (33.45%) aligned exactly 1 time
+    790538 (11.54%) aligned >1 times
+44.99% overall alignment rate
+
+SFHH011Z.quality.t1.R2.hg38.vsl.bam.err.txt ( end-to-end )
+6848148 reads; of these:
+  6848148 (100.00%) were unpaired; of these:
+    588957 (8.60%) aligned 0 times
+    1881307 (27.47%) aligned exactly 1 time
+    4377884 (63.93%) aligned >1 times
+91.40% overall alignment rate
+
+
+
+SFHH011Z.quality.t1.t3.R2.fastq.gz	Poly T removed
+
+SFHH011Z.quality.t1.t3.R2.hg38.vs.bam.err.txt
+2927608 reads; of these:
+  2927608 (100.00%) were unpaired; of these:
+    97790 (3.34%) aligned 0 times
+    2046583 (69.91%) aligned exactly 1 time
+    783235 (26.75%) aligned >1 times
+96.66% overall alignment rate
+
+SFHH011Z.quality.t1.t3.R2.hg38.vsl.bam.err.txt
+2927608 reads; of these:
+  2927608 (100.00%) were unpaired; of these:
+    90828 (3.10%) aligned 0 times
+    1564894 (53.45%) aligned exactly 1 time
+    1271886 (43.44%) aligned >1 times
+96.90% overall alignment rate
+```
+
