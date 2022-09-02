@@ -171,6 +171,71 @@ else
 	chmod -w ${f}
 fi
 
+outbase="${inbase}.umi"	#	"${OUT}/${s}.quality.umi
+f=${outbase}.R2.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	echo "Adding UMI to read name"
+	#paste <( zcat ${inbase}.R2.fastq.gz | paste - - - - ) |
+	zcat ${inbase}.R2.fastq.gz | paste - - - - |
+	awk -F"\t" -v l=${length} '{
+		umi=substr($2,0,l)
+		gsub(/ /,"-",$1)
+		print $1"-"umi
+		print $2
+		print $3
+		print $4
+	}' | gzip > ${f}
+	chmod -w ${f}
+fi
+
+
+
+
+
+
+inbase="${OUT}/${s}.quality.umi"
+outbase="${inbase}.umi_filter"	#	"${OUT}/${s}.quality.umi.umi_filter"
+f=${outbase}.R2.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	RX:Z:........ is the last thing on the line
+	#	{ split($NF,rx,":");umi=rx[3];
+	zcat ${inbase}.R2.fastq.gz | paste - - - - | awk -F"\t" '{ split($1,name,"-"); umi=name[3];a=gsub(/[aA]/,"",umi);c=gsub(/[cC]/,"",umi);g=gsub(/[gG]/,"",umi);t=gsub(/[tT]/,"",umi);x=17;if(a<x && c<x && g<x && t<x){print $1;print $2;print $3;print $4}}' | gzip > ${f}
+	chmod -w ${f}
+fi
+
+#inbase=${OUT}/${s}.quality
+inbase=${OUT}/${s}.quality.umi.umi_filter
+outbase="${inbase}.t1"
+f=${outbase}.R2.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/cutadapt.bash \
+		--cores ${SLURM_NTASKS:-8} \
+		--match-read-wildcards -n 4 \
+		-a CTGTCTCTTATACACATCTC \
+		-m 10 --trim-n \
+		-u 21 \
+		-o ${f} ${inbase}.R2.fastq.gz
+#		-A CTGTCTCTTATACACATCTC \
+#		-U 21 \
+#		-p ${outbase}.R2.fastq.gz \
+#		${inbase}.R2.fastq.gz
+fi
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -179,7 +244,7 @@ fi
 #cutadapt: error: You used an option that enabled paired-end mode (such as -p, -A, -G, -B, -U), but then you also need to provide two input files (you provided one) or use --interleaved.
 
 
-inbase=${outbase}
+inbase=${OUT}/${s}.quality.umi
 outbase="${inbase}.t1"	#	"${OUT}/${s}.quality.umi.t1"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
@@ -190,8 +255,28 @@ else
 		--match-read-wildcards -n 4 \
 		-a CTGTCTCTTATACACATCTC \
 		-m 10 --trim-n \
-		-o ${outbase}.R1.fastq.gz \
-		${inbase}.R1.fastq.gz
+		-o ${f} ${inbase}.R1.fastq.gz
+#		-A CTGTCTCTTATACACATCTC \
+#		-U 21 \
+#		-p ${outbase}.R2.fastq.gz \
+#		${inbase}.R2.fastq.gz
+fi
+
+
+#inbase=${OUT}/${s}.quality
+inbase=${OUT}/${s}.quality.umi
+outbase="${inbase}.t1"
+f=${outbase}.R2.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/cutadapt.bash \
+		--cores ${SLURM_NTASKS:-8} \
+		--match-read-wildcards -n 4 \
+		-a CTGTCTCTTATACACATCTC \
+		-m 10 --trim-n \
+		-u 21 \
+		-o ${f} ${inbase}.R2.fastq.gz
 #		-A CTGTCTCTTATACACATCTC \
 #		-U 21 \
 #		-p ${outbase}.R2.fastq.gz \
@@ -246,7 +331,8 @@ fi
 
 
 
-inbase=${outbase}
+inbase=${OUT}/${s}.quality.umi.t1
+#inbase=${outbase}
 outbase="${outbase}.t3" #	"${OUT}/${s}.quality.umi.t1.t3"
 f=${outbase}.R1.fastq.gz
 if [ -f $f ] && [ ! -w $f ] ; then
@@ -259,14 +345,79 @@ else
 		-a A{10} \
 		-a A{150} \
 		-m 10 --trim-n \
-		-o ${outbase}.R1.fastq.gz \
-		${inbase}.R1.fastq.gz
+		-o ${f} ${inbase}.R1.fastq.gz
 #		-G T{10} \
 #		-G T{150} \
 #		-p ${outbase}.R2.fastq.gz \
 #		${inbase%.t2}.R2.fastq.gz
 		#	NOTE that R2 is from TWO steps prior.
 fi
+
+
+
+
+
+inbase=${OUT}/${s}.quality.umi.t1
+#inbase=${OUT}/${s}.quality.t1
+outbase="${inbase}.t3"
+f=${outbase}.R2.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	~/.local/bin/cutadapt.bash \
+		--cores ${SLURM_NTASKS:-8} \
+		--match-read-wildcards -n 5 \
+		--error-rate 0.20 \
+		-a T{10} \
+		-a T{150} \
+		-m 10 --trim-n \
+		-o ${f} ${inbase}.R2.fastq.gz
+#		-G T{10} \
+#		-G T{150} \
+#		-p ${outbase}.R2.fastq.gz \
+#		${inbase%.t2}.R2.fastq.gz
+		#	NOTE that R2 is from TWO steps prior.
+fi
+
+
+
+
+
+inbase="${OUT}/${s}.quality.umi.t1.t3"
+outbase="${inbase}.umi_filter"	#	"${OUT}/${s}.quality.umi.t1.t3.umi_filter"
+f=${outbase}.R2.fastq.gz
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	#	RX:Z:........ is the last thing on the line
+	#	{ split($NF,rx,":");umi=rx[3];
+	zcat ${inbase}.R2.fastq.gz | paste - - - - | awk -F"\t" '{ split($1,name,"-"); umi=name[3];a=gsub(/[aA]/,"",umi);c=gsub(/[cC]/,"",umi);g=gsub(/[gG]/,"",umi);t=gsub(/[tT]/,"",umi);x=17;if(a<x && c<x && g<x && t<x){print $1;print $2;print $3;print $4}}' | gzip > ${f}
+	chmod -w ${f}
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -363,7 +514,8 @@ fi
 
 
 
-inbase=${outbase}
+inbase=${OUT}/${s}.quality.umi.t1.t3
+#inbase=${outbase}
 outbase="${inbase}.hg38"	#	"${OUT}/${s}.quality.umi.t1.t3.hg38"
 f=${outbase}.bam
 if [ -f $f ] && [ ! -w $f ] ; then
