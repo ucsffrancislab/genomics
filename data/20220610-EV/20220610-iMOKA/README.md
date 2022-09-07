@@ -465,3 +465,38 @@ date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.dump.${date}.out" --time=720 --nodes=1 --ntasks=32 --mem=240G ${PWD}/iMOKA_dump.bash --k 16R1
 ```
 
+
+
+
+```
+awk -F"\t" '{print > "16R1/create_matrix."$2".tsv" }' 16R1/create_matrix.tsv
+
+export SINGULARITY_BINDPATH=/francislab
+export OMP_NUM_THREADS=16
+export IMOKA_MAX_MEM_GB=96
+
+for f in 16R1/create_matrix.*.tsv; do
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core create -i ${f} -o ${f%.tsv}.json
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core dump -i ${f%.tsv}.json -o ${f/create_/}
+gzip ${f/create_/}
+done
+
+
+awk -F"\t" '{print > "16/create_matrix."$2".tsv" }' 16/create_matrix.tsv
+
+export SINGULARITY_BINDPATH=/francislab
+export OMP_NUM_THREADS=16
+export IMOKA_MAX_MEM_GB=96
+
+for f in 16/create_matrix.*.tsv; do
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core create -i ${f} -o ${f%.tsv}.json
+singularity exec /francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img iMOKA_core dump -i ${f%.tsv}.json -o ${f/create_/}
+gzip ${f/create_/}
+done
+
+```
+
+
+
+
+
