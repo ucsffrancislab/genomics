@@ -53,7 +53,7 @@ for q in 15 20 25 ; do
 
 	echo -n "| q${q} |"
 	for s in ${samples} ; do
-		echo -n " |"
+		echo -n " | "
 	done
 	echo
 	
