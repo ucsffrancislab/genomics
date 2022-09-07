@@ -76,7 +76,8 @@ echo $b2
 
 
 
-for quality in 15 20 25 30 ; do
+#for quality in 15 20 25 30 ; do
+for quality in 15 20 25 ; do
 
 	outbase="${OUT}/${s}.quality${quality}"
 	f=${outbase}.R1.fastq.gz
@@ -158,12 +159,14 @@ for quality in 15 20 25 30 ; do
 	else
 		~/.local/bin/cutadapt.bash \
 			--cores ${SLURM_NTASKS:-8} \
-			--match-read-wildcards -n 4 \
+			--match-read-wildcards -n 1 \
 			-m 10 --trim-n \
-			-U 40 \
+			-U 24 \
 			-o ${f} \
 			-p ${outbase}.R2.fastq.gz \
 			${inbase}.R1.fastq.gz ${inbase}.R2.fastq.gz
+			#	-U 24 \ 18bp UMI - G - T{5}
+			#	-U 40 \ 18bp UMI - G - T{21}
 	fi
 
 	#inbase=${OUT}/${s}.quality
@@ -176,11 +179,11 @@ for quality in 15 20 25 30 ; do
 	else
 		~/.local/bin/cutadapt.bash \
 			--cores ${SLURM_NTASKS:-8} \
-			--match-read-wildcards -n 4 \
+			--match-read-wildcards -n 1 \
 			-a CTGTCTCTTATACACATCT \
-      -a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
+			-a CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
 			-A CTGTCTCTTATACACATCT \
-      -A CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
+			-A CTGTCTCTTATACACATCTGACGCTGCCGACGA \
 			-m 10 --trim-n \
 			-o ${f} \
 			-p ${outbase}.R2.fastq.gz \

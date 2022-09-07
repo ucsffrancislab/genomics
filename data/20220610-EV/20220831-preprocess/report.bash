@@ -11,7 +11,9 @@ for fastq in ${rawdir}/S*R?_001.fastq.gz ; do
 	r=${basename##*_}
 	basename=${basename%%_*}
 	ln -s ${fastq} ${dir}/${basename}_${r}.fastq.gz 2> /dev/null
-	ln -s ${fastq}.read_count.txt ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
+	if [ -f ${fastq}.read_count.txt ] ; then
+		ln -s ${fastq}.read_count.txt ${dir}/${basename}_${r}.fastq.gz.read_count.txt 2> /dev/null
+	fi
 done
 
 
@@ -46,8 +48,15 @@ done
 echo
 
 
-for q in 15 20 25 30 ; do
+#for q in 15 20 25 30 ; do
+for q in 15 20 25 ; do
 
+	echo -n "| q${q} |"
+	for s in ${samples} ; do
+		echo -n " |"
+	done
+	echo
+	
 	echo -n "| q${q} Quality Read Count |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.R1.fastq.gz.read_count.txt 2> /dev/null)
