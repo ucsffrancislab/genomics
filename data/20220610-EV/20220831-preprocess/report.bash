@@ -91,14 +91,14 @@ for q in 15 20 25 ; do
 	echo
 
 
-	echo -n "| q${q} Trimmed1 Read Count |"
+	echo -n "| q${q} UMI Trim Read Count |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed1 % Read Count |"
+	echo -n "| q${q} UMI Trim % Read Count |"
 	for s in ${samples} ; do
 		n=$(cat ${dir}/${s}.quality${q}.format.umi.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
 		d=$(cat ${dir}/${s}.quality${q}.format.R1.fastq.gz.read_count.txt 2> /dev/null)
@@ -107,14 +107,14 @@ for q in 15 20 25 ; do
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed1 Ave R1 Read Length |"
+	echo -n "| q${q} UMI Trim Ave R1 Read Length |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.R1.fastq.gz.average_length.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed1 Ave R2 Read Length |"
+	echo -n "| q${q} UMI Trim Ave R2 Read Length |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.R2.fastq.gz.average_length.txt 2> /dev/null)
 		echo -n " ${c} |"
@@ -122,14 +122,14 @@ for q in 15 20 25 ; do
 	echo
 	
 	
-	echo -n "| q${q} Trimmed2 Read Count |"
+	echo -n "| q${q} adapter Trim Read Count |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.R1.fastq.gz.read_count.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed2 % Read Count |"
+	echo -n "| q${q} adapter Trim % Read Count |"
 	for s in ${samples} ; do
 		n=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.R1.fastq.gz.read_count.txt 2> /dev/null)
 		d=$(cat ${dir}/${s}.quality${q}.format.umi.t1.R1.fastq.gz.read_count.txt 2> /dev/null)
@@ -138,14 +138,14 @@ for q in 15 20 25 ; do
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed2 Ave R1 Read Length |"
+	echo -n "| q${q} adapter Trim Ave R1 Read Length |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.R1.fastq.gz.average_length.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed2 Ave R2 Read Length |"
+	echo -n "| q${q} adapter Trim Ave R2 Read Length |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.R2.fastq.gz.average_length.txt 2> /dev/null)
 		echo -n " ${c} |"
@@ -154,14 +154,14 @@ for q in 15 20 25 ; do
 	
 	
 	
-	echo -n "| q${q} Trimmed3 Read Count |"
+	echo -n "| q${q} poly Trim Read Count |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed3 % Read Count |"
+	echo -n "| q${q} poly Trim % Read Count |"
 	for s in ${samples} ; do
 		n=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.R1.fastq.gz.read_count.txt 2> /dev/null)
 		d=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.R1.fastq.gz.read_count.txt 2> /dev/null)
@@ -170,14 +170,14 @@ for q in 15 20 25 ; do
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed3 Ave R1 Read Length |"
+	echo -n "| q${q} poly Trim Ave R1 Read Length |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.R1.fastq.gz.average_length.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
-	echo -n "| q${q} Trimmed3 Ave R2 Read Length |"
+	echo -n "| q${q} poly Trim Ave R2 Read Length |"
 	for s in ${samples} ; do
 		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.R2.fastq.gz.average_length.txt 2> /dev/null)
 		echo -n " ${c} |"
