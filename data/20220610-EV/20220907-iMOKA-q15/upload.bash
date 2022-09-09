@@ -3,7 +3,7 @@
 #BOX_BASE="https://dav.box.com/dav/Francis _Lab_Share"
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 
-PROJECT=$( basename ${PWD} )-test
+PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) )
 
 BOX="${BOX_BASE}/${DATA}"
