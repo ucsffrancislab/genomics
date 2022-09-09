@@ -239,11 +239,6 @@ Predict those not used in models
 
 
 ```
-
-#date=$( date "+%Y%m%d%H%M%S%N" )
-#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA_just_preprocess.${date}.out" --time=60 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA_just_preprocess.bash --dir ${PWD}/16 --k 16 --source_file ${PWD}/source.testse.tsv
-
-
 export SINGULARITY_BINDPATH=/francislab
 export OMP_NUM_THREADS=16
 export IMOKA_MAX_MEM_GB=96
