@@ -1,4 +1,9 @@
 
+#	20220831
+
+Sadly, only aligned R1s to hg38!
+
+Redoing as 20220913
 
 
 
@@ -28,6 +33,30 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 
 
 
+UCSF VPN just sucks
+
+```
+module load samtools
+samtools fasta -f4 out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.bam | gzip > out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.fa.gz 
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=blastn --time=1440 --nodes=1 --ntasks=8 --mem=60G --output=/francislab/data1/working/20220610-EV/20220831-preprocess/blastn.log /francislab/data1/working/20220610-EV/20220831-preprocess/blastn.bash 
+
+zcat out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.tsv.gz | awk 'BEGIN{FS=OFS="\t"}{print $1,$NF}' | uniq | sort | uniq | awk 'BEGIN{FS=OFS="\t"}{print $NF}' | sort | uniq -c | sort -nr
+
+zcat out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.tsv.gz | awk 'BEGIN{FS=OFS="\t"}{print $1}' | uniq | sort | uniq > out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.matched_read_names.txt
+
+
+awk '(NR==FNR){matched[$0]=1}(NR!=FNR){ r=$1; sub(/^>/, "", r); if( !matched[r] ){print $1;print $2 } }' out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.matched_read_names.txt <( zcat out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.fa.gz | paste - - )
+
+
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=kraken2 --time=10080 --nodes=1 --ntasks=32 --mem=240G --output=/francislab/data1/working/20220610-EV/20220831-preprocess/kraken2.log ~/.local/bin/kraken2.bash --threads 32 --use-names --db /francislab/data1/refs/kraken2/standard --report /francislab/data1/working/20220610-EV/20220831-preprocess/out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.unmatched.kraken2.report.txt.gz --output /francislab/data1/working/20220610-EV/20220831-preprocess/out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.unmatched.kraken2.output.txt.gz /francislab/data1/working/20220610-EV/20220831-preprocess/out/SFHH011T.quality15.format.umi.t1.t2.t3.notphiX.readname.hg38.unmapped.blastn-nt.unmatched.fa.gz
+
+
+
+```
 
 
 
@@ -56,6 +85,7 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 
 
 
+---
 
 ```
 ln -s /francislab/data1/refs/sources/gencodegenes.org/gencode.v36lift37.annotation.gtf.gz
