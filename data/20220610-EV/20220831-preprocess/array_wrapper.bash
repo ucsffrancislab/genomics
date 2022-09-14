@@ -272,12 +272,14 @@ for quality in 15 20 25 ; do
 		awk -F"\t" -v b=${outbase} -v l=${length} '{
 			#umi=substr($6,0,l)
 			gsub(/ /,"-",$1)
-			print $1"-"umi >> b".R1.fastq"
+			#print $1"-"umi >> b".R1.fastq" #	oops - this added a trailing - to read name
+			print $1 >> b".R1.fastq"
 			print $2 >> b".R1.fastq"
 			print $3 >> b".R1.fastq"
 			print $4 >> b".R1.fastq"
 			gsub(/ /,"-",$5)
-			print $5"-"umi >> b".R2.fastq"
+			#print $5"-"umi >> b".R2.fastq" #	oops - this added a trailing - to read name
+			print $5 >> b".R2.fastq"
 			print $6 >> b".R2.fastq"
 			print $7 >> b".R2.fastq"
 			print $8 >> b".R2.fastq"
@@ -288,6 +290,11 @@ for quality in 15 20 25 ; do
 		chmod -w ${outbase}.R2.fastq.gz
 	fi
 	
+
+
+
+
+
 
 	inbase="${outbase}"
 	outbase="${inbase}.hg38"
@@ -307,6 +314,10 @@ for quality in 15 20 25 ; do
 	fi
 
 
+
+
+
+
 	inbase="${outbase}"
 	outbase="${inbase}.rx"
 	f=${outbase}.bam
@@ -315,7 +326,9 @@ for quality in 15 20 25 ; do
 	else
 		samtools view -h ${inbase}.bam | awk 'BEGIN{FS=OFS="\t"}
 			( /^@/ ){print;next}
-			{ split($1,a,"-"); $1=a[1]; print $0,"RX:Z:"a[3] }' | samtools view -o ${f} -
+			{ split($1,a,"-"); print $0,"RX:Z:"a[3] }' | samtools view -o ${f} -
+#	keep the full read name with the lane and read name? Previously, I've tossed it. Putting it back.
+#			{ split($1,a,"-"); $1=a[1]; print $0,"RX:Z:"a[3] }' | samtools view -o ${f} -
 #	#	Would this sed command be faster?
 #	#	samtools view -h SFHH011Z.quality.umi.t1.t3.hg38.bam | sed -r "s/^([^,]+)-([ACGTN]{18})(.*)$/\1\3\tRX:Z:\2/"
 		chmod -w ${f}
