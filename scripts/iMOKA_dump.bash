@@ -24,7 +24,7 @@ export SINGULARITY_BINDPATH=/francislab,/scratch
 export OMP_NUM_THREADS=${threads}
 export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
 
-dir="/francislab/data1/working/20220610-EV/20220914-iMOKA"	#/out"
+#dir="/francislab/data1/working/20220610-EV/20220914-iMOKA"	#/out"
 
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do

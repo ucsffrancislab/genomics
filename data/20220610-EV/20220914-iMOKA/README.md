@@ -84,19 +84,19 @@ Preprocess all so can predict later
 mkdir -p ${PWD}/logs
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA11.${date}.out" --time=60 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/11 --k 11 --source_file ${PWD}/source.all.tsv --stopstep reduce
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA11.${date}.out" --time=60 --nodes=1 --ntasks=32 --mem=240G ~/.local/bin/iMOKA.bash --dir ${PWD}/11 --k 11 --source_file ${PWD}/source.all.tsv --stopstep reduce
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA16.${date}.out" --time=60 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/16 --k 16 --source_file ${PWD}/source.all.tsv --stopstep reduce
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA16.${date}.out" --time=60 --nodes=1 --ntasks=32 --mem=240G ~/.local/bin/iMOKA.bash --dir ${PWD}/16 --k 16 --source_file ${PWD}/source.all.tsv --stopstep reduce
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA21.${date}.out" --time=60 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/21 --k 21 --source_file ${PWD}/source.all.tsv --stopstep reduce
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA21.${date}.out" --time=60 --nodes=1 --ntasks=32 --mem=240G ~/.local/bin/iMOKA.bash --dir ${PWD}/21 --k 21 --source_file ${PWD}/source.all.tsv --stopstep reduce
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA31.${date}.out" --time=60 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/31 --k 31 --source_file ${PWD}/source.all.tsv --stopstep reduce
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA31.${date}.out" --time=60 --nodes=1 --ntasks=32 --mem=240G ~/.local/bin/iMOKA.bash --dir ${PWD}/31 --k 31 --source_file ${PWD}/source.all.tsv --stopstep reduce
 ```
 
 
@@ -165,43 +165,43 @@ cat 31/create_matrix.tsv | \grep -E "Primary|Recurrent|control" | sed -E 's/Prim
 
 ```
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.11.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/11 --k 11 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.11.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/11 --k 11 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.16.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.16.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.21.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.21.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.31.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
-
-
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.11.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/11 --k 11 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
-
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.16.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
-
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.21.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
-
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.31.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
-
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.31.primary_recurrent.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrent/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrent.tsv
 
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.11.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/TumorControl/11 --k 11 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.11.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/11 --k 11 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.16.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/TumorControl/16 --k 16 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.16.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/16 --k 16 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.21.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/TumorControl/21 --k 21 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.21.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/21 --k 21 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
 
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.31.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ${PWD}/iMOKA.bash --dir ${PWD}/TumorControl/31 --k 31 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.31.primary_recurrent_control.${date}.out" --time=360 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/PrimaryRecurrentControl/31 --k 31 --step create --source_file ${PWD}/source.primaryrecurrentcontrol.tsv
+
+
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.11.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/TumorControl/11 --k 11 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.16.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/TumorControl/16 --k 16 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.21.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/TumorControl/21 --k 21 --step create --source_file ${PWD}/source.tumorcontrol.tsv
+
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --output="${PWD}/logs/iMOKA.31.tumor_control.${date}.out" --time=720 --nodes=1 --ntasks=64 --mem=495G ~/.local/bin/iMOKA.bash --dir ${PWD}/TumorControl/31 --k 31 --step create --source_file ${PWD}/source.tumorcontrol.tsv
 ```
 
 
