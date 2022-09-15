@@ -20,6 +20,20 @@ date=$( date "+%Y%m%d%H%M%S%N" )
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="${PWD}/logs/preprocess.${date}-%A_%a.out" --time=14400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/array_wrapper.bash
 
+
+
+for f in out/*format.umi.t1.t2.t3.notphiX.readname.R1.fastq.gz ; do
+echo $f
+b=${f%.R1.fastq.gz}
+echo $b
+if [ -f ${b}.hg38.bam ] ; then
+echo "exists"
+else
+echo "Missing"
+chmod -w ${b}.hg38.*
+/bin/rm -rf ${b}.hg38.*
+fi
+done
 ```
 
 

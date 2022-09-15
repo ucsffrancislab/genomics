@@ -5,7 +5,7 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
-#set -e  #       exit if any command fails
+set -e  #       exit if any command fails	#	why unset?
 set -u  #       Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
@@ -339,6 +339,33 @@ for quality in 15 20 25 ; do
 
 
 	inbase="${outbase}"
+	outbase="${inbase}.name"
+	f=${outbase}.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		#	gotta make sure that the paired read names are the same
+		samtools view -h ${inbase}.bam | awk 'BEGIN{FS=OFS="\t"}
+			( /^@/ ){print;next}
+			{ sub(/-[12]:N:0:.*$/,"",$1); print $0 }' | samtools view -o ${f} -
+		chmod -w ${f}
+	fi
+
+
+	inbase="${outbase}"
+	outbase="${inbase}.mated"
+	f=${outbase}.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+			java -jar $PICARD_HOME/picard.jar FixMateInformation \
+				--INPUT ${inbase}.bam \
+				--OUTPUT ${f}
+		chmod -w ${f}
+	fi
+
+
+	inbase="${outbase}"
 	outbase="${inbase}.marked"
 	f=${outbase}.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -349,7 +376,7 @@ for quality in 15 20 25 ; do
 			--TAGGING_POLICY All \
 			--INPUT ${inbase}.bam \
 			--CREATE_INDEX true \
-			--OUTPUT ${outbase}.bam \
+			--OUTPUT ${f} \
 			--METRICS_FILE ${outbase}.metrics.txt \
 			--UMI_METRICS_FILE ${outbase}.umi_metrics.txt
 		chmod -w ${outbase}.*
