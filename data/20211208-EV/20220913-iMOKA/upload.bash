@@ -18,7 +18,7 @@ for f in metadata.csv plot_2.csv ; do
 	curl --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 
-for k in 16 ; do
+for k in 16 21 26 31 ; do
 	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${k}"
 	#curl --silent --ftp-create-dirs -netrc -T ${k}/kmer_matrix.tsv.gz "${BOX}/"
 
