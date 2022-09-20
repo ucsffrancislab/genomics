@@ -20,7 +20,35 @@ for k in 11 16 21 31 ; do
 			dir=${basedir}/${k}
 			rdir=${basedir}/${t}/${k}/${s}
 
-			diff -d <( sort ${dir}/create_matrix.tsv ) <( sort ${rdir}/create_matrix.tsv ) | grep "^< " | sed 's/^< //' | grep -vs "Test SE" | grep -vs "SFHH011B.tsv" > ${rdir}/predict_matrix.tsv
+			#diff -d <( sort ${dir}/create_matrix.tsv ) <( sort ${rdir}/create_matrix.tsv ) | grep "^< " | sed 's/^< //' | grep -vs "Test SE" | grep -vs "SFHH011B.tsv" > ${rdir}/predict_matrix.tsv
+
+
+#			diff -d <( sort ${dir}/create_matrix.tsv ) <( sort ${rdir}/create_matrix.tsv ) | grep "^< " | sed 's/^< //' | grep -vs "SFHH011B.tsv" > ${rdir}/predict_matrix.tsv
+
+			if [ $t == "TumorControl" ] ; then
+				diff -d <( sort ${dir}/create_matrix.tsv ) <( sort ${rdir}/create_matrix.tsv ) | grep "^< " | sed 's/^< //' | \
+					grep -vs -E "scan|stable|pre-progression" | \
+					sed -E 's/\t(post-recurrence|pre-surg|primary|progression|recurence|scan|Primary|Recurrent)$/\ttumor/' | \
+					sed -E 's/\t(Test-SE)$/\tcontrol/' | \
+					grep -vs "SFHH011B.tsv" > ${rdir}/predict_matrix.tsv
+			elif [ $t == "PrimaryRecurrent" ] ; then
+				diff -d <( sort ${dir}/create_matrix.tsv ) <( sort ${rdir}/create_matrix.tsv ) | grep "^< " | sed 's/^< //' | \
+					grep -vs -E "scan|stable|pre-progression" | \
+					sed -E 's/\t(pre-surg|primary)$/\tPrimary/' | \
+					sed -E 's/\t(post-recurrence|progression|recurence)$/\tRecurrent/' | \
+					grep -vs "Test-SE" | grep -vs "control" | \
+					grep -vs "SFHH011B.tsv" > ${rdir}/predict_matrix.tsv
+			elif [ $t == "PrimaryRecurrentControl" ] ; then
+				diff -d <( sort ${dir}/create_matrix.tsv ) <( sort ${rdir}/create_matrix.tsv ) | grep "^< " | sed 's/^< //' | \
+					grep -vs -E "scan|stable|pre-progression" | \
+					sed -E 's/\t(pre-surg|primary)$/\tPrimary/' | \
+					sed -E 's/\t(post-recurrence|progression|recurence)$/\tRecurrent/' | \
+					sed -E 's/\t(Test-SE)$/\tcontrol/' | \
+					grep -vs "SFHH011B.tsv" > ${rdir}/predict_matrix.tsv
+			else
+				echo "Not sure what happened"
+				exit 
+			fi
 
 
 			#	Convert this tsv list into a json list
@@ -40,7 +68,8 @@ for k in 11 16 21 31 ; do
 			for model in ${rdir}/output_models/*.pickle ; do
 				echo $model
 				model_name=${model%.pickle}
-				singularity exec ${img} predict.py ${rdir}/topredict.tsv ${model} ${model_name}.predictions.json | awk 'NR > 1 {print}' > ${model_name}.predictions.tsv
+				singularity exec ${img} predict.py ${rdir}/topredict.tsv ${model} ${model_name}.predictions.json | \
+					awk 'NR > 1 {print}' > ${model_name}.predictions.tsv
 			done
 	
 			echo 'predictions completed'
