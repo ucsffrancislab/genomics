@@ -272,13 +272,11 @@ for quality in 15 20 25 ; do
 		awk -F"\t" -v b=${outbase} -v l=${length} '{
 			#umi=substr($6,0,l)
 			gsub(/ /,"-",$1)
-			#print $1"-"umi >> b".R1.fastq" #	oops - this added a trailing - to read name
 			print $1 >> b".R1.fastq"
 			print $2 >> b".R1.fastq"
 			print $3 >> b".R1.fastq"
 			print $4 >> b".R1.fastq"
 			gsub(/ /,"-",$5)
-			#print $5"-"umi >> b".R2.fastq" #	oops - this added a trailing - to read name
 			print $5 >> b".R2.fastq"
 			print $6 >> b".R2.fastq"
 			print $7 >> b".R2.fastq"
@@ -317,8 +315,10 @@ for quality in 15 20 25 ; do
 
 
 
-
-
+#	should do RX and NAME in one step ...
+#	$1=a[1]
+#	"LI:Z:"a[2]
+#	"RX:Z:"a[3]
 
 
 	inbase="${outbase}"
@@ -337,7 +337,6 @@ for quality in 15 20 25 ; do
 		chmod -w ${f}
 	fi
 
-
 	inbase="${outbase}"
 	outbase="${inbase}.name"
 	f=${outbase}.bam
@@ -352,18 +351,20 @@ for quality in 15 20 25 ; do
 	fi
 
 
+
+
 	inbase="${outbase}"
 	outbase="${inbase}.mated"
 	f=${outbase}.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-			java -jar $PICARD_HOME/picard.jar FixMateInformation \
-				--INPUT ${inbase}.bam \
-				--OUTPUT ${f}
+		#	copy mate's cigar string into the MC tag.
+		java -jar $PICARD_HOME/picard.jar FixMateInformation \
+			--INPUT ${inbase}.bam \
+			--OUTPUT ${f}
 		chmod -w ${f}
 	fi
-
 
 	inbase="${outbase}"
 	outbase="${inbase}.marked"
@@ -385,7 +386,6 @@ for quality in 15 20 25 ; do
 		chmod -w ${f}.F3844.aligned_count.txt
 	
 	fi
-
 
 	inbase="${outbase}"
 	outbase="${inbase}.deduped"
