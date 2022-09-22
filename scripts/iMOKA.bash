@@ -19,6 +19,7 @@ mem=7		#	per thread (keep 7)
 step="preprocess"
 stopstep=""
 source_file="${PWD}/source.tsv"
+random_forest=""
 
 
 export SINGULARITY_BINDPATH=/francislab,/scratch
@@ -42,6 +43,8 @@ while [ $# -gt 0 ] ; do
 			shift; step=$1; shift;;
 		--threads)
 			shift; threads=$1; shift;;
+		--random_forest)
+			shift; random_forest="${random_forest} $1 $2"; shift; shift;;
 		*)
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -221,7 +224,7 @@ if [ "${step}" == "random_forest" ] ; then
 	echo "Modeling"
 	singularity exec ${img} random_forest.py \
 		--threads ${threads} \
-		-r 50 \
+		-r 50 ${random_forest} \
 		${WORKDIR}/aggregated.kmers.matrix ${WORKDIR}/output
 	#cp -r ${WORKDIR}/output* ${dir}/
 #else
