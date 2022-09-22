@@ -74,6 +74,20 @@ for q in 15 ; do
 	done
 	echo
 
+	echo -n "| q${q} Quality Ave R1 Read Length |"
+	for s in ${samples} ; do
+		c=$(cat ${dir}/${s}.quality${q}.R1.fastq.gz.average_length.txt 2> /dev/null)
+		echo -n " ${c} |"
+	done
+	echo
+	
+	echo -n "| q${q} Quality R2 Read Length |"
+	for s in ${samples} ; do
+		c=$(cat ${dir}/${s}.quality${q}.R2.fastq.gz.average_length.txt 2> /dev/null)
+		echo -n " ${c} |"
+	done
+	echo
+	
 
 	echo -n "| q${q} Format Read Count |"
 	for s in ${samples} ; do
