@@ -19,6 +19,7 @@ mem=7		#	per thread (keep 7)
 step="preprocess"
 stopstep=""
 source_file="${PWD}/source.tsv"
+reduce=""
 random_forest=""
 
 
@@ -43,6 +44,8 @@ while [ $# -gt 0 ] ; do
 			shift; step=$1; shift;;
 		--threads)
 			shift; threads=$1; shift;;
+		--reduce)
+			shift; reduce="${reduce} $1 $2"; shift; shift;;
 		--random_forest)
 			shift; random_forest="${random_forest} $1 $2"; shift; shift;;
 		*)
@@ -148,7 +151,7 @@ if [ "${step}" == "reduce" ] ; then
 		exit
 	fi
 	echo "Reducing"
-	singularity exec ${img} iMOKA_core reduce \
+	singularity exec ${img} iMOKA_core reduce ${reduce} \
 		--input ${WORKDIR}/matrix.json \
 		--output ${WORKDIR}/reduced.matrix
 	#	--accuracy 50 \
