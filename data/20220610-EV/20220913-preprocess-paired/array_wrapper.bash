@@ -16,7 +16,7 @@ fi
 #set -x  #       print expanded command before executing it
 
 
-OUT="/francislab/data1/working/20220610-EV/20220913-preprocess/out"
+OUT="/francislab/data1/working/20220610-EV/20220913-preprocess-paired/out"
 
 #while [ $# -gt 0 ] ; do
 #	case $1 in
@@ -38,7 +38,7 @@ echo "Running line :${line}:"
 
 #r1=$( ls -1 /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | sed -n "$line"p )
 #	this metadata has a header line so add 1
-sample=$( sed -n "$((line+1))"p /francislab/data1/working/20220610-EV/20220913-preprocess/metadata.csv | awk -F, '{print $1}' )
+sample=$( sed -n "$((line+1))"p /francislab/data1/working/20220610-EV/20220913-preprocess-paired/metadata.csv | awk -F, '{print $1}' )
 r1=$( ls /francislab/data1/raw/20220610-EV/${sample}_*R1_001.fastq.gz )
 
 #	Make sure that r1 is unique. NEEDS the UNDERSCORE AFTER SAMPLE!
