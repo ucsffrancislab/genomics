@@ -254,14 +254,14 @@ for q in 15 20 25 ; do
 
 	echo -n "| q${q} hg38 deduped Count |"
 	for s in ${samples} ; do
-		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.notphiX.readname.hg38.rx.marked.bam.F3844.aligned_count.txt 2> /dev/null)
+		c=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.notphiX.readname.hg38.rx.name.mated.marked.bam.F3844.aligned_count.txt 2> /dev/null)
 		echo -n " ${c} |"
 	done
 	echo
 	
 	echo -n "| q${q} hg38 deduped aligned % |"
 	for s in ${samples} ; do
-		n=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.notphiX.readname.hg38.rx.marked.bam.F3844.aligned_count.txt 2> /dev/null)
+		n=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.notphiX.readname.hg38.rx.name.mated.marked.bam.F3844.aligned_count.txt 2> /dev/null)
 		d=$(cat ${dir}/${s}.quality${q}.format.umi.t1.t2.t3.notphiX.readname.hg38.bam.aligned_count.txt 2> /dev/null)
 		c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
 		echo -n " ${c} |"
