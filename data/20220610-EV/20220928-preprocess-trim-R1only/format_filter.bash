@@ -20,10 +20,10 @@ out1=$3
 out2=$4
 
 	#awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.........GTTTTT/ ){
-paste <( zcat $in1 | paste - - - - ) <( zcat $in2 | paste - - - - ) |
 	#awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.........GTTT/ ){
 	#awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^..................GTTTTTTTTTTTTTTTTTTTTT/ ){ 
 	#awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.{18}GT{21}/ ){
+paste <( zcat $in1 | paste - - - - ) <( zcat $in2 | paste - - - - ) |
 	awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.{18}GT{5}/ ){
 		print $1 >> o1
 		print $2 >> o1
