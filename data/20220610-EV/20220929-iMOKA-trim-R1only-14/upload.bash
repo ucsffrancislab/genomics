@@ -56,3 +56,5 @@ for k in 11 16 21 31 ; do
 	done	#	s
 done	#	k
 
+echo "Upload Complete"
+

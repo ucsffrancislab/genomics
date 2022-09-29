@@ -130,5 +130,5 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="iMOKA" --
 
 
 ```
-nohup ./upload.bash > upload.out.txt &
+nohup ./upload.bash > upload.out.txt 2>1&
 ```
