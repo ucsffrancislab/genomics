@@ -248,3 +248,7 @@ cp $path complete_genomes/
 done < complete_genomes.txt
 
 
+rsync -avz --progress --include=README.txt --include="*faa.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/protozoa/ protozoa-20221001/
+
+
+
