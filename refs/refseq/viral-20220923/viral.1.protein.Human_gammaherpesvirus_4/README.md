@@ -226,4 +226,11 @@ MGSLEMVPMGAGPPSPGGDPDGYDGGNNSQYPSASGSSGNTPTPPNDEERESNEEP
 
 
 
+./phipseq.bash 56 28 viral.1.protein.Human_gammaherpesvirus_4.fa > phipseq.56.28.out.txt 2>&1 &
+./phipseq.bash 56 42 viral.1.protein.Human_gammaherpesvirus_4.fa > phipseq.56.42.out.txt 2>&1 &
+./phipseq.bash 56 48 viral.1.protein.Human_gammaherpesvirus_4.fa > phipseq.56.48.out.txt 2>&1 &
+./phipseq.bash 56 54 viral.1.protein.Human_gammaherpesvirus_4.fa > phipseq.56.54.out.txt 2>&1 &
+./phipseq.bash 56 55 viral.1.protein.Human_gammaherpesvirus_4.fa > phipseq.56.55.out.txt 2>&1 &
+
+
 
