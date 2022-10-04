@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 
-BOX_BASE="https://dav.box.com/dav/Francis _Lab_Share"
+#BOX_BASE="https://dav.box.com/dav/Francis _Lab_Share"
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) )
 
-#BOX="${BOX_BASE}/${DATA}"
+BOX="${BOX_BASE}/${DATA}"
 #curl -netrc -X MKCOL "${BOX}/"
-#BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
 #curl -netrc -X MKCOL "${BOX}/"
 
 #curl -netrc -T metadata.csv "${BOX}/"
@@ -23,10 +24,10 @@ DATA=$( basename $( dirname ${PWD} ) )
 for d in rmarkdown_results* ; do
 	echo $d
 	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${d}"
-	curl -netrc -X MKCOL "${BOX}/"
+	#curl -netrc -X MKCOL "${BOX}/"
 	for f in ${d}/* ; do
 		echo $f
-		curl -netrc -T ${f} "${BOX}/"
+		curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 	done
 done
 

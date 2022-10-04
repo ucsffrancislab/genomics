@@ -57,7 +57,17 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		output_dir = out_dir
 		output_file = paste(prefix,column,iname,"alpha",alpha_thresh,"logFC",logFC_thresh,"html", sep=".")
 
-		rmarkdown::render("REdiscoverTE_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
+		out=paste(output_dir,output_file,sep="/")
+		print(out)
+
+		if( file.exists(out) && file.access(out, mode=2)==-1  ){
+			print("output file exists and is not writable")
+		#if( file.exists(out) ){
+		#	print("output file exists")
+		} else {
+			rmarkdown::render("REdiscoverTE_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
+			Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
+		}
 
 	EOF
 
@@ -128,16 +138,15 @@ else
 
 
 
+	max=$( cat ${arguments_file} | wc -l )
 
-#	max=$( cat ${arguments_file} | wc -l )
-#
-#	mkdir ${PWD}/logs/
-#	date=$( date "+%Y%m%d%H%M%S%N" )
-#	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-#		--array=1-${max}%1 --job-name="rmarkdown" \
-#		--output="${PWD}/logs/REdiscoverTE.${date}.rmarkdown.%A_%a.out" \
-#		--time=1440 --nodes=1 --ntasks=8 --mem=60G \
-#		${PWD}/REdiscoverTE_EdgeR_rmarkdown.bash
+	mkdir ${PWD}/logs/
+	date=$( date "+%Y%m%d%H%M%S%N" )
+	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+		--array=1-${max}%8 --job-name="rmarkdown" \
+		--output="${PWD}/logs/REdiscoverTE.${date}.rmarkdown.%A_%a.out" \
+		--time=1440 --nodes=1 --ntasks=8 --mem=60G \
+		${PWD}/REdiscoverTE_EdgeR_rmarkdown.bash
 
 fi
 
