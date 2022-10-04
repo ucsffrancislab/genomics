@@ -42,6 +42,7 @@ Not sure what happens if output is a pdf document.
 print(args)
 ```
 
+
 ```{r}
 # test if there are the correct number of arguments: if not, return an error
 if (length(args)!=11) {
@@ -60,6 +61,7 @@ if (length(args)!=11) {
 		\n 11. date (and any prefix you want on the output file)"), call.=FALSE)
 }
 ```
+
 
 ```{r, include = FALSE}
 # PATH/TO/REDISCOVERTE/DATA
@@ -105,7 +107,6 @@ options(max.print=1000000)
 ```
 
 
-
 ```{r}
 filetypes <- c("GENE", "RE_intron", "RE_exon", "RE_intergenic", "RE_all", "RE_all_repFamily", "RE_intron_repFamily", "RE_exon_repFamily", "RE_intergenic_repFamily", "")
 datatypes <-c("_1_raw_counts", "")
@@ -124,15 +125,48 @@ RE_disc = readRDS(filename)
 #	message(RE_disc)
 ```
 
+
 ```{r "Convert Ensemble Gene Ids to HGNC Symbols", include = FALSE}
 if( filetypes[filetype] == "GENE" ){
 #	RE_disc = readRDS("rollup/rollup.merged/GENE_1_raw_counts.RDS")
-	mart <- useDataset("hsapiens_gene_ensembl", useMart("ensembl"))
-	#biomartCacheClear()
+	um=useMart("ensembl")
+	mart <- useDataset("hsapiens_gene_ensembl", um)
+
+	#	Too many useDataset requests at the same time?
+	#Quitting from lines 128-133 (REdiscoverTE_EdgeR_rmarkdown.Rmd) 
+	#Error in bmRequest(request = request, httr_config = httr_config, verbose = verbose) : 
+  	#Gateway Timeout (HTTP 504).
+	#Calls: <Anonymous> ... .useMart -> .listMarts -> bmRequest -> stop_for_status
+	#Execution halted
+
+
+	#	without cache clear ...
+	#Quitting from lines 128-224 (REdiscoverTE_EdgeR_rmarkdown.Rmd) 
+	#Error in .readFromCache(bfc, hash) : Multiple cache results found.
+	#Please clear your cache by running biomartCacheClear()
+	#Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> getBM -> .readFromCache
+
+	#	biomartCacheClear()
+
+	#	with cache clear ...
+	#Quitting from lines 128-231 (REdiscoverTE_EdgeR_rmarkdown.Rmd) 
+	#Error in bmRequest(request = request, httr_config = httr_config, verbose = verbose) : 
+	#  Gateway Timeout (HTTP 504).
+	#Calls: <Anonymous> ... checkDataset -> .listDatasets -> bmRequest -> stop_for_status
+
+
+	#	Stop using cache in next step fixes cache problems
+
+
 	ensembl_gene_id=rownames(RE_disc$counts)
 	ensembl_gene_id=as.data.frame(ensembl_gene_id)
 	conversion_table <- getBM(filters = "ensembl_gene_id",attributes = c("ensembl_gene_id","hgnc_symbol"),
-		values = ensembl_gene_id$ensembl_gene_id, mart = mart)
+		values = ensembl_gene_id$ensembl_gene_id, mart = mart, useCache = FALSE)
+
+	#	With multiple instances running at the same time, caching is an issue, so stop using it.
+	#		values = ensembl_gene_id$ensembl_gene_id, mart = mart)
+
+
 ##	Not all are found. Sometimes return nothing. Sometimes return "<NA>". Sometimes returns duplicates?
 ##           
 ## > conversion_table[duplicated(conversion_table),]
@@ -165,6 +199,8 @@ if( filetypes[filetype] == "GENE" ){
 ##	> length(unique(conversion_table$ensembl_gene_id))
 ##	[1] 32899
 
+
+
 		joined=dplyr::left_join(ensembl_gene_id,conversion_table,by='ensembl_gene_id')
 
 		##	y=unique(joined)$ensembl_gene_id
@@ -178,9 +214,13 @@ if( filetypes[filetype] == "GENE" ){
 		#	2 ENSG00000230417   LINC00856
 		#	3 ENSG00000276085      CCL3L1
 		#	4 ENSG00000276085      CCL3L3
+
+
 		joined = joined %>% group_by(ensembl_gene_id) %>% mutate(hgnc_symbol = paste(hgnc_symbol, collapse = ","))
 		joined = as.data.frame(joined)
 		joined = unique(joined)
+
+
 
 		#	Some ensembl_gene_ids are not in the biomart. Set hgnc_symbol to ensembl_gene_id.
 		joined$hgnc_symbol <- ifelse( joined$hgnc_symbol == "", joined$ensembl_gene_id, joined$hgnc_symbol )
@@ -222,6 +262,7 @@ if( filetypes[filetype] == "GENE" ){
 		rownames(RE_disc$counts)=joined$hgnc_symbol
 }
 ```
+
 
 ```{r}
 #covars = read.csv(cov_file, sep =",",header = TRUE , colClasses=c("character","character"))
@@ -307,7 +348,6 @@ if(Cov_check ==TRUE){
 ```
 
 
-
 Remove the not present samples 
 
 ```{r}
@@ -321,6 +361,7 @@ if(length(not.present) >=1){
 	group_less = group_list
 }
 ```
+
 
 ```{r}
 # Cov_check is always FALSE, but if the metadata file contains other columns
@@ -348,30 +389,27 @@ if(Cov_check == TRUE){
 
 }
 ```
+
+
 ```{r}
-
-
-
-
-
 if(Cov_check ==TRUE){
 	for(k in c(1:length(covs))){
 		RE_disc$samples[covs[k]] = type.convert(group_less[covs[k]], cov_types[k])
 	}
 }
 ```
+
+
 ```{r}
-
-
 # Filter out any groups with no group assignment (== NA)
 Nas = which(is.na(RE_disc$samples$group))
 if(length(Nas >0)){
 	RE_disc=RE_disc[,-Nas]
 }
 ```
+
+
 ```{r}
-
-
 # Filter out groups with too little sample size (i.e <10)
 u_groups = unique(RE_disc$samples$group)
 for(grp in u_groups){
@@ -383,9 +421,9 @@ for(grp in u_groups){
 }
 RE_disc$samples$group = droplevels(RE_disc$samples$group)
 ```
+
+
 ```{r}
-
-
 # Filter out samples with NA covariates 
 if(Cov_check ==TRUE){
 	for(cov_n in covs){
@@ -396,9 +434,9 @@ if(Cov_check ==TRUE){
 	}
 }
 ```
+
+
 ```{r}
-
-
 # ##### Filter out the Healthy individuals  REMOVE REMOVE REMOVE
 # healthy = which(RE_disc$samples$group =="Healthy")
 # RE_disc = RE_disc[,-healthy]
@@ -422,17 +460,16 @@ keep <- rowSums(cpm(RE_disc)>50) >= 2
 RE_disc <- RE_disc[keep,]
 dim(RE_disc)
 RE_disc$samples$lib.size <- colSums(RE_disc$counts)
-
-
 ```
+
+
 ```{r}
-
-
 # Normalize the data
 RE_disc <- calcNormFactors(RE_disc, method = "TMM") # WAS RLE if this fails
 ```
-```{r}
 
+
+```{r}
 n_groups = length(unique(RE_disc$samples$group))
 
 # Data Exploration -----------------------------------------------------------
@@ -456,29 +493,32 @@ for(i in c(1:length(RE_disc$samples$group))){
 ```
 
 BCV
-
 ```{r}
 plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
 ```
+
 
 ```{r fig1, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 ```
 
+
 ```{r}
 plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
 ```
 
+
 ```{r fig2, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-
 ```
+
 
 ```{r}
 plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black", labels=RE_disc$samples$sample)
 ```
+
 
 ```{r fig3, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
@@ -486,10 +526,7 @@ legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.int
 ```
 
 
-
 logFC
-
-
 ```{r}
 # From the R documentiation: 
 # The default method (method="logFC") is to convert the counts to log-counts-per-million using cpm and to pass these to the limma plotMDS function.
@@ -497,47 +534,54 @@ logFC
 plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p)
 ```
 
+
 ```{r, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 ```
+
 
 ```{r}
 plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p, labels=RE_disc$samples$sample)
 ```
 
+
 ```{r, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-
 ```
+
 
 ```{r}
 #Normalization for PCA and t-SNE, not exactly the same 
 normcounts = 1e6*cpm(RE_disc, normalized.lib.sizes=T)
 ```
 
-PCA
 
+PCA
 ```{r}
 ## Perform PCA analysis and make plot
 plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
 ```
 
+
 ```{r, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 ```
+
 
 ```{r}
 ## Perform PCA analysis and make plot
 plotPCA(normcounts, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
 ```
 
+
 ```{r, echo = FALSE}
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
 ```
+
 
 ```{r}
 par(mfrow=c(1,1))
@@ -547,6 +591,7 @@ d1 <- estimateCommonDisp(RE_disc, verbose=T)
 d1 <- estimateTagwiseDisp(d1)
 plotBCV(d1)
 ```
+
 
 ```{r}
 # Design Matrix -----------------------------------------------------------------------
@@ -558,6 +603,7 @@ if(Cov_check ==TRUE){
 head(design.mat)
 ```
 
+
 ```{r}
 #colnames(design.mat) <- levels(RE_disc$samples$group)
 d2 <- estimateGLMCommonDisp(RE_disc,design.mat)
@@ -568,8 +614,8 @@ d2 <- estimateGLMTagwiseDisp(d2,design.mat)
 plotBCV(d2)
 ```
 
-```{r}
 
+```{r}
 fit <- glmFit(d2, design.mat)
 
 # make some contrast patterns
@@ -584,8 +630,8 @@ for(nc in c(1:n_contrasts)){
 }
 
 sig_trans = c()
-
 ```
+
 
 ```{r}
 for(nc in c(1:n_contrasts)){
@@ -622,15 +668,15 @@ for(nc in c(1:n_contrasts)){
 	}
 	#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
 }
-
-
 ```
+
 
 ```{r}
 # Plotting the top results for each pairwise test 
 to_plot = unique(sig_trans)
 print(to_plot)
 ```
+
 
 ```{r}
 for( gene in to_plot){
@@ -660,8 +706,8 @@ for( gene in to_plot){
 }
 ```
 
-```{r}
 
+```{r}
 # HeatMap of significant traits
 # for the repname case
 
@@ -714,7 +760,7 @@ if(length(sig.loc) >1){
 }else{
 	print("Not enough significant results at these thresholds to plot a heatmap.")
 }
-
 ```
+
 
 
