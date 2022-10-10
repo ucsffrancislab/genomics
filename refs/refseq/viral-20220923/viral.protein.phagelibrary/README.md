@@ -195,7 +195,12 @@ MGSLEMVPMGAGPPSPGGDPDGYDGGNNSQYPSASGSSGNTPTPPNDEERESNEEP
 
 
 ```
-./phipseq.bash 56 55 select_viruses.faa > phipseq.56.55.out.txt 2>&1 &
+nohup ./phipseq.bash 56 55 select_virus.faa > phipseq.56.55.out.txt 2>&1 &
+nohup ./phipseq.bash 56 54 select_virus.faa > phipseq.56.54.out.txt 2>&1 &
+nohup ./phipseq.bash 56 53 select_virus.faa > phipseq.56.53.out.txt 2>&1 &
+nohup ./phipseq.bash 56 52 select_virus.faa > phipseq.56.52.out.txt 2>&1 &
+nohup ./phipseq.bash 56 51 select_virus.faa > phipseq.56.51.out.txt 2>&1 &
+nohup ./phipseq.bash 56 50 select_virus.faa > phipseq.56.50.out.txt 2>&1 &
 ```
 
 
