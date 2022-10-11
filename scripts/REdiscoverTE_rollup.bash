@@ -55,11 +55,12 @@ else
 			--job-name="Rollup${d}" \
 			--output="${PWD}/logs/REdiscoverTE.${date}.rollup.${d}.out" \
 			--time=4320 --nodes=1 --ntasks=64 --mem=495G \
-			${PWD}/REdiscoverTE_rollup.bash \
+			${0} \
 			--metadata=${OUTBASE}/REdiscoverTE.${d}.tsv \
 			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ \
 			--nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/
 
+			#${PWD}/REdiscoverTE_rollup.bash \
 #	Question or no question? That is the question.
 #			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion/ \
 
