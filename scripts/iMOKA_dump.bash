@@ -21,6 +21,7 @@ mem=7		#	per thread (keep 7)
 
 
 export SINGULARITY_BINDPATH=/francislab,/scratch
+export APPTAINER_BINDPATH=/francislab,/scratch
 export OMP_NUM_THREADS=${threads}
 export IMOKA_MAX_MEM_GB=$((threads*(mem-1)))
 
