@@ -58,7 +58,7 @@ dir.create(outdir, showWarnings = TRUE, recursive = FALSE, mode = "0700")
 for( file in files ){
 	first=TRUE
 	#for( dir in dirs ){
-	for( dir in list.files(path='rollup',pattern='rollup...$')){
+	for( dir in list.files(path='rollup', pattern='rollup...$', full.names = TRUE)){
 		if( first ){
 			message("Reading first")
 			first=FALSE
