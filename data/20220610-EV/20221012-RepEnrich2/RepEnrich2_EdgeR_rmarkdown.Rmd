@@ -75,7 +75,7 @@ for (row in 1:nrow(meta)) {
 	if( file.exists(filename) ){
 
 		sample <- read.delim(filename, header=FALSE)
-		print(head(sample))
+		#print(head(sample))
 
 		if(ncol(counts) == 0){
 			colnames(sample)=c('A','B','C',id)
@@ -87,7 +87,7 @@ for (row in 1:nrow(meta)) {
 			colnames(d)=id
 			counts = cbind(counts, d)
 		}
-		print(head(counts))
+		#print(head(counts))
 	}
 }
 
@@ -95,11 +95,19 @@ for (row in 1:nrow(meta)) {
 
 
 ```{r}
-counts
+head(counts)
 ```
 
 
+```{r}
+#meta$condition
+```
 
+
+```{r "Levels is always NULL. Should it be?"}
+#	"Levels is always NULL. Should it be?"
+#levels(meta$condition)
+```
 
 
 ```{r}
@@ -107,153 +115,175 @@ counts
 libsize <- meta$libsize
 condition <- factor(meta$condition)
 design <- model.matrix(~0+condition)
-colnames(design) <- levels(meta$condition)
+#colnames(design) <- levels(meta$condition)
+colnames(design) <- levels(condition)
+```
+
+
+```{r}
+condition
+```
+
+
+```{r}
+levels(condition)
+```
+
+
+```{r}
+design
+```
+
+
+```{r}
+colnames(design)
+```
+
+
+```{r}
+# Build a DGE object for the GLM
+y <- DGEList(counts=counts, lib.size=libsize)
+```
+
+
+```{r}
+# Normalize the data
+y <- calcNormFactors(y)
+y$samples
+plotMDS(y)
+```
+
+
+```{r}
+# Estimate the variance
+y <- estimateGLMCommonDisp(y, design)
+y <- estimateGLMTrendedDisp(y, design)
+y <- estimateGLMTagwiseDisp(y, design)
+plotBCV(y)
+```
+
+
+```{r}
+# Build an object to contain the normalized read abundance
+logcpm <- cpm(y, log=TRUE, lib.size=libsize)
+logcpm <- as.data.frame(logcpm)
+colnames(logcpm) <- factor(meta$condition)
+```
+
+
+```{r}
+# Conduct fitting of the GLM
+yfit <- glmFit(y, design)
+```
+
+
+```{r}
+# Initialize result matrices to contain the results of the GLM
+results <- matrix(nrow=dim(counts)[1],ncol=0)
+logfc <- matrix(nrow=dim(counts)[1],ncol=0)
+```
+
+
+```{r "makeContrasts"}
+# Make the comparisons for the GLM
+#my.contrasts <- makeContrasts(
+#	veryold_old = veryold – old,
+#	veryold_young = veryold – young,
+#	old_young = old – young,
+#	levels = design
+#)
+
+##	https://www.rdocumentation.org/packages/limma/versions/3.28.14/topics/makeContrasts
+
+#	FAILS as design levels is NULL
+#	Quitting from lines 181-195 (RepEnrich2_EdgeR_rmarkdown.Rmd) 
+#	Error in if (levels[1] == "(Intercept)") { : argument is of length zero
+#	Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> makeContrasts
+
+my.contrasts <- makeContrasts(
+	Primary_TestSE = Primary - TestSE,
+	levels = design
+)
+```
+
+
+```{r}
+my.contrasts
+```
+
+
+```{r "allcontrasts"}
+# Define the contrasts used in the comparisons
+#allcontrasts = c(
+#	"veryold_old",
+#	"veryold_young",
+#	"old_young"
+#)
+allcontrasts = c(
+	"Primary_TestSE"
+)
 ```
 
 
 
-<!--
-#```{r}
-## Build a DGE object for the GLM
-#y <- DGEList(counts=counts, lib.size=libsize)
-#```
-#
-#
-#```{r}
-## Normalize the data
-#y <- calcNormFactors(y)
-#y$samples
-#plotMDS(y)
-#```
-#
-#```{r}
-## Estimate the variance
-#y <- estimateGLMCommonDisp(y, design)
-#y <- estimateGLMTrendedDisp(y, design)
-#y <- estimateGLMTagwiseDisp(y, design)
-#plotBCV(y)
-#```
-#
-#
-#
-#```{r}
-## Build an object to contain the normalized read abundance
-#logcpm <- cpm(y, log=TRUE, lib.size=libsize)
-#logcpm <- as.data.frame(logcpm)
-#colnames(logcpm) <- factor(meta$condition)
-#```
-#
-#
-#```{r}
-## Conduct fitting of the GLM
-#yfit <- glmFit(y, design)
-#```
-#
-#
-#```{r}
-## Initialize result matrices to contain the results of the GLM
-#results <- matrix(nrow=dim(counts)[1],ncol=0)
-#logfc <- matrix(nrow=dim(counts)[1],ncol=0)
-#```
-#
-#
-#
-#
-#```{r}
-## Make the comparisons for the GLM
-##my.contrasts <- makeContrasts(
-##	veryold_old = veryold – old,
-##	veryold_young = veryold – young,
-##	old_young = old – young,
-##	levels = design
-##)
-#
-###	https://www.rdocumentation.org/packages/limma/versions/3.28.14/topics/makeContrasts
-#
-#my.contrasts <- makeContrasts(
-##	veryold_old = veryold – old,
-##	veryold_young = veryold – young,
-##	old_young = old – young,
-#	Primary_TestSE = Primary – TestSE,
-#	levels = design
-#)
-#```
-#
-#
-#```{r}
-## Define the contrasts used in the comparisons
-##allcontrasts = c(
-##	"veryold_old",
-##	"veryold_young",
-##	"old_young"
-##)
-#allcontrasts = c(
-#	"Primary_TestSE"
-#)
-#```
-#
-#
-#
-#
-#
-#
-#
-#```{r}
-## Conduct a for loop that will do the fitting of the GLM for each comparison
-## Put the results into the results objects
-#for(current_contrast in allcontrasts) {
-#	lrt <- glmLRT(yfit, contrast=my.contrasts[,current_contrast])
-#	plotSmear(lrt, de.tags=rownames(y))
-#	title(current_contrast)
-#	res <- topTags(lrt,n=dim(c)[1],sort.by="none")$table
-#	colnames(res) <- paste(colnames(res),current_contrast,sep=".")
-#	results <- cbind(results,res[,c(1,5)])
-#	logfc <- cbind(logfc,res[c(1)])
-#}
-#```
-#
-#
-#
-#```{r}
-## Add the repeat types back into the results.
-## We should still have the same order as the input data
-##results$class <- young_r1[,2]
-##results$type <- young_r1[,3]
-#```
-#
-#
-#```{r}
-## Sort the results table by the logFC
-##results <- results[with(results, order(-abs(logFC.old_young))), ]
-#results <- results[with(results, order(-abs(logFC.Primary_TestSE))), ]
-#```
-#
-#
-#```{r}
+```{r}
+# Conduct a for loop that will do the fitting of the GLM for each comparison
+# Put the results into the results objects
+for(current_contrast in allcontrasts) {
+	lrt <- glmLRT(yfit, contrast=my.contrasts[,current_contrast])
+	plotSmear(lrt, de.tags=rownames(y))
+	title(current_contrast)
+	res <- topTags(lrt,n=dim(c)[1],sort.by="none")$table
+	colnames(res) <- paste(colnames(res),current_contrast,sep=".")
+	results <- cbind(results,res[,c(1,5)])
+	logfc <- cbind(logfc,res[c(1)])
+}
+```
+
+
+```{r}
+# Add the repeat types back into the results.
+# We should still have the same order as the input data
+#results$class <- young_r1[,2]
+#results$type <- young_r1[,3]
+results$class <- sample[,2]
+results$type <- sample[,3]
+```
+
+
+```{r}
+# Sort the results table by the logFC
+#results <- results[with(results, order(-abs(logFC.old_young))), ]
+results <- results[with(results, order(-abs(logFC.Primary_TestSE))), ]
+```
+
+
+```{r}
 ### Save the results
 ##write.table(results, 'results.txt', quote=FALSE, sep="\t")
-#```
-#
-#
-#```{r}
-## Plot Fold Changes for repeat classes and types
-#for(current_contrast in allcontrasts) {
-#	logFC <- results[, paste0("logFC.", current_contrast)]
-#	# Plot the repeat classes
-#	classes <- with(results, reorder(class, -logFC, median))
-#	par(mar=c(6,10,4,1))
-#	boxplot(logFC ~ classes, data=results, outline=FALSE, horizontal=TRUE,
-#		las=2, xlab="log(Fold Change)", main=current_contrast)
-#	abline(v=0)
-#	# Plot the repeat types
-#	types <- with(results, reorder(type, -logFC, median))
-#	boxplot(logFC ~ types, data=results, outline=FALSE, horizontal=TRUE,
-#		las=2, xlab="log(Fold Change)", main=current_contrast)
-#	abline(v=0)
-#}
-#```
-#
-#
--->
+results
+```
+
+
+```{r}
+# Plot Fold Changes for repeat classes and types
+for(current_contrast in allcontrasts) {
+	logFC <- results[, paste0("logFC.", current_contrast)]
+	# Plot the repeat classes
+
+	classes <- with(results, reorder(class, -logFC, median))
+
+	par(mar=c(6,10,4,1))
+	boxplot(logFC ~ classes, data=results, outline=FALSE, horizontal=TRUE,
+		las=2, xlab="log(Fold Change)", main=current_contrast)
+	abline(v=0)
+	# Plot the repeat types
+	types <- with(results, reorder(type, -logFC, median))
+	boxplot(logFC ~ types, data=results, outline=FALSE, horizontal=TRUE,
+		las=2, xlab="log(Fold Change)", main=current_contrast)
+	abline(v=0)
+}
+```
+
 
 
