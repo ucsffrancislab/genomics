@@ -439,6 +439,36 @@ for quality in 15 ; do
 		chmod -w ${f}
 	fi
 
+
+
+
+
+	inbase="${outbase}"
+	outbase="${inbase}.hg38"	#	"${OUT}/${s}.format.umi.quality15.t2.t3.hg38.name.marked.deduped.hg38
+	f=${outbase}.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		~/.local/bin/bowtie2.bash \
+			--threads ${SLURM_NTASKS:-8} \
+			--very-sensitive-local \
+			-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts \
+			-f -U ${inbase}.fa.gz \
+			--output ${f} \
+			--rg-id ${sample} --rg SM:${sample} \
+			--sort
+			#-2 ${inbase}.R2.fastq.gz \
+			#-U ${inbase}.R1.fastq.gz \
+	fi
+
+
+
+
+#		inbase="${outbase}"
+#		outbase="${inbase}.rx"
+#		f=${outbase}.bam
+
+
 done
 
 
