@@ -1,0 +1,259 @@
+
+---
+title: RepEnrich2 EdgeR Template
+author: Modified RepEnrich2
+date: 20221012
+output: html_document
+---
+
+<!--
+
+THAT MUST BE FIRST TO BE USEFUL!
+
+-->
+
+```{r "Figure Settings", include = FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+```
+
+
+<!--
+
+This is a comment that will only be rendered as an html comment.
+
+Not sure what happens if output is a pdf document.
+
+-->
+
+```{r "Comment note", include = FALSE}
+#	This is r code that isn't included, ie printed.
+#	As it is comment, it isn't run.
+#	I think this is the most straight forward way to include comments in an rmarkdown file.
+```
+
+
+```{r "Show Args"}
+#args = commandArgs(trailingOnly=TRUE)
+print(args)
+```
+
+
+
+```{r}
+#library('BiocManager')
+
+# Setup - Install and load edgeR
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("edgeR")
+library('edgeR')
+```
+
+
+
+
+```{r}
+meta <- read.delim(args[1], header=TRUE,sep=",")
+meta
+
+#meta <- data.frame(
+#	row.names=colnames(counts),
+#	condition=c("young","young","young","old","old","old","veryold","veryold","veryold"),
+#	libsize=c(24923593,28340805,21743712,16385707,26573335,28131649,34751164,37371774,28236419)
+#)
+```
+
+
+
+```{r}
+counts = data.frame()
+
+for (row in 1:nrow(meta)) {
+	id <- meta[row,"id"]
+	filename=paste("/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/",id,"/",id,"_fraction_counts.txt",sep="")
+	print(filename)
+
+	if( file.exists(filename) ){
+
+		sample <- read.delim(filename, header=FALSE)
+		print(head(sample))
+
+		if(ncol(counts) == 0){
+			colnames(sample)=c('A','B','C',id)
+			counts=data.frame(sample[,4])
+			colnames(counts)=id
+			rownames(counts) = sample[,1]
+		} else{
+			d=data.frame(sample[,4])
+			colnames(d)=id
+			counts = cbind(counts, d)
+		}
+		print(head(counts))
+	}
+}
+
+```
+
+
+```{r}
+counts
+```
+
+
+
+
+
+```{r}
+# Define the library size and conditions for the GLM
+libsize <- meta$libsize
+condition <- factor(meta$condition)
+design <- model.matrix(~0+condition)
+colnames(design) <- levels(meta$condition)
+```
+
+
+
+<!--
+#```{r}
+## Build a DGE object for the GLM
+#y <- DGEList(counts=counts, lib.size=libsize)
+#```
+#
+#
+#```{r}
+## Normalize the data
+#y <- calcNormFactors(y)
+#y$samples
+#plotMDS(y)
+#```
+#
+#```{r}
+## Estimate the variance
+#y <- estimateGLMCommonDisp(y, design)
+#y <- estimateGLMTrendedDisp(y, design)
+#y <- estimateGLMTagwiseDisp(y, design)
+#plotBCV(y)
+#```
+#
+#
+#
+#```{r}
+## Build an object to contain the normalized read abundance
+#logcpm <- cpm(y, log=TRUE, lib.size=libsize)
+#logcpm <- as.data.frame(logcpm)
+#colnames(logcpm) <- factor(meta$condition)
+#```
+#
+#
+#```{r}
+## Conduct fitting of the GLM
+#yfit <- glmFit(y, design)
+#```
+#
+#
+#```{r}
+## Initialize result matrices to contain the results of the GLM
+#results <- matrix(nrow=dim(counts)[1],ncol=0)
+#logfc <- matrix(nrow=dim(counts)[1],ncol=0)
+#```
+#
+#
+#
+#
+#```{r}
+## Make the comparisons for the GLM
+##my.contrasts <- makeContrasts(
+##	veryold_old = veryold – old,
+##	veryold_young = veryold – young,
+##	old_young = old – young,
+##	levels = design
+##)
+#
+###	https://www.rdocumentation.org/packages/limma/versions/3.28.14/topics/makeContrasts
+#
+#my.contrasts <- makeContrasts(
+##	veryold_old = veryold – old,
+##	veryold_young = veryold – young,
+##	old_young = old – young,
+#	Primary_TestSE = Primary – TestSE,
+#	levels = design
+#)
+#```
+#
+#
+#```{r}
+## Define the contrasts used in the comparisons
+##allcontrasts = c(
+##	"veryold_old",
+##	"veryold_young",
+##	"old_young"
+##)
+#allcontrasts = c(
+#	"Primary_TestSE"
+#)
+#```
+#
+#
+#
+#
+#
+#
+#
+#```{r}
+## Conduct a for loop that will do the fitting of the GLM for each comparison
+## Put the results into the results objects
+#for(current_contrast in allcontrasts) {
+#	lrt <- glmLRT(yfit, contrast=my.contrasts[,current_contrast])
+#	plotSmear(lrt, de.tags=rownames(y))
+#	title(current_contrast)
+#	res <- topTags(lrt,n=dim(c)[1],sort.by="none")$table
+#	colnames(res) <- paste(colnames(res),current_contrast,sep=".")
+#	results <- cbind(results,res[,c(1,5)])
+#	logfc <- cbind(logfc,res[c(1)])
+#}
+#```
+#
+#
+#
+#```{r}
+## Add the repeat types back into the results.
+## We should still have the same order as the input data
+##results$class <- young_r1[,2]
+##results$type <- young_r1[,3]
+#```
+#
+#
+#```{r}
+## Sort the results table by the logFC
+##results <- results[with(results, order(-abs(logFC.old_young))), ]
+#results <- results[with(results, order(-abs(logFC.Primary_TestSE))), ]
+#```
+#
+#
+#```{r}
+### Save the results
+##write.table(results, 'results.txt', quote=FALSE, sep="\t")
+#```
+#
+#
+#```{r}
+## Plot Fold Changes for repeat classes and types
+#for(current_contrast in allcontrasts) {
+#	logFC <- results[, paste0("logFC.", current_contrast)]
+#	# Plot the repeat classes
+#	classes <- with(results, reorder(class, -logFC, median))
+#	par(mar=c(6,10,4,1))
+#	boxplot(logFC ~ classes, data=results, outline=FALSE, horizontal=TRUE,
+#		las=2, xlab="log(Fold Change)", main=current_contrast)
+#	abline(v=0)
+#	# Plot the repeat types
+#	types <- with(results, reorder(type, -logFC, median))
+#	boxplot(logFC ~ types, data=results, outline=FALSE, horizontal=TRUE,
+#		las=2, xlab="log(Fold Change)", main=current_contrast)
+#	abline(v=0)
+#}
+#```
+#
+#
+-->
+
+
