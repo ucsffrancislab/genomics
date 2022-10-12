@@ -95,47 +95,57 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
+			fi
 		fi
 	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $8 == "Test-SE" ) || ( $9 == "Primary" && $11 == "M" ) ){print $1,$9}' metadata.csv ) | tr -d '-' > ${outdir}/metadata.csv
 
 	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
 
 
-#	#	for i in $( seq 9 ); do
-#	#		echo $i
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.05 0.5 k${k} >> ${arguments_file}
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.2 k${k} >> ${arguments_file}
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.5 0.2 k${k} >> ${arguments_file}
-#	#	done
-#	
-#	
-#		column="PrimaryRecurrent"
-#		outdir=${PWD}/rmarkdown_results_${column}
-#		mkdir -p ${outdir}
-#		#awk 'BEGIN{FS=OFS=",";print "id","'${column}'"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) ){print $1,$9}' metadata.csv > ${outdir}/metadata.csv
-#		awk 'BEGIN{FS=OFS=",";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) ){print $1,$9}' metadata.csv > ${outdir}/metadata.csv
-#	#	for i in $( seq 9 ); do
-#	#		echo $i
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.05 0.5 k${k} >> ${arguments_file}
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.2 k${k} >> ${arguments_file}
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.5 0.2 k${k} >> ${arguments_file}
-#	#	done
-#	
-#	
-#		column="PrimaryRecurrentControl"
-#		outdir=${PWD}/rmarkdown_results_${column}
-#		mkdir -p ${outdir}
-#		#awk 'BEGIN{FS=OFS=",";print "id","'${column}'"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) || ( $9 == "control" ) ){print $1,$9}' metadata.csv > ${outdir}/metadata.csv
-#		awk 'BEGIN{FS=OFS=",";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) || ( $9 == "control" ) ){print $1,$9}' metadata.csv > ${outdir}/metadata.csv
-#	#	for i in $( seq 9 ); do
-#	#		echo $i
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.05 0.5 k${k} >> ${arguments_file}
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.2 k${k} >> ${arguments_file}
-#	#		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.5 0.2 k${k} >> ${arguments_file}
-#	#	done
-#	
-#	
+
+
+#	column="PrimaryRecurrent"
+#	outdir=${PWD}/rmarkdown_results_${column}
+#	mkdir -p ${outdir}
+#	while read id condition ; do
+#		if [ ${id} == "id" ] ; then
+#			echo "id,condition,libsize"
+#		else
+#			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+#			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+#			if [ -f ${f} ] && [ ! -w ${f} ] ; then
+#				echo ${id},${condition},${c}
+#			fi
+#		fi
+#	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) ){print $1,$9}' metadata.csv ) | tr -d '-' > ${outdir}/metadata.csv
+#
+#	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
+#
+#
+#
+#
+#	column="PrimaryRecurrentControl"
+#	outdir=${PWD}/rmarkdown_results_${column}
+#	mkdir -p ${outdir}
+#	while read id condition ; do
+#		if [ ${id} == "id" ] ; then
+#			echo "id,condition,libsize"
+#		else
+#			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+#			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+#			if [ -f ${f} ] && [ ! -w ${f} ] ; then
+#				echo ${id},${condition},${c}
+#			fi
+#		fi
+#	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) || ( $9 == "control" ) ){print $1,$9}' metadata.csv ) | tr -d '-' > ${outdir}/metadata.csv
+#
+#	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
+
+
+
 #		column="TumorControl"
 #		outdir=${PWD}/rmarkdown_results_${column}
 #		mkdir -p ${outdir}

@@ -21,3 +21,7 @@ ln -s "/francislab/data1/raw/20220610-EV/Sample covariate file_ids and indexes_f
 
 
 
+```
+RepEnrich2_upload.bash
+```
+
