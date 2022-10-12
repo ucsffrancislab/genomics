@@ -193,22 +193,48 @@ logfc <- matrix(nrow=dim(counts)[1],ncol=0)
 #	levels = design
 #)
 
+
 ##	https://www.rdocumentation.org/packages/limma/versions/3.28.14/topics/makeContrasts
 
-#	FAILS as design levels is NULL
-#	Quitting from lines 181-195 (RepEnrich2_EdgeR_rmarkdown.Rmd) 
-#	Error in if (levels[1] == "(Intercept)") { : argument is of length zero
-#	Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> makeContrasts
+#makeContrasts(contrasts=c("B-A","C-B","C-A"),levels=c("A","B","C"))
+#makeContrasts(contrasts=c("B-A","C-B","C-A"),levels=design)
 
+contrasts=c()
+#combinations=t(combn(c("A","B","C"),2))
+combinations=t(combn( levels(condition), 2))
+for( i in 1:nrow(combinations) ){
+	print(combinations[i,])
+	contrasts=append(contrasts,paste(combinations[i,1],combinations[i,2],sep="-"))
+}
+contrasts
+```
+
+
+```{r}
 my.contrasts <- makeContrasts(
-	Primary_TestSE = Primary - TestSE,
+	contrasts = contrasts,
 	levels = design
 )
+
+#my.contrasts <- makeContrasts(
+#	"Primary_TestSE" = Primary - TestSE,
+#	levels = design
+#)
 ```
 
 
 ```{r}
 my.contrasts
+```
+
+
+```{r}
+class(my.contrasts)
+```
+
+
+```{r}
+colnames(my.contrasts)
 ```
 
 
@@ -219,9 +245,8 @@ my.contrasts
 #	"veryold_young",
 #	"old_young"
 #)
-allcontrasts = c(
-	"Primary_TestSE"
-)
+#allcontrasts = c( "Primary_TestSE")
+#allcontrasts = colnames(my.contrasts)
 ```
 
 
@@ -229,7 +254,8 @@ allcontrasts = c(
 ```{r}
 # Conduct a for loop that will do the fitting of the GLM for each comparison
 # Put the results into the results objects
-for(current_contrast in allcontrasts) {
+#for(current_contrast in allcontrasts) {
+for(current_contrast in colnames(my.contrasts)) {
 	lrt <- glmLRT(yfit, contrast=my.contrasts[,current_contrast])
 	plotSmear(lrt, de.tags=rownames(y))
 	title(current_contrast)
@@ -254,7 +280,9 @@ results$type <- sample[,3]
 ```{r}
 # Sort the results table by the logFC
 #results <- results[with(results, order(-abs(logFC.old_young))), ]
-results <- results[with(results, order(-abs(logFC.Primary_TestSE))), ]
+
+
+#results <- results[with(results, order(-abs(logFC.Primary_TestSE))), ]
 ```
 
 
@@ -267,7 +295,8 @@ results
 
 ```{r}
 # Plot Fold Changes for repeat classes and types
-for(current_contrast in allcontrasts) {
+#for(current_contrast in allcontrasts) {
+for(current_contrast in colnames(my.contrasts)) {
 	logFC <- results[, paste0("logFC.", current_contrast)]
 	# Plot the repeat classes
 
