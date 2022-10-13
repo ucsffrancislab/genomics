@@ -41,8 +41,9 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		args = commandArgs(trailingOnly=TRUE)
 
 		meta = args[1]
-		out_dir = args[2]
-		out_file = args[3]
+		in_dir = args[2]
+		out_dir = args[3]
+		out_file = args[4]
 
 		output_dir = out_dir
 		output_file = paste(out_file,"html", sep=".")
@@ -83,6 +84,7 @@ else
 #	libsize=c(24923593,28340805,21743712,16385707,26573335,28131649,34751164,37371774,28236419)
 #)
 
+	indir=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out
 
 	echo -n > ${arguments_file}
 
@@ -94,14 +96,14 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
-			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+			f=${indir}/out/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
 		fi
 	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $8 == "Test-SE" ) || ( $9 == "Primary" && $11 == "M" ) ){print $1,$9}' metadata.csv ) | tr -d '-' > ${outdir}/metadata.csv
 
-	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
+	echo ${outdir}/metadata.csv ${indir} ${outdir} ${column} >> ${arguments_file}
 
 
 
@@ -114,14 +116,14 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
-			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
 		fi
 	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) ){print $1,$9}' metadata.csv ) | tr -d '-' > ${outdir}/metadata.csv
 
-	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
+	echo ${outdir}/metadata.csv ${indir} ${outdir} ${column} >> ${arguments_file}
 
 
 
@@ -134,14 +136,14 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
-			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
 		fi
 	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) || ( $9 == "control" ) ){print $1,$9}' metadata.csv ) | tr -d '-' > ${outdir}/metadata.csv
 
-	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
+	echo ${outdir}/metadata.csv ${indir} ${outdir} ${column} >> ${arguments_file}
 
 
 
@@ -154,14 +156,14 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
-			f=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/${id}/${id}_fraction_counts.txt
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
 		fi
 	done < <( awk 'BEGIN{FS=",";OFS="\t";print "id","condition"}( ( $9 == "Primary" ) || ( $9 == "Recurrent" ) || ( $9 == "control" ) ){print $1,$9}' metadata.csv ) | sed -E 's/Primary|Recurrent/tumor/' > ${outdir}/metadata.csv
 
-	echo ${outdir}/metadata.csv ${outdir} ${column} >> ${arguments_file}
+	echo ${outdir}/metadata.csv ${indir} ${outdir} ${column} >> ${arguments_file}
 
 
 	max=$( cat ${arguments_file} | wc -l )
