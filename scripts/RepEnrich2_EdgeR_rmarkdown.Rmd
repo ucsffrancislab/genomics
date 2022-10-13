@@ -69,7 +69,8 @@ counts = data.frame()
 
 for (row in 1:nrow(meta)) {
 	id <- meta[row,"id"]
-	filename=paste("/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/",id,"/",id,"_fraction_counts.txt",sep="")
+	#filename=paste("/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out/",id,"/",id,"_fraction_counts.txt",sep="")
+	filename=paste(args[2],"/",id,"/",id,"_fraction_counts.txt",sep="")
 	print(filename)
 
 	if( file.exists(filename) ){
