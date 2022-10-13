@@ -56,8 +56,7 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		#	print("output file exists")
 		} else {
 			rmarkdown::render("~/.local/bin/RepEnrich2_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
-			#rmarkdown::render("/francislab/data1/working/20220610-EV/20221012-RepEnrich2/RepEnrich2_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
-			#Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
+			Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
 		}
 
 	EOF
