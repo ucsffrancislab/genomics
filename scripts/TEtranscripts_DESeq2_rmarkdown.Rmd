@@ -1,0 +1,556 @@
+
+---
+title: TEtranscripts DESeq2 Template
+author: Modified TEtranscripts
+date: 20221013
+output: html_document
+---
+
+<!--
+
+THAT MUST BE FIRST TO BE USEFUL!
+
+-->
+
+```{r "Figure Settings", include = FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+```
+
+
+<!--
+
+This is a comment that will only be rendered as an html comment.
+
+Not sure what happens if output is a pdf document.
+
+-->
+
+```{r "Comment note", include = FALSE}
+#	This is r code that isn't included, ie printed.
+#	As it is comment, it isn't run.
+#	I think this is the most straight forward way to include comments in an rmarkdown file.
+```
+
+
+```{r "Show Args"}
+#args = commandArgs(trailingOnly=TRUE)
+print(args)
+```
+
+
+
+
+
+```{r}
+#library('BiocManager')
+
+# Setup - Install and load edgeR
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("edgeR")
+library('edgeR')
+```
+
+
+
+
+```{r}
+meta <- read.delim(args[1], header=TRUE,sep=",")
+meta
+#meta <- data.frame(
+#	row.names=colnames(counts),
+#	condition=c("young","young","young","old","old","old","veryold","veryold","veryold")
+#	libsize= ...
+#)
+```
+
+
+
+```{r}
+counts = data.frame()
+
+for (row in 1:nrow(meta)) {
+	id <- meta[row,"id"]
+	filename=paste(args[2],"/",id,".cntTable",sep="")
+	print(filename)
+
+	#if( file.exists(filename) ){
+
+		sample <- read.delim(filename, header=TRUE)
+		#print(head(sample))
+
+		if(ncol(counts) == 0){
+			colnames(sample)=c('A',id)
+			counts=data.frame(sample[,2])
+			colnames(counts)=id
+			rownames(counts) = sample[,1]
+		} else{
+			d=data.frame(sample[,2])
+			colnames(d)=id
+			counts = cbind(counts, d)
+		}
+		#print(head(counts))
+	#}
+}
+
+```
+
+
+```{r}
+head(counts)
+```
+
+
+```{r}
+#meta$condition
+```
+
+
+```{r "Levels is always NULL. Should it be?"}
+#	"Levels is always NULL. Should it be?"
+#levels(meta$condition)
+```
+
+
+Define the library size and conditions for the GLM
+```{r}
+libsize <- meta$libsize
+condition <- factor(meta$condition)
+design <- model.matrix(~0+condition)
+#colnames(design) <- levels(meta$condition)
+colnames(design) <- levels(condition)
+```
+
+
+```{r}
+condition
+```
+
+
+```{r}
+levels(condition)
+```
+
+
+```{r}
+table(meta$condition)
+```
+
+
+```{r}
+table(meta$condition)[1]
+```
+
+
+```{r}
+names(table(meta$condition)[1])
+```
+
+
+```{r}
+as.numeric(table(meta$condition)[1])
+```
+
+
+```{r}
+table(meta$condition)[2]
+```
+
+
+```{r}
+names(table(meta$condition)[2])
+```
+
+
+```{r}
+as.numeric(table(meta$condition)[2])
+```
+
+
+```{r}
+design
+```
+
+
+```{r}
+colnames(design)
+```
+
+
+Build a DGE object for the GLM
+```{r}
+y <- DGEList(counts=counts, lib.size=libsize)
+```
+
+
+Normalize the data
+```{r}
+y <- calcNormFactors(y)
+y$samples
+plotMDS(y)
+```
+
+
+Estimate the variance
+```{r}
+y <- estimateGLMCommonDisp(y, design)
+y <- estimateGLMTrendedDisp(y, design)
+y <- estimateGLMTagwiseDisp(y, design)
+plotBCV(y)
+```
+
+
+Build an object to contain the normalized read abundance
+```{r}
+logcpm <- cpm(y, log=TRUE, lib.size=libsize)
+logcpm <- as.data.frame(logcpm)
+colnames(logcpm) <- factor(meta$condition)
+```
+
+
+Conduct fitting of the GLM
+```{r}
+yfit <- glmFit(y, design)
+```
+
+
+Initialize result matrices to contain the results of the GLM
+```{r}
+results <- matrix(nrow=dim(counts)[1],ncol=0)
+logfc <- matrix(nrow=dim(counts)[1],ncol=0)
+```
+
+
+Make the comparisons for the GLM
+```{r "makeContrasts"}
+#my.contrasts <- makeContrasts(
+#	veryold_old = veryold – old,
+#	veryold_young = veryold – young,
+#	old_young = old – young,
+#	levels = design
+#)
+
+
+##	https://www.rdocumentation.org/packages/limma/versions/3.28.14/topics/makeContrasts
+
+#makeContrasts(contrasts=c("B-A","C-B","C-A"),levels=c("A","B","C"))
+#makeContrasts(contrasts=c("B-A","C-B","C-A"),levels=design)
+
+contrasts=c()
+#combinations=t(combn(c("A","B","C"),2))
+combinations=t(combn( levels(condition), 2))
+for( i in 1:nrow(combinations) ){
+	print(combinations[i,])
+	contrasts=append(contrasts,paste(combinations[i,1],combinations[i,2],sep="-"))
+}
+contrasts
+```
+
+
+```{r}
+my.contrasts <- makeContrasts(
+	contrasts = contrasts,
+	levels = design
+)
+
+#my.contrasts <- makeContrasts(
+#	"Primary_TestSE" = Primary - TestSE,
+#	levels = design
+#)
+```
+
+
+```{r}
+my.contrasts
+```
+
+
+```{r}
+class(my.contrasts)
+```
+
+
+```{r}
+colnames(my.contrasts)
+```
+
+
+Define the contrasts used in the comparisons
+```{r "allcontrasts"}
+#allcontrasts = c(
+#	"veryold_old",
+#	"veryold_young",
+#	"old_young"
+#)
+#allcontrasts = c( "Primary_TestSE")
+#allcontrasts = colnames(my.contrasts)
+```
+
+
+
+```{r}
+# Conduct a for loop that will do the fitting of the GLM for each comparison
+# Put the results into the results objects
+#for(current_contrast in allcontrasts) {
+for(current_contrast in colnames(my.contrasts)) {
+	lrt <- glmLRT(yfit, contrast=my.contrasts[,current_contrast])
+	plotSmear(lrt, de.tags=rownames(y))
+	title(current_contrast)
+	res <- topTags(lrt,n=dim(c)[1],sort.by="none")$table
+	colnames(res) <- paste(colnames(res),current_contrast,sep=".")
+	results <- cbind(results,res[,c(1,5)])
+	logfc <- cbind(logfc,res[c(1)])
+}
+```
+
+
+```{r}
+# Add the repeat types back into the results.
+# We should still have the same order as the input data
+#results$class <- young_r1[,2]
+#results$type <- young_r1[,3]
+#results$class <- sample[,2]
+#results$type <- sample[,3]
+```
+
+
+Sort the results table by the logFC
+```{r}
+#results <- results[with(results, order(-abs(logFC.old_young))), ]
+
+
+#results <- results[with(results, order(-abs(logFC.Primary_TestSE))), ]
+```
+
+
+```{r}
+### Save the results
+##write.table(results, 'results.txt', quote=FALSE, sep="\t")
+results
+```
+
+
+Plot Fold Changes for repeat classes and types
+```{r}
+##for(current_contrast in allcontrasts) {
+#for(current_contrast in colnames(my.contrasts)) {
+#	logFC <- results[, paste0("logFC.", current_contrast)]
+#	# Plot the repeat classes
+#
+#	classes <- with(results, reorder(class, -logFC, median))
+#
+#	par(mar=c(6,10,4,1))
+#	boxplot(logFC ~ classes, data=results, outline=FALSE, horizontal=TRUE,
+#		las=2, xlab="log(Fold Change)", main=current_contrast)
+#	abline(v=0)
+#	# Plot the repeat types
+#	types <- with(results, reorder(type, -logFC, median))
+#	boxplot(logFC ~ types, data=results, outline=FALSE, horizontal=TRUE,
+#		las=2, xlab="log(Fold Change)", main=current_contrast)
+#	abline(v=0)
+#}
+```
+
+
+
+
+
+# Pulled from TEtranscripts create rscript
+
+
+Load all separately based on metadata file
+```{r}
+#	data <- read.table("count_table",header=T,row.names=1)\n' % f_cnt_tbl  # load counts table
+data = counts
+```
+
+
+Semi-provided script is for binary analysis only.
+
+#	levels(condition)[1]
+#	levels(condition)[2]
+
+
+
+```{r}
+names(table(meta$condition)[2])
+```
+
+
+```{r}
+as.numeric(table(meta$condition)[2])
+```
+
+
+
+
+Again, base on metafile
+```{r}
+#	groups <- factor(c(rep("TGroup",%s),rep("CGroup",%s)))\n' % (len(tfiles), len(cfiles))
+```
+
+```{r}
+g1=names(table(meta$condition)[1])
+cg1=as.numeric(table(meta$condition)[1])
+g2=names(table(meta$condition)[2])
+cg2=as.numeric(table(meta$condition)[2])
+groups <- factor(c(rep(g1,cg1),rep(g2,cg2)))
+```
+
+generate groups for pairwise comparison
+```{r}
+#    rscript += 'min_read <- %s\n' % min_read
+min_read <- 1
+```
+
+Counts filtering (hard coded to 20)
+```{r}
+data <- data[apply(data,1,function(x){max(x)}) > min_read,]
+```
+
+
+Differential analysis using DESeq2 and their internal normalization method
+```{r}
+sampleInfo <- data.frame(groups,row.names=colnames(data))
+head(sampleInfo)
+```
+
+```{r}
+suppressPackageStartupMessages(library(DESeq2))
+```
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = data, colData = sampleInfo, design = ~ groups)
+head(dds)
+```
+
+
+Not necessarity the control group
+```{r}
+#dds$groups = relevel(dds$groups,ref="CGroup")
+
+dds$groups = relevel(dds$groups,ref=g1)
+```
+
+```{r}
+dds <- DESeq(dds)
+head(dds)
+```
+
+```{r}
+res <- results(dds)
+head(res)
+```
+
+
+```{r}
+#        rscript += 'write.table(res, file="%s_gene_TE_analysis.txt", sep="\\t",quote=F)\n' % prj_name
+```
+
+
+Threshold filter?
+```{r}
+#        l2fc = math.log(fc, 2)
+#        rscript += 'resSig <- res[(!is.na(res$padj) & (res$padj < %f) & \
+#        (abs(res$log2FoldChange)> %f)), ]\n' % (pval, l2fc)
+```
+
+
+```{r}
+#        rscript += 'write.table(resSig, file="%s_sigdiff_gene_TE.txt",sep="\\t", quote=F)\n' % prj_name
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```{r DESeq1}
+#    # Choose between DESeq2 (default) or DESeq
+#    if not DESeq1:
+#        # ABOVE
+#    else:
+#        # Quantile normalization to calculate fold change
+#        if norm == 'quant':
+#            rscript += 'colnum <- length(data)\n'
+#            rscript += 'rownum <- length(data[,1])\n'
+#            rscript += 'ordMatrix <- matrix(nrow=rownum,ncol=colnum)\n'
+#            rscript += 'ordIdx <- matrix(nrow=rownum,ncol=colnum)\n'
+#            rscript += 'for (i in 1:colnum){\n'
+#            rscript += '  a.sort <- sort(data[,i],index.return=T)\n'
+#            rscript += '  ordMatrix[,i] <- a.sort$x\n'
+#            rscript += '  ordIdx[,i] <- a.sort$ix\n'
+#            rscript += '}\n'
+#            rscript += 'rowAvg <- rowMeans(ordMatrix)\n'
+#            rscript += 'data.q.norm <- matrix(nrow=rownum,ncol=colnum)\n'
+#            rscript += 'for (i in 1:colnum){\n'
+#            rscript += '  data.q.norm[,i] <- rowAvg[order(ordIdx[,i])]\n'
+#            rscript += '}\n'
+#            rscript += 'colnames(data.q.norm) <- colnames(data)\n'
+#            rscript += 'rownames(data.q.norm) <- rownames(data)\n'
+#            if len(tfiles) > 1:
+#                rscript += 'sample1Mean <- rowMeans(data.q.norm[,1:%s],na.rm=T)\n' % len(tfiles)
+#            else:
+#                rscript += 'sample1Mean <- data.q.norm[,1]\n'
+#            group2_start = len(tfiles) + 1
+#            group2_stop = group2_start + len(cfiles)
+#            if len(cfiles) > 1:
+#                rscript += 'sample2Mean <- rowMeans(data.q.norm[,%s:%s,na.rm=T)\n' % (group2_start, group2_stop)
+#            else:
+#                rscript += 'sample2Mean <- data.q.norm[,%s]\n' % group2_start
+#            rscript += 'FoldChange <- (sample2Mean/sample1Mean)\n'
+#            rscript += 'log2FoldChange <- log2(FoldChange)\n'
+#
+#        # Normalize by RPM (reads per million mapped)
+#        if norm == 'TC':
+#            min_libSize = min(rpm_val)
+#            rpm_vec = ','.join(str(x/min_libSize) for x in rpm_val)
+#            rscript += 'tc <- c(%s)\n' % rpm_vec
+#
+#        # Performing differential analysis using DESeq
+#        rscript += 'suppressPackageStartupMessages(library(DESeq))\n'
+#        rscript += 'cds <- newCountDataSet(data,groups)\n'
+#        if norm == 'TC':
+#            rscript += 'cds$sizeFactor = tc\n'
+#        else:
+#            rscript += 'cds <- estimateSizeFactors(cds)\n'
+#        if len(tfiles) == 1 and len(cfiles) == 1:
+#            rscript += 'cds <- estimateDispersions(cds,method="blind",sharingMode="fit-only",fitType="local")\n'
+#        elif len(tfiles) > 1 and len(cfiles) > 1:
+#            rscript += 'cds <- estimateDispersions(cds,method="per-condition")\n'
+#        else:
+#            rscript += 'cds <- estimateDispersions(cds,method="pooled")\n'
+#
+#        rscript += 'res <- nbinomTest(cds,"CGroup","TGroup")\n'
+#
+#        # Generating output table
+#        if norm == 'quant':
+#            rscript += 'res_fc <- cbind(res$id,sample1Mean,sample2Mean,FoldChange,log2FoldChange,res$pval,res$padj)\n'
+#            rscript += 'colnames(res_fc) = c("id","sample1Mean","sample2Mean",\
+#            "FoldChange","log2FoldChange","pval", "padj")\n'
+#        else:
+#            rscript += 'res_fc <- res\n'
+#        rscript += 'write.table(res_fc, file="%s_gene_TE_analysis.txt", sep="\\t",quote=F,row.names=F)\n' % prj_name
+#
+#        # Generating table of "significant" results
+#
+#        l2fc = math.log(fc, 2)
+#        if norm == 'quant':
+#            rscript += 'resSig <- res_fc[(!is.na(res_fc[,7]) & (res_fc[,7] < %f) & \
+#            (abs(as.numeric(res_fc[,5])) > %f)), ]\n' % (pval, l2fc)
+#        else:
+#            rscript += 'resSig <- res_fc[(!is.na(res_fc$padj) & (res_fc$padj < %f) & \
+#            (abs(res_fc$log2FoldChange)> %f)), ]\n' % (pval, l2fc)
+#        rscript += 'write.table(resSig, file="%s_sigdiff_gene_TE.txt",sep="\\t", quote=F, row.names=F)\n' % (prj_name)
+#
+#    return rscript
+```
