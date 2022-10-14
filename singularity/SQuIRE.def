@@ -323,6 +323,8 @@ From: ubuntu:20.04
 	
 	sed -i '/^\tjoincommand_list/s/\$'"'"'\\\\t/'"'"'\t/' squire/Count.py
 
+	sed -i 's/unique_fragavg=unique_fragsum\/int(unique_linecount)/unique_fragavg=unique_fragsum\/int\(unique_linecount\) if unique_linecount \> 0 else 0/' squire/Count.py
+
 	python2 -m pip install -e .
 
 
