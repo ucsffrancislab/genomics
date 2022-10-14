@@ -178,5 +178,6 @@ else
 
 fi
 
+#	TEtranscript analysis is currently just binary
 
 
