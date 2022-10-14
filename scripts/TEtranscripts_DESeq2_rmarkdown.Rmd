@@ -554,3 +554,613 @@ Threshold filter?
 #
 #    return rscript
 ```
+
+
+
+From a separate notebook
+
+```{r SF Normalize}
+counts.sf_normalized <- counts(dds, normalized=TRUE)
+head(counts.sf_normalized[,1:10])
+```
+
+
+
+```{r Norm Counts}
+log.norm.counts <- log2(counts.sf_normalized + 1)
+head(log.norm.counts[,1:10])
+```
+
+
+```{r Tidy}
+res_tidy <- results(dds, tidy=TRUE)
+head(res_tidy[res_tidy$pvalue < 0.1,])
+```
+
+
+``{r}
+head(res_tidy[res_tidy$pvalue < 0.05,])
+```
+
+
+```{r Summary}
+summary(res)
+```
+
+
+```{r Boxplot 1}
+boxplot(counts.sf_normalized, notch=TRUE,
+  main='untransformed counts', ylab='counts')
+```
+
+
+```{r Boxplot 2}
+boxplot(log.norm.counts, notch=TRUE,
+  main='log2-transformed counts',
+  ylab='log2(counts)')
+```
+
+
+```{r plot 1}
+plot(log.norm.counts[,1:2], cex=.1, main='Normalized log2(counts)')
+```
+
+
+```{r}
+library ( vsn )
+library ( ggplot2 )
+```
+
+
+```{r}
+msd_plot<-meanSdPlot(log.norm.counts,ranks=FALSE,plot=FALSE)
+msd_plot$gg+ggtitle('sequencing depth normalized log2(read counts)')+ylab('standard deviation')
+```
+
+
+```{r}
+dds.rlog<-rlog(dds,blind=TRUE)
+rlog.norm.counts<-assay(dds.rlog)
+```
+
+
+```{r}
+msd_plot<-meanSdPlot(rlog.norm.counts,ranks=FALSE,plot=FALSE)
+msd_plot$gg+ggtitle('rlog-transformed read counts')+ylab('standard deviation')
+# cor () calculates the correlation between columns of a matrix
+```
+
+
+```{r}
+distance.m_rlog<-as.dist(1-cor(rlog.norm.counts,method='pearson'))
+head(distance.m_rlog)
+```
+
+
+```{r}
+plot(hclust(distance.m_rlog),
+  labels=colnames(rlog.norm.counts),
+  main='rlog transformed read counts distance : Pearson correlation')
+```
+
+```{r}
+pc<-prcomp(t(rlog.norm.counts))
+```
+
+```{r}
+plot(pc$x[,1],pc$x[,2],
+  col=colData(dds)[,1],
+  main='PCA of seq.depth normalized and rlog-transformed read counts')
+```
+
+
+
+```{r}
+#P<-plotPCA(dds.rlog)
+#P<-P+theme_bw()+ggtitle('Rlog transformed counts')
+#P
+
+#Quitting from lines 659-662 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in .local(object, ...) : 
+#  the argument 'intgroup' should specify columns of colData(dds)
+#Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> plotPCA -> plotPCA -> .local
+```
+
+```{r}
+plotMA( res, ylim = c(-1, 1) )
+```
+
+
+```{r}
+plotMA( res, ylim = c(-2, 2) )
+```
+
+
+```{r}
+plotMA( res, ylim = c(-5, 5) )
+```
+
+
+```{r}
+plotDispEsts( dds, ylim = c(1e-6, 1e1) )
+```
+
+
+```{r}
+plotDispEsts( dds, ylim = c(1e-6, 1e4) )
+```
+
+
+```{r}
+hist( res$pvalue, breaks=20, col='grey' )
+```
+
+
+```{r}
+hist( res$padj, breaks=20, col='grey' )
+```
+
+```{r}
+
+#res <- res[order(res$padj),]
+#head(res)
+res_tidy <- res_tidy[order(res_tidy$padj),]
+head(res_tidy,10)
+```
+
+
+```{r}
+#print('Looping over head 10 padj')
+#for(gene in row.names(head(res[order(res$padj),],10))){
+#  plotCounts(dds, gene=gene, intgroup='condition',
+#    main=paste(gene,' - pval',res[gene,]$pvalue, 'padj',res[gene,]$padj, sep=' : '))
+#}
+#print('end loop over head 10')
+#
+#Quitting from lines 713-721 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in plotCounts(dds, gene = gene, intgroup = "condition", main = paste(gene,  : 
+#  all variables in 'intgroup' must be columns of colData
+#Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> plotCounts
+```
+
+```{r}
+res_tidy <- res_tidy[order(res_tidy$pvalue),]
+head(res_tidy,10)
+```
+
+```{r}
+#print('Looping over head 10 pvalue')
+#for(gene in row.names(head(res[order(res$pvalue),],10))){
+#  plotCounts(dds, gene=gene, intgroup='condition',
+#    main=paste(gene,' - pval',res[gene,]$pvalue, 'padj',res[gene,]$padj, sep=' : '))
+#}
+#print('end loop over head 10')
+#
+#Quitting from lines 732-738 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in plotCounts(dds, gene = gene, intgroup = "condition", main = paste(gene,  : 
+#  all variables in 'intgroup' must be columns of colData
+#Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> plotCounts
+```
+
+```{r}
+with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main='Volcano plot', xlim=c(-3,3)))
+```
+
+
+```{r}
+with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main='Volcano plot', xlim=c(-3,3)))
+with(subset(res, padj<.01 ), points(log2FoldChange, -log10(pvalue), pch=20, col='blue'))
+with(subset(res, padj<.01 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col='red'))
+with(subset(res, padj<.001 ), points(log2FoldChange, -log10(pvalue), pch=20, col='green'))
+with(subset(res, padj<.001 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), pch=20, col='yellow'))
+legend('topright',
+  legend=c('All','padj<0.01','padj<0.01 & abs>2','padj<0.001','padj<0.001 & abs>2'),
+  col=c('black','blue','red','green','yellow'),
+  pch = 20,
+  lty=1:2, cex=0.8)
+```
+
+
+
+```{r}
+rld <- rlog(dds)
+```
+
+```{r}
+#plotPCA(rld, intgroup=c( 'condition' ))
+#
+#Quitting from lines 770-772 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in .local(object, ...) : 
+#  the argument 'intgroup' should specify columns of colData(dds)
+#Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> plotPCA -> plotPCA -> .local
+```
+
+
+
+```{r}
+se <- SummarizedExperiment(log2(counts(dds, normalized=TRUE) + 1), colData=colData(dds))
+```
+
+
+```{r}
+#	plotPCA( DESeqTransform( se ), intgroup=c( 'condition' ) )
+
+#Quitting from lines 786-788 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in .local(object, ...) : 
+#  the argument 'intgroup' should specify columns of colData(dds)
+#Calls: <Anonymous> ... eval_with_user_handlers -> eval -> eval -> plotPCA -> plotPCA -> .local
+```
+
+
+```{r}
+plotSparsity(dds)
+```
+
+```{r}
+vsd <- varianceStabilizingTransformation(dds)
+```
+
+
+```{r}
+dists <- dist(t(assay(vsd)))
+head(dists)
+```
+
+
+```{r}
+plot(hclust(dists))
+```
+
+
+```{r}
+
+plotDispEsts(dds, main='Dispersion plot')
+```
+
+
+```{r}
+
+rld <- rlogTransformation(dds)
+```
+
+
+```{r}
+head(assay(rld)[,1:10])
+```
+
+```{r}
+hist(assay(rld))
+# Colors for plots below
+## Ugly:
+## (mycols <- 1:length(unique(condition)))
+## Use RColorBrewer, better
+```
+
+
+```{r}
+library(RColorBrewer)
+# Why wrapped in (parentheses)?
+(mycols <- brewer.pal(8, 'Dark2')[1:length(unique(condition))])
+```
+
+```{r}
+sampleDists <- as.matrix(dist(t(assay(rld))))
+```
+
+```{r}
+head(sampleDists[,1:10])
+```
+
+
+```{r}
+library(gplots)
+```
+
+
+```{r}
+heatmap.2(as.matrix(sampleDists), key=F, trace='none',
+  col=colorpanel(100, 'black', 'white'),
+  ColSideColors=mycols[condition], RowSideColors=mycols[condition],
+  margin=c(10, 10), main='Sample Distance Matrix')
+```
+
+
+```{r}
+
+rld_pca <- function (rld, intgroup = 'condition', ntop = 500, colors=NULL,
+    legendpos='bottomleft', main='PCA Biplot', textcx=1, ...) {
+  require(genefilter)
+  require(calibrate)
+  require(RColorBrewer)
+  rv = rowVars(assay(rld))
+  select = order(rv, decreasing = TRUE)[seq_len(min(ntop, length(rv)))]
+  pca = prcomp(t(assay(rld)[select, ]))
+  fac = factor(apply(as.data.frame(colData(rld)[, intgroup, drop = FALSE]), 1, paste, collapse = ' : '))
+  if (is.null(colors)) {
+    if (nlevels(fac) >= 3) {
+      colors = brewer.pal(nlevels(fac), 'Paired')
+    } else {
+      colors = c('black', 'red')
+    }
+  }
+  pc1var <- round(summary(pca)$importance[2,1]*100, digits=1)
+  pc2var <- round(summary(pca)$importance[2,2]*100, digits=1)
+  pc1lab <- paste0('PC1 (',as.character(pc1var),'%)')
+  pc2lab <- paste0('PC1 (',as.character(pc2var),'%)')
+  plot(PC2~PC1, data=as.data.frame(pca$x), bg=colors[fac], pch=21, xlab=pc1lab, ylab=pc2lab, main=main, ...)
+  with(as.data.frame(pca$x), textxy(PC1, PC2, labs=rownames(as.data.frame(pca$x)), cex=textcx))
+  legend(legendpos, legend=levels(fac), col=colors, pch=20)
+  #  rldyplot(PC2 ~ PC1, groups = fac, data = as.data.frame(pca$rld),
+  #    pch = 16, cerld = 2, aspect = 'iso', col = colours, 
+  #    main = draw.key(key = list(rect = list(col = colours),
+  #    terldt = list(levels(fac)), rep = FALSE)))
+}
+```
+
+
+```{r}
+#	rld_pca(rld, colors=mycols, intgroup='condition', xlim=c(-75, 35))
+#Quitting from lines 902-903 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in h(simpleError(msg, call)) : 
+#  error in evaluating the argument 'x' in selecting a method for function 'as.data.frame': subscript contains invalid names
+#Calls: <Anonymous> ... normalizeSingleBracketSubscript -> NSBS -> NSBS -> .subscript_error
+```
+
+
+```{r}
+res <- results(dds)
+table(res$padj<0.05)
+```
+
+```{r}
+res <- res[order(res$padj), ]
+```
+
+
+```{r}
+resdata <- merge(as.data.frame(res), as.data.frame(counts(dds, normalized=TRUE)), by='row.names', sort=FALSE)
+```
+
+```{r}
+names(resdata)[1] <- 'Gene'
+```
+
+
+```{r}
+head(resdata[,1:10])
+```
+
+
+```{r}
+hist(res$pvalue, breaks=50, col='grey')
+```
+
+
+```{r}
+attr(res, 'filterThreshold')
+```
+
+
+```{r}
+maplot <- function (res, thresh=0.05, labelsig=TRUE, textcx=1, ...) {
+  with(res, plot(baseMean, log2FoldChange, pch=20, cex=.5, log='x', ...))
+  with(subset(res, padj<thresh), points(baseMean, log2FoldChange, col='red', pch=20, cex=1.5))
+  if (labelsig) {
+    require(calibrate)
+    with(subset(res, padj<thresh), textxy(baseMean, log2FoldChange, labs=Gene, cex=textcx, col=2))
+  }
+}
+```
+
+```{r}
+#	maplot(resdata, main='MA Plot')
+#Quitting from lines 956-958 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in textxy(baseMean, log2FoldChange, labs = Gene, cex = textcx, col = 2) : 
+#  could not find function "textxy"
+#Calls: <Anonymous> ... maplot -> with -> with -> with.default -> eval -> eval
+```
+
+
+```{r}
+volcanoplot <- function (res, lfcthresh=2, sigthresh=0.05, main='Volcano Plot',
+    legendpos='bottomright', labelsig=TRUE, textcx=1, ...) {
+  with(res, plot(log2FoldChange, -log10(pvalue), pch=20, main=main, ...))
+  with(subset(res, padj<sigthresh ), points(log2FoldChange,
+    -log10(pvalue), pch=20, col='red', ...))
+  with(subset(res, abs(log2FoldChange)>lfcthresh), points(log2FoldChange,
+    -log10(pvalue), pch=20, col='orange', ...))
+  with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh),
+    points(log2FoldChange, -log10(pvalue), pch=20, col='green', ...))
+  if (labelsig) {
+    require(calibrate)
+    with(subset(res, padj<sigthresh & abs(log2FoldChange)>lfcthresh),
+      textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=textcx, ...))
+  }
+  legend(legendpos, xjust=1, yjust=1,
+    legend=c(paste('FDR<',sigthresh,sep=''),
+    paste('|LogFC|>',lfcthresh,sep=''), 'both'),
+    pch=20, col=c('red','orange','green'))
+}
+```
+
+```{r}
+#volcanoplot(resdata, lfcthresh=1, sigthresh=0.05, textcx=.8, xlim=c(-2.3, 2))
+
+#Quitting from lines 987-988 (TEtranscripts_DESeq2_rmarkdown.Rmd) 
+#Error in textxy(log2FoldChange, -log10(pvalue), labs = Gene, cex = textcx,  : 
+#  could not find function "textxy"
+#Calls: <Anonymous> ... volcanoplot -> with -> with -> with.default -> eval -> eval
+```
+
+
+```{r}
+# don't think that this needs to be explicitly called
+#dds <- estimateSizeFactors ( dds ) # sequencing depth normalization between the samples
+#dds <- estimateDispersions ( dds ) # gene - wise dispersion estimates across all samples
+dds <- nbinomWaldTest ( dds ) # this fits a negative binomial GLM and applies Wald statistics to each gene
+```
+
+
+```{r}
+dds.results <- results( dds , independentFiltering = TRUE , alpha = 0.05)
+dds.results_tidy <- results( dds , independentFiltering = TRUE , alpha = 0.05, tidy=TRUE)
+summary ( dds.results )
+```
+
+
+```{r}
+# the DESeqResult object can basically be handled like a data . frame
+head ( dds.results_tidy )
+```
+
+```{r}
+table ( dds.results $ padj < 0.05)
+```
+
+
+```{r}
+rownames ( subset ( dds.results , padj < 0.05) )
+```
+
+
+```{r}
+hist ( dds.results$pvalue ,
+  col='grey', border='white', xlab='', ylab='',
+  main='frequencies of p-values' )
+```
+
+```{r}
+# load the library with the aheatmap () function
+library ( NMF )
+
+# aheatmap needs a matrix of values , e.g. , a matrix of DE
+#   genes with the transformed read counts for each replicate
+# sort the results according to the adjusted p- value
+dds.results.sorted <- dds.results [ order ( dds.results$padj ) , ]
+
+# identify genes with the desired adjusted p- value cut -off
+DGEgenes <- rownames ( subset ( dds.results.sorted , padj < 0.05) )
+
+# extract the normalized read counts for DE genes into a matrix
+hm.mat_DGEgenes <- log.norm.counts [ DGEgenes , ]
+
+# plot the normalized read counts of DE genes sorted by the adjusted p- value
+#aheatmap ( hm.mat_DGEgenes , Rowv = NA , Colv = NA )
+
+#Error in dimnames(x) <- dn: length of 'dimnames' [1] not equal to array extent
+#Traceback:
+#1. aheatmap(hm.mat_DGEgenes, Rowv = NA, Colv = NA)
+#2. `rownames<-`(`*tmp*`, value = generate_dimnames(labRow, nrow(mat), 
+# .     rownames(mat)))
+
+# combine the heatmap with hierarchical clustering
+#aheatmap ( hm.mat_DGEgenes ,
+#  Rowv = TRUE , Colv = TRUE , # add dendrograms to rows and columns
+#  distfun = "euclidean" , hclustfun = "average" )
+
+# scale the read counts per gene to emphasize the sample -type - specific differences
+#aheatmap ( hm.mat_DGEgenes ,
+#  Rowv = TRUE , Colv = TRUE ,
+#  distfun = "euclidean" , hclustfun = "average" ,
+#  scale = "row" )
+# values are transformed into distances from the center of the row - specific average : 
+#  ( actual value - mean of the group ) / standard deviation
+```
+
+
+```{r}
+pc<-prcomp(t(rlog.norm.counts))
+```
+
+
+```{r}
+head(pc$x[,1])
+```
+
+```{r}
+#md$cc
+```
+
+```{r}
+#md$colors = 'Red'
+```
+
+```{r}
+#md$colors[md$cc == 'Case'] = 'Blue'
+```
+
+```{r}
+#md$colors
+```
+
+```{r}
+#plot(pc$x[,1],pc$x[,2],
+#  col=md$colors,
+#  main='PCA of rlog normalized counts')
+```
+
+
+```{r}
+# name change based on tuturial
+project.pca <- pc
+```
+
+
+```{r}
+summary(project.pca)
+```
+
+
+```{r}
+#Determine the proportion of variance of each component
+#Proportion of variance equals (PC stdev^2) / (sum all PCs stdev^2)
+project.pca.proportionvariances <- ((project.pca$sdev^2) / (sum(project.pca$sdev^2)))*100
+```
+
+```{r}
+barplot(project.pca.proportionvariances, 
+        cex.names=1, 
+        xlab=paste("Principal component (PC), 1-", length(project.pca$sdev)), 
+        ylab="Proportion of variation (%)", 
+        main="Scree plot", 
+        ylim=c(0,100))
+```
+
+
+```{r}
+#par(cex=1.0, cex.axis=0.8, cex.main=0.8)
+#pairs(project.pca$x[,1:5], col=md$colors, 
+#      main="Principal components analysis bi-plot\nPCs 1-5", pch=16)
+#pairs(project.pca$x[,6:10], col=md$colors, 
+#      main="Principal components analysis bi-plot\nPCs 6-10", pch=16)
+```
+
+```{r}
+#par(mar=c(4,4,4,4), mfrow=c(1,3), cex=1.0, cex.main=0.8, cex.axis=0.8)
+#
+##Plots scatter plot for PC 1 and 2
+#plot(project.pca$x, type="n", 
+#     main="Principal components analysis bi-plot", 
+#     xlab=paste("PC1, ", round(project.pca.proportionvariances[1], 2), "%"), 
+#     ylab=paste("PC2, ", round(project.pca.proportionvariances[2], 2), "%"))
+#points(project.pca$x, col=md$colors, pch=16, cex=1)
+#
+##Plots scatter plot for PC 1 and 3
+#plot(project.pca$x[,1], project.pca$x[,3], type="n", 
+#     main="Principal components analysis bi-plot", 
+#     xlab=paste("PC1, ", round(project.pca.proportionvariances[1], 2), "%"), 
+#     ylab=paste("PC3, ", round(project.pca.proportionvariances[3], 2), "%"))
+#points(project.pca$x[,1], project.pca$x[,3], 
+#       col=md$colors, pch=16, cex=1)
+#
+##Plots scatter plot for PC 2 and 3
+#plot(project.pca$x[,2], project.pca$x[,3], type="n", 
+#     main="Principal components analysis bi-plot", 
+#     xlab=paste("PC2, ", round(project.pca.proportionvariances[2], 2), "%"), 
+#     ylab=paste("PC3, ", round(project.pca.proportionvariances[3], 2), "%"))
+#points(project.pca$x[,2], project.pca$x[,3],
+#       col=md$colors, pch=16, cex=1)
+```
+
+
+
