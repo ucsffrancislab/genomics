@@ -105,7 +105,7 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20211208-EV/20211208-preprocessing/out_noumi/${id}.quality.format.t1.t3.notphiX.notviral.hg38.bam.aligned_count.txt )
-			f=${indir}/${id}.cntTable
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
@@ -122,7 +122,7 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20211208-EV/20211208-preprocessing/out_noumi/${id}.quality.format.t1.t3.notphiX.notviral.hg38.bam.aligned_count.txt )
-			f=${indir}/${id}.cntTable
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
@@ -139,7 +139,7 @@ else
 			echo "id,condition,libsize"
 		else
 			c=$( cat /francislab/data1/working/20211208-EV/20211208-preprocessing/out_noumi/${id}.quality.format.t1.t3.notphiX.notviral.hg38.bam.aligned_count.txt )
-			f=${indir}/${id}.cntTable
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
