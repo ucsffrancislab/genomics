@@ -8,7 +8,7 @@ cd /vagrant
 
 
 
-
+sudo singularity build SQuIRE.img SQuIRE.def 2>&1 | tee SQuIRE.out
 
 
 
