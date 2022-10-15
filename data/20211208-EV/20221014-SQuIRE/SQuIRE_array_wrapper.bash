@@ -88,19 +88,22 @@ else
 	#	Our data has varying lengths so not sure what to do with this. Just grabbing first which could be anything.
 	#	Actually just using 151
 
-	singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/SQuIRE.img squire Map \
+	singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/SQuIRE-20221014.img squire Map \
 		--name $base --read1 $r1 --read2 $r2 \
 		--map_folder ${MAPPED} \
 		--fetch_folder /francislab/data1/refs/SQuIRE/fetched \
 		--read_length ${read_length} \
 		--pthreads ${SLURM_NTASKS:-8} --build hg38 --verbosity
 
-	chmod -w ${f}
-	chmod -w ${f}.bai
+	if [ $? -eq 0 ] ; then
+		chmod -w ${f}
+		chmod -w ${f}.bai
+	fi
 
 fi
 
 
+#COUNTED=${OUT}/counted101
 COUNTED=${OUT}/counted
 mkdir -p ${COUNTED}
 f=${COUNTED}/${base}_TEcounts.txt
@@ -120,18 +123,65 @@ else
 	#	Our data has varying lengths so not sure what to do with this. Just grabbing first which could be anything.
 	#	Actually just using 151
 
-	singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/SQuIRE.img squire Count \
+
+	#	singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/SQuIRE-20221014.img squire Count -h
+	#	usage: squire Count [-h] [-m <folder>] [-c <folder>] [-o <folder>]
+	#	                    [-t <folder>] [-f <folder>] -r <int> [-n <str>]
+	#	                    [-b <build>] [-p <int>] [-s <int>] [-e EM] [-v]
+	#	
+	#	Arguments:
+	#	  -h, --help            show this help message and exit
+	#	  -m <folder>, --map_folder <folder>
+	#	                        Folder location of outputs from SQuIRE Map (optional,
+	#	                        default = 'squire_map')
+	#	  -c <folder>, --clean_folder <folder>
+	#	                        Folder location of outputs from SQuIRE Clean
+	#	                        (optional, default = 'squire_clean')
+	#	  -o <folder>, --count_folder <folder>
+	#	                        Destination folder for output files(optional, default
+	#	                        = 'squire_count')
+	#	  -t <folder>, --tempfolder <folder>
+	#	                        Folder for tempfiles (optional; default=count_folder')
+	#	  -f <folder>, --fetch_folder <folder>
+	#	                        Folder location of outputs from SQuIRE Fetch
+	#	                        (optional, default = 'squire_fetch)'
+	#	  -r <int>, --read_length <int>
+	#	                        Read length (if trim3 selected, after trimming;
+	#	                        required).
+	#	  -n <str>, --name <str>
+	#	                        Common basename for input files (required if more than
+	#	                        one bam file in map_folder)
+	#	  -b <build>, --build <build>
+	#	                        UCSC designation for genome build, eg. 'hg38'
+	#	                        (required if more than 1 build in clean_folder)
+	#	  -p <int>, --pthreads <int>
+	#	                        Launch <int> parallel threads(optional; default='1')
+	#	  -s <int>, --strandedness <int>
+	#	                        '0' if unstranded eg Standard Illumina, 1 if first-
+	#	                        strand eg Illumina Truseq, dUTP, NSR, NNSR, 2 if
+	#	                        second-strand, eg Ligation, Standard SOLiD
+	#	                        (optional,default=0)
+	#	  -e EM, --EM EM        Run estimation-maximization on TE counts given number
+	#	                        of times (optional, specify 0 if no EM desired;
+	#	                        default=auto)
+	#	  -v, --verbosity       Want messages and runtime printed to stderr (optional;
+	#	                        default=False)
+
+
+	singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/SQuIRE-20221014.img squire Count \
 		--map_folder ${MAPPED} --clean_folder /francislab/data1/refs/SQuIRE/cleaned \
 		--count_folder ${COUNTED} --temp_folder ${COUNTED}/${base}-temp \
 		--fetch_folder /francislab/data1/refs/SQuIRE/fetched \
 		--read_length $read_length \
 		--name ${base} --build hg38 --strandedness 2 --EM auto --verbosity
 
-	chmod -w ${COUNTED}/${base}_abund.txt
-	chmod -w ${COUNTED}/${base}.gtf
-	chmod -w ${COUNTED}/${base}_refGenecounts.txt
-	chmod -w ${COUNTED}/${base}_subFcounts.txt
-	chmod -w ${COUNTED}/${base}_TEcounts.txt
+	if [ $? -eq 0 ] ; then
+		chmod -w ${COUNTED}/${base}_abund.txt
+		chmod -w ${COUNTED}/${base}.gtf
+		chmod -w ${COUNTED}/${base}_refGenecounts.txt
+		chmod -w ${COUNTED}/${base}_subFcounts.txt
+		chmod -w ${COUNTED}/${base}_TEcounts.txt
+	fi
 
 fi
 
@@ -142,49 +192,6 @@ fi
 
 
 
-
-
-###	Call
-#
-#
-#```
-#chmod -R 500 ${PWD}/counted
-#mkdir ${PWD}/called
-#
-#projectname=FakeProject
-#
-##Location or variable (such as $TMPDIR) to store intermediate files
-#group1=10-PAUBCB-09A-01R,10-PAUBCT-09A-01R,10-PAUBLL-09A-01R,10-PAUBPY-09A-01R
-##Name of basenames of samples in group 1
-#group2=10-PAUBRD-09A-01R,10-PAUBTC-09A-01R,10-PAUBXP-09A-01R
-##Name of basenames of samples in group 2
-#condition1=treated
-##Name of condition for group 1 in squire Call
-#condition2=control
-##Name of condition for group 2 in squire Call
-#output_format=pdf
-##Desired output of figures as html or pdf
-##  --env R_LIBS=/usr/local/lib/R/library/ \
-#
-#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=sqCall --time=1440 --nodes=1 --ntasks=64 --mem=495G \
-#  --output=${PWD}/called/${base}.txt \
-#  --wrap "singularity exec --bind /francislab,/scratch --no-home \
-#  /francislab/data1/refs/singularity/SQuIRE.img squire Call \
-#  --map_folder ${PWD}/mapped --clean_folder ${PWD}/cleaned --count_folder ${PWD}/counted --temp_folder ${PWD}/${base}-temp \
-#  --group1 $group1 --group2 $group2 --condition1 $condition1 --condition2 $condition2 --projectname $projectname \
-#  --pthreads 64 --output_format $output_format --call_folder ${PWD}/called --verbosity"
-#```
-#
-#Other options to note.
-#
-#```
-#--cleanenv
-#--contain
-#--containall
-#--no-home
-#--no-mount ...
-#```
-#
 
 
 
@@ -207,7 +214,7 @@ fi
 #sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=s${base} --time=1440 --nodes=1 --ntasks=${threads} --mem=${mem} \
 #  --output=${PWD}/drawed/${base}.txt \
 #  --wrap "singularity exec --bind /francislab,/scratch --no-home \
-#  /francislab/data1/refs/singularity/SQuIRE.img squire Draw \
+#  /francislab/data1/refs/singularity/SQuIRE-20221014.img squire Draw \
 #  --map_folder ${PWD}/mapped --clean_folder ${PWD}/cleaned --count_folder ${PWD}/counted --temp_folder ${PWD}/${base}-temp \
 #  --fetch_folder ${PWD}/fetched \
 #  --draw_folder ${PWD}/drawed --name $base --build hg38 --pthreads ${threads} --strandedness 2 --verbosity"
