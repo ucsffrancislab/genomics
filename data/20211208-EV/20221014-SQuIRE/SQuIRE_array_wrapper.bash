@@ -173,7 +173,10 @@ else
 		--count_folder ${COUNTED} --temp_folder ${COUNTED}/${base}-temp \
 		--fetch_folder /francislab/data1/refs/SQuIRE/fetched \
 		--read_length $read_length \
-		--name ${base} --build hg38 --strandedness 2 --EM auto --verbosity
+		--name ${base} --build hg38 --strandedness 0 --EM auto --verbosity
+		#--name ${base} --build hg38 --strandedness 2 --EM auto --verbosity
+
+	#	strandedness and read_length seem to make no difference
 
 	if [ $? -eq 0 ] ; then
 		chmod -w ${COUNTED}/${base}_abund.txt
@@ -250,7 +253,7 @@ ll /francislab/data1/working/20211208-EV/20211208-preprocessing/out_noumi/*quali
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%1 --job-name="SQuIRE" --output="${PWD}/logs/SQuIRE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/SQuIRE_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-13%4 --job-name="SQuIRE" --output="${PWD}/logs/SQuIRE.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/SQuIRE_array_wrapper.bash
 
 
 
