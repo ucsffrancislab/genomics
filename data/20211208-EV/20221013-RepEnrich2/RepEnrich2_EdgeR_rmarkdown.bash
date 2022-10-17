@@ -39,6 +39,7 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 	cat <<- EOF | R --no-save --no-echo --args $args
 
 		args = commandArgs(trailingOnly=TRUE)
+		print(args)
 
 		meta = args[1]
 		in_dir = args[2]
