@@ -2,9 +2,18 @@
 ---
 title: RepEnrich2 EdgeR Template
 author: Modified RepEnrich2
-date: 20221012
-output: html_document
+date: 20221018
+output: 
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango
 ---
+
+
+# Load libraries and read data {.tabset .tabset-fade .tabset-pills}
 
 <!--
 
@@ -99,6 +108,9 @@ for (row in 1:nrow(meta)) {
 head(counts)
 ```
 
+# Analysis {.tabset .tabset-fade .tabset-pills}
+
+##	Prepare
 
 ```{r}
 #meta$condition
@@ -146,6 +158,7 @@ colnames(design)
 y <- DGEList(counts=counts, lib.size=libsize)
 ```
 
+##	Plots
 
 ```{r}
 # Normalize the data
@@ -267,6 +280,8 @@ for(current_contrast in colnames(my.contrasts)) {
 }
 ```
 
+##	Results
+
 
 ```{r}
 # Add the repeat types back into the results.
@@ -292,6 +307,9 @@ results$type <- sample[,3]
 ##write.table(results, 'results.txt', quote=FALSE, sep="\t")
 results
 ```
+
+
+##	Plot Fold Changes
 
 
 ```{r}
