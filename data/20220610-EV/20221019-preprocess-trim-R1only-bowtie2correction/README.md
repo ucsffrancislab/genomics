@@ -46,3 +46,17 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' umi_dedup_report.md > umi_dedup_rep
 
 
 
+
+```
+dir1=/francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out
+dir2=/francislab/data1/working/20220610-EV/20221019-preprocess-trim-R1only-bowtie2correction/out
+c1=$( cat ${dir1}/*.format.umi.quality15.t2.t3.hg38.name.marked.bam.f1024.aligned_count.txt | awk '{s+=$1}END{print s}' )
+c2=$( cat ${dir2}/*.format.umi.quality15.t2.t3.hg38.name.marked.bam.f1024.aligned_count.txt | awk '{s+=$1}END{print s}' )
+diff=$((c2-c1))
+echo $((100*diff/c1))
+```
+
+
+
+
+

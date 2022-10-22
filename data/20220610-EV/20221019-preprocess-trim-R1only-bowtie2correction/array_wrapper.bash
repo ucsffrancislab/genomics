@@ -426,16 +426,19 @@ for quality in 15 ; do
 		samtools view -F 3844 -c ${f} > ${f}.F3844.aligned_count.txt
 		chmod -w ${f}.F3844.aligned_count.txt
 	
+		samtools view -f 1024 -c ${f} > ${f}.f1024.aligned_count.txt
+		chmod -w ${f}.f1024.aligned_count.txt
+
 	fi
 
 	inbase="${outbase}"
-	outbase="${inbase}.marked"	#	"${OUT}/${s}.format.umi.quality15.t2.t3.hg38.name.marked
-	f=${outbase}.bam
+	outbase="${inbase}"	#	"${OUT}/${s}.format.umi.quality15.t2.t3.hg38.name.marked
+	f=${outbase}.bam.f1024.aligned_count.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		samtools view -f 1024 -c ${f} > ${f}.f1024.aligned_count.txt
-		chmod -w ${f}.f1024.aligned_count.txt
+		samtools view -f 1024 -c ${f%.f1024.aligned_count.txt} > ${f}
+		chmod -w ${f}
 	fi
 
 	inbase="${outbase}"
@@ -497,7 +500,7 @@ ll /francislab/data1/raw/20220610-EV/SF*R1_001.fastq.gz | wc -l
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%1 --job-name="preproc" --output="${PWD}/logs/preprocess.${date}-%A_%a.out" --time=1400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%8 --job-name="preproc" --output="${PWD}/logs/preprocess.${date}-%A_%a.out" --time=1400 --nodes=1 --ntasks=8 --mem=60G --gres=scratch:250G ${PWD}/array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
