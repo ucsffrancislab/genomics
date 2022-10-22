@@ -201,6 +201,10 @@ nohup ./phipseq.bash 56 53 select_virus.faa > phipseq.56.53.out.txt 2>&1 &
 nohup ./phipseq.bash 56 52 select_virus.faa > phipseq.56.52.out.txt 2>&1 &
 nohup ./phipseq.bash 56 51 select_virus.faa > phipseq.56.51.out.txt 2>&1 &
 nohup ./phipseq.bash 56 50 select_virus.faa > phipseq.56.50.out.txt 2>&1 &
+
+
+nohup ./phipseq.bash 56 28 select_virus.faa > phipseq.56.28.out.txt 2>&1 &
+nohup ./phipseq.bash 56 14 select_virus.faa > phipseq.56.14.out.txt 2>&1 &
 ```
 
 
