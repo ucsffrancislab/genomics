@@ -3,6 +3,7 @@
 dir1=/francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out
 dir2=/francislab/data1/working/20220610-EV/20221019-preprocess-trim-R1only-bowtie2correction/out
 
+dir=${dir2}
 rawdir=/francislab/data1/raw/20220610-EV
 for fastq in ${rawdir}/S*R?_001.fastq.gz ; do
 	basename=$( basename $fastq .fastq.gz )

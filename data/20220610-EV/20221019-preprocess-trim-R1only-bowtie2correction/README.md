@@ -53,7 +53,12 @@ dir2=/francislab/data1/working/20220610-EV/20221019-preprocess-trim-R1only-bowti
 c1=$( cat ${dir1}/*.format.umi.quality15.t2.t3.hg38.name.marked.bam.f1024.aligned_count.txt | awk '{s+=$1}END{print s}' )
 c2=$( cat ${dir2}/*.format.umi.quality15.t2.t3.hg38.name.marked.bam.f1024.aligned_count.txt | awk '{s+=$1}END{print s}' )
 diff=$((c2-c1))
-echo $((100*diff/c1))
+echo "100 * ${diff} / ${c1}" | bc -l
+
+c1=$( cat ${dir1}/*.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt | awk '{s+=$1}END{print s}' )
+c2=$( cat ${dir2}/*.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt | awk '{s+=$1}END{print s}' )
+diff=$((c1-c2))
+echo "100 * ${diff} / ${c1}" | bc -l
 ```
 
 
