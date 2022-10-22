@@ -1,11 +1,20 @@
 
 ---
-title: REDISCOVERTE EdgeR Template (Modified by Geno 20220712)
-author: John Doe
-date: 20220712
-#output: pdf_document
-output: html_document
+title: REdiscoverTE EdgeR Template
+author: Geno
+date: 20221022
+output: 
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango
 ---
+
+# Load libraries and read data {.tabset .tabset-fade .tabset-pills}
+
+##	Load
 
 <!--
 
@@ -106,6 +115,8 @@ library('dplyr')
 options(max.print=1000000)
 ```
 
+
+##	Read data
 
 ```{r}
 filetypes <- c("GENE", "RE_intron", "RE_exon", "RE_intergenic", "RE_all", "RE_all_repFamily", "RE_intron_repFamily", "RE_exon_repFamily", "RE_intergenic_repFamily", "")
@@ -263,6 +274,7 @@ if( filetypes[filetype] == "GENE" ){
 }
 ```
 
+##	Read metadata
 
 ```{r}
 #covars = read.csv(cov_file, sep =",",header = TRUE , colClasses=c("character","character"))
@@ -436,6 +448,10 @@ if(Cov_check ==TRUE){
 ```
 
 
+# Analysis {.tabset .tabset-fade .tabset-pills}
+
+##	Prepare
+
 ```{r}
 # ##### Filter out the Healthy individuals  REMOVE REMOVE REMOVE
 # healthy = which(RE_disc$samples$group =="Healthy")
@@ -492,7 +508,10 @@ for(i in c(1:length(RE_disc$samples$group))){
 }
 ```
 
+##	Plots
+
 BCV
+
 ```{r}
 plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
 ```
