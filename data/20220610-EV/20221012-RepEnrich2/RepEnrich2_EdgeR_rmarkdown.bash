@@ -84,7 +84,9 @@ else
 #	libsize=c(24923593,28340805,21743712,16385707,26573335,28131649,34751164,37371774,28236419)
 #)
 
-	indir=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out
+	datadir=/francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out
+	#indir=/francislab/data1/working/20220610-EV/20221012-RepEnrich2/out
+	indir=${PWD}/out
 
 	echo -n > ${arguments_file}
 
@@ -95,8 +97,8 @@ else
 		if [ ${id} == "id" ] ; then
 			echo "id,condition,libsize"
 		else
-			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
-			f=${indir}/out/${id}/${id}_fraction_counts.txt
+			c=$( cat ${datadir}/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
@@ -115,7 +117,7 @@ else
 		if [ ${id} == "id" ] ; then
 			echo "id,condition,libsize"
 		else
-			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+			c=$( cat ${datadir}/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
 			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
@@ -135,7 +137,7 @@ else
 		if [ ${id} == "id" ] ; then
 			echo "id,condition,libsize"
 		else
-			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+			c=$( cat ${datadir}/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
 			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
@@ -155,7 +157,7 @@ else
 		if [ ${id} == "id" ] ; then
 			echo "id,condition,libsize"
 		else
-			c=$( cat /francislab/data1/working/20220610-EV/20221010-preprocess-trim-R1only-correction/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+			c=$( cat ${datadir}/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
 			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}

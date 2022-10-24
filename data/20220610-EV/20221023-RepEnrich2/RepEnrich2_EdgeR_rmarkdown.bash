@@ -97,8 +97,8 @@ else
 		if [ ${id} == "id" ] ; then
 			echo "id,condition,libsize"
 		else
-			c=$( cat ${datadir}/out/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
-			f=${indir}/out/${id}/${id}_fraction_counts.txt
+			c=$( cat ${datadir}/${id}.format.umi.quality15.t2.t3.hg38.name.marked.bam.F3844.aligned_count.txt )
+			f=${indir}/${id}/${id}_fraction_counts.txt
 			if [ -f ${f} ] && [ ! -w ${f} ] ; then
 				echo ${id},${condition},${c}
 			fi
