@@ -57,7 +57,11 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		output_dir = out_dir
 		output_file = paste(prefix,column,iname,"alpha",alpha_thresh,"logFC",logFC_thresh,"html", sep=".")
 
-		rmarkdown::render("REdiscoverTE_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
+		#rmarkdown::render("REdiscoverTE_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
+
+		file.copy("~/.local/bin/REdiscoverTE_EdgeR_rmarkdown.Rmd",tempdir())
+		rmarkdown::render(paste(tempdir(),"REdiscoverTE_EdgeR_rmarkdown.Rmd",sep="/"), output_dir = output_dir, output_file = output_file )
+		Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
 
 	EOF
 
