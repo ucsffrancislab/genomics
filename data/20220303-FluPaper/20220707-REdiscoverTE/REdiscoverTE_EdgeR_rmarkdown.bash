@@ -65,6 +65,9 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 
 	EOF
 
+#	Looks like render has 2 options which may have worked instead of copying file to tempdir()
+#	intermediates_dir = NULL,
+#	knit_root_dir = NULL,
 
 
 else

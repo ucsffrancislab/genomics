@@ -62,8 +62,12 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		file.copy("~/.local/bin/REdiscoverTE_EdgeR_rmarkdown.Rmd",tempdir())
 		rmarkdown::render(paste(tempdir(),"REdiscoverTE_EdgeR_rmarkdown.Rmd",sep="/"), output_dir = output_dir, output_file = output_file )
 		Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
+
 	EOF
 
+#	Looks like render has 2 options which may have worked instead of copying file to tempdir()
+#	intermediates_dir = NULL,
+#	knit_root_dir = NULL,
 
 
 else
