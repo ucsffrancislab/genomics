@@ -56,8 +56,9 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		#if( file.exists(out) ){
 		#	print("output file exists")
 		} else {
-			rmarkdown::render("~/.local/bin/TEtranscripts_DESeq2_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
-			Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
+      file.copy("~/.local/bin/TEtranscripts_DESeq2_rmarkdown.Rmd",tempdir())
+      rmarkdown::render(paste(tempdir(),"TEtranscripts_DESeq2_rmarkdown.Rmd",sep="/"), output_dir = output_dir, output_file = output_file )
+      Sys.chmod(out, ( file.info(out)\$mode - as.octmode("200") ) )
 		}
 
 	EOF
