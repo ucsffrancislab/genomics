@@ -57,13 +57,14 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		output_dir = out_dir
 		output_file = paste(prefix,column,iname,"alpha",alpha_thresh,"logFC",logFC_thresh,"html", sep=".")
 
-		#rmarkdown::render("REdiscoverTE_EdgeR_rmarkdown.Rmd", output_dir = output_dir, output_file = output_file )
-
 		file.copy("REdiscoverTE_EdgeR_rmarkdown.Rmd",tempdir())
 		rmarkdown::render(paste(tempdir(),"REdiscoverTE_EdgeR_rmarkdown.Rmd",sep="/"), output_dir = output_dir, output_file = output_file )
 
 	EOF
 
+#	Looks like render has 2 options which may have worked instead of copying file to tempdir()
+#	intermediates_dir = NULL,
+#	knit_root_dir = NULL,
 
 
 else
