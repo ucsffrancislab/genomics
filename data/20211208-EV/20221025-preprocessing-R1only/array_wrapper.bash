@@ -293,7 +293,8 @@ for quality in 15 ; do
 #	fi
 
 
-	inbase="${OUT}/${s}.format.umi.quality15.t1.t2.t3"
+	#inbase="${OUT}/${s}.format.umi.quality15.t1.t2.t3"
+	inbase="${OUT}/${s}.format.umi.quality15.t2.t3"
 	outbase="${inbase}.readname"	#	"${OUT}/${s}.format.umi.quality15.t1.t2.t3.readname
 	f=${outbase}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
