@@ -186,26 +186,6 @@ echo
 
 
 
-#echo -n "| HG38 Read Count |"
-#for s in ${samples} ; do
-#	c=$(cat ${dir}/${s}.format.umi.quality.format.consolidate.t1.t2.t3.notphiX.hg38.bam.aligned_count.txt 2> /dev/null )
-#	c=$( echo "scale=0;  ${c} / 2" | bc -l 2> /dev/null)
-#	echo -n " ${c} |"
-#done
-#echo
-#
-#echo -n "| HG38 % Read Count |"
-#for s in ${samples} ; do
-#	a=$(cat ${dir}/${s}.format.umi.quality.format.consolidate.t1.t2.t3.notphiX.hg38.bam.aligned_count.txt 2> /dev/null )
-#	u=$(cat ${dir}/${s}.format.umi.quality.format.consolidate.t1.t2.t3.notphiX.hg38.bam.unaligned_count.txt 2> /dev/null )
-#	c=$( echo "scale=2; 100 * ${a} / ( ${a} + ${u} )" | bc -l 2> /dev/null)
-#	echo -n " ${c} |"
-#done
-#echo
-
-
-
-
 echo -n "| hg38 aligned Count |"
 for s in ${samples} ; do
 	c=$(cat ${dir}/${s}.format.umi.quality15.t1.t2.t3.readname.hg38.bam.aligned_count.txt 2> /dev/null)
