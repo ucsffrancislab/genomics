@@ -312,7 +312,7 @@ results
 ##	Plot Fold Changes
 
 
-```{r}
+```{r, fig.width=12, fig.height=18}
 # Plot Fold Changes for repeat classes and types
 #for(current_contrast in allcontrasts) {
 for(current_contrast in colnames(my.contrasts)) {
