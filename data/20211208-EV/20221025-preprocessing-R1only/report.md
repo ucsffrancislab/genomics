@@ -1,0 +1,16 @@
+|    | SFHH009A | SFHH009B | SFHH009C | SFHH009D | SFHH009E | SFHH009F | SFHH009G | SFHH009H | SFHH009I | SFHH009J | SFHH009L | SFHH009M | SFHH009N |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Paired Raw Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Format Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Format % Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Quality Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Quality % Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed1 Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed1 % Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed1 Ave R1 Read Length |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed2 Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed2 % Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed2 Ave R1 Read Length |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed3 Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed3 % Read Count |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Trimmed3 Ave R1 Read Length |  |  |  |  |  |  |  |  |  |  |  |  |  |
