@@ -282,8 +282,11 @@ if( filetypes[filetype] == "GENE" ){
 covars = read_csv(cov_file, col_names = TRUE , col_types = cols(.default = "c") )
 
 #	message("covars")
-#	head(covars)
+head(covars)
+```
 
+
+```{r}
 #Establish if there are covariates to include 
 #Cov_check = (is.na(covs) == FALSE)
 Cov_check = ((covs == "NA") == FALSE)
@@ -301,6 +304,11 @@ not.present= c()
 covar_groups = covars[group_col]
 #	message("covar_groups")
 #	message(covar_groups)
+
+covar_groups
+```
+
+```{r}
 
 #second_groups = covars[second_col]
 colnames(group_list)= c(group_col, covs)
@@ -360,6 +368,14 @@ if(Cov_check ==TRUE){
 ```
 
 
+```{r}
+not.present
+```
+
+```{r}
+group_list
+```
+
 Remove the not present samples 
 
 ```{r}
@@ -372,6 +388,11 @@ if(length(not.present) >=1){
 }else{
 	group_less = group_list
 }
+```
+
+
+```{r}
+group_less
 ```
 
 
