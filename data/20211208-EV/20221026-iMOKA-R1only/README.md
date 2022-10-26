@@ -81,7 +81,7 @@ Predict those not used in models
 ```
 ssh d1
 
-./predict.bash
+#	./predict.bash
 ```
 
 

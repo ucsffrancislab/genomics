@@ -22,7 +22,7 @@ for k in 11 16 21 31 ; do
 	BOX="${BOX_BASE}/${DATA}/${PROJECT}/${k}"
 	#curl -netrc -X MKCOL "${BOX}/"
 	#curl -netrc --ftp-create-dirs "${BOX}/"
-	curl --silent --ftp-create-dirs -netrc -T out/${k}/kmer_matrix.tsv.gz "${BOX}/"
+	#curl --silent --ftp-create-dirs -netrc -T out/${k}/kmer_matrix.tsv.gz "${BOX}/"
 
 	for s in HAvL HLvA ; do
 		BOX="${BOX_BASE}/${DATA}/${PROJECT}/${s}-${k}"
@@ -42,14 +42,15 @@ for k in 11 16 21 31 ; do
 		#	predict_matrix.tsv - samples not used for models
 		#	topredict.tsv - select kmer counts of unused samples
 		#	matrix.tsv - select kmer counts of input samples
-		for f in reduced.matrix create_matrix.tsv aggregated.json output.json output_fi.tsv select_kmers.txt predict_matrix.tsv topredict.tsv matrix.tsv ; do
+		#for f in output_predictions.tsv reduced.matrix create_matrix.tsv aggregated.json output.json output_fi.tsv select_kmers.txt predict_matrix.tsv topredict.tsv matrix.tsv ; do
+		for f in output_predictions.tsv ; do
 			echo $f
 			curl --silent --ftp-create-dirs -netrc -T out/${s}/${k}/${f} "${BOX}/"
 		done
-		for f in out/${s}/${k}/output_models/*.predictions.tsv ; do
-			echo $f
-			curl --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
-		done
+		#for f in out/${s}/${k}/output_models/*.predictions.tsv ; do
+		#	echo $f
+		#	curl --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+		#done
 	done
 done
 
