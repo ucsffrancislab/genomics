@@ -220,6 +220,23 @@ fi
 
 date
 
+
+
+
+#  -r ROUNDS, --rounds ROUNDS
+#                        The number of random forests to create. Default:1
+#  -t THREADS, --threads THREADS
+#                        The number of threads to use. Default: 1 ( -1 for automatic)
+#  -m MAX_FEATURES, --max-features MAX_FEATURES
+#                        The maximum number of features to use. Default: 10
+#  -n N_TREES, --n-trees N_TREES
+#                        The number of trees used to evaluate the feature importance. Default: 1000
+#  -c CROSS_VALIDATION, --cross-validation CROSS_VALIDATION
+#                        Cross validation used to determine the metrics of the models. Default: 10
+#  -p PROPORTION_TEST, --proportion-test PROPORTION_TEST
+#                        Proportion of test set
+
+
 if [ "${step}" == "random_forest" ] ; then
 	if [ "${stopstep}" == "${step}" ] ; then 
 		echo "Stop step : ${step}"
