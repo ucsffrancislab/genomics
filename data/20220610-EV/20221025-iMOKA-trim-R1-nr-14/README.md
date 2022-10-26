@@ -114,6 +114,6 @@ Predict those not used in models
 
 
 ```
-nohup ./upload.bash > upload.out.txt 2>1&
+nohup ./upload.bash > upload.out.txt 2>&1&
 ```
 
