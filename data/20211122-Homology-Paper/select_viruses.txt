@@ -24,3 +24,4 @@
 /francislab/data1/refs/refseq/viral-20210916/split/NC_028459.1_Human_associated_gemyvongvirus_1_isolate_DB1,_complete_genome.fa
 /francislab/data1/refs/refseq/viral-20210916/split/NC_038524.1_Human_papillomavirus_type_175_isolate_SE87,_complete_genome.fa
 /francislab/data1/refs/refseq/viral-20210916/split/NC_038889.1_Human_papillomavirus_type_30_genomic_DNA.fa
+/francislab/data1/refs/refseq/viral-20210916/split/NC_001348.1_Human_herpesvirus_3,_complete_genome.fa
