@@ -306,12 +306,12 @@ exit
 
 
 wc -l /francislab/data1/working/20211122-Homology-Paper/select_viruses.txt 
-26
+27
 
 
 
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-26%8 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-27%8 --job-name="homology" --output="${PWD}/array.${date}-%A_%a.out" --time=900 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/working/20211122-Homology-Paper/array_wrapper.bash
 
 
 
