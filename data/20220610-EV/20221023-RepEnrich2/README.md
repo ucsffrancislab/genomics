@@ -38,3 +38,24 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-86%8 --job-
 RepEnrich2_upload.bash
 ```
 
+
+
+```
+./merge_fractions.py -o merged_class_fraction_counts.csv.gz out/SFHH011*/SFHH011{?,??}_class_fraction_counts.txt
+./merge_fractions.py -o merged_family_fraction_counts.csv.gz out/SFHH011*/SFHH011{?,??}_family_fraction_counts.txt
+
+edit
+
+./merge_fractions.py -o merged_fraction_counts.csv.gz out/SFHH011*/SFHH011{?,??}_fraction_counts.txt
+
+edit
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) )
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_class_fraction_counts.csv.gz merged_family_fraction_counts.csv.gz merged_fraction_counts.csv.gz ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
