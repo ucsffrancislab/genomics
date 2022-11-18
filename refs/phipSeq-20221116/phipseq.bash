@@ -32,6 +32,7 @@ cat ${INPUT} \
 	-i orf_tiles-${TILESIZE}-${OVERLAP}.fasta \
 	-o orf_tiles_clustered-${TILESIZE}-${OVERLAP}.fasta \
 	-c 0.95 -G 0 -A 100 -M 0 -T 1 -d 0
+#	no difference with 56/28
 #	-c 0.95 -G 0 -A 50 -M 0 -T 1 -d 0
 
 ~/.local/cd-hit-v4.8.1-2019-0228/cd-hit \
