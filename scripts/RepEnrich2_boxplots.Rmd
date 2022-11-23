@@ -1,0 +1,141 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+args = commandArgs(trailingOnly=TRUE)
+
+output_file = paste(basename(fname),basename(args[2]),"html", sep=".")
+print(output_file)
+
+rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+q("no")
+
+
+
+
+---
+title: RepEnrich2 EdgeR Template
+author: Jake
+date: 20221122
+output: 
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango
+---
+
+# Load libraries and read data {.tabset .tabset-fade .tabset-pills}
+
+<!--
+
+THAT MUST BE FIRST TO BE USEFUL!
+
+-->
+
+```{r "Figure Settings", include = FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8) 
+```
+
+```{r setup}
+library('reticulate')
+```
+
+```{r python}
+use_python('/opt/local/bin/python')
+```
+
+```{r args}
+args
+```
+
+```{python pyargs}
+r.args
+```
+
+```{python args not always array}
+#if isinstance(r.args,list):
+#	ifile=r.args[0]
+#else:
+#	ifile=r.args
+#print( "Using ifile: ", ifile )
+```
+
+```{python}
+meta=r.args[0]
+ifile=r.args[1]
+```
+
+```{python pandas}
+import pandas as pd
+```
+
+```{python}
+meta = pd.read_csv(meta,index_col=0)
+print(meta.head())
+```
+
+```{python}
+df = pd.read_csv(ifile,index_col=[0,1,2])
+print(df.head())
+```
+
+
+```{python}
+import seaborn as sns
+```
+
+```{python}
+import matplotlib.pyplot as plt
+```
+
+# BoxPlots {.tabset .tabset-fade .tabset-pills}
+
+```{python boxplots 1}
+dfbp=pd.concat([df,meta.T.loc[['timepoint']]]).T
+
+retroelements=dfbp.columns.tolist()
+retroelements.remove('timepoint')
+
+for col in retroelements:
+	print(col)
+	plt.figure() #this creates a new figure on which your plot will appear
+	sns.boxplot(y='timepoint', x=col, data=dfbp, orient='h')
+	plt.show()
+```
+
+```{python boxplots}
+#for ind in df.index:
+#	print(ind)
+#	df=pd.concat([df,meta.T.loc[['timepoint']]])
+#	print(df.head())
+#	plt.figure() #this creates a new figure on which your plot will appear
+#	sns.boxplot(y='timepoint', x=ind, data=df, orient='h')
+#	plt.show()
+```
+
+
+```{python sorted boxplots}
+#df=df.T
+#print(df.head())
+#
+#for col in df.columns.tolist():
+#	print(col)
+#	df_col=df.loc[:,[col]].T
+#	print(df_col)
+##	sorted_index = df_col.sort_values(by=col,axis='columns').index
+##	print(sorted_index)
+##	df_sorted=df_col[sorted_index]
+#	df_sorted=pd.concat([df_col,meta.T.loc[['timepoint']]]).T
+#	print(df_sorted.head())
+#	plt.figure() #this creates a new figure on which your plot will appear
+#	sns.boxplot(y='timepoint', x=col, data=df_sorted, orient='h')
+#	plt.show()
+```
+
+
