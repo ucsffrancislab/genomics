@@ -37,7 +37,10 @@ java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar MakeVCF \
 	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 	-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
 	-w ${OUT}/LINE1DISCOVERYVCF/ \
-	-p ${OUT}/LINE1DISCOVERYGROUP/LINE1.pre_geno.tsv
+	-p ${OUT}/LINE1DISCOVERYGROUP/	#LINE1.pre_geno.tsv
+
+#	Add ...
+# -o <arg>               Output directory for final VCF files. Will be in the form of -o/<MEI_NAME>.final_comp.vcf. [./].
 
 
 date
