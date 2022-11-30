@@ -128,7 +128,7 @@ ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/*bam | w
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT1" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G ${PWD}/MELT_1_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G ${PWD}/MELT_1_array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
@@ -137,10 +137,4 @@ scontrol update ArrayTaskThrottle=6 JobId=352083
 ls -1 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/*_R1.fastq.gz | xargs -I% basename % _R1.fastq.gz > to_run.txt
 wc -l to_run.txt 
 278 to_run.txt
-
-mkdir -p /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/logs
-date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="hg38" --output="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G --gres=scratch:500G /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/array_wrapper.bash
-
-
 
