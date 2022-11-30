@@ -40,6 +40,7 @@ java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
 	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 	-n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
 
+chmod -w ${OUT}/LINE1DISCOVERYGROUP/LINE1.pre_geno.tsv
 
 
 date

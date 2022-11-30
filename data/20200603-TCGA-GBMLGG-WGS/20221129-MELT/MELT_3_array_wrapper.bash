@@ -67,7 +67,7 @@ outbase=${OUT}/${basename}
 		-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
 		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 		-w ${OUT}/LINE1DISCOVERYGENO/ \
-    -p ${OUT}/LINE1DISCOVERYGROUP/
+		-p ${OUT}/LINE1DISCOVERYGROUP/
 
 #	chmod -w ${f}
 #	chmod -w ${f%.bai}
