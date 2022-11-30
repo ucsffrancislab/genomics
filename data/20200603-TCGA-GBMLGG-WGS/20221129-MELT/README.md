@@ -130,7 +130,12 @@ Looks like references can't be gzipped or bgzipped.
 Any way to control thread count?
 
 
-This kinda takes a while and doesn't seem to really do anything?
+
+
+####	Step 1 Preprocess + IndivAnalysis
+
+
+
 ```
 module load CBI samtools/1.13 bowtie2/2.4.4 
 
@@ -164,6 +169,10 @@ in source dir. Perhaps best to create working dir with links to source bam/bai
 
 
 
+
+
+
+
 ```
 module load CBI samtools/1.13 bowtie2/2.4.4 
 java -Xmx6G -jar ~/.local/MELTv2.2.2/MELT.jar IndivAnalysis \
@@ -188,6 +197,7 @@ End time: Nov 29, 2022 11:32:03 AM
 
 
 
+####	Step 2 GroupAnalysis
 
 Not sure if this is the correct bed
 Not sure if -discoverydir and -w should be the same
@@ -196,10 +206,54 @@ Not sure if -discoverydir and -w should be the same
 module load CBI samtools/1.13 bowtie2/2.4.4 
 java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
   -discoverydir ${PWD}/out/LINE1DISCOVERY/ \
-  -w ${PWD}/out/LINE1DISCOVERYWORK/ \
+  -w ${PWD}/out/LINE1DISCOVERYGROUP/ \
   -t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
   -h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
   -n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
 
+Command Line:
+MELT.jar GroupAnalysis -discoverydir /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out/LINE1DISCOVERY/ -w /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out/LINE1DISCOVERYWORK/ -t /c4/home/gwendt/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip -h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa -n /c4/home/gwendt/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed 
+
+Start time: Nov 30, 2022 7:07:50 AM
+
+Performing MELT analysis...
+Records Analyzed : 2500
+Records Analyzed : 5000
+Records Analyzed : 7500
+End time: Nov 30, 2022 8:04:21 AM
+
+Wed Nov 30 08:04:21 PST 2022
+```
+
+
+
+
+
+
+
+
+####	Step 3 GenoType
 
 ```
+java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Genotype \
+	-bamfile ${outbase}.bam \
+	-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
+	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+	-w ${OUT}/LINE1DISCOVERYGENO/ \
+	-p ${OUT}/LINE1DISCOVERYGROUP/
+```
+
+
+####	Step 4 MakeVCF
+
+
+```
+java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar MakeVCF \
+	-genotypingdir ${OUT}/LINE1DISCOVERYGENO/ \
+	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+	-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
+	-w ${OUT}/LINE1DISCOVERYVCF/ \
+	-p ${OUT}/LINE1DISCOVERYGROUP/LINE1.pre_geno.tsv
+```
+
+
