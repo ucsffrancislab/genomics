@@ -320,6 +320,7 @@ From: ubuntu:20.04
 
 	#	The multicharacter notation of the tab is pissing off this version of join 
 	#	Replacing with actual tab seems to be working
+	#	Why didn't I just do this to my version?
 	
 	sed -i '/^\tjoincommand_list/s/\$'"'"'\\\\t/'"'"'\t/' squire/Count.py
 
