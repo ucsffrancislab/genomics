@@ -54,25 +54,27 @@ echo ${basename}
 
 
 
-outbase=${OUT}/${basename}
+inbase=${OUT}/${basename}
 
+for mei in ALU HERVK LINE1 SVA ; do
 
-#f=${outbase}.bam.disc.bai
-#if [ -f $f ] && [ ! -w $f ] ; then
-#	echo "Write-protected $f exists. Skipping."
-#else
+	outbase=${OUT}/${mei}DISCOVERYGENO/${basename}.${mei}
+	f=${outbase}.tsv
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
 
-	java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Genotype \
-		-bamfile ${outbase}.bam \
-		-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
-		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
-		-w ${OUT}/LINE1DISCOVERYGENO/ \
-		-p ${OUT}/LINE1DISCOVERYGROUP/
+		java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Genotype \
+			-bamfile ${inbase}.bam \
+			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
+			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+			-w $( dirname ${f} ) \
+			-p ${OUT}/${mei}DISCOVERYGROUP/
 
-#	chmod -w ${f}
-#	chmod -w ${f%.bai}
-#	chmod -w ${f%.disc.bai}.fq
-#fi
+		chmod -w ${f}
+	fi
+
+done
 
 
 date
