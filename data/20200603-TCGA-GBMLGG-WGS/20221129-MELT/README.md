@@ -269,7 +269,26 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) )
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-curl  --silent --ftp-create-dirs -netrc -T LINE1.final_comp.vcf "${BOX}/"
+for f in out/*VCF/*vcf.gz ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
 ```
+
+
+
+
+
+
+Failures
+
+```
+-r--r----- 1 gwendt francislab  261350 Dec  4 18:52 HT-7472-01A-11D-2022.ALU.tsv
+-r--r----- 1 gwendt francislab 1085820 Dec  4 18:56 FG-7636-10A-01D-2088.ALU.tsv
+-r--r----- 1 gwendt francislab 1402941 Dec  4 18:57 FG-6689-01A-11D-1891.ALU.tsv
+-r--r----- 1 gwendt francislab 1308773 Dec  4 18:57 HT-7468-01A-11D-2022.ALU.tsv
+```
+
+
 
 

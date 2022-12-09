@@ -32,15 +32,25 @@ OUT="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out"
 mkdir -p ${OUT}
 
 
-java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar MakeVCF \
-	-genotypingdir ${OUT}/LINE1DISCOVERYGENO/ \
-	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
-	-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
-	-w ${OUT}/LINE1DISCOVERYVCF/ \
-	-p ${OUT}/LINE1DISCOVERYGROUP/	#LINE1.pre_geno.tsv
+for mei in ALU HERVK LINE1 SVA ; do
 
-#	Add ...
-# -o <arg>               Output directory for final VCF files. Will be in the form of -o/<MEI_NAME>.final_comp.vcf. [./].
+	outbase=${OUT}/${mei}DISCOVERYVCF/${mei}
+	f=${outbase}.final_comp.vcf.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar MakeVCF \
+			-genotypingdir ${OUT}/${mei}DISCOVERYGENO/ \
+			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
+			-w $( dirname ${f} ) \
+			-p ${OUT}/${mei}DISCOVERYGROUP/	\
+			-o $( dirname ${f} )
+		gzip ${f%.gz}
+		chmod -w ${f}
+	fi
+
+done
 
 
 date

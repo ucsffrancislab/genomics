@@ -55,6 +55,7 @@ echo ${basename}
 
 
 outbase=${OUT}/${basename}
+inbase=${outbase}
 f=${outbase}.bam
 if [ -h $f ] ; then
 	#       -h file True if file exists and is a symbolic link.
@@ -63,22 +64,6 @@ else
 	ln -s ${bam} ${f}
 	ln -s ${bam}.bai ${f}.bai
 fi
-	
-
-
-
-#f=${outbase}.bam
-#if [ -f $f ] && [ ! -w $f ] ; then
-#	echo "Write-protected $f exists. Skipping."
-#else
-#	#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${basename} --time=2880 \
-#	#	--nodes=1 --ntasks=${threads} --mem=${mem} \
-#	#	--output=${outbase}.${date}.%j.txt \
-#	~/.local/bin/bowtie2_scratch.bash \
-#		--very-sensitive --threads ${SLURM_NTASKS} \
-#		-1 ${r1} -2 ${r2} --sort --output ${f} \
-#		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts
-#fi
 
 
 f=${outbase}.bam.disc.bai
@@ -86,7 +71,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Preprocess \
-		-bamfile ${outbase}.bam \
+		-bamfile ${inbase}.bam \
 		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa
 	chmod -w ${f}
 	chmod -w ${f%.bai}
@@ -94,26 +79,33 @@ else
 fi
 
 inbase=${outbase}
-outbase=${OUT}/LINE1DISCOVERY/${basename}.LINE1
-f=${outbase}.tmp.bed
-if [ -f $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
-else
-	java -Xmx6G -jar ~/.local/MELTv2.2.2/MELT.jar IndivAnalysis \
-  	-bamfile ${inbase}.bam \
-  	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
-  	-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
-  	-w ${OUT}/LINE1DISCOVERY/
-	chmod -w ${outbase}.*
 
-	#-rw-r----- 1 gwendt francislab 31539463 Nov 29 11:03 TQ-A8XE-10A-01D-A367.LINE1.aligned.final.sorted.bam
-	#-rw-r----- 1 gwendt francislab       96 Nov 29 11:03 TQ-A8XE-10A-01D-A367.LINE1.aligned.final.sorted.bam.bai
-	#-rw-r----- 1 gwendt francislab 12526748 Nov 29 11:09 TQ-A8XE-10A-01D-A367.LINE1.aligned.pulled.sorted.bam
-	#-rw-r----- 1 gwendt francislab  2394960 Nov 29 11:09 TQ-A8XE-10A-01D-A367.LINE1.aligned.pulled.sorted.bam.bai
-	#-rw-r----- 1 gwendt francislab   707113 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.hum_breaks.sorted.bam
-	#-rw-r----- 1 gwendt francislab  1444464 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.hum_breaks.sorted.bam.bai
-	#-rw-r----- 1 gwendt francislab     5464 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.tmp.bed
-fi
+for mei in ALU HERVK LINE1 SVA ; do
+
+	outbase=${OUT}/${mei}DISCOVERYIND/${basename}.${mei}
+	f=${outbase}.tmp.bed
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		java -Xmx6G -jar ~/.local/MELTv2.2.2/MELT.jar IndivAnalysis \
+	  	-bamfile ${inbase}.bam \
+	  	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+	  	-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
+	  	-w $( dirname ${f} )
+		chmod -w ${outbase}.*
+	
+		#-rw-r----- 1 gwendt francislab 31539463 Nov 29 11:03 TQ-A8XE-10A-01D-A367.LINE1.aligned.final.sorted.bam
+		#-rw-r----- 1 gwendt francislab       96 Nov 29 11:03 TQ-A8XE-10A-01D-A367.LINE1.aligned.final.sorted.bam.bai
+		#-rw-r----- 1 gwendt francislab 12526748 Nov 29 11:09 TQ-A8XE-10A-01D-A367.LINE1.aligned.pulled.sorted.bam
+		#-rw-r----- 1 gwendt francislab  2394960 Nov 29 11:09 TQ-A8XE-10A-01D-A367.LINE1.aligned.pulled.sorted.bam.bai
+		#-rw-r----- 1 gwendt francislab   707113 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.hum_breaks.sorted.bam
+		#-rw-r----- 1 gwendt francislab  1444464 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.hum_breaks.sorted.bam.bai
+		#-rw-r----- 1 gwendt francislab     5464 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.tmp.bed
+	fi
+
+done
+
+
 
 date
 exit

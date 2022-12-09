@@ -32,16 +32,24 @@ OUT="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out"
 mkdir -p ${OUT}
 
 
+for mei in ALU HERVK LINE1 SVA ; do
 
-java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
-	-discoverydir ${OUT}/LINE1DISCOVERY/ \
-	-w ${OUT}/LINE1DISCOVERYGROUP/ \
-	-t ~/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip \
-	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
-	-n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
+	outbase=${OUT}/${mei}DISCOVERYGROUP/${mei}
+	f=${outbase}.pre_geno.tsv
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
+			-discoverydir ${OUT}/${mei}DISCOVERYIND/ \
+			-w $( dirname ${f} ) \
+			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
+			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+			-n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
 
-chmod -w ${OUT}/LINE1DISCOVERYGROUP/LINE1.pre_geno.tsv
+		chmod -w ${f}	#${OUT}/${mei}DISCOVERYGROUP/${mei}.pre_geno.tsv
+	fi
 
+done
 
 date
 exit
