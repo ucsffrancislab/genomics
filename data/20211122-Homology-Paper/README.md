@@ -317,3 +317,94 @@ See also ...
 
 ```
 
+
+
+
+
+
+
+
+
+#	20221201 - Remapping HG38
+
+
+`hg38_mapping_array_wrapper.bash`
+
+
+
+
+```
+echo '#track name="Viral Homology - HHV HM"' > hg38.split.viral.HHV.gff3
+echo '##displayName=accession' >> hg38.split.viral.HHV.gff3
+zcat mapping/chr*.split.viral.gff3.gz | grep -vs "^#" | grep --file HHV_accessions.txt >> hg38.split.viral.HHV.gff3
+gzip hg38.split.viral.HHV.gff3
+
+echo '#track name="Viral Homology - HHV HM (No HERVK113)"' > hg38.split.viral.noherv.HHV.gff3
+echo '##displayName=accession' >> hg38.split.viral.noherv.HHV.gff3
+zcat mapping/chr*.split.viral.noherv.gff3.gz | grep -vs "^#" | grep --file HHV_accessions.txt >> hg38.split.viral.noherv.HHV.gff3
+gzip hg38.split.viral.noherv.HHV.gff3
+
+
+echo '#track name="Viral Homology - HM"' > hg38.split.viral.any.gff3
+echo '##displayName=accession' >> hg38.split.viral.any.gff3
+zcat mapping/chr*.split.viral.any.gff3.gz | grep -vs "^#" >> hg38.split.viral.any.gff3
+gzip hg38.split.viral.any.gff3
+
+echo '#track name="Viral Homology - HM (No HERVK113)"' > hg38.split.viral.noherv.any.gff3
+echo '##displayName=accession' >> hg38.split.viral.noherv.any.gff3
+zcat mapping/chr*.split.viral.noherv.any.gff3.gz | grep -vs "^#" >> hg38.split.viral.noherv.any.gff3
+gzip hg38.split.viral.noherv.any.gff3
+
+
+echo '#track name="Viral Homology - HM\RM"' > hg38.masked.split.viral.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.gff3
+zcat mapping/chr*.masked.split.viral.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.gff3
+gzip hg38.masked.split.viral.gff3
+
+echo '#track name="Viral Homology - HM\RM (No HERVK113)"' > hg38.masked.split.viral.noherv.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.noherv.gff3
+zcat mapping/chr*.masked.split.viral.noherv.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.noherv.gff3
+gzip hg38.masked.split.viral.noherv.gff3
+```
+
+These gff3s are nice for viewing IGV.
+
+
+
+
+
+
+
+
+
+
+Let merge into contiguous regions
+
+`chr1	homology	fragment	10026	10075	.	+	.	accession=NC_001716.2`
+
+
+```
+mergeGFF3Regions.bash hg38.split.viral.HHV.gff3.gz
+mergeGFF3Regions.bash hg38.split.viral.noherv.HHV.gff3.gz
+mergeGFF3Regions.bash hg38.split.viral.any.gff3.gz
+mergeGFF3Regions.bash hg38.split.viral.noherv.any.gff3.gz
+mergeGFF3Regions.bash hg38.masked.split.viral.gff3.gz
+mergeGFF3Regions.bash hg38.masked.split.viral.noherv.gff3.gz
+```
+
+
+
+
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA="" #$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in hg38.*.merged.gff3.gz ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
