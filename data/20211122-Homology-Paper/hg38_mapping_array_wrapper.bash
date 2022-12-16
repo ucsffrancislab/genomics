@@ -95,7 +95,7 @@ if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "GFF output exists. Skipping step."
 else
 	echo "Creating GFF for ${inbase}"
-	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) | gzip > ${f}
+	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) #	| gzip > ${f}
 	chmod -w ${f}
 	#	THIS'LL BE HUGE AND KINDA USELESS
 fi
@@ -107,6 +107,7 @@ if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "Simplified GFF output exists. Skipping step."
 else
 	echo "Creating GFF for ${inbase}"
+	#	scripts/GFF3toanyaccession.bash INPUT.gff3.gz
 	zcat ${inbase} | awk 'BEGIN{FS=OFS="\t"}(!/^#/){$7="+";$9="accession=any"}{print}' | uniq | gzip > ${f}
 	chmod -w ${f}
 fi
@@ -140,7 +141,7 @@ if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "GFF output exists. Skipping step."
 else
 	echo "Creating GFF for ${inbase}"
-	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) | gzip > ${f}
+	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) #	| gzip > ${f}
 	chmod -w ${f}
 	#	THIS'LL BE HUGE AND KINDA USELESS
 fi
@@ -152,6 +153,7 @@ if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "Simplified GFF output exists. Skipping step."
 else
 	echo "Creating GFF for ${inbase}"
+	#	scripts/GFF3toanyaccession.bash INPUT.gff3.gz
 	zcat ${inbase} | awk 'BEGIN{FS=OFS="\t"}(!/^#/){$7="+";$9="accession=any"}{print}' | uniq | gzip > ${f}
 	chmod -w ${f}
 fi
@@ -226,7 +228,19 @@ if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "GFF output exists. Skipping step."
 else
 	echo "Creating GFF for ${inbase}"
-	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) | gzip > ${f}
+	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) #	| gzip > ${f}
+	chmod -w ${f}
+fi
+
+inbase=${outbase}	#	chr1.masked.split.viral.gff3.gz
+outbase=${inbase%.gff3.gz}.any.gff3.gz
+f=${outbase}
+if [ -f ${f} ] && [ ! -w ${f} ] ; then
+	echo "Simplified GFF output exists. Skipping step."
+else
+	echo "Creating GFF for ${inbase}"
+	#	scripts/GFF3toanyaccession.bash INPUT.gff3.gz
+	zcat ${inbase} | awk 'BEGIN{FS=OFS="\t"}(!/^#/){$7="+";$9="accession=any"}{print}' | uniq | gzip > ${f}
 	chmod -w ${f}
 fi
 
@@ -257,7 +271,19 @@ if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "GFF output exists. Skipping step."
 else
 	echo "Creating GFF for ${inbase}"
-	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) | gzip > ${f}
+	~/.local/bin/createGFF3FromSAM.bash --input ${inbase} --size 25 --ref $( basename ${chr} .fa.gz ) #	| gzip > ${f}
+	chmod -w ${f}
+fi
+
+inbase=${outbase}	#	chr1.masked.split.viral.noherv.gff3.gz
+outbase=${inbase%.gff3.gz}.any.gff3.gz
+f=${outbase}
+if [ -f ${f} ] && [ ! -w ${f} ] ; then
+	echo "Simplified GFF output exists. Skipping step."
+else
+	echo "Creating GFF for ${inbase}"
+	#	scripts/GFF3toanyaccession.bash INPUT.gff3.gz
+	zcat ${inbase} | awk 'BEGIN{FS=OFS="\t"}(!/^#/){$7="+";$9="accession=any"}{print}' | uniq | gzip > ${f}
 	chmod -w ${f}
 fi
 
@@ -310,7 +336,6 @@ echo '##displayName=accession' >> hg38.split.viral.noherv.HHV.gff3
 zcat mapping/chr*.split.viral.noherv.gff3.gz | grep -vs "^#" | grep --file HHV_accessions.txt >> hg38.split.viral.noherv.HHV.gff3
 gzip hg38.split.viral.noherv.HHV.gff3
 
-
 echo '#track name="Viral Homology - HM"' > hg38.split.viral.any.gff3
 echo '##displayName=accession' >> hg38.split.viral.any.gff3
 zcat mapping/chr*.split.viral.any.gff3.gz | grep -vs "^#" >> hg38.split.viral.any.gff3
@@ -330,6 +355,18 @@ echo '#track name="Viral Homology - HM\RM (No HERVK113)"' > hg38.masked.split.vi
 echo '##displayName=accession' >> hg38.masked.split.viral.noherv.gff3
 zcat mapping/chr*.masked.split.viral.noherv.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.noherv.gff3
 gzip hg38.masked.split.viral.noherv.gff3
+
+
+echo '#track name="Viral Homology - HM\RM"' > hg38.masked.split.viral.any.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.any.gff3
+zcat mapping/chr*.masked.split.viral.any.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.any.gff3
+gzip hg38.masked.split.viral.any.gff3
+
+echo '#track name="Viral Homology - HM\RM (No HERVK113)"' > hg38.masked.split.viral.noherv.any.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.noherv.any.gff3
+zcat mapping/chr*.masked.split.viral.noherv.any.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.noherv.any.gff3
+gzip hg38.masked.split.viral.noherv.any.gff3
+
 
 
 zcat hg38.split.viral.HHV.gff3.gz | tail -n +2 | uniq | sort -k9,9 -k7,7 -k1,1 -k4n,5n | uniq | head

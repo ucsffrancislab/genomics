@@ -356,6 +356,8 @@ zcat mapping/chr*.split.viral.noherv.any.gff3.gz | grep -vs "^#" >> hg38.split.v
 gzip hg38.split.viral.noherv.any.gff3
 
 
+
+
 echo '#track name="Viral Homology - HM\RM"' > hg38.masked.split.viral.gff3
 echo '##displayName=accession' >> hg38.masked.split.viral.gff3
 zcat mapping/chr*.masked.split.viral.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.gff3
@@ -365,6 +367,18 @@ echo '#track name="Viral Homology - HM\RM (No HERVK113)"' > hg38.masked.split.vi
 echo '##displayName=accession' >> hg38.masked.split.viral.noherv.gff3
 zcat mapping/chr*.masked.split.viral.noherv.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.noherv.gff3
 gzip hg38.masked.split.viral.noherv.gff3
+
+
+
+echo '#track name="Viral Homology - HM\RM"' > hg38.masked.split.viral.any.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.any.gff3
+zcat mapping/chr*.masked.split.viral.any.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.any.gff3
+gzip hg38.masked.split.viral.any.gff3
+
+echo '#track name="Viral Homology - HM\RM (No HERVK113)"' > hg38.masked.split.viral.noherv.any.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.noherv.any.gff3
+zcat mapping/chr*.masked.split.viral.noherv.any.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.noherv.any.gff3
+gzip hg38.masked.split.viral.noherv.any.gff3
 ```
 
 These gff3s are nice for viewing IGV.
@@ -390,6 +404,8 @@ mergeGFF3Regions.bash hg38.split.viral.any.gff3.gz
 mergeGFF3Regions.bash hg38.split.viral.noherv.any.gff3.gz
 mergeGFF3Regions.bash hg38.masked.split.viral.gff3.gz
 mergeGFF3Regions.bash hg38.masked.split.viral.noherv.gff3.gz
+mergeGFF3Regions.bash hg38.masked.split.viral.any.gff3.gz
+mergeGFF3Regions.bash hg38.masked.split.viral.noherv.any.gff3.gz
 ```
 
 
