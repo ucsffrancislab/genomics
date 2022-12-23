@@ -432,18 +432,18 @@ done
 
 Translate accession numbers to names
 ```
-substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.HHV.gff3.gz ) | gzip > hg38.split.viral.HHV.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.noherv.HHV.gff3.gz ) | gzip > hg38.split.viral.noherv.HHV.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.gff3.gz ) | gzip > hg38.masked.split.viral.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.split.viral.HHV.gff3.gz ) | gzip > hg38.split.viral.HHV.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.split.viral.noherv.HHV.gff3.gz ) | gzip > hg38.split.viral.noherv.HHV.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.gff3.gz ) | gzip > hg38.masked.split.viral.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.translated.gff3.gz
 
-substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.HHV.merged.gff3.gz ) | gzip > hg38.split.viral.HHV.merged.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.noherv.HHV.merged.gff3.gz ) | gzip > hg38.split.viral.noherv.HHV.merged.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.merged.gff3.gz ) | gzip > hg38.masked.split.viral.merged.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.merged.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.merged.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.split.viral.HHV.merged.gff3.gz ) | gzip > hg38.split.viral.HHV.merged.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.split.viral.noherv.HHV.merged.gff3.gz ) | gzip > hg38.split.viral.noherv.HHV.merged.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.merged.gff3.gz ) | gzip > hg38.masked.split.viral.merged.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.merged.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.merged.translated.gff3.gz
 
-substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.HHV.merged.gff3.gz ) | gzip > hg38.masked.split.viral.HHV.merged.translated.gff3.gz
-substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.HHV.merged.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.HHV.merged.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.HHV.merged.gff3.gz ) | gzip > hg38.masked.split.viral.HHV.merged.translated.gff3.gz
+translateAccessionInGFF3.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.HHV.merged.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.HHV.merged.translated.gff3.gz
 ```
 
 
