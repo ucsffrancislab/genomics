@@ -406,6 +406,9 @@ mergeGFF3Regions.bash hg38.masked.split.viral.gff3.gz
 mergeGFF3Regions.bash hg38.masked.split.viral.noherv.gff3.gz
 mergeGFF3Regions.bash hg38.masked.split.viral.any.gff3.gz
 mergeGFF3Regions.bash hg38.masked.split.viral.noherv.any.gff3.gz
+
+mergeGFF3Regions.bash hg38.masked.split.viral.HHV.gff3.gz
+mergeGFF3Regions.bash hg38.masked.split.viral.noherv.HHV.gff3.gz
 ```
 
 
@@ -423,4 +426,36 @@ echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 ```
+
+
+
+
+Translate accession numbers to names
+```
+substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.HHV.gff3.gz ) | gzip > hg38.split.viral.HHV.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.noherv.HHV.gff3.gz ) | gzip > hg38.split.viral.noherv.HHV.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.gff3.gz ) | gzip > hg38.masked.split.viral.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.translated.gff3.gz
+
+substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.HHV.merged.gff3.gz ) | gzip > hg38.split.viral.HHV.merged.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.split.viral.noherv.HHV.merged.gff3.gz ) | gzip > hg38.split.viral.noherv.HHV.merged.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.merged.gff3.gz ) | gzip > hg38.masked.split.viral.merged.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.merged.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.merged.translated.gff3.gz
+
+substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.HHV.merged.gff3.gz ) | gzip > hg38.masked.split.viral.HHV.merged.translated.gff3.gz
+substitute.bash ./viral_sequences.csv <( zcat hg38.masked.split.viral.noherv.HHV.merged.gff3.gz ) | gzip > hg38.masked.split.viral.noherv.HHV.merged.translated.gff3.gz
+```
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA="" #$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in hg38.*.translated.gff3.gz ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
 

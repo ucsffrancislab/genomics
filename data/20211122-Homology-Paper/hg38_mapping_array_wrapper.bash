@@ -346,6 +346,8 @@ echo '##displayName=accession' >> hg38.split.viral.noherv.any.gff3
 zcat mapping/chr*.split.viral.noherv.any.gff3.gz | grep -vs "^#" >> hg38.split.viral.noherv.any.gff3
 gzip hg38.split.viral.noherv.any.gff3
 
+
+
 echo '#track name="Viral Homology - HM\RM"' > hg38.masked.split.viral.gff3
 echo '##displayName=accession' >> hg38.masked.split.viral.gff3
 zcat mapping/chr*.masked.split.viral.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.gff3
@@ -366,6 +368,18 @@ echo '#track name="Viral Homology - HM\RM (No HERVK113)"' > hg38.masked.split.vi
 echo '##displayName=accession' >> hg38.masked.split.viral.noherv.any.gff3
 zcat mapping/chr*.masked.split.viral.noherv.any.gff3.gz | grep -vs "^#" >> hg38.masked.split.viral.noherv.any.gff3
 gzip hg38.masked.split.viral.noherv.any.gff3
+
+
+
+echo '#track name="Viral Homology - HHV HM\RM"' > hg38.masked.split.viral.HHV.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.HHV.gff3
+zcat mapping/chr*.masked.split.viral.gff3.gz | grep -vs "^#" | grep --file HHV_accessions.txt >> hg38.masked.split.viral.HHV.gff3
+gzip hg38.masked.split.viral.HHV.gff3
+
+echo '#track name="Viral Homology - HHV HM\RM (No HERVK113)"' > hg38.masked.split.viral.noherv.HHV.gff3
+echo '##displayName=accession' >> hg38.masked.split.viral.noherv.HHV.gff3
+zcat mapping/chr*.masked.split.viral.noherv.gff3.gz | grep -vs "^#" | grep --file HHV_accessions.txt >> hg38.masked.split.viral.noherv.HHV.gff3
+gzip hg38.masked.split.viral.noherv.HHV.gff3
 
 
 
