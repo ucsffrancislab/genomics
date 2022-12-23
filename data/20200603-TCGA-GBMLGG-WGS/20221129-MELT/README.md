@@ -137,7 +137,7 @@ Any way to control thread count?
 
 
 ```
-module load CBI samtools/1.13 bowtie2/2.4.4 
+module load CBI samtools/1.13 bowtie2/2.4.4
 
 java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Preprocess \
   -bamfile /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/TQ-A8XE-10A-01D-A367.bam \
@@ -159,7 +159,7 @@ MC & MQ tags NOT detected in original bam file. This may result in substantially
 End time: Nov 29, 2022 9:59:17 AM
 ```
 
-Creates 
+Creates
 ```
 .fq
 .disc.bam.bai
@@ -174,7 +174,7 @@ in source dir. Perhaps best to create working dir with links to source bam/bai
 
 
 ```
-module load CBI samtools/1.13 bowtie2/2.4.4 
+module load CBI samtools/1.13 bowtie2/2.4.4
 java -Xmx6G -jar ~/.local/MELTv2.2.2/MELT.jar IndivAnalysis \
   -bamfile /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/TQ-A8XE-10A-01D-A367.bam \
   -h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
@@ -203,7 +203,7 @@ Not sure if this is the correct bed
 Not sure if -discoverydir and -w should be the same
 
 ```
-module load CBI samtools/1.13 bowtie2/2.4.4 
+module load CBI samtools/1.13 bowtie2/2.4.4
 java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
   -discoverydir ${PWD}/out/LINE1DISCOVERY/ \
   -w ${PWD}/out/LINE1DISCOVERYGROUP/ \
@@ -212,7 +212,7 @@ java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
   -n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
 
 Command Line:
-MELT.jar GroupAnalysis -discoverydir /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out/LINE1DISCOVERY/ -w /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out/LINE1DISCOVERYWORK/ -t /c4/home/gwendt/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip -h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa -n /c4/home/gwendt/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed 
+MELT.jar GroupAnalysis -discoverydir /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out/LINE1DISCOVERY/ -w /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out/LINE1DISCOVERYWORK/ -t /c4/home/gwendt/.local/MELTv2.2.2/me_refs/Hg38/LINE1_MELT.zip -h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa -n /c4/home/gwendt/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
 
 Start time: Nov 30, 2022 7:07:50 AM
 
@@ -300,7 +300,7 @@ Failures
 ##	Analyze (testing)
 
 
-I'd love to be able to search for tumor/normal differences in the group VCF, 
+I'd love to be able to search for tumor/normal differences in the group VCF,
 but having trouble finding tool to do this.
 
 
@@ -313,5 +313,41 @@ compare_tumor_normal.bash
 
 
 
+
+
+
+
+
+
+
+```
+zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' > HERVK.final_comp.tsv
+
+zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' -e '1s/\(..-....-...-...-....\)/"\1"/g'> HERVK.final_comp.tsv
+
+zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' -e '1s/\(..-....-...-...-....\)/TCGA-\1/g' > HERVK.final_comp.tsv
+
+
+for vcf in *.final_comp.vcf.gz ; do
+zcat $vcf | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."-3"g' | sed -e '1s/^#//' > $(basename $vcf .vcf.gz).tsv
+done
+```
+
+R does not like column names that start with digits or contain dashes
+so it converts 02-2485-01A-01D-1494 to X02.2485.01A.01D.1494 even if quoted.
+
+Python is ok with both the leading digit and the dashes.
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) )
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in *html ; do
+echo $f
+curl --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
 
 

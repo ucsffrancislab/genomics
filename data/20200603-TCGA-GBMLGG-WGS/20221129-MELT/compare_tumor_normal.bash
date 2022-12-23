@@ -5,7 +5,7 @@
 
 
 
-for vcf in *vcf.gz ; do
+for vcf in {HERV,SVA,LINE}*vcf.gz ; do
 	echo $vcf
 	vcfbase=${vcf%.vcf.gz}
 	mkdir ${vcfbase}_sample_pairs
@@ -28,11 +28,31 @@ for vcf in *vcf.gz ; do
 		zcat ${pair} | awk 'BEGIN{FS=OFS="\t"}(!/^#/){
 			split($10,t,":")
 			split($11,n,":")
-			if( t[1] != n[1] ) print $1":"$2",1"
+			#if( t[1] != n[1] ) print $1":"$2",1"
+			#if( t[1] != n[1] ) print $1"\t"$2"\t1"
+			
+			if( ( n[1] == "./." ) || ( t[1] == "./." ) ){
+				print $1"\t"$2"\t-5"
+				#next
+			} else {
+				#if( ( n[1] == "./." ) || ( n[1] == "0/0" ) ) gtn=0
+				if( n[1] == "0/0" ) gtn=0
+				if( n[1] == "0/1" ) gtn=1
+				if( n[1] == "1/1" ) gtn=2
+
+				#if( ( t[1] == "./." ) || ( t[1] == "0/0" ) ) gtt=0
+				if( t[1] == "0/0" ) gtt=0
+				if( t[1] == "0/1" ) gtt=1
+				if( t[1] == "1/1" ) gtt=2
+
+				#if( gtt != gtn ){
+					print $1"\t"$2"\t"gtt-gtn
+				#}
+			}
 		}' > ${pair%.vcf.gz}.positions.txt
 	done
 
-	./merge.py --int --out ${vcfbase}_sample_pairs.csv ${vcfbase}_sample_pairs/*txt 
+	./merge.py --int --out ${vcfbase}_sample_pairs.tsv ${vcfbase}_sample_pairs/*txt
 
 done
 
