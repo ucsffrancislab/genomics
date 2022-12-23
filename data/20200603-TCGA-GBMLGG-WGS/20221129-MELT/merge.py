@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os    
+import os
 import sys
 import pandas as pd
 
@@ -48,7 +48,7 @@ print( "Using output name: ", output )
 
 data_frames = []
 
-for filename in args.files:  
+for filename in args.files:
 	print("Processing "+filename)
 	if os.path.isfile(filename) and os.path.getsize(filename) > 0:
 		basename=os.path.basename(filename)
@@ -75,9 +75,9 @@ for filename in args.files:
 			#sep="\s+",
 		d = pd.read_csv(filename,
 			skipinitialspace=True,
-			sep=",",
+			sep="\t",
 			header=None,
-			names=['item',sample])
+			names=['CHROM','POS',sample])
 		#d[[sample,'sequence']] = d['sequence'].str.split(" ", 1, expand=True)
 
 		if args.seqint:
@@ -85,7 +85,8 @@ for filename in args.files:
 			#d['sequence']=d['sequence'].astype(int)
 
 		#d.set_index('sequence',inplace=True)
-		d.set_index('item',inplace=True)
+		#d.set_index('item',inplace=True)
+		d.set_index(['CHROM','POS'],inplace=True)
 		print(d.head())
 
 		print("Appending")
@@ -105,7 +106,7 @@ if len(data_frames) > 0:
 #	df.head()
 #	df.dtypes
 
-	
+
 	if args.int:
 		print("Converting all counts back to integers")
 		df = pd.DataFrame(df, dtype=int)
@@ -116,7 +117,8 @@ if len(data_frames) > 0:
 	print("Writing CSV")
 	#df.to_csv(output,index_label=['chromosome','position'])
 	#df.to_csv(output,index_label=['sequence'])
-	df.to_csv(output,index_label=['item'])
+	#df.to_csv(output,index_label=['item'],sep="\t")
+	df.to_csv(output,index_label=['CHROM','POS'],sep="\t")
 
 else:
 	print("No data.")

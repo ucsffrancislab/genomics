@@ -1,0 +1,356 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+args = commandArgs(trailingOnly=TRUE)
+output_file = paste(basename(fname),basename(args[1]),"html", sep=".")
+print(output_file)
+
+rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+q("no")
+
+
+
+---
+title: Cluster mapping MELT Output Genotypes
+author: Jake
+date: 20221222
+output:
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango
+---
+
+
+```{r "Figure Settings", include = FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=8)
+```
+
+
+# Tabset example {.tabset .tabset-fade .tabset-pills}
+
+##	Prep
+
+```{r "Show Args"}
+#args = commandArgs(trailingOnly=TRUE)
+print(args)
+```
+
+```{r setup}
+library('reticulate')
+```
+
+```{r python}
+use_python('/opt/local/bin/python')
+```
+
+Again, python treats r.args as a single variable unless there are multiple
+then it treats it as an list.  This seems like a bad idea.
+Set this so that args is always a list.
+```{python args}
+args=r.args if( type(r.args) == list ) else [r.args]
+```
+
+```{python pandas}
+import pandas as pd
+```
+
+```{python}
+print(args)
+```
+
+
+```{python}
+import os
+basename=os.path.basename(args[0])
+me=basename.split(".")[0]
+```
+
+
+Note that Python is 0 based, R is 1 based
+
+```{python readdata}
+#	import pandas as pd
+#	df = pd.read_csv("HERVK.final_comp.tsv",sep="\t",header=0,index_col=[0,1]).T
+
+#df = pd.read_csv(args[0],sep="\t",header=0,index_col=[0,1]).T
+df = pd.read_csv(args[0],sep="\t",header=0)
+df.index=df.CHROM.str.cat(df.POS.astype(str),sep=":")
+df=df.drop(["CHROM","POS"],axis="columns")
+df=df.T
+df['subject']=df.index.str[0:7]
+#df['type']=df.index.str[8:10]
+#df.index.str.split('-').str[2].str[0:2]
+df.head()
+```
+
+
+
+```{python readmeta1}
+meta1 = pd.read_csv(
+	"~/github/ucsffrancislab/genomics/data/20200603-TCGA-GBMLGG-WGS/20221129-MELT/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv",
+	sep=",",header=None,usecols=[1,3,4,5],index_col=0,
+	names=['sample','gender','classification','institute']
+)
+meta1.index=meta1.index.str[0:20]
+meta1.head()
+```
+
+```{python}
+meta1.columns
+```
+
+
+
+```{python}
+df=df.join(meta1)
+df.head()
+```
+
+
+
+```{python readmeta2}
+meta2 = pd.read_csv("~/github/ucsffrancislab/genomics/data/20200603-TCGA-GBMLGG-WGS/20221129-MELT/TCGA.Glioma.metadata.tsv",sep="\t",header=0,
+	usecols=["case_submitter_id","primary_diagnosis","race","ethnicity","IDH","x1p19q","TERT","Tissue_sample_location"])
+#,index_col=[0,1]).T
+#case_submitter_id project_id primary_diagnosis   race               ethnicity  ...     Tissue_sample_location          MGMT   Age Survival_months Vital_status
+#case_submitter_id	project_id	primary_diagnosis	race	ethnicity	gender	RE_names	IDH	x1p19q	TERT	IDH_1p19q_status	WHO_groups	Triple_group	Tissue_sample_location	MGMT	Age	Survival_months	Vital_status
+
+meta2.index=meta2['case_submitter_id'].str[5:12]
+#meta2['subject']=meta2['case_submitter_id'].str[5:12]
+#meta2.index=meta2['subject']
+meta2.head()
+```
+
+```{python}
+meta2.columns
+```
+
+```{python}
+df=df.join(meta2,on='subject')
+df.head()
+```
+
+
+
+
+
+
+##	Clustermaps
+
+```{python}
+import seaborn as sns
+#import matplotlib.pyplot as plt
+```
+
+
+```{python, out.width="100%", out.height="100%"}
+tmp=df.loc[df.index.str[8:10] == '01']
+
+gender = tmp.pop("gender")
+row_colors1 = gender.map( dict(zip(gender.unique(), sns.color_palette("husl", len(gender.unique()) ) ) ) )
+classification = tmp.pop("classification")
+row_colors2 = classification.map( dict(zip(classification.unique(), sns.color_palette("tab10", len(classification.unique()) ) ) ) )
+institute = tmp.pop("institute")
+row_colors3 = institute.map( dict(zip(institute.unique(), sns.color_palette("hls", len(institute.unique()) ) ) ) )
+case_submitter_id = tmp.pop("case_submitter_id")
+primary_diagnosis = tmp.pop("primary_diagnosis")
+row_colors4 = primary_diagnosis.map( dict(zip(primary_diagnosis.unique(), sns.color_palette("Spectral", len(primary_diagnosis.unique()) ) ) ) )
+race = tmp.pop("race")
+row_colors5 = race.map( dict(zip(race.unique(), sns.color_palette("coolwarm", len(race.unique()) ) ) ) )
+ethnicity = tmp.pop("ethnicity")
+row_colors6 = ethnicity.map( dict(zip(ethnicity.unique(), sns.color_palette("icefire", len(ethnicity.unique()) ) ) ) )
+IDH = tmp.pop("IDH")
+row_colors7 = IDH.map( dict(zip(IDH.unique(), sns.color_palette("husl", len(IDH.unique()) ) ) ) )
+x1p19q = tmp.pop("x1p19q")
+row_colors8 = x1p19q.map( dict(zip(x1p19q.unique(), sns.color_palette("tab10", len(x1p19q.unique()) ) ) ) )
+TERT = tmp.pop("TERT")
+row_colors9 = TERT.map( dict(zip(TERT.unique(), sns.color_palette("hls", len(TERT.unique()) ) ) ) )
+Tissue_sample_location = tmp.pop("Tissue_sample_location")
+row_colors10 = Tissue_sample_location.map( dict(zip(Tissue_sample_location.unique(), sns.color_palette("Spectral", len(Tissue_sample_location.unique()) ) ) ) )
+subject = tmp.pop("subject")
+row_colors = pd.concat([row_colors1,row_colors2,row_colors3,row_colors4,row_colors5,row_colors6,row_colors7,row_colors8,row_colors9,row_colors10],axis=1)
+
+g=sns.clustermap(tmp, row_colors=row_colors) #, col_cluster=False, yticklabels=False, xticklabels=False)
+g.fig.suptitle(me+" Tumor")
+g.cax.set_position([0, 0.25, .005, .65])
+g
+```
+
+```{python, out.width="100%", out.height="100%"}
+tmp=df.loc[df.index.str[8:10] == '10']
+
+gender = tmp.pop("gender")
+row_colors1 = gender.map( dict(zip(gender.unique(), sns.color_palette("husl", len(gender.unique()) ) ) ) )
+classification = tmp.pop("classification")
+row_colors2 = classification.map( dict(zip(classification.unique(), sns.color_palette("tab10", len(classification.unique()) ) ) ) )
+institute = tmp.pop("institute")
+row_colors3 = institute.map( dict(zip(institute.unique(), sns.color_palette("hls", len(institute.unique()) ) ) ) )
+case_submitter_id = tmp.pop("case_submitter_id")
+primary_diagnosis = tmp.pop("primary_diagnosis")
+row_colors4 = primary_diagnosis.map( dict(zip(primary_diagnosis.unique(), sns.color_palette("Spectral", len(primary_diagnosis.unique()) ) ) ) )
+race = tmp.pop("race")
+row_colors5 = race.map( dict(zip(race.unique(), sns.color_palette("coolwarm", len(race.unique()) ) ) ) )
+ethnicity = tmp.pop("ethnicity")
+row_colors6 = ethnicity.map( dict(zip(ethnicity.unique(), sns.color_palette("icefire", len(ethnicity.unique()) ) ) ) )
+IDH = tmp.pop("IDH")
+row_colors7 = IDH.map( dict(zip(IDH.unique(), sns.color_palette("husl", len(IDH.unique()) ) ) ) )
+x1p19q = tmp.pop("x1p19q")
+row_colors8 = x1p19q.map( dict(zip(x1p19q.unique(), sns.color_palette("tab10", len(x1p19q.unique()) ) ) ) )
+TERT = tmp.pop("TERT")
+row_colors9 = TERT.map( dict(zip(TERT.unique(), sns.color_palette("hls", len(TERT.unique()) ) ) ) )
+Tissue_sample_location = tmp.pop("Tissue_sample_location")
+row_colors10 = Tissue_sample_location.map( dict(zip(Tissue_sample_location.unique(), sns.color_palette("Spectral", len(Tissue_sample_location.unique()) ) ) ) )
+subject = tmp.pop("subject")
+row_colors = pd.concat([row_colors1,row_colors2,row_colors3,row_colors4,row_colors5,row_colors6,row_colors7,row_colors8,row_colors9,row_colors10],axis=1)
+
+g=sns.clustermap(tmp, row_colors=row_colors) #, col_cluster=False, yticklabels=False, xticklabels=False)
+g.fig.suptitle(me+" Normal")
+g.cax.set_position([0, 0.25, .005, .65])
+g
+```
+
+
+
+```{python, out.width="100%", out.height="100%"}
+tmp=df.loc[(df.index.str[8:10] == '01') & (df['institute'] == "Broad Institute of MIT and Harvard")]
+
+gender = tmp.pop("gender")
+row_colors1 = gender.map( dict(zip(gender.unique(), sns.color_palette("husl", len(gender.unique()) ) ) ) )
+classification = tmp.pop("classification")
+row_colors2 = classification.map( dict(zip(classification.unique(), sns.color_palette("tab10", len(classification.unique()) ) ) ) )
+institute = tmp.pop("institute")
+row_colors3 = institute.map( dict(zip(institute.unique(), sns.color_palette("hls", len(institute.unique()) ) ) ) )
+case_submitter_id = tmp.pop("case_submitter_id")
+primary_diagnosis = tmp.pop("primary_diagnosis")
+row_colors4 = primary_diagnosis.map( dict(zip(primary_diagnosis.unique(), sns.color_palette("Spectral", len(primary_diagnosis.unique()) ) ) ) )
+race = tmp.pop("race")
+row_colors5 = race.map( dict(zip(race.unique(), sns.color_palette("coolwarm", len(race.unique()) ) ) ) )
+ethnicity = tmp.pop("ethnicity")
+row_colors6 = ethnicity.map( dict(zip(ethnicity.unique(), sns.color_palette("icefire", len(ethnicity.unique()) ) ) ) )
+IDH = tmp.pop("IDH")
+row_colors7 = IDH.map( dict(zip(IDH.unique(), sns.color_palette("husl", len(IDH.unique()) ) ) ) )
+x1p19q = tmp.pop("x1p19q")
+row_colors8 = x1p19q.map( dict(zip(x1p19q.unique(), sns.color_palette("tab10", len(x1p19q.unique()) ) ) ) )
+TERT = tmp.pop("TERT")
+row_colors9 = TERT.map( dict(zip(TERT.unique(), sns.color_palette("hls", len(TERT.unique()) ) ) ) )
+Tissue_sample_location = tmp.pop("Tissue_sample_location")
+row_colors10 = Tissue_sample_location.map( dict(zip(Tissue_sample_location.unique(), sns.color_palette("Spectral", len(Tissue_sample_location.unique()) ) ) ) )
+subject = tmp.pop("subject")
+row_colors = pd.concat([row_colors1,row_colors2,row_colors3,row_colors4,row_colors5,row_colors6,row_colors7,row_colors8,row_colors9,row_colors10],axis=1)
+
+g=sns.clustermap(tmp, row_colors=row_colors) #, col_cluster=False, yticklabels=False, xticklabels=False)
+g.fig.suptitle(me+" Tumor "+" Broad")
+g.cax.set_position([0, 0.25, .005, .65])
+g
+```
+
+```{python, out.width="100%", out.height="100%"}
+tmp=df.loc[(df.index.str[8:10] == '10') & (df['institute'] == "Broad Institute of MIT and Harvard")]
+
+gender = tmp.pop("gender")
+row_colors1 = gender.map( dict(zip(gender.unique(), sns.color_palette("husl", len(gender.unique()) ) ) ) )
+classification = tmp.pop("classification")
+row_colors2 = classification.map( dict(zip(classification.unique(), sns.color_palette("tab10", len(classification.unique()) ) ) ) )
+institute = tmp.pop("institute")
+row_colors3 = institute.map( dict(zip(institute.unique(), sns.color_palette("hls", len(institute.unique()) ) ) ) )
+case_submitter_id = tmp.pop("case_submitter_id")
+primary_diagnosis = tmp.pop("primary_diagnosis")
+row_colors4 = primary_diagnosis.map( dict(zip(primary_diagnosis.unique(), sns.color_palette("Spectral", len(primary_diagnosis.unique()) ) ) ) )
+race = tmp.pop("race")
+row_colors5 = race.map( dict(zip(race.unique(), sns.color_palette("coolwarm", len(race.unique()) ) ) ) )
+ethnicity = tmp.pop("ethnicity")
+row_colors6 = ethnicity.map( dict(zip(ethnicity.unique(), sns.color_palette("icefire", len(ethnicity.unique()) ) ) ) )
+IDH = tmp.pop("IDH")
+row_colors7 = IDH.map( dict(zip(IDH.unique(), sns.color_palette("husl", len(IDH.unique()) ) ) ) )
+x1p19q = tmp.pop("x1p19q")
+row_colors8 = x1p19q.map( dict(zip(x1p19q.unique(), sns.color_palette("tab10", len(x1p19q.unique()) ) ) ) )
+TERT = tmp.pop("TERT")
+row_colors9 = TERT.map( dict(zip(TERT.unique(), sns.color_palette("hls", len(TERT.unique()) ) ) ) )
+Tissue_sample_location = tmp.pop("Tissue_sample_location")
+row_colors10 = Tissue_sample_location.map( dict(zip(Tissue_sample_location.unique(), sns.color_palette("Spectral", len(Tissue_sample_location.unique()) ) ) ) )
+subject = tmp.pop("subject")
+row_colors = pd.concat([row_colors1,row_colors2,row_colors3,row_colors4,row_colors5,row_colors6,row_colors7,row_colors8,row_colors9,row_colors10],axis=1)
+
+g=sns.clustermap(tmp, row_colors=row_colors) #, col_cluster=False, yticklabels=False, xticklabels=False)
+g.fig.suptitle(me+" Normal "+" Broad")
+g.cax.set_position([0, 0.25, .005, .65])
+g
+```
+
+
+```{python, out.width="100%", out.height="100%"}
+tmp=df.loc[(df.index.str[8:10] == '01') & (df['institute'] == "Harvard Medical School")]
+
+gender = tmp.pop("gender")
+row_colors1 = gender.map( dict(zip(gender.unique(), sns.color_palette("husl", len(gender.unique()) ) ) ) )
+classification = tmp.pop("classification")
+row_colors2 = classification.map( dict(zip(classification.unique(), sns.color_palette("tab10", len(classification.unique()) ) ) ) )
+institute = tmp.pop("institute")
+row_colors3 = institute.map( dict(zip(institute.unique(), sns.color_palette("hls", len(institute.unique()) ) ) ) )
+case_submitter_id = tmp.pop("case_submitter_id")
+primary_diagnosis = tmp.pop("primary_diagnosis")
+row_colors4 = primary_diagnosis.map( dict(zip(primary_diagnosis.unique(), sns.color_palette("Spectral", len(primary_diagnosis.unique()) ) ) ) )
+race = tmp.pop("race")
+row_colors5 = race.map( dict(zip(race.unique(), sns.color_palette("coolwarm", len(race.unique()) ) ) ) )
+ethnicity = tmp.pop("ethnicity")
+row_colors6 = ethnicity.map( dict(zip(ethnicity.unique(), sns.color_palette("icefire", len(ethnicity.unique()) ) ) ) )
+IDH = tmp.pop("IDH")
+row_colors7 = IDH.map( dict(zip(IDH.unique(), sns.color_palette("husl", len(IDH.unique()) ) ) ) )
+x1p19q = tmp.pop("x1p19q")
+row_colors8 = x1p19q.map( dict(zip(x1p19q.unique(), sns.color_palette("tab10", len(x1p19q.unique()) ) ) ) )
+TERT = tmp.pop("TERT")
+row_colors9 = TERT.map( dict(zip(TERT.unique(), sns.color_palette("hls", len(TERT.unique()) ) ) ) )
+Tissue_sample_location = tmp.pop("Tissue_sample_location")
+row_colors10 = Tissue_sample_location.map( dict(zip(Tissue_sample_location.unique(), sns.color_palette("Spectral", len(Tissue_sample_location.unique()) ) ) ) )
+subject = tmp.pop("subject")
+row_colors = pd.concat([row_colors1,row_colors2,row_colors3,row_colors4,row_colors5,row_colors6,row_colors7,row_colors8,row_colors9,row_colors10],axis=1)
+
+g=sns.clustermap(tmp, row_colors=row_colors) #, col_cluster=False, yticklabels=False, xticklabels=False)
+g.fig.suptitle(me+" Tumor "+" Harvard")
+g.cax.set_position([0, 0.25, .005, .65])
+g
+```
+
+```{python, out.width="100%", out.height="100%"}
+tmp=df.loc[(df.index.str[8:10] == '10') & (df['institute'] == "Harvard Medical School")]
+
+gender = tmp.pop("gender")
+row_colors1 = gender.map( dict(zip(gender.unique(), sns.color_palette("husl", len(gender.unique()) ) ) ) )
+classification = tmp.pop("classification")
+row_colors2 = classification.map( dict(zip(classification.unique(), sns.color_palette("tab10", len(classification.unique()) ) ) ) )
+institute = tmp.pop("institute")
+row_colors3 = institute.map( dict(zip(institute.unique(), sns.color_palette("hls", len(institute.unique()) ) ) ) )
+case_submitter_id = tmp.pop("case_submitter_id")
+primary_diagnosis = tmp.pop("primary_diagnosis")
+row_colors4 = primary_diagnosis.map( dict(zip(primary_diagnosis.unique(), sns.color_palette("Spectral", len(primary_diagnosis.unique()) ) ) ) )
+race = tmp.pop("race")
+row_colors5 = race.map( dict(zip(race.unique(), sns.color_palette("coolwarm", len(race.unique()) ) ) ) )
+ethnicity = tmp.pop("ethnicity")
+row_colors6 = ethnicity.map( dict(zip(ethnicity.unique(), sns.color_palette("icefire", len(ethnicity.unique()) ) ) ) )
+IDH = tmp.pop("IDH")
+row_colors7 = IDH.map( dict(zip(IDH.unique(), sns.color_palette("husl", len(IDH.unique()) ) ) ) )
+x1p19q = tmp.pop("x1p19q")
+row_colors8 = x1p19q.map( dict(zip(x1p19q.unique(), sns.color_palette("tab10", len(x1p19q.unique()) ) ) ) )
+TERT = tmp.pop("TERT")
+row_colors9 = TERT.map( dict(zip(TERT.unique(), sns.color_palette("hls", len(TERT.unique()) ) ) ) )
+Tissue_sample_location = tmp.pop("Tissue_sample_location")
+row_colors10 = Tissue_sample_location.map( dict(zip(Tissue_sample_location.unique(), sns.color_palette("Spectral", len(Tissue_sample_location.unique()) ) ) ) )
+subject = tmp.pop("subject")
+row_colors = pd.concat([row_colors1,row_colors2,row_colors3,row_colors4,row_colors5,row_colors6,row_colors7,row_colors8,row_colors9,row_colors10],axis=1)
+
+g=sns.clustermap(tmp, row_colors=row_colors) #, col_cluster=False, yticklabels=False, xticklabels=False)
+g.fig.suptitle(me+" Normal "+" Harvard")
+g.cax.set_position([0, 0.25, .005, .65])
+g
+```
+
+
+
