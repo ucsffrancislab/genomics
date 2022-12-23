@@ -22,42 +22,36 @@ parser.add_argument('-V','--version', action='version', version='%(prog)s 1.0')
 args = parser.parse_args()
 
 
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-GTACGTTGTCCCAAGTGG" > SFHH011Z.quality.umi.t1.t3.R1.select.fastq.gz
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-GTACGTTGTCCAAAGTGG" >> SFHH011Z.quality.umi.t1.t3.R1.select.fastq
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-TAGACTCGTTTTAATTTT" >> SFHH011Z.quality.umi.t1.t3.R1.select.fastq
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-TGTAAGTTTGATTTGGAA" >> SFHH011Z.quality.umi.t1.t3.R1.select.fastq
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-TGTGTGTGCGAGGGAGTG" >> SFHH011Z.quality.umi.t1.t3.R1.select.fastq
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-ATTACCTCCGAAGTTCTA" >> SFHH011Z.quality.umi.t1.t3.R1.select.fastq
-#  zcat SFHH011Z.quality.umi.t1.t3.R1.fastq.gz| grep -A3 "\-ATTACCTCCGAATTTCTA" >> SFHH011Z.quality.umi.t1.t3.R1.select.fastq
-#1   GTACGTTGTCCAAAGTGG  35.807947  
-#6   TAGACTCGTTTTAATTTT  36.225806  
-#7   TGTAAGTTTGATTTGGAA  35.379845  
-#19  TGTGTGTGCGAGGGAGTG  35.883333  
-#21  ATTACCTCCGAAGTTCTA  36.128713  
-
-#raw=pd.read_csv("SFHH011Z.quality.umi.t1.t3.R1.head.fastq.gz", header=None, sep="\t", names=["name"])
-#raw=pd.read_csv("SFHH011Z.quality.umi.t1.t3.R1.fastq.gz", header=None, sep="\t", names=["name"])
-
 for filename in args.files:  
-	print("Reading raw data " + filename)
-	#raw=pd.read_csv("SFHH011Z.quality.umi.t1.t3.R1.select.fastq", header=None, sep="\t", names=["name"])
-	raw=pd.read_csv(filename, header=None, sep="\t", names=["name"])
+
+	print("Reading raw data into fastq" + filename)
+	#df = pd.DataFrame(pd.read_csv(filename, sep='\n', header=None).values.reshape(-1, 4), columns=['name', 'sequence', 'sep', 'qualities'])
+	df = pd.DataFrame(pd.read_csv(filename, sep='\t', header=None).values.reshape(-1, 4), columns=['name', 'sequence', 'sep', 'qualities'])
+
+	#print("Reading raw data " + filename)
+	##raw=pd.read_csv("SFHH011Z.quality.umi.t1.t3.R1.select.fastq", header=None, sep="\t", names=["name"])
+	#raw=pd.read_csv(filename, header=None, sep="\t", names=["name"])
 	
-	print("Creating dataframe from raw data")
-	df = pd.DataFrame({
-		'name':raw['name'].iloc[0::4].values,
-		'sequence':raw['name'].iloc[1::4].values,
-		'sep':raw['name'].iloc[2::4].values,
-		'qualities':raw['name'].iloc[3::4].values})
+	#print("Creating dataframe from raw data")
+	#df = pd.DataFrame({
+	#	'name':raw['name'].iloc[0::4].values,
+	#	'sequence':raw['name'].iloc[1::4].values,
+	#	'sep':raw['name'].iloc[2::4].values,
+	#	'qualities':raw['name'].iloc[3::4].values})
+
 
 	print("Dataframe length :"+str(len(df)))
-	del(raw)
+	#del(raw)
 	
 	print("Extracting UMI")
 	df['umi'] = df.apply(lambda row: row['name'].split("-")[-1], axis=1)
 	
 	print("Extracting Average Quality")
 	df['ave_q'] = df.apply(lambda row: sum([ord(c)-33 for c in [*row['qualities']]])/len([*row['qualities']]), axis=1)
+
+	# print("Extracting Quality of Average Probability")
+	# df['ave_q'] = df.apply(lambda row: sum([ord(c)-33 for c in [*row['qualities']]])/len([*row['qualities']]), axis=1)
+	#         print(-10*math.log(sum([10**(-(ord(c)-33)/10) for c in line4])/len(line4),10))
 	
 	print("Creating UMI list")
 	umis=df['umi'].unique().tolist()
@@ -93,6 +87,9 @@ for filename in args.files:
 	
 			maxlen=max(sdf['sequence'].str.len())
 	
+
+			#	Umi script bwa index in memory? Better wild card searching?
+
 	
 			#	rather than make sdf, just extract indexes? and loop over them?
 			#	then can check if the index is found each iteration? rather than keep comparing?
@@ -113,6 +110,9 @@ for filename in args.files:
 						continue
 					ld=Levenshtein.distance(r1['sequence'], r2['sequence'])
 					if ld < ( 0.1 * maxlen ):
+						#	assuming the same as edit distance is low
+						#	selecting which to keep and which to delete based on average quality
+						#	could/should do by highest umi count?
 						print("Comparing average quality")
 						if r1['ave_q'] == r2['ave_q']:
 							print("Comparing length")
@@ -127,8 +127,6 @@ for filename in args.files:
 							min_r = r1
 						else:
 							min_r = r2
-	
-						#min_r= r1 if r1['ave_q'] < r2['ave_q'] else r2
 	
 						print(str(r1['ave_q']) + " " + str(r2['ave_q']) )
 						print("Dropping "+ str(min_r.name))
