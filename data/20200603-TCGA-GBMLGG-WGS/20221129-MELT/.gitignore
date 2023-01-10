@@ -23,3 +23,7 @@ clustermap_tn.Rmd.LINE1.final_comp_sample_pairs.tsv.html
 clustermap_tn.Rmd.SVA.final_comp_sample_pairs.tsv.html
 metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv
 test.Rmd
+Glioblastoma_Multiforme-*
+Brain_Lower_Grade_Glioma-*
+allele_frequencies.*
+Supplemental_Table*
