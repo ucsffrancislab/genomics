@@ -317,9 +317,6 @@ compare_tumor_normal.bash
 
 
 
-
-
-
 ```
 zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' > HERVK.final_comp.tsv
 
@@ -349,5 +346,30 @@ echo $f
 curl --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 ```
+
+
+
+
+```
+./merge_AF_tables.py --output allele_frequencies.csv.gz *.combined.tsv
+gunzip -k allele_frequencies.csv.gz
+```
+
+
+CHR	POS	MEI Type	1kGP2504_AF	1kGP698_AF	Amish_AF	JHS_AF	GTEx100bp_AF	GTEx150bp_AF	UKBB50k_AF	LGG-01_AF	LGG-02_AFLGG-10_AF	GBM-01_AF	GBM-02_AF	GBM-10_AF
+
+```
+awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){c=0;for(i=4;i<=NF;i++){if($i!=".")c+=1};if(c>6)print}' allele_frequencies.csv > allele_frequencies.common.csv
+
+awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){if($13>=0.25 || $16>=0.25)print}' allele_frequencies.csv > allele_frequencies.tcga_normal.csv
+
+awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){c=0;for(i=4;i<=NF;i++){if($i!=".")c+=1};if(c>6)print}' allele_frequencies.tcga_normal.csv > allele_frequencies.tcga_normal.shared.csv
+
+awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){if(( $11!=".") && ($4>=0.05 || $5>=0.05 || $6>=0.05 || $7>=0.05 || $8>=0.05 || $9>=0.05 || $10>=0.05))print}' allele_frequencies.csv > allele_frequencies.control0.05.csv
+```
+
+
+
+
 
 
