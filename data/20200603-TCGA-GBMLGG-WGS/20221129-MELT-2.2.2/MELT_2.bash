@@ -32,6 +32,9 @@ OUT="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out"
 mkdir -p ${OUT}
 
 
+MELTJAR="/c4/home/gwendt/.local/MELTv2.2.2/MELT.jar"
+
+
 for mei in ALU HERVK LINE1 SVA ; do
 
 	outbase=${OUT}/${mei}DISCOVERYGROUP/${mei}
@@ -39,7 +42,7 @@ for mei in ALU HERVK LINE1 SVA ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar GroupAnalysis \
+		java -Xmx4G -jar ${MELTJAR} GroupAnalysis \
 			-discoverydir ${OUT}/${mei}DISCOVERYIND/ \
 			-w $( dirname ${f} ) \
 			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \

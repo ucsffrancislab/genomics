@@ -53,6 +53,7 @@ basename=$( basename $bam .bam )
 echo ${basename}
 
 
+MELTJAR="/c4/home/gwendt/.local/MELTv2.2.2/MELT.jar"
 
 outbase=${OUT}/${basename}
 inbase=${outbase}
@@ -70,7 +71,7 @@ f=${outbase}.bam.disc.bai
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
-	java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Preprocess \
+	java -Xmx2G -jar ${MELTJAR} Preprocess \
 		-bamfile ${inbase}.bam \
 		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa
 	chmod -w ${f}
@@ -87,7 +88,7 @@ for mei in ALU HERVK LINE1 SVA ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		java -Xmx6G -jar ~/.local/MELTv2.2.2/MELT.jar IndivAnalysis \
+		java -Xmx6G -jar ${MELTJAR} IndivAnalysis \
 	  	-bamfile ${inbase}.bam \
 	  	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 	  	-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
