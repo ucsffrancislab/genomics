@@ -53,6 +53,7 @@ basename=$( basename $bam .bam )
 echo ${basename}
 
 
+MELTJAR="/c4/home/gwendt/.local/MELTv2.2.2/MELT.jar"
 
 inbase=${OUT}/${basename}
 
@@ -64,7 +65,7 @@ for mei in ALU HERVK LINE1 SVA ; do
 		echo "Write-protected $f exists. Skipping."
 	else
 
-		java -Xmx2G -jar ~/.local/MELTv2.2.2/MELT.jar Genotype \
+		java -Xmx2G -jar ${MELTJAR} Genotype \
 			-bamfile ${inbase}.bam \
 			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
 			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \

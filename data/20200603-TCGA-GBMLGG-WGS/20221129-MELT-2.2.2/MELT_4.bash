@@ -31,6 +31,7 @@ OUT="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20221129-MELT/out"
 
 mkdir -p ${OUT}
 
+MELTJAR="/c4/home/gwendt/.local/MELTv2.2.2/MELT.jar"
 
 for mei in ALU HERVK LINE1 SVA ; do
 
@@ -39,7 +40,7 @@ for mei in ALU HERVK LINE1 SVA ; do
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		java -Xmx4G -jar ~/.local/MELTv2.2.2/MELT.jar MakeVCF \
+		java -Xmx4G -jar ${MELTJAR} MakeVCF \
 			-genotypingdir ${OUT}/${mei}DISCOVERYGENO/ \
 			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
