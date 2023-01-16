@@ -1,5 +1,7 @@
 
 FROM ubuntu:latest
+MAINTAINER Jake Wendt <jakewendt@gmail.com>
+
 
 ARG DEBIAN_FRONTEND=noninteractive
 #	Which is best? Either? Both?
@@ -173,6 +175,9 @@ RUN chown -R root:root /MELTv2.2.2
 ADD MELTv2.1.5fast.tar.gz /
 RUN chown -R root:root /MELTv2.1.5fast && \rm /._MELTv2.1.5fast 
 
+#	MELTv2.1.5fast.tar.gz
+#	https://genome.cshlp.org/content/suppl/2021/11/12/gr.275323.121.DC1/Supplemental_Code_S1.zip
+#	CloudMELT-1.0.1/docker/MELTv2.1.5fast.tar.gz
 
 
 
