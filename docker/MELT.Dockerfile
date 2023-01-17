@@ -12,13 +12,17 @@ WORKDIR /root
 #	ENTRYPOINT ???
 
 
+#	libboost-all-dev - not compiling libmaus2 so do I need this anymore
+#
+#	which ? just want java
+#	openjdk-19-jre-headless - jvm takes up 500MB
+#	openjdk-19-jdk-headless - jvm takes up 500MB
 
 #RUN apt-get update \
 RUN apt update -y && apt upgrade -y \
-	&& apt install -y apt-utils gcc g++ make software-properties-common libboost-all-dev git wget \
-		pkg-config \
-		zip unzip bzip2 libbz2-dev libncurses5-dev \
-		openjdk-19-jre-headless openjdk-19-jdk-headless \
+	&& apt install -y apt-utils gcc g++ make software-properties-common git wget \
+		pkg-config zip unzip bzip2 libbz2-dev libncurses5-dev zlib1g-dev \
+		default-jre-headless \
 	&& apt clean -y && apt autoremove -y
 
 #        && apt-get install -y apt-utils gcc g++ make software-properties-common libboost-all-dev git wget \
