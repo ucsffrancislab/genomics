@@ -88,54 +88,12 @@ Failures
 ##	Analyze (testing)
 
 
-I'd love to be able to search for tumor/normal differences in the group VCF,
-but having trouble finding tool to do this.
-
-
-All complain `[W::bcf_hdr_check_sanity] GL should be declared as Number=G`, but still seem to work.
 
 ```
-compare_tumor_normal.bash
+module load bcftools
+
+./create_AF_tables.bash 
 ```
-
-
-
-
-
-
-
-
-```
-zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' > HERVK.final_comp.tsv
-
-zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' -e '1s/\(..-....-...-...-....\)/"\1"/g'> HERVK.final_comp.tsv
-
-zcat HERVK.final_comp.vcf.gz | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."0"g' | sed -e '1s/^#//' -e '1s/\(..-....-...-...-....\)/TCGA-\1/g' > HERVK.final_comp.tsv
-
-
-for vcf in *.final_comp.vcf.gz ; do
-zcat $vcf | sed -n '/^#CHROM/,$p' | awk 'BEGIN{FS=OFS="\t"}(/^ch/){for(i=10;i<=NF;i+=1){split($i,a,":");$i=a[1]}}{print}' | cut -f1,2,10- | sed -e 's"1/1"2"g' -e 's"0/1"1"g' -e 's"0/0"0"g' -e 's"./."-3"g' | sed -e '1s/^#//' > $(basename $vcf .vcf.gz).tsv
-done
-```
-
-R does not like column names that start with digits or contain dashes
-so it converts 02-2485-01A-01D-1494 to X02.2485.01A.01D.1494 even if quoted.
-
-Python is ok with both the leading digit and the dashes.
-
-
-```
-BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
-PROJECT=$( basename ${PWD} )
-DATA=$( basename $( dirname ${PWD} ) )
-BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-for f in *html ; do
-echo $f
-curl --ftp-create-dirs -netrc -T ${f} "${BOX}/"
-done
-```
-
-
 
 
 ```
