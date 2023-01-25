@@ -139,15 +139,16 @@ exit
 
 
 
-
-
+Took about 50 hours in total running 20 tasks.
+This seems to really only use 1 thread and about 3GB so could really ramp this up.
+Changing to 2/10G for "next" go.
 
 
 ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/*bam | wc -l
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G ${PWD}/MELT_1_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=10G ${PWD}/MELT_1_array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083

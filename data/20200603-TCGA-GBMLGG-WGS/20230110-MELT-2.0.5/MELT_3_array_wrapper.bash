@@ -96,7 +96,14 @@ ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/*bam | w
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G ${PWD}/MELT_3_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=10G ${PWD}/MELT_3_array_wrapper.bash
+
+Looks like this takes about 10-15 hours each (~60 hours total)
+
+Looks like they all "failed" genotyping, with partial creations of tsv?
+
+grep -l "Failed at genotyping" logs/MELT3.20230113064802015926971-1098822_* | wc -l
+278
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
