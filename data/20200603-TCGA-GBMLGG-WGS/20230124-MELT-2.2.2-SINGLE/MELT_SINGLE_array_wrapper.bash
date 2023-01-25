@@ -84,25 +84,35 @@ inbase=${outbase}
 for mei in ALU HERVK LINE1 SVA ; do
 
 	#outbase=${OUT}/${mei}/${basename}.${mei}
-
-	mkdir ${OUT}/${mei}/${basename}
-	outbase=${OUT}/${mei}/${basename}/${basename}.${mei}
+	#outbase=${OUT}/${mei}/${basename}/${basename}.${mei}
+	outbase=${OUT}/individuals/${mei}/${basename}/${basename}.${mei}
 	f=${outbase}.tmp.bed
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 
+		mkdir -p $( dirname $outbase} )
+
 		ave_read_length=$( samtools view ${inbase}.bam | head -100 | awk '{s+=length($10)}END{print s/NR}' )
 
+		#ln -s ${inbase}.bam.fq $( dirname ${f} )/
+		#ln -s ${inbase}.bam.disc $( dirname ${f} )/
+		#ln -s ${inbase}.bam.disc.bai $( dirname ${f} )/
+
 		java -Xmx6G -jar ${MELTJAR} Single -k \
-	  	-bamfile ${inbase}.bam \
-	  	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
+			-bamfile ${inbase}.bam \
+			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 			-n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed \
-	  	-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
-	  	-w $( dirname ${f} )/${mei}/${basename} \
+			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
+			-w $( dirname ${f} ) \
 			-r ${ave_read_length}
 
+		#	where is MELT expecting to find the preprocessed files. Where is "-l"? About to find out.
+		#	 -k                BAM file(s) have already been processed for discordant pairs (suffixes .fq, .disc, and .disc.bai are already present for the bam file in -l). [false]
+
+
 	  #	-w $( dirname ${f} ) \
+	  #	-w $( dirname ${f} )/${mei}/${basename} \
 
 		#	Missing required options: bamfile, h, w, t, n
 		#	
