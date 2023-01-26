@@ -88,3 +88,74 @@ INPUTS
 
 
 
+
+
+tar cf hg38.chrXYM_alts.tar hg38.chrXYM_alts.[abps]*
+
+
+
+python3
+
+
+#The configuration file, $HOME/.sevenbridges/credentials, has a simple .ini file format, with the environment (the Seven Bridges Platform, or the CGC, or Cavatica) indicated in square brackets, as shown:
+#	
+#	[default]
+#	api_endpoint = https://api.sbgenomics.com/v2
+#	auth_token = <TOKEN_HERE>
+#	
+#	[cgc]
+#	api_endpoint = https://cgc-api.sbgenomics.com/v2
+#	auth_token = <TOKEN_HERE>
+#	
+#	[cavatica]
+#	api_endpoint = https://cavatica-api.sbgenomics.com/v2
+#	auth_token = <TOKEN_HERE>
+#	c = sbg.Config(profile='cgc')
+#api = sbg.Api(config=c)
+
+import sevenbridges as sbg
+c = sbg.Config(profile='cgc')
+api = sbg.Api(config=c)
+
+api.users.me()
+
+for project in api.projects.query().all():
+	print (project.id,project.name)
+
+
+project = api.projects.get(id='wendt2017/sgdp')
+
+for file in api.files.query(project=project).all():
+	print(file.id,file.name)
+
+
+refs=api.files.query(project=project,names=['references'],limit=1)[0]
+bwa=api.files.query(parent=refs.id,names=['bwa'],limit=1)[0]
+
+upload=api.files.upload('hg38.chrXYM_alts.tar', parent=bwa, wait=False)
+
+upload.status
+#'PREPARING'
+
+upload.start() # Starts the upload.
+
+upload.status
+#'RUNNING'
+
+upload.status
+
+upload.progress
+upload.progress
+upload.progress
+upload.progress
+upload.progress
+
+
+upload.progress
+#	0.01000673635349509		#  MAX?
+
+upload.status
+#'COMPLETED'
+
+#	Surprisingly fast
+
