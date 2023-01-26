@@ -81,12 +81,15 @@ fi
 
 inbase=${outbase}
 
-for mei in ALU HERVK LINE1 SVA ; do
+#for mei in ALU HERVK LINE1 SVA ; do
+
+#mei=ALL
 
 	#outbase=${OUT}/${mei}/${basename}.${mei}
 	#outbase=${OUT}/${mei}/${basename}/${basename}.${mei}
-	outbase=${OUT}/individuals/${mei}/${basename}/${basename}.${mei}
-	f=${outbase}.tmp.bed
+	#outbase=${OUT}/individuals/${mei}/${basename}/${basename}.${mei}
+	outbase=${OUT}/individuals/${basename}/${basename}
+	f=${outbase}.ALU.tmp.bed
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -103,10 +106,11 @@ for mei in ALU HERVK LINE1 SVA ; do
 			-bamfile ${inbase}.bam \
 			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 			-n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed \
-			-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
+			-t /c4/home/gwendt/.local/MELTv2.2.2/me_refs/Hg38/all_list.txt \
 			-w $( dirname ${f} ) \
 			-r ${ave_read_length}
 
+		#	-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
 		#	where is MELT expecting to find the preprocessed files. Where is "-l"? About to find out.
 		#	 -k                BAM file(s) have already been processed for discordant pairs (suffixes .fq, .disc, and .disc.bai are already present for the bam file in -l). [false]
 
@@ -155,7 +159,7 @@ for mei in ALU HERVK LINE1 SVA ; do
 		#-rw-r----- 1 gwendt francislab     5464 Nov 29 11:32 TQ-A8XE-10A-01D-A367.LINE1.tmp.bed
 	fi
 
-done
+#done
 
 
 
