@@ -96,7 +96,7 @@ exit
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-122%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G ${PWD}/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-122%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G --gres=scratch:500G ${PWD}/array_wrapper.bash
 
 
 
@@ -109,7 +109,7 @@ wc -l to_run.txt
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G ${PWD}/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G --gres=scratch:500G ${PWD}/array_wrapper.bash
 
 
 
