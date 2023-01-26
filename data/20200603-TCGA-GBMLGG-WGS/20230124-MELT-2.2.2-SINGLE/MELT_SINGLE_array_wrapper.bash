@@ -96,7 +96,7 @@ inbase=${outbase}
 
 		mkdir -p $( dirname $outbase} )
 
-		ave_read_length=$( samtools view ${inbase}.bam | head -100 | awk '{s+=length($10)}END{print s/NR}' )
+		ave_read_length=$( samtools view -F3844 ${bam} | head -100 | awk '{s+=length($10)}END{print int(s/NR)}' )
 
 		#ln -s ${inbase}.bam.fq $( dirname ${f} )/
 		#ln -s ${inbase}.bam.disc $( dirname ${f} )/
