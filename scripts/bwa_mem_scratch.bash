@@ -9,6 +9,9 @@ set -o pipefail
 
 set -x
 
+#	default is 2GB, so add suffix
+mem=${SLURM_MEM_PER_NODE}MB
+
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 #while [ $# -gt 1 ] ; do				#	SAVE THE LAST ONE

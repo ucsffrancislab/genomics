@@ -63,15 +63,25 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 
-	bwa mem -o ${f%.bam}.sam -t ${SLURM_NTASKS} /francislab/data1/refs/bwa/hg38.chrXYM_alts ${r1} ${r2} 
+	#	SLURM_MEM_PER_NODE is --mem converted to MB
+	#	12G = 12288
+	#	 9G = 9216
 
-	samtools sort -@ ${SLURM_NTASKS} \
-		--reference /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
-		-o ${f} ${f%.bam}.sam
+	#	Not sure how much sambamba will actually use. Script uses all for the moment.
 
-	chmod -w ${f}
+	~/.local/bin/bwa_mem_scratch.bash --sort -o ${f} -i /francislab/data1/refs/bwa/hg38.chrXYM_alts -1 ${r1} -2 ${r2} 
 
-#	\rm ${f%.bam}.sam
+	#~/.local/bin/bwa_mem_scratch.bash --sort -o ${f} -t ${SLURM_NTASKS} -i /francislab/data1/refs/bwa/hg38.chrXYM_alts -1 ${r1} -2 ${r2} 
+
+	#	bwa mem -o ${f%.bam}.sam -t ${SLURM_NTASKS} /francislab/data1/refs/bwa/hg38.chrXYM_alts ${r1} ${r2} 
+	#
+	#	samtools sort -@ ${SLURM_NTASKS} \
+	#		--reference /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
+	#		-o ${f} ${f%.bam}.sam
+	#
+	#	chmod -w ${f}
+	#
+	#	\rm ${f%.bam}.sam
 
 fi
 
@@ -86,7 +96,7 @@ exit
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-122%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G ${PWD}/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-122%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G --gres=scratch:500G ${PWD}/array_wrapper.bash
 
 
 
@@ -99,7 +109,7 @@ wc -l to_run.txt
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G ${PWD}/array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="hg38" --output="${PWD}/logs/array.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=16 --mem=120G --gres=scratch:500G ${PWD}/array_wrapper.bash
 
 
 
