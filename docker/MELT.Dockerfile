@@ -8,6 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 #ENV DEBIAN_FRONTEND noninteractive
 
 WORKDIR /root
+#WORKDIR /opt
 
 #	ENTRYPOINT ???
 
@@ -102,19 +103,21 @@ RUN cd / \
 
 #ENV HTSLIB_VERSION 1.16
 #ENV SAMTOOLS_VERSION 1.16.1
-#ENV BOWTIE2_VERSION 2.5.0
+#ENV BOWTIE2_VERSION 2.5.1
 #ENV HTSLIB_URL https://github.com/samtools/htslib/releases/download
 #ENV SAMTOOLS_URL https://github.com/samtools/samtools/releases/download
 #ENV BOWTIE2_URL https://sourceforge.net/projects/bowtie-bio/files/bowtie2
+##https://github.com/BenLangmead/bowtie2/releases/download/v2.5.1/bowtie2-2.5.1-linux-x86_64.zip
 ##ENV BOWTIE2_FILE bowtie2-${BOWTIE2_VERSION}-source.zip
 #ENV BOWTIE2_FILE bowtie2-${BOWTIE2_VERSION}-linux-x86_64.zip
  
 ARG HTSLIB_VERSION=1.16
 ARG SAMTOOLS_VERSION=1.16.1
-ARG BOWTIE2_VERSION=2.5.0
+ARG BOWTIE2_VERSION=2.5.1
 ARG HTSLIB_URL=https://github.com/samtools/htslib/releases/download
 ARG SAMTOOLS_URL=https://github.com/samtools/samtools/releases/download
-ARG BOWTIE2_URL=https://sourceforge.net/projects/bowtie-bio/files/bowtie2
+#ARG BOWTIE2_URL=https://sourceforge.net/projects/bowtie-bio/files/bowtie2
+ARG BOWTIE2_URL=https://github.com/BenLangmead/bowtie2/releases/download
 ARG BOWTIE2_FILE=bowtie2-${BOWTIE2_VERSION}-linux-x86_64.zip
  
 #RUN cd / \
@@ -149,8 +152,10 @@ RUN cd / \
 #	&& cd ~ \
 #	&& /bin/rm -rf /bowtie2-${BOWTIE2_VERSION}*
 
+#	&& wget ${BOWTIE2_URL}/${BOWTIE2_VERSION}/${BOWTIE2_FILE}/download -O ${BOWTIE2_FILE} \
+
 RUN cd / \
-	&& wget ${BOWTIE2_URL}/${BOWTIE2_VERSION}/${BOWTIE2_FILE}/download -O ${BOWTIE2_FILE} \
+	&& wget ${BOWTIE2_URL}/v${BOWTIE2_VERSION}/${BOWTIE2_FILE} -O ${BOWTIE2_FILE} \
 	&& unzip ${BOWTIE2_FILE} \
 	&& mv bowtie2-${BOWTIE2_VERSION}-linux-x86_64/bowtie2* /usr/local/bin/ \
 	&& /bin/rm -rf /bowtie2-${BOWTIE2_VERSION}*
@@ -174,10 +179,21 @@ RUN wget https://raw.githubusercontent.com/ucsffrancislab/genomics/master/script
 
 #	MELT isn't available to freely download so ...
 
-ADD MELTv2.2.2.tar.gz /
-RUN chown -R root:root /MELTv2.2.2
-ADD MELTv2.1.5fast.tar.gz /
-RUN chown -R root:root /MELTv2.1.5fast && \rm /._MELTv2.1.5fast 
+#ADD MELTv2.2.2.tar.gz /usr/local/bin/
+#RUN chown -R root:root /usr/local/bin/MELTv2.2.2
+#ADD MELTv2.1.5fast.tar.gz /usr/local/bin/
+#RUN chown -R root:root /usr/local/bin/MELTv2.1.5fast && \rm /usr/local/bin/._MELTv2.1.5fast 
+
+
+#ADD MELT.tar /opt/
+#RUN chown -R root:root /opt/MELT
+ADD MELT.tar /
+RUN chown -R root:root /MELT
+
+
+
+
+#COPY MELTv2.2.2.bash /usr/local/bin/
 
 #	MELTv2.1.5fast.tar.gz
 #	https://genome.cshlp.org/content/suppl/2021/11/12/gr.275323.121.DC1/Supplemental_Code_S1.zip
@@ -198,15 +214,6 @@ RUN chown -R root:root /MELTv2.1.5fast && \rm /._MELTv2.1.5fast
 #
 #	docker run -v $PWD:/pwd --rm melt bamtofastq filename=/pwd/NA21144.chrom20.ILLUMINA.bwa.GIH.low_coverage.20130415.bam exclude=SECONDARY,QCFAIL,DUP,SUPPLEMENTARY F=/pwd/NA21144_R1.fastq.gz F2=/pwd/NA21144_R2.fastq.gz
 
-#	INCLUDE A SCRIPT LIKE THIS THAT SORTS, OUTPUTS TO BAM, INDEXES
-#	~/.local/bin/bowtie2_scratch.bash \
-#		--very-sensitive --threads ${SLURM_NTASKS} \
-#		-1 ${r1} -2 ${r2} --sort --output ${f} \
-#		-x /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts
-
-#	java -Xmx2G -jar ${MELTJAR} Preprocess \
-#		-bamfile ${inbase}.bam \
-#		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa
 
 
 #for mei in ALU HERVK LINE1 SVA ; do
@@ -252,5 +259,44 @@ RUN chown -R root:root /MELTv2.1.5fast && \rm /._MELTv2.1.5fast
 #			-w $( dirname ${f} ) \
 #			-p ${OUT}/${mei}DISCOVERYGROUP/	\
 #			-o $( dirname ${f} )
+
+#
+#[jake@Francis-Lab ~/github/ucsffrancislab/genomics/docker]$ docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.1.5fast.jar
+#Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/commons/cli/ParseException
+#	at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
+#	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3166)
+#	at java.base/java.lang.Class.getMethodsRecursive(Class.java:3307)
+#	at java.base/java.lang.Class.getMethod0(Class.java:3293)
+#	at java.base/java.lang.Class.getMethod(Class.java:2106)
+#	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:57)
+#Caused by: java.lang.ClassNotFoundException: org.apache.commons.cli.ParseException
+#	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:476)
+#	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:589)
+#	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:522)
+#	... 6 more
+#
+
+#	docker run -v $PWD:/pwd --rm melt bamtofastq filename=/pwd/NA21144.chrom20.ILLUMINA.bwa.GIH.low_coverage.20130415.bam exclude=SECONDARY,QCFAIL,DUP,SUPPLEMENTARY F=/pwd/NA21144_R1.fastq.gz F2=/pwd/NA21144_R2.fastq.gz gz=1 level=9 O=/dev/null O2=/dev/null S=/dev/null
+
+
+#	docker run --rm melt java -Xmx2G -jar /MELT/MELTv2.2.2.jar Preprocess
+
+#	docker run --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar IndivAnalysis
+
+#	docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar Single -bamfile /pwd/NA21144.chrom20.ILLUMINA.bwa.GIH.low_coverage.20130415.hg38.chrXYM_alts.bam -t /pwd/MELT/me_refs/Hg38/HERVK_MELT.zip -h /pwd/hg38.chrXYM_alts.fa -n /pwd/MELT/add_bed_files/Hg38/Hg38.genes.bed -w .
+
+
+
+#	docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar Single -bamfile /pwd/DU-6542-10A-01D-1891.bam -t /pwd/MELT/me_refs/Hg38/ALU_MELT.zip /pwd/CloudMELT/MELTv2.2.2/prior_files/ALU.1KGP.sites.vcf -h /pwd/hg38.chrXYM_alts.fa -n /pwd/MELT/add_bed_files/Hg38/Hg38.genes.bed -w /pwd/DU-6542-10A-01D-1891/
+
+#	docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar Single -bamfile /pwd/HT-7604-01A-11D-2088.bam -t /pwd/MELT/me_refs/Hg38/ALU_MELT.zip /pwd/CloudMELT/MELTv2.2.2/prior_files/ALU.1KGP.sites.vcf -h /pwd/hg38.chrXYM_alts.fa -n /pwd/MELT/add_bed_files/Hg38/Hg38.genes.bed -w /pwd/HT-7604-01A-11D-2088/
+
+#	docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar Single -bamfile /pwd/HT-7604-01A-11D-2088.bam -t /pwd/MELT/me_refs/Hg38/ALU_MELT.zip	/pwd/ALU.final_comp.vcf -h /pwd/hg38.chrXYM_alts.fa -n /pwd/MELT/add_bed_files/Hg38/Hg38.genes.bed -w /pwd/HT-7604-01A-11D-2088-prior/
+#	docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar Single -bamfile /pwd/DU-6542-10A-01D-1891.bam -t /pwd/MELT/me_refs/Hg38/ALU_MELT.zip	/pwd/ALU.final_comp.vcf -h /pwd/hg38.chrXYM_alts.fa -n /pwd/MELT/add_bed_files/Hg38/Hg38.genes.bed -w /pwd/DU-6542-10A-01D-1891-prior/
+
+#	java -Xmx6G -jar MELT/MELTv2.2.2.jar Single -bamfile DU-6542-10A-01D-1891.bam -t ALU_transposon_file_list.txt -h hg38.chrXYM_alts.fa -n MELT/add_bed_files/Hg38/Hg38.genes.bed -w DU-6542-10A-01D-1891-run5/ -bowtie /Users/jake/github/benLangmead/bowtie2/unaltered/bowtie2
+
+
+#COPY test.bash /usr/local/bin/
 
 
