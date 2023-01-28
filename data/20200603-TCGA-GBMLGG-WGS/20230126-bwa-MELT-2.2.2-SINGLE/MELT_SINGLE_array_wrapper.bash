@@ -17,8 +17,8 @@ fi
 #set -x  #       print expanded command before executing it
 
 
-IN="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out"
-OUT="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-MELT-2.2.2-SINGLE/out"
+IN="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa/out"
+OUT="/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230126-bwa-MELT-2.2.2-SINGLE/out"
 
 #while [ $# -gt 0 ] ; do
 #	case $1 in
@@ -98,6 +98,9 @@ inbase=${outbase}
 
 		ave_read_length=$( samtools view -F3844 ${bam} | head -100 | awk '{s+=length($10)}END{print int(s/NR)}' )
 
+		#	Please Enter an integer greater than 0 for -r
+
+
 		#ln -s ${inbase}.bam.fq $( dirname ${f} )/
 		#ln -s ${inbase}.bam.disc $( dirname ${f} )/
 		#ln -s ${inbase}.bam.disc.bai $( dirname ${f} )/
@@ -172,7 +175,7 @@ exit
 
 
 
-ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/*bam | wc -l
+ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa/out/*bam | wc -l
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
