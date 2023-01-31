@@ -7,7 +7,7 @@ set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
-	echo "Loading required modules"
+	#echo "Loading required modules"
 	module load CBI samtools	#/1.10
 fi
 #set -x
