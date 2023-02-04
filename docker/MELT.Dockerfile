@@ -1,7 +1,24 @@
-
-FROM ubuntu:latest
+#
+#FROM ubuntu:latest
+#
+#docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.1.5fast.jar
+#Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/commons/cli/ParseException
+#	at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
+#	at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3458)
+#	at java.base/java.lang.Class.getMethodsRecursive(Class.java:3599)
+#	at java.base/java.lang.Class.getMethod0(Class.java:3585)
+#	at java.base/java.lang.Class.getMethod(Class.java:2275)
+#	at org.eclipse.jdt.internal.jarinjarloader.JarRsrcLoader.main(JarRsrcLoader.java:57)
+#Caused by: java.lang.ClassNotFoundException: org.apache.commons.cli.ParseException
+#	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:445)
+#	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:588)
+#	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:521)
+#	... 6 more
+#
+#	Not sure what's missing, but start with a different docker base image or MELT 2.1.5 fails
+#
+FROM openjdk:8-jre-slim
 MAINTAINER Jake Wendt <jakewendt@gmail.com>
-
 
 ARG DEBIAN_FRONTEND=noninteractive
 #	Which is best? Either? Both?
@@ -18,31 +35,22 @@ WORKDIR /root
 #	which ? just want java
 #	openjdk-19-jre-headless - jvm takes up 500MB
 #	openjdk-19-jdk-headless - jvm takes up 500MB
+#		default-jre-headless \
 
 #RUN apt-get update \
 RUN apt update -y && apt upgrade -y \
 	&& apt install -y apt-utils gcc g++ make software-properties-common git wget \
 		pkg-config zip unzip bzip2 libbz2-dev libncurses5-dev zlib1g-dev \
-		default-jre-headless \
 	&& apt clean -y && apt autoremove -y
 
-#        && apt-get install -y apt-utils gcc g++ make software-properties-common libboost-all-dev git wget \
-#					pkg-config \
-#					zip unzip bzip2 libbz2-dev libncurses5-dev \
-#					openjdk-19-jre-headless openjdk-19-jdk-headless \
-#        && apt-get clean && apt-get autoremove
+#		openjdk-19-jre \
+#openjdk-19-jre-headless \
 
 #	What do each of these do
 # apt-get -y update 
 # apt-get -y upgrade
 #	apt-get -y full-upgrade - equivalent to dist-upgrade?
 #	apt-get dist-upgrade - can upgrade kernel
-
-
-
-
-
-#	boost
 
 
 #	libmaus2
@@ -165,32 +173,22 @@ RUN wget https://raw.githubusercontent.com/ucsffrancislab/genomics/master/script
 	&& chmod +x /usr/local/bin/bowtie2.bash
 
 
-
-#	Test this on position-sorted bam files
-
-
-
-
-
 #	MELT
 
 #ADD --chown=root:root MELTv2.2.2.tar.gz /
 #ADD --chown=root:root MELTv2.1.5fast.tar.gz /
-
-#	MELT isn't available to freely download so ...
-
+#
+#	MELT isn't available to freely download so have to have it local
+#
 #ADD MELTv2.2.2.tar.gz /usr/local/bin/
 #RUN chown -R root:root /usr/local/bin/MELTv2.2.2
 #ADD MELTv2.1.5fast.tar.gz /usr/local/bin/
 #RUN chown -R root:root /usr/local/bin/MELTv2.1.5fast && \rm /usr/local/bin/._MELTv2.1.5fast 
 
-
 #ADD MELT.tar /opt/
 #RUN chown -R root:root /opt/MELT
 ADD MELT.tar /
 RUN chown -R root:root /MELT
-
-
 
 
 #COPY MELTv2.2.2.bash /usr/local/bin/
@@ -213,9 +211,7 @@ RUN chown -R root:root /MELT
 #	Individually ...
 #
 #	docker run -v $PWD:/pwd --rm melt bamtofastq filename=/pwd/NA21144.chrom20.ILLUMINA.bwa.GIH.low_coverage.20130415.bam exclude=SECONDARY,QCFAIL,DUP,SUPPLEMENTARY F=/pwd/NA21144_R1.fastq.gz F2=/pwd/NA21144_R2.fastq.gz
-
-
-
+#
 #for mei in ALU HERVK LINE1 SVA ; do
 #
 #		java -Xmx6G -jar ${MELTJAR} IndivAnalysis \
@@ -224,7 +220,7 @@ RUN chown -R root:root /MELT
 #	  	-t ~/.local/MELTv2.2.2/me_refs/Hg38/${mei}_MELT.zip \
 #	  	-w $( dirname ${f} )
 
-
+#
 #	As a group
 #
 #for mei in ALU HERVK LINE1 SVA ; do
@@ -236,6 +232,7 @@ RUN chown -R root:root /MELT
 #			-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa \
 #			-n ~/.local/MELTv2.2.2/add_bed_files/Hg38/Hg38.genes.bed
 
+#
 #	Individually
 #
 #for mei in ALU HERVK LINE1 SVA ; do
@@ -247,7 +244,7 @@ RUN chown -R root:root /MELT
 #			-w $( dirname ${f} ) \
 #			-p ${OUT}/${mei}DISCOVERYGROUP/
 
-
+#
 #	As a group
 #
 #for mei in ALU HERVK LINE1 SVA ; do
@@ -300,3 +297,34 @@ RUN chown -R root:root /MELT
 #COPY test.bash /usr/local/bin/
 
 
+COPY coverage.bash /usr/local/bin/
+
+
+
+RUN git clone https://github.com/chmille4/bamReadDepther.git \
+	&& cd bamReadDepther \
+	&& g++ -o bamReadDepther bamReadDepther.cpp \
+	&& mv bamReadDepther /usr/local/bin/ \
+	&& cd .. && /bin/rm -rf bamReadDepther
+
+# docker run -v $PWD:/pwd --rm melt bash -c "cat /pwd/HT-7604-01A-11D-2088.bam.bai | bamReadDepther"
+
+
+
+#	Cloud MELT used ...
+#	ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.fa
+#	Is it different than what we have?
+
+#	Cloud MELT also used mosdepth for coverage computation I think
+#	version 0.2.5 is from Mar 7, 2019
+#RUN curl -LO https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth && chmod ugo+x mosdepth && mv mosdepth /usr/local/bin/
+RUN wget https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth && chmod ugo+x mosdepth && mv mosdepth /usr/local/bin/
+#	v0.3.3 is available from Feb 2, 2022
+
+# docker run -v $PWD:/pwd --rm melt mosdepth -n --fast-mode -t 4 --by 1000 /pwd/output /pwd/DU-6542-10A-01D-1891.bam
+# ~/CloudMelt/CloudMELT-1.0.1/docker/mosdepth2cov.py output.mosdepth.global.dist.txt
+#	2.5
+
+
+
+RUN apt install -y bc
