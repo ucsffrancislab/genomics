@@ -41,6 +41,7 @@ WORKDIR /root
 RUN apt update -y && apt upgrade -y \
 	&& apt install -y apt-utils gcc g++ make software-properties-common git wget \
 		pkg-config zip unzip bzip2 libbz2-dev libncurses5-dev zlib1g-dev \
+		bc gzip python3 \
 	&& apt clean -y && apt autoremove -y
 
 #		openjdk-19-jre \
@@ -197,6 +198,45 @@ RUN chown -R root:root /MELT
 #	https://genome.cshlp.org/content/suppl/2021/11/12/gr.275323.121.DC1/Supplemental_Code_S1.zip
 #	CloudMELT-1.0.1/docker/MELTv2.1.5fast.tar.gz
 
+#COPY test.bash /usr/local/bin/
+
+
+
+
+
+RUN git clone https://github.com/chmille4/bamReadDepther.git \
+	&& cd bamReadDepther \
+	&& g++ -o bamReadDepther bamReadDepther.cpp \
+	&& mv bamReadDepther /usr/local/bin/ \
+	&& cd .. && /bin/rm -rf bamReadDepther
+
+# docker run -v $PWD:/pwd --rm melt bash -c "cat /pwd/HT-7604-01A-11D-2088.bam.bai | bamReadDepther"
+
+
+
+#	Cloud MELT used ...
+#	ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.fa
+#	Is it different than what we have?
+
+#	Cloud MELT also used mosdepth for coverage computation I think
+#	version 0.2.5 is from Mar 7, 2019
+#RUN curl -LO https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth && chmod ugo+x mosdepth && mv mosdepth /usr/local/bin/
+RUN wget https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth && chmod ugo+x mosdepth && mv mosdepth /usr/local/bin/
+#	v0.3.3 is available from Feb 2, 2022
+
+# docker run -v $PWD:/pwd --rm melt mosdepth -n --fast-mode -t 4 --by 1000 /pwd/output /pwd/DU-6542-10A-01D-1891.bam
+# ~/CloudMelt/CloudMELT-1.0.1/docker/mosdepth2cov.py output.mosdepth.global.dist.txt
+#	2.5
+
+
+
+
+COPY ave_read_length.bash /usr/local/bin/
+COPY mosdepth_coverage.bash /usr/local/bin/
+COPY mosdepth2cov.py /usr/local/bin/
+COPY coverage.bash /usr/local/bin/
+
+
 
 
 #	docker build -t melt --file MELT.Dockerfile ./
@@ -292,43 +332,5 @@ RUN chown -R root:root /MELT
 #	docker run -v $PWD:/pwd --rm melt java -Xmx6G -jar /MELT/MELTv2.2.2.jar Single -bamfile /pwd/DU-6542-10A-01D-1891.bam -t /pwd/MELT/me_refs/Hg38/ALU_MELT.zip	/pwd/ALU.final_comp.vcf -h /pwd/hg38.chrXYM_alts.fa -n /pwd/MELT/add_bed_files/Hg38/Hg38.genes.bed -w /pwd/DU-6542-10A-01D-1891-prior/
 
 #	java -Xmx6G -jar MELT/MELTv2.2.2.jar Single -bamfile DU-6542-10A-01D-1891.bam -t ALU_transposon_file_list.txt -h hg38.chrXYM_alts.fa -n MELT/add_bed_files/Hg38/Hg38.genes.bed -w DU-6542-10A-01D-1891-run5/ -bowtie /Users/jake/github/benLangmead/bowtie2/unaltered/bowtie2
-
-
-#COPY test.bash /usr/local/bin/
-
-
-COPY coverage.bash /usr/local/bin/
-
-
-
-RUN git clone https://github.com/chmille4/bamReadDepther.git \
-	&& cd bamReadDepther \
-	&& g++ -o bamReadDepther bamReadDepther.cpp \
-	&& mv bamReadDepther /usr/local/bin/ \
-	&& cd .. && /bin/rm -rf bamReadDepther
-
-# docker run -v $PWD:/pwd --rm melt bash -c "cat /pwd/HT-7604-01A-11D-2088.bam.bai | bamReadDepther"
-
-
-
-#	Cloud MELT used ...
-#	ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/GRCh38_full_analysis_set_plus_decoy_hla.fa
-#	Is it different than what we have?
-
-#	Cloud MELT also used mosdepth for coverage computation I think
-#	version 0.2.5 is from Mar 7, 2019
-#RUN curl -LO https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth && chmod ugo+x mosdepth && mv mosdepth /usr/local/bin/
-RUN wget https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth && chmod ugo+x mosdepth && mv mosdepth /usr/local/bin/
-#	v0.3.3 is available from Feb 2, 2022
-
-# docker run -v $PWD:/pwd --rm melt mosdepth -n --fast-mode -t 4 --by 1000 /pwd/output /pwd/DU-6542-10A-01D-1891.bam
-# ~/CloudMelt/CloudMELT-1.0.1/docker/mosdepth2cov.py output.mosdepth.global.dist.txt
-#	2.5
-
-
-
-RUN apt install -y bc
-
-COPY ave_read_length.bash /usr/local/bin/
 
 
