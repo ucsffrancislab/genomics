@@ -328,3 +328,7 @@ RUN wget https://github.com/brentp/mosdepth/releases/download/v0.2.5/mosdepth &&
 
 
 RUN apt install -y bc
+
+COPY ave_read_length.bash /usr/local/bin/
+
+
