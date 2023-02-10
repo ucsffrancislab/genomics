@@ -35,7 +35,7 @@ MELTJAR="/c4/home/gwendt/.local/MELTv2.1.5fast/MELT.jar"
 
 
 outbase=${OUT}/DISCOVERYVCF
-f=${outbase}.final_comp.vcf.gz
+f=${outbase}/ALU.final_comp.vcf.gz
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
@@ -43,11 +43,11 @@ else
 		-genotypingdir ${OUT}/DISCOVERYGENO/ \
 		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
 		-t ~/.local/MELTv2.2.2/me_refs/Hg38/transposon_file_list.txt \
-		-w $( dirname ${f} ) \
 		-p ${OUT}/DISCOVERYGROUP/	\
+		-w $( dirname ${f} ) \
 		-o $( dirname ${f} )
-	gzip ${f%.gz}
-	chmod -w ${f}
+	gzip $( dirname ${f}/*.final_comp.vcf )
+	chmod -w $( dirname ${f}/*.final_comp.vcf.gz )
 fi
 
 
