@@ -68,34 +68,33 @@ else
 fi
 
 
-ave_read_length=$( samtools view -F3844 ${bam} | head -1000 | awk '{s+=length($10)}END{print int(s/NR)}' )
+#	ave_read_length=$( samtools view -F3844 ${bam} | head -1000 | awk '{s+=length($10)}END{print int(s/NR)}' )
+#	
+#	#aligned_read_count=$( cat ${f}.bai| ~/.local/bin/bamReadDepther | grep "^#" | awk '{s+=$1;s+=$2}END{print s}' )
+#	#aligned_read_count=$( cat ${bam}.bai| bamReadDepther | grep "^#" | awk '{s+=$1;s+=$2}END{print s}' ) # WRONG
+#	aligned_read_count=$( cat ${bam}.bai| bamReadDepther | grep "^#" | awk '{s+=$2;s+=$3}END{print s}' )
+#	
+#	#zcat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_no_alts.fa.gz | grep -vs "^>" | awk '{s+=length($0)}END{print s}'
+#	#3088286401
+#	
+#	#	Integer math only
+#	#coverage=$[($aligned_read_count*$ave_read_length)/3088286401]
+#	
+#	coverage=$( echo "scale=2; ($aligned_read_count*$ave_read_length)/3088286401" | bc -l )
+#	
+#	
+#	echo "Computed depth of coverage at ${coverage}"
+#	
+#	#cat out/02-2483-01A-01D-1494.bam.bai | ~/.local/bin/bamReadDepther | grep "^#" | awk '{s+=$1;s+=$2}END{print s}'
+#	#1103198361
+#	
+#	#	* read length. Assume all the same. Check first 100.
 
-#aligned_read_count=$( cat ${f}.bai| ~/.local/bin/bamReadDepther | grep "^#" | awk '{s+=$1;s+=$2}END{print s}' )
-#aligned_read_count=$( cat ${bam}.bai| bamReadDepther | grep "^#" | awk '{s+=$1;s+=$2}END{print s}' ) # WRONG
-aligned_read_count=$( cat ${bam}.bai| bamReadDepther | grep "^#" | awk '{s+=$2;s+=$3}END{print s}' )
 
-#zcat /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_no_alts.fa.gz | grep -vs "^>" | awk '{s+=length($0)}END{print s}'
-#3088286401
 
-#	Integer math only
-#coverage=$[($aligned_read_count*$ave_read_length)/3088286401]
-
-coverage=$( echo "scale=2; ($aligned_read_count*$ave_read_length)/3088286401" | bc -l )
-
+coverage=$( /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT/mosdepth_coverage.bash ${bam} )
 
 echo "Computed depth of coverage at ${coverage}"
-
-
-
-
-#cat out/02-2483-01A-01D-1494.bam.bai | ~/.local/bin/bamReadDepther | grep "^#" | awk '{s+=$1;s+=$2}END{print s}'
-#1103198361
-
-#	* read length. Assume all the same. Check first 100.
-
-#
-
-
 
 
 f=${outbase}.bam.disc.bai
