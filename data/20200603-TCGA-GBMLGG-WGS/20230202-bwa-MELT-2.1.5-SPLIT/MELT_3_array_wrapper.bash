@@ -120,6 +120,11 @@ Looks like about 10 hours each? Many on n17 are at 25hours and they are only hal
 34 hours now.
 
 
+
+mkdir -p ${PWD}/logs
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-4%4 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=40G ${PWD}/MELT_3_array_wrapper.bash
+
 scontrol update ArrayTaskThrottle=6 JobId=352083
 
 
