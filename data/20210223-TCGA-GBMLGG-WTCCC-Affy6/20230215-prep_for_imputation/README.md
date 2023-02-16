@@ -1,0 +1,216 @@
+
+#       TopMed Imputation
+
+https://imputation.biodatacatalyst.nhlbi.nih.gov/
+
+https://topmedimpute.readthedocs.io/en/latest/
+
+
+##      Data preparation
+
+The main steps for HRC are:
+
+https://topmedimpute.readthedocs.io/en/latest/prepare-your-data.html
+
+
+
+
+###     Download tool and sites
+
+```BASH
+ln -s ../20210223-prep_for_imputation/HRC-1000G-check-bim.pl 
+
+#wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip
+#unzip HRC-1000G-check-bim-v4.2.7.zip
+
+ln -s ../20210223-prep_for_imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab
+
+#wget ftp://ngs.sanger.ac.uk/production/hrc/HRC.r1-1/HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz
+#gunzip HRC.r1-1.GRCh37.wgs.mac5.sites.tab.gz 
+```
+
+These are hg38 though so hmmm.
+
+
+
+
+###     Create a frequency file
+
+```BASH
+module load plink/1.90b6.21
+
+
+plink --freq --bfile 20230215_TCGA_WTCCC_lifted.hg38.final --out 20230215_TCGA_WTCCC_lifted.hg38.final
+
+
+PLINK v1.90b6.21 64-bit (19 Oct 2020)          www.cog-genomics.org/plink/1.9/
+(C) 2005-2020 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to 20230215_TCGA_WTCCC_lifted.hg38.final.log.
+Options in effect:
+  --bfile 20230215_TCGA_WTCCC_lifted.hg38.final
+  --freq
+  --out 20230215_TCGA_WTCCC_lifted.hg38.final
+
+386796 MB RAM detected; reserving 193398 MB for main workspace.
+751689 variants loaded from .bim file.
+6656 people (3810 males, 2846 females) loaded from .fam.
+6656 phenotype values loaded from .fam.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 6656 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Warning: 29986 het. haploid genotypes present (see
+20230215_TCGA_WTCCC_lifted.hg38.final.hh ); many commands treat these as
+missing.
+Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+treat these as missing.
+Total genotyping rate is 0.815237.
+--freq: Allele frequencies (founders only) written to
+20230215_TCGA_WTCCC_lifted.hg38.final.frq .
+```
+
+
+
+I don't think that this will work right as ref is hg19 and data is hg38.
+
+```
+perl HRC-1000G-check-bim.pl -b 20230215_TCGA_WTCCC_lifted.hg38.final.bim -f 20230215_TCGA_WTCCC_lifted.hg38.final.frq -r HRC.r1-1.GRCh37.wgs.mac5.sites.tab -h
+
+                                                  Script to check plink .bim files against HRC/1000G for
+                                                 strand, id names, positions, alleles, ref/alt assignment
+                                                                  William Rayner 2015
+                                                                 wrayner@well.ox.ac.uk
+
+                                                                      Version 4.2.7
+
+Options Set:
+Reference Panel:             HRC
+Bim filename:                20230215_TCGA_WTCCC_lifted.hg38.final.bim
+Reference filename:          HRC.r1-1.GRCh37.wgs.mac5.sites.tab
+Allele frequencies filename: 20230215_TCGA_WTCCC_lifted.hg38.final.frq
+Allele frequency threshold:  0.2
+
+Reading HRC.r1-1.GRCh37.wgs.mac5.sites.tab
+ 100000 200000 300000 400000 500000 600000 700000 800000 900000 1000000 1100000 1200000 1300000 1400000 1500000 1600000 1700000 1800000 1900000 2000000 2100000 2200000 2300000 2400000 2500000 2600000 2700000 2800000 2900000 3000000 3100000 3200000 3300000 3400000 3500000 3600000 3700000 3800000 3900000 4000000 4100000 4200000 4300000 4400000 4500000 4600000 4700000 4800000 4900000 5000000 5100000 5200000 5300000 5400000 5500000 5600000 5700000 5800000 5900000 6000000 6100000 6200000 6300000 6400000 6500000 6600000 6700000 6800000 6900000 7000000 7100000 7200000 7300000 7400000 7500000 7600000 7700000 7800000 7900000 8000000 8100000 8200000 8300000 8400000 8500000 8600000 8700000 8800000 8900000 9000000 9100000 9200000 9300000 9400000 9500000 9600000 9700000 9800000 9900000 10000000 10100000 10200000 10300000 10400000 10500000 10600000 10700000 10800000 10900000 11000000 11100000 11200000 11300000 11400000 11500000 11600000 11700000 11800000 11900000 12000000 12100000 12200000 12300000 12400000 12500000 12600000 12700000 12800000 12900000 13000000 13100000 13200000 13300000 13400000 13500000 13600000 13700000 13800000 13900000 14000000 14100000 14200000 14300000 14400000 14500000 14600000 14700000 14800000 14900000 15000000 15100000 15200000 15300000 15400000 15500000 15600000 15700000 15800000 15900000 16000000 16100000 16200000 16300000 16400000 16500000 16600000 16700000 16800000 16900000 17000000 17100000 17200000 17300000 17400000 17500000 17600000 17700000 17800000 17900000 18000000 18100000 18200000 18300000 18400000 18500000 18600000 18700000 18800000 18900000 19000000 19100000 19200000 19300000 19400000 19500000 19600000 19700000 19800000 19900000 20000000 20100000 20200000 20300000 20400000 20500000 20600000 20700000 20800000 20900000 21000000 21100000 21200000 21300000 21400000 21500000 21600000 21700000 21800000 21900000 22000000 22100000 22200000 22300000 22400000 22500000 22600000 22700000 22800000 22900000 23000000 23100000 23200000 23300000 23400000 23500000 23600000 23700000 23800000 23900000 24000000 24100000 24200000 24300000 24400000 24500000 24600000 24700000 24800000 24900000 25000000 25100000 25200000 25300000 25400000 25500000 25600000 25700000 25800000 25900000 26000000 26100000 26200000 26300000 26400000 26500000 26600000 26700000 26800000 26900000 27000000 27100000 27200000 27300000 27400000 27500000 27600000 27700000 27800000 27900000 28000000 28100000 28200000 28300000 28400000 28500000 28600000 28700000 28800000 28900000 29000000 29100000 29200000 29300000 29400000 29500000 29600000 29700000 29800000 29900000 30000000 30100000 30200000 30300000 30400000 30500000 30600000 30700000 30800000 30900000 31000000 31100000 31200000 31300000 31400000 31500000 31600000 31700000 31800000 31900000 32000000 32100000 32200000 32300000 32400000 32500000 32600000 32700000 32800000 32900000 33000000 33100000 33200000 33300000 33400000 33500000 33600000 33700000 33800000 33900000 34000000 34100000 34200000 34300000 34400000 34500000 34600000 34700000 34800000 34900000 35000000 35100000 35200000 35300000 35400000 35500000 35600000 35700000 35800000 35900000 36000000 36100000 36200000 36300000 36400000 36500000 36600000 36700000 36800000 36900000 37000000 37100000 37200000 37300000 37400000 37500000 37600000 37700000 37800000 37900000 38000000 38100000 38200000 38300000 38400000 38500000 38600000 38700000 38800000 38900000 39000000 39100000 39200000 39300000 39400000 39500000 39600000 39700000 39800000 39900000 40000000 40100000 40200000 40300000 40400000 Done
+
+Matching to HRC
+
+Position Matches
+ ID matches HRC 6855
+ ID Doesn't match HRC 1820
+ Total Position Matches 8675
+ID Match
+ Different position to HRC 741879
+No Match to HRC 1025
+Skipped (X, XY, Y, MT) 17
+Total in bim file 751689
+Total processed 751596
+
+Indels (ignored in r1) 0
+
+SNPs not changed 134926
+SNPs to change ref alt 510600
+Strand ok 414586
+Total Strand ok 645526
+
+Strand to change 316876
+Total checked 750554
+Total checked Strand 731462
+Total removed for allele Frequency diff > 0.2 57548
+Palindromic SNPs with Freq > 0.4 16288
+
+
+Non Matching alleles 2805
+ID and allele mismatching 915; where HRC is . 907
+Duplicates removed 93
+```
+
+That check looks bad.
+
+Gonna try to run the raw files from Geno.
+
+
+The "Run_plink.sh" script would have also split the vcf file into separate chromosome vcfs
+
+Not sure if that is necessary.
+
+Gonna convert to a vcf file and upload.
+
+
+
+Also some suggestion that hg38 requires the "chr" prefix on chromosomes.
+
+Will find out shortly.
+
+
+
+###     Create vcf using VcfCooker
+
+```BASH
+vcfCooker --in-bfile <bim file> --ref <reference.fasta>  --out <output-vcf> --write-vcf
+bgzip <output-vcf>
+```
+Why vcfCooker? Why not plink? vcfCooker is part of a pain in a$$ gotcloud toolkit.
+Does vcfCooker do something that plink won't?
+Pass.
+
+
+
+
+
+###     Create vcf files using plink
+
+
+```BASH
+plink --bfile 20230215_TCGA_WTCCC_lifted.hg38.final --recode vcf --out 20230215_TCGA_WTCCC_lifted.hg38.final
+
+
+PLINK v1.90b6.21 64-bit (19 Oct 2020)          www.cog-genomics.org/plink/1.9/
+(C) 2005-2020 Shaun Purcell, Christopher Chang   GNU General Public License v3
+Logging to 20230215_TCGA_WTCCC_lifted.hg38.final.log.
+Options in effect:
+  --bfile 20230215_TCGA_WTCCC_lifted.hg38.final
+  --out 20230215_TCGA_WTCCC_lifted.hg38.final
+  --recode vcf
+
+386796 MB RAM detected; reserving 193398 MB for main workspace.
+751689 variants loaded from .bim file.
+6656 people (3810 males, 2846 females) loaded from .fam.
+6656 phenotype values loaded from .fam.
+Using 1 thread (no multithreaded calculations invoked).
+Before main variant filters, 6656 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Warning: 29986 het. haploid genotypes present (see
+20230215_TCGA_WTCCC_lifted.hg38.final.hh ); many commands treat these as
+missing.
+Warning: Nonmissing nonmale Y chromosome genotype(s) present; many commands
+treat these as missing.
+Total genotyping rate is 0.815237.
+751689 variants and 6656 people pass filters and QC.
+Among remaining phenotypes, 0 are cases and 6656 are controls.
+Warning: Underscore(s) present in sample IDs.
+--recode vcf to 20230215_TCGA_WTCCC_lifted.hg38.final.vcf ... done.
+
+
+
+
+module load htslib/1.10.2
+
+bgzip 20230215_TCGA_WTCCC_lifted.hg38.final.vcf
+```
+
+
+
+
+
+##      Upload
+
+Copy the files locally.
+```
+scp c4:/francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20230215-prep_for_imputation/*vcf.gz ./
+```
+
+Then upload to the web app.
+
+
+
+
