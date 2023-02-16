@@ -60,19 +60,52 @@ inbase=${OUT}/${basename}
 
 
 outbase=${OUT}/DISCOVERYGENO/${basename}
-f=${outbase}.tsv
+f=${outbase}.ALU.tsv
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 
-	java -Xmx2G -jar ${MELTJAR} Genotype \
-		-bamfile ${inbase}.bam \
-		-t ~/.local/MELTv2.2.2/me_refs/Hg38/transposon_file_list.txt \
-		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
-		-w $( dirname ${f} ) \
-		-p ${OUT}/DISCOVERYGROUP/
+	trap "{ chmod -R +w $TMPDIR ; }" EXIT
+	scratch_in=${TMPDIR}/in
+	mkdir -p ${scratch_in}
+	#cp ${inbase}.bam* ${scratch_in}
+	ln -s ${inbase}.bam ${scratch_in}
+	ln -s ${inbase}.bam.bai ${scratch_in}
+	cp ${inbase}.bam.disc ${scratch_in}
+	cp ${inbase}.bam.disc.bai ${scratch_in}
+	cp ${inbase}.bam.fq ${scratch_in}
+	cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa ${scratch_in}
+	cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa.fai ${scratch_in}
+	#cp ~/.local/MELTv2.2.2/me_refs/Hg38/*_MELT.zip ${scratch_in}
+	#ls -1 ${scratch_in}/*_MELT.zip > ${scratch_in}/transposon_file_list.txt
+		#-t ${scratch_in}/transposon_file_list.txt \
+	scratch_bam=${scratch_in}/$( basename ${inbase}.bam )
+	scratch_work=${TMPDIR}/work
+	mkdir -p ${scratch_work}
+	cp -r ${OUT}/DISCOVERYGROUP ${TMPDIR}/
 
-	chmod -w ${f}
+	java -Xmx2G -jar ${MELTJAR} Genotype \
+		-bamfile ${scratch_bam} \
+		-t ~/.local/MELTv2.2.2/me_refs/Hg38/transposon_file_list.txt \
+		-h ${scratch_in}/hg38.chrXYM_alts.fa \
+		-w ${scratch_work} \
+		-p ${TMPDIR}/DISCOVERYGROUP/
+
+	cp ${scratch_work}/$( basename ${f} .ALU.tsv ).*.tsv $( dirname ${f} )/
+
+
+#	Not sure that using scratch made this any faster.
+
+#	java -Xmx2G -jar ${MELTJAR} Genotype \
+#		-bamfile ${inbase}.bam \
+#		-t ~/.local/MELTv2.2.2/me_refs/Hg38/transposon_file_list.txt \
+#		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
+#		-w $( dirname ${f} ) \
+#		-p ${OUT}/DISCOVERYGROUP/
+
+
+	chmod -w ${f%.ALU.tsv}.*.tsv
+
 fi
 
 
@@ -114,7 +147,7 @@ ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/*bam | w
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=10G ${PWD}/MELT_3_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G --gres=scratch:100G ${PWD}/MELT_3_array_wrapper.bash
 
 Looks like about 10 hours each? Many on n17 are at 25hours and they are only halfway!
 34 hours now.
