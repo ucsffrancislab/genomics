@@ -17,7 +17,7 @@ https://topmedimpute.readthedocs.io/en/latest/prepare-your-data.html
 
 ###     Download tool and sites
 
-These are hg38 
+These are hg38 so not these
 
 ```BASH
 #wget http://www.well.ox.ac.uk/~wrayner/tools/HRC-1000G-check-bim-v4.2.7.zip
@@ -109,8 +109,6 @@ perl HRC-1000G-check-bim.pl -b 20230216_TCGA_WTCCC.bim -f 20230216_TCGA_WTCCC.fr
 
 ```BASH
 plink --bfile 20230216_TCGA_WTCCC --recode vcf --out 20230216_TCGA_WTCCC
-
-
 
 
 module load htslib/1.10.2
