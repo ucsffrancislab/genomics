@@ -36,7 +36,7 @@ MELTJAR="/c4/home/gwendt/.local/MELTv2.1.5fast/MELT.jar"
 
 discoverydir=${OUT}/DISCOVERYIND/
 
-outbase=${OUT}/DISCOVERYGROUP/
+outbase=${OUT}/DISCOVERYGROUP/ALU
 f=${outbase}.pre_geno.tsv
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
