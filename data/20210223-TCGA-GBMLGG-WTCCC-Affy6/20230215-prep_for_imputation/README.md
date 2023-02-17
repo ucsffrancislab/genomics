@@ -51,7 +51,6 @@ curl 'https://bravo.sph.umich.edu/freeze5/hg38/download/all' -H 'Accept-Encoding
 zgrep -c "PASS" bravo-dbsnp-all.vcf.gz 
 463071133
 ```
-minus 1 for the PASS FILTER definition line
 
 
 
@@ -63,7 +62,13 @@ unzip CreateTOPMed.zip
 This looks like it will take about 20 hours.
 
 ```
-./CreateTOPMed.pl -i bravo-dbsnp-all.vcf.gz
+nohup ./CreateTOPMed.pl -i bravo-dbsnp-all.vcf.gz -o PASS.Variants.bravo-dbsnp-all.tab.gz &
+```
+
+
+```
+zcat PASS.Variants.bravo-dbsnp-all.tab.gz | |wc -l
+463071133
 ```
 
 
@@ -110,12 +115,60 @@ chmod -w 20230216_TCGA_WTCCC.frq
 ###	Check BIM and split
 
 ```
-perl HRC-1000G-check-bim.pl -b 20230216_TCGA_WTCCC.bim -f 20230216_TCGA_WTCCC.frq -r PASS.Variantsbravo-dbsnp-all.tab -h
+perl HRC-1000G-check-bim.pl -b 20230216_TCGA_WTCCC.bim -f 20230216_TCGA_WTCCC.frq -r PASS.Variants.bravo-dbsnp-all.tab.gz -h
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 
 ```BASH
 sh Run-plink.sh
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 
@@ -137,6 +190,28 @@ echo $vcf
 bgzip $vcf
 done
 ```
+
+
+
+###	Check VCF files
+
+
+
+CheckVCF
+Use checkVCF to ensure that the VCF files are valid. checkVCF proposes "Action Items" (e.g. upload to sftp server), which can be ignored. Only the validity should be checked with this command.
+
+
+
+```BASH
+for vcf in 20230216_TCGA_WTCCC*vcf.gz; do
+echo $vcf
+bgzip $vcf
+checkVCF.py -r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa.gz -o out $vcf
+done
+```
+
+
+
 
 
 
