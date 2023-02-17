@@ -47,12 +47,20 @@ curl 'https://bravo.sph.umich.edu/freeze5/hg38/download/all' -H 'Accept-Encoding
 ~6.4 GB 
 
 
+```BASH
+zgrep -c "PASS" bravo-dbsnp-all.vcf.gz 
+463071133
+```
+minus 1 for the PASS FILTER definition line
+
+
+
 ```
 wget https://www.well.ox.ac.uk/~wrayner/tools/CreateTOPMed.zip
 unzip CreateTOPMed.zip
 ```
 
-This takes hours.
+This looks like it will take about 20 hours.
 
 ```
 ./CreateTOPMed.pl -i bravo-dbsnp-all.vcf.gz
@@ -77,13 +85,15 @@ Convert to ped/map, convert 1-26 to chr1-chrM, limiting to just chr1-22
 
 ```
 plink --bfile 20230215_TCGA_WTCCC_lifted.hg38.final --recode --out 20230216_TCGA_WTCCC --output-chr chrM --chr 1-22
+chmod -w 20230216_TCGA_WTCCC.{map,ped}
 ```
 
 
 Convert back to bed/bim/fam files
 
 ```
-plink --bfile 20230216_TCGA_WTCCC --make-bed --out 20230216_TCGA_WTCCC
+plink --file 20230216_TCGA_WTCCC --make-bed --out 20230216_TCGA_WTCCC
+chmod -w 20230216_TCGA_WTCCC.{bed,bim,fam}
 ```
 
 
@@ -93,39 +103,40 @@ plink --bfile 20230216_TCGA_WTCCC --make-bed --out 20230216_TCGA_WTCCC
 module load plink/1.90b6.21
 
 plink --freq --bfile 20230216_TCGA_WTCCC --out 20230216_TCGA_WTCCC
+chmod -w 20230216_TCGA_WTCCC.frq
 ```
 
 
-###	Check BIM
+###	Check BIM and split
 
 ```
 perl HRC-1000G-check-bim.pl -b 20230216_TCGA_WTCCC.bim -f 20230216_TCGA_WTCCC.frq -r PASS.Variantsbravo-dbsnp-all.tab -h
 ```
 
 
+```BASH
+sh Run-plink.sh
+```
+
 
 ###     Create vcf files using plink
 
 
 ```BASH
-plink --bfile 20230216_TCGA_WTCCC --recode vcf --out 20230216_TCGA_WTCCC
-
-
-module load htslib/1.10.2
-
-bgzip 20230216_TCGA_WTCCC.vcf
+for bed in 20230216_TCGA_WTCCC-updated-chr*.bed ; do
+base=${bed%.bed}
+plink --bfile ${base} --recode vcf --out ${base}
+done
 ```
 
-VCF was ~20GB before compression!
 
-
-
-
-
-
-
-
-
+```BASH
+module load htslib/1.10.2
+for vcf in 20230216_TCGA_WTCCC*vcf; do
+echo $vcf
+bgzip $vcf
+done
+```
 
 
 
