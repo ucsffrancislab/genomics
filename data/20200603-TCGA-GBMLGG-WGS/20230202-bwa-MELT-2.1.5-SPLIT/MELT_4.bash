@@ -46,8 +46,8 @@ else
 		-p ${OUT}/DISCOVERYGROUP/	\
 		-w $( dirname ${f} ) \
 		-o $( dirname ${f} )
-	gzip $( dirname ${f}/*.final_comp.vcf )
-	chmod -w $( dirname ${f}/*.final_comp.vcf.gz )
+	gzip $( dirname ${f} )/*.final_comp.vcf
+	chmod -w $( dirname ${f} )/*.final_comp.vcf.gz
 fi
 
 
