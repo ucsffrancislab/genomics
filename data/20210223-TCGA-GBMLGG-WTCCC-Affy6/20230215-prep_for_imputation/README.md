@@ -1703,6 +1703,59 @@ T
 
 
 
+```
+vcf=20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz
+
+./checkVCF.py -r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa.gz -o ${vcf}.out $vcf
+checkVCF.py -- check validity of VCF file for meta-analysis
+version 1.4 (20140115)
+contact zhanxw@umich.edu or dajiang@umich.edu for problems.
+Python version is [ 2.7.5.final.0 ] 
+Begin checking vcfFile [ 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz ]
+---------------     WARNING     ---------------
+Detected that chromosome names have 'chr' prefix...
+Please consider using the following command to clean your VCF file and then re-run checkVCF.py
+(grep ^"#" $your_old_vcf; grep -v ^"#" $your_old_vcf | sed 's:^chr::ig' | sort -k1,1n -k2,2n) | bgzip -c > $your_vcf_file 
+---------------     REPORT     ---------------
+Total [ 26 ] lines processed
+Examine [ 6 ] VCF header lines, [ 20 ] variant sites, [ 6656 ] samples
+[ 0 ] duplicated sites
+[ 0 ] NonSNP site are outputted to [ 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.nonSnp ]
+[ 20 ] Inconsistent reference sites are outputted to [ 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.ref ]
+[ 0 ] Variant sites with invalid genotypes are outputted to [ 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.geno ]
+[ 0 ] Alternative allele frequency > 0.5 sites are outputted to [ 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.af ]
+[ 0 ] Monomorphic sites are outputted to [ 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.mono ]
+---------------     ACTION ITEM     ---------------
+* Read 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.ref, for autosomal sites, make sure the you are using the forward strand
+* Upload these files to the ftp server (so we can double check): 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.log 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.dup 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.noSnp 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.ref 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.geno 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.af 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.mono
+
+cat 20230215_TCGA_WTCCC_lifted.hg38.final-updated-chr23.vcf.gz.out.check.ref
+MismatchRefBase	chrX:2884552:-T/A
+MismatchRefBase	chrX:3049015:-A/G
+MismatchRefBase	chrX:3373246:-C/T
+MismatchRefBase	chrX:3415014:-A/G
+MismatchRefBase	chrX:30729082:-C/T
+MismatchRefBase	chrX:37995474:-T/C
+MismatchRefBase	chrX:52804921:-C/T
+MismatchRefBase	chrX:89511282:-C/T
+MismatchRefBase	chrX:89579055:-T/C
+MismatchRefBase	chrX:90229005:-C/T
+MismatchRefBase	chrX:90617361:-A/G
+MismatchRefBase	chrX:90945933:-G/A
+MismatchRefBase	chrX:92080649:-A/G
+MismatchRefBase	chrX:92417379:-A/G
+MismatchRefBase	chrX:92778081:-G/A
+MismatchRefBase	chrX:93020384:-G/A
+MismatchRefBase	chrX:102615935:-T/G
+MismatchRefBase	chrX:135687823:-C/T
+MismatchRefBase	chrX:140998510:-T/C
+MismatchRefBase	chrX:141777467:-T/C
+
+```
+
+
+
+
 
 
 ##      Upload
@@ -1723,7 +1776,7 @@ Then upload to the web app.
 
 
 
-
+##	Process
 
 https://imputation.biodatacatalyst.nhlbi.nih.gov/
 
@@ -1774,14 +1827,89 @@ X - **Generate Meta-imputation file**   (I don't recall this option previously)
 
 
 
-Started at 11:37am
-Wait for files to upload.  This took me about .....
-Single VCF and hg38 without chr prefix. Expecting failure.
+Started at 2:00PM
+
+Wait for files to upload.  
 
 
 
 
-Trying again...
+
+###	Input Validation
+
+```
+23 valid VCF file(s) found.
+
+Samples: 6656
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 X 3 4 5 6 7 8 9
+SNPs: 663402
+Chunks: 300
+Datatype: unphased
+Build: hg38
+Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Population: all
+Phasing: eagle
+Mode: imputation
+Rsq filter: 0.1
+```
+
+
+
+
+
+
+### Quality Control
+
+```
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 180,824
+Reference Overlap: 99.79 %
+Match: 661,941
+Allele switch: 0
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 0
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 48
+SNPs call rate < 90%: 119,445
+
+Excluded sites in total: 119,493
+Remaining sites in total: 542,496
+See snps-excluded.txt for details
+Typed only sites: 1,413
+See typed-only.txt for details
+
+Warning: 9 Chunk(s) excluded: < 3 SNPs (see chunks-excluded.txt for details).
+Warning: 5 Chunk(s) excluded: at least one sample has a call rate < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 288
+
+```
+
+###	Quality Control (Report)
+
+```
+Execution successful.
+
+```
+
+
+###	Pre-phasing and Imputation
+
+```
+
+
+```
+
+
+
 
 
 
