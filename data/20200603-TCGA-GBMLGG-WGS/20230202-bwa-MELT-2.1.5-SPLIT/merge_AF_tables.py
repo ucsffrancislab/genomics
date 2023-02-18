@@ -32,12 +32,13 @@ print( "Using output name: ", output )
 
 #	CHR isn't sorting properly when column contains ints and strs? So dtype
 
-x = pd.read_csv("Supplemental_Table_S1_A.tsv",
+#x = pd.read_csv("Supplemental_Table_S1_A.tsv",
+x = pd.read_csv("bowtie2_allele_frequencies.csv",
 	dtype = {0: str},
 	skipinitialspace=True,
 	sep="\t")
 #	CHR POS MEI Type  INFO  1kGP2504_AF 1kGP698_AF  Amish_AF  JHS_AF  GTEx100bp_AF  GTEx150bp_AF  UKBB50k_AF
-x.drop(['INFO'],axis='columns',inplace=True)
+#x.drop(['INFO'],axis='columns',inplace=True)
 x.set_index(['CHR','POS','MEI Type'],inplace=True)
 x.head()
 
