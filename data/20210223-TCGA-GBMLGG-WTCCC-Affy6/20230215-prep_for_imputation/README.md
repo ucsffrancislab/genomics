@@ -1901,17 +1901,42 @@ Execution successful.
 ```
 
 
-###	Pre-phasing and Imputation
 
+
+##	Results
+
+
+
+
+I was emailed a password which I put in a file called `password`
+
+```BASH
+mkdir imputation
+cd imputation
+```
+
+```BASH
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/833069/fa00bfbc67821e353df26fe03887da0c46263cc55f3d2389a6750f04fe60bba0 | bash
+
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/833073/f16a3645ad52c35db02f5863638470ac44891fe58e41dd4e4e87c9743ff61fad | bash
+
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/833075/33a43ae4e51a2a67cb1d3a3e0f0837ac4046a0ee4bee7f8590b83fc9e1ebeebc | bash
+
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/833076/7ac586295760600ef54aab06883b0a0fb3e736e25744622dd146b32bf14badc3 | bash
 ```
 
 
+Results are encrypted
+
+
+chmod a-w *
+
 ```
-
-
-
-
-
+for zip in chr*zip ; do
+echo $zip
+unzip -P $( cat password ) $zip
+done
+```
 
 
 
