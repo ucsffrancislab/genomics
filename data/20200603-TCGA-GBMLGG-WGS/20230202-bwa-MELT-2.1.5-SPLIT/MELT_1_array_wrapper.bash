@@ -67,6 +67,19 @@ else
 	ln -s ${bam}.bai ${f}.bai
 fi
 
+f=${outbase}.bam.disc.bai
+if [ -f $f ] && [ ! -w $f ] ; then
+	echo "Write-protected $f exists. Skipping."
+else
+	echo "Running MELT Preprocess on ${inbase}.bam"
+
+	java -Xmx2G -jar ${MELTJAR} Preprocess \
+		-bamfile ${inbase}.bam \
+		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa
+	chmod -w ${f}
+	chmod -w ${f%.bai}
+	chmod -w ${f%.disc.bai}.fq
+fi
 
 #	ave_read_length=$( samtools view -F3844 ${bam} | head -1000 | awk '{s+=length($10)}END{print int(s/NR)}' )
 #	
@@ -92,22 +105,8 @@ fi
 
 
 
-coverage=$( /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT/mosdepth_coverage.bash ${bam} )
-
-echo "Computed depth of coverage at ${coverage}"
 
 
-f=${outbase}.bam.disc.bai
-if [ -f $f ] && [ ! -w $f ] ; then
-	echo "Write-protected $f exists. Skipping."
-else
-	java -Xmx2G -jar ${MELTJAR} Preprocess \
-		-bamfile ${inbase}.bam \
-		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa
-	chmod -w ${f}
-	chmod -w ${f%.bai}
-	chmod -w ${f%.disc.bai}.fq
-fi
 
 inbase=${outbase}
 
@@ -116,6 +115,13 @@ f=${outbase}.ALU.tmp.bed
 if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
+
+	echo "Computing depth of coverage"
+	coverage=$( /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT/mosdepth_coverage.bash ${bam} )
+
+	echo "Computed depth of coverage at ${coverage}"
+
+	echo "Running MELT IndivAnalysis on ${inbase}.bam"
 
 	java -Xmx6G -jar ${MELTJAR} IndivAnalysis \
 		-c ${coverage} \
