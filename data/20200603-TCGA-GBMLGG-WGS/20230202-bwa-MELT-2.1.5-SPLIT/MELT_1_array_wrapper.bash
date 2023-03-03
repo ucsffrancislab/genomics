@@ -117,7 +117,8 @@ if [ -f $f ] && [ ! -w $f ] ; then
 else
 
 	echo "Computing depth of coverage"
-	coverage=$( /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT/mosdepth_coverage.bash ${bam} )
+	#coverage=$( /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT/mosdepth_coverage.bash ${bam} )
+	coverage=$( ${PWD}/.local/bin/mosdepth_coverage.bash ${bam} )
 
 	echo "Computed depth of coverage at ${coverage}"
 
