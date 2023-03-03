@@ -11,7 +11,7 @@ set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
 	#module load CBI samtools
-	module load CBI samtools/1.13 bowtie2/2.4.4 
+	module load CBI samtools/1.13 bowtie2/2.4.4 htslib
 	#bedtools2/2.30.0
 fi
 #set -x  #       print expanded command before executing it
@@ -46,7 +46,7 @@ else
 		-p ${OUT}/DISCOVERYGROUP/	\
 		-w $( dirname ${f} ) \
 		-o $( dirname ${f} )
-	gzip $( dirname ${f} )/*.final_comp.vcf
+	bgzip $( dirname ${f} )/*.final_comp.vcf
 	chmod -w $( dirname ${f} )/*.final_comp.vcf.gz
 fi
 
