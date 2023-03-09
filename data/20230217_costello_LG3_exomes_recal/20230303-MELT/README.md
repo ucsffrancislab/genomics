@@ -60,6 +60,11 @@ MELT_4.bash
 
 
 
+Something is WAY off with GBM02.Z00384.bam.
+mosdepth only returns 0.01 and its real fast.
+Doesn't match the file size.
+I copied CloudMELT's command.
+
 
 
 
