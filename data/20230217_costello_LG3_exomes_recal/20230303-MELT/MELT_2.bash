@@ -43,12 +43,24 @@ else
 	java -Xmx4G -jar ${MELTJAR} GroupAnalysis \
 		-discoverydir ${discoverydir}/ \
 		-w $( dirname ${f} ) \
+		-cov 25 -sr 2 \
 		-t ~/.local/MELTv2.2.2/me_refs/1KGP_Hg19/transposon_file_list.txt \
 		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa \
 		-n ~/.local/MELTv2.2.2/add_bed_files/1KGP_Hg19/hg19.genes.bed
 
 	chmod -w ${f}	#${OUT}/${mei}DISCOVERYGROUP/${mei}.pre_geno.tsv
 fi
+
+
+#	EXOME!
+#	https://groups.google.com/g/melt-help/c/I8-D_fXn3Io/m/9JbkA9IFBQAJ
+#	1.) use "-exome" when running IndivAnalysis
+#	2.) Set "-cov 25" when running GroupAnalysis - This is to compensate for the smaller insert size associated with WXS (in my samples, this was ~300bp)
+#	3.) Set "-sr 2" when running GroupAnalysis - This removes any sites with ≤ 2 split reads and greatly increases sensitivity when running MELT on WXS
+
+# -cov <arg>            Standard deviation cutoff when calling final sites in integer format. [35]
+# -sr <arg>             Filter sites with less than X SRs during breakpoint ascertainment. Default, -1, is to not filter any such sites. [-1]
+
 
 
 date

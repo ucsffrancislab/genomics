@@ -89,21 +89,80 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 
+	trap "{ chmod -R +w $TMPDIR ; }" EXIT
+	scratch_in=${TMPDIR}/in
+	mkdir -p ${scratch_in}
+	ln -s ${inbase}.bam ${scratch_in}
+	ln -s ${inbase}.bam.bai ${scratch_in}
+	cp ${inbase}.bam.disc ${scratch_in}
+	cp ${inbase}.bam.disc.bai ${scratch_in}
+	cp ${inbase}.bam.fq ${scratch_in}
+	cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa ${scratch_in}
+	cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa.fai ${scratch_in}
+	#cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa ${scratch_in}
+	#cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa.fai ${scratch_in}
+	scratch_bam=${scratch_in}/$( basename ${inbase}.bam )
+	scratch_work=${TMPDIR}/work
+	mkdir -p ${scratch_work}
+
+
+
 	echo "Computing depth of coverage"
-	coverage=$( ~/.local/bin/mosdepth_coverage.bash ${bam} )
+	#coverage=$( ~/.local/bin/mosdepth_coverage.bash ${bam} )
+	coverage=$( ~/.local/bin/mosdepth_coverage.bash ${scratch_bam} )
 
 	echo "Computed depth of coverage at ${coverage}"
 
-	echo "Running MELT IndivAnalysis on ${inbase}.bam"
+	#echo "Running MELT IndivAnalysis on ${inbase}.bam"
+	#echo "Running MELT IndivAnalysis on ${bam}"
+	echo "Running MELT IndivAnalysis on ${scratch_bam}"
+
+
+
+
+	#	EXOME !!!!!
+	#	The human exome is about 1% of the genome.
+	#	Does that mean the the coverage calculated by mosdepth should be upped by 100x?
+
+	coverage=$( printf "%.2f\n" $(echo "$coverage * 100" | bc -l) )
+	echo "RE Computed EXOME depth of coverage at ${coverage}"
+	coverage="${coverage} -exome "
+
+
+
 
 	java -Xmx6G -jar ${MELTJAR} IndivAnalysis \
 		-c ${coverage} \
-		-bamfile ${inbase}.bam \
-		-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa \
+		-bamfile ${scratch_bam} \
+		-h ${scratch_in}/hg19.chrXYMT_alts.fa \
 		-t ~/.local/MELTv2.2.2/me_refs/1KGP_Hg19/transposon_file_list.txt \
-		-w $( dirname ${f} )
+		-w ${scratch_work}
 
-	chmod -w ${outbase}.*
+	#	-bamfile ${bam} \
+	#	-bamfile ${inbase}.bam \
+	#	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa \
+	#	-w $( dirname ${f} )
+	#	-t ~/.local/MELTv2.2.2/me_refs/Hg38/transposon_file_list.txt \
+
+
+
+	mkdir -p $( dirname ${f} )
+	#cp ${scratch_work}/$( basename ${f} .ALU.tsv ).*.tsv $( dirname ${f} )/
+	cp ${scratch_work}/* $( dirname ${f} )/
+
+	#chmod -w ${outbase}.*
+	chmod -w ${outbase}.{ALU,LINE1,SVA}.aligned.final.sorted.bam{,.bai}
+	chmod -w ${outbase}.{ALU,LINE1,SVA}.hum_breaks.sorted.bam{,.bai}
+	chmod -w ${outbase}.{ALU,LINE1,SVA}.pulled.sorted.bam{,.bai}
+	chmod -w ${outbase}.{ALU,LINE1,SVA}.tmp.bed
+
+#-rw-r----- 1 gwendt francislab 10340398 Mar  6 11:00 out/DISCOVERYIND/Patient01.Z00324.ALU.aligned.final.sorted.bam
+#-rw-r----- 1 gwendt francislab       96 Mar  6 11:00 out/DISCOVERYIND/Patient01.Z00324.ALU.aligned.final.sorted.bam.bai
+#-rw-r----- 1 gwendt francislab  8758935 Mar  6 13:48 out/DISCOVERYIND/Patient01.Z00324.ALU.hum_breaks.sorted.bam
+#-rw-r----- 1 gwendt francislab  1541320 Mar  6 13:48 out/DISCOVERYIND/Patient01.Z00324.ALU.hum_breaks.sorted.bam.bai
+#-rw-r----- 1 gwendt francislab 10993782 Mar  6 11:02 out/DISCOVERYIND/Patient01.Z00324.ALU.pulled.sorted.bam
+#-rw-r----- 1 gwendt francislab  2331280 Mar  6 11:02 out/DISCOVERYIND/Patient01.Z00324.ALU.pulled.sorted.bam.bai
+#-rw-r----- 1 gwendt francislab    34535 Mar  6 13:48 out/DISCOVERYIND/Patient01.Z00324.ALU.tmp.bed
 
 fi
 
@@ -123,15 +182,18 @@ Changed from 4/30GB to 2/10GB
 
 ll ${PWD}/in/*bam | wc -l
 
-mkdir -p ${PWD}/logs
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1564%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G ${PWD}/MELT_1_array_wrapper.bash
-
-
 scontrol update ArrayTaskThrottle=6 JobId=352083
 
 
 ls -1 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq/out/*_R1.fastq.gz | xargs -I% basename % _R1.fastq.gz > to_run.txt
 wc -l to_run.txt 
 1564 to_run.txt
+
+
+
+mkdir -p ${PWD}/logs
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1564%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=15G ${PWD}/MELT_1_array_wrapper.bash
+
+
 

@@ -77,9 +77,6 @@ else
 	cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa.fai ${scratch_in}
 	#cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa ${scratch_in}
 	#cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa.fai ${scratch_in}
-	#cp ~/.local/MELTv2.2.2/me_refs/Hg38/*_MELT.zip ${scratch_in}
-	#ls -1 ${scratch_in}/*_MELT.zip > ${scratch_in}/transposon_file_list.txt
-		#-t ${scratch_in}/transposon_file_list.txt \
 	scratch_bam=${scratch_in}/$( basename ${inbase}.bam )
 	scratch_work=${TMPDIR}/work
 	mkdir -p ${scratch_work}
@@ -92,6 +89,7 @@ else
 		-w ${scratch_work} \
 		-p ${TMPDIR}/DISCOVERYGROUP/
 
+	mkdir -p $( dirname ${f} )
 	cp ${scratch_work}/$( basename ${f} .ALU.tsv ).*.tsv $( dirname ${f} )/
 
 
@@ -117,11 +115,6 @@ exit
 
 
 
-
-mkdir -p ${PWD}/logs
-date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1564%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G --gres=scratch:100G ${PWD}/MELT_3_array_wrapper.bash
-
 Looks like about 10 hours each? Many on n17 are at 25hours and they are only halfway!
 34 hours now.
 
@@ -132,5 +125,12 @@ date=$( date "+%Y%m%d%H%M%S%N" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-4%4 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=40G ${PWD}/MELT_3_array_wrapper.bash
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
+
+
+
+mkdir -p ${PWD}/logs
+date=$( date "+%Y%m%d%H%M%S%N" )
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-1564%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=15G --gres=scratch:100G ${PWD}/MELT_3_array_wrapper.bash
+
 
 
