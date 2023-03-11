@@ -34,6 +34,11 @@ mkdir -p ${OUT}
 MELTJAR="/c4/home/gwendt/.local/MELTv2.1.5fast/MELT.jar"
 
 
+
+
+# -r <arg>              Read length of the supplied bam file(s). [100]
+
+
 discoverydir=${OUT}/DISCOVERYIND/
 
 outbase=${OUT}/DISCOVERYGROUP/ALU

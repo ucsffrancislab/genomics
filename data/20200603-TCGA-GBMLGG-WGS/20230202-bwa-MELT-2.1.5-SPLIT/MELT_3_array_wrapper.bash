@@ -146,9 +146,9 @@ ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20220329-hg38/out/*bam | w
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=30G --gres=scratch:100G ${PWD}/MELT_3_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=10080 --nodes=1 --ntasks=4 --mem=30G --gres=scratch:100G ${PWD}/MELT_3_array_wrapper.bash
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=15G --gres=scratch:50G ${PWD}/MELT_3_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%16 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=10080 --nodes=1 --ntasks=2 --mem=15G --gres=scratch:50G ${PWD}/MELT_3_array_wrapper.bash
 
 Looks like about 10 hours each? Many on n17 are at 25hours and they are only halfway!
 34 hours now.
@@ -157,7 +157,7 @@ Looks like about 10 hours each? Many on n17 are at 25hours and they are only hal
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-4%4 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=4 --mem=40G ${PWD}/MELT_3_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-4%4 --job-name="MELT3" --output="${PWD}/logs/MELT3.${date}-%A_%a.out" --time=10080 --nodes=1 --ntasks=4 --mem=40G ${PWD}/MELT_3_array_wrapper.bash
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
 
