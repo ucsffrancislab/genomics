@@ -181,7 +181,7 @@ ll /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa/out/*bam
 
 mkdir -p ${PWD}/logs
 date=$( date "+%Y%m%d%H%M%S%N" )
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=4320 --nodes=1 --ntasks=2 --mem=15G --gres=scratch:50G ${PWD}/MELT_1_array_wrapper.bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-278%4 --job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" --time=10080 --nodes=1 --ntasks=2 --mem=15G --gres=scratch:50G ${PWD}/MELT_1_array_wrapper.bash
 
 
 scontrol update ArrayTaskThrottle=6 JobId=352083
