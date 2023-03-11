@@ -25,6 +25,7 @@ ARGS=$*
 #	done
 
 #	No easily computable output file so pick custom argument, pass on the rest
+q=""
 
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
@@ -35,6 +36,8 @@ while [ $# -gt 0 ] ; do
 			shift; pos=$1; shift;;
 		-b*|--bam*)
 			shift; bam=$1; shift;;
+		-q)
+			shift; q="-q $1"; shift;;
 #			SELECT_ARGS="${SELECT_ARGS} -o $1"; shift;;
 #		*)		#	NEEEEEEED THIS!
 #			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
@@ -56,11 +59,11 @@ done
 #	samtools view $ARGS
 
 
-	#	This may be wrong if clipped
+	#	This may be wrong if clipped. I think if it is clipped, samtools wouldn't show it?
 
 	#echo samtools view ${bam} ${chr}:${pos}-${pos} #$| awk -F"\t" '{print $3 - $4 - $10}'
 	#samtools view ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print $3,$4,substr($10,p,1),$10}'
-	samtools view ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print substr($10,p,1)}'
+	samtools view ${q} ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print substr($10,p,1)}'
 
 #	chmod a-w $f
 #fi
