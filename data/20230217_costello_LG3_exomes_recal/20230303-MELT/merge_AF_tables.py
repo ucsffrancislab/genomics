@@ -33,7 +33,7 @@ print( "Using output name: ", output )
 #	CHR isn't sorting properly when column contains ints and strs? So dtype
 
 #x = pd.read_csv("Supplemental_Table_S1_A.tsv",
-x = pd.read_csv("bowtie2_allele_frequencies.csv",
+x = pd.read_csv("tcga.allele_frequencies.csv",
 	dtype = {0: str},
 	skipinitialspace=True,
 	sep="\t")
