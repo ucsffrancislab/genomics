@@ -8,14 +8,17 @@
 
 #	PRIOR TO RUNNING THIS ... create sample lists for each ... subtype - sample type
 
-awk -F, '{    
-	gsub(/ /,"_",$5)
-	sampletype=substr($2,9,2)
-	sampleid=substr($2,1,20)
-	print sampleid > $5"-"sampletype".sample_list"
-}' metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv
+awk -F"\t" '( NR>1 ){
+	print $3"."$1 > $6"-tn.sample_list"
+	print $3"."$1 > $7"-npr.sample_list"
+}' patient_ID_conversions.2022.exists.tsv
 
-
+#awk -F, '{    
+#	gsub(/ /,"_",$5)
+#	sampletype=substr($2,9,2)
+#	sampleid=substr($2,1,20)
+#	print sampleid > $5"-"sampletype".sample_list"
+#}' metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv
 #
 #awk -F, '{print $5}' metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv  | sort | uniq -c
 #    200 Brain Lower Grade Glioma
@@ -25,22 +28,29 @@ awk -F, '{
 #    125 01
 #     27 02
 #    126 10
-#
+
+
+
+
+module load bcftools
 
 #	Error: subset called for sample that does not exist in header: "FG-5963-10A-01D-1703". Use "--force-samples" to ignore this error.
 
 for f in *.sample_list ; do
 	echo $f
 
-	for me in HERVK SVA LINE1 ALU ; do
+	#for me in HERVK SVA LINE1 ALU ; do
+	for me in SVA LINE1 ALU ; do
 		#vcf=${me}.final_comp.vcf.gz
-		vcf=$( ls -1 out/*VCF/${me}*vcf.gz )
+		vcf=$( ls -1 out/DISCOVERYVCF/${me}*.hg38.vcf.gz )
+		echo $vcf
 		basevcf=$( basename $vcf )
+		echo $basevcf
 
 		bcftools view --apply-filters PASS --samples-file ${f} --force-samples ${vcf} \
 			| bcftools +fill-tags -o ${f}.${basevcf} -Oz -- -t AF
 
-		tsv=${f}.${basevcf%.vcf.gz}.tsv
+		tsv=${f}.${basevcf%.hg38.vcf.gz}.tsv
 		zcat ${f}.${basevcf} | awk -v me=${me} 'BEGIN{FS=OFS="\t"}(!/^#/){sub(/chr/,"",$1);split($8,a,";AF=");print $1,$2,me,$8,a[2]}' > ${tsv}
 	done
 
