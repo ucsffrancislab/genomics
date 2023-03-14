@@ -21,7 +21,8 @@ while read Z SF patient sample_type ; do
 			echo -n -e "\t${s}"
 		done
 		echo
-	elif [ -f "in/${bam}" ] ; then
+	#elif [ -f "in/${bam}" ] ; then
+	elif [ -s "in/${bam}" ] ; then
 
 		tn=Unset
 		npr=Unset
