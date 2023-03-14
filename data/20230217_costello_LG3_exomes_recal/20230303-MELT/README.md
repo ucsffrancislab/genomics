@@ -39,6 +39,8 @@ done
 ```
 
 
+Oddities
+
 ```
 \rm in/PatientWU1.K00001.bam.bai
 ln -s /costellolab/data3/jocostello/LG3/exomes_recal/PatientWU1/K00001.bwa.realigned.rmDups.recal.bai in/PatientWU1.K00001.bam.bai
@@ -57,9 +59,6 @@ MELT_4.bash
 
 
 
-
-
-
 Something is WAY off with GBM02.Z00384.bam.
 mosdepth only returns 0.01 and its real fast.
 Doesn't match the file size.
@@ -70,30 +69,26 @@ I copied CloudMELT's command.
 
 
 
-
----
-
-
-
-
-
-##	Share
-
-```
-BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
-PROJECT=$( basename ${PWD} )
-DATA=$( basename $( dirname ${PWD} ) )
-BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-for f in out/*VCF/*vcf.gz ; do
-echo $f
-curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
-done
-```
-
-
-
-
 ##	Analyze (testing)
+
+
+```
+module load picard
+
+picard CreateSequenceDictionary \
+	R=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
+	O=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.dict
+
+for vcf in out/DISCOVERYVCF/*final_comp.vcf.gz ; do
+echo $vcf
+picard LiftoverVcf I=${vcf} O=${vcf%.vcf.gz}.hg38.vcf.gz CHAIN=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz R=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa REJECT=${vcf%.vcf.gz}.hg38.rejected.vcf.gz
+done > liftover.log
+
+```
+
+
+
+
 
 
 
@@ -104,7 +99,27 @@ module load bcftools
 ```
 
 
-merge with the bowtie2 run.
+
+
+```
+ln -s /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT/allele_frequencies.csv tcga.allele_frequencies.csv
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+merge with the TCGA run.
 ```
 ./merge_AF_tables.py --output allele_frequencies.csv *.combined.tsv
 
@@ -113,13 +128,33 @@ vi allele_frequencies.csv
 
 
 ```
-CHR	POS	MEI Type	1kGP2504_AF	1kGP698_AF	Amish_AF	JHS_AF	GTEx100bp_AF	GTEx150bp_AF	UKBB50k_AF	LGG-01_AF	LGG-02_AFLGG-10_AF	GBM-01_AF	GBM-02_AF	GBM-10_AF
+head -1 allele_frequencies.csv 
+
+CHR	POS	MEI Type	1kGP2504_AF	1kGP698_AF	Amish_AF	JHS_AF	GTEx100bp_AF	GTEx150bp_AF	UKBB50k_AF	BT2_LGG-01_AF	BT2_LGG-02_AF	BT2_LGG-10_AF	BT2_GBM-01_AF	BT2_GBM-02_AF	BT2_GBM-10_AF	BWA_LGG-01_AF	BWA_LGG-02_AF	BWA_LGG-10_AF	BWA_GBM-01_AF	BWA_GBM-02_AF	BWA_GBM-10_AF	Normal-npr_AF	Normal-tn_AF	Primary-npr_AF	Recurrent-npr_AF	Tumor-tn_AF	Unset-npr_AF	Unset-tn_AF
 ```
 
 
 
+```
+cat allele_frequencies.csv | gzip > allele_frequencies.csv.gz
+```
 
 
+##	Share
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) )
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in out/*VCF/*vcf.gz allele_frequencies.csv allele_frequencies.csv.gz ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+---
 
 
 
