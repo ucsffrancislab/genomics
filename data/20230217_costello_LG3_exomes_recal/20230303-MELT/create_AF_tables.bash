@@ -42,7 +42,7 @@ for f in *.sample_list ; do
 	#for me in HERVK SVA LINE1 ALU ; do
 	for me in SVA LINE1 ALU ; do
 		#vcf=${me}.final_comp.vcf.gz
-		vcf=$( ls -1 out/DISCOVERYVCF/${me}*.hg38.vcf.gz )
+		vcf=$( ls -1 out/DISCOVERYVCF/${me}*.corrected.hg38.vcf.gz )
 		echo $vcf
 		basevcf=$( basename $vcf )
 		echo $basevcf
@@ -50,7 +50,7 @@ for f in *.sample_list ; do
 		bcftools view --apply-filters PASS --samples-file ${f} --force-samples ${vcf} \
 			| bcftools +fill-tags -o ${f}.${basevcf} -Oz -- -t AF
 
-		tsv=${f}.${basevcf%.hg38.vcf.gz}.tsv
+		tsv=${f}.${basevcf%.corrected.hg38.vcf.gz}.tsv
 		zcat ${f}.${basevcf} | awk -v me=${me} 'BEGIN{FS=OFS="\t"}(!/^#/){sub(/chr/,"",$1);split($8,a,";AF=");print $1,$2,me,$8,a[2]}' > ${tsv}
 	done
 
