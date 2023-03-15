@@ -10,7 +10,7 @@ reference=$2
 
 	#cmd="samtools faidx "reference" chr"$1":"$2"-"$2" | tail -1"
 
-bcftools view -H $vcf | awk -v reference=$reference 'BEGIN{FS=OFS="\t"}{
+bcftools view -H $vcf | awk -v reference=$reference 'BEGIN{FS=OFS="\t";diff=count=0}{
 
 	cmd="samtools faidx "reference" "$1":"$2"-"$2" | tail -1"
 	cmd | getline ref
