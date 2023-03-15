@@ -73,6 +73,19 @@ I copied CloudMELT's command.
 
 
 ```
+vcf_reference_check.bash out/DISCOVERYVCF/SVA.final_comp.vcf.gz /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa
+22	267	0.082397
+
+
+vcf_reference_check.bash out/DISCOVERYVCF/LINE1.final_comp.vcf.gz /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa
+10181	36643	0.277843
+
+vcf_reference_check.bash out/DISCOVERYVCF/ALU.final_comp.vcf.gz /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa
+11295	35637	0.316946
+```
+
+
+```
 module load picard
 
 picard CreateSequenceDictionary \
