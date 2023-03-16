@@ -2,8 +2,10 @@
 
 
 
-#positions="chr2:209113192 chr5:1286516 chr5:1295228 chr5:1295250 chr5:1295349 chr7:54978924 chr7:55159349 chr8:130685457 chr9:22068652 chr11:118477367 chr15:90631934 chr20:62309839"
-positions=""
+#positions=""
+positions="chr2:209113112 chr2:209113192 chr5:1286516 chr5:1295228 chr5:1295250 chr5:1295349 chr7:54978924 chr7:55159349 chr8:130685457 chr9:22068652 chr11:118477367 chr15:90631934 chr15:90631838 chr20:62309839"
+#positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"
+
 
 while read Z SF patient sample_type ; do
 	#echo $Z $SF $patient $sample_type
@@ -44,9 +46,12 @@ while read Z SF patient sample_type ; do
 		for s in $positions ; do
 			c=$( echo $s | cut -d: -f1 )
 			p=$( echo $s | cut -d: -f2 )
-			bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | paste -s -d, | sed 's/ //g' 2>/dev/null )
+			#bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | paste -s -d, | sed 's/ //g' 2>/dev/null )
+			bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | sed 's/^ *//' | paste -sd, | sed 's/ /:/g' )
 			echo -n -e "\t${bases}"
 		done
+
+		#positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"
 
 		echo 
 
@@ -57,18 +62,35 @@ done < patient_ID_conversions.2022.tsv
 #done < <( tail -n +2 patient_ID_conversions.2022.tsv )
 
 
+
+
+
 #	Add some more columns
+
+
+#	https://www.ncbi.nlm.nih.gov/variation/view/
 
 #	hg19 
 
-#	IDH1 chr2	209113192	rs11554137
+#	IDH1 chr2	209113192	rs11554137 ???? G->A
+#	https://www.ncbi.nlm.nih.gov/snp/rs11554137
+#	https://www.ncbi.nlm.nih.gov/snp/?term=hg19+rs11554137
+#	don't understand the differences
+#	IDH1
+#	GRCh37, 2:209113112, G->A???  (rs121913500 CAGT)
 
 #	https://cancer.sanger.ac.uk/cosmic/mutation/overview?cosm=COSM41590&id=25815454&trans=IDH2
 #	IDH2
 #	AA mutation p.R140Q (Substitution - Missense, position 140, R➞Q)
 #	CDS mutation c.419G>A (Substitution, position 419, G➞A)
 #	Genomic coordinates GRCh37, 15:90631934..90631934, view Ensembl contig
-#	
+
+#	IDH2
+#	https://cancer.sanger.ac.uk/cosmic/mutation/overview?id=25815454
+#	GRCh37, 15:90631934, G->A???  rs121913502
+#	GRCh37, 15:90631838, G->A???  rs121913503
+
+
 
 #	https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4229642/
 #	The two most common mutations in TERT, C228T and C250T, map −124 and −146 bp, respectively, upstream of the TERT ATG site (chr5, 1,295,228 C>T and 1,295,250 C>T, respectively), creating binding sites for Ets/TCF transcription factors that are associated with a two- to four-fold increased transcriptional
