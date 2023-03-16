@@ -63,7 +63,8 @@ done
 
 	#echo samtools view ${bam} ${chr}:${pos}-${pos} #$| awk -F"\t" '{print $3 - $4 - $10}'
 	#samtools view ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print $3,$4,substr($10,p,1),$10}'
-	samtools view ${q} ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print substr($10,p,1)}'
+	#samtools view ${q} ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print substr($10,p,1)}' | sort | uniq -c | sed 's/^ *//' | paste -sd, | sed 's/ /:/g'
+	samtools view ${q} ${bam} ${chr}:${pos}-${pos} | awk -F"\t" -v pos=$pos '{p=1+pos-$4;print substr($10,p,1)}' 
 
 #	chmod a-w $f
 #fi
