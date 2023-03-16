@@ -86,16 +86,26 @@ vcf_reference_check.bash out/DISCOVERYVCF/ALU.final_comp.vcf.gz /francislab/data
 
 
 ```
+correct_vcf_reference_values.bash out/DISCOVERYVCF/SVA.final_comp.vcf.gz /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.chrXYMT_alts.fa | gzip > out/DISCOVERYVCF/SVA.final_comp.corrected.vcf.gz
+
+correct_vcf_reference_values.bash out/DISCOVERYVCF/LINE1.final_comp.vcf.gz /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.chrXYMT_alts.fa | gzip > out/DISCOVERYVCF/LINE1.final_comp.corrected.vcf.gz
+
+correct_vcf_reference_values.bash out/DISCOVERYVCF/ALU.final_comp.vcf.gz /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.chrXYMT_alts.fa | gzip > out/DISCOVERYVCF/ALU.final_comp.corrected.vcf.gz
+
+```
+
+
+```
 module load picard
 
 picard CreateSequenceDictionary \
 	R=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
 	O=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.dict
 
-for vcf in out/DISCOVERYVCF/*final_comp.vcf.gz ; do
+for vcf in out/DISCOVERYVCF/*final_comp.corrected.vcf.gz ; do
 echo $vcf
 picard LiftoverVcf I=${vcf} O=${vcf%.vcf.gz}.hg38.vcf.gz CHAIN=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz R=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa REJECT=${vcf%.vcf.gz}.hg38.rejected.vcf.gz
-done > liftover.log
+done >> liftover.log 2>&1 &
 
 ```
 
@@ -124,6 +134,11 @@ ln -s /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5
 
 
 
+
+
+
+
+WAIT UNTIL THE RERUN HAS COMPLETED
 
 
 
