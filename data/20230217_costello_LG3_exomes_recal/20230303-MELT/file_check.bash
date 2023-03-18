@@ -3,8 +3,12 @@
 
 
 #positions=""
-positions="chr2:209113112 chr2:209113192 chr5:1286516 chr5:1295228 chr5:1295250 chr5:1295349 chr7:54978924 chr7:55159349 chr8:130685457 chr9:22068652 chr11:118477367 chr15:90631934 chr15:90631838 chr20:62309839"
 #positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"
+
+positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838 chr13:108863591 chr13:108863609"
+
+#	most don't have
+#	chr5:1286516 chr5:1295228 chr5:1295250 chr5:1295349 chr7:54978924 chr7:55159349 chr8:130685457 chr9:22068652 chr11:118477367 chr20:62309839"
 
 
 while read Z SF patient sample_type ; do
@@ -20,7 +24,7 @@ while read Z SF patient sample_type ; do
 	if [ $Z == "Z" ] ; then
 		echo -n "Z	SF	patient	sample_type	bam	tn	npr"
 		for s in $positions ; do
-			echo -n -e "\t${s}"
+			echo -n -e "\t${s}\t${s} call"
 		done
 		echo
 	#elif [ -f "in/${bam}" ] ; then
@@ -49,6 +53,9 @@ while read Z SF patient sample_type ; do
 			#bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | paste -s -d, | sed 's/ //g' 2>/dev/null )
 			bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | sed 's/^ *//' | paste -sd, | sed 's/ /:/g' )
 			echo -n -e "\t${bases}"
+
+			call=$( echo ${bases} | tr , "\n" | awk 'BEGIN{FS=":"}{b[$2]=$1;total+=$1}END{if(total>10){for(k in b){if(b[k]/total<0.2){delete b[k]}}; for(k in b){x=x""k};print x }}' )
+			echo -n -e "\t${call}"
 		done
 
 		#positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"
