@@ -46,8 +46,14 @@ else
 		-p ${OUT}/DISCOVERYGROUP/	\
 		-w $( dirname ${f} ) \
 		-o $( dirname ${f} )
-	bgzip $( dirname ${f} )/*.final_comp.vcf
-	chmod -w $( dirname ${f} )/*.final_comp.vcf.gz
+
+	#bgzip $( dirname ${f} )/*.final_comp.vcf
+	#chmod -w $( dirname ${f} )/*.final_comp.vcf.gz
+	for vcf in $( dirname ${f} )/*.final_comp.vcf ; do
+		bgzip $vcf
+		chmod -w ${vcf}.gz
+	done
+
 fi
 
 
