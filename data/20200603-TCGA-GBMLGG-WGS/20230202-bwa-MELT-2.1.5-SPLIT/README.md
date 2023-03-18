@@ -28,6 +28,17 @@ MELT_4.bash
 
 
 
+
+
+mkdir -p out/DISCOVERYGENO.20230316/
+
+mv out/DISCOVERYGENO/HT-7468-01A-11D-2022.ALU.tsv out/DISCOVERYGENO/DU-7292-10A-01D-2022.ALU.tsv out/DISCOVERYGENO/FG-6689-01A-11D-1891.ALU.tsv out/DISCOVERYGENO/FG-7636-01A-11D-2088.ALU.tsv out/DISCOVERYGENO/FN-7833-10A-01D-2088.ALU.tsv out/DISCOVERYGENO/FG-7636-10A-01D-2088.ALU.tsv out/DISCOVERYGENO/HT-7468-10A-01D-2022.ALU.tsv out/DISCOVERYGENO/HT-7472-01A-11D-2022.ALU.tsv out/DISCOVERYGENO/HT-7604-01A-11D-2088.ALU.tsv out/DISCOVERYGENO.20230316/
+
+
+
+
+
+
 ##	Share
 
 ```
@@ -118,7 +129,7 @@ awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){ if(( $11!=".") && ( $17!=".")){ c=0
 
 
 ```
-gzip allele_frequencies.csv
+cat allele_frequencies.csv | gzip > allele_frequencies.csv.gz
 ```
 
 
@@ -136,6 +147,7 @@ curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.shared.csv "${BOX}
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.control0.05.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.tcgabt20.05.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.tcgabwa0.05.csv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.csv.gz "${BOX}/"
 ```
 
