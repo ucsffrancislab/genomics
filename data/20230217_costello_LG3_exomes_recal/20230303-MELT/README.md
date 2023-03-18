@@ -182,28 +182,6 @@ done
 ```
 
 
----
-
-
-
-
-```
-#awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){c=0;for(i=4;i<=NF;i++){if($i!=".")c+=1};if(c>6)print}' allele_frequencies.csv > allele_frequencies.common.csv
-#
-#awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){if($13>=0.25 || $16>=0.25)print}' allele_frequencies.csv > allele_frequencies.tcga_normal.csv
-#
-#awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){c=0;for(i=4;i<=NF;i++){if($i!=".")c+=1};if(c>6)print}' allele_frequencies.tcga_normal.csv > allele_frequencies.tcga_normal.shared.csv
-#
-#awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){if(( $11!=".") && ($4>=0.05 || $5>=0.05 || $6>=0.05 || $7>=0.05 || $8>=0.05 || $9>=0.05 || $10>=0.05))print}' allele_frequencies.csv > allele_frequencies.control0.05.csv
-```
-
-
-```
-CHR	POS	MEI Type	 (1-3)
-1kGP2504_AF	1kGP698_AF	Amish_AF	JHS_AF	GTEx100bp_AF	GTEx150bp_AF	UKBB50k_AF	(4-10)
-BT2_LGG-01_AF	BT2_LGG-02_AF	BT2_LGG-10_AF	BT2_GBM-01_AF	BT2_GBM-02_AF	BT2_GBM-10_AF (11-16)
-BWA_LGG-01_AF	BWA_LGG-02_AF	BWA_LGG-10_AF	BWA_GBM-01_AF	BWA_GBM-02_AF	BWA_GBM-10_AF (17-22)
-```
 
 ```
 
@@ -221,24 +199,6 @@ awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){ if(( $11!=".") && ( $17!=".")){ c=0
 
 
 
-
-
-
-
-
-
-
-
-```
-gzip allele_frequencies.csv
-```
-
-
-
-
-
-
-
 ```
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
@@ -248,7 +208,9 @@ curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.shared.csv "${BOX}
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.control0.05.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.tcgabt20.05.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.tcgabwa0.05.csv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.csv.gz "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T patient_ID_conversions.2022.exists.tsv "${BOX}/"
 ```
 
 
