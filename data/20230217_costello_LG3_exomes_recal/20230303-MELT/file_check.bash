@@ -2,10 +2,21 @@
 
 
 
+module load CBI samtools bcftools
+
 #positions=""
 #positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"
 
-positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838 chr13:108863591 chr13:108863609"
+positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"	# chr13:108863591 chr13:108863609"
+
+#	IDH1
+#	chr2:209113112 - p.Arg132His ( also R132C )
+#	chr2:209113192 - has no impact on protein created
+
+#	IDH2
+#	chr15:90631934 - 
+#	chr15:90631838 - 
+
 
 #	most don't have
 #	chr5:1286516 chr5:1295228 chr5:1295250 chr5:1295349 chr7:54978924 chr7:55159349 chr8:130685457 chr9:22068652 chr11:118477367 chr20:62309839"
@@ -24,7 +35,7 @@ while read Z SF patient sample_type ; do
 	if [ $Z == "Z" ] ; then
 		echo -n "Z	SF	patient	sample_type	bam	tn	npr"
 		for s in $positions ; do
-			echo -n -e "\t${s}\t${s} call"
+			echo -n -e "\t${s} bases\t${s} bam call\t${s} vcf call"
 		done
 		echo
 	#elif [ -f "in/${bam}" ] ; then
@@ -51,11 +62,41 @@ while read Z SF patient sample_type ; do
 			c=$( echo $s | cut -d: -f1 )
 			p=$( echo $s | cut -d: -f2 )
 			#bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | paste -s -d, | sed 's/ //g' 2>/dev/null )
-			bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | sed 's/^ *//' | paste -sd, | sed 's/ /:/g' )
+			bases=$( samtools_bases_at_position.bash -q 60 -c ${c} -p ${p} -b in/${bam} 2>/dev/null | sort | uniq -c | sed 's/^ *//' | paste -sd\; | sed 's/ /:/g' )
 			echo -n -e "\t${bases}"
 
-			call=$( echo ${bases} | tr , "\n" | awk 'BEGIN{FS=":"}{b[$2]=$1;total+=$1}END{if(total>10){for(k in b){if(b[k]/total<0.2){delete b[k]}}; for(k in b){x=x""k};print x }}' )
+			call=$( echo ${bases} | tr \; "\n" | awk 'BEGIN{FS=":"}{b[$2]=$1;total+=$1}END{if(total>10){for(k in b){if(b[k]/total<0.2){delete b[k]}}; for(k in b){x=x""k}; if(length(x)==1){x=x""x};print x }}' )
 			echo -n -e "\t${call}"
+
+
+			f="vcfallq60/${bam%.bam}.vcf.gz"
+			if [ -f ${f}.csi ] && [ ! -w ${f}.csi ] ; then
+				vcfcall=$( bcftools view -H -r ${c}:${p}-${p} ${f} | grep -vs INDEL | awk '{gt=$NF;split(gt,gta,":");gsub(/0/,$4,gta[1]);gsub(/1/,$5,gta[1]);print gta[1]}' )
+
+#bam=Patient263.Z00286.bam
+#f=vcfallq60/${bam%.bam}.vcf.gz"
+#c=chr15
+#p=90631934
+#bcftools view -H -r ${c}:${p}-${p} ${f} 
+#chr15	90631932	.	TCC	.	30.5542	.	INDEL;IDV=2;IMF=0.0588235;DP=34;VDB=0.509452;SGB=-0.453602;RPBZ=-0.659792;MQBZ=0;MQSBZ=0;SCBZ=0;FS=0;MQ0F=0;AN=2;DP4=14,15,1,1;MQ=60	GT	0/0
+#chr15	90631934	.	C	.	284.59	.	DP=32;MQSBZ=0;FS=0;MQ0F=0;AN=2;DP4=11,11,0,0;MQ=60	GT	0/0
+
+
+				#	for better comparison of my call and vcf call
+				#	remove /?
+				#	sort bases in alphabetic order?
+				#echo cba | grep -o . | sort |tr -d "\n"
+				#awk '{split($0,a,"");asort(a);for(i in a){s=s""a[i]};print s}'
+
+				if  [ -z "$vcfcall" ]; then
+					echo -n -e "\t"	#./."
+				else
+					echo -n -e "\t${vcfcall}"
+				fi
+			else
+				echo -n -e "\t-"
+			fi
+
 		done
 
 		#positions="chr2:209113112 chr2:209113192 chr15:90631934 chr15:90631838"
