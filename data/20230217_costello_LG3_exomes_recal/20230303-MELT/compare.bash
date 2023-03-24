@@ -1,36 +1,42 @@
 #!/usr/bin/env bash
 
+module load bcftools
 
-for mei in ALU LINE1 SVA HERVK ; do
-	for vcf in out.first155/DISCOVERYVCF/${mei}.final_comp.vcf.gz ; do
+mkdir -p MELT.Compare
+
+for mei in ALU LINE1 SVA ; do
+	echo $mei
+	for vcf in out/DISCOVERYVCF/${mei}.final_comp.vcf.gz ; do
 		echo $vcf
 		for sample in $( zgrep -m 1 "^#CHROM" ${vcf} | cut -f10- ); do
 			echo $sample
-			sample_type=$( echo ${sample} | cut -c9,10 )
-			if [ ${sample_type} == "01" ] || [ ${sample_type} == "10" ] ; then
-				echo processing
+
+			#sample_type=$( echo ${sample} | cut -c9,10 )
+			#if [ ${sample_type} == "01" ] || [ ${sample_type} == "10" ] ; then
+			#	echo processing
+			#fi
+
+			#f="MELT.Compare/${sample}.${mei}.final_comp.vcf.gz"
+			f="MELT.Compare/${sample}.${mei}.genotypes"
+			if [ -f ${f} ] && [ ! -w ${f} ] ; then
+				echo "$f exists. skipping"
+			else
+				echo "extracting $f"
+				#bcftools view -Oz -s ${sample} -o ${f} ${vcf} 2> /dev/null
+				bcftools query -s ${sample} -o ${f} -f '%CHROM\t%POS\t%REF\t%ALT\t[%GT]\n' ${vcf}
+				chmod -w ${f}
 			fi
-		done
-	done
-done
+
+#			if [ -f ${f}.csi ] && [ ! -w ${f}.csi ] ; then
+#				echo "$f exists. skipping"
+#			else
+#				echo "extracting $f"
+##				bcftools index ${f}
+#			fi
 
 
 
-
-
-#for mei in ALU LINE1 SVA ; do
-#
-#	while read tumor normal ; do
-#		#echo -n "$mei : $tumor - $normal  : "
-#		echo "$mei : $tumor - $normal  : "
 #	
-#		bcftools view -Oz -s $tumor -o $tumor.${mei}.final_comp.vcf.gz ${mei}.final_comp.vcf.gz 2> /dev/null
-#		bcftools index $tumor.${mei}.final_comp.vcf.gz
-#	
-#		bcftools view -Oz -s $normal -o $normal.${mei}.final_comp.vcf.gz ${mei}.final_comp.vcf.gz 2> /dev/null
-#		bcftools index $normal.${mei}.final_comp.vcf.gz
-#
-#		base=$( echo $normal | cut -d- -f1-2 )
 #	
 #		sdiff -s <( bcftools view -H $tumor.${mei}.final_comp.vcf.gz 2> /dev/null | awk '{split($10,a,":");print $1,$2,a[1]}' ) <( bcftools view -H $normal.${mei}.final_comp.vcf.gz 2> /dev/null | awk '{split($10,a,":");print $1,$2,a[1]}' ) | awk -v b=$base -v m=$mei 'BEGIN{OFS=","}{print m,$1,$2,$NF"->"$3}' > ${base}.${mei}.csv
 #		#sdiff -s <( bcftools view -H $tumor.${mei}.final_comp.vcf.gz 2> /dev/null | awk '{split($10,a,":");print $1,$2,a[1]}' ) <( bcftools view -H $normal.${mei}.final_comp.vcf.gz 2> /dev/null | awk '{split($10,a,":");print $1,$2,a[1]}' ) | awk '($2 != $6)'
@@ -51,3 +57,9 @@ done
 #	done < pairs
 #
 #done
+
+		done
+	done
+done
+
+
