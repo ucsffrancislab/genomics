@@ -28,13 +28,15 @@ Many filenames are duplicated so need to link to dirname and filename as filenam
 ```
 mkdir in
 for f in /costellolab/data3/jocostello/LG3/exomes_recal/*/*.bwa.realigned.rmDups.recal.bam ;do
-b=$(basename $f .bwa.realigned.rmDups.recal.bam)
+b=$( basename $f .bwa.realigned.rmDups.recal.bam )
 d=$( basename $( dirname $f ))
 echo $f
 echo $b
 echo $d
-#ln -s $f in/${d}.${b}.bam
+if [ -s $f ] ; then
+ln -s $f in/${d}.${b}.bam
 ln -s $f.bai in/${d}.${b}.bam.bai
+fi
 done
 ```
 
@@ -199,6 +201,31 @@ awk 'BEGIN{OFS=FS="\t"}(NR==1){print}(NR>1){ if(( $11!=".") && ( $17!=".")){ c=0
 
 
 
+
+```
+./bam2vcf.bash
+
+nohup ./file_check.bash > patient_ID_conversions.2022.exists.tsv &
+
+(head -1 Covariates.csv && tail -n +2 Covariates.csv | tr -d "\r" | sort -t , -k2,2 ) > Covariates.sorted.csv 
+
+(head -1 patient_ID_conversions.2022.exists.tsv && tail -n +2 patient_ID_conversions.2022.exists.tsv | sort -k3,3 ) | tr "\t" , > patient_ID_conversions.2022.exists.sorted.csv
+
+join --header -t , -1 3 -2 2 -a 1 patient_ID_conversions.2022.exists.sorted.csv Covariates.sorted.csv > patient_ID_conversions.2022.exists.covariates.sorted.csv
+
+
+
+for i in 9 10 12 13 15 16 18 19 21 22 24 25 ; do
+awk -F"\t" -v c=$i '(NR>1){split($c,a,"");asort(a);s="";for(i in a){s=s""a[i]};print s}' patient_ID_conversions.2022.exists.tsv | sed 's/\///g' > $i
+done
+
+for i in 9 12 15 18 21 24 ; do
+sdiff -s <(cat -n ${i}) <(cat -n $[i+1])
+done
+
+
+```
+
 ```
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
@@ -211,10 +238,51 @@ curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.tcgabwa0.05.csv "$
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.csv "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T allele_frequencies.csv.gz "${BOX}/"
 curl  --silent --ftp-create-dirs -netrc -T patient_ID_conversions.2022.exists.tsv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T patient_ID_conversions.2022.exists.covariates.sorted.csv "${BOX}/"
 ```
 
 
 
+```
+#for v in vcf/*vcf.gz ; do echo $v; row=$( bcftools view -H -r chr2:209113112-209113112 $v ); if [ -z "$row" ]; then echo "./."; else echo $row | awk '{gt=$NF;split(gt,gta,":");gsub(/0/,$4,gta[1]);gsub(/1/,$5,gta[1]);print gta[1]}'; fi ; done
+```
+
+
+
+
+##	Analysis
+
+Compare tumor normal differences in MELT calls.
+
+```
+./extract_tumor_normal_pairs.py patient_ID_conversions.2022.exists.covariates.sorted.csv 
+
+nohup ./compare.bash &
+```
+
+```
+dir=MELT.Compare
+while read patient normal tumor ; do
+echo "$patient - $normal - $tumor"
+for mei in ALU LINE1 SVA ; do
+n=${dir}/${patient}.${normal}.${mei}.genotypes
+t=${dir}/${patient}.${tumor}.${mei}.genotypes
+if [ -f ${n} ] && [ -f ${t} ] ; then
+sdiff -s ${n} ${t} > ${dir}/${patient}.${normal}.${tumor}.${mei}.genotype_diffs
+fi
+done
+done < <( tail -n +2 tumor_normal_pairs.tsv )
+```
+
+
+Extracting genotypes from standard vcfs (takes quite a while)
+
+```
+for v in vcfallq60/*vcf.gz ; do 
+echo $v
+bcftools query -i 'TYPE="SNP"' -o ${v%.vcf.gz}.genotypes -f '%CHROM\t%POS\t%REF\t%ALT\t[%GT]\n' ${v}
+done
+```
 
 
 
