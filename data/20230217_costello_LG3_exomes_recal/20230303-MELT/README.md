@@ -278,12 +278,43 @@ done < <( tail -n +2 tumor_normal_pairs.tsv )
 Extracting genotypes from standard vcfs (takes quite a while)
 
 ```
-for v in vcfallq60/*vcf.gz ; do 
-echo $v
-bcftools query -i 'TYPE="SNP"' -o ${v%.vcf.gz}.genotypes -f '%CHROM\t%POS\t%REF\t%ALT\t[%GT]\n' ${v}
-done
+./vcf2genotypes.bash 
 ```
 
+
+```
+dir=vcfallq60
+while read patient normal tumor ; do
+echo "$patient - $normal - $tumor"
+n=${dir}/${patient}.${normal}.genotypes.gz
+t=${dir}/${patient}.${tumor}.genotypes.gz
+if [ -f ${n} ] && [ -f ${t} ] ; then
+sdiff -s <( zcat ${n} ) <( zcat ${t} ) > ${dir}/${patient}.${normal}.${tumor}.genotype_diffs
+fi
+done < <( tail -n +2 tumor_normal_pairs.tsv | head -1 )
+```
+
+
+
+
+
+the libraries with IDs starting with X where produced using interval list
+
+/home/jocostello/shared/LG3_Pipeline_HIDE/resources/xgen-exome-research-panel-targets_6bpexpanded.interval_list
+
+
+and starting with Z
+
+/home/jocostello/shared/LG3_Pipeline_HIDE/resources/SeqCap_EZ_Exome_v3_capture.interval_list
+
+
+and older libraries starting with A
+
+/home/jocostello/shared/LG3_Pipeline_HIDE/resources/Agilent_SureSelect_HumanAllExon50Mb.interval_list
+
+/home/jocostello/shared/LG3_Pipeline_HIDE/resources/Agilent_SureSelect_HumanAllExonV4.interval_list
+
+/home/jocostello/shared/LG3_Pipeline_HIDE/resources/Agilent_SureSelect_HumanAllExonV5.interval_list
 
 
 
