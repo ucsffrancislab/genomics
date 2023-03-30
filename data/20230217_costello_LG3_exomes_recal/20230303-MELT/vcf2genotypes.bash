@@ -66,6 +66,7 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 			#	this will not return a 0/0. Then absence is ambiguous. No data or reference value?
 			#bcftools query -i 'TYPE="SNP"' -o ${f%.gz} -f '%CHROM\t%POS\t%REF\t%ALT\t[%GT]\n' ${vcf}
 
+			sample=$( echo ${basename} | cut -d. -f2 )
 			exome_letter=$( echo ${basename} | cut -d. -f2 | cut -c1 )
 
 			#	the libraries with IDs starting with X where produced using interval list
@@ -86,24 +87,35 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 			#	
 			#	/home/jocostello/shared/LG3_Pipeline_HIDE/resources/Agilent_SureSelect_HumanAllExonV5.interval_list
 
+			region=""
 			case $exome_letter in
-				#A)
+				A)
 				#	region="--regions-file " ;;
+
+
+					list=$( awk -F"\t" -v sample=${sample} '($1==sample){gsub(" ","_",$2);print $2".interval_list"}' exome_kits_for_A.tsv )
+					if [ -n "${list}" ] ; then
+						region="--regions-file ${list}"
+					fi
+					;;
 				X)
 					#region="--regions-file <( grep -vs \"^@\" /home/jocostello/shared/LG3_Pipeline_HIDE/resources/xgen-exome-research-panel-targets_6bpexpanded.interval_list )" ;;
 					region="--regions-file xgen-exome-research-panel-targets_6bpexpanded.interval_list" ;;
 				Z)
 					#region="--regions-file <( grep -vs \"^@\" /home/jocostello/shared/LG3_Pipeline_HIDE/resources/SeqCap_EZ_Exome_v3_capture.interval_list )" ;;
 					region="--regions-file SeqCap_EZ_Exome_v3_capture.interval_list" ;;
-				*)
-					region="" ;;
+				#*)
+				#	region="" ;;
 			esac
 
-			if [[ "XZ" == *"${exome_letter}"* ]] ; then
+			#if [[ "XZ" == *"${exome_letter}"* ]] ; then
+			if [ -n "${region}" ] ; then
 				#	--regions and --targets are very similar. Regions uses the vcf's index and should be faster.
 
 				bcftools query ${region} -o ${f%.gz} -f '%CHROM\t%POS\t%REF\t%ALT\t[%GT]\n' ${vcf}
 				gzip ${f%.gz}
+
+				unset region
 
 				chmod a-w ${f}	#${outdir}/${basename}.vcf.gz
 			fi
@@ -136,8 +148,8 @@ else
 
 	mkdir -p ${PWD}/logs/
 	date=$( date "+%Y%m%d%H%M%S%N" )
-	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-		--array=1-${max}%32 --job-name=${script} \
+	echo sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+		--array=1-${max}%1 --job-name=${script} \
 		--output="${PWD}/logs/${script}.${date}.%A_%a.out" \
 		--time=1440 --nodes=1 --ntasks=2 --mem=15G \
 		$( realpath ${0} )

@@ -2,7 +2,14 @@
 
 import os
 import sys
+
+#os.environ["MODIN_ENGINE"] = "ray"  # Modin will use Ray
+
 import pandas as pd
+#import modin.pandas as pd
+
+#	python3 -m pip install --upgrade --user panda dask[dataframe]
+#import dask.dataframe as pd
 
 # include standard modules
 import argparse
@@ -62,7 +69,7 @@ for filename in args.files:
 		d = pd.read_csv(filename,
 			sep="\t",
 			header=None,
-
+			#blocksize=None,
 			#usecols=[0,1,2,4],
 			#names=['CHR','POS','REF',sample])
 
@@ -72,18 +79,18 @@ for filename in args.files:
 		d['ALT1']=d['ALT'].str.split(',',expand=True)[0]
 
 		altsplit=d['ALT'].str.split(',',expand=True)
-		if(len(altsplit.columns)>=1):
-			d['ALT2']=None
-		else:
-			#d['ALT2']=d['ALT'].str.split(',',expand=True)[1]
+		if(len(altsplit.columns)>1):
 			d['ALT2']=altsplit[1]
+		else:
+			d['ALT2']=None
+			#d['ALT2']=d['ALT'].str.split(',',expand=True)[1]
 
 		altsplit=d['ALT'].str.split(',',expand=True)
-		if(len(altsplit.columns)>=2):
-			d['ALT3']=None
-		else:
-			#d['ALT3']=d['ALT'].str.split(',',expand=True)[1]
+		if(len(altsplit.columns)>2):
 			d['ALT3']=altsplit[2]
+		else:
+			d['ALT3']=None
+			#d['ALT3']=d['ALT'].str.split(',',expand=True)[1]
 
 		print(d.head())
 
@@ -128,6 +135,7 @@ for filename in args.files:
 
 		print("Appending")
 		data_frames.append(d)
+		del d
 	else:
 		print(filename + " is empty")
 
@@ -135,7 +143,8 @@ if len(data_frames) > 0:
 	print("Concating all")
 	df = pd.concat(data_frames, axis=1, sort=True )
 	print(df.head())
-	data_frames = []
+	#data_frames = []
+	del data_frames
 
 	print("Merged dataframe now has "+str(df.shape))
 

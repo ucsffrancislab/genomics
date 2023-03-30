@@ -121,11 +121,22 @@ else
 	mkdir -p ${PWD}/logs/
 	date=$( date "+%Y%m%d%H%M%S%N" )
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-		--array=1-${max}%32 --job-name=${script} \
+		--array=1-${max}%16 --job-name=${script} \
 		--output="${PWD}/logs/${script}.${date}.%A_%a.out" \
-		--time=1440 --nodes=1 --ntasks=2 --mem=15G \
-		--gres=scratch:100G \
+		--time=1440 --nodes=1 --ntasks=8 --mem=60G \
+		--gres=scratch:250G \
 		$( realpath ${0} )
+
+#	64 500 2000
+# 32 240 1000
+# 16 120  500
+#  8  60  250
+#  4  30  120
+#	 2  15   60
+#	 1   7   30
+
+
+
 
 fi
 
