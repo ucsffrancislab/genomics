@@ -26,6 +26,8 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 	fi
 	set -x	#	print expanded command before executing it
 
+	date
+
 	line=${SLURM_ARRAY_TASK_ID:-1}
 	echo "Running line :${line}:"
 
@@ -56,10 +58,10 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 	normal=$( echo ${args} | cut -d" " -f2 )
 	tumor=$( echo ${args} | cut -d" " -f3 )
 
-	normal_letter=$( echo ${normal} | cut -c1 )
-	tumor_letter=$( echo ${tumor} | cut -c1 )
+	#normal_letter=$( echo ${normal} | cut -c1 )
+	#tumor_letter=$( echo ${tumor} | cut -c1 )
 
-	if [[ "XZ" == *"${normal_letter}"* ]] && [[ "XZ" == *"${tumor_letter}"* ]] ; then
+	#if [[ "XZ" == *"${normal_letter}"* ]] && [[ "XZ" == *"${tumor_letter}"* ]] ; then
 
 		echo "Both samples are X or Z. Processing."
 
@@ -91,11 +93,11 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 
 		fi
 
-	else
+	#else
+	#	echo "Both samples aren't X or Z. Skipping."
+	#fi
 
-		echo "Both samples aren't X or Z. Skipping."
-
-	fi
+	date
 
 else
 
@@ -114,26 +116,27 @@ else
 
 	#ls -1 vcfallq60/*vcf.gz | xargs -I% basename % > ${arguments_file}
 
-	tail -n +2 tumor_normal_pairs.tsv > ${arguments_file}
+#	tail -n +2 tumor_normal_pairs.tsv > ${arguments_file}
 
-	max=$( cat ${arguments_file} | wc -l )
+#	max=$( cat ${arguments_file} | wc -l )
 
 	mkdir -p ${PWD}/logs/
 	date=$( date "+%Y%m%d%H%M%S%N" )
-	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-		--array=1-${max}%16 --job-name=${script} \
+	echo sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+		--job-name=${script} \
 		--output="${PWD}/logs/${script}.${date}.%A_%a.out" \
 		--time=1440 --nodes=1 --ntasks=8 --mem=60G \
-		--gres=scratch:250G \
 		$( realpath ${0} )
 
-#	64 500 2000
+#		--gres=scratch:250G \
+
+# 64 500 2000
 # 32 240 1000
 # 16 120  500
 #  8  60  250
 #  4  30  120
-#	 2  15   60
-#	 1   7   30
+#  2  15   60
+#  1   7   30
 
 
 

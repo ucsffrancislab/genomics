@@ -26,6 +26,8 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 	fi
 	set -x	#	print expanded command before executing it
 
+	date
+
 	line=${SLURM_ARRAY_TASK_ID:-1}
 	echo "Running line :${line}:"
 
@@ -126,6 +128,8 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 		echo "Input file ( ${vcf} ) has zero size"
 
 	fi
+
+	date
 
 else
 
