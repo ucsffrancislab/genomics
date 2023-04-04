@@ -82,8 +82,8 @@ else
 
 	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
-	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="merge_genotype_diffs" \
-		--output="${PWD}/logs/MELT4.${date}.out" --time=14400 --nodes=1 --ntasks=4 --mem=30G \
+	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${script}" \
+		--output="${PWD}/logs/${script}.${date}.out" --time=14400 --nodes=1 --ntasks=4 --mem=30G \
 		$( realpath ${0} )
 
 fi
