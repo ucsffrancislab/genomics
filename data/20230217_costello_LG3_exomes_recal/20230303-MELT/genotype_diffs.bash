@@ -43,8 +43,8 @@ if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
 
 	echo $args
 
-	indir=${PWD}/vcfallq60
-	outdir=${PWD}/vcfallq60
+	indir=${PWD}/vcfallq60region
+	outdir=${PWD}/vcfallq60region
 	mkdir -p ${outdir}
 
 	#bam=${PWD}/in/${args}
@@ -116,14 +116,14 @@ else
 
 	#ls -1 vcfallq60/*vcf.gz | xargs -I% basename % > ${arguments_file}
 
-#	tail -n +2 tumor_normal_pairs.tsv > ${arguments_file}
+	tail -n +2 tumor_normal_pairs.tsv > ${arguments_file}
 
-#	max=$( cat ${arguments_file} | wc -l )
+	max=$( cat ${arguments_file} | wc -l )
 
 	mkdir -p ${PWD}/logs/
 	date=$( date "+%Y%m%d%H%M%S%N" )
 	echo sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-		--job-name=${script} \
+		--array=1-${max}%16 --job-name=${script} \
 		--output="${PWD}/logs/${script}.${date}.%A_%a.out" \
 		--time=1440 --nodes=1 --ntasks=8 --mem=60G \
 		$( realpath ${0} )

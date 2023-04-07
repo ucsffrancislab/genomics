@@ -318,3 +318,28 @@ and older libraries starting with A
 
 
 
+```
+
+./extract_primary_recurrent_pairs.py patient_ID_conversions.2022.exists.covariates.sorted.csv 
+
+
+dir=vcfallq60
+while read patient normal primary recurrent ; do
+p=${dir}/${patient}.${normal}.${primary}.regions.genotype_snp_diffs.tsv
+r=${dir}/${patient}.${normal}.${recurrent}.regions.genotype_snp_diffs.tsv
+if [ -f ${p} ] && [ -f ${r} ] ; then
+pc=$( tail -n +2 ${p} | wc -l )
+rc=$( tail -n +2 ${r} | wc -l )
+dc=$[rc-pc]
+echo "${patient},${normal},${primary},${pc},${recurrent},${rc},${dc}"
+fi
+done < <( tail -n +2 primary_recurrent_pairs.tsv ) > primary_recurrent_pairs_difference_counts.tsv
+```
+
+```
+
+./bed_intersection.bash
+
+
+
+
