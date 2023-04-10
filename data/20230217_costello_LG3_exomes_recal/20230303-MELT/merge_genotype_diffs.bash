@@ -73,7 +73,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-	/francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/merge_genotype_diffs.py -o /francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/merged_genotype_diffs.csv.gz /francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/vcfallq60/*.regions.genotype_snp_diffs.tsv
+	#/francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/merge_genotype_diffs.py -o /francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/merged_genotype_diffs.csv.gz /francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/vcfallq60/*.regions.genotype_snp_diffs.tsv
+	/francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/merge_genotype_diffs.py -o /francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/merged_genotype_diffs.region.tsv.gz /francislab/data1/working/20230217_costello_LG3_exomes_recal/20230303-MELT/vcfallq60region/*.regions.genotype_snp_diffs.tsv
 
 	date
 

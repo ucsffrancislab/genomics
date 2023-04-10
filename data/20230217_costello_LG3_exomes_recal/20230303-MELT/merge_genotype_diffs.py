@@ -11,7 +11,7 @@ import argparse
 parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
 parser.add_argument('files', nargs='*', help='files help')
 parser.add_argument('-V','--version', action='version', version='%(prog)s 1.1')
-parser.add_argument('-o', '--output', nargs=1, type=str, default='genotype_diffs.csv.gz', help='output csv filename to %(prog)s (default: %(default)s)')
+parser.add_argument('-o', '--output', nargs=1, type=str, default='genotype_diffs.tsv.gz', help='output tsv filename to %(prog)s (default: %(default)s)')
 #parser.add_argument('-s', '--sep', nargs=1, type=str, default='\t', help='the separator to %(prog)s (default: %(default)s)')
 #	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
 parser.add_argument('--int', action='store_true', help='convert values to ints to %(prog)s (default: %(default)s)')
