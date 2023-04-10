@@ -336,10 +336,90 @@ fi
 done < <( tail -n +2 primary_recurrent_pairs.tsv ) > primary_recurrent_pairs_difference_counts.tsv
 ```
 
-```
 
+
+
+
+
+
+
+
+```
 ./bed_intersection.bash
 
+./vcf2genotypes.bash
+
+./genotype_diffs.bash
+
+dir=vcfallq60region
+while read patient normal primary recurrent ; do
+p=${dir}/${patient}.${normal}.${primary}.regions.genotype_snp_diffs.tsv
+r=${dir}/${patient}.${normal}.${recurrent}.regions.genotype_snp_diffs.tsv
+if [ -f ${p} ] && [ -f ${r} ] ; then
+pc=$( tail -n +2 ${p} | wc -l )
+rc=$( tail -n +2 ${r} | wc -l )
+dc=$[rc-pc]
+echo "${patient},${normal},${primary},${pc},${recurrent},${rc},${dc}"
+fi
+done < <( tail -n +2 primary_recurrent_pairs.tsv ) > primary_recurrent_pairs_difference_counts.tsv
+
+
+./merge_genotype_diffs.bash 
+
+
+zcat merged_genotype_diffs.region.tsv.gz > merged_genotype_diffs.region.tsv
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+curl  --silent --ftp-create-dirs -netrc -T primary_recurrent_pairs_region_difference_counts_comparison.tsv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T primary_recurrent_pairs_difference_counts.tsv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T merged_genotype_diffs.region.tsv.gz "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T merged_genotype_diffs.region.tsv "${BOX}/"
+
+
+awk 'BEGIN{FS=OFS="\t"}{s=0;for(i=4;i<=NF;i++){s+=$i};if(s>200)print $1,$2,$3,s}' merged_genotype_diffs.region.tsv | sort -k4n | tail -n 20
+
+chr11 48367387 C/T->C/C 205
+chrX 114425210 G/A->G/G 210
+chr11 56468021 G/G->G/A 214
+chr1 120612154 C/C->C/G 221
+chr1 120612163 C/C->C/A 222
+chrX 114425210 G/G->G/A 225
+chr11 56468021 G/A->G/G 234
+chr1 145112414 T/C->T/T 239
+chr1 145112428 C/T->C/C 254
+
+
+awk 'BEGIN{FS=OFS="\t"}{s=0;for(i=4;i<=NF;i++){s+=$i};c[$1][$2]+=s}END{for(i in c){for(j in c[i]){print i,j,c[i][j]}}}' merged_genotype_diffs.region.tsv | sort -k3n | tail -n 20
+
+chr11	6567907	273
+chr17	21204257	274
+chr11	48346822	276
+chr11	48346843	283
+chrX	52891645	287
+chr11	56468694	294
+chr7	100552338	294
+chr1	145112414	295
+chr11	56468699	299
+chr11	56468704	302
+chr19	4511491	309
+chr17	21204308	311
+chr1	120612154	313
+chrX	114425181	313
+chr1	120612163	320
+chr11	48347419	334
+chr1	145112428	344
+chr11	48367387	344
+chrX	114425210	444
+chr11	56468021	448
+
+awk 'BEGIN{FS=",";OFS="\t"}(NR==FNR){ a[$1"-"$2"-"$3"-"$5]=$6 }(NR!=FNR){ b[$1"-"$2"-"$3"-"$5]=$6 } END{ for(k in b){print k,a[k],b[k]} }' primary_recurrent_pairs_difference_counts.tsv primary_recurrent_pairs_region_difference_counts.tsv > primary_recurrent_pairs_region_difference_counts_comparison.tsv
+
+
+```
 
 
 
