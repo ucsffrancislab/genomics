@@ -423,3 +423,21 @@ awk 'BEGIN{FS=",";OFS="\t"}(NR==FNR){ a[$1"-"$2"-"$3"-"$5]=$6 }(NR!=FNR){ b[$1"-
 
 
 
+```
+./merge_select_genotypes.bash
+
+zcat select_genotypes.tsv.gz > select_genotypes.tsv
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+curl  --silent --ftp-create-dirs -netrc -T select_genotypes.tsv.gz "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T select_genotypes.tsv "${BOX}/"
+
+```
+
+
+
+
