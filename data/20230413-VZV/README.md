@@ -2,6 +2,12 @@
 #	20230413-VZV
 
 
+https://www.dropbox.com/sh/qvo1t75sgsq7fi8/AABPlKrMoiJnWciIHeRzV3LMa/VIR3_clean.csv.gz?dl=0
+
+https://www.dropbox.com/sh/qvo1t75sgsq7fi8/AAAY-LQEQDrxV6wWF6OJDHPWa?dl=0
+
+
+
 Find and extract Varicella zoster virus - Human alphaherpesvirus 3 genome
 Find and extract VZV proteins
 
@@ -38,16 +44,25 @@ done
 
 ```
 
+
 Align results
 ```
 mkdir share
 for i in $(seq 0 9) ; do 
 echo $i
+
+tblastx -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.default.tblastx
+cp Human_alphaherpesvirus_3.sam_header phipseq-${i}/oligos-ref-56-28.default.sam
+blast2sam.pl phipseq-${i}/oligos-ref-56-28.default.tblastx >> phipseq-${i}/oligos-ref-56-28.default.sam
+samtools sort -o share/phipseq-${i}-oligos-ref-56-28.default.bam phipseq-${i}/oligos-ref-56-28.default.sam
+samtools index share/phipseq-${i}-oligos-ref-56-28.default.bam
+
 tblastx -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.tblastx
 cp Human_alphaherpesvirus_3.sam_header phipseq-${i}/oligos-ref-56-28.sam
 blast2sam.pl phipseq-${i}/oligos-ref-56-28.tblastx >> phipseq-${i}/oligos-ref-56-28.sam
 samtools sort -o share/phipseq-${i}-oligos-ref-56-28.bam phipseq-${i}/oligos-ref-56-28.sam
 samtools index share/phipseq-${i}-oligos-ref-56-28.bam
+
 done
 ```
 
@@ -74,6 +89,46 @@ blast2sam.pl Human_alphaherpesvirus_3_proteins.tblastn >> Human_alphaherpesvirus
 samtools sort -o share/Human_alphaherpesvirus_3_proteins.bam Human_alphaherpesvirus_3_proteins.sam
 samtools index share/Human_alphaherpesvirus_3_proteins.bam
 ```
+
+
+
+
+
+
+
+
+```
+
+zgrep Varicella VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print ">"$1"-"$10;print $21}' | sed -e '/^>/s/[ \/,\(\)]/_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' > VIR3_Varicella.fa
+
+tblastn -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query VIR3_Varicella.fa -out VIR3_Varicella.tblastn
+
+Warning: [tblastn] Query_505 25945-Tegument_.. : Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1468 51765-Putative.. : Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1491 56367-Tegument.. : Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1609 61461-Tegument_protein: Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1610 61462-Tegument_protein: Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1611 61463-Tegument_protein: Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1612 61464-Tegument_protein: Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+Warning: [tblastn] Query_1613 61465-Tegument_protein: Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
+
+
+cp Human_alphaherpesvirus_3.sam_header VIR3_Varicella.sam
+blast2sam.pl VIR3_Varicella.tblastn >> VIR3_Varicella.sam
+samtools sort -o share/VIR3_Varicella.bam VIR3_Varicella.sam
+samtools index share/VIR3_Varicella.bam
+
+
+tblastn -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query VIR3_Varicella.fa -out VIR3_Varicella_default.tblastn
+cp Human_alphaherpesvirus_3.sam_header VIR3_Varicella_default.sam
+blast2sam.pl VIR3_Varicella_default.tblastn >> VIR3_Varicella_default.sam
+samtools sort -o share/VIR3_Varicella_default.bam VIR3_Varicella_default.sam
+samtools index share/VIR3_Varicella_default.bam
+```
+
+
+
+
 
 
 
