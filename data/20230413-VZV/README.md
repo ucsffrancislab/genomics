@@ -53,18 +53,23 @@ echo $i
 
 tblastx -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.default.tblastx
 cp Human_alphaherpesvirus_3.sam_header phipseq-${i}/oligos-ref-56-28.default.sam
-blast2sam.pl phipseq-${i}/oligos-ref-56-28.default.tblastx >> phipseq-${i}/oligos-ref-56-28.default.sam
+#blast2sam.pl phipseq-${i}/oligos-ref-56-28.default.tblastx | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> phipseq-${i}/oligos-ref-56-28.default.sam
+blast2sam.pl phipseq-${i}/oligos-ref-56-28.default.tblastx > phipseq-${i}/oligos-ref-56-28.default.before.sam
+awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' phipseq-${i}/oligos-ref-56-28.default.before.sam >> phipseq-${i}/oligos-ref-56-28.default.sam
 samtools sort -o share/phipseq-${i}-oligos-ref-56-28.default.bam phipseq-${i}/oligos-ref-56-28.default.sam
 samtools index share/phipseq-${i}-oligos-ref-56-28.default.bam
 
 tblastx -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.tblastx
 cp Human_alphaherpesvirus_3.sam_header phipseq-${i}/oligos-ref-56-28.sam
-blast2sam.pl phipseq-${i}/oligos-ref-56-28.tblastx >> phipseq-${i}/oligos-ref-56-28.sam
+#blast2sam.pl phipseq-${i}/oligos-ref-56-28.tblastx | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> phipseq-${i}/oligos-ref-56-28.sam
+blast2sam.pl phipseq-${i}/oligos-ref-56-28.tblastx > phipseq-${i}/oligos-ref-56-28.before.sam
+awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' phipseq-${i}/oligos-ref-56-28.before.sam >> phipseq-${i}/oligos-ref-56-28.sam
 samtools sort -o share/phipseq-${i}-oligos-ref-56-28.bam phipseq-${i}/oligos-ref-56-28.sam
 samtools index share/phipseq-${i}-oligos-ref-56-28.bam
 
 done
 ```
+
 
 
 
@@ -83,11 +88,23 @@ makeblastdb -in genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -inpu
 
 Align VZV proteins with tblastn or whatever to VZV genome
 ```
+
 tblastn -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query Human_alphaherpesvirus_3_proteins.fa -out Human_alphaherpesvirus_3_proteins.tblastn
 cp Human_alphaherpesvirus_3.sam_header Human_alphaherpesvirus_3_proteins.sam
-blast2sam.pl Human_alphaherpesvirus_3_proteins.tblastn >> Human_alphaherpesvirus_3_proteins.sam
+#blast2sam.pl Human_alphaherpesvirus_3_proteins.tblastn | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> Human_alphaherpesvirus_3_proteins.sam
+blast2sam.pl Human_alphaherpesvirus_3_proteins.tblastn > Human_alphaherpesvirus_3_proteins.before.sam
+awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' Human_alphaherpesvirus_3_proteins.before.sam >> Human_alphaherpesvirus_3_proteins.sam
 samtools sort -o share/Human_alphaherpesvirus_3_proteins.bam Human_alphaherpesvirus_3_proteins.sam
 samtools index share/Human_alphaherpesvirus_3_proteins.bam
+
+tblastn -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query Human_alphaherpesvirus_3_proteins.fa -out Human_alphaherpesvirus_3_proteins.default.tblastn
+cp Human_alphaherpesvirus_3.sam_header Human_alphaherpesvirus_3_proteins.default.sam
+#blast2sam.pl Human_alphaherpesvirus_3_proteins.default.tblastn | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> Human_alphaherpesvirus_3_proteins.default.sam
+blast2sam.pl Human_alphaherpesvirus_3_proteins.default.tblastn > Human_alphaherpesvirus_3_proteins.default.before.sam
+awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' Human_alphaherpesvirus_3_proteins.default.before.sam >> Human_alphaherpesvirus_3_proteins.default.sam
+samtools sort -o share/Human_alphaherpesvirus_3_proteins.default.bam Human_alphaherpesvirus_3_proteins.default.sam
+samtools index share/Human_alphaherpesvirus_3_proteins.default.bam
+
 ```
 
 
@@ -114,20 +131,52 @@ Warning: [tblastn] Query_1613 61465-Tegument_protein: Could not calculate ungapp
 
 
 cp Human_alphaherpesvirus_3.sam_header VIR3_Varicella.sam
-blast2sam.pl VIR3_Varicella.tblastn >> VIR3_Varicella.sam
+#blast2sam.pl VIR3_Varicella.tblastn | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> VIR3_Varicella.sam
+blast2sam.pl VIR3_Varicella.tblastn > VIR3_Varicella.before.sam
+awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' VIR3_Varicella.before.sam >> VIR3_Varicella.sam
 samtools sort -o share/VIR3_Varicella.bam VIR3_Varicella.sam
 samtools index share/VIR3_Varicella.bam
 
 
-tblastn -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query VIR3_Varicella.fa -out VIR3_Varicella_default.tblastn
-cp Human_alphaherpesvirus_3.sam_header VIR3_Varicella_default.sam
-blast2sam.pl VIR3_Varicella_default.tblastn >> VIR3_Varicella_default.sam
-samtools sort -o share/VIR3_Varicella_default.bam VIR3_Varicella_default.sam
-samtools index share/VIR3_Varicella_default.bam
+tblastn -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query VIR3_Varicella.fa -out VIR3_Varicella.default.tblastn
+cp Human_alphaherpesvirus_3.sam_header VIR3_Varicella.default.sam
+#blast2sam.pl VIR3_Varicella.default.tblastn | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> VIR3_Varicella.default.sam
+blast2sam.pl VIR3_Varicella.default.tblastn > VIR3_Varicella.default.before.sam
+awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' VIR3_Varicella.default.before.sam >> VIR3_Varicella.default.sam
+samtools sort -o share/VIR3_Varicella.default.bam VIR3_Varicella.default.sam
+samtools index share/VIR3_Varicella.default.bam
 ```
 
 
 
+
+
+
+
+
+
+```
+wget https://ftp.ncbi.nih.gov/refseq/release/viral/viral.1.protein.gpff.gz
+wget https://ftp.ncbi.nih.gov/refseq/release/viral/viral.1.genomic.gbff.gz
+
+region=$( zgrep -n "^LOCUS" viral.1.genomic.gbff.gz | grep -A1 "NC_001348" | awk -F: '{print $1}' | paste )
+
+start=$( echo $region | cut -d" " -f1 )
+#17536996
+
+stop=$( echo $region | cut -d" " -f2 )
+#17541847
+
+zcat viral.1.genomic.gbff.gz | tail -n +${start} | head -n $[stop-start] > NC_001348.genomic.gbff
+
+
+
+grep "^     CDS" NC_001348.genomic.gbff | awk '{gsub(/complement|join|[\(\)]/,"",$2);split($2,a,",");for(i in a){split(a[i],b,".");print "NC_001348.1_Human_herpesvirus_3__complete_genome\t"b[1]"\t"b[3]}}' > share/NC_001348.1_Human_herpesvirus_3__complete_genome.CDS.bed
+
+grep "^     gene" NC_001348.genomic.gbff | awk '{gsub(/complement|join|[\(\)]/,"",$2);split($2,a,",");for(i in a){split(a[i],b,".");print "NC_001348.1_Human_herpesvirus_3__complete_genome\t"b[1]"\t"b[3]}}' > share/NC_001348.1_Human_herpesvirus_3__complete_genome.gene.bed
+
+
+```
 
 
 
@@ -143,6 +192,7 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 BOX="${BOX_BASE}/${PROJECT}"
 for f in share/*; do
+echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 ```
