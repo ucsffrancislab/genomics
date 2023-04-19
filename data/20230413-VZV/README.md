@@ -59,7 +59,7 @@ awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){s=s""3*a[i];s=s
 samtools sort -o share/phipseq-${i}-oligos-ref-56-28.default.bam phipseq-${i}/oligos-ref-56-28.default.sam
 samtools index share/phipseq-${i}-oligos-ref-56-28.default.bam
 
-tblastx -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.tblastx
+tblastx -max_target_seqs 1 -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.tblastx
 cp Human_alphaherpesvirus_3.sam_header phipseq-${i}/oligos-ref-56-28.sam
 #blast2sam.pl phipseq-${i}/oligos-ref-56-28.tblastx | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> phipseq-${i}/oligos-ref-56-28.sam
 blast2sam.pl phipseq-${i}/oligos-ref-56-28.tblastx > phipseq-${i}/oligos-ref-56-28.before.sam
@@ -89,7 +89,7 @@ makeblastdb -in genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -inpu
 Align VZV proteins with tblastn or whatever to VZV genome
 ```
 
-tblastn -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query Human_alphaherpesvirus_3_proteins.fa -out Human_alphaherpesvirus_3_proteins.tblastn
+tblastn -max_target_seqs 1 -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query Human_alphaherpesvirus_3_proteins.fa -out Human_alphaherpesvirus_3_proteins.tblastn
 cp Human_alphaherpesvirus_3.sam_header Human_alphaherpesvirus_3_proteins.sam
 #blast2sam.pl Human_alphaherpesvirus_3_proteins.tblastn | awk 'BEGIN{FS=OFS="\t"}{split($6,a,/[MIHSD]/,b);s="";for(i in b){if(b[i]=="H"){s=s""a[i]}else{s=s""3*a[i]};s=s""b[i]}print $1,$2,$3,$4,$5,s,$7,$8,$9,$10,$11,$12}' >> Human_alphaherpesvirus_3_proteins.sam
 blast2sam.pl Human_alphaherpesvirus_3_proteins.tblastn > Human_alphaherpesvirus_3_proteins.before.sam
@@ -118,7 +118,7 @@ samtools index share/Human_alphaherpesvirus_3_proteins.default.bam
 
 zgrep Varicella VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print ">"$1"-"$10;print $21}' | sed -e '/^>/s/[ \/,\(\)]/_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' > VIR3_Varicella.fa
 
-tblastn -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query VIR3_Varicella.fa -out VIR3_Varicella.tblastn
+tblastn -max_target_seqs 1 -max_hsps 1 -db genome/NC_001348.1_Human_herpesvirus_3__complete_genome.fa -query VIR3_Varicella.fa -out VIR3_Varicella.tblastn
 
 Warning: [tblastn] Query_505 25945-Tegument_.. : Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
 Warning: [tblastn] Query_1468 51765-Putative.. : Could not calculate ungapped Karlin-Altschul parameters due to an invalid query sequence or its translation. Please verify the query sequence(s) and/or filtering options 
@@ -182,16 +182,39 @@ grep "^     gene" NC_001348.genomic.gbff | awk '{gsub(/complement|join|[\(\)]/,"
 
 
 
+```
+sed  -e '/^>/s/\(^.\{1,51\}\).*/\1/' Human_alphaherpesvirus_3_proteins.fa > Human_alphaherpesvirus_3_proteins.trim.fa
+
+makeblastdb -in Human_alphaherpesvirus_3_proteins.trim.fa -input_type fasta -dbtype prot -title VZV_Proteins -parse_seqids
+
+blastp -max_target_seqs 1 -max_hsps 1 -db Human_alphaherpesvirus_3_proteins.trim.fa -query VIR3_Varicella.fa -out VIR3_Varicella.Human_alphaherpesvirus_3_proteins.blastp
+cp Human_alphaherpesvirus_3_proteins.trim.sam_header VIR3_Varicella.Human_alphaherpesvirus_3_proteins.sam
+blast2sam.pl VIR3_Varicella.Human_alphaherpesvirus_3_proteins.blastp >> VIR3_Varicella.Human_alphaherpesvirus_3_proteins.sam
+samtools sort -o share/VIR3_Varicella.Human_alphaherpesvirus_3_proteins.bam VIR3_Varicella.Human_alphaherpesvirus_3_proteins.sam
+samtools index share/VIR3_Varicella.Human_alphaherpesvirus_3_proteins.bam
+
+
+for i in $(seq 0 9) ; do 
+echo $i
+blastx -max_target_seqs 1 -max_hsps 1 -db Human_alphaherpesvirus_3_proteins.trim.fa -query phipseq-${i}/oligos-ref-56-28.fasta -out phipseq-${i}/oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.blastx
+cp Human_alphaherpesvirus_3_proteins.trim.sam_header phipseq-${i}/oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.sam
+blast2sam.pl phipseq-${i}/oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.blastx >> phipseq-${i}/oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.sam
+samtools sort -o share/phipseq-${i}-oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.bam phipseq-${i}/oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.sam
+samtools index share/phipseq-${i}-oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.bam
+done
+```
 
 
 
 
 
 ```
+for f in share/*; do
+
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 BOX="${BOX_BASE}/${PROJECT}"
-for f in share/*; do
+for f in Human_alphaherpesvirus_3_proteins.trim.fa share/VIR3_Varicella.Human_alphaherpesvirus_3_proteins.bam{,.bai} share/phipseq-?-oligos-ref-56-28.Human_alphaherpesvirus_3_proteins.bam{,.bai}; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
