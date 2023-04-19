@@ -204,7 +204,7 @@ else
 	date=$( date "+%Y%m%d%H%M%S%N" )
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
 		--job-name="MELT1" --output="${PWD}/logs/MELT1.${date}-%A_%a.out" \
-		--time=10080 --nodes=1 --ntasks=2 --mem=15G \
+		--time=10080 --nodes=1 --ntasks=2 --mem=15G --gres=scratch:60G \
 		$( realpath ${0} )
 
 		#${PWD}/MELT_1_array_wrapper.bash
