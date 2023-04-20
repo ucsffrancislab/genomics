@@ -1,0 +1,225 @@
+
+Bootstrap: docker
+From: ubuntu:20.04
+#GNU bash, version 5.0.17(1)-release (x86_64-pc-linux-gnu)
+
+
+
+#	this is run when `singularity run TEProF2.img ... ` is called. ( not exec )
+
+%runscript
+
+	exec echo "The runscript is the containers default runtime command!"
+
+
+%files
+
+#	/home/vanessa/Desktop/hello-kitty.txt        # copied to root of container
+
+#	/home/vanessa/Desktop/party_dinosaur.gif     /opt/the-party-dino.gif #
+
+
+%environment
+
+#	data is inserted in image at end of build time and sourced at runtime
+
+#	VARIABLE=MEATBALLVALUE
+
+#	export VARIABLE
+
+#	#	add --no-home to singularity exec call to avoid R using ~/.Renviron and ~/.Rprofile
+#	export R_LIBS=/usr/local/lib/R/library
+
+%labels
+
+	AUTHOR George.Wendt@ucsf.edu
+
+
+%post
+
+	#	https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+	export DEBIAN_FRONTEND=noninteractive
+
+	apt-get clean all
+	apt-get -y update
+	apt-get -y upgrade
+
+#	apt-get -y install python3 python3-distutils python3-apt
+
+	apt-get -y install pkg-config debian-keyring gnupg bash git wget gcc g++ gfortran make curl \
+		bzip2 default-jdk bc libbz2-dev zlib1g-dev libncurses5-dev libncursesw5-dev liblzma-dev \
+		libcurl4-openssl-dev libcurl4-doc libidn11-dev libkrb5-dev libldap2-dev librtmp-dev libssh2-1-dev \
+		libssl-dev libxml2-dev libpcre2-dev libpcre3-dev libreadline-dev libjpeg-dev zlib1g-dev libpng-dev
+
+	apt-get -y install software-properties-common
+
+	add-apt-repository universe
+	apt-get -y update
+	#apt-get -y install python2-minimal
+	apt-get -y install python2-dev
+	curl https://bootstrap.pypa.io/pip/2.7/get-pip.py | python2
+	python2 -m pip install --upgrade pip numpy pytabix
+	ln -s python2 /usr/bin/python
+
+	apt-get -y autoremove
+
+
+#	curl https://bootstrap.pypa.io/get-pip.py | python3
+#	ln -s python3 /usr/bin/python
+#	python3 -m pip install --upgrade pip
+#	python3 -m pip install --upgrade wheel awscli numpy scipy sklearn pandas requests seaborn boto3 pandarallel modin pysam 
+#	python -m pip install --upgrade pip
+
+
+	wget --no-verbose https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
+	tar xfj samtools-1.9.tar.bz2
+	cd samtools-1.9
+	make
+	make install
+	cd ..
+	/bin/rm -rf samtools-1.9 samtools-1.9.tar.bz2
+
+
+#	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.29.1/bedtools-2.29.1.tar.gz
+#	tar xfz bedtools-2.29.1.tar.gz
+#	cd bedtools2
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf bedtools2 bedtools-2.29.1.tar.gz
+#
+#	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.30.0/bedtools-2.30.0.tar.gz
+#	tar xfz bedtools-2.30.0.tar.gz
+#	cd bedtools2
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf bedtools2 bedtools-2.30.0.tar.gz
+
+	wget --no-verbose https://github.com/arq5x/bedtools2/releases/download/v2.30.0/bedtools.static.binary
+	chmod +x bedtools.static.binary
+	mv bedtools.static.binary /usr/local/bin/bedtools
+
+
+#	wget --no-verbose https://github.com/alexdobin/STAR/archive/refs/tags/2.5.3a.tar.gz
+#	tar xfz 2.5.3a.tar.gz
+##	cd STAR-2.5.3a
+##	make
+##	make install
+##	cd ..
+#	mv /STAR-2.5.3a/bin/Linux_x86_64/STAR /usr/bin/
+#	mv /STAR-2.5.3a/bin/Linux_x86_64/STARlong /usr/bin/
+#	#	mv /STAR-2.5.3a/bin/Linux_x86_64_static/STAR /usr/bin/
+#	#	mv /STAR-2.5.3a/bin/Linux_x86_64_static/STARlong /usr/bin/
+#	/bin/rm -rf 2.5.3a.tar.gz STAR-2.5.3a
+
+
+	wget --no-verbose http://ccb.jhu.edu/software/stringtie/dl/stringtie-1.3.3b.Linux_x86_64.tar.gz
+	tar xfz stringtie-1.3.3b.Linux_x86_64.tar.gz
+	mv /stringtie-1.3.3b.Linux_x86_64/stringtie /usr/local/bin/
+	/bin/rm -rf /stringtie-1.3.3b.Linux_x86_64 /stringtie-1.3.3b.Linux_x86_64.tar.gz
+
+
+	wget --no-verbose http://cole-trapnell-lab.github.io/cufflinks/assets/downloads/cufflinks-2.2.1.Linux_x86_64.tar.gz
+	tar xfz cufflinks-2.2.1.Linux_x86_64.tar.gz
+	rm cufflinks-2.2.1.Linux_x86_64/README
+	rm cufflinks-2.2.1.Linux_x86_64/AUTHORS
+	rm cufflinks-2.2.1.Linux_x86_64/LICENSE
+	mv cufflinks-2.2.1.Linux_x86_64/* /usr/local/bin/
+	/bin/rm -rf /cufflinks-2.2.1.Linux_x86_64.tar.gz /cufflinks-2.2.1.Linux_x86_64
+
+
+#	wget --no-verbose https://cran.r-project.org/src/base/R-3/R-3.4.1.tar.gz
+#	tar -zxvf R-3.4.1.tar.gz
+#	cd R-3.4.1
+#	./configure --with-x=no --with-readline=no
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf R-3.4.1.tar.gz R-3.4.1
+#	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
+#	Rscript -e 'BiocManager::install( version = "3.6", ask = FALSE)'
+
+
+#	wget --no-verbose https://cran.r-project.org/src/base/R-3/R-3.6.3.tar.gz
+#	tar xfz R-3.6.3.tar.gz
+#	cd R-3.6.3
+#	./configure --with-x=no --with-readline=no
+#	make
+#	make install
+#	cd ..
+#	/bin/rm -rf R-3.6.3.tar.gz R-3.6.3
+#	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
+#	Rscript -e 'BiocManager::install( version = "3.10", ask = FALSE)'
+
+
+
+
+	wget --no-verbose https://cran.r-project.org/src/base/R-4/R-4.2.3.tar.gz
+	tar -zxvf R-4.2.3.tar.gz
+	cd R-4.2.3
+	./configure --with-x=no --with-readline=no
+	make
+	make install
+	cd ..
+	/bin/rm -rf R-4.2.3.tar.gz R-4.2.3
+
+	Rscript -e 'install.packages("BiocManager", repos = "https://cloud.r-project.org")'
+	Rscript -e 'BiocManager::install( ask = FALSE)'
+	#Rscript -e 'BiocManager::install( version="3.16", ask = FALSE )'
+#Bioconductor version 3.16 (BiocManager 1.30.20), R 4.2.3 (2023-03-15)
+
+
+
+
+
+#	Rscript -e 'BiocManager::install(c("devtools","install_url"),ask=FALSE)'
+
+	#Rscript -e 'install.packages("devtools", repos = "https://cloud.r-project.org")'
+	#Rscript -e 'install.packages("Xmisc", repos = "https://cloud.r-project.org")'
+
+	#Rscript -e 'BiocManager::install(c("ggplot2","bsgenome.hsapiens.ucsc.hg38","reshape2"),ask=FALSE)'
+
+	#Rscript -e 'install.packages("rlang",repos = "https://cloud.r-project.org")'
+	#Rscript -e 'install.packages(c("ggplot2","bsgenome.hsapiens.ucsc.hg38","reshape2"),repos = "https://cloud.r-project.org")'
+
+
+	Rscript -e 'BiocManager::install("ggplot2",ask=FALSE)'
+	Rscript -e 'BiocManager::install("reshape2",ask=FALSE)'
+	Rscript -e 'options(timeout = 3000);BiocManager::install("BSgenome.Hsapiens.UCSC.hg38",ask=FALSE)'
+
+	wget --no-verbose https://cran.r-project.org/src/contrib/Archive/Xmisc/Xmisc_0.2.1.tar.gz
+	Rscript -e 'install.packages("Xmisc_0.2.1.tar.gz", type="source", repos=NULL)'
+	rm Xmisc_0.2.1.tar.gz
+
+
+
+
+
+	git clone https://github.com/twlab/TEProf2Paper.git
+
+
+#	singularity run-help TEProF2.img 
+%help
+
+	build remotely ...
+
+	singularity remote login --tokenfile ~/sylabs-token 
+
+	singularity build --remote TEProF2.img TEProF2.def
+
+	-- or --
+
+	build locally ...
+
+	sudo singularity build TEProF2.img TEProF2.def 2>&1 | tee TEProF2.out
+
+
+	and run ...
+
+	singularity exec --bind /francislab TEProF2.img ...
+
+
