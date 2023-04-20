@@ -5,7 +5,13 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
-if [ -n "${SLURM_JOB_NAME}" ] ; then
+#set -e  #       exit if any command fails
+set -u  #       Error on usage of unset variables
+set -o pipefail
+#set -x  #       print expanded command before executing it
+
+if [ $( basename ${0} ) == "slurm_script" ] ; then
+#if [ -n "${SLURM_JOB_NAME}" ] ; then
 	script=${SLURM_JOB_NAME}
 else
 	script=$( basename $0 )
@@ -16,9 +22,11 @@ arguments_file=${PWD}/${script}.arguments
 
 threads=8
 extension="_R1.fastq.gz"
-IN="${PWD}/in"
-OUT="${PWD}/out"
+#IN="${PWD}/in"
+#OUT="${PWD}/out"
 
+#			-l /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/D_mel_transposon_sequence_set_v10.1.fa \
+#			-r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa 
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-i|--in)
@@ -27,6 +35,10 @@ while [ $# -gt 0 ] ; do
 			shift; threads=$1; shift;;
 		-o|--out)
 			shift; OUT=$1; shift;;
+		-l|--transposon)
+			shift; transposon_fasta=$1; shift;;
+		-r|--human)
+			shift; human_fasta=$1; shift;;
 		*)
 			echo "Unknown params :${1}:"; exit ;;
 	esac
@@ -39,14 +51,10 @@ scratch_size=$[threads*28]
 #if [ $( basename ${0} ) == "slurm_script" ] ; then
 if [ $( basename ${0} ) == "slurm_script" ] ; then
 
-	#set -e  #       exit if any command fails
-	set -u  #       Error on usage of unset variables
-	set -o pipefail
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
 		module load CBI samtools bwa bedtools2
 	fi
-	#set -x  #       print expanded command before executing it
 	
 	date
 	
@@ -77,128 +85,22 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		exit
 	fi
 
+	base=$( basename $line ${extension} )
 	R1=${line}
 	R2=${line/_R1./_R2.}
 
-	echo $R1
-	echo $R2
+	echo
+	echo "base : ${base}"
+	echo "ext : ${extension}"
+	echo "r1 : $R1"
+	echo "r2 : $R2"
+	echo 
 
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
-	#		outbase=${OUT}/${basename}
-	#		inbase=${outbase}
-	#		f=${outbase}.bam
-	#		if [ -h $f ] ; then
-	#			#       -h file True if file exists and is a symbolic link.
-	#			echo "Link $f exists. Skipping."
-	#		else
-	#			ln -s ${bam} ${f}
-	#			ln -s ${bam}.bai ${f}.bai
-	#		fi
-	#		
-	#		f=${outbase}.bam.disc.bai
-	#		if [ -f $f ] && [ ! -w $f ] ; then
-	#			echo "Write-protected $f exists. Skipping."
-	#		else
-	#			echo "Running MELT Preprocess on ${inbase}.bam"
-	#		
-	#			java -Xmx2G -jar ${MELTJAR} Preprocess \
-	#				-bamfile ${inbase}.bam \
-	#				-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa
-	#			chmod -w ${f}
-	#			chmod -w ${f%.bai}
-	#			chmod -w ${f%.disc.bai}.fq
-	#		fi
-	#		
-	#		
-	#		inbase=${outbase}
-	#		
-	#		outbase=${OUT}/DISCOVERYIND/${basename}
-	#		f=${outbase}.ALU.tmp.bed
-	#		if [ -f $f ] && [ ! -w $f ] ; then
-	#			echo "Write-protected $f exists. Skipping."
-	#		else
-	#		
-	#			trap "{ chmod -R +w $TMPDIR ; }" EXIT
-	#			scratch_in=${TMPDIR}/in
-	#			mkdir -p ${scratch_in}
-	#			ln -s ${inbase}.bam ${scratch_in}
-	#			ln -s ${inbase}.bam.bai ${scratch_in}
-	#			cp ${inbase}.bam.disc ${scratch_in}
-	#			cp ${inbase}.bam.disc.bai ${scratch_in}
-	#			cp ${inbase}.bam.fq ${scratch_in}
-	#			cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa ${scratch_in}
-	#			cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa.fai ${scratch_in}
-	#			#cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa ${scratch_in}
-	#			#cp /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa.fai ${scratch_in}
-	#			scratch_bam=${scratch_in}/$( basename ${inbase}.bam )
-	#			scratch_work=${TMPDIR}/work
-	#			mkdir -p ${scratch_work}
-	#		
-	#		
-	#		
-	#			echo "Computing depth of coverage"
-	#			#coverage=$( ~/.local/bin/mosdepth_coverage.bash ${bam} )
-	#			coverage=$( ~/.local/bin/mosdepth_coverage.bash ${scratch_bam} )
-	#		
-	#			echo "Computed depth of coverage at ${coverage}"
-	#		
-	#			#echo "Running MELT IndivAnalysis on ${inbase}.bam"
-	#			#echo "Running MELT IndivAnalysis on ${bam}"
-	#			echo "Running MELT IndivAnalysis on ${scratch_bam}"
-	#		
-	#		
-	#		
-	#		
-	#			#	EXOME !!!!!
-	#			#	The human exome is about 1% of the genome.
-	#			#	Does that mean the the coverage calculated by mosdepth should be upped by 100x?
-	#		
-	#			coverage=$( printf "%.2f\n" $(echo "$coverage * 100" | bc -l) )
-	#			echo "RE Computed EXOME depth of coverage at ${coverage}"
-	#			coverage="${coverage} -exome "
-	#		
-	#		
-	#		
-	#		
-	#			java -Xmx6G -jar ${MELTJAR} IndivAnalysis \
-	#				-c ${coverage} \
-	#				-bamfile ${scratch_bam} \
-	#				-h ${scratch_in}/hg19.chrXYMT_alts.fa \
-	#				-t ~/.local/MELTv2.2.2/me_refs/1KGP_Hg19/transposon_file_list.txt \
-	#				-w ${scratch_work}
-	#		
-	#			#	-bamfile ${bam} \
-	#			#	-bamfile ${inbase}.bam \
-	#			#	-h /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/20200117/hg19.chrXYMT_alts.fa \
-	#			#	-w $( dirname ${f} )
-	#			#	-t ~/.local/MELTv2.2.2/me_refs/Hg38/transposon_file_list.txt \
-	#		
-	#		
-	#		
-	#			mkdir -p $( dirname ${f} )
-	#			#cp ${scratch_work}/$( basename ${f} .ALU.tsv ).*.tsv $( dirname ${f} )/
-	#			cp ${scratch_work}/* $( dirname ${f} )/
-	#		
-	#			#chmod -w ${outbase}.*
-	#			chmod -w ${outbase}.{ALU,LINE1,SVA}.aligned.final.sorted.bam{,.bai}
-	#			chmod -w ${outbase}.{ALU,LINE1,SVA}.hum_breaks.sorted.bam{,.bai}
-	#			chmod -w ${outbase}.{ALU,LINE1,SVA}.pulled.sorted.bam{,.bai}
-	#			chmod -w ${outbase}.{ALU,LINE1,SVA}.tmp.bed
-	#		
-	#		#-rw-r----- 1 gwendt francislab 10340398 Mar  6 11:00 out/DISCOVERYIND/Patient01.Z00324.ALU.aligned.final.sorted.bam
-	#		#-rw-r----- 1 gwendt francislab       96 Mar  6 11:00 out/DISCOVERYIND/Patient01.Z00324.ALU.aligned.final.sorted.bam.bai
-	#		#-rw-r----- 1 gwendt francislab  8758935 Mar  6 13:48 out/DISCOVERYIND/Patient01.Z00324.ALU.hum_breaks.sorted.bam
-	#		#-rw-r----- 1 gwendt francislab  1541320 Mar  6 13:48 out/DISCOVERYIND/Patient01.Z00324.ALU.hum_breaks.sorted.bam.bai
-	#		#-rw-r----- 1 gwendt francislab 10993782 Mar  6 11:02 out/DISCOVERYIND/Patient01.Z00324.ALU.pulled.sorted.bam
-	#		#-rw-r----- 1 gwendt francislab  2331280 Mar  6 11:02 out/DISCOVERYIND/Patient01.Z00324.ALU.pulled.sorted.bam.bai
-	#		#-rw-r----- 1 gwendt francislab    34535 Mar  6 13:48 out/DISCOVERYIND/Patient01.Z00324.ALU.tmp.bed
-	#		
-	#		fi
-
-
-
 	#	https://github.com/bergmanlab/ngs_te_mapper2
+
+	#	Script to detect non-reference TEs from SINGLE END short read data
 
 	#	Needs RepeatMasker, samtools, bwa, bedtools2, seqtk
 
@@ -206,29 +108,77 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	export PATH="${PATH}:${HOME}/.local/RepeatMasker/"
 
-	echo ngs_te_mapper2 -t ${threads} \
-		-f ${R1},${R2}
 
-#			-l /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/D_mel_transposon_sequence_set_v10.1.fa \
-#			-r /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa 
+	#	ngs_te_mapper2 converts "+" to "plus"
+	base=${base//+/plus}
+
+
+	#		inbase=${outbase}
+	outbase=${OUT}/${base}
+	f=${outbase}.ref.bed
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Running ngs_te_mapper2"
+		set -x  #       print expanded command before executing it
+
+		trap "{ chmod -R +w $TMPDIR ; }" EXIT
+
+		ngs_te_mapper2 --thread ${threads} \
+			--reads ${R1},${R2} \
+			--library ${transposon_fasta} \
+			--reference ${human_fasta} \
+			--out ${TMPDIR}
+
+		ls -l ${TMPDIR}
+
+		mv ${TMPDIR}/$(basename $f) ${OUT}
+		mv ${TMPDIR}/$(basename $f .ref.bed).nonref.bed ${OUT}
+		chmod -w ${f} ${f%.ref.bed}.nonref.bed
+	fi
 
 	date
 
 
 else
 
-	ls -1 ${IN}/*${extension} > ${arguments_file}
+	ls -1 ${IN}/*${extension} | head > ${arguments_file}
 
 	max=$( cat ${arguments_file} | wc -l )
 
 	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
-	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
-		--job-name="$(basename $0)" \
+	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
+		--parsable --job-name="$(basename $0)" \
 		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
-		--output=${PWD}/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) -t ${threads}
+		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
+			$( realpath ${0} ) -t ${threads} -l ${transposon_fasta} -r ${human_fasta} --out ${OUT} )
+
+	#	transposon fasta cannot be gzipped
+
+	#	Successfully created the directory /scratch/gwendt/1264046/intermediate_files 
+	#	Traceback (most recent call last):
+	#	  File "/c4/home/gwendt/.local/bin/ngs_te_mapper2", line 8, in <module>
+	#	    sys.exit(main())
+	#	  File "/c4/home/gwendt/.local/lib/python3.6/site-packages/ngs_te_mapper2/ngs_te_mapper2.py", line 189, in main
+	#	    out_dir=tmp_dir,
+	#	  File "/c4/home/gwendt/.local/lib/python3.6/site-packages/ngs_te_mapper2/utility.py", line 66, in parse_input
+	#	    fix_fasta_header(library, library_fix)
+	#	  File "/c4/home/gwendt/.local/lib/python3.6/site-packages/ngs_te_mapper2/utility.py", line 47, in fix_fasta_header
+	#	    for record in SeqIO.parse(input, "fasta"):
+	#	  File "/c4/home/gwendt/.local/lib/python3.6/site-packages/Bio/SeqIO/__init__.py", line 609, in parse
+	#	    for r in i:
+	#	  File "/c4/home/gwendt/.local/lib/python3.6/site-packages/Bio/SeqIO/FastaIO.py", line 122, in FastaIterator
+	#	    for title, sequence in SimpleFastaParser(handle):
+	#	  File "/c4/home/gwendt/.local/lib/python3.6/site-packages/Bio/SeqIO/FastaIO.py", line 43, in SimpleFastaParser
+	#	    line = handle.readline()
+	#	  File "/usr/lib64/python3.6/codecs.py", line 321, in decode
+	#	    (result, consumed) = self._buffer_decode(data, self.errors, final)
+	#	UnicodeDecodeError: 'utf-8' codec can't decode byte 0x8b in position 1: invalid start byte
+
+	echo "Throttle with ..."
+	echo "scontrol update ArrayTaskThrottle=8 JobId=${array_id}"
 
 fi
 
