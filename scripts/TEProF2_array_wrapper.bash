@@ -20,7 +20,7 @@ fi
 #	PWD preserved by slurm for where job is run? I guess so.
 arguments_file=${PWD}/${script}.arguments
 
-threads=${SLURM_NTASKS:-8}
+threads=${SLURM_NTASKS:-4}
 extension="_R1.fastq.gz"
 #IN="${PWD}/in"
 #OUT="${PWD}/out"
@@ -200,8 +200,17 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 ##                        Extend5pOfRead1   ... fully extend only the 5p of the read1, all other ends: local alignment
 ##                        Extend5pOfReads12 ... fully extend only the 5p of the both read1 and read2, all other ends: local alignment
 ##
+##	
 ##
-#
+##outSAMstrandField               None
+##    string: Cufflinks-like strand field flag
+##                                None        ... not used
+##                                intronMotif ... strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.
+##
+##outSAMattributes                Standard
+##    string: a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order.
+##                                XS          ... alignment strand according to --outSAMstrandField.
+##
 #
 #
 #	#	ngs_te_mapper2 --thread ${threads} \
@@ -227,16 +236,30 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#	Filtering: Due to problems with mapping to repetitive elements, we usually will filter to only include uniquelly mapped reads.
 
 	outbase=${OUT}/${base}
-	f=${outbase}.filtered.bam
+	f=${outbase}.unique.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		echo "Selecting only uniquely mapped reads"
 
-		echo samtools view -q 60 -o ${f} ${bam}
-		echo chmod -w ${f}
+		samtools view -h -q 250 ${bam} | samtools sort --threads $[threads-1] -o ${f} -
+		samtools index ${f}
+		chmod -w ${f} ${f}.bai
 	fi
 
+#	samtools view -q 255 -h EGAR00001163970_636782_1_1.rnaseq.fastqAligned.sortedByCoord.out.bam | stringtie - -o EGAR00001163970_636782_1_1.rnaseq.fastqAligned.sortedByCoord.out.gtf -m 100 -c 1
+
+
+	#	Op BAM Description Consumes query Consumes reference
+	#	M 0 alignment match (can be a sequence match or mismatch) yes yes
+	#	I 1 insertion to the reference yes no
+	#	D 2 deletion from the reference no yes
+	#	N 3 skipped region from the reference no yes
+	#	S 4 soft clipping (clipped sequences present in SEQ) yes no
+	#	H 5 hard clipping (clipped sequences NOT present in SEQ) no no
+	#	P 6 padding (silent deletion from padded reference) no no
+	#	= 7 sequence match yes yes
+	#	X 8 sequence mismatch yes yes
 
 
 
@@ -245,26 +268,77 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	infile=${f}
 	outbase=${OUT}/${base}
-	f=${outbase}.filtered.bam
+	f=${outbase}.unique.gtf
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		echo "Stringtie"
+		echo "Stringtie : ASSUMING --rf IS CORRECT. WITHOUT IT, NOTHING GETS ANNOTATED."
 
-		echo stringtie ${bam} -p ${threads} -o ${f}
-		echo chmod -w ${f}
+		stringtie ${infile} -p ${threads} -o ${f} -m 100 -c 1 --rf
+		chmod -w ${f}
+	fi
+
+
+	#(1) <gtffile>_annotated_test_all
+	#(2) <gtffile>_annotated_filtered_test_all
+	#(3) <gtffile>_annotated_test*
+	#(4) <gtffile>_annotated_filtered_test*
+
+	infile=${f}
+	outbase=${OUT}/${base}
+	f=${outbase}.unique.gtf_annotated_test_all
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "rmskhg38_annotate_gtf_update_test_tpm"
+
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/rmskhg38_annotate_gtf_update_test_tpm.py ${infile} /francislab/data1/refs/TEProf2/TEProF2.arguments.txt
+
+		chmod -w ${f}
 	fi
 
 
 
 
+	outbase=${OUT}/${base}
+	#for s in annotated_filtered_test_all annotated_test_all ; do
+	for s in annotated_filtered_test_all ; do
+
+		#(1) <gtffile>annotated_filtered_test(all)_c
+
+		f=${outbase}.unique.gtf_${s}_c
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "annotationtpmprocess.py filtered"
+
+			/c4/home/gwendt/github/twlab/TEProf2Paper/bin/annotationtpmprocess.py ${infile}_${s}
+
+			chmod -w ${f}
+		fi
+
+	done
 
 
 
 
-
-
-
+#		#(1) filter_combined_candidates.tsv: A file with every TE-gene transcript. This file is used for calculating read information in subsequent steps.
+#		#
+#		#(2) initial_candidate_list.tsv: A summary of filter_combined_candidates.tsv for each unique candidate. 
+#		#			Also lists the treatment and untreated files that the candidate is present in.
+#		#
+#		#(3) Step4.RData: Workspace file with data loaded from R session. Subsequent steps load this to save time.
+#
+#		f=${outbase}.unique.gtf_${s}_c
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			echo "annotationtpmprocess.py filtered"
+#
+#			/c4/home/gwendt/github/twlab/TEProf2Paper/bin/aggregateProcessedAnnotation.R <options>
+#
+#			chmod -w ${f}
+#		fi
 
 
 
@@ -273,16 +347,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 else
 
-	ls -1 ${IN}/*${extension} | head > ${arguments_file}
+	ls -1 ${IN}/*${extension} > ${arguments_file}
 
 	max=$( cat ${arguments_file} | wc -l )
 
 	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
-	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
+	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%20 \
 		--parsable --job-name="$(basename $0)" \
-		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
+		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
 		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 			$( realpath ${0} ) --out ${OUT} --extension ${extension} )
 
@@ -292,11 +366,10 @@ else
 
 fi
 
-#	TEProF2_array_wrapper.bash
+#	TEProF2_array_wrapper.bash --threads 4
 #	--in /francislab/data1/working/20200609_costello_RNAseq_spatial/20200615-STAR_hg38/out
 #	--out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230421-TEProF2/out
 #	--extension .STAR.hg38.Aligned.out.bam
-#	--threads 8
 
 
 
