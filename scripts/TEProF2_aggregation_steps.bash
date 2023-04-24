@@ -81,12 +81,21 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 
-#	
-#	mkdir filterreadstats
-#	
-#	commandsmax_speed.py filter_combined_candidates.tsv ../aligned/
-#	
-#	echo "(4/8) Filter based on Reads"
+
+
+	f=${OUT}/filterreadcommands.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		cd ${OUT}
+		mkdir filterreadstats
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/commandsmax_speed.py filter_combined_candidates.tsv ../
+		chmod -w ${f}
+	fi
+
+
+
+#		echo "(4/8) Filter based on Reads"
 #	parallel_GNU -j $MAXJOBS < filterreadcommands.txt
 #	
 #	find ./filterreadstats -name "*.stats" -type f -maxdepth 1 -print0 | xargs -0 -n128 -P1 grep -H e > resultgrep_filterreadstatsdone.txt
