@@ -97,7 +97,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#	Not real sure how to check this. There are about 88,000 commands in this
 
 	echo "(4/8) Filter based on Reads"
-	parallel -j $threads < filterreadcommands.txt
+	parallel -j $threads < ${OUT}/filterreadcommands.txt
 
 
 
