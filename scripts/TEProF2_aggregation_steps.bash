@@ -58,8 +58,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI r
-			#samtools bwa bedtools2 cufflinks star/2.7.7a
+		module load CBI r samtools 
+			# bwa bedtools2 cufflinks star/2.7.7a
 	fi
 	
 	date
