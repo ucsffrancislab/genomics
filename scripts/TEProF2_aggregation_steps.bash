@@ -97,17 +97,25 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#	Not real sure how to check this. There are about 88,000 commands in this
 
 	echo "(4/8) Filter based on Reads"
-	parallel -j $threads < ${OUT}/filterreadcommands.txt
+#	parallel -j $threads < ${OUT}/filterreadcommands.txt
+
+
+	#	creates a whole bunch of files like ...
+	#	out/filterreadstats/MIR3_127855022_None_None_None_ENG_exon_1_127815016--455v03.unique.stats
+
+	#	All are 
+	#	0	0	0	pe
+	#	Guessing this is pretty useless.
+
+
+	find ${OUT}/filterreadstats -name "*.stats" -type f -maxdepth 1 -print0 | xargs -0 -n128 -P1 grep -H e > ${OUT}/resultgrep_filterreadstatsdone.txt
+	cat ${OUT}/resultgrep_filterreadstatsdone.txt | sed 's/\:/\t/g' > ${OUT}/filter_read_stats.txt
+
+
+	/c4/home/gwendt/github/twlab/TEProf2Paper/bin/filterReadCandidates.R -r 5
 
 
 
-#	find ./filterreadstats -name "*.stats" -type f -maxdepth 1 -print0 | xargs -0 -n128 -P1 grep -H e > resultgrep_filterreadstatsdone.txt
-#	cat resultgrep_filterreadstatsdone.txt | sed 's/\:/\t/g' > filter_read_stats.txt
-#	
-#	module load R/3.4.1
-#	
-#	filterReadCandidates.R -r 5
-#	
 #	gffread -E candidate_transcripts.gff3 -T -o candidate_transcripts.gtf
 #	echo candidate_transcripts.gtf > cuffmergegtf.list
 #	cuffmerge -o ./merged_asm_full -g ~/reference/Gencode/gencode.v25.basic.annotation.gtf cuffmergegtf.list
