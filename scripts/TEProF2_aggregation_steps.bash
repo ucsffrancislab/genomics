@@ -29,8 +29,8 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 #		-i|--in)
 #			shift; IN=$1; shift;;
-#		-t|--threads)
-#			shift; threads=$1; shift;;
+		-t|--threads)
+			shift; threads=$1; shift;;
 		-o|--out)
 			shift; OUT=$1; shift;;
 #		-l|--transposon)
