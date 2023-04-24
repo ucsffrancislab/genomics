@@ -94,10 +94,13 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 
+	#	Not real sure how to check this. There are about 88,000 commands in this
 
-#		echo "(4/8) Filter based on Reads"
-#	parallel_GNU -j $MAXJOBS < filterreadcommands.txt
-#	
+	echo "(4/8) Filter based on Reads"
+	parallel -j $threads < filterreadcommands.txt
+
+
+
 #	find ./filterreadstats -name "*.stats" -type f -maxdepth 1 -print0 | xargs -0 -n128 -P1 grep -H e > resultgrep_filterreadstatsdone.txt
 #	cat resultgrep_filterreadstatsdone.txt | sed 's/\:/\t/g' > filter_read_stats.txt
 #	
