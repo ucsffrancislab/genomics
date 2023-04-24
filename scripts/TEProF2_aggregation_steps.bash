@@ -89,7 +89,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		cd ${OUT}
 		mkdir filterreadstats
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/commandsmax_speed.py filter_combined_candidates.tsv ../
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/commandsmax_speed.py filter_combined_candidates.tsv ${OUT}
 		chmod -w ${f}
 	fi
 
