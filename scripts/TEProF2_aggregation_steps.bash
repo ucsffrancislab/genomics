@@ -20,7 +20,7 @@ fi
 #	PWD preserved by slurm for where job is run? I guess so.
 #arguments_file=${PWD}/${script}.arguments
 
-threads=${SLURM_NTASKS:-8}
+threads=${SLURM_NTASKS:-32}
 #extension="_R1.fastq.gz"
 #IN="${PWD}/in"
 #OUT="${PWD}/out"
@@ -58,34 +58,27 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI samtools bwa bedtools2 cufflinks star/2.7.7a
+		module load CBI r
+			#samtools bwa bedtools2 cufflinks star/2.7.7a
 	fi
 	
 	date
 	
 
+#	outbase=${OUT}/${base}
+	f=${OUT}/filter_combined_candidates.tsv
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "(3/8) Aggregate Annotations"
 
+		cd ${OUT}
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/aggregateProcessedAnnotation.R -a /francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 
-
-
-
-
-#	module load R/3.4.1
-#	
-#	echo "(3/8) Aggregate Annotations"
-#	aggregateProcessedAnnotation.R -e $TREATMENTLABEL
-
-
-# 32   --chdir="${PWD}/out" \
-# 33   --wrap="/c4/home/gwendt/github/twlab/TEProf2Paper/bin/aggregateProcessedAnnotation.R -a /francislab/data1/refs/TEProf2/TEProF2.arguments.txt"
-# 34 
-# 35 ```
-# 36 
-# 37 ```
-# 38 -rw-r----- 1 gwendt francislab   179250859 Apr 22 15:42 out/filter_combined_candidates.tsv
-# 39 -rw-r----- 1 gwendt francislab     8678838 Apr 22 15:42 out/initial_candidate_list.tsv
-# 40 -rw-r----- 1 gwendt francislab   300008731 Apr 22 15:43 out/Step4.RData
-# 41 ```
+		chmod -w ${f} 
+		chmod -w ${OUT}/initial_candidate_list.tsv
+		chmod -w ${OUT}/Step4.RData
+	fi
 
 
 #	
