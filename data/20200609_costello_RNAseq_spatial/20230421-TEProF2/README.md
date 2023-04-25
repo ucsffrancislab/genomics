@@ -27,7 +27,7 @@ TEProF2_array_wrapper.bash --threads 4 --strand --rf \
 
 ```
 
-TEProF2_aggregation_steps.bash --threads 64 --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230421-TEProF2/out-rf
+TEProF2_aggregation_steps.bash --threads 64 --strand --rf --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230421-TEProF2/out-rf
 
 ```
 
@@ -47,7 +47,7 @@ TEProF2_array_wrapper.bash --threads 4 --strand --fr \
 
 ```
 
-TEProF2_aggregation_steps.bash --threads 64 --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230421-TEProF2/out-fr
+TEProF2_aggregation_steps.bash --threads 64 --strand --fr --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230421-TEProF2/out-fr
 
 ```
 
