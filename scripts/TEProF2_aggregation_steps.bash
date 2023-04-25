@@ -216,8 +216,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 
-	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translatePart1.R 
-	/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translatePart1.R 
+	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+	/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
 
 
 
@@ -226,8 +226,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 
-	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translatePart2.R
-	/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translatePart2.R
+	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+	/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
 
 
 	echo "ballgown prep?"
