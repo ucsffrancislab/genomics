@@ -24,6 +24,7 @@ threads=${SLURM_NTASKS:-32}
 #extension="_R1.fastq.gz"
 #IN="${PWD}/in"
 #OUT="${PWD}/out"
+strand=""
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -39,6 +40,17 @@ while [ $# -gt 0 ] ; do
 #			shift; human_fasta=$1; shift;;
 #		-e|--extension)
 #			shift; extension=$1; shift;;
+		-s|--strand)
+			shift; strand=$1; shift;;
+			#	I really don't know which is correct
+			# --rf assume stranded library fr-firststrand
+			# --fr assume stranded library fr-secondstrand - guessing this is correct, but its a guess
+			#	5' ------------------------------> 3'
+			#	   /2 ----->            <----- /1 - fr-firststrand
+			#	   /1 ----->            <----- /2 - fr-secondstrand
+			#	unstranded
+			#	second-strand = directional, where the first read of the read pair (or in case of single end reads, the only read) is from the transcript strand
+			#	first-strand = directional, where the first read (or the only read in case of SE) is from the opposite strand.
 		-h|--help)
 			echo
 			echo "Good question"
@@ -159,7 +171,13 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 	#	tries to create new gtf files of the same name that I started. Added "JAKE"
-	find ${OUT} -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 --fr -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
+	#	I think that this assumes if "fr"
+	#find ${OUT} -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 --fr -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
+	find ${OUT} -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
+
+	#	they have a special script that passes rf
+	#	find ../aligned -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".gtf -e -b "${xbase%.*}"_stats -p 2 --rf -m 100 -c 1 -G reference_merged_candidates.gtf" >> quantificationCommands.txt ; done ;
+
 
 
 	echo "(6/8) Transcript Quantification"
