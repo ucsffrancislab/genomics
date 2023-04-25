@@ -51,8 +51,25 @@ wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencod
 zcat gencode.v43.annotation.gtf.gz | awk '{if($3=="transcript"||$3=="exon"||$3=="start_codon"){print}}' |  awk -F "; " '{print $0"\t"$2}' > OUTPUT_sorted.gtf
 ~/github/twlab/TEProf2Paper/bin/genecode_to_dic.py OUTPUT_sorted.gtf
 
+~/github/twlab/TEProf2Paper/bin/genecode_introns.py OUTPUT_sorted.gtf
+
+sort -k1,1 -k2,2n -k3,3n OUTPUT_sorted.gtf_introns_plus > OUTPUT_sorted.gtf_introns_plus_sorted
+sort -k1,1 -k2,2n -k3,3n OUTPUT_sorted.gtf_introns_minus > OUTPUT_sorted.gtf_introns_minus_sorted
+
+bgzip OUTPUT_sorted.gtf_introns_plus_sorted
+bgzip OUTPUT_sorted.gtf_introns_minus_sorted
+
+tabix -p bed OUTPUT_sorted.gtf_introns_plus_sorted.gz
+tabix -p bed OUTPUT_sorted.gtf_introns_minus_sorted.gz
 
 
+
+
+
+module load htslib
+
+zcat gencode.v43.basic.annotation.gtf.gz | awk '{if($3=="transcript"||$3=="exon"||$3=="start_codon"){print}}' |  awk -F "; " '{print $0"\t"$2}' > OUTPUT_sorted.gtf
+~/github/twlab/TEProf2Paper/bin/genecode_to_dic.py OUTPUT_sorted.gtf
 
 ~/github/twlab/TEProf2Paper/bin/genecode_introns.py OUTPUT_sorted.gtf
 
