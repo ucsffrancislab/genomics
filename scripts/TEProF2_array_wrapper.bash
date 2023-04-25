@@ -24,6 +24,7 @@ threads=${SLURM_NTASKS:-4}
 extension="_R1.fastq.gz"
 #IN="${PWD}/in"
 #OUT="${PWD}/out"
+strand=""
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -39,6 +40,17 @@ while [ $# -gt 0 ] ; do
 #			shift; human_fasta=$1; shift;;
 		-e|--extension)
 			shift; extension=$1; shift;;
+		-s|--strand)
+			shift; strand=$1; shift;;
+			#	I really don't know which is correct
+			# --rf assume stranded library fr-firststrand
+			# --fr assume stranded library fr-secondstrand - guessing this is correct, but its a guess
+			#	5' ------------------------------> 3'
+			#	   /2 ----->            <----- /1 - fr-firststrand
+			#	   /1 ----->            <----- /2 - fr-secondstrand
+			#	unstranded
+			#	second-strand = directional, where the first read of the read pair (or in case of single end reads, the only read) is from the transcript strand
+			#	first-strand = directional, where the first read (or the only read in case of SE) is from the opposite strand.
 		-h|--help)
 			echo
 			echo "Good question"
@@ -274,7 +286,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Stringtie : ASSUMING --rf IS CORRECT. WITHOUT IT, NOTHING GETS ANNOTATED."
 
-		stringtie ${infile} -p ${threads} -o ${f} -m 100 -c 1 --rf
+		stringtie ${infile} -p ${threads} -o ${f} -m 100 -c 1 ${strand}
+
 		chmod -w ${f}
 	fi
 
