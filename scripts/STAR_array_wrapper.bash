@@ -129,6 +129,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--outSAMtype BAM SortedByCoordinate \
 			--outFileNamePrefix ${outFileNamePrefix}
 
+		samtools index ${f}
+		chmod -w ${f}.bai
 
 
 ##alignEndsType           Local
