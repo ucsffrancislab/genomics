@@ -71,3 +71,13 @@ TEProF2_aggregation_steps.bash --threads 64 --out /francislab/data1/working/2020
 
 ```
 
+
+
+
+
+fr and unstranded failed quite early
+
+
+
+
+
