@@ -70,7 +70,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI r/4.0.0 samtools cufflinks bedtools2
+		module load CBI r/4.2.3 samtools cufflinks bedtools2
 			# bwa bedtools2 star/2.7.7a
 
 		#	http://ccb.jhu.edu/software/stringtie/dl/		gffread / stringtie / gffcompare 
