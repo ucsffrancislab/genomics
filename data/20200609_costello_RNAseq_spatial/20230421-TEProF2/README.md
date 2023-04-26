@@ -10,6 +10,7 @@
 
 Running this 3 different ways: unstranded, rf and fr for comparison
 
+RseQC says that this data is --rf (fr-firststrand)
 
 
 
