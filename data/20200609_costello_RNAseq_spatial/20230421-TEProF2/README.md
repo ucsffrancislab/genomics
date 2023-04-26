@@ -78,6 +78,18 @@ TEProF2_aggregation_steps.bash --threads 64 --out /francislab/data1/working/2020
 fr and unstranded failed quite early
 
 
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+BOX="${BOX_BASE}/${PROJECT}"
+for f in out-rf/Step10.RData ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
 
 
 
