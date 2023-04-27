@@ -82,7 +82,8 @@ fr and unstranded failed quite early
 
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
-BOX="${BOX_BASE}/${PROJECT}"
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
 for f in out-rf/Step10.RData ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
