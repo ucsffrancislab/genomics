@@ -43,3 +43,34 @@ qsub -N ${feature} -l nodes=1:ppn=8 -l vmem=60gb -l feature=nocommunal -j oe -o 
 done
 
 
+
+
+
+
+
+```
+
+for bai in *bai; do bam=$( basename $bai .bai); echo $bam ; f=${bam}.strand_check.txt; if [ ! -f ${f} ] ; then infer_experiment.py -r hg38_GENCODE_V42_Basic.bed -i ${bam} > ${f} ; fi ; done
+
+```
+
+
+
+```
+
+grep "1+-,1-+,2++,2--" out/*bam.strand_check.txt | awk '{print $NF}' | sort -nr | tail
+0.9179
+0.9179
+0.9176
+0.9078
+0.9046
+0.9032
+0.9010
+0.9005
+0.9000
+0.8985
+
+
+```
+
+
