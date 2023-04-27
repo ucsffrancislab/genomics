@@ -13,3 +13,27 @@ STAR_array_wrapper.bash --threads 8 \
 
 
 ```
+
+
+```
+
+for bai in *bai; do bam=$( basename $bai .bai); echo $bam ; f=${bam}.strand_check.txt; if [ ! -f ${f} ] ; then infer_experiment.py -r hg38_GENCODE_V42_Basic.bed -i ${bam} > ${f} ; fi ; done
+
+```
+
+
+```
+grep "1+-,1-+,2++,2--" out/*bam.strand_check.txt | awk '{print $NF}' | sort -nr | tail
+0.9179
+0.9178
+0.9104
+0.9098
+0.9094
+0.9069
+0.9069
+0.9064
+0.8980
+0.8843
+```
+
+
