@@ -106,22 +106,43 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="STAR" \
 ##	Align
 
 
+Align - Parse - Annotate can be run on paired end data by aligning with STAR instead of Circexplorer
+
+Tophat does seem to support paired end alignment so perhaps align that way rather than with CIRCexplorer2's align
+
 
 Aligning with CIRCexplorer2 takes a while. 
 Seems like it creates its own indexes from these indexes and gtf
 Should probably create a good index and use STAR instead.
 This would also facilitate paired end alignment.
+
+
+
+
+
+
+
+```
+export BOWTIE_INDEXES=/francislab/data1/refs/CIRCexplorer2
+export BOWTIE2_INDEXES=/francislab/data1/refs/CIRCexplorer2
+
+unset BOWTIE_INDEXES
+unset BOWTIE2_INDEXES
+export PATH="${HOME}/.local/tophat-2.1.0.Linux_x86_64:${PATH}"
+module load tophat bowtie/1.3.1 bowtie2/2.4.1 bedtools2/2.30.0
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="align" \
+--time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/CIRCexplorer2-align.out.log \
+--wrap="CIRCexplorer2 align -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf --thread 64 --bowtie1 bowtie1_index --bowtie2 bowtie2_index -f /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz"
+
 ```
 
-module load tophat/2.1.1 bowtie/1.3.1 bowtie2/2.4.1
-
-CIRCexplorer2 align -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf \
-  --bowtie1 /francislab/data1/refs/CIRCexplorer2/bowtie1_index \
-  --bowtie2 /francislab/data1/refs/CIRCexplorer2/bowtie2_index \
-  -f /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz > CIRCexplorer2_align.log
 
 
 
+--bowtie1 and --bowtie2 are the NAMES of the indexes in the BOWTIE_INDEX / BOWTIE2_INDEXES folder
+
+```
 [2023-04-27 09:13:10] Beginning TopHat run (v2.1.1)
 -----------------------------------------------
 [2023-04-27 09:13:10] Checking for Bowtie
@@ -151,7 +172,7 @@ Apparently uses environment variable BOWTIE2_INDEXES to locate bowtie2 index and
 
 
 
-64 failed. Trying 32 thread. Failed. Trying 16. 16 works. Guess all the extra threads results in too many open files.
+Align paired end with STAR, but will not be able to run Assemble or Denovo steps
 
 ```
 
@@ -168,17 +189,67 @@ STAR --chimSegmentMin 10 --runMode alignReads \
 --outSAMtype BAM SortedByCoordinate \
 --outFileNamePrefix /francislab/data1/refs/CIRCexplorer2/02-0047-01A."
 
+```
+
+
+64 failed. Trying 32 thread. Failed. Trying 16. 16 works. Guess all the extra threads results in too many open files.
+
+```
 BAMoutput.cpp:27:BAMoutput: exiting because of *OUTPUT FILE* error: could not create output file /francislab/data1/refs/CIRCexplorer2/02-0047-01A._STARtmp//BAMsort/19/46
 SOLUTION: check that the path exists and you have write permission for this file. Also check ulimit -n and increase it to allow more open files.
 
 Apr 27 11:34:38 ...... FATAL ERROR, exiting
 
-``
+```
 
 
 
 
 
+
+
+
+
+Trying to align paired with tophat so can run all pipelines.
+
+Not sure if running paired make much difference
+
+```
+
+gtf_juncs /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf  > /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.juncs
+chmod -w /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.juncs
+
+gtf_to_fasta --min-anchor 8 --splice-mismatches 2 --min-report-intron 50 --max-report-intron 500000 --min-isoform-fraction 0.15 --output-dir /francislab/data2/refs/CIRCexplorer2/ --max-multihits 1 --max-seg-multihits 10 --segment-length 25 --segment-mismatches 2 --min-closure-exon 100 --min-closure-intron 50 --max-closure-intron 5000 --min-coverage-intron 50 --max-coverage-intron 20000 --min-segment-intron 50 --max-segment-intron 500000 --read-mismatches 2 --read-gap-length 2 --read-edit-dist 2 --read-realign-edit-dist 3 --max-insertion-length 3 --max-deletion-length 3 -z gzip -p64 --gtf-annotations /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf --gtf-juncs /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.juncs --no-closure-search --no-coverage-search /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf /francislab/data2/refs/CIRCexplorer2/bowtie2_index.fa /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.fa
+chmod -w /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.fa
+chmod -w /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.fa.tlst
+
+
+bowtie2-build --threads 8 /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.fa /francislab/data2/refs/CIRCexplorer2/hg38_ref_all
+chmod -w /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.*bt2
+```
+
+
+
+
+```
+tophat -g 1 --microexon-search -m 2 -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf -p 18 -o /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat /francislab/data2/refs/CIRCexplorer2/bowtie2_index /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz
+
+#>prep_reads:
+/software/c4/cbi/software/tophat-2.1.1/prep_reads --min-anchor 8 --splice-mismatches 2 --min-report-intron 50 --max-report-intron 500000 --min-isoform-fraction 0.15 --output-dir /francislab/data2/refs/CIRCexplorer2/alignment/tophat/ --max-multihits 1 --max-seg-multihits 10 --segment-length 25 --segment-mismatches 2 --min-closure-exon 100 --min-closure-intron 50 --max-closure-intron 5000 --min-coverage-intron 50 --max-coverage-intron 20000 --min-segment-intron 50 --max-segment-intron 500000 --read-mismatches 2 --read-gap-length 2 --read-edit-dist 2 --read-realign-edit-dist 3 --max-insertion-length 3 --max-deletion-length 3 -z gzip -p64 --gtf-annotations /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf --gtf-juncs /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.juncs --no-closure-search --no-coverage-search --aux-outfile=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/prep_reads.info --index-outfile=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.bam.index --sam-header=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/bowtie2_index_genome.bwt.samheader.sam --outfile=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.bam /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz
+
+/software/c4/cbi/software/tophat-2.1.1/bam2fastx --all /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.bam|/software/c4/cbi/software/bowtie2-2.4.1/bowtie2 -k 60 -D 15 -R 2 -N 0 -L 20 -i S,1,1.25 --gbar 4 --mp 6,2 --np 1 --rdg 5,3 --rfg 5,3 --score-min C,-14,0 -p 64 --sam-no-hd -x /francislab/data2/refs/CIRCexplorer2/hg38_ref_all -|/software/c4/cbi/software/tophat-2.1.1/fix_map_ordering --bowtie2-min-score 15 --read-mismatches 2 --read-gap-length 2 --read-edit-dist 2 --read-realign-edit-dist 3 --sam-header /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/hg38_ref_all.bwt.samheader.sam - - /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.m2g_um.bam | /software/c4/cbi/software/tophat-2.1.1/map2gtf --sam-header /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/bowtie2_index_genome.bwt.samheader.sam /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.fa.tlst - /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.m2g.bam > /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/logs/m2g_left_kept_reads.out
+
+```
+
+
+
+
+
+
+
+
+
+##	Parse
 
 
 ```
@@ -192,7 +263,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="CIRC-Pars
 
 
 
-
+##	Annotate
 
 
 ```
@@ -203,6 +274,12 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="CIRC-Anno
 ```
 
 
+
+
+##	Assemble
+
+
+Assemble - Denovo - doesn't really work with paired end data explicitly
 
 
 
@@ -224,7 +301,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="CIRC-Ass"
 
 
 
-
+##	Denovo
 
 
 
@@ -258,7 +335,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="CIRC-deno
 --wrap "CIRCexplorer2 denovo --ref ${PWD}/hg38_ref_all.txt --genome ${PWD}/hg38.fa --bed ${PWD}/back_spliced_junction.bed --abs abs --as as --tophat ${PWD}/tophat --pAplus pAplus_tophat --output ${PWD}/denovo"
 
 ```
-d --abs=abs --as=as --tophat=${OUT}/${basename}/tophat --pAplus=pAplus_tophat --cuff=${OUT}/${basename}/assemble --output=${OUT}/${basename}/denovo" )
 
 
 
@@ -286,6 +362,7 @@ d --abs=abs --as=as --tophat=${OUT}/${basename}/tophat --pAplus=pAplus_tophat --
 
 
 
+---
 
 Weird errors.
 
@@ -323,8 +400,4 @@ terminate called after throwing an instance of 'int'
 
 
 
-
-
-
-~/.local/bin/STAR --runMode genomeGenerate --genomeFastaFiles hg38.fa --sjdbGTFfile hg38_ref_all.gtf --genomeDir STAR/ --runThreadN 64
 
