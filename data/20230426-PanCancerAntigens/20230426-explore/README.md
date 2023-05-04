@@ -88,3 +88,56 @@ done
 
 
 ```
+
+
+
+
+
+
+
+NP_040188.1_serine-threonine_protein_kinase_US3_Hu
+TCONS_00011565_MLT1A0_AKT3_-_233
+TCONS_00092541_MLT2B2_EPHA5_-_195
+TCONS_00036289_MLT1E2_PRKD1_-_134
+TCONS_00000820_L2b_EPHB2_+_9
+TCONS_00105490_L1PA5_MAP3K7_-_130
+TCONS_00012449_MIRb_RET_+_458
+
+```
+module load samtools
+
+cp /francislab/data1/working/20230413-VZV/Human_alphaherpesvirus_3_proteins.trim.sam_header S10_All_ProteinSequences_IN_Human_alphaherpesvirus_3_proteins.Human_alphaherpesvirus_3_proteins.sam
+
+blast2sam.pl S10_All_ProteinSequences_IN_Human_alphaherpesvirus_3_proteins.blastp.e0.05.txt >> S10_All_ProteinSequences_IN_Human_alphaherpesvirus_3_proteins.Human_alphaherpesvirus_3_proteins.sam
+samtools sort -o S10_All_ProteinSequences_IN_Human_alphaherpesvirus_3_proteins.Human_alphaherpesvirus_3_proteins.bam S10_All_ProteinSequences_IN_Human_alphaherpesvirus_3_proteins.Human_alphaherpesvirus_3_proteins.sam
+samtools index S10_All_ProteinSequences_IN_Human_alphaherpesvirus_3_proteins.Human_alphaherpesvirus_3_proteins.bam
+```
+
+
+
+
+
+
+
+```
+cat <<EOF > S10_All_ProteinSequences 
+TCONS_00011565_MLT1A0_AKT3_-_233
+TCONS_00092541_MLT2B2_EPHA5_-_195
+TCONS_00036289_MLT1E2_PRKD1_-_134
+TCONS_00000820_L2b_EPHB2_+_9
+TCONS_00105490_L1PA5_MAP3K7_-_130
+TCONS_00012449_MIRb_RET_+_458
+EOF
+
+
+grep -f S10_All_ProteinSequences -A1 --no-group-separator /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences.fa 
+
+
+
+```
+
+
+
+
+
+
