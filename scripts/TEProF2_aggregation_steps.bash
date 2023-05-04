@@ -450,6 +450,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
+#	takes a while and is single threaded
 		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
 		chmod -w ${f}
 	fi
@@ -470,6 +471,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
+#	takes a while and is single threaded
 		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
 		chmod -w ${f}
 	fi

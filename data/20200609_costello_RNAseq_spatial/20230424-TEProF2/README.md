@@ -34,7 +34,7 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-for f in out/Step10.RData ; do
+for f in out/{Step10.RData,Step11_FINAL.RData,Step12.RData,Step13.RData,candidates_cpcout.fa,candidates_proteinseq.fa} ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
