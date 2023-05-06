@@ -138,6 +138,10 @@ grep -f S10_All_ProteinSequences -A1 --no-group-separator /francislab/data1/raw/
 
 
 
+```
+wget http://www.sbg.bio.ic.ac.uk/~maxcluster/maxcluster64bit
+chmod +x maxcluster64bit
+```
 
 
 
