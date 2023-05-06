@@ -103,6 +103,19 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="STAR" \
 
 
 
+
+```
+zcat /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz \
+  | head -1000 | gzip > 02-0047-01A-01R-1849-01+1_head_R1.fastq.gz
+chmod -w 02-0047-01A-01R-1849-01+1_head_R1.fastq.gz
+zcat /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz \
+  | head -1000 | gzip > 02-0047-01A-01R-1849-01+1_head_R2.fastq.gz
+chmod -w 02-0047-01A-01R-1849-01+1_head_R2.fastq.gz
+
+```
+
+
+
 ##	Align
 
 
@@ -118,7 +131,9 @@ This would also facilitate paired end alignment.
 
 
 
+Tophat 2.1.1 results in a Tophat-Fusion error
 
+Using 2.1.0
 
 
 
@@ -128,12 +143,12 @@ export BOWTIE2_INDEXES=/francislab/data1/refs/CIRCexplorer2
 
 unset BOWTIE_INDEXES
 unset BOWTIE2_INDEXES
+module load bowtie/1.3.1 bowtie2/2.4.1 bedtools2/2.30.0
 export PATH="${HOME}/.local/tophat-2.1.0.Linux_x86_64:${PATH}"
-module load tophat bowtie/1.3.1 bowtie2/2.4.1 bedtools2/2.30.0
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="align" \
 --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/CIRCexplorer2-align.out.log \
---wrap="CIRCexplorer2 align -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf --thread 64 --bowtie1 bowtie1_index --bowtie2 bowtie2_index -f /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz"
+--wrap="CIRCexplorer2 align -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf --thread 64 --bowtie1 bowtie1_index --bowtie2 bowtie2_index -f /francislab/data1/refs/CIRCexplorer2/02-0047-01A-01R-1849-01+1_head_R1.fastq.gz"
 
 ```
 
@@ -232,7 +247,20 @@ chmod -w /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.*bt2
 
 
 ```
-tophat -g 1 --microexon-search -m 2 -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf -p 18 -o /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat /francislab/data2/refs/CIRCexplorer2/bowtie2_index /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz
+unset BOWTIE_INDEXES
+unset BOWTIE2_INDEXES
+module load bowtie/1.3.1 bowtie2/2.4.1 bedtools2/2.30.0
+export PATH="${HOME}/.local/tophat-2.1.0.Linux_x86_64:${PATH}"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="tophat" \
+--time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/tophat.out.log \
+--wrap="tophat -g 1 --microexon-search -m 2 -G /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf -p 18 -o /francislab/data2/refs/CIRCexplorer2/alignment-test/tophat /francislab/data2/refs/CIRCexplorer2/bowtie2_index /francislab/data1/refs/CIRCexplorer2/02-0047-01A-01R-1849-01+1_head_R1.fastq.gz /francislab/data1/refs/CIRCexplorer2/02-0047-01A-01R-1849-01+1_head_R2.fastq.gz"
+
+
+
+
+
+
 
 #>prep_reads:
 /software/c4/cbi/software/tophat-2.1.1/prep_reads --min-anchor 8 --splice-mismatches 2 --min-report-intron 50 --max-report-intron 500000 --min-isoform-fraction 0.15 --output-dir /francislab/data2/refs/CIRCexplorer2/alignment/tophat/ --max-multihits 1 --max-seg-multihits 10 --segment-length 25 --segment-mismatches 2 --min-closure-exon 100 --min-closure-intron 50 --max-closure-intron 5000 --min-coverage-intron 50 --max-coverage-intron 20000 --min-segment-intron 50 --max-segment-intron 500000 --read-mismatches 2 --read-gap-length 2 --read-edit-dist 2 --read-realign-edit-dist 3 --max-insertion-length 3 --max-deletion-length 3 -z gzip -p64 --gtf-annotations /francislab/data1/refs/CIRCexplorer2/hg38_ref_all.gtf --gtf-juncs /francislab/data2/refs/CIRCexplorer2/hg38_ref_all.juncs --no-closure-search --no-coverage-search --aux-outfile=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/prep_reads.info --index-outfile=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.bam.index --sam-header=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/bowtie2_index_genome.bwt.samheader.sam --outfile=/francislab/data2/refs/CIRCexplorer2/alignment-test/tophat/tmp/left_kept_reads.bam /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz
