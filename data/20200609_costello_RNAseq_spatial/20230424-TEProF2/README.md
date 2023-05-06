@@ -24,6 +24,16 @@ TEProF2_aggregation_steps.bash --threads 64 --strand --rf --out /francislab/data
 
 
 
+```
+
+TEProF2_TCGA33_guided_aggregation_steps.bash --threads 64 --strand --rf \
+  --in  /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out \
+  --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out-guided
+
+```
+
+
+
 
 
 
