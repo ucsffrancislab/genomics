@@ -248,7 +248,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 	echo "mergeAnnotationProcess.R"
-	f=${OUT}/reference_merged_candidates.gff3_annotated_filtered_test_all
+	f=${OUT}/Step10.RData
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -456,6 +456,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 
+#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
+
 	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
 	f=${OUT}/candidates_cpcout.fa
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -495,7 +497,7 @@ else
 		--job-name="$(basename $0)" \
 		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
-			$( realpath ${0} ) --out ${OUT}
+			$( realpath ${0} ) --out ${OUT} --strand ${strand}
 
 fi
 
