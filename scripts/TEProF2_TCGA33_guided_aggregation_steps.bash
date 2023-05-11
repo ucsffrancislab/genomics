@@ -322,7 +322,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		ls ./*stats/t_data.ctab > ctablist.txt
+		ls ${OUT}/*stats/t_data.ctab > ctablist.txt
 		chmod -w ${f}
 	fi
 
@@ -332,7 +332,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		\rm ${f}
+		\rm -f ${f}
 		cat ctablist.txt | while read file ; do
 			echo "/c4/home/gwendt/github/twlab/TEProf2Paper/bin/stringtieExpressionFrac.py $file" >> ${f}
 		done
@@ -340,156 +340,158 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 
-##	echo "(7/8) Transcript Quantification"
-##	f=${OUT}/stringtieExpressionFracCommands.complete
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##
-##		# usually called with 64 which causes ...
-##		#	OpenBLAS blas_thread_init: pthread_create failed for thread 62 of 64: Resource temporarily unavailable
-##		#	OpenBLAS blas_thread_init: RLIMIT_NPROC 4096 current, 2061315 max
-##		#	OpenBLAS blas_thread_init: pthread_create failed for thread 63 of 64: Resource temporarily unavailable
-##		#	OpenBLAS blas_thread_init: RLIMIT_NPROC 4096 current, 2061315 max
-##		#	cutting threads in half. testing.
-##		#	32 seems to be working without failure.
-##
-##		\rm -f ${f}
-##		parallel -j $[threads/2] < stringtieExpressionFracCommands.txt
-##		touch ${f}
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo "(7/8) Transcript Quantification 1a"
-##	f=${OUT}/ctab_frac_tot_files.txt
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		ls ./*stats/t_data.ctab_frac_tot > ${f}
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo "(7/8) Transcript Quantification 1b"
-##	f=${OUT}/ctab_tpm_files.txt
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		ls ./*stats/t_data.ctab_tpm > ${f}
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo "(7/8) Transcript Quantification 2"
-##	f=${OUT}/table_frac_tot
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		cat <(echo "TranscriptID") <(find . -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
-###		chmod -w ${f}
-###	fi
-###	echo "(7/8) Transcript Quantification 3"
-###	f=${OUT}/table_frac_tot
-###	if [ -f $f ] && [ ! -w $f ] ; then
-###		echo "Write-protected $f exists. Skipping."
-###	else
-##		cat ctab_frac_tot_files.txt | while read file ; do
-##			fileid=$(echo "$file" | awk -F "/" '{print $2}')
-##			paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
-##			mv table_frac_tot_temp table_frac_tot
-##		done
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo "(7/8) Transcript Quantification 4"
-##	f=${OUT}/table_tpm
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		cat <(echo "TranscriptID") <(find . -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
-###		chmod -w ${f}
-###	fi
-###	echo "(7/8) Transcript Quantification 5"
-###	f=${OUT}/table_tpm
-###	if [ -f $f ] && [ ! -w $f ] ; then
-###		echo "Write-protected $f exists. Skipping."
-###	else
-##		cat ctab_tpm_files.txt | while read file ; do
-##			fileid=$(echo "$file" | awk -F "/" '{print $2}')
-##			paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_tpm_temp
-##			mv table_tpm_temp table_tpm
-##		done
-##		chmod -w ${f}
-##	fi
-##
-##
-##
-##
-##
-##	echo "(7/8) Transcript Quantification 6"
-##	f=${OUT}/table_frac_tot_cand
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		cat <(head -1 table_frac_tot) <(grep -Ff candidate_names.txt table_frac_tot) > ${f}
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo "(7/8) Transcript Quantification 7"
-##	f=${OUT}/table_tpm_cand
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		cat <(head -1 table_tpm) <(grep -Ff candidate_names.txt table_tpm) > ${f}
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo "(8/8) Final Stats Calculations"
-##	f=${OUT}/Step11_FINAL.RData
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/finalStatisticsOutput.R #-e $TREATMENTLABEL
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
-##	f=${OUT}/candidates.fa
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-###	takes a while and is single threaded
-##		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
-##		chmod -w ${f}
-##	fi
-##
-##
-###	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
-##
-##	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
-##	f=${OUT}/candidates_cpcout.fa
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-##		/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
-##		chmod -w ${f}
-##	fi
-##
-##
-##	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
-##	f=${OUT}/Step13.RData
-##	if [ -f $f ] && [ ! -w $f ] ; then
-##		echo "Write-protected $f exists. Skipping."
-##	else
-###	takes a while and is single threaded
-##		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
-##		chmod -w ${f}
-##	fi
+	echo "(7/8) Transcript Quantification"
+	f=${OUT}/stringtieExpressionFracCommands.complete
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+
+		# usually called with 64 which causes ...
+		#	OpenBLAS blas_thread_init: pthread_create failed for thread 62 of 64: Resource temporarily unavailable
+		#	OpenBLAS blas_thread_init: RLIMIT_NPROC 4096 current, 2061315 max
+		#	OpenBLAS blas_thread_init: pthread_create failed for thread 63 of 64: Resource temporarily unavailable
+		#	OpenBLAS blas_thread_init: RLIMIT_NPROC 4096 current, 2061315 max
+		#	cutting threads in half. testing.
+		#	32 seems to be working without failure.
+
+		\rm -f ${f}
+		parallel -j $[threads/2] < stringtieExpressionFracCommands.txt
+		touch ${f}
+		chmod -w ${f}
+	fi
+
+
+	echo "(7/8) Transcript Quantification 1a"
+	f=${OUT}/ctab_frac_tot_files.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		ls ${OUT}/*stats/t_data.ctab_frac_tot > ${f}
+		chmod -w ${f}
+	fi
+
+
+	echo "(7/8) Transcript Quantification 1b"
+	f=${OUT}/ctab_tpm_files.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		ls ${OUT}/*stats/t_data.ctab_tpm > ${f}
+		chmod -w ${f}
+	fi
+
+
+	echo "(7/8) Transcript Quantification 2"
+	f=${OUT}/table_frac_tot
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		#cat <(echo "TranscriptID") <(find . -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
+		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
+#		chmod -w ${f}
+#	fi
+#	echo "(7/8) Transcript Quantification 3"
+#	f=${OUT}/table_frac_tot
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+		cat ctab_frac_tot_files.txt | while read file ; do
+			fileid=$(echo "$file" | awk -F "/" '{print $2}')
+			paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
+			mv table_frac_tot_temp table_frac_tot
+		done
+		chmod -w ${f}
+	fi
+
+
+	echo "(7/8) Transcript Quantification 4"
+	f=${OUT}/table_tpm
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		#cat <(echo "TranscriptID") <(find . -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
+		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
+#		chmod -w ${f}
+#	fi
+#	echo "(7/8) Transcript Quantification 5"
+#	f=${OUT}/table_tpm
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+		cat ctab_tpm_files.txt | while read file ; do
+			fileid=$(echo "$file" | awk -F "/" '{print $2}')
+			paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_tpm_temp
+			mv table_tpm_temp table_tpm
+		done
+		chmod -w ${f}
+	fi
+
+
+
+
+
+	echo "(7/8) Transcript Quantification 6"
+	f=${OUT}/table_frac_tot_cand
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		cat <(head -1 table_frac_tot) <(grep -Ff candidate_names.txt table_frac_tot) > ${f}
+		chmod -w ${f}
+	fi
+
+
+	echo "(7/8) Transcript Quantification 7"
+	f=${OUT}/table_tpm_cand
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		cat <(head -1 table_tpm) <(grep -Ff candidate_names.txt table_tpm) > ${f}
+		chmod -w ${f}
+	fi
+
+
+	echo "(8/8) Final Stats Calculations"
+	f=${OUT}/Step11_FINAL.RData
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/finalStatisticsOutput.R #-e $TREATMENTLABEL
+		chmod -w ${f}
+	fi
+
+
+	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+	f=${OUT}/candidates.fa
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+#	takes a while and is single threaded
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+		chmod -w ${f}
+	fi
+
+
+#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
+
+	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
+	f=${OUT}/candidates_cpcout.fa
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
+		chmod -w ${f}
+	fi
+
+
+	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+	f=${OUT}/Step13.RData
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+#	takes a while and is single threaded
+		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+		chmod -w ${f}
+	fi
 
 
 #	echo "ballgown prep?"
