@@ -5,6 +5,31 @@
 
 /francislab/data1/refs/sources/genome.ucsc.edu/
 
+
+
+
+
+I think that the last line makes it "stranded", "--fr" or "fr-firststrand". NOPE.
+
+
+
+
+Running RseQC returns all like ...
+
+Fraction of reads explained by "1+-,1-+,2++,2--": 0.9568
+
+https://chipster.csc.fi/manual/library-type-summary.html
+
+This suggests fr-firststrand
+
+Stringtie
+--rf	Assumes a stranded library fr-firststrand.
+
+
+
+
+
+
 ```
 
 TEProF2_array_wrapper.bash --threads 4 --strand --rf \

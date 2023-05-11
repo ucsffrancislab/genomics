@@ -10,7 +10,18 @@
 
 Running this 3 different ways: unstranded, rf and fr for comparison
 
-RseQC says that this data is --rf (fr-firststrand)
+
+Running RseQC returns all like ...
+
+Fraction of reads explained by "1+-,1-+,2++,2--": 0.9568
+
+https://chipster.csc.fi/manual/library-type-summary.html
+
+This suggests fr-firststrand
+
+Stringtie
+--rf	Assumes a stranded library fr-firststrand.
+--fr	Assumes a stranded library fr-secondstrand.
 
 
 
