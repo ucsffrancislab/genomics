@@ -96,3 +96,24 @@ done
 
 
 
+Strand was not being passed ...
+```
+
+TEProF2_array_wrapper.bash --threads 4 --strand --rf \
+  --in /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-STAR_hg38_strand/out \
+  --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out-strandtest \
+  --extension .Aligned.sortedByCoord.out.bam
+
+```
+
+```
+
+TEProF2_TCGA33_guided_aggregation_steps.bash --threads 64 --strand --rf \
+  --in  /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out-strandtest \
+  --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out-strandtest-guided
+
+```
+
+
+
+
