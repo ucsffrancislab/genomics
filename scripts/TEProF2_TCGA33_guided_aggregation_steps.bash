@@ -508,11 +508,15 @@ else
 	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
+	strand_option=""
+	if [ -n ${strand} ] ; then
+		strand_option="--strand ${strand}"
+	fi
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
 		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
-			$( realpath ${0} ) --in ${IN} --out ${OUT} --strand ${strand}
+			$( realpath ${0} ) --in ${IN} --out ${OUT} ${strand_option}
 
 fi
 
