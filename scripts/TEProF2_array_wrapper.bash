@@ -284,8 +284,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		echo "Stringtie : ASSUMING --rf IS CORRECT. WITHOUT IT, NOTHING GETS ANNOTATED."
+		#echo "Stringtie : ASSUMING --rf IS CORRECT. WITHOUT IT, NOTHING GETS ANNOTATED."
 
+		echo stringtie ${infile} -p ${threads} -o ${f} -m 100 -c 1 ${strand}
 		stringtie ${infile} -p ${threads} -o ${f} -m 100 -c 1 ${strand}
 
 		chmod -w ${f}
@@ -367,11 +368,15 @@ else
 	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
+	strand_option=""
+	if [ -n ${strand} ] ; then
+		strand_option="--strand ${strand}"
+	fi
 	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%20 \
 		--parsable --job-name="$(basename $0)" \
 		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
 		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) --out ${OUT} --extension ${extension} )
+			$( realpath ${0} ) --out ${OUT} --extension ${extension} ${strand_option} )
 
 
 	echo "Throttle with ..."
