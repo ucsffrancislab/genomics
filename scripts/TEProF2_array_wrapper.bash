@@ -21,6 +21,7 @@ fi
 arguments_file=${PWD}/${script}.arguments
 
 TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
+ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-4}
 extension="_R1.fastq.gz"
 #IN="${PWD}/in"
@@ -309,7 +310,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "rmskhg38_annotate_gtf_update_test_tpm"
 
-		${TEPROF2}/rmskhg38_annotate_gtf_update_test_tpm.py ${infile} /francislab/data1/refs/TEProf2/TEProF2.arguments.txt
+		${TEPROF2}/rmskhg38_annotate_gtf_update_test_tpm.py ${infile} ${ARGUMENTS}
 
 		chmod -w ${f}
 	fi
