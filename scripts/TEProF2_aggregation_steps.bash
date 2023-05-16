@@ -92,7 +92,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	cd ${OUT}
 
 	#if [ -n "${reference_merged_candidates_gtf}" ] ; then
-	if ${using_reference} ; then
+	if ! ${using_reference} ; then
 
 		reference_merged_candidates_gtf="${OUT}/reference_merged_candidates.gtf"
 
@@ -361,7 +361,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		\rm -f ${f}
-		parallel -j ${threads} < ${OUT}/candidateCommands.txt
+		#	runs out of file handles and memory if run in full
+		parallel -j $[threads/2] < ${OUT}/candidateCommands.txt
 		touch ${f}
 		chmod -w ${f}
 	fi
