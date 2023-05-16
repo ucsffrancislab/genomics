@@ -77,6 +77,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	
 	date
 	
+	echo "IN:${IN}"
+	echo "OUT:${OUT}"
 
 	mkdir -p ${OUT}
 	cd ${OUT}
@@ -257,7 +259,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "mergeAnnotationProcess_Ref.R"
 	#f=${OUT}/reference_merged_candidates.gff3_annotated_filtered_test_all
 	f=${OUT}/Step10.RData 
-	#	candidate_introns.txt candidate_introns.txt
+	#	candidate_introns.txt candidate_names.txt?
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -281,6 +283,11 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
+
+
+
+	#	single threaded. could parallelize
 
 	echo "ctab_i.txt 2"
 	f=${OUT}/ctab_i.2.complete
@@ -295,7 +302,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+
+
+
 	date
+
+	#	single threaded merging table. cannot parallelize
 
 	echo "ctab_i.txt 3"
 	f=${OUT}/table_i_all
@@ -325,6 +337,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+
+
+
+
 	echo "ctab_i.txt 6"
 	f=${OUT}/stringtieExpressionFracCommands.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -337,7 +353,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
-	date
+	date		#	merge these 2 steps.
 
 	echo "(7/8) Transcript Quantification"
 	f=${OUT}/stringtieExpressionFracCommands.complete
@@ -358,6 +374,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		touch ${f}
 		chmod -w ${f}
 	fi
+
+
+
+
 
 	date
 
