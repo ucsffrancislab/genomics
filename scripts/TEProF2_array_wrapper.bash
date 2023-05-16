@@ -277,6 +277,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	#	Assembly: STRINGTIE Default parameters will work if unstranded, but you should look at stringtie documentation to adjust paramaters based on type of sequencing run. For discovering low coverage transcripts we sometimes set the following flags (-c 1 -m 100). Note, future steps will require being able to map the gtf file to the bam file, so the easiest way to do this would be to just change the extension of the files from *.bam to *.gtf (test1.bam to test1.gtf).
 
+	date
 
 	infile=${f}
 	outbase=${OUT}/${base}
@@ -292,6 +293,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	#(1) <gtffile>_annotated_test_all
 	#(2) <gtffile>_annotated_filtered_test_all
@@ -311,8 +313,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
-
-
+	date
 
 	outbase=${OUT}/${base}
 	#for s in annotated_filtered_test_all annotated_test_all ; do
@@ -333,6 +334,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	done
 
+	date
 
 
 
@@ -369,9 +371,7 @@ else
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
 	strand_option=""
-	if [ -n ${strand} ] ; then
-		strand_option="--strand ${strand}"
-	fi
+	[ -n "${strand}" ] && strand_option="--strand ${strand}"
 	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%20 \
 		--parsable --job-name="$(basename $0)" \
 		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
