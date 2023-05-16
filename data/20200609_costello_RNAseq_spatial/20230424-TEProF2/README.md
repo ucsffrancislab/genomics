@@ -49,6 +49,7 @@ TEProF2_aggregation_steps.bash --threads 64 --strand --rf --out /francislab/data
 
 
 
+This took nearly 6 days
 ```
 
 TEProF2_TCGA33_guided_aggregation_steps.bash --threads 64 --strand --rf \
@@ -105,6 +106,8 @@ TEProF2_array_wrapper.bash --threads 4 --strand --rf \
   --extension .Aligned.sortedByCoord.out.bam
 
 ```
+
+
 
 ```
 
