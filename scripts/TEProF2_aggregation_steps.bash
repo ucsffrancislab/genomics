@@ -19,20 +19,27 @@ fi
 #	PWD preserved by slurm for where job is run? I guess so.
 #arguments_file=${PWD}/${script}.arguments
 
+CPC2=/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py
+TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
+ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-32}
 #extension="_R1.fastq.gz"
 #IN="${PWD}/in"
 #OUT="${PWD}/out"
 strand=""
+using_reference=false
 
 while [ $# -gt 0 ] ; do
 	case $1 in
-#		-i|--in)
-#			shift; IN=$1; shift;;
+		-i|--in)
+			shift; IN=$1; shift;;
 		-t|--threads)
 			shift; threads=$1; shift;;
 		-o|--out)
 			shift; OUT=$1; shift;;
+		-r|--reference_merged_candidates_gtf)
+			using_reference=true
+			shift; reference_merged_candidates_gtf=$1; shift;;
 #		-l|--transposon)
 #			shift; transposon_fasta=$1; shift;;
 #		-r|--human)
@@ -76,143 +83,159 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 	
 	date
-	
+	echo "IN:${IN}"
+	echo "OUT:${OUT}"
 
+	echo "IN and OUT should NOT be the same"
+
+	mkdir -p ${OUT}
 	cd ${OUT}
 
+	#if [ -n "${reference_merged_candidates_gtf}" ] ; then
+	if ${using_reference} ; then
 
-	f=${OUT}/filter_combined_candidates.tsv
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		echo "(3/8) Aggregate Annotations"
+		reference_merged_candidates_gtf="${OUT}/reference_merged_candidates.gtf"
 
-		cd ${OUT}
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/aggregateProcessedAnnotation.R -a /francislab/data1/refs/TEProf2/TEProF2.arguments.txt
+		f=${OUT}/filter_combined_candidates.tsv
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "(3/8) Aggregate Annotations"
+	
+			cd ${OUT}
+			${TEPROF2}/aggregateProcessedAnnotation.R -a ${ARGUMENTS}
+	
+			chmod -w ${f} 
+			chmod -w ${OUT}/initial_candidate_list.tsv
+			chmod -w ${OUT}/Step4.RData
+		fi
+	
+		date
+	
+		f=${OUT}/filterreadcommands.txt
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			cd ${OUT}
+			mkdir filterreadstats
+			${TEPROF2}/commandsmax_speed.py filter_combined_candidates.tsv ${OUT}/
+			chmod -w ${f}
+		fi
+	
+		date
+	
+		#	Not real sure how to check this. There are about 88,000 commands in this
+	
+		f=${OUT}/filterreadcommands.complete
+		echo "(4/8) Filter based on Reads"
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			\rm -f ${f}
+			echo "Running 'parallel' on MANY, MANY commands"
+			parallel -j $threads < ${OUT}/filterreadcommands.txt
+			touch ${f}
+			chmod -w ${f}
+		fi
+	
+		#	creates a whole bunch of files like ...
+		#	out/filterreadstats/MIR3_127855022_None_None_None_ENG_exon_1_127815016--455v03.unique.stats
+	
+		#	All are 
+		#	0	0	0	pe
+		#	Guessing this is pretty useless.
+	
+		date
+	
+		f=${OUT}/filter_read_stats.txt
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			find ${OUT}/filterreadstats -name "*.stats" -type f -maxdepth 1 -print0 | xargs -0 -n128 -P1 grep -H e > ${OUT}/resultgrep_filterreadstatsdone.txt
+			cat ${OUT}/resultgrep_filterreadstatsdone.txt | sed 's/\:/\t/g' > ${f}
+			chmod -w ${f}
+		fi
+	
+		date
 
-		chmod -w ${f} 
-		chmod -w ${OUT}/initial_candidate_list.tsv
-		chmod -w ${OUT}/Step4.RData
+		echo "filterReadCandidates.R"
+		#	Step6.RData candidate_transcripts.gff3 read_filtered_candidates.tsv
+		f=${OUT}/candidate_transcripts.gff3
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			${TEPROF2}/filterReadCandidates.R -r 5
+			chmod -w ${f}
+		fi
+	
+		date
+	
+		echo "gffread 1"
+		f=${OUT}/candidate_transcripts.gtf
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			~/.local/bin/gffread -E ${OUT}/candidate_transcripts.gff3 \
+				-T -o ${f}
+			chmod -w ${f}
+		fi
+	
+		date
+	
+		f=${OUT}/reference_merged_candidates.gtf
+		echo "cuffmerge"
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo ${OUT}/candidate_transcripts.gtf > ${OUT}/cuffmergegtf.list
+			#	example wasn't gzipped. will gzipped work?
+			cuffmerge -o ${OUT}/merged_asm_full \
+				-g /francislab/data1/refs/sources/gencodegenes.org/gencode.v43.basic.annotation.gtf \
+				${OUT}/cuffmergegtf.list
+	
+			mv ${OUT}/merged_asm_full/merged.gtf ${f}
+			chmod -w ${f}
+		fi
+	
+		date
+	
+		f=${OUT}/reference_merged_candidates.gff3
+		echo "gffread 2"
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			~/.local/bin/gffread -E ${OUT}/reference_merged_candidates.gtf -o- > ${f}
+	
+			#	MODIFY THIS TO EXPECT THREE HEADER LINES AROUND LINE 453 (OR TRIM LINE OFF TOP OF GFF?)
+			# to avoid editing their code, should trim a header line off of reference_merged_candidates.gff3
+			#	Perhaps, a newer version of gff-read is responsible for the additional line.
+			##gff-version 3
+			# gffread v0.12.7
+			# /c4/home/gwendt/.local/bin/gffread \
+			#		-E /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out/reference_merged_candidates.gtf -o-
+	
+			mv ${f} ${f}.original
+			tail -n +2 ${f}.original > ${f}
+			chmod -w ${f}
+		fi
+	
+		date
+	
+		echo "(5/8) Annotate Merged Transcripts"
+	
+		f=${OUT}/reference_merged_candidates.gff3_annotated_filtered_test_all
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			${TEPROF2}/rmskhg38_annotate_gtf_update_test_tpm_cuff.py \
+				${OUT}/reference_merged_candidates.gff3 \
+				${ARGUMENTS}
+			chmod -w ${f}
+		fi
+
 	fi
 
-
-	f=${OUT}/filterreadcommands.txt
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		cd ${OUT}
-		mkdir filterreadstats
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/commandsmax_speed.py filter_combined_candidates.tsv ${OUT}/
-		chmod -w ${f}
-	fi
-
-
-	#	Not real sure how to check this. There are about 88,000 commands in this
-
-	f=${OUT}/filterreadcommands.complete
-	echo "(4/8) Filter based on Reads"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		\rm ${f}
-		echo "Running 'parallel' on MANY, MANY commands"
-		parallel -j $threads < ${OUT}/filterreadcommands.txt
-		touch ${f}
-		chmod -w ${f}
-	fi
-
-	#	creates a whole bunch of files like ...
-	#	out/filterreadstats/MIR3_127855022_None_None_None_ENG_exon_1_127815016--455v03.unique.stats
-
-	#	All are 
-	#	0	0	0	pe
-	#	Guessing this is pretty useless.
-
-
-	f=${OUT}/filter_read_stats.txt
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		find ${OUT}/filterreadstats -name "*.stats" -type f -maxdepth 1 -print0 | xargs -0 -n128 -P1 grep -H e > ${OUT}/resultgrep_filterreadstatsdone.txt
-		cat ${OUT}/resultgrep_filterreadstatsdone.txt | sed 's/\:/\t/g' > ${f}
-		chmod -w ${f}
-	fi
-
-	echo "filterReadCandidates.R"
-	#	Step6.RData candidate_transcripts.gff3 read_filtered_candidates.tsv
-	f=${OUT}/candidate_transcripts.gff3
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/filterReadCandidates.R -r 5
-		chmod -w ${f}
-	fi
-
-
-	echo "gffread 1"
-	f=${OUT}/candidate_transcripts.gtf
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		~/.local/bin/gffread -E ${OUT}/candidate_transcripts.gff3 \
-			-T -o ${f}
-		chmod -w ${f}
-	fi
-
-
-
-
-	f=${OUT}/reference_merged_candidates.gtf
-	echo "cuffmerge"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		echo ${OUT}/candidate_transcripts.gtf > ${OUT}/cuffmergegtf.list
-		#	example wasn't gzipped. will gzipped work?
-		cuffmerge -o ${OUT}/merged_asm_full \
-			-g /francislab/data1/refs/sources/gencodegenes.org/gencode.v43.basic.annotation.gtf \
-			${OUT}/cuffmergegtf.list
-
-		mv ${OUT}/merged_asm_full/merged.gtf ${f}
-		chmod -w ${f}
-	fi
-
-
-
-	f=${OUT}/reference_merged_candidates.gff3
-	echo "gffread 2"
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		~/.local/bin/gffread -E ${OUT}/reference_merged_candidates.gtf -o- > ${f}
-
-		#	MODIFY THIS TO EXPECT THREE HEADER LINES AROUND LINE 453 (OR TRIM LINE OFF TOP OF GFF?)
-		# to avoid editing their code, should trim a header line off of reference_merged_candidates.gff3
-		#	Perhaps, a newer version of gff-read is responsible for the additional line.
-		##gff-version 3
-		# gffread v0.12.7
-		# /c4/home/gwendt/.local/bin/gffread \
-		#		-E /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2/out/reference_merged_candidates.gtf -o-
-
-		mv ${f} ${f}.original
-		tail -n +2 ${f}.original > ${f}
-		chmod -w ${f}
-	fi
-
-
-
-	echo "(5/8) Annotate Merged Transcripts"
-
-	f=${OUT}/reference_merged_candidates.gff3_annotated_filtered_test_all
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/rmskhg38_annotate_gtf_update_test_tpm_cuff.py \
-			${OUT}/reference_merged_candidates.gff3 \
-			/francislab/data1/refs/TEProf2/TEProF2.arguments.txt	
-		chmod -w ${f}
-	fi
-
+	date
 
 	f=${OUT}/quantificationCommands.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -222,11 +245,15 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#	tries to create new gtf files of the same name that I started. Added "JAKE"
 		#	I think that this assumes if "fr"
 		#find . -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 --fr -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
-		\rm ${f}
-		find ${OUT} -name "*bam" | while read file ; do
+		\rm -f ${f}
+		#find ${OUT} -name "*bam" | while read file ; do
+		#	xbase=${file##*/}
+		#	#echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${f}
+
+		find ${IN} -name "*bam" | while read file ; do
 			xbase=${file##*/}
-			echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${f}
-		done
+			echo "samtools view -q 255 -h "$file" | stringtie - -o "${OUT}/${xbase%.*}".gtf -e -b "${OUT}/${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G ${reference_merged_candidates_gtf}" #>> ${f}
+		done > ${f}
 
 		#	they have a special script that passes rf
 		#	find ../aligned -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".gtf -e -b "${xbase%.*}"_stats -p 2 --rf -m 100 -c 1 -G reference_merged_candidates.gtf" >> quantificationCommands.txt ; done ;
@@ -241,7 +268,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		\rm ${f}
+		\rm -f ${f}
 		parallel -j ${threads} < ${OUT}/quantificationCommands.txt
 		touch ${f}
 		chmod -w ${f}
@@ -249,13 +276,39 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-	echo "mergeAnnotationProcess.R"
-	f=${OUT}/Step10.RData
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
+	if ${using_reference} ; then
+
+		echo "mergeAnnotationProcess_Ref.R"
+		#f=${OUT}/reference_merged_candidates.gff3_annotated_filtered_test_all
+		f=${OUT}/Step10.RData 
+		#	candidate_introns.txt candidate_names.txt?
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			gff3_annotated_filtered_test_all=${reference_merged_candidates_gtf%.gtf}.gff3_annotated_filtered_test_all
+			${TEPROF2}/mergeAnnotationProcess_Ref.R \
+        -f ${gff3_annotated_filtered_test_all} \
+				-a ${ARGUMENTS}
+
+				#-f /francislab/data1/refs/TEProf2/reference_merged_candidates.gff3_annotated_filtered_test_all \
+	
+			# README says to use -g, but script actually uses -f
+	
+			chmod -w ${f}
+		fi
+
 	else
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/mergeAnnotationProcess.R
-		chmod -w ${f}
+
+		echo "mergeAnnotationProcess.R"
+		f=${OUT}/Step10.RData
+		# candidate_introns.txt candidate_names.txt?
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			${TEPROF2}/mergeAnnotationProcess.R
+			chmod -w ${f}
+		fi
+
 	fi
 
 	date
@@ -269,20 +322,59 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
+
+
+
+	#	single threaded and long. could parallelize as is not merging anything
+
+	#echo "ctab_i.txt 2"
+	#f=${OUT}/ctab_i.2.complete
+	#if [ -f $f ] && [ ! -w $f ] ; then
+	#	echo "Write-protected $f exists. Skipping."
+	#else
+	#	cat ctab_i.txt | while read ID ; do
+	#		fileid=$(echo "$ID" | awk -F "/" '{print $2}')
+	#		cat <(printf 'chr\tstrand\tstart\tend\t'${fileid/_stats/}'\n') <(grep -f candidate_introns.txt $ID | awk -F'\t' '{ print $2"\t"$3"\t"$4"\t"$5"\t"$6 }') > ${ID}_cand
+	#	done
+	#	touch ${f}
+	#	chmod -w ${f}
+	#fi
+
+
 
 	echo "ctab_i.txt 2"
-	f=${OUT}/ctab_i.2.complete
+	f=${OUT}/candidateCommands.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
+		\rm -f ${f}
 		cat ctab_i.txt | while read ID ; do
 			fileid=$(echo "$ID" | awk -F "/" '{print $2}')
-			cat <(printf 'chr\tstrand\tstart\tend\t'${fileid/_stats/}'\n') <(grep -f candidate_introns.txt $ID | awk -F'\t' '{ print $2"\t"$3"\t"$4"\t"$5"\t"$6 }') > ${ID}_cand
-		done
+			echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid/_stats/}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+		done > ${f}
+		chmod -w ${f}
+	fi
+
+	f=${OUT}/candidateCommands.complete
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		\rm -f ${f}
+		parallel -j ${threads} < ${OUT}/candidateCommands.txt
 		touch ${f}
 		chmod -w ${f}
 	fi
 
+	
+
+
+
+
+
+	date
+
+	#	single threaded merging table. cannot parallelize
 
 	echo "ctab_i.txt 3"
 	f=${OUT}/table_i_all
@@ -299,6 +391,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "ctab_i.txt 5"
 	f=${OUT}/ctablist.txt
@@ -316,14 +409,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		\rm ${f}
+		\rm -f ${f}
 		cat ctablist.txt | while read file ; do
-			echo "/c4/home/gwendt/github/twlab/TEProf2Paper/bin/stringtieExpressionFrac.py $file" >> ${f}
+			echo "${TEPROF2}/stringtieExpressionFrac.py $file" >> ${f}
 		done
 		chmod -w ${f}
 	fi
 
-	date
+	date	#	merge these 2 steps.
 
 	echo "(7/8) Transcript Quantification"
 	f=${OUT}/stringtieExpressionFracCommands.complete
@@ -339,7 +432,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#	cutting threads in half. testing.
 		#	32 seems to be working without failure.
 
-		\rm ${f}
+		\rm -f ${f}
 		parallel -j $[threads/2] < stringtieExpressionFracCommands.txt
 		touch ${f}
 		chmod -w ${f}
@@ -428,56 +521,19 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/finalStatisticsOutput.R #-e $TREATMENTLABEL
+		${TEPROF2}/finalStatisticsOutput.R #-e $TREATMENTLABEL
 		chmod -w ${f}
 	fi
 
-
-#	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
-#	f=${OUT}/candidates.fa
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-##	takes a while and is single threaded
-#		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
-#		chmod -w ${f}
-#	fi
-#
-#
-##	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
-#
-#	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
-#	f=${OUT}/candidates_cpcout.fa
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
-#		chmod -w ${f}
-#	fi
-#
-#
-#	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
-#	f=${OUT}/Step13.RData
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-##	takes a while and is single threaded
-#		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
-#		chmod -w ${f}
-#	fi
-
-
 	date
-
 
 	dependency_id=${SLURM_JOB_ID}
 
-	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+	echo ${TEPROF2}/translationPart1.R 
 	f=${OUT}/candidates.fa
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="translationPart1" \
@@ -485,22 +541,17 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--output=${OUT}/translationPart1.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
-			--wrap="/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R;chmod -w ${f}" )
-
-		##	takes a while and is single threaded
-		#/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
-		#chmod -w ${f}
+			--wrap="${TEPROF2}/translationPart1.R;chmod -w ${f}" )
 	fi
 
 
 	#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
 
-	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
+	echo ${CPC2} -i candidates.fa -o candidates_cpcout.fa
 	f=${OUT}/candidates_cpcout.fa
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="CPC2" \
@@ -508,19 +559,15 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--output=${OUT}/CPC2.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
-			--wrap="/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f};chmod -w ${f}" )
-
-		#/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
-		#chmod -w ${f}
+			--wrap="${CPC2} -i candidates.fa -o ${f};chmod -w ${f}" )
 	fi
 
 
-	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+	echo ${TEPROF2}/translationPart2.R
 	f=${OUT}/Step13.RData
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="translationPart2" \
@@ -528,11 +575,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--output=${OUT}/translationPart2.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
-			--wrap="/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R;chmod -w ${f}" )
-
-		#	takes a while and is single threaded
-		#/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
-		#chmod -w ${f}
+			--wrap="${TEPROF2}/translationPart2.R;chmod -w ${f}" )
 	fi
   
 	date
@@ -542,13 +585,16 @@ else
 	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
+	reference_merged_candidates_gtf_option=""
+	[ -n "${reference_merged_candidates_gtf}" ] && \
+		reference_merged_candidates_gtf_option="--reference_merged_candidates_gtf ${reference_merged_candidates_gtf}"
 	strand_option=""
 	[ -n "${strand}" ] && strand_option="--strand ${strand}"
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
 		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
-			$( realpath ${0} ) --out ${OUT} ${strand_option}
+			$( realpath ${0} ) --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
 
 fi
 
