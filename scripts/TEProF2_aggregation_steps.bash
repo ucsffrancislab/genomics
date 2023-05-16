@@ -221,7 +221,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		#	tries to create new gtf files of the same name that I started. Added "JAKE"
 		#	I think that this assumes if "fr"
-		#find ${OUT} -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 --fr -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
+		#find . -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 --fr -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
 		\rm ${f}
 		find ${OUT} -name "*bam" | while read file ; do
 			xbase=${file##*/}
@@ -234,6 +234,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(6/8) Transcript Quantification"
 	f=${OUT}/quantificationCommands.complete
@@ -246,6 +247,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "mergeAnnotationProcess.R"
 	f=${OUT}/Step10.RData
@@ -256,13 +258,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "ctab_i.txt 1"
 	f=${OUT}/ctab_i.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		find . -name "*i_data.ctab" > ${f}
+		find ${OUT} -name "*i_data.ctab" > ${f}
 		chmod -w ${f}
 	fi
 
@@ -286,18 +289,11 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		cat <(find . -name "*i_data.ctab_cand" | head -1 | while read file ; do cat $file | awk '{print $1"\t"$2"\t"$3"\t"$4}' ; done;) > ${f}
-#		chmod ${f}
-#	fi
-#	echo "ctab_i.txt 4"
-#	f=${OUT}/ctab_i.4.complete
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
+		cat <(find ${OUT} -name "*i_data.ctab_cand" | head -1 | while read file ; do cat $file | awk '{print $1"\t"$2"\t"$3"\t"$4}' ; done;) > ${f}
 		#	This merges each column into a table using paste. kinda nice.
-		find . -name "*i_data.ctab_cand" | while read file ; do
+		find ${OUT} -name "*i_data.ctab_cand" | while read file ; do
 			paste -d'\t' <(cat table_i_all) <(cat $file | awk '{print $5}') > table_i_all_temp
-			mv table_i_all_temp table_i_all
+			mv table_i_all_temp ${f}
 		done
 		touch ${f}
 		chmod -w ${f}
@@ -309,10 +305,11 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		ls ./*stats/t_data.ctab > ctablist.txt
+		ls ${OUT}/*stats/t_data.ctab > ${f}
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "ctab_i.txt 6"
 	f=${OUT}/stringtieExpressionFracCommands.txt
@@ -326,6 +323,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(7/8) Transcript Quantification"
 	f=${OUT}/stringtieExpressionFracCommands.complete
@@ -347,40 +345,36 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(7/8) Transcript Quantification 1a"
 	f=${OUT}/ctab_frac_tot_files.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		ls ./*stats/t_data.ctab_frac_tot > ${f}
+		ls ${OUT}/*stats/t_data.ctab_frac_tot > ${f}
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(7/8) Transcript Quantification 1b"
 	f=${OUT}/ctab_tpm_files.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		ls ./*stats/t_data.ctab_tpm > ${f}
+		ls ${OUT}/*stats/t_data.ctab_tpm > ${f}
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(7/8) Transcript Quantification 2"
 	f=${OUT}/table_frac_tot
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		cat <(echo "TranscriptID") <(find . -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
-#		chmod -w ${f}
-#	fi
-#	echo "(7/8) Transcript Quantification 3"
-#	f=${OUT}/table_frac_tot
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
+		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
 		cat ctab_frac_tot_files.txt | while read file ; do
 			fileid=$(echo "$file" | awk -F "/" '{print $2}')
 			paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
@@ -389,20 +383,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(7/8) Transcript Quantification 4"
 	f=${OUT}/table_tpm
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		cat <(echo "TranscriptID") <(find . -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
-#		chmod -w ${f}
-#	fi
-#	echo "(7/8) Transcript Quantification 5"
-#	f=${OUT}/table_tpm
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
+		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
 		cat ctab_tpm_files.txt | while read file ; do
 			fileid=$(echo "$file" | awk -F "/" '{print $2}')
 			paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_tpm_temp
@@ -411,9 +399,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
-
-
-
+	date
 
 	echo "(7/8) Transcript Quantification 6"
 	f=${OUT}/table_frac_tot_cand
@@ -424,6 +410,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(7/8) Transcript Quantification 7"
 	f=${OUT}/table_tpm_cand
@@ -434,6 +421,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	date
 
 	echo "(8/8) Final Stats Calculations"
 	f=${OUT}/Step11_FINAL.RData
@@ -445,26 +433,85 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 
+#	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+#	f=${OUT}/candidates.fa
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+##	takes a while and is single threaded
+#		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+#		chmod -w ${f}
+#	fi
+#
+#
+##	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
+#
+#	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
+#	f=${OUT}/candidates_cpcout.fa
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
+#		chmod -w ${f}
+#	fi
+#
+#
+#	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+#	f=${OUT}/Step13.RData
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+##	takes a while and is single threaded
+#		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+#		chmod -w ${f}
+#	fi
+
+
+	date
+
+
+	dependency_id=${SLURM_JOB_ID}
+
 	echo /c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
 	f=${OUT}/candidates.fa
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-#	takes a while and is single threaded
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
-		chmod -w ${f}
+
+		date=$( date "+%Y%m%d%H%M%S%N" )
+		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+			--job-name="translationPart1" \
+			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--output=${OUT}/translationPart1.${date}.out.log \
+			--parsable --dependency=${dependency_id} \
+			--chdir=${OUT} \
+			--wrap="/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R;chmod -w ${f}" )
+
+		##	takes a while and is single threaded
+		#/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart1.R 
+		#chmod -w ${f}
 	fi
 
 
-#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
+	#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
 
 	echo /c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o candidates_cpcout.fa
 	f=${OUT}/candidates_cpcout.fa
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
-		chmod -w ${f}
+
+		date=$( date "+%Y%m%d%H%M%S%N" )
+		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+			--job-name="CPC2" \
+			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--output=${OUT}/CPC2.${date}.out.log \
+			--parsable --dependency=${dependency_id} \
+			--chdir=${OUT} \
+			--wrap="/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f};chmod -w ${f}" )
+
+		#/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py -i candidates.fa -o ${f}
+		#chmod -w ${f}
 	fi
 
 
@@ -473,20 +520,22 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-#	takes a while and is single threaded
-		/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
-		chmod -w ${f}
+
+		date=$( date "+%Y%m%d%H%M%S%N" )
+		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+			--job-name="translationPart2" \
+			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--output=${OUT}/translationPart2.${date}.out.log \
+			--parsable --dependency=${dependency_id} \
+			--chdir=${OUT} \
+			--wrap="/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R;chmod -w ${f}" )
+
+		#	takes a while and is single threaded
+		#/c4/home/gwendt/github/twlab/TEProf2Paper/bin/translationPart2.R
+		#chmod -w ${f}
 	fi
-
-
-#	echo "ballgown prep?"
-#	mkdir ballgown
-#	cd ballgown
-#	ls -d ../*_stats | while read file ; do mkdir $(basename $file) ; cd $(basename $file) ; (ls ../${file}/*ctab | while read file2 ; do ln -s $file2 ; done ;) ; cd .. ; done ;
-
-
+  
 	date
-
 
 else
 
@@ -494,9 +543,7 @@ else
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
 	strand_option=""
-	if [ -n ${strand} ] ; then
-		strand_option="--strand ${strand}"
-	fi
+	[ -n "${strand}" ] && strand_option="--strand ${strand}"
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
 		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
