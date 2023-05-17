@@ -120,7 +120,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		bcftools mpileup -q 60 -Ou -f ${ref} ${bam} | bcftools call -m -Oz -o ${vcf}
 		bcftools index ${f}
-		chmod -w ${f}
+		chmod -w ${f} ${f}.csi
 	fi
 
 	date
