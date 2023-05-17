@@ -22,7 +22,18 @@ TEProF2_array_wrapper.bash --threads 4 --strand --rf \
 
 ```
 
-TEProF2_TCGA33_guided_aggregation_steps.bash --threads 64 --strand --rf \
+#TEProF2_TCGA33_guided_aggregation_steps.bash --threads 64 --strand --rf \
+#  --in  /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2/in \
+#  --out /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2/out
+
+```
+
+
+
+```
+
+TEProF2_aggregation_steps.bash --threads 64 --strand --rf \
+  --reference_merged_candidates_gtf /francislab/data1/refs/TEProf2/reference_merged_candidates.gtf \
   --in  /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2/in \
   --out /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2/out
 
