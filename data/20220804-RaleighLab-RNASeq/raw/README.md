@@ -117,3 +117,23 @@ ln -s ${f} trimmed/${l}
 done
 ```
 
+
+```
+for f in /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/FASTQ/Trimmed_Data/Arriba/*_trimmed.?.fastq.gz ; do
+l=$(basename $f)
+l=${l/_trimmed/}
+ln -s ${f} trimmed/${l}
+done
+```
+
+
+```
+
+bcftool_mpileup_call_array_wrapper.bash --ref /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/genome-lib/GRCh38_gencode_v37_CTAT_lib_Mar012021.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa trimmed/*bam
+
+```
+
+
+
+
+
