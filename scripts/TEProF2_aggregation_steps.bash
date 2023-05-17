@@ -522,7 +522,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		${TEPROF2}/finalStatisticsOutput.R #-e $TREATMENTLABEL
+		${TEPROF2}/finalStatisticsOutput.R -a ${ARGUMENTS}
+			#-e $TREATMENTLABEL
 		chmod -w ${f}
 	fi
 
