@@ -67,8 +67,8 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-mem=$[threads*7]
-scratch_size=$[threads*28]
+mem=$[threads*7500]M
+scratch_size=$[threads*28]G
 
 if [ $( basename ${0} ) == "slurm_script" ] ; then
 
@@ -350,8 +350,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		\rm -f ${f}
 		cat ctab_i.txt | while read ID ; do
-			fileid=$(echo "$ID" | awk -F "/" '{print $2}')
-			echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid/_stats/}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+			#fileid=$(echo "$ID" | awk -F "/" '{print $2}')
+			#echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid/_stats/}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+			fileid=$( basename $(dirname "$ID" ) .unique_stats )
+			echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
 		done > ${f}
 		chmod -w ${f}
 	fi
@@ -463,6 +465,13 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+
+
+
+#	this is a tricky loop. the fileid is supposed to be the sample
+# I made this a full directory and now they are all "francislab"
+
+
 	echo "(7/8) Transcript Quantification 2"
 	f=${OUT}/table_frac_tot
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -470,8 +479,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
 		cat ctab_frac_tot_files.txt | while read file ; do
-			fileid=$(echo "$file" | awk -F "/" '{print $2}')
-			paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
+			#fileid=$(echo "$file" | awk -F "/" '{print $2}')
+			#paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
+			fileid=$( basename $( dirname "$file" ) .unique_stats )
+			paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
 			mv table_frac_tot_temp table_frac_tot
 		done
 		chmod -w ${f}
@@ -486,8 +497,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
 		cat ctab_tpm_files.txt | while read file ; do
-			fileid=$(echo "$file" | awk -F "/" '{print $2}')
-			paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_tpm_temp
+			#fileid=$(echo "$file" | awk -F "/" '{print $2}')
+			#paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_tpm_temp
+			fileid=$( basename $( dirname "$file" ) .unique_stats )
+			paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid}) <(sort $file | awk '{print $2}')) > table_tpm_temp
 			mv table_tpm_temp table_tpm
 		done
 		chmod -w ${f}
@@ -594,7 +607,7 @@ else
 	[ -n "${strand}" ] && strand_option="--strand ${strand}"
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
-		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem}G --gres=scratch:${scratch_size}G \
+		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
 			$( realpath ${0} ) --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
 
