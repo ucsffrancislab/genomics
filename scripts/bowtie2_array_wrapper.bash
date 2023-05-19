@@ -97,6 +97,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	bam=${base}.$(basename ${ref}).bam
 	if [ -n "${outdir}" ] ; then
+		mkdir -p ${outdir}
 		bam=${outdir}/$( basename ${bam} )
 	fi
 
@@ -124,7 +125,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Running bowtie2"
 
-		echo "bowtie2.bash --threads ${SLURM_NTASKS} -x ${ref} -1 ${R1} -2 ${R2} ${bowtie2_options}"
+		~/.local/bin/bowtie2.bash --threads ${SLURM_NTASKS} -x ${ref} -1 ${R1} -2 ${R2} ${bowtie2_options}
 
 		#chmod -w ${f} ${f}.csi
 	fi
