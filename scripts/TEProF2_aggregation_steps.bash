@@ -532,6 +532,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	echo "(8/8) Final Stats Calculations"
 	f=${OUT}/Step11_FINAL.RData
+	# -rw-r----- 1 gwendt francislab   3652873 May 18 11:20 All TE-derived Alternative Isoforms Statistics.csv
+	# -rw-r----- 1 gwendt francislab 209808460 May 18 11:20 allCandidateStatistics.tsv
+	# -rw-r----- 1 gwendt francislab   8259950 May 18 11:21 merged_transcripts_all.refBed
+	# -r--r----- 1 gwendt francislab 170485021 May 18 11:21 Step11_FINAL.RData
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
