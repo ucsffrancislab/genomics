@@ -30,6 +30,16 @@ TEProF2_array_wrapper.bash --threads 4 --strand --rf \
 
 
 
+Rerunning AGAIN due to my filename parsing change
+
+```
+
+/bin/rm -f ctab_i.txt candidateCommands.txt candidateCommands.complete table_i_all ctablist.txt stringtieExpressionFracCommands.txt stringtieExpressionFracCommands.complete ctab_frac_tot_files.txt ctab_tpm_files.txt table_frac_tot table_tpm table_frac_tot_cand table_tpm_cand "All TE-derived Alternative Isoforms Statistics.csv" allCandidateStatistics.tsv merged_transcripts_all.refBed Step11_FINAL.RData translationPart?.2023*.out.log CPC2.2023*.out.log
+
+```
+
+
+
 ```
 
 TEProF2_aggregation_steps.bash --threads 64 --strand --rf \
@@ -58,4 +68,14 @@ done
 
 ```
 
+
+Prepping to view final R data
+```
+R
+
+load("out/Step13.RData")
+
+head(fracexpressiontable)
+
+```
 
