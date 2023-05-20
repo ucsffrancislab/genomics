@@ -126,26 +126,3 @@ ln -s ${f} trimmed/${l}
 done
 ```
 
-
-```
-
-bcftool_mpileup_call_array_wrapper.bash --ref /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/genome-lib/GRCh38_gencode_v37_CTAT_lib_Mar012021.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa trimmed/*bam
-
-```
-
-
-
-
-```
-bcftools view --no-header trimmed/QM101.Aligned.sortedByCoord.out.vcf.gz | awk '{print $NF}' | awk -F: '{print $1}' | sort | uniq -c
-
-524708088 ./.
- 53765241 0/0
-    15165 0/1
-    67700 1/1
-      148 1/2
-```
-
-
-
-
