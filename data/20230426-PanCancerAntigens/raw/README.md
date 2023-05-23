@@ -55,6 +55,10 @@ head -2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_
 26 : GBM_tumor
 38 : LGG_tumor
 87 : Brain_gtex
+106 : Tumor Total
+107 : Normal Total
+108 : GTEx Total
+109 : GTEx Total without Testis
 
 
 ```
@@ -64,6 +68,28 @@ tail -n +3 41588_2023_1349_MOESM3_ESM/S1.csv | awk -F, '((($26>0)||($38>0))&&($8
 grep -f S1_BrainTumorTranscriptIDs.txt 41588_2023_1349_MOESM3_ESM/S10.csv | awk 'BEGIN{FS=",";OFS="_"}($13!="None"){print ">"$1,$2,$7,$9,$10;print $13}'  | sed 's/ /_/' > S10_S1Brain_ProteinSequences.fa
 
 makeblastdb -in S10_S1Brain_ProteinSequences.fa -input_type fasta -dbtype prot -out S10_S1Brain_ProteinSequences -title S10_S1Brain_ProteinSequences -parse_seqids
+```
+
+
+
+```
+
+awk 'BEGIN{OFS=FS=","}(NR==2)||(NR>2 && $108==0){print $1,$26,$38,$87,$106,$107,$108}' 41588_2023_1349_MOESM3_ESM/S1.csv | head
+Transcript ID,GBM_tumor,LGG_tumor,Brain_gtex,Tumor Total,Normal Total,GTEx Total
+TCONS_00004307,1,0,0,1018,0,0
+TCONS_00004314,0,0,0,925,1,0
+TCONS_00031384,0,0,0,895,3,0
+TCONS_00004305,1,0,0,700,0,0
+TCONS_00108523,0,0,0,431,1,0
+TCONS_00087188,0,0,0,391,0,0
+TCONS_00115232,0,0,0,391,1,0
+TCONS_00115235,0,2,0,375,2,0
+TCONS_00060183,0,0,0,368,4,0
+
+awk 'BEGIN{OFS=FS=","}(NR>2 && $108==0){print $1}' 41588_2023_1349_MOESM3_ESM/S1.csv | head
+
+awk 'BEGIN{OFS=FS=","}(NR>2 && $108==0){print $1}' 41588_2023_1349_MOESM3_ESM/S1.csv > S1_TranscriptIDs_GTExZero.txt
+
 ```
 
 
