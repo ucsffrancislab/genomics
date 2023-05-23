@@ -189,6 +189,90 @@ R
 ```
 
 
+```
+for (thing in ls()) {
+  print(thing)
+  print( object.size( get(thing)), units='auto')
+}
+```
+
+
+```R
+
+load("out-strandtest-guided/Step13.RData")
+row.names(tpmexpressiontable)=tpmexpressiontable[['TranscriptID']]
+df = subset(tpmexpressiontable, select = -c(TranscriptID) )
+write.csv(df,file='out-strandtest-guided/tpmexpressiontable.csv', quote=FALSE)
+write.csv(t(df),file='out-strandtest-guided/tpmexpressiontable.t.csv', quote=FALSE)
+
+```
+
+
+```
+chmod -w out-strandtest-guided/tpmexpressiontable*
+
+```
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
+for f in out-strandtest-guided/{Step10.RData,Step11_FINAL.RData,Step12.RData,Step13.RData,candidates_cpcout.fa,candidates_proteinseq.fa,tpmexpressiontable.csv,tpmexpressiontable.t.csv} ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+
+
+
+2- Within each subject- How many transcripts are shared vs unique? i.e. how much homogeneity and heterogeneity is the win in a subject?
+
+```
+
+sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTExZero.txt > S1_TranscriptIDs_GTExZero_at_beginning.txt
+
+( head -1 out-strandtest-guided/tpmexpressiontable.t.csv && grep -f S1_TranscriptIDs_GTExZero_at_beginning.txt out-strandtest-guided/tpmexpressiontable.t.csv ) > out-strandtest-guided/tpmexpressiontable.t.GTEx0.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print}(NR>1){z=0;for(i=2;i<=NF;i++){if($i==0){z=1;break}}if(z==0){print}}' out-strandtest-guided/tpmexpressiontable.t.GTEx0.csv > out-strandtest-guided/tpmexpressiontable.t.GTEx0.all_subjects.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out-strandtest-guided/tpmexpressiontable.t.GTEx0.csv > out-strandtest-guided/tpmexpressiontable.t.GTEx0.subject_count.csv
+
+
+cat out-strandtest-guided/tpmexpressiontable.t.GTEx0.csv | datamash transpose -t, > out-strandtest-guided/tpmexpressiontable.t.GTEx0.t.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out-strandtest-guided/tpmexpressiontable.t.GTEx0.t.csv > out-strandtest-guided/tpmexpressiontable.t.GTEx0.t.transcript_count.csv
+
+
+```
+
+
+
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
+for f in out-strandtest-guided/{tpmexpressiontable.t.GTEx0.csv,tpmexpressiontable.t.GTEx0.all_subjects.csv,tpmexpressiontable.t.GTEx0.subject_count.csv,tpmexpressiontable.t.GTEx0.t.csv,tpmexpressiontable.t.GTEx0.t.transcript_count.csv} ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+
+
 
 
 
