@@ -69,13 +69,35 @@ done
 ```
 
 
+
+
+
 Prepping to view final R data
 ```
 R
 
 load("out/Step13.RData")
-
-head(fracexpressiontable)
+row.names(tpmexpressiontable)=tpmexpressiontable[['TranscriptID']]
+df = subset(tpmexpressiontable, select = -c(TranscriptID) )
+write.csv(df,file='tpmexpressiontable.csv', quote=FALSE)
+write.csv(t(df),file='tpmexpressiontable.t.csv', quote=FALSE)
 
 ```
+
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
+for f in out/{Step10.RData,Step11_FINAL.RData,Step12.RData,Step13.RData,candidates_cpcout.fa,candidates_proteinseq.fa,tpmexpressiontable.csv,tpmexpressiontable.t.csv} ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
 
