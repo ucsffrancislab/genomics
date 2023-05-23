@@ -61,12 +61,20 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="bcftoolsm
 --time=20160 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/bcftools_merge.${date}.out.log \
 --wrap="bcftools merge --threads 16 -Ov /francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF/trimmed/*.Aligned.sortedByCoord.out.vcf.gz | sed -e '/^#CHROM/s:.Aligned.sortedByCoord.out.bam::g' -e '/^#CHROM/s:/francislab/data2/raw/20220804-RaleighLab-RNASeq/trimmed/::g' | bgzip > /francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF/merged.multithread.vcf.gz"
 
+```
+
+
+`bcftools merge` didn't work will with previous studies 
+(20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT) 
+as the VCFs and References had many mismatches.
+
+
 
 
 ```
 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n' /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz |\
+awk 'BEGIN{FS=OFS="\t"}($4!="."){split($4,a,",");for(i=5;i<=NF;i++){gsub(/0/,$3,$i);gsub(/1/,a[1],$i);gsub(/2/,a[2],$i);gsub(/3/,a[3],$i)}print}'
 
-
-
-
+```
 
