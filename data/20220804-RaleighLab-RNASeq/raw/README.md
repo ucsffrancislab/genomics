@@ -126,3 +126,17 @@ ln -s ${f} trimmed/${l}
 done
 ```
 
+
+```
+awk 'BEGIN{OFS=FS=","}(NR>1){print $1,$12}' HKU_AllFusions/Integrated_data_working-Table\ 1.csv | sort > ids_DNA_methylation_group.csv
+
+```
+
+
+
+
+
+
+
+
+
