@@ -15,3 +15,39 @@ bowtie2_array_wrapper.bash --no-unal --sort --extension _trimmed.1.fastq.gz --ve
 ```
 
 
+```
+
+grep "^>" /francislab/data1/working/20211111-hg38-viral-homology/RMHM.fasta | tr -d "^>" | sed 's/ /        /' | gzip >  accession_description.tsv.gz
+
+chmod -w accession_description.tsv.gz 
+
+```
+
+
+
+```
+
+./merge.py --int --output e2e_counts.tsv.gz   e2e/QM*.RMHM.bam.aligned_sequence_counts.txt && chmod -w e2e_counts.tsv.gz
+
+./merge.py --int --output local_counts.tsv.gz local/QM*.RMHM.bam.aligned_sequence_counts.txt && chmod -w local_counts.tsv.gz
+
+```
+
+
+
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in e2e_counts.tsv local_counts.tsv /francislab/data1/raw/20220804-RaleighLab-RNASeq/ids_DNA_methylation_group.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
