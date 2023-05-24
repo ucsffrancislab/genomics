@@ -91,9 +91,26 @@ done
 
 
 
+```
+/francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/Human_alphaherpesvirus_3_proteins_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.txt
 
 
+Query= NP_040188.1_serine-threonine_protein_kinase_US3_Hu
 
+Length=393
+                                                                      Score        E
+Sequences producing significant alignments:                          (Bits)     Value
+
+TCONS_00011565_MLT1A0_AKT3_-_233 unnamed protein product              89.4       2e-21
+TCONS_00092541_MLT2B2_EPHA5_-_195 unnamed protein product             68.2       2e-14
+TCONS_00036289_MLT1E2_PRKD1_-_134 unnamed protein product             66.6       7e-14
+TCONS_00000820_L2b_EPHB2_+_9 unnamed protein product                  65.1       2e-13
+TCONS_00105490_L1PA5_MAP3K7_-_130 unnamed protein product             47.4       6e-08
+TCONS_00012449_MIRb_RET_+_458 unnamed protein product                 44.3       2e-07
+```
+
+
+Not entirely certain why these 6 were selected.
 
 NP_040188.1_serine-threonine_protein_kinase_US3_Hu
 TCONS_00011565_MLT1A0_AKT3_-_233
