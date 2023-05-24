@@ -231,10 +231,34 @@ done
 
 
 
+/francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/Human_alphaherpesvirus_3_proteins_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.txt
+
+/francislab/data1/raw/20230426-PanCancerAntigens/S1_BrainTumorTranscriptIDs.txt
+
+
+```
+cat <<EOF > VZV_NP_040188_TranscriptIDs_at_beginning.txt
+^TCONS_00011565
+^TCONS_00092541
+^TCONS_00036289
+^TCONS_00000820
+^TCONS_00105490
+^TCONS_00012449
+EOF
+
+
+```
+
+
+
 
 2- Within each subject- How many transcripts are shared vs unique? i.e. how much homogeneity and heterogeneity is the win in a subject?
 
 ```
+
+( head -1 out-strandtest-guided/tpmexpressiontable.t.csv && grep -f VZV_NP_040188_TranscriptIDs_at_beginning.txt out-strandtest-guided/tpmexpressiontable.t.csv ) > out-strandtest-guided/tpmexpressiontable.t.NP_040188.csv
+
+
 
 sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTExZero.txt > S1_TranscriptIDs_GTExZero_at_beginning.txt
 
@@ -262,12 +286,13 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
-for f in out-strandtest-guided/{tpmexpressiontable.t.GTEx0.csv,tpmexpressiontable.t.GTEx0.all_subjects.csv,tpmexpressiontable.t.GTEx0.subject_count.csv,tpmexpressiontable.t.GTEx0.t.csv,tpmexpressiontable.t.GTEx0.t.transcript_count.csv} ; do
+for f in out-strandtest-guided/{tpmexpressiontable.t.GTEx0.csv,tpmexpressiontable.t.GTEx0.all_subjects.csv,tpmexpressiontable.t.GTEx0.subject_count.csv,tpmexpressiontable.t.GTEx0.t.csv,tpmexpressiontable.t.GTEx0.t.transcript_count.csv,tpmexpressiontable.t.NP_040188.csv} ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 
 ```
+
 
 
 
