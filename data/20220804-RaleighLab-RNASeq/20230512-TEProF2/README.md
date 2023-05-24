@@ -79,10 +79,67 @@ R
 load("out/Step13.RData")
 row.names(tpmexpressiontable)=tpmexpressiontable[['TranscriptID']]
 df = subset(tpmexpressiontable, select = -c(TranscriptID) )
-write.csv(df,file='tpmexpressiontable.csv', quote=FALSE)
-write.csv(t(df),file='tpmexpressiontable.t.csv', quote=FALSE)
+write.csv(df,file='out/tpmexpressiontable.csv', quote=FALSE)
+write.csv(t(df),file='out/tpmexpressiontable.t.csv', quote=FALSE)
 
 ```
+
+
+```
+chmod -w out/tpmexpressiontable*
+
+```
+
+
+
+
+
+/francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/Human_alphaherpesvirus_3_proteins_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.txt
+
+/francislab/data1/raw/20230426-PanCancerAntigens/S1_BrainTumorTranscriptIDs.txt
+
+
+```
+cat <<EOF > VZV_NP_040188_TranscriptIDs_at_beginning.txt
+^TCONS_00011565
+^TCONS_00092541
+^TCONS_00036289
+^TCONS_00000820
+^TCONS_00105490
+^TCONS_00012449
+EOF
+
+
+```
+
+
+
+
+2- Within each subject- How many transcripts are shared vs unique? i.e. how much homogeneity and heterogeneity is the win in a subject?
+
+```
+
+( head -1 out/tpmexpressiontable.t.csv && grep -f VZV_NP_040188_TranscriptIDs_at_beginning.txt out/tpmexpressiontable.t.csv ) > out/tpmexpressiontable.t.NP_040188.csv
+
+
+
+sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTExZero.txt > S1_TranscriptIDs_GTExZero_at_beginning.txt
+
+( head -1 out/tpmexpressiontable.t.csv && grep -f S1_TranscriptIDs_GTExZero_at_beginning.txt out/tpmexpressiontable.t.csv ) > out/tpmexpressiontable.t.GTEx0.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print}(NR>1){z=0;for(i=2;i<=NF;i++){if($i==0){z=1;break}}if(z==0){print}}' out/tpmexpressiontable.t.GTEx0.csv > out/tpmexpressiontable.t.GTEx0.all_subjects.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out/tpmexpressiontable.t.GTEx0.csv > out/tpmexpressiontable.t.GTEx0.subject_count.csv
+
+
+cat out/tpmexpressiontable.t.GTEx0.csv | datamash transpose -t, > out/tpmexpressiontable.t.GTEx0.t.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out/tpmexpressiontable.t.GTEx0.t.csv > out/tpmexpressiontable.t.GTEx0.t.transcript_count.csv
+
+
+```
+
+
 
 
 
@@ -92,7 +149,7 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
-for f in out/{Step10.RData,Step11_FINAL.RData,Step12.RData,Step13.RData,candidates_cpcout.fa,candidates_proteinseq.fa,tpmexpressiontable.csv,tpmexpressiontable.t.csv} ; do
+for f in out/{Step10.RData,Step11_FINAL.RData,Step12.RData,Step13.RData,candidates_cpcout.fa,candidates_proteinseq.fa,tpmexpressiontable.csv,tpmexpressiontable.t.csv,tpmexpressiontable.t.GTEx0.csv,tpmexpressiontable.t.GTEx0.all_subjects.csv,tpmexpressiontable.t.GTEx0.subject_count.csv,tpmexpressiontable.t.GTEx0.t.csv,tpmexpressiontable.t.GTEx0.t.transcript_count.csv,tpmexpressiontable.t.NP_040188.csv} ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
