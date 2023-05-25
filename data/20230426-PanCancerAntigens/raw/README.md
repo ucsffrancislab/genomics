@@ -88,7 +88,9 @@ TCONS_00060183,0,0,0,368,4,0
 
 awk 'BEGIN{OFS=FS=","}(NR>2 && $108==0){print $1}' 41588_2023_1349_MOESM3_ESM/S1.csv | head
 
-awk 'BEGIN{OFS=FS=","}(NR>2 && $108==0){print $1}' 41588_2023_1349_MOESM3_ESM/S1.csv > S1_TranscriptIDs_GTExZero.txt
+awk 'BEGIN{OFS=FS=","}(NR>2 && $108==0){print $1}' 41588_2023_1349_MOESM3_ESM/S1.csv > S1_TranscriptIDs_GTEx0.txt
+
+awk 'BEGIN{OFS=FS=","}(NR>2 && $108<=1){print $1}' 41588_2023_1349_MOESM3_ESM/S1.csv > S1_TranscriptIDs_GTEx1.txt
 
 ```
 
