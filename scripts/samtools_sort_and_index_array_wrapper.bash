@@ -26,7 +26,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI samtools star/2.7.7a
+		module load CBI samtools #star/2.7.7a
 	fi
 	
 	date
@@ -75,7 +75,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 else
 
 	threads=${SLURM_NTASKS:-4}
-	mem=$[threads*7]
+	mem=$[threads*7500]M
 	scratch_size=$[threads*28]
 
 	\rm -f ${arguments_file}
@@ -107,7 +107,7 @@ else
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%10 \
 			--parsable --job-name="$(basename $0)" \
-			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem}G \
+			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) --threads ${threads} )
 	
