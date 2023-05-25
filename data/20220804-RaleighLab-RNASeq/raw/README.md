@@ -133,9 +133,43 @@ awk 'BEGIN{OFS=FS=","}(NR>1){print $1,$12}' HKU_AllFusions/Integrated_data_worki
 ```
 
 
+```
+for bai in trimmed/QM*.Aligned.sortedByCoord.out.bam.bai ; do
+echo $bai
+f=${bai}.read_count.txt
+if [ ! -f ${f} ] ; then
+cat $bai | bamReadDepther | awk '(/^[#*]/){s+=$2+$3}END{print s}' > ${f}
+chmod -w ${f}
+fi
+done
+```
 
 
 
+```
+for f in trimmed/QM*.Aligned.sortedByCoord.out.bam.bai.read_count.txt ; do
+b=$( basename $f .Aligned.sortedByCoord.out.bam.bai.read_count.txt )
+c=$( cat $f )
+echo ${b},${c}
+done | sort -t, -k2nr
+
+```
+
+Why are some odd? Multiple alignments! ERRRR
+```
+QM315,226044724
+QM136,223145285
+QM304,221835393
+QM74,219763372
+QM138,218339710
+```
+
+No way to filter read count from index file so ...
+
+
+```
+samtools_count_array_wrapper.bash trimmed/QM*bam
+```
 
 
 
