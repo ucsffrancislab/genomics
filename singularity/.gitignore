@@ -1,4 +1,5 @@
 *.img
+*.sif
 *.out
 TEfinderClusterTest/
 TEfinderTest/
@@ -9,7 +10,7 @@ xTeaDemo/
 xTeaTest/
 
 .vagrant/
-Vagrantfile
+Vagrantfile*
 MaxQuant_2.0.3.1.zip
 MaxQuant_2.0.3.1/
 old/
