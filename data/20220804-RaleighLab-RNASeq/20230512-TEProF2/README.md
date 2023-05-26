@@ -72,27 +72,6 @@ done
 
 
 
-Prepping to view final R data
-```
-R
-
-load("out/Step13.RData")
-row.names(tpmexpressiontable)=tpmexpressiontable[['TranscriptID']]
-df = subset(tpmexpressiontable, select = -c(TranscriptID) )
-write.csv(df,file='out/tpmexpressiontable.csv', quote=FALSE)
-write.csv(t(df),file='out/tpmexpressiontable.t.csv', quote=FALSE)
-
-```
-
-
-```
-chmod -w out/tpmexpressiontable*
-
-```
-
-
-
-
 
 /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/Human_alphaherpesvirus_3_proteins_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.txt
 
@@ -117,44 +96,6 @@ EOF
 
 2- Within each subject- How many transcripts are shared vs unique? i.e. how much homogeneity and heterogeneity is the win in a subject?
 
-```
-
-( head -1 out/tpmexpressiontable.t.csv && grep -f VZV_NP_040188_TranscriptIDs_at_beginning.txt out/tpmexpressiontable.t.csv ) > out/tpmexpressiontable.t.NP_040188.csv
-
-
-
-sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTEx0.txt > S1_TranscriptIDs_GTEx0_at_beginning.txt
-
-( head -1 out/tpmexpressiontable.t.csv && grep -f S1_TranscriptIDs_GTEx0_at_beginning.txt out/tpmexpressiontable.t.csv ) > out/tpmexpressiontable.t.GTEx0.csv
-
-awk 'BEGIN{FS=OFS=","}(NR==1){print}(NR>1){z=0;for(i=2;i<=NF;i++){if($i==0){z=1;break}}if(z==0){print}}' out/tpmexpressiontable.t.GTEx0.csv > out/tpmexpressiontable.t.GTEx0.all_subjects.csv
-
-awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out/tpmexpressiontable.t.GTEx0.csv > out/tpmexpressiontable.t.GTEx0.subject_count.csv
-
-
-cat out/tpmexpressiontable.t.GTEx0.csv | datamash transpose -t, > out/tpmexpressiontable.t.GTEx0.t.csv
-
-awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out/tpmexpressiontable.t.GTEx0.t.csv > out/tpmexpressiontable.t.GTEx0.t.transcript_count.csv
-
-
-
-sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTEx1.txt > S1_TranscriptIDs_GTEx1_at_beginning.txt
-
-( head -1 out/tpmexpressiontable.t.csv && grep -f S1_TranscriptIDs_GTEx1_at_beginning.txt out/tpmexpressiontable.t.csv ) > out/tpmexpressiontable.t.GTEx1.csv
-
-awk 'BEGIN{FS=OFS=","}(NR==1){print}(NR>1){z=0;for(i=2;i<=NF;i++){if($i==0){z=1;break}}if(z==0){print}}' out/tpmexpressiontable.t.GTEx1.csv > out/tpmexpressiontable.t.GTEx1.all_subjects.csv
-
-awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out/tpmexpressiontable.t.GTEx1.csv > out/tpmexpressiontable.t.GTEx1.subject_count.csv
-
-
-cat out/tpmexpressiontable.t.GTEx1.csv | datamash transpose -t, > out/tpmexpressiontable.t.GTEx1.t.csv
-
-awk 'BEGIN{FS=OFS=","}(NR==1){print $1,"count","totalcount"}(NR>1){count=0;for(i=2;i<=NF;i++){if($i>0){count+=1}}print $1,count,NF-1}' out/tpmexpressiontable.t.GTEx1.t.csv > out/tpmexpressiontable.t.GTEx1.t.transcript_count.csv
-
-
-```
-
-
 
 
 
@@ -172,16 +113,117 @@ done
 ```
 
 
+
+
+
+
+----
+
+Try this again
+```
+\rm -f out/tpmexpressiontable*
+
+
+sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTEx0.txt > S1_TranscriptIDs_GTEx0_at_beginning.txt
+
+sed -e 's/^/\^/' /francislab/data1/raw/20230426-PanCancerAntigens/S1_TranscriptIDs_GTEx1.txt > S1_TranscriptIDs_GTEx1_at_beginning.txt
+
+( echo "ids,subfam,locationTE,gene" && ( awk 'BEGIN{FS=OFS=","}(NR>2){print $1,$2,$6,$7}' /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort ) ) > ids_subfam_locationTE_gene.csv
+
+```
+
+Prepping to view final R data
+```R
+R
+
+load("out/Step13.RData")
+colnames(tpmexpressiontable)[1] = "ids"
+write.table(tpmexpressiontable,file='tpmexpressiontable.csv',sep=",",row.names=FALSE,quote=FALSE)
+```
+
+
+```
+chmod a-w tpmexpressiontable.csv
+```
+
+
+
+```
+
+python3
+
+import pandas as pd
+
+df=pd.read_csv("tpmexpressiontable.csv",index_col='ids')
+
+samples=pd.read_csv("ids_DNA_methylation_group.csv",index_col='ids')
+
+df=pd.concat([df,samples],axis=1).set_index(['methylation_group'], append=True).T
+
+transcripts=pd.read_csv("ids_subfam_locationTE_gene.csv",index_col='ids')
+
+df=pd.concat([df,transcripts],axis=1)
+df.index.name='transcriptId'
+df.set_index(['subfam','locationTE','gene'],append=True,inplace=True)
+
+df.columns=pd.MultiIndex.from_tuples(df.columns)
+
+df.fillna('', inplace=True)
+
+df=df.reset_index().T.reset_index().T
+
+df.to_csv('tpmexpressiontable.annotated.csv',sep=",",index=False,header=False)
+
+```
+
+
+I don't care for the output format of multindexed csvs, so reset index and using as basic columns.
+
+
+
+```
+( head -2 tpmexpressiontable.annotated.csv && grep -f VZV_NP_040188_TranscriptIDs_at_beginning.txt tpmexpressiontable.annotated.csv ) > tpmexpressiontable.annotated.NP_040188.csv
+
+
+
+for gtex in GTEx0 GTEx1 ; do
+
+( head -2 tpmexpressiontable.annotated.csv && grep -f S1_TranscriptIDs_${gtex}_at_beginning.txt tpmexpressiontable.annotated.csv ) > tpmexpressiontable.annotated.${gtex}.csv
+
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){z=0;for(i=5;i<=NF;i++){if($i==0){z=1;break}}if(z==0){print}}' tpmexpressiontable.annotated.${gtex}.csv > tpmexpressiontable.annotated.${gtex}.all_subjects.csv
+
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=0.90){print}}' tpmexpressiontable.annotated.${gtex}.csv > tpmexpressiontable.annotated.${gtex}.0.90_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=0.95){print}}' tpmexpressiontable.annotated.${gtex}.csv > tpmexpressiontable.annotated.${gtex}.0.95_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=0.99){print}}' tpmexpressiontable.annotated.${gtex}.csv > tpmexpressiontable.annotated.${gtex}.0.99_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=1.00){print}}' tpmexpressiontable.annotated.${gtex}.csv > tpmexpressiontable.annotated.${gtex}.1.00_subjects.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==2){print "transcriptId,subfam,locationTE,gene,count,totalcount"}(NR>2){count=0;for(i=5;i<=NF;i++){if($i>0){count+=1}}print $1,$2,$3,$4,count,NF-1}' tpmexpressiontable.annotated.${gtex}.csv > tpmexpressiontable.annotated.${gtex}.subject_count.csv
+
+cat tpmexpressiontable.annotated.${gtex}.csv | datamash transpose -t, > tpmexpressiontable.annotated.${gtex}.t.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==4){print "id,methylation,count,totalcount"}(NR>4){count=0;for(i=3;i<=NF;i++){if($i>0){count+=1}}print $1,$2,count,NF-1}' tpmexpressiontable.annotated.${gtex}.t.csv > tpmexpressiontable.annotated.${gtex}.t.transcript_count.csv
+
+done
+
+
+chmod a-w tpmexpressiontable*.csv
+
+```
+
+
+
 ```
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
 
-for f in out/{tpmexpressiontable.t.GTEx*.csv,tpmexpressiontable.t.GTEx*.all_subjects.csv,tpmexpressiontable.t.GTEx*.subject_count.csv,tpmexpressiontable.t.GTEx*.t.csv,tpmexpressiontable.t.GTEx*.t.transcript_count.csv,tpmexpressiontable.t.NP_040188.csv} ; do
+for f in tpmexpressiontable* ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 
 ```
+
+
 
