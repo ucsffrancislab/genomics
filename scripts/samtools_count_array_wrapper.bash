@@ -127,7 +127,7 @@ else
 				$( realpath ${0} ) --threads ${threads} )
 	
 		echo "Throttle with ..."
-		echo "scontrol update ArrayTaskThrottle=8 JobId=${array_id}"
+		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
 
 	else
 
