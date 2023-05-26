@@ -23,12 +23,13 @@ optional arguments:
   -v, --version  show program's version number and exit
 ```
 
+Really only needs about 100GB mem
 
 ```
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="MEGAnE" \
 --time=20160 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/MEGAnE.out.log \
---wrap="singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/MEGAnE.v1.0.0.beta-20230525.sif build_kmerset -fa /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.fa.gz -prefix reference_human_genome -outdir ${PWD}/megane_kmer_set"
+--wrap="singularity exec --bind /francislab,/scratch /francislab/data1/refs/singularity/MEGAnE.v1.0.1.beta-20230525.sif build_kmerset -fa /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.fa -prefix reference_human_genome -outdir ${PWD}/megane_kmer_set"
 
 ```
 
