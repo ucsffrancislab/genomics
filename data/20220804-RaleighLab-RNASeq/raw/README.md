@@ -2,6 +2,9 @@
 #	20220804-RaleighLab-RNASeq
 
 
+Meningioma? HKU? Hong Kong University
+
+
 Raw Raw
 
 ll /raleighlab/data1/wcc/portal-us.medgenome.com/FASTQ/
@@ -169,6 +172,12 @@ No way to filter read count from index file so ...
 
 ```
 samtools_count_array_wrapper.bash trimmed/QM*bam
+```
+
+Still not always even?
+
+```
+fast_count_array_wrapper.bash trimmed/QM*.1.fastq.gz 
 ```
 
 
