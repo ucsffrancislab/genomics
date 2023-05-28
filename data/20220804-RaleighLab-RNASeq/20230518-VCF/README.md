@@ -63,6 +63,11 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="bcftoolsm
 
 ```
 
+Took 9 days
+
+```
+-rw-r----- 1 gwendt francislab 51452831801 May 27 20:18 merged.vcf.gz
+```
 
 `bcftools merge` didn't work will with previous studies 
 (20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT) 
