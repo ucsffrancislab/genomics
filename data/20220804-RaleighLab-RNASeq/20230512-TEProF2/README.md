@@ -206,6 +206,29 @@ awk 'BEGIN{FS=OFS=","}(NR==4){print "id,methylation,count,totalcount"}(NR>4){cou
 done
 
 
+
+
+for gtex in GTEx0 GTEx1 ; do
+for subtype in Immune-enriched Hypermitotic Merlin-intact ; do
+
+cat tpmexpressiontable.annotated.${gtex}.csv | datamash transpose -t, | grep -E "^transcriptId|^subfam|^locationTE|^gene|${subtype}" | datamash transpose -t, > tpmexpressiontable.annotated.${gtex}.${subtype}.csv
+
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){z=0;for(i=5;i<=NF;i++){if($i==0){z=1;break}}if(z==0){print}}' tpmexpressiontable.annotated.${gtex}.${subtype}.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.all_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=0.90){print}}' tpmexpressiontable.annotated.${gtex}.${subtype}.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.0.90_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=0.95){print}}' tpmexpressiontable.annotated.${gtex}.${subtype}.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.0.95_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=0.99){print}}' tpmexpressiontable.annotated.${gtex}.${subtype}.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.0.99_subjects.csv
+awk 'BEGIN{FS=OFS=","}(NR<=2){print}(NR>2){c=0;for(i=5;i<=NF;i++){if($i>0){c+=1}}if((c/(NF-4))>=1.00){print}}' tpmexpressiontable.annotated.${gtex}.${subtype}.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.1.00_subjects.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==2){print "transcriptId,subfam,locationTE,gene,count,totalcount"}(NR>2){count=0;for(i=5;i<=NF;i++){if($i>0){count+=1}}print $1,$2,$3,$4,count,NF-1}' tpmexpressiontable.annotated.${gtex}.${subtype}.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.subject_count.csv
+
+cat tpmexpressiontable.annotated.${gtex}.${subtype}.csv | datamash transpose -t, > tpmexpressiontable.annotated.${gtex}.${subtype}.t.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==4){print "id,methylation,count,totalcount"}(NR>4){count=0;for(i=3;i<=NF;i++){if($i>0){count+=1}}print $1,$2,count,NF-1}' tpmexpressiontable.annotated.${gtex}.${subtype}.t.csv > tpmexpressiontable.annotated.${gtex}.${subtype}.t.transcript_count.csv
+
+done
+done
+
+
 chmod a-w tpmexpressiontable*.csv
 
 ```
@@ -219,6 +242,8 @@ DATA=$( basename $( dirname ${PWD} ) )
 BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
 
 for f in tpmexpressiontable* ; do
+
+for f in tpmexpressiontable*{Immune-enriched,Hypermitotic,Merlin-intact}* ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
