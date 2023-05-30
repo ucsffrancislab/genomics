@@ -123,7 +123,17 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 	outbase=${OUT}/${base}
-	f=${outbase}
+
+	#	produces many files
+	#
+	#		MEI_final_gaussian_genotyped.vcf
+	#		breakpoint_pairs_pooled_all.txt.gz
+	#		overhang_to_MEI_list.txt.gz
+	#		absent_MEs_genotyped.vcf
+	#		absent.txt.gz
+	#
+	#	but this vcf is the last
+	f=${outbase}/absent_MEs_genotyped.vcf
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -153,7 +163,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#UnicodeDecodeError: 'utf-8' codec can't decode byte 0x9f in position 24: invalid start byte
 
 
-		chmod -R a-w ${f}
+		chmod -R a-w $( dirname ${f} )
 	fi
 
 	date
