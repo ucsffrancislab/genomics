@@ -62,3 +62,13 @@ done
 
 
 
+
+
+```
+bcftools_mpileup_call_array_wrapper.bash -q 30 --variants-only --skip-variants indels --ref /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa ${PWD}/out/*bam
+
+
+```
+
+
+
