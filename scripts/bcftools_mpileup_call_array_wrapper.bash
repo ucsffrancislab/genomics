@@ -25,6 +25,10 @@ extension=".bam"
 #IN="${PWD}/in"
 #OUT="${PWD}/out"
 
+mpileup_options=""
+call_options=""
+array_options=""
+
 while [ $# -gt 0 ] ; do
 	case $1 in
 #		-i|--in)
@@ -40,10 +44,22 @@ while [ $# -gt 0 ] ; do
 		-e|--extension)
 			shift; extension=$1; shift;;
 		-r|--ref)
+			array_options="${array_options} $1 $2"
 			shift; ref=$1; shift;;
+		-q)
+			array_options="${array_options} $1 $2"
+			mpileup_options="${mpileup_options} $1 $2"; shift; shift;;
+		-v|--variants-only)
+			#	Output variant sites only
+			array_options="${array_options} $1"
+			call_options="${call_options} $1"; shift;;
+		-V|--skip-variants)
+			# TYPE        Skip indels/snps
+			array_options="${array_options} $1 $2"
+			call_options="${call_options} $1 $2"; shift; shift;;
 		-h|--help)
 			echo
-			echo bcftool_mpileup_call_array_wrapper.bash --ref /PATH/TO/ref_genome.fa trimmed/*bam
+			echo bcftools_mpileup_call_array_wrapper.bash --ref /PATH/TO/ref_genome.fa trimmed/*bam
 			echo
 			exit;;
 		-*)
@@ -115,10 +131,11 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#	not sure if -q 60 is always appropriate here
 		# STAR The mapping quality MAPQ (column 5) is 255 for uniquely mapping reads, and int(-10*log10(1-. 1/Nmap)) for multi-mapping reads.
 		#	Bowtie 2 generates MAPQ scores between 0–42. BWA generates MAPQ scores between 0–37. 
+		#	Actually, BWA-MEM produces MAPQ as high as 60. Not sure where the line is though.
 
 		#	this calls for all positions with data, not just variants.
 
-		bcftools mpileup -q 60 -Ou -f ${ref} ${bam} | bcftools call -m -Oz -o ${vcf}
+		bcftools mpileup ${mpileup_options} -Ou -f ${ref} ${bam} | bcftools call ${call_options} -m -Oz -o ${vcf}
 		bcftools index ${f}
 		chmod -w ${f} ${f}.csi
 	fi
@@ -141,7 +158,7 @@ else
 		--parsable --job-name="$(basename $0)" \
 		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) --ref ${ref} )
+			$( realpath ${0} ) ${array_options} )
 
 	echo "Throttle with ..."
 	echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
