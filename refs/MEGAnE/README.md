@@ -72,4 +72,42 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="MEGAnE" \
 
 
 
+https://www.nature.com/articles/s41588-023-01390-2
+
+https://zenodo.org/record/7703708
+
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh37.ME_absences.ALL.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh37.ME_absences.PASS.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh37.ME_insertions.ALL.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh37.ME_insertions.PASS.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_2504.ME_absences.ALL.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_2504.ME_absences.PASS.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_2504.ME_insertions.ALL.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_2504.ME_insertions.PASS.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_3202.ME_absences.ALL.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_3202.ME_absences.PASS.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_3202.ME_insertions.ALL.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/1000GP.GRCh38_3202.ME_insertions.PASS.vcf.gz
+
+wget https://zenodo.org/record/7703708/files/GTEx_eQTL_mash_meta_analysis.ME.lfsr.tsv.gz
+
+wget https://zenodo.org/record/7703708/files/GTEx_eQTL_mash_meta_analysis.ME.posterior_mean.tsv.gz
+
+wget https://zenodo.org/record/7703708/files/GTEx_eQTL_mash_meta_analysis.ME.posterior_stdev.tsv.gz
+
+
+
+
 
