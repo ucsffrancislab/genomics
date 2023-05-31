@@ -43,7 +43,7 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-for f in e2e_counts.tsv local_counts.tsv /francislab/data1/raw/20220804-RaleighLab-RNASeq/ids_DNA_methylation_group.csv ; do
+for f in e2e_counts.tsv local_counts.tsv /francislab/data1/raw/20220804-RaleighLab-RNASeq/ids_DNA_methylation_group.csv /francislab/data1/working/20211111-hg38-viral-homology/RMHM.fasta accession_description.tsv.gz ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
