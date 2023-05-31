@@ -74,7 +74,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI r/4.2.3 samtools cufflinks bedtools2 plink2
+		module load CBI r/4.2.3 samtools cufflinks bedtools2 #plink2
 			# bwa bedtools2 star/2.7.7a
 
 		#	http://ccb.jhu.edu/software/stringtie/dl/		gffread / stringtie / gffcompare 
@@ -230,9 +230,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	memory=$[threads*7500] #M
 
 	#for chr in chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY; do
-	for chr in chr22 chrX chrY; do
+	#for chr in chr22 chrX chrY; do
 
-		echo "Processing chr ${chr}"
+		#echo "Processing chr ${chr}"
 
 		#	# first, generate a SNP VCF
 		#	snp_vcf=/path/to/SNP.vcf
@@ -255,19 +255,19 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#	# next, generate a ME VCF
 		#	me_vcf=/path/to/vcf_for_phasing/[cohort_name]_biallelic.vcf.gz
 
-		plink2 \
-			--threads ${threads} \
-			--memory ${memory} \
-			--vcf ${OUT}/vcf_for_phasing/all_biallelic.vcf.gz
-			--make-pgen \
-			--max-alleles 2 \
-			--mac 2 \
-			--hwe 1e-6 \
-			--chr ${chr} \
-			--indiv-sort natural \
-			--vcf-half-call missing \
-			--export vcf bgz \
-			--out ME
+		#plink2 \
+		#	--threads ${threads} \
+		#	--memory ${memory} \
+		#	--vcf ${OUT}/vcf_for_phasing/all_biallelic.vcf.gz
+		#	--make-pgen \
+		#	--max-alleles 2 \
+		#	--mac 2 \
+		#	--hwe 1e-6 \
+		#	--chr ${chr} \
+		#	--indiv-sort natural \
+		#	--vcf-half-call missing \
+		#	--export vcf bgz \
+		#	--out ME
 	
 
 		#	# merge SNP and ME VCFs
@@ -305,7 +305,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#	--thread ${threads} \
 		#	--output SNP_ME.phased.vcf.gz
 
-	done
+	#done
 
 	date
 
