@@ -258,7 +258,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#plink2 \
 		#	--threads ${threads} \
 		#	--memory ${memory} \
-		#	--vcf ${OUT}/vcf_for_phasing/all_biallelic.vcf.gz
+		#	--vcf ${OUT}/vcf_for_phasing/all_biallelic.vcf.gz \
 		#	--make-pgen \
 		#	--max-alleles 2 \
 		#	--mac 2 \
