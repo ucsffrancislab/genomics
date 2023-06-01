@@ -183,3 +183,22 @@ fast_count_array_wrapper.bash trimmed/QM*.1.fastq.gz
 
 
 
+
+
+
+20230531
+```
+grep -E 'gene_name "GAPDH"|gene_name "TP53"' /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/genome-lib/GRCh38_gencode_v37_CTAT_lib_Mar012021.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gff3 > select.gff3
+
+grep -E 'gene_name "GAPDH"|gene_name "TP53"' /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/genome-lib/GRCh38_gencode_v37_CTAT_lib_Mar012021.plug-n-play/ctat_genome_lib_build_dir/ref_annot.gtf > select.gtf
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fCtranscript" \
+--time=20160 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/fCtranscript.${date}.out.log \
+--wrap="featureCounts.bash -T 16 -t transcript -g gene_name -a ${PWD}/select.gtf -o ${PWD}/QM.TP53.GAPDH.transcript.tsv ${PWD}/trimmed/Q*bam"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fCexon" \
+--time=20160 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/fCexon.${date}.out.log \
+--wrap="featureCounts.bash -T 16 -t exon -g gene_name -a ${PWD}/select.gtf -o ${PWD}/QM.TP53.GAPDH.exon.tsv ${PWD}/trimmed/Q*bam"
+
+```
