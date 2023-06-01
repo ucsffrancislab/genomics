@@ -10,22 +10,10 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 set -x  #       print expanded command before executing it
 
-if [ $( basename ${0} ) == "slurm_script" ] ; then
-	script=${SLURM_JOB_NAME}
-else
-	script=$( basename $0 )
-fi
-
-#	PWD preserved by slurm for where job is run? I guess so.
-#arguments_file=${PWD}/${script}.arguments
-
 CPC2=/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py
 TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
 ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-32}
-#extension="_R1.fastq.gz"
-#IN="${PWD}/in"
-#OUT="${PWD}/out"
 strand=""
 using_reference=false
 
@@ -40,12 +28,6 @@ while [ $# -gt 0 ] ; do
 		-r|--reference_merged_candidates_gtf)
 			using_reference=true
 			shift; reference_merged_candidates_gtf=$1; shift;;
-#		-l|--transposon)
-#			shift; transposon_fasta=$1; shift;;
-#		-r|--human)
-#			shift; human_fasta=$1; shift;;
-#		-e|--extension)
-#			shift; extension=$1; shift;;
 		-s|--strand)
 			shift; strand=$1; shift;;
 			#	I really don't know which is correct
@@ -59,16 +41,14 @@ while [ $# -gt 0 ] ; do
 			#	first-strand = directional, where the first read (or the only read in case of SE) is from the opposite strand.
 		-h|--help)
 			echo
-			echo "Good question"
+			echo $0
 			echo
 			exit;;
 		*)
-			echo "Unknown params :${1}:"; exit ;;
+			echo "Unknown param :${1}:"; exit ;;
 	esac
 done
 
-mem=$[threads*7500]M
-scratch_size=$[threads*28]G
 
 if [ $( basename ${0} ) == "slurm_script" ] ; then
 
@@ -327,7 +307,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 	#	single threaded and long. could parallelize as is not merging anything
-
 	#echo "ctab_i.txt 2"
 	#f=${OUT}/ctab_i.2.complete
 	#if [ -f $f ] && [ ! -w $f ] ; then
@@ -340,8 +319,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#	touch ${f}
 	#	chmod -w ${f}
 	#fi
-
-
 
 	echo "ctab_i.txt 2"
 	f=${OUT}/candidateCommands.txt
@@ -601,14 +578,20 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 else
 
-	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
+
+	mkdir -p ${PWD}/logs
+
+	mem=$[threads*7500]M
+	scratch_size=$[threads*28]G
 
 	reference_merged_candidates_gtf_option=""
 	[ -n "${reference_merged_candidates_gtf}" ] && \
 		reference_merged_candidates_gtf_option="--reference_merged_candidates_gtf ${reference_merged_candidates_gtf}"
+
 	strand_option=""
 	[ -n "${strand}" ] && strand_option="--strand ${strand}"
+
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
 		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
@@ -616,14 +599,4 @@ else
 			$( realpath ${0} ) --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
 
 fi
-
-
-
-
-
-#	TEProF2_array_wrapper.bash
-#	--in /francislab/data1/working/20200609_costello_RNAseq_spatial/20200615-STAR_hg38/out
-#	--out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230421-TEProF2/out
-#	--extension .STAR.hg38.Aligned.out.bam
-#	--threads 8
 
