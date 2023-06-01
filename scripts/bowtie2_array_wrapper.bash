@@ -10,15 +10,21 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
-#if [ $( basename ${0} ) == "slurm_script" ] ; then
-#	script=${SLURM_JOB_NAME}
-#else
-#	script=$( basename $0 )
-#fi
-#
-##	PWD preserved by slurm for where job is run? I guess so.
-#arguments_file=${PWD}/${script}.arguments
-#\rm -f ${arguments_file}.tmp
+
+function usage(){
+	set +x
+	echo
+	echo "Usage:"
+	echo
+	echo $0 --ref /PATH/TO/ref_genome path/*1.fastq.gz
+	echo
+	echo $0 --no-unal --sort --extension _R1.fastq.gz --very-sensitive --threads 8 
+	echo -x /francislab/data1/working/20211111-hg38-viral-homology/RMHM 
+	echo --outdir ${PWD}/e2e 
+	echo /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/*_R1.fastq.gz
+	echo
+	exit
+}
 
 
 
@@ -32,7 +38,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "mem :${mem}:"
 
 	bowtie2_options=""
-	#threads=${SLURM_NTASKS:-4}
 	extension="_R1.fastq.gz"
 	outdir=""
 
@@ -47,19 +52,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			-x|-r|--ref)
 				shift; ref=$1; shift;;
 			-*)
-				#echo
-				#echo "Unknown params :${1}:"
-				#echo
-				#exit ;;
 				bowtie2_options="${bowtie2_options} $1"
 				shift;;
 			*)
 				echo "Unexpected argument"
 				echo $1
 				echo $*
+				usage
 				exit;;
-			#	realpath --no-symlinks $1 >> ${arguments_file}.tmp
-			#	shift;;
 		esac
 	done
 
@@ -143,42 +143,43 @@ else
 			-t|--threads)
 				shift; threads=$1; shift;;
 			-o|--out|--outdir|-e|--extension|-x|-r|--ref)
-				array_options="${array_options} $1 $2"
-				shift; shift;;
+				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
-				echo
-				echo $0 --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
-				echo
-				exit;;
+				usage;;
 			-*)
-				array_options="${array_options} $1"
-				shift;;
+				array_options="${array_options} $1"; shift;;
 			*)
-				#echo "Unexpected argument"
-				#echo $1
-				#echo $*
-				#exit;;
-				realpath --no-symlinks $1 >> ${array_file}
-				shift;;
+				echo "Unknown param :${1}: Assuming file"; 
+				realpath --no-symlinks $1 >> ${array_file}; shift;;
 		esac
 	done
 
-	# using M so can be more precise-ish
-	mem=$[threads*7500]M
-	scratch_size=$[threads*28]G	#	not always necessary
+	#	True if file exists and has a size greater than zero.
+	if [ -s ${array_file} ] ; then
 
-	max=$( cat ${array_file} | wc -l )
+		# using M so can be more precise-ish
+		mem=$[threads*7500]M
+		scratch_size=$[threads*28]G	#	not always necessary
 
-	mkdir -p ${PWD}/logs
+		max=$( cat ${array_file} | wc -l )
 
-	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
-		--parsable --job-name="$(basename $0)" \
-		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
-		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) ${array_options} )
+		mkdir -p ${PWD}/logs
 
-	echo "Throttle with ..."
-	echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
+			--parsable --job-name="$(basename $0)" \
+			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
+				$( realpath ${0} ) ${array_options} )
+
+		echo "Throttle with ..."
+		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+
+	else
+
+		echo "No files given"
+			usage
+
+	fi
 
 fi
 
