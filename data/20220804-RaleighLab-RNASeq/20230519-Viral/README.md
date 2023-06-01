@@ -12,6 +12,11 @@ bowtie2_array_wrapper.bash --no-unal --sort --extension _trimmed.1.fastq.gz --ve
 
 bowtie2_array_wrapper.bash --no-unal --sort --extension _trimmed.1.fastq.gz --very-sensitive-local -x /francislab/data1/working/20211111-hg38-viral-homology/RMHM --outdir /francislab/data1/working/20220804-RaleighLab-RNASeq/20230519-Viral/local --threads 8 /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/FASTQ/Trimmed_Data/Arriba/QM*_trimmed.1.fastq.gz 
 
+
+
+
+bowtie2_array_wrapper.bash --no-unal --sort --extension _trimmed.1.fastq.gz --very-sensitive -x /francislab/data1/refs/refseq/viral-20220923/NC_001669.1/NC_001669.1_Simian_virus_40_complete_genome --outdir /francislab/data1/working/20220804-RaleighLab-RNASeq/20230519-Viral/e2e_SV40 --threads 8 /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/FASTQ/Trimmed_Data/Arriba/QM*_trimmed.1.fastq.gz 
+
 ```
 
 
@@ -48,6 +53,23 @@ echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in QM299.RMHM.bam QM17.RMHM.bam QM308.RMHM.bam ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T local/${f} "${BOX}/local/"
+curl  --silent --ftp-create-dirs -netrc -T local/${f}.bai "${BOX}/local/"
+curl  --silent --ftp-create-dirs -netrc -T e2e/${f} "${BOX}/e2e/"
+curl  --silent --ftp-create-dirs -netrc -T e2e/${f}.bai "${BOX}/e2e/"
+done
+
 ```
+
+
+
+
 
 
