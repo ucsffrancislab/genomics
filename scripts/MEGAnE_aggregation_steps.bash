@@ -10,23 +10,7 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 set -x  #       print expanded command before executing it
 
-if [ $( basename ${0} ) == "slurm_script" ] ; then
-	script=${SLURM_JOB_NAME}
-else
-	script=$( basename $0 )
-fi
-
-#	PWD preserved by slurm for where job is run? I guess so.
-#arguments_file=${PWD}/${script}.arguments
-
-CPC2=/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py
-TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
-ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-32}
-#extension="_R1.fastq.gz"
-#IN="${PWD}/in"
-#OUT="${PWD}/out"
-strand=""
 using_reference=false
 
 while [ $# -gt 0 ] ; do
@@ -37,38 +21,16 @@ while [ $# -gt 0 ] ; do
 			shift; threads=$1; shift;;
 		-o|--out)
 			shift; OUT=$1; shift;;
-#		-r|--reference_merged_candidates_gtf)
-#			using_reference=true
-#			shift; reference_merged_candidates_gtf=$1; shift;;
-#		-l|--transposon)
-#			shift; transposon_fasta=$1; shift;;
-#		-r|--human)
-#			shift; human_fasta=$1; shift;;
-#		-e|--extension)
-#			shift; extension=$1; shift;;
-		-s|--strand)
-			shift; strand=$1; shift;;
-			#	I really don't know which is correct
-			# --rf assume stranded library fr-firststrand
-			# --fr assume stranded library fr-secondstrand - guessing this is correct, but its a guess
-			#	5' ------------------------------> 3'
-			#	   /2 ----->            <----- /1 - fr-firststrand
-			#	   /1 ----->            <----- /2 - fr-secondstrand
-			#	unstranded
-			#	second-strand = directional, where the first read of the read pair (or in case of single end reads, the only read) is from the transcript strand
-			#	first-strand = directional, where the first read (or the only read in case of SE) is from the opposite strand.
 		-h|--help)
 			echo
-			echo "Good question"
+			echo $0
 			echo
 			exit;;
 		*)
-			echo "Unknown params :${1}:"; exit ;;
+			echo "Unknown param :${1}:"; exit ;;
 	esac
 done
 
-mem=$[threads*7500]M
-scratch_size=$[threads*28]G
 
 if [ $( basename ${0} ) == "slurm_script" ] ; then
 
@@ -90,24 +52,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	mkdir -p ${OUT}
 	cd ${OUT}
-
-#	echo ${TEPROF2}/translationPart2.R
-#	f=${OUT}/Step13.RData
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		date=$( date "+%Y%m%d%H%M%S%N" )
-#		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-#			--job-name="translationPart2" \
-#			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
-#			--output=${OUT}/translationPart2.${date}.out.log \
-#			--parsable --dependency=${dependency_id} \
-#			--chdir=${OUT} \
-#			--wrap="${TEPROF2}/translationPart2.R;chmod -w ${f}" )
-#	fi
-
-
-#	sif=/path/to/MEGAnE.sif
 
 	date
 
@@ -132,14 +76,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-
-#-r--r----- 1 gwendt francislab 617620 May 27 20:29 2023-5-27-201946_MEI_jointcall.vcf.gz
-#-r--r----- 1 gwendt francislab 591084 May 27 20:21 2023-5-27-201946_MEI_scaffold.vcf.gz
-#-r--r----- 1 gwendt francislab 249680 May 27 20:30 2023-5-27-202933_MEA_jointcall.vcf.gz
-#-r--r----- 1 gwendt francislab 243049 May 27 20:29 2023-5-27-202933_MEA_scaffold.vcf.gz
-
-
-	#ls -l jointcall_out
+	#-r--r----- 1 gwendt francislab 617620 May 27 20:29 2023-5-27-201946_MEI_jointcall.vcf.gz
+	#-r--r----- 1 gwendt francislab 591084 May 27 20:21 2023-5-27-201946_MEI_scaffold.vcf.gz
+	#-r--r----- 1 gwendt francislab 249680 May 27 20:30 2023-5-27-202933_MEA_jointcall.vcf.gz
+	#-r--r----- 1 gwendt francislab 243049 May 27 20:29 2023-5-27-202933_MEA_scaffold.vcf.gz
 
 	#	all_MEI_scaffold.vcf.gz all_MEI_jointcall.vcf.gz
 	f=${OUT}/jointcall_out/all_MEI_jointcall.vcf.gz
@@ -162,15 +102,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#-i ${bam} -sample_name ${base} -outdir ${f}
 			#-fa /path/to/reference_human_genome.fa \
 
-#  -cohort_name str     Optional. Specify a cohort name. This will be used for
-#                       the variant names as well the output file name.
-#                       Default: YYYY-MM-DD-HHMMSS
+		#  -cohort_name str     Optional. Specify a cohort name. This will be used for
+		#                       the variant names as well the output file name.
+		#                       Default: YYYY-MM-DD-HHMMSS
 	fi
 
-
 	date
-
-#	ls -l jointcall_out
 
 	#	all_MEA_scaffold.vcf.gz all_MEA_jointcall.vcf.gz
 	f=${OUT}/jointcall_out/all_MEA_jointcall.vcf.gz
@@ -190,25 +127,23 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
-
-#[gwendt@c4-log1 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE]$ ll aggregation/jointcall_out/
-#total 1836
-#-rw-r----- 1 gwendt francislab 617620 May 27 20:29 2023-5-27-201946_MEI_jointcall.vcf.gz
-#-rw-r----- 1 gwendt francislab 591084 May 27 20:21 2023-5-27-201946_MEI_scaffold.vcf.gz
-#-rw-r----- 1 gwendt francislab 249680 May 27 20:30 2023-5-27-202933_MEA_jointcall.vcf.gz
-#-rw-r----- 1 gwendt francislab 243049 May 27 20:29 2023-5-27-202933_MEA_scaffold.vcf.gz
-#-rw-r----- 1 gwendt francislab  66858 May 27 20:30 for_debug_jointcall_abs.log
-#-rw-r----- 1 gwendt francislab  99610 May 27 20:29 for_debug_jointcall_ins.log
-
+	#[gwendt@c4-log1 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE]$ ll aggregation/jointcall_out/
+	#total 1836
+	#-rw-r----- 1 gwendt francislab 617620 May 27 20:29 2023-5-27-201946_MEI_jointcall.vcf.gz
+	#-rw-r----- 1 gwendt francislab 591084 May 27 20:21 2023-5-27-201946_MEI_scaffold.vcf.gz
+	#-rw-r----- 1 gwendt francislab 249680 May 27 20:30 2023-5-27-202933_MEA_jointcall.vcf.gz
+	#-rw-r----- 1 gwendt francislab 243049 May 27 20:29 2023-5-27-202933_MEA_scaffold.vcf.gz
+	#-rw-r----- 1 gwendt francislab  66858 May 27 20:30 for_debug_jointcall_abs.log
+	#-rw-r----- 1 gwendt francislab  99610 May 27 20:29 for_debug_jointcall_ins.log
   
 	date
 
-#	ls -1 vcf_for_phasing/
-#	all_biallelic.bed.gz
-#	all_biallelic.vcf.gz
-#	all_MEA_biallelic.vcf.gz
-#	all_MEI_biallelic.vcf.gz
-#	multiallelic_ME_summary.log
+	#	ls -1 vcf_for_phasing/
+	#	all_biallelic.bed.gz
+	#	all_biallelic.vcf.gz
+	#	all_MEA_biallelic.vcf.gz
+	#	all_MEI_biallelic.vcf.gz
+	#	multiallelic_ME_summary.log
 
 	f=${OUT}/vcf_for_phasing/all_biallelic.bed.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -309,12 +244,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-#	ls -l
-
 else
 
-	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
+
+	mkdir -p ${PWD}/logs
+
+	mem=$[threads*7500]M
+	scratch_size=$[threads*28]G
 
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
