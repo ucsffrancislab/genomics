@@ -2,3 +2,4 @@ Makefile
 .ipynb_checkpoints/
 requested_sequences.csv
 .DS_Store
+slurm-*.out

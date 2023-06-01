@@ -1,15 +1,28 @@
 
 
 
+
+/francislab/data1/working/20220804-RaleighLab-RNASeq/20230519-Viral
+
+/francislab/data1/raw/20220804-RaleighLab-RNASeq/ - featureCounting
+
+/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230531-Viral
+
+/francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF - Ginormous
+zcat /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz | tail
+
+/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/ MEGAnE - tumor normal subtraction and comparison to 1GP
+
+
+
+
 /francislab/data1/raw/20230426-PanCancerAntigens
 
 /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2
 
 /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2
 
-/francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF
 
-zcat /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz | tail
 
 
 
