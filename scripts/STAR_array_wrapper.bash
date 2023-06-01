@@ -10,19 +10,21 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
-#if [ $( basename ${0} ) == "slurm_script" ] ; then
-##if [ -n "${SLURM_JOB_NAME}" ] ; then
-#	script=${SLURM_JOB_NAME}
-#else
-#	script=$( basename $0 )
-#fi
-#
-##	PWD preserved by slurm for where job is run? I guess so.
-#arguments_file=${PWD}/${script}.arguments
+
+function usage(){
+	set +x
+	echo
+	echo "Usage:"
+	echo
+	echo $0 --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
+	echo
+	echo $0 --threads 8 --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-STAR_hg38_strand/out 
+	echo --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
+	echo
+	exit
+}
 
 
-#if [ -n "${SLURM_ARRAY_TASK_ID}" ] ; then
-#if [ $( basename ${0} ) == "slurm_script" ] ; then
 if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	echo "Running an individual array job"
@@ -32,10 +34,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	mem=${SBATCH_MEM_PER_NODE:-30000M}
 	echo "mem :${mem}:"
 
-	#threads=${SLURM_NTASKS:-4}
 	extension="_R1.fastq.gz"
-	#IN="${PWD}/in"
-	#OUT="${PWD}/out"
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
@@ -48,12 +47,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			-e|--extension)
 				shift; extension=$1; shift;;
 			*)
-				echo "Unknown params :${1}:"; exit ;;
+				echo "Unknown param :${1}:"; usage ;;
 		esac
 	done
-
-	#mem=$[threads*7]
-	#scratch_size=$[threads*28]
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
@@ -152,38 +148,43 @@ else
 			-t|--threads)
 				shift; threads=$1; shift;;
 			-o|--out|--outdir|-e|--extension|-r|--ref)
-				array_options="${array_options} $1 $2"
-				shift; shift;;
+				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
-				echo
-				echo $0 --ref /PATH/TO/ref_genome path/*1.fastq.gz
-				echo
-				exit;;
+				usage;;
 			-*)
-				array_options="${array_options} $1"
-				shift;;
+				array_options="${array_options} $1"; shift;;
 			*)
-				realpath --no-symlinks $1 >> ${array_file}
-				shift;;
+				echo "Unknown param :${1}: Assuming file"; 
+				realpath --no-symlinks $1 >> ${array_file}; shift;;
 		esac
 	done
 
-	# using M so can be more precise-ish
-	mem=$[threads*7500]M
-	scratch_size=$[threads*28]G	#	not always necessary
+	#	True if file exists and has a size greater than zero.
+	if [ -s ${array_file} ] ; then
 
-	max=$( cat ${array_file} | wc -l )
+		# using M so can be more precise-ish
+		mem=$[threads*7500]M
+		scratch_size=$[threads*28]G	#	not always necessary
 
-	mkdir -p ${PWD}/logs
+		max=$( cat ${array_file} | wc -l )
 
-	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
-		--parsable --job-name="$(basename $0)" \
-		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
-		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) ${array_options} )
+		mkdir -p ${PWD}/logs
 
-	echo "Throttle with ..."
-	echo "scontrol update ArrayTaskThrottle=8 JobId=${array_id}"
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
+			--parsable --job-name="$(basename $0)" \
+			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
+				$( realpath ${0} ) ${array_options} )
+
+		echo "Throttle with ..."
+		echo "scontrol update ArrayTaskThrottle=8 JobId=${array_id}"
+
+	else
+
+		echo "No files given"
+		usage
+
+	fi
 
 fi
 

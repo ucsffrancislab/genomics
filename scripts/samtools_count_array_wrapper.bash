@@ -10,16 +10,16 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
-#if [ $( basename ${0} ) == "slurm_script" ] ; then
-#	script=${SLURM_JOB_NAME}
-#else
-#	script=$( basename $0 )
-#fi
-#
-##	PWD preserved by slurm for where job is run? I guess so.
-#arguments_file=${PWD}/${script}.arguments
-#
-##threads=${SLURM_NTASKS:-4}
+
+function usage(){
+	set +x
+	echo
+	echo "Usage:"
+	echo
+	echo $0 *bam
+	echo
+	exit
+}
 
 
 if [ $( basename ${0} ) == "slurm_script" ] ; then
@@ -31,15 +31,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	mem=${SBATCH_MEM_PER_NODE:-30000M}
 	echo "mem :${mem}:"
 
-	#bowtie2_options=""
-	#threads=${SLURM_NTASKS:-4}
-	#extension="_R1.fastq.gz"
-	#outdir=""
-
 	while [ $# -gt 0 ] ; do
 		case $1 in
 			--array*)
 				shift; array_file=$1; shift;;
+			*)
+				echo "Unknown param :${1}:"; usage ;;
 		esac
 	done
 
@@ -123,35 +120,40 @@ else
 			-@|--threads)
 				shift; threads=$1; shift;;
 			-h|--help)
-				echo
-				echo "Good question"
-				echo
-				exit;;
+				usage;;
 			*)
-				echo "Unknown params :${1}: Assuming file"; 
-				realpath --no-symlinks ${1} >> ${array_file}
-				shift
-				;;
+				echo "Unknown param :${1}: Assuming file"; 
+				realpath --no-symlinks ${1} >> ${array_file}; shift ;;
 		esac
 	done
 
-	mem=$[threads*7500]M
-	scratch_size=$[threads*28]G
+	#	True if file exists and has a size greater than zero.
+	if [ -s ${array_file} ] ; then
 
-	max=$( cat ${array_file} | wc -l )
+		mem=$[threads*7500]M
+		scratch_size=$[threads*28]G
 
-	mkdir -p ${PWD}/logs
+		max=$( cat ${array_file} | wc -l )
 
-	#--gres=scratch:${scratch_size} \
+		mkdir -p ${PWD}/logs
 
-	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%10 \
-		--parsable --job-name="$(basename $0)" \
-		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
-		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) ${array_file} )
+		#--gres=scratch:${scratch_size} \
+
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%10 \
+			--parsable --job-name="$(basename $0)" \
+			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
+			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
+				$( realpath ${0} ) ${array_file} )
 	
-	echo "Throttle with ..."
-	echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+		echo "Throttle with ..."
+		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+
+	else
+
+		echo "No files given"
+		usage
+
+	fi
 
 fi
 

@@ -5,24 +5,41 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
-#set -e  #       exit if any command fails
+set -e  #       exit if any command fails
 set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
+
+function usage(){
+	set +x
+	echo
+	echo "Usage:"
+	echo
+	echo $0 *bam
+	echo
+	exit
+}
+
+
 if [ $( basename ${0} ) == "slurm_script" ] ; then
-	script=${SLURM_JOB_NAME}
-else
-	script=$( basename $0 )
-fi
 
-#	PWD preserved by slurm for where job is run? I guess so.
-arguments_file=${PWD}/${script}.arguments
+	echo "Running an individual array job"
 
-threads=${SLURM_NTASKS:-4}
+	threads=${SLURM_NTASKS:-4}
+	echo "threads :${threads}:"
+	mem=${SBATCH_MEM_PER_NODE:-30000M}
+	echo "mem :${mem}:"
 
+	while [ $# -gt 0 ] ; do
+		case $1 in
+			--array*)
+				shift; array_file=$1; shift;;
+			*)
+				echo "Unknown param :${1}:"; usage ;;
+		esac
+	done
 
-if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
@@ -37,7 +54,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	#	Use a 1 based index since there is no line 0.
 
-	line=$( sed -n "$line_number"p ${arguments_file} )
+	echo "Using array_file :${array_file}:"
+
+	line=$( sed -n "$line_number"p ${array_file} )
 	echo $line
 
 	if [ -z "${line}" ] ; then
@@ -71,52 +90,53 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-
 else
 
-	threads=${SLURM_NTASKS:-4}
-	mem=$[threads*7500]M
-	scratch_size=$[threads*28]
-
-	\rm -f ${arguments_file}
+	date=$( date "+%Y%m%d%H%M%S%N" )
+	echo "Preparing array job :${date}:"
+	array_file=${PWD}/$( basename $0 ).${date}
+	array_options="--array ${array_file} "
+	
+	threads=4
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
-			-@|--threads)
+			-@|-t|--threads)
 				shift; threads=$1; shift;;
 			-h|--help)
-				echo
-				echo "Good question"
-				echo
-				exit;;
+				usage;;
 			*)
-				echo "Unknown params :${1}: Assuming file"; 
-				realpath ${1} >> ${arguments_file}
-				shift
-				;;
+				echo "Unknown param :${1}: Assuming file"; 
+				realpath --no-symlinks $1 >> ${array_file}; shift;;
 		esac
 	done
 
-	if [ -f ${arguments_file} ] ; then
-		max=$( cat ${arguments_file} | wc -l )
+	#	True if file exists and has a size greater than zero.
+	if [ -s ${array_file} ] ; then
+
+		# using M so can be more precise-ish
+		mem=$[threads*7500]M
+		scratch_size=$[threads*28]G	#	not always necessary
+
+		max=$( cat ${array_file} | wc -l )
 
 		mkdir -p ${PWD}/logs
-		date=$( date "+%Y%m%d%H%M%S%N" )
 
 		#--gres=scratch:${scratch_size}G \
 
-		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%10 \
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%8 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-				$( realpath ${0} ) --threads ${threads} )
+				$( realpath ${0} ) ${array_options} )
 	
 		echo "Throttle with ..."
-		echo "scontrol update ArrayTaskThrottle=8 JobId=${array_id}"
+		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
 
 	else
 
-		echo "No arguments passed"
+		echo "No files given"
+		usage
 
 	fi
 

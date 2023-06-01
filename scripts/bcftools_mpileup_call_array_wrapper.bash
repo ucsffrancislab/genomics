@@ -10,74 +10,64 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
-if [ $( basename ${0} ) == "slurm_script" ] ; then
-	script=${SLURM_JOB_NAME}
-else
-	script=$( basename $0 )
-fi
 
-#	PWD preserved by slurm for where job is run? I guess so.
-arguments_file=${PWD}/${script}.arguments
-\rm -f ${arguments_file}.tmp
-
-threads=${SLURM_NTASKS:-4}
-extension=".bam"
-#IN="${PWD}/in"
-#OUT="${PWD}/out"
-
-mpileup_options=""
-call_options=""
-array_options=""
-
-while [ $# -gt 0 ] ; do
-	case $1 in
-#		-i|--in)
-#			shift; IN=$1; shift;;
-		-t|--threads)
-			shift; threads=$1; shift;;
-#		-o|--out)
-#			shift; OUT=$1; shift;;
-#		-l|--transposon)
-#			shift; transposon_fasta=$1; shift;;
-#		-r|--human)
-#			shift; human_fasta=$1; shift;;
-		-e|--extension)
-			shift; extension=$1; shift;;
-		-r|--ref)
-			array_options="${array_options} $1 $2"
-			shift; ref=$1; shift;;
-		-q)
-			array_options="${array_options} $1 $2"
-			mpileup_options="${mpileup_options} $1 $2"; shift; shift;;
-		-v|--variants-only)
-			#	Output variant sites only
-			array_options="${array_options} $1"
-			call_options="${call_options} $1"; shift;;
-		-V|--skip-variants)
-			# TYPE        Skip indels/snps
-			array_options="${array_options} $1 $2"
-			call_options="${call_options} $1 $2"; shift; shift;;
-		-h|--help)
-			echo
-			echo bcftools_mpileup_call_array_wrapper.bash --ref /PATH/TO/ref_genome.fa trimmed/*bam
-			echo
-			exit;;
-		-*)
-			echo
-			echo "Unknown params :${1}:"
-			echo
-			exit ;;
-		*)
-			realpath --no-symlinks $1 >> ${arguments_file}.tmp
-			shift;;
-	esac
-done
-
-# using M so can be more precise-ish
-mem=$[threads*7500]M
-scratch_size=$[threads*28]G
+function usage(){
+	set +x
+	echo
+	echo "Usage:"
+	echo
+	echo $0 *bam
+	echo
+	echo $0 --ref /raleighlab/data1/naomi/HKU_RNA_seq/Data_Analysis/genome-lib/GRCh38_gencode_v37_CTAT_lib_Mar012021.plug-n-play/ctat_genome_lib_build_dir/ref_genome.fa 
+	echo /francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF/trimmed/*bam
+	echo
+	exit
+}
 
 if [ $( basename ${0} ) == "slurm_script" ] ; then
+
+	echo "Running an individual array job"
+
+	threads=${SLURM_NTASKS:-4}
+	echo "threads :${threads}:"
+	mem=${SBATCH_MEM_PER_NODE:-30000M}
+	echo "mem :${mem}:"
+
+	extension=".bam"
+
+	mpileup_options=""
+	call_options=""
+
+	while [ $# -gt 0 ] ; do
+		case $1 in
+			--array*)
+				shift; array_file=$1; shift;;
+			-t|--threads)
+				shift; threads=$1; shift;;
+			-e|--extension)
+				shift; extension=$1; shift;;
+			-r|--ref)
+				shift; ref=$1; shift;;
+			-q)
+				mpileup_options="${mpileup_options} $1 $2"; shift; shift;;
+			-v|--variants-only)
+				#	Output variant sites only
+				call_options="${call_options} $1"; shift;;
+			-V|--skip-variants)
+				# TYPE        Skip indels/snps
+				call_options="${call_options} $1 $2"; shift; shift;;
+			-*)
+				echo
+				echo "Unknown param :${1}:"
+				echo
+				usage;;
+			*)
+				echo
+				echo "Unknown param :${1}:"
+				echo
+				usage;;
+		esac
+	done
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
@@ -91,7 +81,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	#	Use a 1 based index since there is no line 0.
 
-	line=$( sed -n "$line_number"p ${arguments_file} )
+	echo "Using array_file :${array_file}:"
+
+	line=$( sed -n "$line_number"p ${array_file} )
 	echo $line
 
 	if [ -z "${line}" ] ; then
@@ -142,26 +134,60 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-
 else
 
-	mv ${arguments_file}.tmp ${arguments_file}
-
-	#ls -1 ${IN}/*${extension} > ${arguments_file}
-
-	max=$( cat ${arguments_file} | wc -l )
-
-	mkdir -p ${PWD}/logs
 	date=$( date "+%Y%m%d%H%M%S%N" )
+	echo "Preparing array job :${date}:"
+	array_file=${PWD}/$( basename $0 ).${date}
+	array_options="--array ${array_file} "
+	
+	threads=4
 
-	array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
-		--parsable --job-name="$(basename $0)" \
-		--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
-		--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-			$( realpath ${0} ) ${array_options} )
+	while [ $# -gt 0 ] ; do
+		case $1 in
+			-t|--threads)
+				shift; threads=$1; shift;;
+			-o|--out|--outdir|-e|--extension|-x|-r|--ref|-V|--skip-variants|-q)
+				array_options="${array_options} $1 $2"; shift; shift;;
+			-v|--variants-only)
+				array_options="${array_options} $1"; shift;;
+			-h|--help)
+				usage;;
+			-*)
+				array_options="${array_options} $1"; shift;;
+			*)
+				echo "Unknown param :${1}: Assuming file"; 
+				realpath --no-symlinks $1 >> ${array_file}; shift;;
+		esac
+	done
 
-	echo "Throttle with ..."
-	echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+	#	True if file exists and has a size greater than zero.
+	if [ -s ${array_file} ] ; then
+
+		# using M so can be more precise-ish
+		mem=$[threads*7500]M
+		scratch_size=$[threads*28]G	#	not always necessary
+
+		max=$( cat ${array_file} | wc -l )
+
+		mkdir -p ${PWD}/logs
+		date=$( date "+%Y%m%d%H%M%S%N" )
+
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
+			--parsable --job-name="$(basename $0)" \
+			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
+				$( realpath ${0} ) ${array_options} )
+
+		echo "Throttle with ..."
+		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+
+	else
+
+		echo "No files given"
+		usage
+
+	fi
 
 fi
 
