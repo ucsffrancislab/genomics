@@ -201,4 +201,26 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fCexon" \
 --time=20160 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/fCexon.${date}.out.log \
 --wrap="featureCounts.bash -T 16 -t exon -g gene_name -a ${PWD}/select.gtf -o ${PWD}/QM.TP53.GAPDH.exon.tsv ${PWD}/trimmed/Q*bam"
 
+
+
+sed -i -e "1,2s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/trimmed/''g" -e "1,2s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/''g" -e "1,2s'.Aligned.sortedByCoord.out.bam''g" QM.TP53.GAPDH.transcript.tsv
+sed -i -e "1,2s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/trimmed/''g" -e "1,2s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/''g" -e "1,2s'.Aligned.sortedByCoord.out.bam''g" QM.TP53.GAPDH.exon.tsv
+
+sed -i -e "s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/trimmed/''g" -e "s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/''g" -e "s'.Aligned.sortedByCoord.out.bam''g" QM.TP53.GAPDH.transcript.tsv.summary
+sed -i -e "s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/trimmed/''g" -e "s'/francislab/data1/raw/20220804-RaleighLab-RNASeq/''g" -e "s'.Aligned.sortedByCoord.out.bam''g" QM.TP53.GAPDH.exon.tsv.summary
+
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+#BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+BOX="${BOX_BASE}/${PROJECT}"
+for f in QM.TP53.GAPDH.* ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+
+
 ```
