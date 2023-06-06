@@ -70,5 +70,10 @@ bcftools_mpileup_call_array_wrapper.bash -q 30 --variants-only --skip-variants i
 
 ```
 
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="bcftoolsmerge" \
+--time=20160 --nodes=1 --ntasks=16 --mem=120G --output=${PWD}/bcftools_merge.$( date "+%Y%m%d%H%M%S%N" ).out.log --export=None \
+--wrap="module load bcftools htslib && bcftools merge --threads 16 -Ov /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa/out/*.vcf.gz | sed -e '/^#CHROM/s:.bam::g' -e '/^#CHROM/s:/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa/out/::g' | bgzip > /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa/merged.vcf.gz"
+```
 
 
