@@ -110,15 +110,8 @@ TCONS_00012449_MIRb_RET_+_458 unnamed protein product                 44.3      
 ```
 
 
-Not entirely certain why these 6 were selected.
 
-NP_040188.1_serine-threonine_protein_kinase_US3_Hu
-TCONS_00011565_MLT1A0_AKT3_-_233
-TCONS_00092541_MLT2B2_EPHA5_-_195
-TCONS_00036289_MLT1E2_PRKD1_-_134
-TCONS_00000820_L2b_EPHB2_+_9
-TCONS_00105490_L1PA5_MAP3K7_-_130
-TCONS_00012449_MIRb_RET_+_458
+
 
 ```
 module load samtools
@@ -159,6 +152,96 @@ grep -f S10_All_ProteinSequences -A1 --no-group-separator /francislab/data1/raw/
 wget http://www.sbg.bio.ic.ac.uk/~maxcluster/maxcluster64bit
 chmod +x maxcluster64bit
 ```
+
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein.faa | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' > viral_proteins.faa
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein.faa | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' | grep "^>" | sed 's/^>//' > viral_proteins.names.txt
+(echo "accession,description" && awk -F_ '{print $1"_"$2","$0}' viral_proteins.names.txt ) > viral_proteins.names.csv
+(echo -e "accession\tdescription" &&awk -F_ '{print $1"_"$2"\t"$0}' viral_proteins.names.txt ) > viral_proteins.names.tsv
+
+makeblastdb -in viral_proteins.faa -input_type fasta -dbtype prot -out viral_proteins -title viral_proteins -parse_seqids
+
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein.faa | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' | awk -F_ '(/^>/){print $1"_"$2}(!/>/){print}' > viral_protein_accessions.faa
+makeblastdb -in viral_protein_accessions.faa -input_type fasta -dbtype prot -out viral_protein_accessions -title viral_protein_accessions -parse_seqids
+
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences \
+  -query viral_proteins.faa -evalue 0.05 > viral_proteins_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.txt &
+blastp -query /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences.fa \
+  -db viral_proteins -evalue 0.05 > S10_S1Brain_ProteinSequences_IN_viral_proteins.blastp.e0.05.txt &
+
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences -outfmt 6 \
+  -query viral_proteins.faa -evalue 0.05 > viral_proteins_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv &
+blastp -query /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences.fa -outfmt 6 \
+  -db viral_proteins -evalue 0.05 > S10_S1Brain_ProteinSequences_IN_viral_proteins.blastp.e0.05.tsv &
+
+
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences \
+  -query viral_protein_accessions.faa -evalue 0.05 > viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.txt &
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences -outfmt 6 \
+  -query viral_protein_accessions.faa -evalue 0.05 >> viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv &
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences -outfmt 6 \
+  -query viral_protein_accessions.faa -evalue 0.05 >> viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv &
+
+
+
+
+```
+
+
+Warning: [blastp] Query_249537 YP_010087346.. : One or more O characters replaced by X for alignment score calculations at positions 242 
+
+
+
+Should have ...
+
+```  
+date=$( date "+%Y%m%d%H%M%S%N" ) && sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="blast" \
+--time=20160 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/blast.${date}.out.log \
+--wrap=""
+```
+
+```
+
+head -1 viral_proteins.names.tsv > viral_proteins.names.sorted.tsv
+tail -n +2 viral_proteins.names.tsv | sort >> viral_proteins.names.sorted.tsv
+
+head -1 viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv > viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv
+tail -n +2 viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv | sort >> viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv
+
+head -1 viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv > viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv
+tail -n +2 viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv | sort >> viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv
+
+
+join --header viral_proteins.names.sorted.tsv viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv > viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+join --header viral_proteins.names.sorted.tsv viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv > viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+
+
+
+```
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+
+```
+
 
 
 
