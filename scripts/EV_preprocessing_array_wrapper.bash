@@ -159,7 +159,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
 			--cores ${threads} \
-			${trim_options} -a AAAAAAAA -m 15 \
+			${trim_options} -a AAAAAAAA -a GGGGGGGG -m 15 \
 			-o ${f} ${fastq}
 	fi
 
