@@ -245,3 +245,63 @@ done
 
 
 
+
+
+---
+
+
+
+`grep -E "Human.*herpes" /francislab/data1/refs/refseq/viral-20220923/viral.protein.names.txt`
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human*herpes*.fa | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' | awk -F_ '(/^>/){print $1"_"$2}(!/>/){print}' > Human_herpes_protein_accessions.faa
+
+makeblastdb -in Human_herpes_protein_accessions.faa -input_type fasta -dbtype prot -out Human_herpes_accessions -title Human_herpes_accessions -parse_seqids
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S1Brain_ProteinSequences -outfmt 6 \
+  -query Human_herpes_protein_accessions.faa -evalue 0.05 >> Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv &
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv
+blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences -outfmt 6 \
+  -query Human_herpes_protein_accessions.faa -evalue 0.05 >> Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv &
+
+
+
+
+
+head -1 Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv > Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv
+tail -n +2 Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.tsv | sort >> Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv
+
+head -1 Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv
+tail -n +2 Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv | sort >> Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv
+
+
+join --header viral_proteins.names.sorted.tsv Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv > Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+join --header viral_proteins.names.sorted.tsv Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+
+
+
+```
+
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in Human_herpes_protein_accessions_IN_S10_*_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+
+```
+
+
+
