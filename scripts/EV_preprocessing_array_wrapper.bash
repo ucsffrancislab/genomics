@@ -109,6 +109,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Creating $f"
 
+		#	These are long list of 1-base offset adapters.
+
 		if [ ${labkit} == "D-plex" ] ; then
 			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTG"
 			#AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
@@ -162,12 +164,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			${trim_options} -a AAAAAAAA -a GGGGGGGG -m 15 \
 			-o ${f} ${fastq}
 	fi
-
-
-
-
-
-
 
 	date
 
