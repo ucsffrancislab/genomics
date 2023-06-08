@@ -1,18 +1,24 @@
 
 
+ll /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_* /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE/vcf_for_phasing/all*
 
 
-/francislab/data1/working/20220804-RaleighLab-RNASeq/20230519-Viral
+data/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa - vcf prep for something?
 
-/francislab/data1/raw/20220804-RaleighLab-RNASeq/ - featureCounting
+20210428-EV/20230606-iMOKA/
 
-/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230531-Viral
+
+/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - tumor normal subtraction and comparison to 1GP
+/francislab/data1/refs/MEGAnE/
+
 
 /francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF - Ginormous
 zcat /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz | tail
 
-/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/ MEGAnE - tumor normal subtraction and comparison to 1GP
 
+
+/francislab/data1/working/20220804-RaleighLab-RNASeq/20230519-Viral
+/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230531-Viral
 
 
 
@@ -29,6 +35,9 @@ zcat /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz | tail
 
 
 
+
+
+/francislab/data1/raw/20220804-RaleighLab-RNASeq/ - featureCounting
 
 Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
