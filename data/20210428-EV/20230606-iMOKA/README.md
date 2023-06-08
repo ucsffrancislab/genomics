@@ -110,6 +110,46 @@ if(system("test -f " f".sorted.bin")==0){
 if( $4 ~ /control/){print f,$3,"Control"}else if( $4 ~ /IDH-mutant/){print f,$3,"IDHmt"}else{print f,$3,"IDHWT"}
 }}' /francislab/data1/raw/20210428-EV/metadata.csv | grep -vs "Control" > out/IDH-Lexogen-${k}/create_matrix.tsv
 
+
+
+mkdir -p out/GBM-CATS-${k}-withControl
+mkdir -p out/GBM-Lexogen-${k}-withControl
+mkdir -p out/IDH-CATS-${k}-withControl
+mkdir -p out/IDH-Lexogen-${k}-withControl
+
+ln -s ../${k}/preprocess out/GBM-CATS-${k}-withControl/preprocess
+ln -s ../${k}/preprocess out/GBM-Lexogen-${k}-withControl/preprocess
+ln -s ../${k}/preprocess out/IDH-CATS-${k}-withControl/preprocess
+ln -s ../${k}/preprocess out/IDH-Lexogen-${k}-withControl/preprocess
+
+
+awk -F, -v k=${k} -v pwd=$PWD 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}
+( NR>1  && $4 !~ /blank/ ){f=pwd"/out/"k"/preprocess/"$2"/"$2".tsv"
+if(system("test -f " f".sorted.bin")==0){
+if( $4 ~ /control/){print f,$2,"Control"}else if( $4 ~ /GBM/){print f,$2,"GBM"}else{print f,$2,"nonGBM"}
+}}' /francislab/data1/raw/20210428-EV/metadata.csv > out/GBM-CATS-${k}-withControl/create_matrix.tsv
+
+awk -F, -v k=${k} -v pwd=$PWD 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}
+( NR>1  && $4 !~ /blank/ ){f=pwd"/out/"k"/preprocess/"$3"/"$3".tsv"
+if(system("test -f " f".sorted.bin")==0){
+if( $4 ~ /control/){print f,$3,"Control"}else if( $4 ~ /GBM/){print f,$3,"GBM"}else{print f,$3,"nonGBM"}
+}}' /francislab/data1/raw/20210428-EV/metadata.csv > out/GBM-Lexogen-${k}-withControl/create_matrix.tsv
+
+awk -F, -v k=${k} -v pwd=$PWD 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}
+( NR>1  && $4 !~ /blank/ ){f=pwd"/out/"k"/preprocess/"$2"/"$2".tsv"
+if(system("test -f " f".sorted.bin")==0){
+if( $4 ~ /control/){print f,$2,"Control"}else if( $4 ~ /IDH-mutant/){print f,$2,"IDHmt"}else{print f,$2,"IDHWT"}
+}}' /francislab/data1/raw/20210428-EV/metadata.csv > out/IDH-CATS-${k}-withControl/create_matrix.tsv
+
+awk -F, -v k=${k} -v pwd=$PWD 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}
+( NR>1  && $4 !~ /blank/ ){f=pwd"/out/"k"/preprocess/"$3"/"$3".tsv"
+if(system("test -f " f".sorted.bin")==0){
+if( $4 ~ /control/){print f,$3,"Control"}else if( $4 ~ /IDH-mutant/){print f,$3,"IDHmt"}else{print f,$3,"IDHWT"}
+}}' /francislab/data1/raw/20210428-EV/metadata.csv > out/IDH-Lexogen-${k}-withControl/create_matrix.tsv
+
+
+
+
 done
 ```
 
@@ -123,7 +163,7 @@ done
 ```
 
 for k in 16 21 31 ; do
-for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} ; do
+for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} GBM-CATS-${k}-withControl GBM-Lexogen-${k}-withControl IDH-CATS-${k}-withControl IDH-Lexogen-${k}-withControl ; do
 
 date=$( date "+%Y%m%d%H%M%S%N" )
 
@@ -153,7 +193,7 @@ Predict those not in the models
 
 ```
 for k in 16 21 31 ; do
-for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} ; do
+for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} GBM-CATS-${k}-withControl GBM-Lexogen-${k}-withControl IDH-CATS-${k}-withControl IDH-Lexogen-${k}-withControl ; do
 iMOKA_upload.bash out/${s}
 done ; done
 
