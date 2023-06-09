@@ -4,9 +4,13 @@
 
 ```
 mkdir -p in
-for f in /francislab/data1/working/20210428-EV/20230605-preprocessing/out/SFHH00*.fastq.gz ; do
+for f in \
+ /francislab/data1/working/20210428-EV/20230605-preprocessing/out/SFHH005{?,??}.umi_tag.dups.deduped.fastq.gz \
+ /francislab/data1/working/20210428-EV/20230605-preprocessing/out/SFHH006{?,??}.fastq.gz
+do
 echo $f
 base=$( basename $f )
+base=${base/.umi_tag.dups.deduped/}
 ln -s $f in/${base}
 done
 ```
