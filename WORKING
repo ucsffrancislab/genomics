@@ -5,7 +5,9 @@ ll /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_* /francislab/data1/worki
 
 data/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa - vcf prep for something?
 
+20210428-EV/20230605-preprocessing
 20210428-EV/20230606-iMOKA/
+20210428-EV/20230608-iMOKA-raw-untrimmed
 
 
 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - tumor normal subtraction and comparison to 1GP
