@@ -51,7 +51,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI samtools #star/2.7.7a
+		module load CBI samtools star/2.7.7a gatk
 	fi
 	
 	date
@@ -123,19 +123,32 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#	GAACTCCAGTCACCAACTAATCTCGTATGCCGTCTTCTGCTTG
 
 			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG"
-
-			trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA \
-				-a GAACTCCAGTCAC -a ATCTCGTATGCCGTCTTCTGCTTG"
-
 			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+
+
+
+			#	best so far
+
+			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA \
+			#	-a GAACTCCAGTCAC -a ATCTCGTATGCCGTCTTCTGCTTG"
+
+
+
+			#	re-testing UMI (12bp + 4bp) so don't left trim 16bp
+
+			#	Since removing 16bases, set minimum from 15 to 31.
+			trim_options="-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG --minimum-length 31"
+
+
+
 
 		elif [ ${labkit} == "Lexogen" ] ; then
 			#TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
 			#trim_options="-a TGGAATTCTCGGGTGCCAAGGA"
 			#trim_options="-a TGGAATTCTCGGGT -a TGGAATTCTCGGGTGCCAAG -a GGAATTCTCGGGTGCCAAGG -a GAATTCTCGGGTGCCAAGGA -a AATTCTCGGGTGCCAAGGAA -a ATTCTCGGGTGCCAAGGAAC -a TTCTCGGGTGCCAAGGAACT -a TCTCGGGTGCCAAGGAACTC -a CTCGGGTGCCAAGGAACTCC -a TCGGGTGCCAAGGAACTCCA -a CGGGTGCCAAGGAACTCCAG -a GGGTGCCAAGGAACTCCAGT -a GGTGCCAAGGAACTCCAGTC -a GTGCCAAGGAACTCCAGTCA -a TGCCAAGGAACTCCAGTCAC"
-			trim_options="-a TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC"
+			trim_options="-a TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC --minimum-length 15"
 		else
-			trim_options=""
+			trim_options="--minimum-length 15"
 		fi
 
 		#  --action {trim,retain,mask,lowercase,none}
@@ -176,10 +189,137 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
 		~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 4 \
 			--cores ${threads} --error-rate 0.1 \
-			-a "A{10}" -a "G{10}" --minimum-length 15 \
+			-a "A{10}" -a "G{10}" \
 			${trim_options} \
 			-o ${f} ${fastq}
 	fi
+
+
+
+
+
+
+
+
+	if [ ${labkit} == "D-plex" ] ; then
+
+		out_base=${OUT}/${base}.umi
+		f=${out_base}.fastq.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
+
+			#	extract the UMI into the read name
+
+			zcat ${OUT}/${base}.fastq.gz | paste - - - - \
+				| awk -F"\t" '{split($1,a," ");print a[1]":"substr($2,1,12)" "a[2];print substr($2,17); print $3;print substr($4,17)}' \
+				| gzip > ${f}
+			chmod a-w ${f}
+
+		fi
+
+
+		#out_base=${OUT}/${base}.umi
+		out_base=${out_base}.umi
+		f=${out_base}.Aligned.sortedByCoord.out.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
+
+			#	align with STAR
+
+			STAR --runMode alignReads \
+				--genomeDir /francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a \
+				--runThreadN ${threads} \
+				--readFilesType Fastx \
+				--outSAMtype BAM SortedByCoordinate \
+				--outSAMstrandField intronMotif \
+				--readFilesCommand zcat \
+				--readFilesIn ${OUT}/${base}.umi.fastq.gz \
+				--outFileNamePrefix ${out_base}.  \
+				--outSAMattrRGline ID:${base} SM:${base} \
+				--outFilterMultimapNmax 1 \
+				--outSAMattributes Standard XS
+
+			chmod a-w ${f}
+
+		fi
+
+		#out_base=${OUT}/${base}.umi_tag
+		out_base=${out_base}.umi_tag
+		f=${out_base}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
+
+			#	move UMI into a tag
+
+			samtools view -h ${OUT}/${base}.umi.Aligned.sortedByCoord.out.bam \
+				| awk 'BEGIN{FS=OFS="\t"}
+				(/^@/){print;next}
+				{	last_colon_index=match($1, /:[^:]*$/)
+					umi=substr($1,last_colon_index+1)
+					$1=substr($1,1,last_colon_index-1)
+					print $0"\tRX:Z:"umi
+				}' | samtools view -o ${f} -
+
+			chmod a-w ${f}
+
+		fi
+
+
+		#out_base=${OUT}/${base}.umi_tag.dups
+		out_base=${out_base}.dups
+		f=${out_base}.bam
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
+
+			#	mark duplicates
+
+			gatk UmiAwareMarkDuplicatesWithMateCigar \
+				--INPUT ${OUT}/${base}.umi_tag.bam \
+				--METRICS_FILE ${out_base}.metrics_file.txt \
+				--UMI_METRICS_FILE ${out_base}.umi_metrics_file.txt \
+				--OUTPUT ${f}
+
+			chmod a-w ${f}
+
+		fi
+
+		#	could have just ...
+		#--REMOVE_DUPLICATES <Boolean> If true do not write duplicates to the output file instead of writing them with
+		#                              appropriate flags set.  Default value: false. Possible values: {true, false} 
+
+		#out_base=${OUT}/${base}.umi_tag.dups.deduped
+		out_base=${out_base}.deduped
+		f=${out_base}.fastq.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
+
+			#	filter out duplicates
+
+			#samtools view -F1024 -o ${f} ${OUT}/${base}.umi_tag.dups.bam
+			samtools fastq -F1024 ${OUT}/${base}.umi_tag.dups.bam | gzip > ${f}
+
+			chmod a-w ${f}
+
+		fi
+
+	fi
+
+
+
+
+
+
+
 
 	date
 
