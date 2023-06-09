@@ -116,7 +116,19 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#AGATCGGAAGAGCACACGTCTGAACTCCAGTCA
 			#trim_options="-a AGATCGGAAGAGCACACGTCTG"
 			#trim_options="-u 16 -a AGATCGGAAGAGCA -a AGATCGGAAGAGCACACGTC -a GATCGGAAGAGCACACGTCT -a ATCGGAAGAGCACACGTCTG -a TCGGAAGAGCACACGTCTGA -a CGGAAGAGCACACGTCTGAA -a GGAAGAGCACACGTCTGAAC -a GAAGAGCACACGTCTGAACT -a AAGAGCACACGTCTGAACTC -a AGAGCACACGTCTGAACTCC -a GAGCACACGTCTGAACTCCA -a AGCACACGTCTGAACTCCAG -a GCACACGTCTGAACTCCAGT -a CACACGTCTGAACTCCAGTC -a ACACGTCTGAACTCCAGTCA"
-			trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a CCAACTAATCTCGTATGCCGTCTTCTGCTTG"
+			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a CCAACTAATCTCGTATGCCGTCTTCTGCTTG"
+			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG"
+
+			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNATCTCGTATGCCGTCTTCTGCTTG"
+			#	GAACTCCAGTCACCAACTAATCTCGTATGCCGTCTTCTGCTTG
+
+			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG"
+
+			trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA \
+				-a GAACTCCAGTCAC -a ATCTCGTATGCCGTCTTCTGCTTG"
+
+			#trim_options="-u 16 -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA"
+
 		elif [ ${labkit} == "Lexogen" ] ; then
 			#TGGAATTCTCGGGTGCCAAGGAACTCCAGTCAC
 			#trim_options="-a TGGAATTCTCGGGTGCCAAGGA"
@@ -162,9 +174,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#	No quality filtering?
 
 		#~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 3 \
-		~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards -n 4 \
-			--cores ${threads} \
-			-a "A{10}" -a "G{10}" -m 15 \
+		~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 4 \
+			--cores ${threads} --error-rate 0.1 \
+			-a "A{10}" -a "G{10}" --minimum-length 15 \
 			${trim_options} \
 			-o ${f} ${fastq}
 	fi
