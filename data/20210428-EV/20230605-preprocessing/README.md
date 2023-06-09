@@ -22,6 +22,7 @@ done
 
 ```
 EV_preprocessing_array_wrapper.bash \
+--threads 8 \
 --extension .fastq.gz \
 --out ${PWD}/out \
 ${PWD}/in/SFHH00*.fastq.gz
