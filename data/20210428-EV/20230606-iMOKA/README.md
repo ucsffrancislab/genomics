@@ -194,13 +194,12 @@ Predict those not in the models
 ```
 for k in 16 21 31 ; do
 for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} GBM-CATS-${k}-withControl GBM-Lexogen-${k}-withControl IDH-CATS-${k}-withControl IDH-Lexogen-${k}-withControl ; do
+if [ -f out/${s}/output.json ] ; then
 iMOKA_upload.bash out/${s}
+fi
 done ; done
 
 ```
-
-
-
 
 
 
