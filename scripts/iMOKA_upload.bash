@@ -16,6 +16,8 @@ DATA=$( basename $( dirname ${PWD} ) )
 #	/francislab/data1/working/20210428-EV/20230606-iMOKA/out/GBM-Lexogen-16/
 basedir=$1
 
+echo "Processing $1"
+
 BOX="${BOX_BASE}/${DATA}/${PROJECT}/$( basename $1 )"
 
 #	create_matrix.tsv - input samples used
@@ -34,9 +36,14 @@ BOX="${BOX_BASE}/${DATA}/${PROJECT}/$( basename $1 )"
 #	matrix.tsv - select kmer counts of input samples
 cd $basedir
 
-for f in reduced.matrix create_matrix.tsv aggregated.json output.json output_fi.tsv reduced.matrix_stable.tsv output_predictions.tsv ; do
-	echo $f
-	curl --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+for f in reduced.matrix create_matrix.tsv aggregated.json output.json output_fi.tsv reduced.matrix_stable.tsv \
+		output_predictions.tsv select_kmers.txt predict_matrix.tsv topredict.tsv matrix.tsv ; do
+	if [ -f ${f} ] ; then
+		echo "Uploading ${f}."
+		curl --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+	else
+		echo "${f} is not present."
+	fi
 done
 
 #for f in ${basedir}/output_models/*.predictions.tsv ; do
