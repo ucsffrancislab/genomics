@@ -59,9 +59,9 @@ awk -F, -v pwd=$PWD 'BEGIN{FPAT = "([^,]+)|(\"[^\"]+\")";OFS="\t"}( NR>1 && $4 !
 With control
 
 ```
-iMOKA_count.bash -k 16 --threads 64 --mem 490
-iMOKA_count.bash -k 21 --threads 64 --mem 490
-iMOKA_count.bash -k 31 --threads 64 --mem 490
+for k in 13 16 21 31 35 39 43 ; do
+iMOKA_count.bash -k ${k} --threads 64 --mem 490
+done
 ```
 
 
@@ -78,7 +78,7 @@ chmod -w out/*/preprocess/*/*bin
 ../../20220610-EV/20221025-iMOKA-trim-R1-nr-14/iMOKA_prep_create_matrices.bash
 
 ```
-for k in 16 21 31 ; do
+for k in 13 16 21 31 35 39 43 ; do
 mkdir -p out/GBM-CATS-${k}
 mkdir -p out/GBM-Lexogen-${k}
 mkdir -p out/IDH-CATS-${k}
@@ -166,7 +166,7 @@ done
 
 ```
 
-for k in 16 21 31 ; do
+for k in 13 16 21 31 35 39 43 ; do
 for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} GBM-CATS-${k}-withControl GBM-Lexogen-${k}-withControl IDH-CATS-${k}-withControl IDH-Lexogen-${k}-withControl ; do
 
 date=$( date "+%Y%m%d%H%M%S%N" )
@@ -196,7 +196,7 @@ Predict those not in the models
 
 
 ```
-for k in 16 21 31 ; do
+for k in 13 16 21 31 35 39 43 ; do
 for s in GBM-CATS-${k} GBM-Lexogen-${k} IDH-CATS-${k} IDH-Lexogen-${k} GBM-CATS-${k}-withControl GBM-Lexogen-${k}-withControl IDH-CATS-${k}-withControl IDH-Lexogen-${k}-withControl ; do
 if [ -f out/${s}/output.json ] ; then
 iMOKA_upload.bash out/${s}
