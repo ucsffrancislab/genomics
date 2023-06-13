@@ -1,21 +1,32 @@
 
 
-ll /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_* /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE/vcf_for_phasing/all*
+20230217_costello_LG3_exomes_recal/20230303-MELT/merged_normal_tumor_melt.csv - find most notable
 
 
-data/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa - vcf prep for something?
+ll refs/MEGAnE/1000GP.GRCh38_3202.ME_* 
+20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - tumor normal subtraction and comparison to 1GP
+20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE/merged_normal_tumor_megane.csv - find most notable
+refs/MEGAnE/
+
+
+working/20220804-RaleighLab-RNASeq/20230518-VCF/merged.vcf.gz - Ginormous
+
+data/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa - vcf prep for something? (latter steps of MEGAnE?)
+
+
+
+
+
+
+
+
+
+
+
 
 20210428-EV/20230605-preprocessing
 20210428-EV/20230606-iMOKA/
 20210428-EV/20230608-iMOKA-raw-untrimmed
-
-
-/francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - tumor normal subtraction and comparison to 1GP
-/francislab/data1/refs/MEGAnE/
-
-
-/francislab/data1/working/20220804-RaleighLab-RNASeq/20230518-VCF - Ginormous
-zcat /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz | tail
 
 
 
@@ -31,20 +42,10 @@ zcat /francislab/data1/raw/20220804-RaleighLab-RNASeq/merged.vcf.gz | tail
 /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-TEProF2
 
 
-
-
-
-
-
-
-
-
 /francislab/data1/raw/20220804-RaleighLab-RNASeq/ - featureCounting
 
 Write Paper
 /francislab/data1/working/CEPH-ENA-PRJEB3381/20220310-homology
-
-
 
 
 /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest
@@ -55,8 +56,6 @@ iMOKA on hg38
             811489 francisla  bowtie2   gwendt  R 1-12:25:10      1 c4-n17
             812921 francisla    iMOKA   gwendt PD       0:00      1 (QOSMaxCpuPerUserLimit)
 [1]+  Running                 nohup reference2regions.bash &
-
-
 
 
 
@@ -73,14 +72,6 @@ Simka
 
 Try to do ... but paired. Extract reference or keep as is?
 /francislab/data1/working/20220610-EV/20220624-preprocessing_with_custom_umi_sequence_extraction
-
-
-
-
-
-
-
-
 
 
 /francislab/data2/working/20220610-EV
