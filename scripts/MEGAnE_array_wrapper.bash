@@ -116,7 +116,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Running MEGAnE"
 
-		singularity exec --bind /francislab,/scratch \
+		singularity exec --bind /francislab,/scratch,/costellolab \
 			/francislab/data1/refs/singularity/MEGAnE.v1.0.1.beta-20230525.sif \
 			call_genotype_38 -p ${threads} \
 			-fa /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.fa \
