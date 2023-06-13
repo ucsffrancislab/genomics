@@ -466,12 +466,44 @@ done
 
 ./merge_melt_genotype_diffs.py -o merged_normal_tumor_melt.csv MELT.Compare/*.ALL.genotype_diffs.tsv
 
+awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=5;i<=NF;i++){if($i~/->/){c+=1}}print $1,$2,$3,$4,c}' merged_normal_tumor_melt.csv > merged_normal_tumor_melt.mutation_counts.csv
+
+awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=5;i<=NF;i++){if(($i~/->/)&&($i!~/\./)){c+=1}}print $1,$2,$3,$4,c}' merged_normal_tumor_melt.csv > merged_normal_tumor_melt.nondot_mutation_counts.csv
+
+sort -k5nr merged_normal_tumor_melt.nondot_mutation_counts.csv | head -20
+
+chr17	78056052	G	<INS:ME:ALU>	391
+chr10	105817214	C	<INS:ME:ALU>	336
+chr19	9490504	G	<INS:ME:ALU>	319
+chr16	89291389	G	<INS:ME:ALU>	317
+chr13	111076811	T	<INS:ME:ALU>	313
+chr2	11426375	T	<INS:ME:ALU>	309
+chr1	93167530	T	<INS:ME:ALU>	306
+chr5	78426549	C	<INS:ME:ALU>	304
+chr3	56604955	T	<INS:ME:ALU>	294
+chr13	45556073	A	<INS:ME:ALU>	280
+chr8	68981808	T	<INS:ME:ALU>	275
+chr7	82430525	T	<INS:ME:ALU>	274
+chr1	112992009	T	<INS:ME:ALU>	262
+chr8	42039906	T	<INS:ME:ALU>	262
+chr4	42088056	T	<INS:ME:ALU>	254
+chr18	74638701	T	<INS:ME:ALU>	248
+chr17	72620217	C	<INS:ME:ALU>	246
+chr7	157448787	T	<INS:ME:ALU>	246
+chr7	76870796	C	<INS:ME:ALU>	244
+chr3	50879175	T	<INS:ME:ALU>	242
+
+
+
+
 
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
 curl  --silent --ftp-create-dirs -netrc -T merged_normal_tumor_melt.csv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T merged_normal_tumor_melt.mutation_counts.csv "${BOX}/"
+curl  --silent --ftp-create-dirs -netrc -T merged_normal_tumor_melt.nondot_mutation_counts.csv "${BOX}/"
 
 ```
 
