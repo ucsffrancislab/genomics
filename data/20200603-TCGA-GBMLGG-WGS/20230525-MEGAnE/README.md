@@ -182,12 +182,125 @@ done ; done
 
 ./merge_megane_genotype_diffs.py -o merged_normal_tumor_megane.csv ${PWD}/vcf_for_phasing/all_biallelic.SD/*.*.tsv
 
+
+awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=4;i<=NF;i++){if($i~/->/){c+=1}}print $1,$2,$3,c}' merged_normal_tumor_megane.csv > merged_normal_tumor_megane.mutation_counts.csv
+
+awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=4;i<=NF;i++){if(($i~/->/)&&($i!~/\./)){c+=1}}print $1,$2,$3,c}' merged_normal_tumor_megane.csv > merged_normal_tumor_megane.nondot_mutation_counts.csv
+
+sort -k4nr merged_normal_tumor_megane.nondot_mutation_counts.csv | head -20
+
+chr4	68171189	all_abs_1160	33
+chr2	31336814	all_ins_5289	32
+chr4	190179651	all_ins_7223	31
+chr1	102630524	all_abs_70	28
+chr22	20075431	all_ins_6104	28
+chr7	36212532	all_ins_8243	28
+chr8	16245288	all_ins_8695	28
+chr1	102582131	all_abs_69	27
+chr11	106173837	all_ins_3052	26
+chr21	42965753	all_ins_6075	26
+chr2	64872853	all_ins_5383	26
+chr13	21614340	all_ins_3549	25
+chr15	39399389	all_ins_4117	25
+chr19	53194248	all_ins_5191	25
+chr20	29640907	all_ins_5862	25
+chr3	99936522	all_ins_6443	25
+chr5	134427215	all_ins_7577	25
+chr10	133689566	all_ins_2785	24
+chr11	16576031	all_abs_229	24
+chr12	10081572	all_ins_3165	24
+
+```
+
+
+```
+awk -F, '($5=="Brain Lower Grade Glioma"){print $1}' \
+	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv | uniq > LGG.txt
+
+awk -F, '($5=="Glioblastoma Multiforme"){print $1}' \
+	/francislab/data1/raw/20200603-TCGA-GBMLGG-WGS/metadata.cart.TCGA.GBM-LGG.WGS.bam.2020-07-17.csv | uniq > GBM.txt
+```
+
+
+
+```
+for subtype in LGG GBM ; do
+echo ${subtype}
+
+( ( cat merged_normal_tumor_megane.csv | datamash transpose | head -3 ) && ( cat merged_normal_tumor_megane.csv | datamash transpose | grep -f ${subtype}.txt ) ) | datamash transpose > merged_normal_tumor_megane.${subtype}.csv
+
+awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=4;i<=NF;i++){if($i~/->/){c+=1}}print $1,$2,$3,c}' merged_normal_tumor_megane.${subtype}.csv > merged_normal_tumor_megane.${subtype}.mutation_counts.csv
+
+awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=4;i<=NF;i++){if(($i~/->/)&&($i!~/\./)){c+=1}}print $1,$2,$3,c}' merged_normal_tumor_megane.${subtype}.csv > merged_normal_tumor_megane.${subtype}.nondot_mutation_counts.csv
+
+sort -k4nr merged_normal_tumor_megane.${subtype}.nondot_mutation_counts.csv | head -20
+
+done
+```
+
+
+
+```
+LGG
+chr15	39399389	all_ins_4117	18
+chr22	20075431	all_ins_6104	18
+chr2	31336814	all_ins_5289	18
+chr4	190179651	all_ins_7223	17
+chr2	169785008	all_abs_2114	16
+chr11	16576031	all_abs_229	15
+chr19	6987454	all_abs_733	15
+chr4	68171189	all_abs_1160	15
+chr11	76619300	all_ins_1397	14
+chr12	53354543	all_ins_3300	14
+chr18	49621033	all_ins_4939	14
+chr19	53194248	all_ins_5191	14
+chr2	64872853	all_ins_5383	14
+chr6	38954423	all_abs_1438	14
+chrX	76034035	all_abs_1857	14
+chr12	10081572	all_ins_3165	13
+chr14	62759565	all_ins_3980	13
+chr15	26627364	all_ins_4091	13
+chr20	29640907	all_ins_5862	13
+chr3	68821337	all_abs_1049	13
+
+GBM
+chr11	106173837	all_ins_3052	19
+chr1	102582131	all_abs_69	18
+chr4	68171189	all_abs_1160	18
+chr1	102630524	all_abs_70	17
+chr13	21614340	all_ins_3549	17
+chr6	120247085	all_ins_8024	17
+chr16	81085872	all_abs_621	16
+chr21	5313393	all_ins_5946	16
+chr7	36212532	all_ins_8243	15
+chr7	47511446	all_ins_8277	15
+chr8	124877682	all_ins_8963	15
+chr8	16245288	all_ins_8695	15
+chr11	61377720	all_ins_2942	14
+chr15	77618526	all_abs_567	14
+chr21	42965753	all_ins_6075	14
+chr2	31336814	all_ins_5289	14
+chr4	190179651	all_ins_7223	14
+chr5	134427215	all_ins_7577	14
+chr11	38779510	all_ins_2887	13
+chr12	90452611	all_abs_348	13
+
+```
+
+
+
+
+
+
+```
 BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-curl  --silent --ftp-create-dirs -netrc -T merged_normal_tumor_megane.csv "${BOX}/"
-
+for f in merged_normal_tumor_megane* ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
 ```
 
 
