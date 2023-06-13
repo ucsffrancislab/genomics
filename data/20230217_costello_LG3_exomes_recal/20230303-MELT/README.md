@@ -441,3 +441,39 @@ curl  --silent --ftp-create-dirs -netrc -T select_genotypes.tsv "${BOX}/"
 
 
 
+
+#	20230612
+
+
+```
+grep -h -vs "\./\." MELT.Compare/*.*.*.*.genotype_diffs | awk '{print $1"\t"$2}' | sort -k1,1 -k2n | uniq > MELT_genotype_diff_positions.txt
+
+
+for gd in MELT.Compare/*.genotype_diffs ; do
+echo $gd
+sed 's/[[:space:]]\+/\t/g' ${gd} | awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,$4,$5"->"$11}' > ${gd}.tsv
+done
+
+
+for alu in MELT.Compare/*.*.*.ALU.genotype_diffs.tsv ; do
+echo ${alu}
+line1=${alu/.ALU./.LINE1.}
+sva=${alu/.ALU./.SVA.}
+all=${alu/.ALU./.ALL.}
+cat ${alu} ${line1} ${sva} > ${all}
+done
+
+
+./merge_melt_genotype_diffs.py -o merged_normal_tumor_melt.csv MELT.Compare/*.ALL.genotype_diffs.tsv
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+curl  --silent --ftp-create-dirs -netrc -T merged_normal_tumor_melt.csv "${BOX}/"
+
+```
+
+
+
