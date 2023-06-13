@@ -1,10 +1,6 @@
 
-20230217_costello_LG3_exomes_recal/ MEGAnE
 
-
-
-
-20230217_costello_LG3_exomes_recal/20230303-MELT/merged_normal_tumor_melt.csv - find most notable
+20230217_costello_LG3_exomes_recal/20230613-MEGAnE - WES not supported. Trying so we'll see.
 
 
 ll refs/MEGAnE/1000GP.GRCh38_3202.ME_* 
@@ -15,29 +11,29 @@ refs/MEGAnE/
 
 working/20220804-RaleighLab-RNASeq/20230518-VCF/merged.vcf.gz - Ginormous
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 data/20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa - vcf prep for something? (latter steps of MEGAnE?)
-
-
-
-
-
-
-
-
-
-
-
 
 20210428-EV/20230605-preprocessing
 20210428-EV/20230606-iMOKA/
 20210428-EV/20230608-iMOKA-raw-untrimmed
 
-
+20230217_costello_LG3_exomes_recal/20230303-MELT/merged_normal_tumor_melt.csv - find most notable
 
 /francislab/data1/working/20220804-RaleighLab-RNASeq/20230519-Viral
 /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230531-Viral
-
-
 
 /francislab/data1/raw/20230426-PanCancerAntigens
 
