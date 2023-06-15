@@ -409,10 +409,28 @@ for sf in ${PWD}/vcf_for_phasing/all_biallelic.SD.samples.* ; do
   | bcftools +fill-tags -Oz -o ${vcf%.vcf.gz}${subset}AF.vcf.gz -- -t AF
 
  bcftools view --apply-filters PASS --samples-file ${sf} -Oz --force-samples ${vcf} \
-  | bcftools +fill-tags -Oz -o ${vcf%.vcf.gz}${subset}PASS.AF.vcf.gz -- -t AF
+  | bcftools +fill-tags -Oz -o ${vcf%.vcf.gz}${subset}AF.PASS.vcf.gz -- -t AF
 
 done
 
+```
+
+```
+module load bcftools htslib
+for vcf in /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.*.vcf.gz ; do
+ echo $vcf
+ bcftools view ${vcf} | awk 'BEGIN{FS=OFS="\t"}(/^#/){print}(!/^#/){sub(/SD/,"S;D",$7);print}' | bgzip > ${vcf%.vcf.gz}.SD.vcf.gz
+ bcftools +fill-tags ${vcf%.vcf.gz}.SD.vcf.gz -Oz -o ${vcf%.vcf.gz}.SD.AF.vcf.gz -- -t AF
+done
+```
+
+
+
+```
+for vcf in vcf_for_phasing/all_biallelic.SD.*.AF.vcf.gz ; do
+ echo $vcf
+ zcat ${vcf} | awk 'BEGIN{FS=OFS="\t"}(/^chr/){split($8,a,";");SVTYPE=MEI=AF="";for(i in a){split(a[i],b,"=");if(b[1]=="AF"){AF=b[2]}if(b[1]=="SVTYPE"){SVTYPE=b[2]}if(b[1]=="MEI"){MEI=b[2]}};print $1,$2,$3,$7,SVTYPE,MEI,AF}' | sort -k1,1 -k2n,2 | gzip > ${vcf%.vcf.gz}.tsv.gz
+done
 ```
 
 
@@ -423,4 +441,51 @@ done
 
 
 
+
+
+
+MERGE
+
+```
+
+for f in ${PWD}/vcf_for_phasing/*.AF.tsv.gz /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_*.ALL.AF.tsv.gz ; do
+echo $f
+zcat ${f} | cut -f1,2 | uniq -d
+done
+
+./merge_vcf_data.py -o merged_megane_results.csv ${PWD}/vcf_for_phasing/*.AF.tsv.gz /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_*.ALL.AF.tsv.gz
+```
+
+
+
+
+
+```
+cat merged_megane_results.csv | wc -l
+66917
+
+cat merged_megane_results.csv | awk '($28!="")&&(($33!="")||($38!=""))' | wc -l
+5732
+```
+Less than 10% of all positions are shared between 1kg and our dataset.
+
+
+```
+cat merged_megane_results.csv | awk 'BEGIN{FS=OFS="\t"}(NR==1)||(($28!="")&&(($33!="")||($38!=""))) {print $1,$2,$7,$12,$17,$22,$27,$32,$37,$42}' > merged_megane_results.shared.AF.csv
+```
+
+
+
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_megane_results.csv merged_megane_results.shared.AF.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
 
