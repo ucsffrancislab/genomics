@@ -308,4 +308,119 @@ done
 
 
 
+##	20230614
+
+
+
+```
+bcftools +fill-tags -l
+
+GTisec
+GTsubset
+ad-bias
+add-variantkey
+af-dist
+allele-length
+check-ploidy
+check-sparsity
+color-chrs
+contrast
+counts
+dosage
+fill-AN-AC
+fill-from-fasta
+fill-tags
+fixploidy
+fixref
+frameshifts
+guess-ploidy
+gvcfz
+impute-info
+indel-stats
+isecGT
+mendelian
+mendelian2
+missing2ref
+parental-origin
+prune
+remove-overlaps
+scatter
+setGT
+smpl-stats
+split
+split-vep
+tag2tag
+trio-dnm2
+trio-stats
+trio-switch-rate
+variant-distance
+variantkey-hex
+
+
+bcftools +fill-tags -- -l
+
+INFO/AC        Number:A  Type:Integer  ..  Allele count in genotypes
+INFO/AC_Hom    Number:A  Type:Integer  ..  Allele counts in homozygous genotypes
+INFO/AC_Het    Number:A  Type:Integer  ..  Allele counts in heterozygous genotypes
+INFO/AC_Hemi   Number:A  Type:Integer  ..  Allele counts in hemizygous genotypes
+INFO/AF        Number:A  Type:Float    ..  Allele frequency from FMT/GT or AC,AN if FMT/GT is not present
+INFO/AN        Number:1  Type:Integer  ..  Total number of alleles in called genotypes
+INFO/ExcHet    Number:A  Type:Float    ..  Test excess heterozygosity; 1=good, 0=bad
+INFO/END       Number:1  Type:Integer  ..  End position of the variant
+INFO/F_MISSING Number:1  Type:Float    ..  Fraction of missing genotypes (all samples, experimental)
+INFO/HWE       Number:A  Type:Float    ..  HWE test (PMID:15789306); 1=good, 0=bad
+INFO/MAF       Number:1  Type:Float    ..  Frequency of the second most common allele
+INFO/NS        Number:1  Type:Integer  ..  Number of samples with data
+INFO/TYPE      Number:.  Type:String   ..  The record type (REF,SNP,MNP,INDEL,etc)
+FORMAT/VAF     Number:A  Type:Float    ..  The fraction of reads with the alternate allele, requires FORMAT/AD or ADF+ADR
+FORMAT/VAF1    Number:1  Type:Float    ..  The same as FORMAT/VAF but for all alternate alleles cumulatively
+TAG:Number=Type(EXPR)                  ..  Experimental support for user expressions such as DP:1=int(sum(DP))
+               If Number and Type are not given (e.g. DP=sum(DP)), variable number (Number=.) of floating point
+               values (Type=Float) will be used.
+```
+
+
+
+```
+bcftools view --apply-filters PASS --samples-file ${f} --force-samples ${vcf} \
+ | bcftools +fill-tags -o ${f}.${basevcf} -Oz -- -t AF
+```
+
+
+```
+vcf=${PWD}/vcf_for_phasing/all_biallelic.SD.vcf.gz
+
+zgrep -m1 "^#CHROM" ${vcf} | cut -f10- | datamash transpose > ${vcf%.vcf.gz}.samples.txt
+grep "^..-....-10" ${vcf%.vcf.gz}.samples.txt > ${vcf%.vcf.gz}.samples.normal.txt
+grep "^..-....-01" ${vcf%.vcf.gz}.samples.txt > ${vcf%.vcf.gz}.samples.tumor.txt
+grep -f GBM.txt ${vcf%.vcf.gz}.samples.normal.txt > ${vcf%.vcf.gz}.samples.GBM.normal.txt
+grep -f LGG.txt ${vcf%.vcf.gz}.samples.normal.txt > ${vcf%.vcf.gz}.samples.LGG.normal.txt
+grep -f GBM.txt ${vcf%.vcf.gz}.samples.tumor.txt > ${vcf%.vcf.gz}.samples.GBM.tumor.txt
+grep -f LGG.txt ${vcf%.vcf.gz}.samples.tumor.txt > ${vcf%.vcf.gz}.samples.LGG.tumor.txt
+
+
+for sf in ${PWD}/vcf_for_phasing/all_biallelic.SD.samples.* ; do
+ echo $sf
+ subset=${sf#*all_biallelic.SD.samples}
+ subset=${subset%txt}
+ echo ${subset}
+
+ bcftools view --samples-file ${sf} -Oz --force-samples ${vcf} \
+  | bcftools +fill-tags -Oz -o ${vcf%.vcf.gz}${subset}AF.vcf.gz -- -t AF
+
+ bcftools view --apply-filters PASS --samples-file ${sf} -Oz --force-samples ${vcf} \
+  | bcftools +fill-tags -Oz -o ${vcf%.vcf.gz}${subset}PASS.AF.vcf.gz -- -t AF
+
+done
+
+```
+
+
+
+
+
+
+
+
+
 
