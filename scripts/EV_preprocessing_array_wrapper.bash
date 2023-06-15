@@ -134,6 +134,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 
+#	Truseq Single Index Library:
+#	
+#	5'- AATGATACGGCGACCACCGAGATCTACA-CTCTTTCCCTACACGACGCTCTTCCGATCT-insert-AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC-NNNNNNNN-ATCTCGTATGCCGTCTTCTGCTTG -3'
+#	3'- TTACTATGCCGCTGGTGGCTCTAGATGT-GAGAAAGGGATGTGCTGCGAGAAGGCTAGA-insert-TCTAGCCTTCTCGTGTGCAGACTTGAGGTCAGTG-NNNNNNNN-TAGAGCATACGGCAGAAGACGAAC -5'
+#	          Illumina P5                   Truseq Read 1                        Truseq Read 2                 i7        Illumina P7
+
+
+
 			#	re-testing UMI (12bp + 4bp) so don't left trim 16bp
 
 			#	Since removing 16bases, set minimum from 15 to 31.
