@@ -71,7 +71,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="MEGAnE" \
 
 
 
-
+```
 https://www.nature.com/articles/s41588-023-01390-2
 
 https://zenodo.org/record/7703708
@@ -106,8 +106,36 @@ wget https://zenodo.org/record/7703708/files/GTEx_eQTL_mash_meta_analysis.ME.lfs
 wget https://zenodo.org/record/7703708/files/GTEx_eQTL_mash_meta_analysis.ME.posterior_mean.tsv.gz
 
 wget https://zenodo.org/record/7703708/files/GTEx_eQTL_mash_meta_analysis.ME.posterior_stdev.tsv.gz
+```
 
 
 
 
+```
+module load htslib
+for vcf in 1000GP.GRCh38_3202.*.vcf ; do
+ awk 'BEGIN{FS=OFS="\t"}(/^#/){print}(!/^#/){sub(/SD/,"S;D",$7);print}' ${vcf} | bgzip > ${vcf}.gz
+done
+```
+
+
+```
+module load bcftools htslib
+for vcf in /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.*.vcf.gz ; do
+ echo $vcf
+ bcftools +fill-tags ${vcf} -Oz -o ${vcf%.vcf.gz}.AF.vcf.gz -- -t AF
+done
+```
+
+
+
+```
+
+zcat /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_absences.ALL.AF.vcf.gz | awk 'BEGIN{FS=OFS="\t"}(/^chr/){split($8,a,";");SVTYPE=MEI=AF="";for(i in a){split(a[i],b,"=");if(b[1]=="AF"){AF=b[2]}if(b[1]=="SVTYPE"){SVTYPE=b[2]}if(b[1]=="MEI"){MEI=b[2]}};print $1,$2,$3,$7,SVTYPE,MEI,AF}' | gzip > /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_absences.ALL.AF.tsv.gz
+
+zcat /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_insertions.ALL.AF.vcf.gz | awk 'BEGIN{FS=OFS="\t"}(/^chr/){split($8,a,";");SVTYPE=MEI=AF="";for(i in a){split(a[i],b,"=");if(b[1]=="AF"){AF=b[2]}if(b[1]=="SVTYPE"){SVTYPE=b[2]}if(b[1]=="MEI"){MEI=b[2]}};print $1,$2,$3,$7,SVTYPE,MEI,AF}' | gzip > /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_insertions.ALL.AF.tsv.gz
+
+
+zcat /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME_*.ALL.AF.tsv.gz | sort -k1,1 -k2n,2 | gzip > /francislab/data1/refs/MEGAnE/1000GP.GRCh38_3202.ME.ALL.AF.tsv.gz
+```
 
