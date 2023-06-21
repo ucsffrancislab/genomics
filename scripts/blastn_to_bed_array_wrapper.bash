@@ -112,28 +112,78 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Running blast"
 
-#		singularity exec --bind /francislab,/scratch,/costellolab \
-#			/francislab/data1/refs/singularity/MEGAnE.v1.0.1.beta-20230525.sif \
-#			call_genotype_38 -p ${threads} \
-#			-fa /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.fa \
-#			-mk /francislab/data1/refs/MEGAnE/megane_kmer_set/reference_human_genome.mk \
-#			-i ${bam} -sample_name ${base} -outdir ${f}
-
 		blastn \
 			-db ${db} \
 			-query ${line} \
 			-evalue ${evalue} \
 			-word_size ${word_size} \
-			-outfmt '6 qaccver qstart qend' | sort -k2n,3 | uniq \
-			| awk 'BEGIN{FS=OFS="\t"}
-				{ 
-					if( r == "" ){
-						r=$1;s=$2;e=$3 
-					} else { 
-						if( $2 <= (e+1) ){ 
-							if(e>$3){e=$3} }else{ print $1,s-1,e; s=$2; e=$3 } 
-					} 
-				}END{ if( r != "" ) print r,s-1,e }' > ${f}
+			-outfmt '6 qaccver qstart qend' > ${f}.tmp
+
+		cat ${f}.tmp | sort -k1,1 -k2n,3 | uniq \
+						| awk -v ext=1 'BEGIN{FS=OFS="\t"}{
+							if( r == "" ){
+								# First record for initial accession in given SORTED results
+								r=$1
+								s=(($2>ext)?$2:(ext+1))-ext
+								e=$3+ext
+							} else if ( r != $1 ) {
+								# First record for new accession
+								print r,s-1,e
+								r=$1
+								s=$2-ext
+								e=$3+ext
+							} else {
+								if( $2 <= (e+ext+1) ){
+									if(e>$3){
+										e=$3+ext
+									} 
+								}else{
+									print r,s-1,e
+									s=$2-ext
+									e=$3+ext
+								} 
+							}
+						}END{ 
+							# Final record
+							if( r != "" ) print r,s-1,e 
+						}' > ${f}
+
+#	blast results are 1 based?
+#	BED format is zero-based for the coordinate start and one-based for the coordinate end.
+
+#						| awk -v ext=1 'BEGIN{FS=OFS="\t"}{
+#							if( r == "" ){
+#								#	first record
+#								r=$1
+#								s=(($2>ext)?$2:(ext+1))-ext
+#								e=$3+ext
+#							} else {
+#								if( $2 <= (e+ext+1) ){
+#									e=$3+ext
+#								}else{
+#									print $1,s-1,e
+#									s=$2-ext
+#									e=$3+ext
+#								} 
+#							}
+#						}END{ if( r != "" ) print r,s-1,e }' > ${o}
+
+
+#			| awk 'BEGIN{FS=OFS="\t"}
+#				{ 
+#					if( r == "" ){
+#						r=$1;s=$2;e=$3 
+#					} else { 
+#						if( $2 <= (e+1) ){ 
+#							if(e>$3){
+#								e=$3
+#							} 
+#						}else{ 
+#							print $1,s-1,e; s=$2; e=$3 
+#						}
+#					} 
+#				}END{ if( r != "" ) print r,s-1,e }' > ${f}
+
 
 		chmod -R a-w ${f}	#	$( dirname ${f} )
 	fi

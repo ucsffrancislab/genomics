@@ -130,14 +130,20 @@ https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-020-00785-5
 
 
 ```
+mkdir blastn_beds_word_size_11
+blastn_to_bed_array_wrapper.bash -word_size 11 --threads 2 --out ${PWD}/blastn_beds_word_size_11 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+
 mkdir blastn_beds_word_size_10
 blastn_to_bed_array_wrapper.bash -word_size 10 --threads 2 --out ${PWD}/blastn_beds_word_size_10 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
 
 mkdir blastn_beds_word_size_09
-blastn_to_bed_array_wrapper.bash -word_size 9 --threads 2 --out ${PWD}/blastn_beds_word_size_10 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+blastn_to_bed_array_wrapper.bash -word_size 9 --threads 2 --out ${PWD}/blastn_beds_word_size_09 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
 
 mkdir blastn_beds_word_size_08
-blastn_to_bed_array_wrapper.bash -word_size 8 --threads 2 --out ${PWD}/blastn_beds_word_size_10 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+blastn_to_bed_array_wrapper.bash -word_size 8 --threads 2 --out ${PWD}/blastn_beds_word_size_08 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+
+mkdir blastn_beds_word_size_07
+blastn_to_bed_array_wrapper.bash -word_size 8 --threads 2 --out ${PWD}/blastn_beds_word_size_07 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
 
 ```
 
