@@ -489,3 +489,29 @@ curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 ```
 
+
+
+Any different from the average
+```
+awk 'BEGIN{FS=OFS="\t"}(NR>1){sum=ave=0;for(i=3;i<=NF;i++){sum+=$i};ave=sum/7.0;p=0;for(i=3;i<=NF;i++){if($i!=""){diff=$i-ave;if((diff>0.25)||(diff<-0.25)){p=1}}};if(p==1){print $1,$2}}' merged_megane_results.shared.AF.csv
+```
+
+Any different from 1KG
+```
+awk 'BEGIN{FS=OFS="\t"}(NR>1){if($9!=""){kg=$9}else{kg=$10};p=0;for(i=3;i<=8;i++){diff=$i-kg;if((diff>0.25)||(diff<-0.25)){p=1}};if(p==1){print $1,$2}}' merged_megane_results.shared.AF.csv > merged_megane_results.shared.AF.anydiff1KG.csv
+```
+
+
+
+Normals different from 1KG
+
+CHR	POS	all_biallelic.SD.GBM.normal.AF.tsv.gz AF	all_biallelic.SD.GBM.tumor.AF.tsv.gz AF	all_biallelic.SD.LGG.normal.AF.tsv.gz AF	all_biallelic.SD.LGG.tumor.AF.tsv.gz AF	all_biallelic.SD.normal.AF.tsv.gz AF	all_biallelic.SD.tumor.AF.tsv.gz AF	1000GP.GRCh38_3202.ME_absences.ALL.AF.tsv.gz AF	1000GP.GRCh38_3202.ME_insertions.ALL.AF.tsv.gz AF
+
+```
+awk 'BEGIN{FS=OFS="\t"}(NR>1){if($9!=""){kg=$9}else{kg=$10};p=0;for(i=3;i<=8;i+=2){diff=$i-kg;if((diff>0.25)||(diff<-0.25)){p=1}};if(p==1){print $1,$2}}' merged_megane_results.shared.AF.csv > merged_megane_results.shared.AF.normaldiff1KG.csv
+```
+
+
+
+
+
