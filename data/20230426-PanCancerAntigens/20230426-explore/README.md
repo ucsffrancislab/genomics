@@ -220,8 +220,8 @@ head -1 viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv > 
 tail -n +2 viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv | sort >> viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv
 
 
-join --header viral_proteins.names.sorted.tsv viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv > viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
-join --header viral_proteins.names.sorted.tsv viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv > viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+join --nocheck-order --header viral_proteins.names.sorted.tsv viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv | sed 's/ /\t/g' > viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+join --nocheck-order --header viral_proteins.names.sorted.tsv viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv | sed 's/ /\t/g' > viral_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
 
 
 
@@ -234,7 +234,7 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-for f in viral_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv ; do
+for f in viral_protein_accessions_IN_S10*_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
@@ -280,8 +280,9 @@ head -1 Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05
 tail -n +2 Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv | sort >> Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv
 
 
-join --header viral_proteins.names.sorted.tsv Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv > Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
-join --header viral_proteins.names.sorted.tsv Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+join --nocheck-order --header viral_proteins.names.sorted.tsv Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.tsv | sed 's/ /\t/g' > Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
+
+join --nocheck-order --header viral_proteins.names.sorted.tsv Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.tsv | sed 's/ /\t/g' > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv
 
 
 
