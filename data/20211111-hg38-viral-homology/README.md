@@ -105,3 +105,39 @@ done
 
 
 
+###	20230621
+
+
+A tissue level atlas of the healthy human virome
+
+https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-020-00785-5
+
+
+| name | accession | description |
+| --- | --- | --- |
+| HHV-1 | NC_001806.2 | also known as Herpes Simplex type 1 (HSV-1) | 
+| HHV-2 | NC_001798.2 | also known as Herpes Simplex type 2 (HSV-2) | 
+| HHV-3 | NC_001348.1 |  | 
+| HHV-4 | NC_007605.1 | also known as Epstein-Barr virus (EBV) | 
+| HHV-4 type 2 | NC_009334.1 |  | 
+| HHV-5 | NC_006273.2 | also known as Human Cytomegalovirus (HCMV) | 
+| HHV-6A | NC_001664.4 |  | 
+| HHV-6B | NC_000898.1 |  | 
+| HHV-7 | NC_001716.2 |  | 
+| HHV-8 | NC_009333.1 | also known as Kaposi sarcoma-associated herpesvirus (KSHV) | 
+
+
+
+
+```
+mkdir blastn_beds_word_size_10
+blastn_to_bed_array_wrapper.bash -word_size 10 --threads 2 --out ${PWD}/blastn_beds_word_size_10 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+
+mkdir blastn_beds_word_size_09
+blastn_to_bed_array_wrapper.bash -word_size 9 --threads 2 --out ${PWD}/blastn_beds_word_size_10 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+
+mkdir blastn_beds_word_size_08
+blastn_to_bed_array_wrapper.bash -word_size 8 --threads 2 --out ${PWD}/blastn_beds_word_size_10 ${PWD}/Raw/{NC_001806.2,NC_001798.2,NC_001348.1,NC_007605.1,NC_009334.1,NC_006273.2,NC_001664.4,NC_000898.1,NC_001716.2,NC_009333.1}*fasta
+
+```
+
