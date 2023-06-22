@@ -306,3 +306,46 @@ done
 
 
 
+
+
+###	20230621
+
+
+
+```
+
+head -2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | tail -1 | tr -d '\015' > S1.TCONS_sorted.csv
+tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort -t, -k1,1 | tr -d '\015' >> S1.TCONS_sorted.csv
+
+
+for f in Human_herpes_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv \
+  Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.tsv ; do
+o1=${f%.tsv}.TCONS.csv
+awk 'BEGIN{FS=OFS="\t"}(NR==1){print "Transcript ID",$0}(NR>1){split($3,a,"_");print "TCONS_"a[2],$0}' ${f} | sed 's/\t/,/g' > ${o1}
+
+o2=${f%.tsv}.TCONS.sorted.csv
+head -1 ${o1} > ${o2}
+tail -n +2 ${o1} | sort -t, -k1,1 >> ${o2}
+
+o3=${f%.tsv}.TCONS.sorted.join.csv
+join -t, --nocheck-order --header S1.TCONS_sorted.csv ${o2} > ${o3}
+
+done
+
+```
+
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in *.TCONS.sorted.join.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+
+```
