@@ -16,12 +16,12 @@ function usage(){
 	echo
 	echo "Usage:"
 	echo
-	echo $0 --ref /PATH/TO/ref_genome path/*1.fastq.gz
+	echo $0 --ref /PATH/TO/ref_genome path/\*1.fastq.gz
 	echo
 	echo $0 --no-unal --sort --extension _R1.fastq.gz --very-sensitive --threads 8 
 	echo -x /francislab/data1/working/20211111-hg38-viral-homology/RMHM 
 	echo --outdir ${PWD}/e2e 
-	echo /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/*_R1.fastq.gz
+	echo /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/\*_R1.fastq.gz
 	echo
 	exit
 }
