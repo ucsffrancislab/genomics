@@ -79,5 +79,31 @@ done
 ```
 
 
+Sum up viral read counts ...
+
+```
+
+cat Brain_S3.csv | datamash transpose -t, | awk -F, '{s=0;for(i=2;i<=NF;i++){s+=$i};print $1,s}' 
+
+```
+
+
+
+
+
+Replace the comma field separator with a tab.
+Because there are commas in the data, this is tricky.
+Use FPAT, instead of FS, and new OFS. Force rebuilding of $0. Print.
+
+`$1=$1` forces awk to recreate the record with the new OFS, I think.
+I don't understand the need for the final trailing `1`. I think that it is the same as `{print}`.
+
+```
+awk 'BEGIN{FPAT = "([^,]*)|(\"[^\"]+\")";OFS="\t"}{$1=$1} 1' Brain.csv > Brain.tsv
+
+awk 'BEGIN{FPAT = "([^,]*)|(\"[^\"]+\")";OFS="\t"}{$1=$1;print}' Brain.csv > Brain.tsv
+
+```
+
 
 
