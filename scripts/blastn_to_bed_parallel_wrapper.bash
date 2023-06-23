@@ -55,10 +55,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		esac
 	done
 	
-	#mem=$[threads*7500]M
-	#scratch_size=$[threads*28]
-
-
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
 		module load CBI #samtools bwa bedtools2 cufflinks star/2.7.7a
@@ -69,32 +65,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	mkdir -p ${OUT}
 
-	line_number=${SLURM_ARRAY_TASK_ID:-1}
-	echo "Running line_number :${line_number}:"
-
-	#	Use a 1 based index since there is no line 0.
-
 	echo "Using array_file :${array_file}:"
 
-	line=$( sed -n "$line_number"p ${array_file} )
-	echo $line
-
-	if [ -z "${line}" ] ; then
-		echo "No line at :${line_number}:"
-		exit
-	fi
-
-	base=$( basename $line ${extension} )
-	#bam=${line}
-	#R1=${line}
-	#R2=${line/_R1./_R2.}
-
 	echo
-	echo "base : ${base}"
 	echo "ext : ${extension}"
-	#echo "r1 : $R1"
-	#echo "r2 : $R2"
-	#echo "bam : $bam"
 	echo 
 
 	date=$( date "+%Y%m%d%H%M%S%N" )
@@ -104,18 +78,24 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	set -x
 
 
-	blastn_to_bed.bash \
-			--out ${OUT} \
-			--extension ${extension} \
-			-db ${db} \
-			-query ${line} \
-			-evalue ${evalue} \
-			-word_size ${word_size}
+	while read fasta ; do
 
-#
-#
-#		chmod -R a-w ${f}	#	$( dirname ${f} )
-#	fi
+		echo blastn_to_bed.bash \
+				--out ${OUT} \
+				--extension ${extension} \
+				-db ${db} \
+				-evalue ${evalue} \
+				-word_size ${word_size} \
+				${fasta}
+
+				#-query ${fasta} \
+
+	done < ${array_file} > ${array_file}.commands
+
+	#| parallel -j ${threads}
+
+	parallel -j ${threads} < ${array_file}.commands
+
 
 	date
 
@@ -127,7 +107,7 @@ else
 	array_file=${PWD}/$( basename $0 ).${date}
 	array_options="--array ${array_file} "
 	
-	threads=4
+	threads=64
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
@@ -137,9 +117,9 @@ else
 				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
 				usage;;
-			#-*)
-			#	array_options="${array_options} $1"
-			#	shift;;
+			-*)
+				array_options="${array_options} $1"
+				shift;;
 			*)
 				echo "Unknown param :${1}: Assuming file"; 
 				realpath --no-symlinks $1 >> ${array_file}; shift;;
@@ -157,17 +137,11 @@ else
 
 		mkdir -p ${PWD}/logs
 
-		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%20 \
-			--parsable --job-name="$(basename $0)" \
+		sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+			--job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
-			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
-				$( realpath ${0} ) ${array_options} )
-
-		#--gres=scratch:${scratch_size}G \
-
-
-		echo "Throttle with ..."
-		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
+			--output=${PWD}/logs/$(basename $0).${date}.out.log \
+				$( realpath ${0} ) ${array_options}
 
 	else
 
