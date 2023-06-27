@@ -15,7 +15,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="blast" \
 ${PWD}/blastx.bash
 ```
 
-Really only uses about 1 thread and not much memory. It does take a LONG LONG time.
+Really only uses about 1 thread and not much memory. It does take a LONG LONG LONG LONG time.
 
 
 
