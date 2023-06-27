@@ -308,8 +308,7 @@ done
 
 
 
-###	20230621
-
+##	20230621
 
 
 ```
@@ -349,3 +348,117 @@ done
 
 
 ```
+
+
+
+
+##	20230623
+
+
+Group and count by virus (from transcripts)
+
+
+
+NO. CSV file is crazy HUGE.
+```
+sqlite3 -header -csv /francislab/data1/refs/taxadb/asgf.sqlite "select accession,species from asgf" > accession_species.csv
+```
+
+
+```
+awk -F, '{split($110,a,".");print a[1]}' Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.csv | sort | uniq -c | wc -l
+84
+
+
+sqlite3 -header -csv /francislab/data1/refs/taxadb/asgf.sqlite 'SELECT accession,species FROM asgf WHERE accession IN ("NP_040137","NP_040141","NP_040158","NP_040183","NP_040188","NP_042898","NP_042904","NP_050187","NP_050200","NP_597817","YP_001129351","YP_001129360","YP_001129362","YP_001129363","YP_001129365","YP_001129366","YP_001129368","YP_001129394","YP_001129411","YP_001129415","YP_001129417","YP_001129431","YP_001129432","YP_001129433","YP_001129434","YP_001129438","YP_001129449","YP_001129453","YP_001129462","YP_001129466","YP_001129471","YP_001129484","YP_001129490","YP_001129512","YP_009137074","YP_009137076","YP_009137103","YP_009137111","YP_009137115","YP_009137133","YP_009137138","YP_009137142","YP_009137146","YP_009137151","YP_009137188","YP_009137202","YP_009137209","YP_009137210","YP_009137215","YP_009137223","YP_009458635","YP_009458641","YP_073753","YP_081468","YP_081477","YP_081483","YP_081492","YP_081499","YP_081521","YP_081556","YP_081565","YP_081570","YP_081572","YP_081606","YP_081611","YP_081612","YP_401633","YP_401635","YP_401637","YP_401638","YP_401639","YP_401640","YP_401641","YP_401642","YP_401643","YP_401652","YP_401656","YP_401667","YP_401668","YP_401672","YP_401689","YP_401694","YP_401719","asdf")'
+
+
+
+
+sqlite3 -header -csv /francislab/data1/refs/taxadb/asgf.sqlite 'SELECT accession,species FROM asgf WHERE accession IN ('$( awk -F, '(NR>1){split($110,a,".");print "\""a[1]"\""}' Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.csv | sort | uniq | paste -sd, )') ORDER BY accession' | tr -d \" > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.accession_species.csv
+
+( head -1 Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.csv && awk 'BEGIN{FS=OFS=","}(NR>1){split($110,a,".");$110=a[1];print}' Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.csv | sort -t, -k110,110 ) > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.trimandsort.csv
+
+join -t, --nocheck-order --header -1 110 -2 1 Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.trimandsort.csv Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.accession_species.csv > Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.trimandsort.species.csv
+
+
+awk 'BEGIN{FS=OFS=","}{print $123,$11,$13,$15,$17,$19,$21,$23,$25,$27,$29,$31,$33,$35,$37,$39,$41,$43,$45,$47,$49,$51,$53,$55,$57,$59,$61,$63,$65,$67,$69,$71,$73,$75}' Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.trimandsort.species.csv
+
+{print $123,$11,$13,$15,$17,$19,$21,$23,$25,$27,$29,$31,$33,$35,$37,$39,$41,$43,$45,$47,$49,$51,$53,$55,$57,$59,$61,$63,$65,$67,$69,$71,$73,$75}
+
+awk 'BEGIN{FS=OFS=",";tumors=[11,13,15,17,19,21,23,25,27,29]}(NR==1){print} (NR>1){ for(i in tumors){ counts[$1][i]+=$i } } END{for(k in counts){ print k }}' Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.trimandsort.species.csv
+
+
+
+awk 'BEGIN{FS=OFS=",";tc=split("11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75",tumors,",")}(NR==1){line=$NF; for(j=1;j<=tc;j++){line=line OFS $tumors[j]}print line} (NR>1){for(i in tumors){ counts[$NF][tumors[i]]+=int($tumors[i]) } } END{for(k in counts){ line=k; for(j=1;j<=tc;j++){line=line OFS counts[k][tumors[j]]}print line }}' Human_herpes_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.sorted.descriptions.TCONS.sorted.join.trimandsort.species.csv
+
+
+```
+
+
+
+
+
+
+
+##	20230626
+
+
+So my current thinking is that we coudn the number of unique TCONS as individual hits. But I would like to make the E value a bit more stringent. Any thoughts on that?
+
+
+This README is getting pretty heavy.
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="blast" \
+--time=20160 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/blast.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/20230626.bash
+```
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in S1.TCONS_sorted.csv *grouped.csv ; do
+for f in S1.TCONS_sorted.csv ; do
+for f in *trimandsort.species.S1.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+
+##	20230627
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="blast" \
+--time=20160 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/blast.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/20230627.bash
+```
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in select*.trimandsort.species.S1.csv select*.trimandsort.species.TCONS.S1.grouped.sorted.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+
+
+
