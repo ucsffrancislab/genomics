@@ -147,3 +147,21 @@ blastn_to_bed_array_wrapper.bash -word_size 8 --threads 2 --out ${PWD}/blastn_be
 
 ```
 
+
+
+
+
+There are over 14,000 (14721) fasta files which is way over the job limit so I wrote a parallel wrapper.
+
+```
+
+blastn_to_bed_parallel_wrapper.bash --threads 64 -word_size 11 --out ${PWD}/Raw_blastn_beds_word_size_11 ${PWD}/Raw/*fasta
+
+blastn_to_bed_parallel_wrapper.bash --threads 64 -word_size 9 --out ${PWD}/Raw_blastn_beds_word_size_09 ${PWD}/Raw/*fasta
+
+```
+
+
+
+
+
