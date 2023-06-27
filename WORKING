@@ -1,6 +1,42 @@
 
-20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - computing AFs for comparison
+20230426-PanCancerAntigens/20230426-explore - merged viral proteins by virus, sum by virus, select only *_tumor
 
+
+20201006-GTEx/20230622-RMHMViral - reproduce paper's results
+produce additional masked reference
+what viruses did the authors use? all of them?
+RNA or DNA? Does it matter?
+
+use blast instead of bowtie2. Is that appropriate for paired end fastq?
+
+
+20211111-hg38-viral-homology/ - create blastn masked references
+
+
+20230426-PanCancerAntigens/20230426-explore - aligned viral proteins to TCONS proteins
+
+20211111-hg38-viral-homology - use blast to mask instead of bowtie2?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+20201006-GTEx/20230616-PanCancerAntigens-Viral - align samples to viral proteins with blastx (Takes a very very long time) . canceled
+
+20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - computing AFs for comparison
 
 ll refs/MEGAnE/1000GP.GRCh38_3202.ME_* 
 20200603-TCGA-GBMLGG-WGS/20230525-MEGAnE - tumor normal subtraction and comparison to 1GP
@@ -9,16 +45,6 @@ refs/MEGAnE/
 
 
 working/20220804-RaleighLab-RNASeq/20230518-VCF/merged.vcf.gz - Ginormous
-
-
-
-
-
-
-
-
-
-
 
 
 
