@@ -363,8 +363,8 @@ else
 				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
 				usage;;
-			-*)
-				array_options="${array_options} $1"; shift;;
+#			-*)
+#				array_options="${array_options} $1"; shift;;
 			*)
 				echo "Unknown param :${1}: Assuming file"; 
 				realpath --no-symlinks $1 >> ${array_file}; shift;;
