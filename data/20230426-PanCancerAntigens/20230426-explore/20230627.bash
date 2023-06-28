@@ -43,6 +43,7 @@ cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human*herpes*.f
 	/francislab/data1/refs/refseq/viral-20220923/viral.protein/*Human_polyomavirus*.fa \
 	/francislab/data1/refs/refseq/viral-20220923/viral.protein/*Human_papillomavirus*.fa \
 	/francislab/data1/refs/refseq/viral-20220923/viral.protein/*Human_endogenous*.fa \
+	/francislab/data1/refs/refseq/viral-20220923/viral.protein/*Human_orthopneumovirus*.fa \
 	| sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' \
 	| awk -F_ '(/^>/){print $1"_"$2}(!/>/){print}' > select_protein_accessions.faa
 
