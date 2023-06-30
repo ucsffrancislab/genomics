@@ -249,6 +249,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 				--outFileNamePrefix ${out_base}.  \
 				--outSAMattrRGline ID:${base} SM:${base} \
 				--outFilterMultimapNmax 1 \
+				--outSAMunmapped Within KeepPairs \
 				--outSAMattributes Standard XS
 
 			chmod a-w ${f}
