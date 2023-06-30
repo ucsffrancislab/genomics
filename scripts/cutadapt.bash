@@ -34,7 +34,7 @@ if [ -f $f ] && [ ! -w $f ] ; then
 	echo "Write-protected $f exists. Skipping."
 else
 	echo "Creating $f"
-	cutadapt $ARGS
+	cutadapt $ARGS > ${f}.cutadapt_summary.log
 	chmod a-w $f
 
 	count_fasta_reads.bash $f
