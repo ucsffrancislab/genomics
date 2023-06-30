@@ -35,6 +35,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "mem :${mem}:"
 
 	extension="_R1.fastq.gz"
+	ref=/francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
@@ -112,12 +113,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--outSAMstrandField intronMotif \
 			--outSAMattributes Standard XS \
 			--outSAMtype BAM SortedByCoordinate \
+			--outSAMattrRGline ID:${base} SM:${base} \
+			--outSAMunmapped Within KeepPairs \
 			--outFileNamePrefix ${outFileNamePrefix}
 
-		#/francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a \
+		#	The XS flag is assigned only for spliced reads based on the intron motif of the junction.
+		#	For an unstranded library, the read may be sequenced from the 1st cDNA strand (opposite to RNA),
+		#	but the intron motif allows to determine the actual RNA strand.
 
-		samtools index ${f}
-		chmod -w ${f}.bai
+		#samtools index ${f}
+		#chmod -w ${f}.bai
 
 		##alignEndsType           Local
 		##    string: type of read ends alignment
@@ -151,8 +156,8 @@ else
 				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
 				usage;;
-			-*)
-				array_options="${array_options} $1"; shift;;
+#			-*)
+#				array_options="${array_options} $1"; shift;;
 			*)
 				echo "Unknown param :${1}: Assuming file"; 
 				realpath --no-symlinks $1 >> ${array_file}; shift;;
@@ -177,7 +182,7 @@ else
 				$( realpath ${0} ) ${array_options} )
 
 		echo "Throttle with ..."
-		echo "scontrol update ArrayTaskThrottle=8 JobId=${array_id}"
+		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
 
 	else
 
