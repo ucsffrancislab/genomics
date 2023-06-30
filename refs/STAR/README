@@ -59,4 +59,15 @@ STAR --runMode genomeGenerate --genomeFastaFiles /francislab/data1/refs/sources/
 
 
 
+--sjdbGTFfile is used with runMode genomeGenerate, however ...
+Starting from 2.4.1a, the annotations can also be included on the fly at the mapping step.
+
+Since 2.4.1a, the annotations can be included on the fly at the mapping step, without including them at the genome generation step.
+
+
+
+module load star/2.7.7a
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARnonegenerate"   --time=10080 --nodes=1 --ntasks=16 --mem=120G   --output=${PWD}/STARnonegenerate.log   --wrap="STAR --runMode genomeGenerate --genomeFastaFiles /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa --genomeDir /francislab/data1/refs/STAR/hg38-golden-none-2.7.7a/ --runThreadN 16"
+
+
 
