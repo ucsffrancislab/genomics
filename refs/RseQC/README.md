@@ -85,4 +85,10 @@ done | sort | uniq -c
 
 
 
+STAR can add an XS tag when given the options `--outSAMstrandField intronMotif --outSAMattributes Standard XS`
+
+The XS flag is assigned only for spliced reads based on the intron motif of the junction.
+For an unstranded library, the read may be sequenced from the 1st cDNA strand (opposite to RNA),
+but the intron motif allows to determine the actual RNA strand.
+
 
