@@ -49,6 +49,8 @@ else
 	echo "Creating $f"
 	STAR $ARGS
 	chmod a-w $f
+	samtools index $f
+	chmod a-w ${f}.bai
 
 	for m in mate1 mate2 ; do
 		if [ -f ${outprefix}Unmapped.out.${m} ] ; then
