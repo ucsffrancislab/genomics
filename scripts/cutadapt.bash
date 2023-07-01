@@ -36,6 +36,7 @@ else
 	echo "Creating $f"
 	cutadapt $ARGS > ${f}.cutadapt_summary.log
 	chmod a-w $f
+	chmod a-w ${f}.cutadapt_summary.log
 
 	count_fasta_reads.bash $f
 	average_fasta_read_length.bash $f
