@@ -24,7 +24,7 @@ function usage(){
 
 threads=${SLURM_NTASKS:-4}
 echo "threads :${threads}:"
-mem=${SBATCH_MEM_PER_NODE:-30000M}
+mem=${SLURM_MEM_PER_NODE:-30000M}
 echo "mem :${mem}:"
 
 db=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts
