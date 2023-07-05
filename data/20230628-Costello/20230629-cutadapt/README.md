@@ -10,7 +10,7 @@ Then ...
 
 ```
 
-./cutadapt_array_wrapper.bash --threads 4 --extension _R1.fastq.gz \
+cutadapt_array_wrapper.bash --threads 4 --extension _R1.fastq.gz \
   --out /francislab/data1/working/20230628-Costello/20230629-cutadapt/out \
   --trim-n --match-read-wildcards --times 7 \
   --error-rate 0.1 --overlap 5 --minimum-length 15 --quality-cutoff 25 \
