@@ -128,7 +128,58 @@ samtools view -f160 gtf_xs_then_xs_again.Aligned.sortedByCoord.out.bam | awk '{p
 
 
 ```
+samtools view -c gtf_xs_then_xs_again.Aligned.sortedByCoord.out.bam
+132792040
+
 samtools view gtf_xs_then_xs_again.Aligned.sortedByCoord.out.bam | grep -E -o "XS:A:.*XS:A:.*$" | sort | uniq -c
+8782652 XS:A:-	XS:A:-
+8772158 XS:A:-	XS:A:+
+8229596 XS:A:+	XS:A:-
+8244698 XS:A:+	XS:A:+
+
+```
+
+
+
+
+
+
+
+
+
+
+##	20230703
+
+
+
+Prepping to view final R data
+```R
+R
+
+load("out/Step13.RData")
+colnames(tpmexpressiontable)[1] = "ids"
+write.table(tpmexpressiontable,file='tpmexpressiontable.csv',sep=",",row.names=FALSE,quote=FALSE)
+```
+
+
+```
+chmod a-w tpmexpressiontable.csv
+```
+
+
+
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in tpmexpressiontable.ordered.csv tpmexpressiontable.csv out/Step13.RData ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
 ```
 
 
