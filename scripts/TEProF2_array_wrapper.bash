@@ -31,7 +31,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	threads=${SLURM_NTASKS:-4}
 	echo "threads :${threads}:"
-	mem=${SBATCH_MEM_PER_NODE:-30000M}
+	mem=${SLURM_MEM_PER_NODE:-30000M}
 	echo "mem :${mem}:"
 
 	TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
