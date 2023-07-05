@@ -385,6 +385,7 @@ else
 		mkdir -p ${PWD}/logs
 		#	date=$( date "+%Y%m%d%H%M%S%N" )
 
+		set -x  #       print expanded command before executing it
 		#	strand_option=""
 		#	[ -n "${strand}" ] && strand_option="--strand ${strand}"
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%8 \

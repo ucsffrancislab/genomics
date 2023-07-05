@@ -35,7 +35,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "mem :${mem}:"
 
 	extension="_R1.fastq.gz"
-	ref=/francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a
+	#ref=/francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a
+	ref=/francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
@@ -205,6 +206,8 @@ else
 		max=$( cat ${array_file} | wc -l )
 
 		mkdir -p ${PWD}/logs
+
+		set -x  #       print expanded command before executing it
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
 			--parsable --job-name="$(basename $0)" \
