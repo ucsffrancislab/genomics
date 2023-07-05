@@ -43,3 +43,11 @@ TEProF2_array_wrapper.bash --threads 4 \
 
 ```
 
+
+
+```
+TEProF2_aggregation_steps.bash --threads 64 \
+  --reference_merged_candidates_gtf /francislab/data1/refs/TEProf2/reference_merged_candidates.gtf \
+  --in  /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/in \
+  --out /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/out
+```
