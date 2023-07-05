@@ -27,3 +27,29 @@ Then ...
 
 
 
+
+
+```
+
+
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R2_001.fastq.gz | sed -n '2~4p' | grep -c "AAAAAAAAAA"
+81660
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R2_001.fastq.gz | sed -n '2~4p' | grep -c "TTTTTTTTTT"
+120278
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R2_001.fastq.gz | sed -n '2~4p' | grep -c "CCCCCCCCCC"
+65975
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R2_001.fastq.gz | sed -n '2~4p' | grep -c "GGGGGGGGGG"
+5464
+
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R1_001.fastq.gz | sed -n '2~4p' | grep -c "AAAAAAAAAA"
+56273
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R1_001.fastq.gz | sed -n '2~4p' | grep -c "TTTTTTTTTT"
+246341
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R1_001.fastq.gz | sed -n '2~4p' | grep -c "CCCCCCCCCC"
+4700
+zcat /costellolab/data2/jocostello/rna_all/CH02/2p300SF10711v1_S2_L001_R1_001.fastq.gz | sed -n '2~4p' | grep -c "GGGGGGGGGG"
+5612
+
+
+
+```
