@@ -31,7 +31,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	threads=${SLURM_NTASKS:-4}
 	echo "threads :${threads}:"
-	mem=${SBATCH_MEM_PER_NODE:-30000M}
+	mem=${SLURM_MEM_PER_NODE:-30000M}
 	echo "mem :${mem}:"
 
 	extension="_R1.fastq.gz"
@@ -116,6 +116,37 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--outSAMattrRGline ID:${base} SM:${base} \
 			--outSAMunmapped Within KeepPairs \
 			--outFileNamePrefix ${outFileNamePrefix}
+
+#			--outBAMsortingBinsN 10 \
+#			--limitBAMsortRAM $[SLURM_NTASKS*7000000000] \
+
+
+
+#	out/26-5134-01A-01R-1850-01+1._STARtmp//BAMsort
+#	contains 1 for each thread. Each folder then contains about 50 files (--outBAMsortingBinsN default is 50)
+#	That is 800 files which is fine
+#	More threads, say 32 would try to create 1600 files but crashes just over 1000. Probably a ulimit thing
+#	So, if using 32 threads. Would need to set the bins to 25?
+#	64 set to 12
+#	10 with 32 worked with the addition of setting sortRAM
+
+
+#			--outBAMsortingBinsN 10 \
+#\
+#			--limitBAMsortRAM $[SLURM_NTASKS*7000000000]
+
+			#--outBAMsortingBinsN 100 \
+#	Too small and 8/60 will run out of memory, which is odd since 60 > 39
+#	EXITING because of fatal ERROR: not enough memory for BAM sorting: 
+#	SOLUTION: re-run STAR with at least --limitBAMsortRAM 39895949651
+#
+#	Too large and I think that you create too many files.
+#	BAMoutput.cpp:27:BAMoutput: exiting because of *OUTPUT FILE* error: could not create output file /scratch/gwendt/1468442/outdir/02-2483-01A-01R-1849-01+2._STARtmp//BAMsort/5/16
+#	SOLUTION: check that the path exists and you have write permission for this file. Also check ulimit -n and increase it to allow more open files.
+
+#	outBAMsortingBinsN      50
+#	    int: >0:  number of genome bins fo coordinate-sorting
+
 
 		#	The XS flag is assigned only for spliced reads based on the intron motif of the junction.
 		#	For an unstranded library, the read may be sequenced from the 1st cDNA strand (opposite to RNA),
