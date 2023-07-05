@@ -1,4 +1,24 @@
 
+
+#	GenCode
+
+The GenCode website
+
+https://www.gencodegenes.org/human/
+
+stores its references in ...
+
+https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/
+
+... but I'll keep them here in refs/sources/gencodegenes.org
+
+
+
+
+
+
+
+
 Since this was built in ~2015, use something about that old
 ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_19/gencode.v19.chr_patch_hapl_scaff.annotation.gtf.gz
 
@@ -84,6 +104,16 @@ tabix -p bed OUTPUT_sorted.gtf_introns_minus_sorted.gz
 
 
 
+
+
+
+
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.transcripts.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.pc_transcripts.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.pc_translations.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.lncRNA_transcripts.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/GRCh38.p13.genome.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/GRCh38.primary_assembly.genome.fa.gz
 
 
 
