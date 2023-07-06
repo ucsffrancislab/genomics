@@ -155,8 +155,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
-			~/.local/bin/gffread -E ${OUT}/candidate_transcripts.gff3 \
-				-T -o ${f}
+			~/.local/bin/gffread -E ${OUT}/candidate_transcripts.gff3 -T -o ${f}
 			chmod -w ${f}
 		fi
 	
@@ -222,21 +221,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 
-		#	tries to create new gtf files of the same name that I started. Added "JAKE"
-		#	I think that this assumes if "fr"
-		#find . -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 --fr -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${OUT}/quantificationCommands.txt ; done ;
 		\rm -f ${f}
-		#find ${OUT} -name "*bam" | while read file ; do
-		#	xbase=${file##*/}
-		#	#echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".JAKE.gtf -e -b "${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G reference_merged_candidates.gtf" >> ${f}
 
 		find ${IN} -name "*bam" | while read file ; do
 			xbase=${file##*/}
-			echo "samtools view -q 255 -h "$file" | stringtie - -o "${OUT}/${xbase%.*}".gtf -e -b "${OUT}/${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G ${reference_merged_candidates_gtf}" #>> ${f}
+			echo "samtools view -q 255 -h "$file" | stringtie - -o "${OUT}/${xbase%.*}".gtf -e -b "${OUT}/${xbase%.*}"_stats -p 2 ${strand} -m 100 -c 1 -G ${reference_merged_candidates_gtf}"
 		done > ${f}
-
-		#	they have a special script that passes rf
-		#	find ../aligned -name "*bam" | while read file ; do xbase=${file##*/}; echo "samtools view -q 255 -h "$file" | stringtie - -o "${xbase%.*}".gtf -e -b "${xbase%.*}"_stats -p 2 --rf -m 100 -c 1 -G reference_merged_candidates.gtf" >> quantificationCommands.txt ; done ;
 
 		chmod -w ${f}
 	fi
@@ -542,6 +532,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		cat <(head -1 table_frac_tot) <(grep -Ff candidate_names.txt table_frac_tot) > ${f}
+		#( head -1 table_frac_tot && grep -Ff candidate_names.txt table_frac_tot ) > ${f}
 		chmod -w ${f}
 	fi
 
@@ -553,6 +544,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		cat <(head -1 table_tpm) <(grep -Ff candidate_names.txt table_tpm) > ${f}
+		#( head -1 table_tpm && grep -Ff candidate_names.txt table_tpm ) > ${f}
 		chmod -w ${f}
 	fi
 
