@@ -51,3 +51,16 @@ TEProF2_aggregation_steps.bash --threads 64 \
   --in  /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/in \
   --out /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/out
 ```
+
++ rm -f /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/out/candidateCommands.complete
++ parallel -j 32
+cat: write error: Cannot allocate memory
+cat: write error: Cannot allocate memory
+cat: write error: Cannot allocate memory
+slurmstepd: error: Detected 26362 oom-kill event(s) in StepId=1475792.batch. Some of your processes may have been killed by the cgroup out-of-memory handler.
+
+
+Edit parallel to only run 1/4 of threads
+
+
+
