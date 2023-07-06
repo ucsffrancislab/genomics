@@ -259,7 +259,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if ${using_reference} ; then
 
 		echo "mergeAnnotationProcess_Ref.R"
-		#f=${OUT}/reference_merged_candidates.gff3_annotated_filtered_test_all
 		f=${OUT}/Step10.RData 
 		#	candidate_introns.txt candidate_names.txt?
 		if [ -f $f ] && [ ! -w $f ] ; then
@@ -270,8 +269,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
         -f ${gff3_annotated_filtered_test_all} \
 				-a ${ARGUMENTS}
 
-				#-f /francislab/data1/refs/TEProf2/reference_merged_candidates.gff3_annotated_filtered_test_all \
-	
 			# README says to use -g, but script actually uses -f
 	
 			chmod -w ${f}
@@ -304,21 +301,27 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+	#	I imagine that this will pretty much always be the same list
+	f=${OUT}/candidate_introns.chrs.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		\rm -f ${f}
+		awk '{print $1}' ${OUT}/candidate_introns.txt | uniq > ${f}
+		#for chr in $( awk '{print $1}' ${OUT}/candidate_introns.txt | uniq ) ; do
+		for chr in $( cat ${f} ) ; do
+			awk -v chr=${chr} '($1==chr)' ${OUT}/candidate_introns.txt > ${OUT}/candidate_introns.${chr}.txt
+		done
+		#touch ${f}
+		chmod -w ${f}
+	fi
+
+	date
 
 
-	#	single threaded and long. could parallelize as is not merging anything
-	#echo "ctab_i.txt 2"
-	#f=${OUT}/ctab_i.2.complete
-	#if [ -f $f ] && [ ! -w $f ] ; then
-	#	echo "Write-protected $f exists. Skipping."
-	#else
-	#	cat ctab_i.txt | while read ID ; do
-	#		fileid=$(echo "$ID" | awk -F "/" '{print $2}')
-	#		cat <(printf 'chr\tstrand\tstart\tend\t'${fileid/_stats/}'\n') <(grep -f candidate_introns.txt $ID | awk -F'\t' '{ print $2"\t"$3"\t"$4"\t"$5"\t"$6 }') > ${ID}_cand
-	#	done
-	#	touch ${f}
-	#	chmod -w ${f}
-	#fi
+
+
+
 
 	echo "ctab_i.txt 2"
 	f=${OUT}/candidateCommands.txt
@@ -327,13 +330,36 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		\rm -f ${f}
 		cat ctab_i.txt | while read ID ; do
-			#fileid=$(echo "$ID" | awk -F "/" '{print $2}')
-			#echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid/_stats/}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
 			fileid=$( basename $(dirname "$ID" ) .unique_stats )
-			echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+			#echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+			# Trying to make this more efficient, use less files and less memory
+			#echo "grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\";print \"chr\tstrand\tstart\tend\t${fileid}\"}{ print \$2,\$3,\$4,\$5,\$6 }' > ${ID}_cand"
+			#	grep for shorter list to minimize memory?
+			echo -e "chr\tstrand\tstart\tend\t${fileid}" > ${ID}_cand.0
+			for chr in $( cat ${OUT}/candidate_introns.chrs.txt ) ; do
+				echo -e "grep -f candidate_introns.${chr}.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }' > ${ID}_cand.${chr}"
+			done
 		done > ${f}
 		chmod -w ${f}
 	fi
+
+
+#	echo "ctab_i.txt 2"
+#	f=${OUT}/candidateCommands.txt
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		\rm -f ${f}
+#		cat ctab_i.txt | while read ID ; do
+#			fileid=$( basename $(dirname "$ID" ) .unique_stats )
+#			#echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+#			# Trying to make this more efficient, use less files and less memory
+#			echo "grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\";print \"chr\tstrand\tstart\tend\t${fileid}\"}{ print \$2,\$3,\$4,\$5,\$6 }' > ${ID}_cand"
+#		done > ${f}
+#		chmod -w ${f}
+#	fi
+
+	date
 
 	f=${OUT}/candidateCommands.complete
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -341,10 +367,39 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		\rm -f ${f}
 		#	runs out of file handles and memory if run in full
-		parallel -j $[threads/2] < ${OUT}/candidateCommands.txt
+		#parallel -j $[threads/2] < ${OUT}/candidateCommands.txt
+		parallel -j ${threads} < ${OUT}/candidateCommands.txt
 		touch ${f}
 		chmod -w ${f}
 	fi
+
+	date
+
+	#	merge
+
+	f=${OUT}/candidate_introns.merged
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		\rm -f ${f}
+		##	runs out of file handles and memory if run in full
+		#parallel -j $[threads/2] < ${OUT}/candidateCommands.txt
+
+		cat ctab_i.txt | while read ID ; do
+			cat ${ID}_cand.* > ${ID}_cand
+		done
+
+		touch ${f}
+		chmod -w ${f}
+	fi
+
+
+
+
+
+	#	That all seemed to work
+	
+
 
 	
 
@@ -456,8 +511,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_frac_tot" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > ${f}
 		cat ctab_frac_tot_files.txt | while read file ; do
-			#fileid=$(echo "$file" | awk -F "/" '{print $2}')
-			#paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
 			fileid=$( basename $( dirname "$file" ) .unique_stats )
 			paste -d'\t' <(cat table_frac_tot) <(cat <(echo ${fileid}) <(sort $file | awk '{print $2}')) > table_frac_tot_temp
 			mv table_frac_tot_temp table_frac_tot
@@ -474,8 +527,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		cat <(echo "TranscriptID") <(find ${OUT} -name "*ctab_tpm" | head -1 | while read file ; do sort $file | awk '{print $1}' ; done;) > table_tpm
 		cat ctab_tpm_files.txt | while read file ; do
-			#fileid=$(echo "$file" | awk -F "/" '{print $2}')
-			#paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid/_stats/}) <(sort $file | awk '{print $2}')) > table_tpm_temp
 			fileid=$( basename $( dirname "$file" ) .unique_stats )
 			paste -d'\t' <(cat table_tpm) <(cat <(echo ${fileid}) <(sort $file | awk '{print $2}')) > table_tpm_temp
 			mv table_tpm_temp table_tpm
