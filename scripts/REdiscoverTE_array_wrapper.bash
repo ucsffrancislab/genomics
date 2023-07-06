@@ -99,8 +99,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "Running"
 
 
-	outbase=${OUT}/${base}
-	f=${outbase}.salmon.REdiscoverTE.k15
+	f=${OUT}/${base}.salmon.REdiscoverTE.k15
 	if [ -d $f ] ; then
 		#echo "Write-protected $f exists. Skipping."
 		echo "Directory $f exists. Skipping."
@@ -117,7 +116,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			fastas="--unmatedReads ${scratch_R1}"
 		fi
 
-		scratch_out=${TMPDIR}/$( basename ${outbase} )
+		scratch_out=${TMPDIR}/$( basename ${f} )
 
 		index=${SALMON}/REdiscoverTE.k15
 		cp -r ${index} ${TMPDIR}/
@@ -149,6 +148,15 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		fi
 
 	fi
+
+
+#	+ salmonstatus=0
+#	+ chmod a-w /scratch/gwendt/1475973/p323SF10750-v1_S9
+#	+ '[' 0 -ne 0 ']'
+#	Wed Jul  5 18:31:01 PDT 2023
+#	chmod: cannot access ‘/francislab/data1/working/20230628-Costello/20230706-REdiscoverTE/out/p323SF10750-v1_S9.salmon.REdiscoverTE.k15’: No such file or directory
+
+
 
 
 	date
