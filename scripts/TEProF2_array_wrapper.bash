@@ -280,6 +280,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+
+
+	#	Not sure if these annotated files are really needed.
+
+
+
 	#(1) <gtffile>_annotated_test_all
 	#(2) <gtffile>_annotated_filtered_test_all
 	#(3) <gtffile>_annotated_test*
