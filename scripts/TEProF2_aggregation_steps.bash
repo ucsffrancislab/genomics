@@ -291,29 +291,22 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-	#	I imagine that this will pretty much always be the same list
+	echo "Split candidate introns by chromosome for greping list"
 	f=${OUT}/candidate_introns.chrs.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		\rm -f ${f}
 		awk '{print $1}' ${OUT}/candidate_introns.txt | uniq > ${f}
-		#for chr in $( awk '{print $1}' ${OUT}/candidate_introns.txt | uniq ) ; do
 		for chr in $( cat ${f} ) ; do
 			awk -v chr=${chr} '($1==chr)' ${OUT}/candidate_introns.txt > ${OUT}/candidate_introns.${chr}.txt
 		done
-		#touch ${f}
 		chmod -w ${f}
 	fi
 
 	date
 
-
-
-
-
-
-	echo "ctab_i.txt 2"
+	echo "Create separate chromosome specific grep commands to minimize memory usage"
 	f=${OUT}/candidateCommands.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -321,9 +314,11 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		\rm -f ${f}
 		cat ctab_i.txt | while read ID ; do
 			fileid=$( basename $(dirname "$ID" ) .unique_stats )
-			#echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid}\n\") <(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
+			#echo "cat <(printf \"chr\tstrand\tstart\tend\t${fileid}\n\")
+			#		<(grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\"}{ print \$2,\$3,\$4,\$5,\$6 }') > ${ID}_cand"
 			# Trying to make this more efficient, use less files and less memory
-			#echo "grep -f candidate_introns.txt $ID | awk 'BEGIN{FS=OFS=\"\t\";print \"chr\tstrand\tstart\tend\t${fileid}\"}{ print \$2,\$3,\$4,\$5,\$6 }' > ${ID}_cand"
+			#echo "grep -f candidate_introns.txt $ID | 
+			#		awk 'BEGIN{FS=OFS=\"\t\";print \"chr\tstrand\tstart\tend\t${fileid}\"}{ print \$2,\$3,\$4,\$5,\$6 }' > ${ID}_cand"
 			#	grep for shorter list to minimize memory?
 			echo -e "chr\tstrand\tstart\tend\t${fileid}" > ${ID}_cand.0
 			for chr in $( cat ${OUT}/candidate_introns.chrs.txt ) ; do
@@ -351,6 +346,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+	echo "Run the candidateCommands via parallel"
 	f=${OUT}/candidateCommands.complete
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
@@ -365,37 +361,18 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-	#	merge
-
+	echo "Merge each of the chromosome results"
 	f=${OUT}/candidate_introns.merged
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		\rm -f ${f}
-		##	runs out of file handles and memory if run in full
-		#parallel -j $[threads/2] < ${OUT}/candidateCommands.txt
-
 		cat ctab_i.txt | while read ID ; do
 			cat ${ID}_cand.* > ${ID}_cand
 		done
-
 		touch ${f}
 		chmod -w ${f}
 	fi
-
-
-
-
-
-	#	That all seemed to work
-	
-
-
-	
-
-
-
-
 
 	date
 
@@ -463,6 +440,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+
+	#	Nothing below here really needs the 64/490GB resources.
+	#	Try to create sub jobs
+
 	date
 
 	echo "(7/8) Transcript Quantification 1a"
@@ -486,13 +467,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 	date
-
-
-
-
-#	this is a tricky loop. the fileid is supposed to be the sample
-# I made this a full directory and now they are all "francislab"
-
 
 	echo "(7/8) Transcript Quantification 2"
 	f=${OUT}/table_frac_tot
@@ -536,6 +510,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod -w ${f}
 	fi
 
+	#	I don't think that the -F option is needed in these grep calls
+
 	date
 
 	echo "(7/8) Transcript Quantification 7"
@@ -550,6 +526,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+	#	None of these really need the full 64/490GB resources.
+
+	dependency_id=${SLURM_JOB_ID}
+
 	echo "(8/8) Final Stats Calculations"
 	f=${OUT}/Step11_FINAL.RData
 	# -rw-r----- 1 gwendt francislab   3652873 May 18 11:20 All TE-derived Alternative Isoforms Statistics.csv
@@ -559,14 +539,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
-		${TEPROF2}/finalStatisticsOutput.R -a ${ARGUMENTS}
+		date=$( date "+%Y%m%d%H%M%S%N" )
+		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+			--job-name="finalStatisticsOutput" \
+			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--output=${OUT}/finalStatisticsOutput.${date}.out.log \
+			--parsable --dependency=${dependency_id} \
+			--chdir=${OUT} \
+			--wrap="${TEPROF2}/finalStatisticsOutput.R -a ${ARGUMENTS};chmod -w ${f}" )
 			#-e $TREATMENTLABEL
-		chmod -w ${f}
 	fi
-
-	date
-
-	dependency_id=${SLURM_JOB_ID}
 
 	echo ${TEPROF2}/translationPart1.R 
 	f=${OUT}/candidates.fa
