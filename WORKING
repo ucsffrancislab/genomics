@@ -1,21 +1,38 @@
 
-20230426-PanCancerAntigens/20230426-explore - merged viral proteins by virus, sum by virus, select only *_tumor
+
+NEW and old Costello Data (spatial data?)
+/francislab/data1/raw/20230628-Costello
+/costellolab/data2/jocostello/rna_all/CHJC3?/trimmed_fastqs/*_R1_*fq.gz
+
+20230628-Costello/20230629-cutadapt
+20230628-Costello/20230705-STAR
+20230628-Costello/20230706-REdiscoverTE
+20230628-Costello/ ... TEProF2
 
 
-20201006-GTEx/20230622-RMHMViral - reproduce paper's results
-produce additional masked reference
-what viruses did the authors use? all of them?
-RNA or DNA? Does it matter?
-
-use blast instead of bowtie2. Is that appropriate for paired end fastq?
+20200720-TCGA-GBMLGG-RNA_bam/20230628-STAR_hg38_XS
+20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2 - to compare to paper's results table "A tissue level atlas of the healthy human virome" 
 
 
-20211111-hg38-viral-homology/ - create blastn masked references
+20200720-TCGA-GBMLGG-RNA_bam/20230628-STAR-TEProF2-test - testing STAR, refs, GTF, XS - TEProF2
 
 
 20230426-PanCancerAntigens/20230426-explore - aligned viral proteins to TCONS proteins
+20230426-PanCancerAntigens/20230426-explore - merged viral proteins by virus, sum by virus, select only *_tumor "A tissue level atlas of the healthy human virome"
 
+
+20201006-GTEx/20230622-RMHMViral - reproduce paper's results "A tissue level atlas of the healthy human virome"
+produce additional masked reference
+what viruses did the authors use? all of them?
+RNA or DNA? Does it matter?
+use blast instead of bowtie2. Is that appropriate for paired end fastq?
+
+
+20211111-hg38-viral-homology/ - create blastn masked references "A tissue level atlas of the healthy human virome"
 20211111-hg38-viral-homology - use blast to mask instead of bowtie2?
+
+
+
 
 
 
