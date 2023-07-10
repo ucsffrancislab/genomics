@@ -99,11 +99,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "Running"
 
 
-	f=${OUT}/${base}.salmon.REdiscoverTE.k15
-	if [ -d $f ] ; then
-		#echo "Write-protected $f exists. Skipping."
-		echo "Directory $f exists. Skipping."
+	#f=${OUT}/${base}.salmon.REdiscoverTE.k15
+	#if [ -d $f ] ; then
+	#	echo "Directory $f exists. Skipping."
+
+	f=${OUT}/${base}.salmon.REdiscoverTE.k15/quant.sf.gz
+	if [ -f ${f} ] && [ ! -w ${f} ] ; then
+		echo "Write-protected $f exists. Skipping."
 	else
+
+		d=$( dirname ${f} )
 
 		cp ${R1} ${TMPDIR}/
 		scratch_R1=${TMPDIR}/$( basename ${R1} )
@@ -116,7 +121,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			fastas="--unmatedReads ${scratch_R1}"
 		fi
 
-		scratch_out=${TMPDIR}/$( basename ${f} )
+		#scratch_out=${TMPDIR}/$( basename ${f} )
+		scratch_out=${TMPDIR}/$( basename ${d} )
 
 		index=${SALMON}/REdiscoverTE.k15
 		cp -r ${index} ${TMPDIR}/
@@ -131,16 +137,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		date
 
 		#	GOTTA move an existing dir or we'll move this INTO it.
-		if [ -d ${f} ] ; then
-			date=$( date "+%Y%m%d%H%M%S" --date="$( stat --printf '%z' ${f} )" )
-			mv ${f} ${f}.${date}
+		if [ -d ${d} ] ; then
+			date=$( date "+%Y%m%d%H%M%S" --date="$( stat --printf '%z' ${d} )" )
+			mv ${d} ${d}.${date}
 		fi
 
 		chmod -R +w ${scratch_out}	#	so script can move and delete the contents (not crucial but stops error messages)
 		gzip ${scratch_out}/quant.sf
 
-		mv ${scratch_out} $( dirname ${f} )
-		chmod -R a-w ${f}
+		mv ${scratch_out} ${d}
+		chmod a-w ${f}
 
 		/bin/rm -rf ${scratch_R1}
 		if ${paired} ; then
