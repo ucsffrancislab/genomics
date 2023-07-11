@@ -106,129 +106,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	set -x
 
-	#export PATH="${PATH}:${HOME}/.local/RepeatMasker/"
-	##	ngs_te_mapper2 converts "+" to "plus"
-	#base=${base//+/plus}
 
 
 	#	QC: Using software such as FASTQC
 
-
 	#	Adapter Trimming
-
 
 	#	Alignment: We normally user and prefer STAR. Make sure that the -XS tag will be outputted since the splice-aware assembly software such as stringtie has the information it needs. HISAT2 can also be used, but HISAT uses 60 instead of 255 for uniquelly mapped reads which will interfere with code in future steps.
 	#	Note: Future steps require sorted and indexed bam files. Thus, outputting sorted BAM files will be beneficial.
 	#	Sorting and Indexing: The BAM files need to be sorted by position (samtools sort) and need to be indexed (samtools index)
 	#	Pretty sure that STAR will produce sorted bam with index
-
-#/francislab/data1/refs/STAR/hg38-golden-ncbiRefSeq-2.7.7a
-
-
-#	##		inbase=${outbase}
-#	outbase=${OUT}/${base}
-#	f=${outbase}.Aligned.bam
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		echo "Running STAR"
-#		set -x  #       print expanded command before executing it
-#
-#		trap "{ chmod -R +w $TMPDIR ; }" EXIT
-#
-#		#	STAR_scratch.bash
-#
-##		f="${outprefix}Aligned.sortedByCoord.out.${outtype,,}"
-#
-##	runMode                         alignReads
-##	
-##runThreadN                      1
-##    int: number of threads to run STAR
-##
-##genomeDir                   ./GenomeDir/
-##    string: path to the directory where genome files are stored (for --runMode alignReads) or will be generated (for --runMode generateGenome)
-##
-##readFilesType               Fastx
-##    string: format of input read files
-##                            Fastx       ... FASTA or FASTQ
-##                            SAM SE      ... SAM or BAM single-end reads; for BAM use --readFilesCommand samtools view
-##                            SAM PE      ... SAM or BAM paired-end reads; for BAM use --readFilesCommand samtools view
-##
-##readFilesIn                 Read1 Read2
-##    string(s): paths to files that contain input read1 (and, if needed,  read2)
-##
-##
-##
-##readFilesCommand             -
-##    string(s): command line to execute for each of the input file. This command should generate FASTA or FASTQ text and send it to stdout
-##               For example: zcat - to uncompress .gz files, bzcat - to uncompress .bz2 files, etc.
-##outFileNamePrefix               ./
-##    string: output files name prefix (including full or relative path). Can only be defined on the command line.
-##
-##
-##outStd                          Log
-##    string: which output will be directed to stdout (standard out)
-##                                Log                    ... log messages
-##                                SAM                    ... alignments in SAM format (which normally are output to Aligned.out.sam file), normal standard output will go into Log.std.out
-##                                BAM_Unsorted           ... alignments in BAM format, unsorted. Requires --outSAMtype BAM Unsorted
-##                                BAM_SortedByCoordinate ... alignments in BAM format, unsorted. Requires --outSAMtype BAM SortedByCoordinate
-##                                BAM_Quant              ... alignments to transcriptome in BAM format, unsorted. Requires --quantMode TranscriptomeSAM
-##
-##### Output: SAM and BAM
-##outSAMtype                      SAM
-##    strings: type of SAM/BAM output
-##                                1st word:
-##                                BAM  ... output BAM without sorting
-##                                SAM  ... output SAM without sorting
-##                                None ... no SAM/BAM output
-##                                2nd, 3rd:
-##                                Unsorted           ... standard unsorted
-##                                SortedByCoordinate ... sorted by coordinate. This option will allocate extra memory for sorting which can be specified by --limitBAMsortRAM.
-##
-##
-##outFilterScoreMin               0
-##    int: alignment will be output only if its score is higher than or equal to this value.
-##
-##
-##alignEndsType           Local
-##    string: type of read ends alignment
-##                        Local             ... standard local alignment with soft-clipping allowed
-##                        EndToEnd          ... force end-to-end read alignment, do not soft-clip
-##                        Extend5pOfRead1   ... fully extend only the 5p of the read1, all other ends: local alignment
-##                        Extend5pOfReads12 ... fully extend only the 5p of the both read1 and read2, all other ends: local alignment
-##
-##	
-##
-##outSAMstrandField               None
-##    string: Cufflinks-like strand field flag
-##                                None        ... not used
-##                                intronMotif ... strand derived from the intron motif. This option changes the output alignments: reads with inconsistent and/or non-canonical introns are filtered out.
-##
-##outSAMattributes                Standard
-##    string: a string of desired SAM attributes, in the order desired for the output SAM. Tags can be listed in any combination/order.
-##                                XS          ... alignment strand according to --outSAMstrandField.
-##
-#
-#
-#	#	ngs_te_mapper2 --thread ${threads} \
-#	#		--reads ${R1},${R2} \
-#	#		--library ${transposon_fasta} \
-#	#		--reference ${human_fasta} \
-#	#		--out ${TMPDIR}
-#
-#	#	ls -l ${TMPDIR}
-#
-#	#	mv ${TMPDIR}/$(basename $f) ${OUT}
-#	#	mv ${TMPDIR}/$(basename $f .ref.bed).nonref.bed ${OUT}
-#		chmod -w ${f}
-#	fi
-
-
-
-
-
-
-
 
 	#	Filtering: Due to problems with mapping to repetitive elements, we usually will filter to only include uniquelly mapped reads.
 
@@ -326,31 +213,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	done
 
 	date
-
-
-
-#		#(1) filter_combined_candidates.tsv: A file with every TE-gene transcript. This file is used for calculating read information in subsequent steps.
-#		#
-#		#(2) initial_candidate_list.tsv: A summary of filter_combined_candidates.tsv for each unique candidate. 
-#		#			Also lists the treatment and untreated files that the candidate is present in.
-#		#
-#		#(3) Step4.RData: Workspace file with data loaded from R session. Subsequent steps load this to save time.
-#
-#		f=${outbase}.unique.gtf_${s}_c
-#		if [ -f $f ] && [ ! -w $f ] ; then
-#			echo "Write-protected $f exists. Skipping."
-#		else
-#			echo "annotationtpmprocess.py filtered"
-#
-#			${TEPROF2}/aggregateProcessedAnnotation.R <options>
-#
-#			chmod -w ${f}
-#		fi
-
-
-
-	date
-
 
 else
 
