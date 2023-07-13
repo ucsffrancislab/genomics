@@ -252,3 +252,66 @@ done
 
 
 
+
+
+
+##	20230711
+
+
+Create a translation table to convert TCONS to Viral
+
+```
+awk 'BEGIN{FS=OFS=","}(NR>1){print $(NF-1),$NF}' /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.csv | sort | uniq > TCONS_species.e0.005.csv
+
+head -2 tpmexpressiontable.annotated.csv > tpmexpressiontable.annotated.sorted.csv
+tail -n +3 tpmexpressiontable.annotated.csv | sort >> tpmexpressiontable.annotated.sorted.csv
+
+for subtype in Immune-enriched Hypermitotic Merlin-intact ; do
+echo $subtype
+cat tpmexpressiontable.annotated.sorted.csv | datamash transpose -t, | grep -E "^transcriptId|^subfam|^locationTE|^gene|${subtype}" | datamash transpose -t, > tpmexpressiontable.annotated.${subtype}.csv
+done
+
+
+for subtype in .sorted .Immune-enriched .Hypermitotic .Merlin-intact ; do
+echo $subtype
+join -t, TCONS_species.e0.005.csv \
+  <( tail -n +3 tpmexpressiontable.annotated${subtype}.csv ) \
+  > tpmexpressiontable.annotated${subtype}.species.csv
+awk 'BEGIN{FS=OFS=","}{s=0;for(i=6;i<=NF;i++){if($i>0.01)s++};print $2,s}' \
+  tpmexpressiontable.annotated${subtype}.species.csv \
+  | sort > tpmexpressiontable.annotated${subtype}.species.sums.csv
+awk 'BEGIN{FS=OFS=","}{s[$1]+=$2}END{for(k in s){print k,s[k]}}' \
+  tpmexpressiontable.annotated${subtype}.species.sums.csv \
+  | sort > tpmexpressiontable.annotated${subtype}.species.sums.sums.csv
+done
+
+```
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}/TCGA33_guided"
+
+for f in tpmexpressiontable*species.csv tpmexpressiontable*species.sums.sums.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+##	20230712
+
+
+```
+for subtype in .sorted .Immune-enriched .Hypermitotic .Merlin-intact ; do
+echo $subtype
+awk 'BEGIN{FS=OFS=","}{ for(i=6;i<=NF;i++){s[$2][i]+=$i}}END{for(k in s){t=k;for(i=6;i<=NF;i++){t=t","s[k][i]};print t}}' tpmexpressiontable.annotated${subtype}.species.csv | sort | awk 'BEGIN{FS=OFS=","}{s=0;for(i=2;i<=NF;i++){if($i>0.01)s++};print $1,s}' > tpmexpressiontable.annotated${subtype}.species.agg.csv
+done
+
+```
+
+
