@@ -462,3 +462,18 @@ done
 
 
 
+##	20230711
+
+
+Create a translation table to convert TCONS to Viral
+
+```
+awk 'BEGIN{FS=OFS=","}(NR>1){print $(NF-1),$NF}' /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.csv | sort | uniq > TCONS_species.e0.005.csv
+
+
+```
+
+
+
+
+
