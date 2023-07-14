@@ -18,9 +18,42 @@ function usage(){
 	echo
 	echo $0 *fastq.gz
 	echo
+	echo $0 --threads 4 --extension _R1.fastq.gz
+	echo	--out /francislab/data1/working/20230628-Costello/20230629-cutadapt/out
+	echo	--trim-n --match-read-wildcards --times 7 
+	echo	--error-rate 0.1 --overlap 5 --minimum-length 15 --quality-cutoff 25
+	echo	-a "A{10}" -a "G{10}" -a "T{10}" -a "C{10}"
+	echo	-a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG
+	echo	-A "A{10}" -A "G{10}" -A "T{10}" -A "C{10}"
+	echo	-A AGATCGGAAGAGCGTCGTGTAGGGAAAGAG    -A GGAAGAGCGTCGTGTAGGGAAAGAG    -A TGTAGATCTCGGTGGTCGCCGTATCATT
+	echo	/francislab/data1/raw/20230628-Costello/fastq/*R1.fastq.gz
+	echo
 	exit
 }
 
+#
+#	The R1 index is mostly just in R1 and the R2 index is ONLY in R2.
+#
+#	zgrep -c ATCTCGTATGCCGTCTTCTGCTTG /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-00*R?.fastq.gz
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz:6712873
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz:117
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+2_R1.fastq.gz:6033234
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+2_R2.fastq.gz:67
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+1_R1.fastq.gz:2866230
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+1_R2.fastq.gz:682
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+2_R1.fastq.gz:2530981
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+2_R2.fastq.gz:353
+#	
+#	zgrep -c TGTAGATCTCGGTGGTCGCCGTATCATT /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-*R?.fastq.gz
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R1.fastq.gz:0
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+1_R2.fastq.gz:524036
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+2_R1.fastq.gz:0
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0047-01A-01R-1849-01+2_R2.fastq.gz:416211
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+1_R1.fastq.gz:0
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+1_R2.fastq.gz:324897
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+2_R1.fastq.gz:0
+#	/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/02-0055-01A-01R-1849-01+2_R2.fastq.gz:272519
+#	
 
 if [ $( basename ${0} ) == "slurm_script" ] ; then
 
