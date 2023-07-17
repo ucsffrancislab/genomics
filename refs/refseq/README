@@ -250,5 +250,7 @@ done < complete_genomes.txt
 
 rsync -avz --progress --include=README.txt --include="*faa.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/protozoa/ protozoa-20221001/
 
+rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/archaea/ archaea-20230714/
+
 
 
