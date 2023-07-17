@@ -368,9 +368,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#	${HVA}/virus_genome_for_second_blast \
 			#	Not sure if it'll work but trying nt here. Sadly enough reads aren't making it this far.
 			#	nt doesn't return any matches. Odd.
+			#	| blastn -db /francislab/data1/refs/blastn/nt \
+
+			#	Creating db_for_second_blast
 
 			zcat ${outbase}_${RR}.blast.viral.fa.gz \
-				| blastn -db /francislab/data1/refs/blastn/nt \
+				| blastn -db /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast \
 					-word_size 11 -outfmt 6 -num_threads ${threads} -evalue 0.01 | gzip > ${f}
 					#-out ${f} 
 	
