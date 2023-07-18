@@ -208,7 +208,7 @@ else
 
 		set -x  #       print expanded command before executing it
 
-		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%4 \
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%1 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).$( date "+%Y%m%d%H%M%S%N" )-%A_%a.out.log \

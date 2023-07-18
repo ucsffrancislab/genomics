@@ -256,7 +256,7 @@ else
 		set -x  #       print expanded command before executing it
 		#	strand_option=""
 		#	[ -n "${strand}" ] && strand_option="--strand ${strand}"
-		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%8 \
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%1 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
