@@ -385,7 +385,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	done
 
 	#outbase=${OUT}/${base}
-	f=${outbase}_count.txt
+	f=${outbase}.count.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -442,7 +442,7 @@ else
 
 		set -x  #       print expanded command before executing it
 		
-		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%8 \
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%1 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
