@@ -113,3 +113,118 @@ done
 
 ```
 
+
+##	20230716
+
+
+
+```
+for bam in out-preprocessed-e2e/*bam ; do
+echo $bam
+samtools view -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.proper_pair_aligned_sequence_counts.txt
+done
+
+
+python3 ~/.local/bin/merge_uniq-c.py --int --out merged_preproc_e2e_proper_pair.csv out-preprocessed-e2e/*.RMHM.bam.proper_pair_aligned_sequence_counts.txt
+
+join --header -t, accession_description.csv merged_preproc_e2e_proper_pair.csv > merged_preproc_e2e_proper_pair_with_description.csv
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_preproc_e2e_proper_pair_with_description*.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+
+
+
+
+##	20230717
+
+
+
+```
+for bam in out-preprocessed-e2e/*bam ; do
+echo $bam
+samtools view -q10 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q10.proper_pair_aligned_sequence_counts.txt
+samtools view -q20 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q20.proper_pair_aligned_sequence_counts.txt
+samtools view -q30 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q30.proper_pair_aligned_sequence_counts.txt
+samtools view -q40 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q40.proper_pair_aligned_sequence_counts.txt
+done
+
+
+
+
+for q in q10 q20 q30 q40 ; do
+python3 ~/.local/bin/merge_uniq-c.py --int --out merged_preproc_e2e_proper_pair_${q}.csv out-preprocessed-e2e/*.RMHM.bam.${q}.proper_pair_aligned_sequence_counts.txt
+join --header -t, accession_description.csv merged_preproc_e2e_proper_pair_${q}.csv > merged_preproc_e2e_proper_pair_${q}_with_description.csv
+done
+
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_preproc_e2e_proper_pair_q??_with_description*.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+Normalize by number of reads after trimming * 1 million
+
+```
+
+fastx_count_array_wrapper.bash /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/*_R1.fastq.gz
+
+
+for txt in out-preprocessed-e2e/*proper_pair_aligned_sequence_counts.txt ; do
+echo $txt
+f=${txt%.txt}.normalized.txt
+if [ -f ${f} ] && [ ! -w ${f} ] ; then
+echo "Write-protected ${f} exists. Skipping."
+else
+echo "Creating ${f}"
+srr=$( basename ${txt} .proper_pair_aligned_sequence_counts.txt )
+srr=${srr%.RMHM.bam*}
+rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
+if [ -n "${rc}" ] ; then
+echo "Have rc ${rc}"
+awk -v rc=${rc} '{print (($1*1000000)/(2*rc)),$2}' ${txt} > ${f}
+chmod -w ${f}
+fi
+fi
+done
+
+
+for q in . .q10. .q20. .q30. .q40. ; do
+echo $q
+python3 ~/.local/bin/merge_uniq-c.py --out merged_preproc_e2e_proper_pair${q}normalized.csv out-preprocessed-e2e/*.RMHM.bam${q}proper_pair_aligned_sequence_counts.normalized.txt
+join --header -t, accession_description.csv merged_preproc_e2e_proper_pair${q}normalized.csv > merged_preproc_e2e_proper_pair${q}normalized_with_description.csv
+done
+
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_preproc_e2e_proper_pair*normalized_with_description*.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
