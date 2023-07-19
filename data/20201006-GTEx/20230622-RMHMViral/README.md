@@ -228,3 +228,122 @@ done
 ```
 
 
+
+
+##	20230718
+
+
+
+Merge tables with specific body site for grouping
+
+
+```
+head -1 /francislab/data1/raw/20201006-GTEx/SraRunTable.txt | awk -F, '{for(i=1;i<=NF;i++){print i,$i}}'
+
+cat /francislab/data1/raw/20201006-GTEx/SraRunTable.txt | awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$11}' | sort > body_site.csv
+
+#join --header -t, body_site.csv <( sed 's/,/ /' merged_preproc_e2e_proper_pair${q}normalized_with_description.csv | datamash transpose -t , ) | datamash transpose -t , > merged_preproc_e2e_proper_pair${q}normalized_with_description_bodysite.csv
+
+for q in . .q10. .q20. .q30. .q40. ; do
+echo $q
+join --header -t, body_site.csv <( sed 's/,/ /' merged_preproc_e2e_proper_pair${q}normalized_with_description.csv | datamash transpose -t , ) > tmp
+head -1 tmp > tmp2
+tail -n +2 tmp | sort -t, -k2,2 -k1,1 >> tmp2
+cat tmp2 | datamash transpose -t , > merged_preproc_e2e_proper_pair${q}normalized_with_description_bodysite.csv
+\rm tmp tmp2
+done
+```
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_preproc_e2e_proper_pair*normalized_with_description_bodysite.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+##	20230719
+
+Aggregate merged_preproc_e2e_proper_pair${q}normalized_with_description_bodysite.csv creating matrix of 
+
+```
+           site 1     site 2    site 3     
+virus 1
+virus 2            median values
+virus 3
+
+```
+
+
+```
+for f in merged_preproc_e2e_proper_pair*normalized_with_description_bodysite.csv ; do
+echo $f
+tail -n +2 ${f} | datamash transpose -t, > tmp
+
+out=${f%.csv}_medians.csv
+
+column_count=$( head -1 tmp | awk -F, '{print NF}' )
+
+head -1 tmp > ${out}
+( echo -n "All," && cat tmp | datamash median --header-in -t, 2-${column_count} ) >> ${out}
+
+while read body_site ; do
+echo $body_site
+( echo -n "${body_site#Brain - }," && grep "^${body_site}," tmp | datamash median -t, 2-${column_count} ) >> ${out}
+done < <( tail -n +2 tmp | cut -d, -f1 | uniq )
+cat ${out} | datamash transpose -t, > ${out%.csv}.t.csv
+
+tail -n +2 ${f} | datamash transpose -t, > tmp
+
+out=${f%.csv}_sums.csv
+
+column_count=$( head -1 tmp | awk -F, '{print NF}' )
+
+head -1 tmp > ${out}
+( echo -n "All," && cat tmp | datamash sum --header-in -t, 2-${column_count} ) >> ${out}
+
+while read body_site ; do
+echo $body_site
+( echo -n "${body_site#Brain - }," && grep "^${body_site}," tmp | datamash sum -t, 2-${column_count} ) >> ${out}
+done < <( tail -n +2 tmp | cut -d, -f1 | uniq )
+cat ${out} | datamash transpose -t, > ${out%.csv}.t.csv
+
+tail -n +2 ${f} | datamash transpose -t, > tmp
+
+out=${f%.csv}_means.csv
+
+column_count=$( head -1 tmp | awk -F, '{print NF}' )
+
+head -1 tmp > ${out}
+( echo -n "All," && cat tmp | datamash mean --header-in -t, 2-${column_count} ) >> ${out}
+
+while read body_site ; do
+echo $body_site
+( echo -n "${body_site#Brain - }," && grep "^${body_site}," tmp | datamash mean -t, 2-${column_count} ) >> ${out}
+done < <( tail -n +2 tmp | cut -d, -f1 | uniq )
+cat ${out} | datamash transpose -t, > ${out%.csv}.t.csv
+done
+```
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_preproc_e2e_proper_pair*normalized_with_description_bodysite_{sum,mean,median}*.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
