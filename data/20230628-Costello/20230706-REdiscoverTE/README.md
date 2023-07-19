@@ -12,3 +12,22 @@ REdiscoverTE_array_wrapper.bash --paired \
 ```
 
 
+```
+
+REdiscoverTE_rollup.bash
+
+```
+
+
+
+
+
+Haven't run yet ...
+```
+
+REdiscoverTE_EdgeR_rmarkdown.bash
+
+```
+
+
+
