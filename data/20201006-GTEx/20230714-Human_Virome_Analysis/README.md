@@ -41,27 +41,42 @@ cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/SRR80861
 
 
 ```
+head -1 /francislab/data1/raw/20201006-GTEx/SraRunTable.txt | awk -F, '{for(i=1;i<=NF;i++){print i,$i}}'
+
+cat /francislab/data1/raw/20201006-GTEx/SraRunTable.txt | awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$11}' | sort > body_site.csv
+
+
+```
+
+
+
+Not certain how they arrived at they're counts. 
+
+```
 for f in out/*.count.txt ; do
 echo $f
 srr=$( basename ${f} .count.txt )
 rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
-awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/(2*rc))}' ${f} > ${f%.txt}.normalized.txt
+awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${f%.txt}.normalized.txt
 done
 
+#awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/(2*rc))}' ${f} > ${f%.txt}.normalized.txt
 ```
 
 ```
-python3 ./merge.py --out merged.tsv out/*.count.normalized.txt
+python3 ./merge.py --out merged.csv out/*.count.normalized.txt
 ```
 
 
 ```
-( ( head -1 merged.tsv ) && ( tail -n +2 merged.tsv | sort -k1,1 ) ) > merged.sorted.tsv
-( ( head -2 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM11_ESM.tsv | tail -n 1 | sed 's/Refseq ID/Refseq_ID/' ) && ( tail -n +3 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM11_ESM.tsv | sed 's/[",]//g' | sort -k3 ) ) | awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3}' > 12915_2020_785_MOESM11_ESM.sorted.tsv
+( ( head -1 merged.csv ) && ( tail -n +2 merged.csv | sort -t, -k1,1 ) ) > merged.sorted.csv
+( ( head -2 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM11_ESM.tsv | tail -n 1 | sed 's/Refseq ID/Refseq_ID/' | sed $'s/\t/,/g' ) && ( tail -n +3 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM11_ESM.tsv | sed 's/[,"]//g' | sed $'s/\t/,/g' | sort -t, -k3 ) ) | awk 'BEGIN{FS=OFS=","}{print $1,$2,$3}' > 12915_2020_785_MOESM11_ESM.sorted.csv
 
-join --header -1 3 -2 1 12915_2020_785_MOESM11_ESM.sorted.tsv merged.sorted.tsv | datamash transpose -t ' ' | tail -n +3 | sed 's/ /\t/g' > transposed.tsv
+join -t, --header -1 3 -2 1 12915_2020_785_MOESM11_ESM.sorted.csv merged.sorted.csv | datamash transpose -t, | tail -n +3 > transposed.csv
 
-join --header transposed.tsv <( tail -n +2 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM3_ESM.tsv | sed 's/ /_/g' ) | sed 's/ /,/g' > compared.csv
+join -t, --header transposed.csv <( tail -n +2 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM3_ESM.csv | sed 's/ /_/g' )  > compared.csv
+
+join -t, --header body_site.csv compared.csv > compared_with_body_site.csv
 ```
 
 
@@ -74,10 +89,16 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 PROJECT=$( basename ${PWD} )
 DATA=$( basename $( dirname ${PWD} ) ) 
 BOX="${BOX_BASE}/${DATA}/${PROJECT}"
-for f in compared.csv ; do
+for f in compared_with_body_site.csv ; do
 echo $f
 curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 
 ```
+
+
+
+
+
+
 
