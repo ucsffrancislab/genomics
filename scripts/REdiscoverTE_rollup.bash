@@ -18,9 +18,17 @@ if [ $# -gt 0 ] ; then
 
 
 	~/github/ucsffrancislab/REdiscoverTE/rollup.R $*
-	#${PWD}/rollup.R $*
 
-		
+	if [ $( ls -1d rollup/rollup.* | wc -l ) -gt 1 ] ; then
+		REdiscoverTE_rollup_merge.Rscript
+	else
+		ln -s $( basename $( ls -1d rollup/rollup.* ) ) rollup/rollup.merged
+	fi
+
+	for f in rollup/rollup.merged/* ; do
+		ln -s rollup.merged/$( basename ${f} ) rollup/$( basename ${f} )
+	done
+
 else
 
 	INDIR="${PWD}/out"
@@ -36,7 +44,8 @@ else
 
 	split --lines=1000 --numeric-suffixes --additional-suffix=.tsv ${OUTBASE}/REdiscoverTE.tsv ${OUTBASE}/REdiscoverTE.
 
-	for f in ${OUTBASE}/REdiscoverTE.??.tsv ; do
+	#for f in ${OUTBASE}/REdiscoverTE.??.tsv ; do	#	always 2 digits?
+	for f in ${OUTBASE}/REdiscoverTE.*.tsv ; do
 		echo $f
 		d=$( basename $f .tsv )
 		d=${d#*.}
