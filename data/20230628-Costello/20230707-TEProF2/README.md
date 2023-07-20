@@ -57,3 +57,38 @@ TEProF2_aggregation_steps.bash --threads 64 \
 ```
 
 
+
+
+
+Prepping to view final R data
+```R
+R
+
+load("out/Step13.RData")
+colnames(tpmexpressiontable)[1] = "ids"
+write.table(tpmexpressiontable,file='tpmexpressiontable.csv',sep=",",row.names=FALSE,quote=FALSE)
+```
+
+
+```
+chmod a-w tpmexpressiontable.csv
+```
+
+
+
+
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in tpmexpressiontable* ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
