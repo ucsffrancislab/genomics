@@ -73,6 +73,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	#if [ -n "${reference_merged_candidates_gtf}" ] ; then
 	if ! ${using_reference} ; then
+		echo "Not Reference Guided"
 
 		reference_merged_candidates_gtf="${OUT}/reference_merged_candidates.gtf"
 
@@ -212,6 +213,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			chmod -w ${f}
 		fi
 
+	else
+		echo "Using Reference Guided"
+		echo "Skipping to (6/8) Transcript Quantification"
 	fi
 
 	date
