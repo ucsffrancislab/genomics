@@ -20,5 +20,30 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=makeblastd
 ```
 
 
---wrap="module load blast && zcat /c4/home/gwendt/github/ucsffrancislab/Human_Virome_analysis/virus_genome_for_second_blast.fas.gz /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome.fa.gz /francislab/data1/refs/refseq/archaea-20230714/archaea.*.genomic.fna.gz /francislab/data1/refs/refseq/bacteria-20210916/bacteria.*.genomic.fna.gz | makeblastdb -input_type fasta -dbtype nucl -parse_seqids -out ${PWD}/virus_genome_for_second_blast -title virus_genome_for_second_blast"
 
+Make a bowtie2 reference using the same files
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bowtie2-build --output=${PWD}/bowtie2-build.$(date "+%Y%m%d%H%M%S").out --time=10000 --nodes=1 --ntasks=64 --mem=490G ${PWD}/bowtie2-build.bash
+
+```
+OUT OF MEMORY
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bowtie2-build --output=${PWD}/bowtie2-build.$(date "+%Y%m%d%H%M%S").out --time=10000 --nodes=1 --ntasks=64 --mem=1000G ${PWD}/bowtie2-build.bash
+
+```
+STILL WAITING ....
+
+
+
+
+Make a bwa reference using the same files
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bwa-index --output=${PWD}/bwa-index.$(date "+%Y%m%d%H%M%S").out --time=10000 --nodes=1 --ntasks=64 --mem=490G ${PWD}/bwa-index.bash
+
+```
