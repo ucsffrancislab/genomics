@@ -254,3 +254,20 @@ rsync -avz --progress --include=README.txt --include="*fna.gz" --exclude="*" rsy
 
 
 
+
+
+
+archaea
+bacteria
+complete
+fungi
+invertebrate
+mitochondrion
+plant
+plasmid
+plastid
+protozoa
+vertebrate_mammalian
+vertebrate_other
+viral
+
