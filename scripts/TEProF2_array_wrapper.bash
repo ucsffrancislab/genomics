@@ -184,6 +184,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
+		echo "(1/8) Annotate GTF Files"
 		echo "rmskhg38_annotate_gtf_update_test_tpm"
 
 		${TEPROF2}/rmskhg38_annotate_gtf_update_test_tpm.py ${infile} ${ARGUMENTS}
@@ -203,6 +204,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		if [ -f $f ] && [ ! -w $f ] ; then
 			echo "Write-protected $f exists. Skipping."
 		else
+			echo "(2/8) Annotate GTF Files"
 			echo "annotationtpmprocess.py filtered"
 
 			${TEPROF2}/annotationtpmprocess.py ${infile}_${s}
