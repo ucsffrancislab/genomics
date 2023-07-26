@@ -477,3 +477,21 @@ awk 'BEGIN{FS=OFS=","}(NR>1){print $(NF-1),$NF}' /francislab/data1/working/20230
 
 
 
+
+##	20230724
+
+
+
+Create select_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.S1.grouped.sorted.csv
+
+but for phages
+
+
+
+
+
+
+
+
+
+
