@@ -106,3 +106,225 @@ done
 ```
 
 
+
+
+
+##	20230724
+
+
+Annotate with LGG or GBM
+
+
+```
+cut -f1,2 /francislab/data1/refs/TCGA/TCGA.Glioma.metadata.tsv | sed -e 's/TCGA-//g' -e 's/\t/,/g' > subject_study.csv
+
+head -2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | tail -n 1 | awk 'BEGIN{FS=OFS=","}{print $1,$26,$38}' | tr -d "\r" > S1.csv
+tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort -t, -k1,1 | awk 'BEGIN{FS=OFS=","}{print $1,$26,$38}' | tr -d "\r" >> S1.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print;next}($1~/^..-....-01/){split($1,a,"-");$1=a[1]"-"a[2];print}' tpmexpressiontable.csv > tpmexpressiontable.subject.csv
+
+join -t, --header subject_study.csv tpmexpressiontable.subject.csv > tpmexpressiontable.subject.study.ALL.csv
+
+head -1 tpmexpressiontable.subject.study.ALL.csv > tpmexpressiontable.subject.study.GBM.csv
+head -1 tpmexpressiontable.subject.study.ALL.csv > tpmexpressiontable.subject.study.LGG.csv
+
+awk -F, '($2=="GBM")' tpmexpressiontable.subject.study.ALL.csv >> tpmexpressiontable.subject.study.GBM.csv
+awk -F, '($2=="LGG")' tpmexpressiontable.subject.study.ALL.csv >> tpmexpressiontable.subject.study.LGG.csv
+
+
+for s in ALL GBM LGG ; do
+f=tpmexpressiontable.subject.study.${s}.csv
+echo $f
+cat ${f} | datamash transpose -t, | awk -v s=${s} 'BEGIN{FS=OFS=","}(NR==1){print "TCONS",s;next}(NR>2){ for(i=2;i<=NF;i++){if($i>10)a[$1]++};print $1,a[$1] }' > ${f%.csv}.agg.csv
+done
+
+
+
+join --header -t, S1.csv tpmexpressiontable.subject.study.ALL.agg.csv > tmp
+join --header -t, tmp tpmexpressiontable.subject.study.GBM.agg.csv > tmp2
+join --header -t, tmp2 tpmexpressiontable.subject.study.LGG.agg.csv > tpmexpressiontable.subject.study.joined.csv
+\rm tmp tmp2
+
+```
+
+
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in tpmexpressiontable.subject.study.joined.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+Create a translation table to convert TCONS to Viral
+
+
+```
+awk 'BEGIN{FS=OFS=","}(NR>1){print $(NF-1),$NF}' /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.csv | sort | uniq > TCONS_species.e0.005.csv
+
+cat tpmexpressiontable.csv | datamash transpose -t, | head -1 > tpmexpressiontable.sorted.csv
+cat tpmexpressiontable.csv | datamash transpose -t, | tail -n +2 >> tpmexpressiontable.sorted.csv
+
+join -t, TCONS_species.e0.005.csv \
+  <( tail -n +2 tpmexpressiontable.sorted.csv ) \
+  > tpmexpressiontable.sorted.species.csv
+```
+
+```
+head tpmexpressiontable.sorted.species.csv | cut -c1-100
+TCONS_00000820,Human alphaherpesvirus 1,0,0,0,0,0,0,0.000531905731863191,0.000813138243711905,0,0,0,
+TCONS_00000820,Human alphaherpesvirus 2,0,0,0,0,0,0,0.000531905731863191,0.000813138243711905,0,0,0,
+TCONS_00000820,Human alphaherpesvirus 3,0,0,0,0,0,0,0.000531905731863191,0.000813138243711905,0,0,0,
+TCONS_00002594,Human gammaherpesvirus 4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+TCONS_00002595,Human gammaherpesvirus 4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+TCONS_00003184,Human alphaherpesvirus 1,0.704724144973338,0.936696584022382,0,2.00585812436771,0,0,0
+TCONS_00003184,Human alphaherpesvirus 2,0.704724144973338,0.936696584022382,0,2.00585812436771,0,0,0
+TCONS_00004313,Human gammaherpesvirus 8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+TCONS_00004428,Variola virus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TCONS_00004429,Variola virus,0.129904493580813,0.188582338908091,0,0,0,0,0,0,0,0,0,0,0.1147977428202
+
+```
+
+```
+
+awk 'BEGIN{FS=OFS=","}{ for(i=3;i<=NF;i++){s[$2][i]+=$i}}END{for(k in s){t=k;for(i=3;i<=NF;i++){t=t","s[k][i]};print t}}' tpmexpressiontable.sorted.species.csv | sort | awk 'BEGIN{FS=OFS=","}{s=0;for(i=2;i<=NF;i++){if($i>0.01)s++};print $1,s}' > tpmexpressiontable.sorted.species.agg.csv
+```
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in tpmexpressiontable.sorted.species.agg.csv; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+
+
+
+
+##	20230725
+
+
+They used `allCandidateStatistics.tsv` to call a subject for counting, not the RData.
+
+Here, we have multiple samples for a single subject so I'm going to merge.
+Average TPM and sum Intron Count.
+
+```
+head out/allCandidateStatistics.tsv 
+File	Transcript_Name	Transcript Expression (TPM)	Fraction of Total Gene Expression	Intron Read Count
+02-0047-01A-01R-1849-01+1	TCONS_00000050	0.584999815701071	1	0
+02-0047-01A-01R-1849-01+2	TCONS_00000050	0.787714079719568	1	0
+02-0055-01A-01R-1849-01+1	TCONS_00000050	6.14088165270914	0.846313476598139	0
+02-0055-01A-01R-1849-01+2	TCONS_00000050	8.53331347943616	0.867583298061072	0
+02-2483-01A-01R-1849-01+1	TCONS_00000050	0.647165119772972	0.0509629814790806	0
+02-2483-01A-01R-1849-01+2	TCONS_00000050	0.467683735232652	0.0527361940518989	0
+02-2485-01A-01R-1849-01+1	TCONS_00000050	0.0190372772404058	0.00752552517310175	0
+02-2485-01A-01R-1849-01+2	TCONS_00000050	0.0290970189897434	0.00832843044112294	0
+02-2486-01A-01R-1849-01+1	TCONS_00000050	0	0	0
+```
+
+
+Covert this sample tsv to a subject csv.
+
+```
+head -1 out/allCandidateStatistics.tsv | sed 's/\t/,/g' > subjectsStatistics.csv
+
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){c=1;next}{ split($1,a,"-");$1=a[1]"-"a[2];
+if(($1==subj)&&($2==tcons)){
+c+=1
+tpm+=$3
+irc+=$5
+}else{
+if(subj!=""){ print subj,tcons,tpm/c,$4,irc }
+c=1
+subj=$1
+tcons=$2
+tpm=$3
+irc=$5
+}
+}END{ print subj,tcons,tpm/c,$4,irc }' out/allCandidateStatistics.tsv | sort -t, -k1,2 >> subjectsStatistics.csv
+```
+
+
+```
+join -t, --header subject_study.csv subjectsStatistics.csv > subjectsStatistics.study.csv
+
+head -1 subjectsStatistics.study.csv > subjectsStatistics.study.ALL.csv
+tail -n +2 subjectsStatistics.study.csv | sort -t, -k3,3 -k1,1 >> subjectsStatistics.study.ALL.csv
+
+head -1 subjectsStatistics.study.ALL.csv > subjectsStatistics.study.GBM.csv
+head -1 subjectsStatistics.study.ALL.csv > subjectsStatistics.study.LGG.csv
+
+awk -F, '($2=="GBM")' subjectsStatistics.study.ALL.csv >> subjectsStatistics.study.GBM.csv
+awk -F, '($2=="LGG")' subjectsStatistics.study.ALL.csv >> subjectsStatistics.study.LGG.csv
+```
+
+
+
+```
+for s in ALL GBM LGG ; do
+echo $s
+awk -v s=${s} 'BEGIN{FS=OFS=","}(NR==1){print "Transcript_Name",s;next}{
+if($3==tcons){
+if(($4>1)&&($6>1)){c++}
+}else{
+if(tcons!=""){print tcons,c};c=0;tcons=$3
+}
+}END{print tcons,c}' subjectsStatistics.study.${s}.csv > subjectsStatistics.study.${s}.agg.csv
+done
+
+join --header -t, S1.csv subjectsStatistics.study.ALL.agg.csv > tmp
+join --header -t, tmp subjectsStatistics.study.GBM.agg.csv > tmp2
+join --header -t, tmp2 subjectsStatistics.study.LGG.agg.csv > subjectsStatistics.study.agg.joined.csv
+\rm tmp tmp2
+```
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in subjectsStatistics.study.agg.joined.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
