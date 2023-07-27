@@ -475,10 +475,22 @@ awk 'BEGIN{FS=OFS=","}(NR>1){print $(NF-1),$NF}' /francislab/data1/working/20230
 
 
 
+##	20230726
+
+
+New direction. S2 transcripts and select viruses
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="blast" \
+--time=20160 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/blast.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/20230726.bash
+```
 
 
 
-##	20230724
+
+
+##	SOON
 
 
 
