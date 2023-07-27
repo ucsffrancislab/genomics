@@ -23,7 +23,7 @@ grep -f S2_TranscriptID.txt 41588_2023_1349_MOESM3_ESM/S10.csv | awk 'BEGIN{FS="
 grep -f S2_TranscriptID.txt 41588_2023_1349_MOESM3_ESM/S10.csv | awk 'BEGIN{FS=",";OFS="_"}($13!="None"){print ">"$1,$2,$7,$9,$10;print $13}'  | sed 's/ /_/' > S10_S2_ProteinSequences.fa
 
 
-makeblastdb -in S10_S2_ProteinSequences.fa -input_type fasta -dbtype prot -title S10_S2_ProteinSequences -parse_seqids
+makeblastdb -in S10_S2_ProteinSequences.fa -input_type fasta -dbtype prot -out S10_S2_ProteinSequences -title S10_S2_ProteinSequences -parse_seqids
 
 
 
