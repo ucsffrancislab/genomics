@@ -258,10 +258,9 @@ tpm=$3
 irc=$5
 }
 }END{ print subj,tcons,tpm/c,$4,irc }' out/allCandidateStatistics.tsv | sort -t, -k1,2 >> subjectsStatistics.csv
-```
 
 
-```
+
 join -t, --header subject_study.csv subjectsStatistics.csv > subjectsStatistics.study.csv
 
 head -1 subjectsStatistics.study.csv > subjectsStatistics.study.ALL.csv
@@ -272,16 +271,14 @@ head -1 subjectsStatistics.study.ALL.csv > subjectsStatistics.study.LGG.csv
 
 awk -F, '($2=="GBM")' subjectsStatistics.study.ALL.csv >> subjectsStatistics.study.GBM.csv
 awk -F, '($2=="LGG")' subjectsStatistics.study.ALL.csv >> subjectsStatistics.study.LGG.csv
-```
 
 
 
-```
 for s in ALL GBM LGG ; do
 echo $s
 awk -v s=${s} 'BEGIN{FS=OFS=","}(NR==1){print "Transcript_Name",s;next}{
 if($3==tcons){
-if(($4>1)&&($6>1)){c++}
+if(($4>=1)&&($6>=1)){c++}
 }else{
 if(tcons!=""){print tcons,c};c=0;tcons=$3
 }
@@ -309,20 +306,132 @@ done
 
 
 
+##	20230726
+
+
+Create matrix of 
+
+
+```
+head subjectsStatistics.csv
+File,Transcript_Name,Transcript Expression (TPM),Fraction of Total Gene Expression,Intron Read Count
+02-0047,TCONS_00000050,0.686357,0.846313476598139,0
+02-0047,TCONS_00000056,0,0.123963095389445,0
+02-0047,TCONS_00000058,0,0.00483105643202961,0
+02-0047,TCONS_00000059,0,0,0
+02-0047,TCONS_00000073,0.0295707,1,0
+02-0047,TCONS_00000078,0.788036,0.253018003310857,4
+02-0047,TCONS_00000080,0.661171,0.546399368004186,4
+02-0047,TCONS_00000090,0,0,0
+02-0047,TCONS_00000091,0,0,0
+
+
+head /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.005.trimandsort.species.TCONS.csv
+Transcript ID,Species
+TCONS_00000820,Human alphaherpesvirus 1
+TCONS_00000820,Human alphaherpesvirus 2
+TCONS_00000820,Human alphaherpesvirus 3
+TCONS_00002594,Human gammaherpesvirus 4
+TCONS_00002595,Human gammaherpesvirus 4
+TCONS_00003184,Human alphaherpesvirus 1
+TCONS_00003184,Human alphaherpesvirus 2
+TCONS_00004313,Human gammaherpesvirus 8
+TCONS_00004428,Variola virus
+```
+
+```
+tail -n +2 /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv | cut -d, -f1 | uniq > viral_TCONS.0.05.txt
+```
+
+
+```
+( head -1 subjectsStatistics.csv && tail -n +2 subjectsStatistics.csv | grep -f viral_TCONS.0.05.txt ) | head
+File,Transcript_Name,Transcript Expression (TPM),Fraction of Total Gene Expression,Intron Read Count
+02-0047,TCONS_00000463,0,0,0
+02-0047,TCONS_00000820,0,0,0
+02-0047,TCONS_00001232,0,0.0922518735873746,0
+02-0047,TCONS_00001235,0.0301408,0,0
+02-0047,TCONS_00001290,0.0118123,0,0
+02-0047,TCONS_00002594,0,0,0
+02-0047,TCONS_00002595,0,0,0
+02-0047,TCONS_00003184,0.82071,0,0
+02-0047,TCONS_00004143,0,0.521057050988852,0
+```
 
 
 
 
+```
+( head -1 subjectsStatistics.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' && \
+  tail -n +2 subjectsStatistics.csv \
+  | grep -f viral_TCONS.0.05.txt \
+  | awk 'BEGIN{FS=OFS=","}{if(($3>=1)&&($5>=1)){print $2,$1}}' \
+  | sort -t, -k1,2 \
+) > subjectsStatistics.presence.csv
+
+cat subjectsStatistics.presence.csv | cut -d, -f1 | uniq -c | awk 'BEGIN{OFS=","}{print $2,$1}' > subjectsStatistics.presence.counts.csv
+
+
+join --header -t, /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv subjectsStatistics.presence.counts.csv > subjectsStatistics.presence.species.counts.csv
+
+```
 
 
 
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in subjectsStatistics.presence.species.counts.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
 
 
 
+##	20230727
 
 
 
+```
+cut -f1,2 /francislab/data1/refs/TCGA/TCGA.Glioma.metadata.tsv | sed -e 's/TCGA-//g' -e 's/\t/,/g' > subject_study.csv
 
+tail -n +2 /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv | cut -d, -f1 | uniq > viral_TCONS.0.05.txt
+
+( head -1 subjectsStatistics.csv | awk 'BEGIN{FS=OFS=","}{print $1,$2}' && \
+  tail -n +2 subjectsStatistics.csv \
+  | grep -f viral_TCONS.0.05.txt \
+  | awk 'BEGIN{FS=OFS=","}{if(($3>=1)&&($5>=1)){print $1,$2}}' \
+) > subjectsStatistics.presence.csv
+
+join --header -t, subject_study.csv subjectsStatistics.presence.csv > subjectsStatistics.presence.ALL.csv
+
+for s in GBM LGG ; do
+a=subjectsStatistics.presence.ALL.csv
+( head -1 ${a} && tail -n +2 ${a} | grep ${s} ) > subjectsStatistics.presence.${s}.csv
+done
+
+for s in ALL GBM LGG ; do
+a=subjectsStatistics.presence.${s}.csv
+( head -1 ${a} | awk -v s=${s} 'BEGIN{FS=OFS=","}{print $3,s}' && tail -n +2 ${a} | cut -d, -f3 | sort | uniq -c | awk 'BEGIN{OFS=","}{print $2,$1}' ) > subjectsStatistics.presence.${s}.counts.csv
+join --header -t, /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv subjectsStatistics.presence.${s}.counts.csv > subjectsStatistics.presence.${s}.species.counts.csv
+done
+```
+
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in subjectsStatistics.presence.???.species.counts.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
 
 
 
