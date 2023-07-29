@@ -66,3 +66,19 @@ chmod -w reference_merged_candidates.gff3_annotated_filtered_test_all
 ```
 
 
+
+
+
+##	20230727
+
+
+```
+wget https://wangftp.wustl.edu/~nshah/ucsf/TCGA33Download/Expression%20of%20Transcripts%20Across%20Cell%20Line%20Samples-%202297.csv
+
+wget https://wangftp.wustl.edu/~nshah/ucsf/TCGA33Download/Expression%20of%20Transcripts%20Across%20TCGA%20Samples-%202297.csv
+
+wget https://wangftp.wustl.edu/~nshah/rnapipeline_public_link/rnapipelinerefhg38.tar.gz
+```
+
+
+
