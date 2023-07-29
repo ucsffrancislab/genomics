@@ -490,20 +490,45 @@ ${PWD}/20230726.bash
 
 
 
-##	SOON
-
+##	20230727
 
 
 Create select_protein_accessions_IN_S10_S1Brain_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.S1.grouped.sorted.csv
 
 but for phages
 
+From the latest refseq...
+```
+zcat viral.1.1.genomic.fna.gz | grep "^>" | grep -c phage 
+6128
+
+zcat viral.1.protein.faa.gz | grep "^>" | grep -c phage 
+542683
+```
 
 
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="blast" \
+--time=20160 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/blast.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/20230727-phages.bash
+```
 
 
+The 0.05's failed as the selected list of accessions was too long for sqlite
+```
+/var/spool/slurm/d/job1494873/slurm_script: line 65: /usr/bin/sqlite3: Argument list too long
+```
 
 
-
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in all_phage*0.005.trimandsort.species.TCONS.S1.grouped.sorted.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
 
 
