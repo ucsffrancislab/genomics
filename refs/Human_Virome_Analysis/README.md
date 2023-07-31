@@ -42,8 +42,11 @@ STILL WAITING ....
 
 Make a bwa reference using the same files
 
+64/490/10000 ran out of time
+16/120/20160 ran out of memory
+
+
 ```
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bwa-index --output=${PWD}/bwa-index.$(date "+%Y%m%d%H%M%S").out --time=10000 --nodes=1 --ntasks=64 --mem=490G ${PWD}/bwa-index.bash
-
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bwa-index --output=${PWD}/bwa-index.$(date "+%Y%m%d%H%M%S").out --time=20160 --nodes=1 --ntasks=32 --mem=240G ${PWD}/bwa-index.bash
 ```
