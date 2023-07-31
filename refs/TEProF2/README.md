@@ -82,3 +82,44 @@ wget https://wangftp.wustl.edu/~nshah/rnapipeline_public_link/rnapipelinerefhg38
 
 
 
+
+
+
+##	20230731
+
+Rename count columns and merge
+
+```
+20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/subjectsStatistics.presence.???.counts.csv
+20200909-TARGET-ALL-P2-RNA_bam/20230710-TEProF2/subjectsStatistics.presence.ALL.counts.csv
+20220804-RaleighLab-RNASeq/20230512-TEProF2/subjectsStatistics.presence.ALL.counts.csv
+20230628-Costello/20230707-TEProF2/subjectsStatistics.presence.ALL.counts.csv
+```
+
+```
+ll {20200720-TCGA-GBMLGG-RNA_bam,20200909-TARGET-ALL-P2-RNA_bam,20220804-RaleighLab-RNASeq,20230628-Costello}/*-TEProF2/subjectsStatistics.presence.???.counts.csv
+```
+
+
+```
+python3 ./merge.py --int -o merged.subjectsStatistics.presence.counts.csv subjectsStatistics.presence.* 
+
+join --header -t, /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv merged.subjectsStatistics.presence.counts.csv > merged.subjectsStatistics.presence.species.counts.csv
+
+```
+
+
+```
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged.subjectsStatistics.presence.species.counts.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+```
+
+
+
+
