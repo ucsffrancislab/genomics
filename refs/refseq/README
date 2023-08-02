@@ -271,3 +271,10 @@ vertebrate_mammalian
 vertebrate_other
 viral
 
+
+
+
+rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral-20230801/
+
+
+
