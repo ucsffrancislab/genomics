@@ -46,6 +46,9 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bwa-ind
 
 
 
+Pseudo pipeline
+
+```
 
 STAR
 --runMode genomeGenerate
@@ -115,8 +118,17 @@ STAR
 --outSAMheaderHD @HD VN:1.4
 --outSAMattrRGline <formatted RG line provided by wrapper>
 
+```
 
 
+##	20230801
 
 
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2-build" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2-build-hg38-viral.log --export=None \
+ --wrap="module load bowtie2 && bowtie2-build --threads 64 \
+  ${PWD}/GRCh38.primary_assembly.genome.fa,/francislab/data1/refs/refseq/viral-20230801/viral.1.1.genomic.fna.gz \
+  ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801"
+```
 
