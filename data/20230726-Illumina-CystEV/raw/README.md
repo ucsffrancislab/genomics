@@ -2,6 +2,21 @@
 #	20230726-Illumina-CystEV
 
 
+Numbers exported these and they still have ...
+```
+ASCII text, with CRLF line terminators
+```
+
+Can do with 
+```
+dos2unix /francislab/data1/raw/20230726-Illumina-CystEV/cyst_flu*
+```
+or
+```
+tr -d '\r'
+```
+
+
 ```
 mkdir fastq
 for f in *_071323_L1_ds*/*.fastq.gz ; do
