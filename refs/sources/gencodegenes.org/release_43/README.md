@@ -132,3 +132,19 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2
   ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801"
 ```
 
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgenerate" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/STARgenerate.human-virallog --export=None \
+ --wrap="module load star/2.7.7a && STAR --runThreadN 64 --runMode genomeGenerate \
+  --genomeFastaFiles ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/refs/refseq/viral-20230801/viral.1.1.genomic.fna \
+  --sjdbGTFfile ${PWD}/gencode.v43.primary_assembly.annotation.gtf \
+  --genomeDir ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801"
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bwa-index" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bwa-index-humanviral.log --export=None \
+ --wrap="module load bwa && cat ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/refs/refseq/viral-20230801/viral.1.1.genomic.fna | bwa index -p ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801 -"
+```
+
