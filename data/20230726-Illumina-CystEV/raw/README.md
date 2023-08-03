@@ -32,7 +32,7 @@ done
 
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR==1 || $6 ~/Kirkwood Cyst Study_cyst/){print}' cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv > cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv
+awk 'BEGIN{FS=OFS=","}(NR==1){print;next}($6 ~/Kirkwood Cyst Study_cyst/){if(system("test -f fastq/"$1"_R1.fastq.gz")==0){print}}' cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv > cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv
 ```
 
 
