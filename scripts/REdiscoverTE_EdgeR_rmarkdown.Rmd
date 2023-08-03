@@ -112,6 +112,9 @@ library('gtable') # New 20220712
 library('RColorBrewer')
 library('biomaRt')
 library('dplyr')
+#library('DESeq2')	#	needed for plotPCA?
+#library('BiocGenerics')	#	needed for plotPCA?
+library('ggfortify')	#	new for new plotPCA style?
 options(max.print=1000000)
 ```
 
@@ -556,7 +559,10 @@ legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.int
 
 
 ```{r}
-plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black", labels=RE_disc$samples$sample)
+#plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black", labels=RE_disc$samples$sample)
+#	"labels" is not a graphical parameter
+
+plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
 ```
 
 
@@ -582,7 +588,10 @@ legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.int
 
 
 ```{r}
-plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p, labels=RE_disc$samples$sample)
+#plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p, labels=RE_disc$samples$sample)
+#	"labels" is not a graphical parameter
+
+plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p)
 ```
 
 
@@ -601,7 +610,16 @@ normcounts = 1e6*cpm(RE_disc, normalized.lib.sizes=T)
 PCA
 ```{r}
 ## Perform PCA analysis and make plot
-plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
+#plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
+
+pca_res <- prcomp(normcounts, scale. = TRUE)
+#plot(pca_res, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
+#	"labels" is not a graphical parameter
+#plot(pca_res$x, bg=color_p, pch=shape_p, col = "black")
+
+autoplot(pca_res, data = normcounts, labels= FALSE )
+
+
 ```
 
 
@@ -613,7 +631,14 @@ legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.int
 
 ```{r}
 ## Perform PCA analysis and make plot
-plotPCA(normcounts, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
+#plotPCA(normcounts, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
+
+pca_res <- prcomp(normcounts, scale. = TRUE)
+#plot(pca_res, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
+#	"labels" is not a graphical parameter
+#plot(pca_res, bg=color_p, pch=shape_p, col = "black")
+
+autoplot(pca_res, data = normcounts, labels= TRUE )
 ```
 
 
