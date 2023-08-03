@@ -25,7 +25,7 @@ REdiscoverTE_rollup.bash
 Haven't run yet ...
 ```
 
-REdiscoverTE_EdgeR_rmarkdown.bash
+./REdiscoverTE_EdgeR_rmarkdown.bash
 
 ```
 
