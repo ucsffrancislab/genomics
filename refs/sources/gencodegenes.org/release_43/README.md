@@ -148,3 +148,32 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bwa-ind
  --wrap="module load bwa && cat ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/refs/refseq/viral-20230801/viral.1.1.genomic.fna | bwa index -p ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801 -"
 ```
 
+keeps failing
+
+```
+[BWTIncConstructFromPacked] 780 iterations done. 7264665570 characters processed.
+[BWTIncConstructFromPacked] 790 iterations done. 7288393506 characters processed.
+[bwt_gen] Finished constructing BWT in 798 iterations.
+[bwa_index] 6608.50 seconds elapse.
+[bwa_index] Update BWT... 49.56 sec
+[bwa_index] Pack forward-only FASTA... [gzread] Bad file descriptor
+```
+
+
+```
+cat ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/refs/refseq/viral-20230801/viral.1.1.genomic.fna > GRCh38.primary_assembly.genome.plus.viral-20230801.fa
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bwa-index" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bwa-index-humanviral.log --export=None \
+ --wrap="module load bwa && bwa index -p ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801 ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20230801.fa"
+
+```
+
+Seems to be working. Not sure why piping fails, but that's that.
+
+
+
+
