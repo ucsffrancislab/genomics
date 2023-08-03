@@ -1,8 +1,8 @@
 
 ---
 title: REdiscoverTE EdgeR Template
-author: Geno
-date: 20221022
+author: Geno/Jake
+date: 20230803
 output: 
   html_document:
     toc: true # table of content true
@@ -494,7 +494,7 @@ summary(RE_disc$samples$group)
 
 #apply(x$counts, 2, sum)
 dim(RE_disc)
-RE_disc <- calcNormFactors(RE_disc, method = "TMM") # WAS RLE if this fails
+RE_disc <- calcNormFactors(RE_disc, method = "RLE") # WAS RLE if this fails
 
 keep <- rowSums(cpm(RE_disc)>50) >= 2
 RE_disc <- RE_disc[keep,]
@@ -505,7 +505,7 @@ RE_disc$samples$lib.size <- colSums(RE_disc$counts)
 
 ```{r}
 # Normalize the data
-RE_disc <- calcNormFactors(RE_disc, method = "TMM") # WAS RLE if this fails
+RE_disc <- calcNormFactors(RE_disc, method = "RLE") # WAS RLE if this fails
 ```
 
 
@@ -517,7 +517,7 @@ n_groups = length(unique(RE_disc$samples$group))
 
 # Get the proper group colors 
 u_groups = as.character(unique(RE_disc$samples$group))
-col_groups= brewer.pal(n = length(u_groups), name = "Paired")
+col_groups= brewer.pal(n = length(u_groups), name = "Set1")
 possible_shapes= c(21,22,23,24,25)
 shape_groups = c()
 for(i in c(1:length(u_groups))){
@@ -532,144 +532,55 @@ for(i in c(1:length(RE_disc$samples$group))){
 }
 ```
 
-##	Plots
+##	Exploratory Plots {.tabset .tabset-fade .tabset-pills}
 
-BCV
+### PCA
 
-```{r}
-plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
-```
+```{r PCA, echo = FALSE, fig.height=6}
 
-
-```{r fig1, echo = FALSE}
-plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
-legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-```
-
-
-```{r}
-plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
-```
-
-
-```{r fig2, echo = FALSE}
-plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
-legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-```
-
-
-```{r}
-#plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black", labels=RE_disc$samples$sample)
-#	"labels" is not a graphical parameter
-
-plotMDS(RE_disc, method="bcv", pch=shape_p, bg= color_p, col="black")
-```
-
-
-```{r fig3, echo = FALSE}
-plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
-legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-```
-
-
-logFC
-```{r}
-# From the R documentiation: 
-# The default method (method="logFC") is to convert the counts to log-counts-per-million using cpm and to pass these to the limma plotMDS function.
-# This method calculates distances between samples based on log2 fold changes. 
-plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p)
-```
-
-
-```{r, echo = FALSE}
-plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
-legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-```
-
-
-```{r}
-#plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p, labels=RE_disc$samples$sample)
-#	"labels" is not a graphical parameter
-
-plotMDS(RE_disc, method="logFC", bg=color_p, col = "black",  pch=shape_p)
-```
-
-
-```{r, echo = FALSE}
-plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
-legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
-```
-
-
-```{r}
-#Normalization for PCA and t-SNE, not exactly the same 
-normcounts = 1e6*cpm(RE_disc, normalized.lib.sizes=T)
-```
-
-
-PCA
-```{r}
 ## Perform PCA analysis and make plot
-#plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
-
-pca_res <- prcomp(normcounts, scale. = TRUE)
-#plot(pca_res, bg=color_p, labels= FALSE , pch=shape_p, col = "black")
-#	"labels" is not a graphical parameter
-#plot(pca_res$x, bg=color_p, pch=shape_p, col = "black")
-
-autoplot(pca_res, data = normcounts, labels= FALSE )
-
-
-```
-
-
-```{r, echo = FALSE}
+plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black",)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
+
+
+
+plotPCA(normcounts, bg=color_p, labels= FALSE , pch=shape_p, col = "black", k=3)
+
 ```
 
-
-```{r}
-## Perform PCA analysis and make plot
-#plotPCA(normcounts, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
-
-pca_res <- prcomp(normcounts, scale. = TRUE)
-#plot(pca_res, bg=color_p, labels= TRUE , pch=shape_p, col = "black")
-#	"labels" is not a graphical parameter
-#plot(pca_res, bg=color_p, pch=shape_p, col = "black")
-
-autoplot(pca_res, data = normcounts, labels= TRUE )
-```
-
-
-```{r, echo = FALSE}
+### MDS 
+"Dimension reduction via MDS is achieved by taking the original set of samples and calculating a dissimilarity (distance) measure for each pairwise comparison of samples. The samples are then usually represented graphically in two dimensions such that the distance between points on the plot approximates their multivariate dissimilarity as closely as possible."
+```{r MDS, echo = FALSE}
+a=plotMDS(RE_disc, col = "black", pch = shape_p, bg= color_p)
 plot(NULL ,xaxt='n',yaxt='n',bty='n',ylab='',xlab='', xlim=0:1, ylim=0:1)
 legend("top", u_groups,  pch=shape_groups, col= "black", pt.bg=col_groups, y.intersp=1.25)
+
 ```
 
 
-```{r}
+
+# Differential Expression Analysis {.tabset .tabset-fade .tabset-pills}
+
+
+## Set up 
+```{r DE setup, echo = FALSE, warning=FALSE}
 par(mfrow=c(1,1))
 
 # Dispersion analysis 
 d1 <- estimateCommonDisp(RE_disc, verbose=T)
 d1 <- estimateTagwiseDisp(d1)
 plotBCV(d1)
-```
 
-
-```{r}
 # Design Matrix -----------------------------------------------------------------------
 if(Cov_check ==TRUE){
-	design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group",covs)]  )
+design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group",covs)]  )
 }else{
-	design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group")]  )
+  design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group")]  )
+  
 }
-head(design.mat)
-```
+#head(design.mat)
 
-
-```{r}
 #colnames(design.mat) <- levels(RE_disc$samples$group)
 d2 <- estimateGLMCommonDisp(RE_disc,design.mat)
 d2 <- estimateGLMTrendedDisp(d2,design.mat, method="auto")
@@ -677,10 +588,7 @@ d2 <- estimateGLMTrendedDisp(d2,design.mat, method="auto")
 # The default is "auto" which chooses "bin.spline" when > 200 tags and "power" otherwise.
 d2 <- estimateGLMTagwiseDisp(d2,design.mat)
 plotBCV(d2)
-```
 
-
-```{r}
 fit <- glmFit(d2, design.mat)
 
 # make some contrast patterns
@@ -690,89 +598,144 @@ contrasts = mat.or.vec(n_contrasts, ncol(design.mat))
 combos = t(combn(length(col_groups), 2))
 colnames(contrasts)= colnames(design.mat)
 for(nc in c(1:n_contrasts)){
-	contrasts[nc,combos[nc,1]] =1
-	contrasts[nc,combos[nc,2]] =-1
+  contrasts[nc,combos[nc,1]] =1
+  contrasts[nc,combos[nc,2]] =-1
+  
+  
 }
 
+
+```
+
+## Volcano Plots
+
+```{r volcano plotter, echo = FALSE, warning=FALSE}
+# make the volcano plot function here 
+Volcano_plot = function(glmt, label, alpha_thresh, logfc){
+glmt = data.frame(glmt$table)
+glmt$FDR=as.numeric(glmt$FDR)
+glmt$diffexpressed = "No"
+# if log2Foldchange > 0.6 and pvalue < 0.05, set as "UP" 
+glmt$diffexpressed[glmt$logFC > logfc & glmt$FDR < alpha_thresh] <- "Up"
+# if log2Foldchange < -0.6 and pvalue < 0.05, set as "DOWN"
+glmt$diffexpressed[glmt$logFC < -logfc & glmt$FDR < alpha_thresh] <- "Down"
+
+# Create a new column "delabel" to glmt, that will contain the name of genes differentially expressed (NA in case they are not)
+glmt$delabel <- NA
+glmt$delabel[glmt$diffexpressed != "No"] <- row.names(glmt[glmt$diffexpressed != "No",]) # CAREFUL HERE repname or rep family!!!!!
+
+
+# Re-plot but this time color the points with "diffexpressed"
+p <- ggplot(data=glmt, aes(x=logFC, y=-log10(PValue), col=diffexpressed, label=delabel)) + geom_point() + theme_minimal()+ geom_text_repel() + theme(title =element_text(size=8, face='bold'))
+
+# Add lines as before...
+p2 <- p + geom_vline(xintercept=c(-logfc, logfc), col="red") +
+        geom_hline(yintercept=-log10(alpha_thresh), col="red")    
+# 1. by default, it is assigned to the categories in an alphabetical order):
+mycolors <- c("blue", "red", "black")
+names(mycolors) <- c("Down", "Up", "No")
+p3 <- p2 + scale_colour_manual(values = mycolors) + ggtitle(label)
+
+print(p3)
+
+}
+```
+
+```{r volcano plots, echo = FALSE, warning=FALSE, fig.align = "center"}
+# This section actually does all of the DE analysis, but prints out all of the volcano plots 
 sig_trans = c()
-```
-
-
-```{r}
+results = list()
 for(nc in c(1:n_contrasts)){
-	print(nc)
-	lrt <- glmLRT(fit, contrast=contrasts[nc,])
-	glmt = topTags(lrt, n=1000)
+lrt <- glmLRT(fit, contrast=contrasts[nc,])
+glmt = topTags(lrt, n=nrow(RE_disc))
+#glmt = glmt[glmt$table$FDR <alpha_thresh,]
+#glmt = glmt[which(abs(glmt$table$logFC)>logFC_thresh),]
 
-	pass_logFC= row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])
-	pass_alpha = row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])
-	pass_both = intersect(pass_logFC, pass_alpha)
-	if(length(pass_both) > 0){
-		sig_trans = c(sig_trans, pass_both)
-		sig_results = glmt[which(row.names(glmt) %in% pass_both),-which(colnames(glmt) == "LR")] # New 20220712
+#print(glmt[,-which(colnames(glmt) == "LR")])
 
-#		# New 20220712 Plot to PDF
-#		title_plot=glmt$comparison
-#		t1 = tableGrob(head(data.frame(sig_results), n=40))
-#		title <- textGrob(title_plot,gp=gpar(fontsize=15))
-#		padding <- unit(5,"mm")
-#
-#		table <- gtable_add_rows(
-#			t1, 
-#			heights = grobHeight(title) + padding,
-#			pos = 0)
-#		table <- gtable_add_grob(
-#			table, 
-#			title, 
-#			1, 1, 1, ncol(table))
-#
-#		grid.newpage()
-#		grid.draw(table)
 
-		print(sig_results)
-	}
-	#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
+# Volcano Plot 
+Volcano_plot(glmt, as.character(glmt$comparison), alpha_thresh, logFC_thresh)
+
+#sig_trans = c(sig_trans, row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])   )
+pass_logFC= row.names(glmt$table[which(abs(glmt$table$logFC)>logFC_thresh),])
+pass_alpha = row.names(glmt$table[which(glmt$table$FDR<alpha_thresh),])
+pass_both = intersect(pass_logFC, pass_alpha)
+if(length(pass_both) > 0){
+sig_trans = c(sig_trans, pass_both)
 }
+#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
+glmt_res = glmt$table[which(row.names(glmt$table) %in% sig_trans),-which(colnames(glmt) == "LR")]
+if(nrow(glmt_res >0)){
+glmt_res$comparison = glmt$comparison
+}
+results[[nc]] = glmt_res
+}
+
+
 ```
 
+##  Box Plots 
 
-```{r}
+All significant TEs are plotted here, the window is limited to a maximum value of 2 standard deviations above the mean expression. 
+
+```{r box plots, echo = FALSE, warning=FALSE, fig.height = 4, fig.width = 6, fig.align = "center"}
+
+
 # Plotting the top results for each pairwise test 
 to_plot = unique(sig_trans)
-print(to_plot)
-```
 
-
-```{r}
 for( gene in to_plot){
-	w=which(row.names(normcounts) == gene)
-	print(paste0("gene : ",gene," - w=which(row.names(normcounts) == gene) : ",w))
-	#print(paste0("gene : ",gene))
-	if( length(w) > 0 ){
-		plot_data = data.frame(as.numeric(normcounts[w,]))
-		plot_data$group = RE_disc$samples$group
-		#	row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
-		colnames(plot_data) = c(gene, "group")
-		plot_data$group = as.factor(plot_data$group)
-
-		p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]),
-			fill=as.factor(plot_data[,2]))) +
-			geom_boxplot()+
-			labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
-			theme(legend.position= "right")+
-			theme(plot.title = element_text(hjust = 0.5))+
-			geom_jitter(color="black", size=0.4, alpha=0.7) +
-			theme(axis.text.x = element_blank())+
-			labs(fill = group_col)
-		print(p)
-	} else {
-		print(paste0("0 which(row.names(normcounts) == ",gene," )"))
-	}
+  print(gene)
+  plot_data = data.frame(as.numeric(normcounts[which(row.names(normcounts) == gene),]))
+  plot_data$group = RE_disc$samples$group
+  #print(paste("Individual with max value = ", row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
+  colnames(plot_data) = c(gene, "group")
+  plot_data$group = as.factor(plot_data$group)
+  # Plot limits based on mean and 2 sd above
+  plot_max = mean(as.numeric(plot_data[,1])) + 2* sd(as.numeric(plot_data[,1]))
+  excluded = length(which(as.numeric(plot_data[,1]) > plot_max))
+  plot_max = min(max(as.numeric(plot_data[,1])), plot_max)
+  print(paste(as.numeric(excluded), " samples are above the plot window and not pictured.", sep = ""))
+    p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]), fill=as.factor(plot_data[,2]))) +
+    geom_boxplot()+
+    labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
+    theme(legend.position= "right")+
+    theme(plot.title = element_text(hjust = 0.5))+
+    geom_jitter(color="black", size=0.2, alpha=0.1) +
+    theme(axis.text.x = element_blank())+
+    labs(fill = group_col) +
+  theme(legend.key.size = unit(1, 'cm'), #change legend key size
+        legend.key.height = unit(1, 'cm'), #change legend key height
+        legend.key.width = unit(1, 'cm'), #change legend key width
+        legend.title = element_text(size=7), #change legend title font size
+        legend.text = element_text(size=5)) + ylim(0,plot_max)
+  
+  
+  print(p)
+  
+  
 }
+
+```
+
+## Significant Result Tables 
+
+```{r tables, echo = FALSE, results="asis", warning=FALSE}
+for(nc in c(1:n_contrasts)){
+kbltbl = (results[[nc]])[,-c(ncol(results[[nc]]))] %>%
+  kbl(caption = (results[[nc]])$comparison[1] ) %>%
+   kable_classic(full_width = F, html_font = "Cambria") %>%
+  scroll_box(width = "1000px", height = "300px")
+print(kbltbl)
+}
+
 ```
 
 
-```{r}
+## Heat Maps 
+
+```{r heatmaps, echo = FALSE}
 # HeatMap of significant traits
 # for the repname case
 
