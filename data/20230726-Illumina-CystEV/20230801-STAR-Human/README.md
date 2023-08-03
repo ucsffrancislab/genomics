@@ -54,7 +54,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fCmiRNAtr
 ```
 awk 'BEGIN{FS=OFS=","}{print $1,$21}' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv > tmp
 
-(head -n 1 tmp && tail -n +2 tmp | sort -t, -k1,1 ) > kirkwood.csv
+(head -n 1 tmp && tail -n +2 tmp | sort -t, -k1,1 ) | sed 's/ /_/g' > kirkwood.csv
 \rm tmp
 ```
 
@@ -88,6 +88,44 @@ done
 ```
 
 
+##	20230803 - normalize featurecounts by aligned count
 
+
+```
+echo "Sequencing_ID,Aligned_Counts" > aligned_counts.csv
+for f in out/*.Aligned.sortedByCoord.out.bam.aligned_count.txt ; do
+b=$( basename $f .Aligned.sortedByCoord.out.bam.aligned_count.txt )
+c=$( cat $f )
+echo "${b},${c}"
+done | sort -t, -k1,1 >> aligned_counts.csv
+```
+
+
+```
+for f in featureCounts.*.tsv ; do
+sed -e '2s/.Aligned.sortedByCoord.out.bam//g' -e '2s:/francislab/data1/working/20230726-Illumina-CystEV/20230801-STAR/out/::g' $f | tail -n +2 | cut --output-delimiter=, -f1,7- | datamash transpose -t, > tmp1
+(head -n 1 tmp1 && tail -n +2 tmp1 | sort -t, -k1,1 ) | datamash transpose -t, > tmp2
+(head -n 1 tmp2 && tail -n +2 tmp2 | sort -t, -k1,1 ) | datamash transpose -t, > tmp3
+join --header -t, kirkwood.csv tmp3 > tmp4
+(head -n 1 tmp4 && tail -n +2 tmp4 | sort -t, -k2,2 -k1,1 ) | datamash transpose -t, > ${f%.tsv}.grade.csv
+join --header -t, aligned_counts.csv tmp4 | awk 'BEGIN{FS=OFS=","}(NR==1){print;next}{for(i=4;i<=NF;i++){$i=1000000*$i/$2}print}' > tmp5
+(head -n 1 tmp5 && tail -n +2 tmp5 | sort -t, -k3,3 -k1,1 ) | datamash transpose -t, > ${f%.tsv}.grade.normalized.csv
+done
+\rm tmp1 tmp2 tmp3 tmp4 tmp5
+```
+
+
+```
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in featureCounts.*.grade.normalized.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
 
 
