@@ -148,6 +148,8 @@ else
 		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.05 0.5 k${k} >> ${array_file}
 		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.2 k${k} >> ${array_file}
 		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.5 0.2 k${k} >> ${array_file}
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.01 k${k} >> ${array_file}
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 1 0.01 k${k} >> ${array_file}
 	done
 
 
