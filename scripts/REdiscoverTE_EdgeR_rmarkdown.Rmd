@@ -99,10 +99,11 @@ logFC_thresh = args[10]
 # The date, will be used in the output file 
 date = args[11]
 
+#	BiocManager::install()
 
 library('readr')
 library('edgeR')
-require('EDASeq')
+library('EDASeq')
 library('ggplot2')
 library('RColorBrewer')
 library('pheatmap')
@@ -114,7 +115,10 @@ library('biomaRt')
 library('dplyr')
 #library('DESeq2')	#	needed for plotPCA?
 #library('BiocGenerics')	#	needed for plotPCA?
-library('ggfortify')	#	new for new plotPCA style?
+#library('ggfortify')	#	new for new plotPCA style?
+library('kableExtra')
+library('ggrepel')
+
 options(max.print=1000000)
 ```
 
@@ -149,7 +153,7 @@ if( filetypes[filetype] == "GENE" ){
 	#	Too many useDataset requests at the same time?
 	#Quitting from lines 128-133 (REdiscoverTE_EdgeR_rmarkdown.Rmd) 
 	#Error in bmRequest(request = request, httr_config = httr_config, verbose = verbose) : 
-  	#Gateway Timeout (HTTP 504).
+	#Gateway Timeout (HTTP 504).
 	#Calls: <Anonymous> ... .useMart -> .listMarts -> bmRequest -> stop_for_status
 	#Execution halted
 
@@ -223,7 +227,7 @@ if( filetypes[filetype] == "GENE" ){
 
 		#	Some ensembl_gene_ids have duplicate hgnc_symbols. Concatenate them.
 		#	> getBM(filters = "ensembl_gene_id",attributes = c("ensembl_gene_id","hgnc_symbol"),values=c("ENSG00000230417","ENSG00000276085"), mart = mart)
-  		#	ensembl_gene_id hgnc_symbol
+		#	ensembl_gene_id hgnc_symbol
 		#	1 ENSG00000230417   LINC00595
 		#	2 ENSG00000230417   LINC00856
 		#	3 ENSG00000276085      CCL3L1
@@ -534,6 +538,13 @@ for(i in c(1:length(RE_disc$samples$group))){
 
 ##	Exploratory Plots {.tabset .tabset-fade .tabset-pills}
 
+
+```{r}
+#Normalization for PCA and t-SNE, not exactly the same 
+normcounts = 1e6*cpm(RE_disc, normalized.lib.sizes=T)
+```
+
+
 ### PCA
 
 ```{r PCA, echo = FALSE, fig.height=6}
@@ -574,10 +585,9 @@ plotBCV(d1)
 
 # Design Matrix -----------------------------------------------------------------------
 if(Cov_check ==TRUE){
-design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group",covs)]  )
+	design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group",covs)]  )
 }else{
-  design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group")]  )
-  
+	design.mat <- model.matrix(~ 0 +., RE_disc$samples[c("group")]  )
 }
 #head(design.mat)
 
@@ -598,10 +608,8 @@ contrasts = mat.or.vec(n_contrasts, ncol(design.mat))
 combos = t(combn(length(col_groups), 2))
 colnames(contrasts)= colnames(design.mat)
 for(nc in c(1:n_contrasts)){
-  contrasts[nc,combos[nc,1]] =1
-  contrasts[nc,combos[nc,2]] =-1
-  
-  
+	contrasts[nc,combos[nc,1]] =1
+	contrasts[nc,combos[nc,2]] =-1
 }
 
 
@@ -612,31 +620,35 @@ for(nc in c(1:n_contrasts)){
 ```{r volcano plotter, echo = FALSE, warning=FALSE}
 # make the volcano plot function here 
 Volcano_plot = function(glmt, label, alpha_thresh, logfc){
-glmt = data.frame(glmt$table)
-glmt$FDR=as.numeric(glmt$FDR)
-glmt$diffexpressed = "No"
-# if log2Foldchange > 0.6 and pvalue < 0.05, set as "UP" 
-glmt$diffexpressed[glmt$logFC > logfc & glmt$FDR < alpha_thresh] <- "Up"
-# if log2Foldchange < -0.6 and pvalue < 0.05, set as "DOWN"
-glmt$diffexpressed[glmt$logFC < -logfc & glmt$FDR < alpha_thresh] <- "Down"
+	glmt = data.frame(glmt$table)
+	glmt$FDR=as.numeric(glmt$FDR)
+	glmt$diffexpressed = "No"
+	# if log2Foldchange > 0.6 and pvalue < 0.05, set as "UP" 
+	glmt$diffexpressed[glmt$logFC > logfc & glmt$FDR < alpha_thresh] <- "Up"
+	# if log2Foldchange < -0.6 and pvalue < 0.05, set as "DOWN"
+	glmt$diffexpressed[glmt$logFC < -logfc & glmt$FDR < alpha_thresh] <- "Down"
 
-# Create a new column "delabel" to glmt, that will contain the name of genes differentially expressed (NA in case they are not)
-glmt$delabel <- NA
-glmt$delabel[glmt$diffexpressed != "No"] <- row.names(glmt[glmt$diffexpressed != "No",]) # CAREFUL HERE repname or rep family!!!!!
+	# Create a new column "delabel" to glmt, that will contain the name of genes differentially expressed (NA in case they are not)
+	glmt$delabel <- NA
+	glmt$delabel[glmt$diffexpressed != "No"] <- row.names(glmt[glmt$diffexpressed != "No",]) # CAREFUL HERE repname or rep family!!!!!
 
 
-# Re-plot but this time color the points with "diffexpressed"
-p <- ggplot(data=glmt, aes(x=logFC, y=-log10(PValue), col=diffexpressed, label=delabel)) + geom_point() + theme_minimal()+ geom_text_repel() + theme(title =element_text(size=8, face='bold'))
 
-# Add lines as before...
-p2 <- p + geom_vline(xintercept=c(-logfc, logfc), col="red") +
-        geom_hline(yintercept=-log10(alpha_thresh), col="red")    
-# 1. by default, it is assigned to the categories in an alphabetical order):
-mycolors <- c("blue", "red", "black")
-names(mycolors) <- c("Down", "Up", "No")
-p3 <- p2 + scale_colour_manual(values = mycolors) + ggtitle(label)
+	glmt$PValue=as.numeric(glmt$PValue)
 
-print(p3)
+
+	# Re-plot but this time color the points with "diffexpressed"
+	p <- ggplot(data=glmt, aes(x=logFC, y=-log10(PValue), col=diffexpressed, label=delabel)) + geom_point() + theme_minimal()+ geom_text_repel() + theme(title =element_text(size=8, face='bold'))
+
+	# Add lines as before...
+	p2 <- p + geom_vline(xintercept=c(-logfc, logfc), col="red") +
+		geom_hline(yintercept=-log10(alpha_thresh), col="red")    
+	# 1. by default, it is assigned to the categories in an alphabetical order):
+	mycolors <- c("blue", "red", "black")
+	names(mycolors) <- c("Down", "Up", "No")
+	p3 <- p2 + scale_colour_manual(values = mycolors) + ggtitle(label)
+
+	print(p3)
 
 }
 ```
@@ -646,33 +658,33 @@ print(p3)
 sig_trans = c()
 results = list()
 for(nc in c(1:n_contrasts)){
-lrt <- glmLRT(fit, contrast=contrasts[nc,])
-glmt = topTags(lrt, n=nrow(RE_disc))
-#glmt = glmt[glmt$table$FDR <alpha_thresh,]
-#glmt = glmt[which(abs(glmt$table$logFC)>logFC_thresh),]
+	lrt <- glmLRT(fit, contrast=contrasts[nc,])
+	glmt = topTags(lrt, n=nrow(RE_disc))
+	#glmt = glmt[glmt$table$FDR <alpha_thresh,]
+	#glmt = glmt[which(abs(glmt$table$logFC)>logFC_thresh),]
 
-#print(glmt[,-which(colnames(glmt) == "LR")])
+	#print(glmt[,-which(colnames(glmt) == "LR")])
 
 
-# Volcano Plot 
-Volcano_plot(glmt, as.character(glmt$comparison), alpha_thresh, logFC_thresh)
+	# Volcano Plot 
+	#Volcano_plot(glmt, as.character(glmt$comparison), alpha_thresh, logFC_thresh)
+	#Volcano_plot(glmt, as.character(glmt$comparison), alpha_thresh, as.numeric(logFC_thresh))
+	Volcano_plot(glmt, as.character(glmt$comparison),as.numeric(alpha_thresh), as.numeric(logFC_thresh))
 
-#sig_trans = c(sig_trans, row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])   )
-pass_logFC= row.names(glmt$table[which(abs(glmt$table$logFC)>logFC_thresh),])
-pass_alpha = row.names(glmt$table[which(glmt$table$FDR<alpha_thresh),])
-pass_both = intersect(pass_logFC, pass_alpha)
-if(length(pass_both) > 0){
-sig_trans = c(sig_trans, pass_both)
+	#sig_trans = c(sig_trans, row.names(glmt[which(glmt$table$FDR<alpha_thresh),1][[1]])   )
+	pass_logFC= row.names(glmt$table[which(abs(glmt$table$logFC)>logFC_thresh),])
+	pass_alpha = row.names(glmt$table[which(glmt$table$FDR<alpha_thresh),])
+	pass_both = intersect(pass_logFC, pass_alpha)
+	if(length(pass_both) > 0){
+		sig_trans = c(sig_trans, pass_both)
+	}
+	#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
+	glmt_res = glmt$table[which(row.names(glmt$table) %in% sig_trans),-which(colnames(glmt) == "LR")]
+	if(nrow(glmt_res >0)){
+		glmt_res$comparison = glmt$comparison
+	}
+	results[[nc]] = glmt_res
 }
-#sig_trans = c(sig_trans, row.names(glmt[which(abs(glmt$table$logFC)>logFC_thresh),1][[1]])   )
-glmt_res = glmt$table[which(row.names(glmt$table) %in% sig_trans),-which(colnames(glmt) == "LR")]
-if(nrow(glmt_res >0)){
-glmt_res$comparison = glmt$comparison
-}
-results[[nc]] = glmt_res
-}
-
-
 ```
 
 ##  Box Plots 
@@ -686,35 +698,32 @@ All significant TEs are plotted here, the window is limited to a maximum value o
 to_plot = unique(sig_trans)
 
 for( gene in to_plot){
-  print(gene)
-  plot_data = data.frame(as.numeric(normcounts[which(row.names(normcounts) == gene),]))
-  plot_data$group = RE_disc$samples$group
-  #print(paste("Individual with max value = ", row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
-  colnames(plot_data) = c(gene, "group")
-  plot_data$group = as.factor(plot_data$group)
-  # Plot limits based on mean and 2 sd above
-  plot_max = mean(as.numeric(plot_data[,1])) + 2* sd(as.numeric(plot_data[,1]))
-  excluded = length(which(as.numeric(plot_data[,1]) > plot_max))
-  plot_max = min(max(as.numeric(plot_data[,1])), plot_max)
-  print(paste(as.numeric(excluded), " samples are above the plot window and not pictured.", sep = ""))
-    p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]), fill=as.factor(plot_data[,2]))) +
-    geom_boxplot()+
-    labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
-    theme(legend.position= "right")+
-    theme(plot.title = element_text(hjust = 0.5))+
-    geom_jitter(color="black", size=0.2, alpha=0.1) +
-    theme(axis.text.x = element_blank())+
-    labs(fill = group_col) +
-  theme(legend.key.size = unit(1, 'cm'), #change legend key size
-        legend.key.height = unit(1, 'cm'), #change legend key height
-        legend.key.width = unit(1, 'cm'), #change legend key width
-        legend.title = element_text(size=7), #change legend title font size
-        legend.text = element_text(size=5)) + ylim(0,plot_max)
+	print(gene)
+	plot_data = data.frame(as.numeric(normcounts[which(row.names(normcounts) == gene),]))
+	plot_data$group = RE_disc$samples$group
+	#print(paste("Individual with max value = ", row.names(plot_data)[which(plot_data[,1] == max(plot_data[,1]))], sep=""))
+	colnames(plot_data) = c(gene, "group")
+	plot_data$group = as.factor(plot_data$group)
+	# Plot limits based on mean and 2 sd above
+	plot_max = mean(as.numeric(plot_data[,1])) + 2* sd(as.numeric(plot_data[,1]))
+	excluded = length(which(as.numeric(plot_data[,1]) > plot_max))
+	plot_max = min(max(as.numeric(plot_data[,1])), plot_max)
+	print(paste(as.numeric(excluded), " samples are above the plot window and not pictured.", sep = ""))
+	p <- ggplot(plot_data, aes(x=as.factor(plot_data[,2]), y=as.numeric(plot_data[,1]), fill=as.factor(plot_data[,2]))) +
+	geom_boxplot()+
+	labs(title=paste(gene, sep = ""),x=group_col, y = "Count (normalized)")+
+	theme(legend.position= "right")+
+	theme(plot.title = element_text(hjust = 0.5))+
+	geom_jitter(color="black", size=0.2, alpha=0.1) +
+	theme(axis.text.x = element_blank())+
+	labs(fill = group_col) +
+	theme(legend.key.size = unit(1, 'cm'), #change legend key size
+	legend.key.height = unit(1, 'cm'), #change legend key height
+	legend.key.width = unit(1, 'cm'), #change legend key width
+	legend.title = element_text(size=7), #change legend title font size
+	legend.text = element_text(size=5)) + ylim(0,plot_max)
   
-  
-  print(p)
-  
-  
+	print(p)
 }
 
 ```
@@ -723,11 +732,11 @@ for( gene in to_plot){
 
 ```{r tables, echo = FALSE, results="asis", warning=FALSE}
 for(nc in c(1:n_contrasts)){
-kbltbl = (results[[nc]])[,-c(ncol(results[[nc]]))] %>%
-  kbl(caption = (results[[nc]])$comparison[1] ) %>%
-   kable_classic(full_width = F, html_font = "Cambria") %>%
-  scroll_box(width = "1000px", height = "300px")
-print(kbltbl)
+	kbltbl = (results[[nc]])[,-c(ncol(results[[nc]]))] %>%
+	kbl(caption = (results[[nc]])$comparison[1] ) %>%
+	kable_classic(full_width = F, html_font = "Cambria") %>%
+	scroll_box(width = "1000px", height = "300px")
+	print(kbltbl)
 }
 
 ```
