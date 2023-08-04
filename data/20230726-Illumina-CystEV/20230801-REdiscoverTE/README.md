@@ -19,10 +19,7 @@ REdiscoverTE_rollup.bash
 ```
 
 
-
-
-
-Haven't run yet ...
+Edit and run ...
 ```
 
 ./REdiscoverTE_EdgeR_rmarkdown.bash
