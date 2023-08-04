@@ -33,3 +33,30 @@ done
 ```
 
 
+
+```
+python3 -m pip install --user --upgrade fastq-statistic
+```
+
+
+```
+for r1 in SFHH011*_S*_R1_0*.fastq.gz; do
+echo $r1
+r2=${r1/_R1_/_R2_}
+#base=${r1%_R1*}
+base=${r1%_S*}
+fastq-statistic --sampleid ${base} --no-plot ${r1} ${r2}
+done
+```
+
+
+
+
+```
+head -1q *_statistic.csv | head -1 > fastq-statistics.csv
+tail -n 1 -q *_statistic.csv >> fastq-statistics.csv
+
+box_upload.bash fastq-statistics.csv 
+```
+
+
