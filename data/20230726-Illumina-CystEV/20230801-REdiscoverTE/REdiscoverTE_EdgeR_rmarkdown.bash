@@ -140,9 +140,11 @@ else
 
 
 	column="grade_collapsed"
-	outdir=${PWD}/rmarkdown_results_${column}
+	outdir=${PWD}/rmarkdown_results_cyst_fluid_${column}
 	mkdir -p ${outdir}
-	awk 'BEGIN{FS=OFS=",";print "id","'${column}'"}(NR>1){print $1,$NF}' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv > ${outdir}/metadata.csv
+	awk 'BEGIN{FS=OFS=",";print "id","'${column}'"}($7=="Kirkwood Cyst Study" && $8=="cyst fluid" && $NF!=""){print $1,$NF}' \
+		/francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv \
+		> ${outdir}/metadata.csv
 	for i in $( seq 9 ); do
 		echo $i
 		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.05 0.5 k${k} >> ${array_file}
@@ -151,6 +153,25 @@ else
 		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.01 k${k} >> ${array_file}
 		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 1 0.01 k${k} >> ${array_file}
 	done
+
+
+	column="grade_collapsed"
+	outdir=${PWD}/rmarkdown_results_serum_${column}
+	mkdir -p ${outdir}
+	awk 'BEGIN{FS=OFS=",";print "id","'${column}'"}($7=="Kirkwood Cyst Study" && $8=="SE" && $NF!=""){print $1,$NF}' \
+		/francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv \
+		> ${outdir}/metadata.csv
+	for i in $( seq 9 ); do
+		echo $i
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.05 0.5 k${k} >> ${array_file}
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.2 k${k} >> ${array_file}
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.5 0.2 k${k} >> ${array_file}
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 0.1 0.01 k${k} >> ${array_file}
+		echo ${indir} ${outdir}/metadata.csv ${outdir} id ${column} NA NA ${i} 1 0.01 k${k} >> ${array_file}
+	done
+
+
+
 
 
 

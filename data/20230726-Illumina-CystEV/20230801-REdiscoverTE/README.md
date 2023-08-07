@@ -27,3 +27,10 @@ Edit and run ...
 ```
 
 
+
+```
+REdiscoverTE_upload.bash
+```
+
+
+
