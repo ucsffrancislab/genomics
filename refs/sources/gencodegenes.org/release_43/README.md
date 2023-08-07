@@ -177,3 +177,17 @@ Seems to be working. Not sure why piping fails, but that's that.
 
 
 
+
+
+
+
+##	20230804 - Try RMHM version
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2-build" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2-build-hg38-viral.log --export=None \
+ --wrap="module load bowtie2 && bowtie2-build --threads 64 \
+  ${PWD}/GRCh38.primary_assembly.genome.fa,/francislab/data1/working/20211111-hg38-viral-homology/RMHM.fasta.gz \
+  ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM"
+```
+
