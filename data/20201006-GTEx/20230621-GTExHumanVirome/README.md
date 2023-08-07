@@ -2,6 +2,12 @@
 
 #	GTEx
 
+These files are just public data. We did no processing here.
+
+
+
+
+
 
 From "A tissue level atlas of the healthy human virome"
 https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-020-00785-5
