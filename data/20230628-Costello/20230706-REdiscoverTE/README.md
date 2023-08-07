@@ -21,6 +21,8 @@ REdiscoverTE_rollup.bash
 
 
 
+Giving that this is a spatial analysis, this analysis doesn't seem appropriate.
+
 
 Haven't run yet ...
 ```
