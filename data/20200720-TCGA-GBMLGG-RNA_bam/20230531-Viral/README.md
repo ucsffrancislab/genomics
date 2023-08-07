@@ -44,3 +44,55 @@ done
 
 ```
 
+
+
+
+
+##	20230731
+
+
+```
+
+echo "accession,description" > accession_description.csv
+cat /francislab/data1/refs/refseq/viral-20210916/viral_sequences.txt | sed "s/[',]//g" | xargs -I% basename % .fa | sed 's/_/,/2' | sort >> accession_description.csv
+
+
+```
+
+
+
+```
+for bam in e2e/*bam ; do
+echo $bam
+samtools view -q20 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q20.proper_pair_aligned_sequence_counts.txt
+samtools view -q30 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q30.proper_pair_aligned_sequence_counts.txt
+samtools view -q40 -f 2 ${bam} | cut -f3 | sort | uniq -c | sort -k1nr > ${bam}.q40.proper_pair_aligned_sequence_counts.txt
+done
+
+
+
+for q in q20 q30 q40 ; do
+python3 ~/.local/bin/merge_uniq-c.py --int --out merged_e2e_proper_pair_${q}.csv e2e/*.RMHM.bam.${q}.proper_pair_aligned_sequence_counts.txt
+join --header -t, accession_description.csv merged_e2e_proper_pair_${q}.csv > merged_e2e_proper_pair_${q}_with_description.csv
+done
+
+
+
+BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
+PROJECT=$( basename ${PWD} )
+DATA=$( basename $( dirname ${PWD} ) ) 
+BOX="${BOX_BASE}/${DATA}/${PROJECT}"
+for f in merged_e2e_proper_pair_q??_with_description*.csv ; do
+echo $f
+curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
+done
+
+```
+
+
+
+
+
+
+
+
