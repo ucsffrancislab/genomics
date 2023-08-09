@@ -5,7 +5,8 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 #DATA=$( basename $( dirname ${PWD} ) )
 #BOX="${BOX_BASE}/${DATA}/${PROJECT}"
 
-dir=${PWD}
+#dir=${PWD}
+dir=$( dirname $( realpath --no-symlinks ${1} ) )
 dir=${dir#/francislab/data1/raw/}
 dir=${dir#/francislab/data1/working/}
 BOX="${BOX_BASE}/${dir}"
