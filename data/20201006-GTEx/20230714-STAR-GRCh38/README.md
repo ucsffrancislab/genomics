@@ -56,3 +56,35 @@ STAR_array_wrapper.bash --threads 8 \
 
 
 
+
+
+##	20230808
+
+Run on all
+
+
+
+```
+ll ${PWD}/../20201116-preprocess/trimmed/*_R1.fastq.gz | wc -l
+1438
+```
+
+Eventually 
+
+
+```
+ll ${PWD}/../20201116-preprocess/trimmed/SRR1*_R1.fastq.gz | wc -l
+1048
+```
+
+```
+STAR_array_wrapper.bash --threads 8 \
+  --ref /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome \
+  --out ${PWD}/out \
+  ${PWD}/../20201116-preprocess/trimmed/SRR1*_R1.fastq.gz
+
+```
+
+
+
+
