@@ -2,6 +2,11 @@
 #	20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt
 
 
+```
+ll ${PWD}/../20200803-bamtofastq/out/*_R1.fastq.gz | wc -l
+895
+```
+
 
 ```
 
@@ -13,7 +18,7 @@ cutadapt_array_wrapper.bash --threads 4 --extension _R1.fastq.gz \
   -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a GGAAGAGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG \
   -A "A{10}" -A "G{10}" -A "T{10}" -A "C{10}" \
   -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAG    -A GGAAGAGCGTCGTGTAGGGAAAGAG    -A TGTAGATCTCGGTGGTCGCCGTATCATT \
-  ${PWD}/../20200803-bamtofastq/out/0*_R1.fastq.gz
+  ${PWD}/../20200803-bamtofastq/out/*_R1.fastq.gz
 
 
 ```
