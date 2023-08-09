@@ -207,13 +207,11 @@ done
 ##	20230808
 
 
+Run the old cyst fluid EV data from the last batch through this prediction model also?  20211208-EV
 
- I know you are taking time off today , but whenever you have a minute, can you try to run the old cyst fluid EV data from the last batch through this prediction model also?
-
-
-20211208-EV
-
-ll /francislab/data1/working/20211208-EV/20221024-preprocessing-paired/out/*t3.R?.fastq.gz
+```
+/francislab/data1/working/20211208-EV/20221024-preprocessing-paired/
+```
 
 ```
 ##          id condition  libsize
@@ -231,7 +229,37 @@ ll /francislab/data1/working/20211208-EV/20221024-preprocessing-paired/out/*t3.R
 
 
 
+Given that this is crossing projects, create generic predict script that takes input params ...
 
+Don't need to pass k, but k would very likely be part of the loop calling this ..
+
+different naming convention for grades will likely make all look like the failed
+
+
+```
+out_base=${PWD}/20211208-EV-predictions
+for d in /francislab/data1/working/20211208-EV/20221026-iMOKA-paired/out/?? ; do
+echo $d
+k=$(basename ${d})
+var=grade_collapsed
+model_base=${PWD}/out/${var}-${k}
+if [ -d ${model_base} ]; then
+echo ${model_base} exists. Predicting.
+predict_out=${out_base}/$( basename ${model_base} )
+mkdir -p ${predict_out}
+echo "Creating predict_matrix.tsv from create_matrix.tsv"
+sed -E -e 's/Low/LGD_or_No_HGD\/Carcinoma_seen/' \
+  -e 's/(High|Adenocarcinoma)/HGD_or_Invasive_Cancer/' \
+  ${d}/create_matrix.tsv > ${predict_out}/predict_matrix.tsv
+iMOKA_predict.bash \
+  --model_base ${model_base} \
+  --predict_matrix ${predict_out}/predict_matrix.tsv \
+  --predict_out ${predict_out}
+else
+echo ${model_base} does not exist. Skipping.
+fi
+done
+```
 
 
 
