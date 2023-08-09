@@ -96,7 +96,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		elif [ "${line: -1}" == "q" ] ; then
 			command="cat ${line} | paste - - - - "
 		elif [ "${line: -4}" == "a.gz" ] ; then
-			command="cat ${line} | paste - - "
+			command="zcat ${line} | paste - - "
 		elif [ "${line: -1}" == "a" ] ; then
 			command="cat ${line} | paste - - "
 		else
