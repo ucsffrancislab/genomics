@@ -7,19 +7,16 @@ reference /francislab/data1/working/20210428-EV/20230606-iMOKA/README.md
 
 
 ```
+#  $( tail -n +2 /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv | cut -d, -f1 | paste -s ) ; do
+
 mkdir -p in
 for id in \
-  $( tail -n +2 /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv | cut -d, -f1 | paste -s ) ; do
+  $( awk -F, '($7=="Kirkwood Cyst Study" && $8=="cyst fluid" && $NF!=""){print $1}' \
+  /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv ) ; do
   #echo $id
   for f in $( ls ../20230801-cutadapt/out/${id}_R?.fastq.gz 2> /dev/null ) ; do
     echo $f
-    #b=$( basename ${f} )
-    #l=${b%_071323*}
-    #r=${b%_001.fastq.gz}
-    #r=${r#*_L001_}
-    #echo $f ${l}_${r}.fastq.gz
     ln -s ../${f} in/	
-    #${l}_${r}.fastq.gz
   done
 done
 ```
@@ -30,6 +27,8 @@ Paired data, so R1;R2
 NO SPACES IN GROUP NAMES
 
 ```
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($7=="Kirkwood Cyst Study" && $8=="cyst fluid" && $NF!=""){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,$NF,pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz" } }' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv | sed 's/ /_/g' > source.all.tsv
+
 awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}(NR>1){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,$NF,pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz" } }' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.Kirkwood.csv | sed 's/ /_/g' > source.all.tsv
 
 ```
@@ -142,5 +141,97 @@ for k in 13 16 21 31 35 39 43 ; do
 done ; done
 
 ```
+
+
+
+
+Let's predict the SE
+
+```
+mkdir -p in
+for id in \
+  $( awk -F, '($7=="Kirkwood Cyst Study" && $8=="SE" && $NF!=""){print $1}' \
+  /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv ) ; do
+  #echo $id
+  for f in $( ls ../20230801-cutadapt/out/${id}_R?.fastq.gz 2> /dev/null ) ; do
+    echo $f
+    ln -s ../${f} in/	
+  done
+done
+```
+
+
+```
+
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($7=="Kirkwood Cyst Study" && $8=="SE" && $NF!=""){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,$NF,pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz" } }' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.csv | sed 's/ /_/g' > source.predict.tsv
+
+```
+
+```
+date=$( date "+%Y%m%d%H%M%S%N" )
+for k in 13 16 21 31 35 39 43 ; do
+  iMOKA_count.bash -k ${k} --threads 64 --mem 490 --source_file ${PWD}/source.predict.tsv --dir ${PWD}/predictions
+done
+```
+
+
+```
+chmod -w predictions/*/preprocess/*/*bin
+```
+
+
+
+
+
+```
+ssh d1
+/francislab/data1/working/20230726-Illumina-CystEV/20230801-iMOKA
+
+./predict.bash
+
+```
+
+Nothing great
+
+```
+for f in predictions/grade_collapsed-??/* ; do
+echo $f
+~/.local/bin/box_upload.bash ${f}
+done
+```
+
+
+
+
+
+##	20230808
+
+
+
+ I know you are taking time off today , but whenever you have a minute, can you try to run the old cyst fluid EV data from the last batch through this prediction model also?
+
+
+20211208-EV
+
+ll /francislab/data1/working/20211208-EV/20221024-preprocessing-paired/out/*t3.R?.fastq.gz
+
+```
+##          id condition  libsize
+## 1  SFHH009H       Low  7117958
+## 2  SFHH009L       Low  4469587
+## 3  SFHH009E HighAdeno  1075103
+## 4  SFHH009G       Low  7348242
+## 5  SFHH009I HighAdeno  4649449
+## 6  SFHH009F       Low  7524770
+## 7  SFHH009D HighAdeno  1458794
+## 8  SFHH009N HighAdeno 15905847
+## 9  SFHH009C HighAdeno  8819837
+## 10 SFHH009M HighAdeno 10380729
+```
+
+
+
+
+
 
 
