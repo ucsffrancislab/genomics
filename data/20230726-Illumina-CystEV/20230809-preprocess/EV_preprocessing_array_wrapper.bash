@@ -51,7 +51,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	if [ -n "$( declare -F module )" ] ; then
 		echo "Loading required modules"
-		module load CBI samtools star/2.7.7a gatk
+		module load CBI samtools star/2.7.10b picard gatk htslib
 	fi
 	
 	date
@@ -99,6 +99,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 
+		\rm -f ${out_base}.R1.fastq ${out_base}.R2.fastq ${out_base}.R1.fastq.gz ${out_base}.R2.fastq.gz
+
 		out1=${out_base}.R1.fastq.gz
 		out2=${out_base}.R2.fastq.gz
 		paste <( zcat ${r1} | paste - - - - ) <( zcat ${r2} | paste - - - - ) |
@@ -113,8 +115,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 				print $8 >> o2
 			}'
 
-		gzip ${out1%.gz}
-		gzip ${out2%.gz}
+		bgzip ${out1%.gz}
+		bgzip ${out2%.gz}
 
 		chmod -w $out1 $out2
 
@@ -136,6 +138,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
+		\rm -f ${out_base}.R1.fastq ${out_base}.R2.fastq ${out_base}.R1.fastq.gz ${out_base}.R2.fastq.gz
+
 		echo "Adding UMI to read name"
 		length=18
 		paste <( zcat ${in_base}.R1.fastq.gz | paste - - - - ) <( zcat ${in_base}.R2.fastq.gz | paste - - - - ) |
@@ -171,13 +175,15 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#     A00887:505:HCVJ3DRX2:1:2101:5330:1016-TATGTGACTGCTTCGGTG 2:N:0:CGGTAATC+NTGGACTG'
 		#	cutadapt is happy. STAR will keep. Done
 
-		gzip ${out_base}.R1.fastq
-		gzip ${out_base}.R2.fastq
+		bgzip ${out_base}.R1.fastq
+		bgzip ${out_base}.R2.fastq
+
 		chmod -w ${out_base}.R1.fastq.gz
 		chmod -w ${out_base}.R2.fastq.gz
+
+		count_fasta_reads.bash ${out_base}.R1.fastq.gz ${out_base}.R2.fastq.gz
 	fi
 	
-
 
 
 	in_base=${out_base}
@@ -284,7 +290,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		#	align with STAR
 
-		STAR --runMode alignReads \
+		STAR.bash --runMode alignReads \
 			--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome \
 			--runThreadN ${threads} \
 			--readFilesType Fastx \
@@ -303,6 +309,42 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		chmod a-w ${f} ${f/.R1./.R2.}
 
 	fi
+
+
+#	#	wouldn't need this if had used STAR.bash instead of STAR
+#
+#	in_base=${out_base}.Aligned.sortedByCoord.out
+#	out_base=${in_base}
+#	f=${out_base}.bam.aligned_count.txt
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		echo "Creating $f"
+#
+#		samtools.bash fasta -f 4 --threads $[${threads:-1}-1] -N -o ${out_base}.unmapped.fasta.gz ${out_base}.bam
+#		chmod a-w ${out_base}.unmapped.fasta.gz
+#
+#		#	Produces ${f%.bam}.unmapped.fasta.gz.read_count.txt
+#		count_fasta_reads.bash ${out_base}.unmapped.fasta.gz
+#
+#		#	-F = NOT
+#		#	0xf04	3844	UNMAP,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
+#		samtools view -c -F 3844 ${out_base}.bam > ${out_base}.bam.aligned_count.txt
+#		chmod a-w ${out_base}.bam.aligned_count.txt
+#
+#		#	-f = IS
+#		#	0x4	4	UNMAP
+#		samtools view -c -f 4    ${out_base}.bam > ${out_base}.bam.unaligned_count.txt
+#		chmod a-w ${out_base}.bam.unaligned_count.txt
+#
+#		samtools view -F4 ${out_base}.bam | awk '{print $3}' | gzip > ${out_base}.bam.aligned_sequences.txt.gz
+#		chmod a-w ${out_base}.bam.aligned_sequences.txt.gz
+#
+#		zcat ${out_base}.bam.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${out_base}.bam.aligned_sequence_counts.txt
+#		chmod a-w ${out_base}.bam.aligned_sequence_counts.txt
+#
+#	fi
+
 
 	in_base=${out_base}.Aligned.sortedByCoord.out
 	out_base=${in_base}.umi_tag
@@ -334,15 +376,15 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 
-	inbase=${outbase}
-	outbase=${inbase}.fixmate
-	f=${outbase}.bam
+	in_base=${out_base}
+	out_base=${in_base}.fixmate
+	f=${out_base}.bam
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
 		#	copy mate's cigar string into the MC tag.
 		java -jar $PICARD_HOME/picard.jar FixMateInformation \
-			--INPUT ${inbase}.bam \
+			--INPUT ${in_base}.bam \
 			--OUTPUT ${f}
 		chmod -w ${f}
 	fi
@@ -362,20 +404,110 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#--REMOVE_DUPLICATES <Boolean> If true do not write duplicates to the output file instead of writing them with
 		#                              appropriate flags set.  Default value: false. Possible values: {true, false} 
 
+		#--MAX_EDIT_DISTANCE_TO_JOIN / -MAX_EDIT_DISTANCE_TO_JOIN
+		#Largest edit distance that UMIs must have in order to be considered as coming from distinct source molecules.
+
+		#	I thoughht that UMIs were only used in RNA-seq data????
+		#
+		#	Note also that this tool will not work with alignments that have large gaps or deletions, such as those from RNA-seq data.This is due to the need to buffer small genomic windows to ensure integrity of the duplicate marking, while large skips(ex. skipping introns) in the alignment records would force making that window very large, thus exhausting memory.
+
+
 		#	Not sure what this does with unaligned.
 
 		gatk UmiAwareMarkDuplicatesWithMateCigar \
 			--INPUT ${in_base}.bam \
 			--METRICS_FILE ${out_base}.metrics_file.txt \
 			--UMI_METRICS_FILE ${out_base}.umi_metrics_file.txt \
-			--REMOVE_DUPLICATES true \
+			--MAX_EDIT_DISTANCE_TO_JOIN 2 \
 			--OUTPUT ${f}
 
+			#--REMOVE_DUPLICATES true \
 		chmod a-w ${f}
 
 	fi
 
 	date
+
+
+	in_base=${out_base}
+	out_base=${in_base}
+	f=${out_base}.R1.fastq.gz
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+
+		# Alignment flags: PAIRED,PROPER_PAIR,UNMAP,MUNMAP,REVERSE,MREVERSE,READ1,READ2,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
+
+		bamtofastq gz=1 collate=1 inputformat=bam filename=${in_base}.bam \
+			exclude=DUP,SECONDARY,SUPPLEMENTARY \
+			F=${out_base}.R1.fastq.gz \
+			F2=${out_base}.R2.fastq.gz \
+			S=${out_base}.S0.fastq.gz \
+			O=${out_base}.O1.fastq.gz \
+			O2=${out_base}.O2.fastq.gz
+
+		count_fasta_reads.bash ${out_base}.{R1,R2,S0,O1,O2}.fastq.gz
+
+		chmod a-w ${out_base}.{R1,R2,S0,O1,O2}.fastq.gz
+
+	fi
+
+	date
+
+
+
+
+	in_base=${out_base}
+	out_base=${in_base}
+	f=${out_base}.bam.read_count.txt
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+
+		#   0x1     1  PAIRED         paired-end / multiple-segment sequencing technology
+		#   0x2     2  PROPER_PAIR    each segment properly aligned according to aligner
+		#   0x4     4  UNMAP          segment unmapped
+		#   0x8     8  MUNMAP         next segment in the template unmapped
+		#  0x10    16  REVERSE        SEQ is reverse complemented
+		#  0x20    32  MREVERSE       SEQ of next segment in template is rev.complemented
+		#  0x40    64  READ1          the first segment in the template
+		#  0x80   128  READ2          the last segment in the template
+		# 0x100   256  SECONDARY      secondary alignment
+		# 0x200   512  QCFAIL         not passing quality controls or other filters
+		# 0x400  1024  DUP            PCR or optical duplicate
+		# 0x800  2048  SUPPLEMENTARY  supplementary alignment
+
+		# 2048 + 256 = 2312
+
+		#  -f, --require-flags FLAG   ...have all of the FLAGs present
+		#  -F, --excl[ude]-flags FLAG ...have none of the FLAGs present
+		#      --rf, --incl-flags, --include-flags FLAG
+
+		samtools view -c -F 2312 ${in_base}.bam > ${out_base}.bam.read_count.txt
+
+		samtools view -c -f 1024 -F 2312 ${in_base}.bam > ${out_base}.bam.dup_read_count.txt
+
+
+		chmod a-w ${out_base}.bam.read_count.txt
+
+		chmod a-w ${out_base}.bam.dup_read_count.txt
+
+	fi
+
+	date
+
+
+
+
+
+
+
+
+
+
+
 
 else
 
