@@ -317,14 +317,34 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		samtools view -h ${in_base}.bam \
 			| awk 'BEGIN{FS=OFS="\t"}
 			(/^@/){print;next}
-			{	last_colon_index=match($1, /:[^:]*$/)
-				umi=substr($1,last_colon_index+1)
-				$1=substr($1,1,last_colon_index-1)
+			{	last_dash_index=match($1, /-[^-]*$/)
+				umi=substr($1,last_dash_index+1)
+				$1=substr($1,1,last_dash_index-1)
 				print $0"\tRX:Z:"umi
 			}' | samtools view -o ${f} -
 
+	#		{	last_colon_index=match($1, /:[^:]*$/)
+	#			umi=substr($1,last_colon_index+1)
+	#			$1=substr($1,1,last_colon_index-1)
+	#			print $0"\tRX:Z:"umi
+	#		}' | samtools view -o ${f} -
+#
 		chmod a-w ${f}
 
+	fi
+
+
+	inbase=${outbase}
+	outbase=${inbase}.fixmate
+	f=${outbase}.bam
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		#	copy mate's cigar string into the MC tag.
+		java -jar $PICARD_HOME/picard.jar FixMateInformation \
+			--INPUT ${inbase}.bam \
+			--OUTPUT ${f}
+		chmod -w ${f}
 	fi
 
 
