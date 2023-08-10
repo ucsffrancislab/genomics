@@ -8,6 +8,9 @@ ll ${PWD}/../20200803-bamtofastq/out/*_R1.fastq.gz | wc -l
 ```
 
 
+This is a bit aggressive with all of the polys, but gonna see where it goes.
+
+
 ```
 
 cutadapt_array_wrapper.bash --threads 4 --extension _R1.fastq.gz \
