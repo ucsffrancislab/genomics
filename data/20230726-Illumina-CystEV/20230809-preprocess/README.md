@@ -28,3 +28,14 @@ EV_preprocessing_array_wrapper.bash --out ${PWD}/out --extension _R1.fastq.gz \
 
 
 
+
+```
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
+
+```
+
+
+
+
+
