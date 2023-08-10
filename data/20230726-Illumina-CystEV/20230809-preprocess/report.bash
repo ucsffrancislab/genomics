@@ -58,7 +58,7 @@ done
 echo
 
 
-echo -n "| Paired Raw Read Count |"
+echo -n "| Paired Raw R1 Read Count |"
 for s in ${samples} ; do
 	c=$(cat ${rawdir}/${s}_R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
@@ -75,7 +75,7 @@ echo
 
 
 
-echo -n "| Format Read Count |"
+echo -n "| Format R1 Read Count |"
 for s in ${samples} ; do
 	c=$(cat ${dir}/${s}.format.R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
@@ -92,14 +92,14 @@ done
 echo
 
 
-echo -n "| Trimmed Read Count |"
+echo -n "| Trimmed R1 Read Count |"
 for s in ${samples} ; do
 	c=$(cat ${dir}/${s}.format.umi.trim.R1.fastq.gz.read_count.txt 2> /dev/null)
 	echo -n " ${c} |"
 done
 echo
 
-echo -n "| Trimmed % Read Count |"
+echo -n "| Trimmed % R1 Read Count |"
 for s in ${samples} ; do
 	n=$(cat ${dir}/${s}.format.umi.trim.R1.fastq.gz.read_count.txt 2> /dev/null)
 	d=$(cat ${dir}/${s}.format.R1.fastq.gz.read_count.txt 2> /dev/null)
