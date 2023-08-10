@@ -18,7 +18,7 @@ Create report
 
 
 
-``
+```
 
 EV_preprocessing_array_wrapper.bash --out ${PWD}/out --extension _R1.fastq.gz \
   /francislab/data1/raw/20230726-Illumina-CystEV/fastq/*R1.fastq.gz
