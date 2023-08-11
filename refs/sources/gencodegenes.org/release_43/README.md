@@ -2,6 +2,8 @@
 
 #	gencodegenes.org/release_43
 
+https://www.gencodegenes.org/human/release_43.html
+
 
 These may be my go to reference set
 
@@ -189,5 +191,28 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2
  --wrap="module load bowtie2 && bowtie2-build --threads 64 \
   ${PWD}/GRCh38.primary_assembly.genome.fa,/francislab/data1/working/20211111-hg38-viral-homology/RMHM.fasta.gz \
   ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM"
+```
+
+##	20230811
+
+There's already a release_44!
+Not upgrading yet.
+
+
+Create a STAR ref with the larger fa for "better" deduplication?
+
+
+```
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.chr_patch_hapl_scaff.annotation.gtf.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.chr_patch_hapl_scaff.basic.annotation.gtf.gz
+```
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgenerate" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/STARgenerate.$( date "+%Y%m%d%H%M%S%N" ).log --export=None \
+ --wrap="module load star && STAR --runThreadN 64 --runMode genomeGenerate \
+  --genomeFastaFiles ${PWD}/GRCh38.p13.genome.fa \
+  --sjdbGTFfile ${PWD}/gencode.v43.chr_patch_hapl_scaff.annotation.gtf \
+  --genomeDir ${PWD}/GRCh38.p13.genome"
 ```
 
