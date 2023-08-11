@@ -174,3 +174,32 @@ for s in ${samples} ; do
 done
 echo
 
+
+
+echo -n "| --- |"
+for s in ${samples} ; do
+	echo -n " --- |"
+done
+echo
+
+#echo -n "| hg38 deduped Count |"
+#for s in ${samples} ; do
+#	s0=$(cat ${dir}/${s}.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.S0.fastq.gz.read_count.txt 2> /dev/null)
+#	r1=$(cat ${dir}/${s}.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.R1.fastq.gz.read_count.txt 2> /dev/null)
+#	r2=$(cat ${dir}/${s}.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.R2.fastq.gz.read_count.txt 2> /dev/null)
+#	o1=$(cat ${dir}/${s}.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.O1.fastq.gz.read_count.txt 2> /dev/null)
+#	o2=$(cat ${dir}/${s}.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.O2.fastq.gz.read_count.txt 2> /dev/null)
+#	c=$( echo "${s0} + ${r1} + ${r2} + ${o1} + ${o2}" | bc -l 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
+
+
+echo -n "| hg38 deduped Count |"
+for s in ${samples} ; do
+	c=$(cat ${dir}/${s}.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.bam.deduped_read_count.txt 2> /dev/null)
+	echo -n " ${c} |"
+done
+echo
+
+
