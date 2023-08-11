@@ -289,9 +289,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		echo "Creating $f"
 
 		#	align with STAR
+		#	--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome \
 
 		STAR.bash --runMode alignReads \
-			--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome \
+			--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.p13.genome \
 			--runThreadN ${threads} \
 			--readFilesType Fastx \
 			--outSAMtype BAM SortedByCoordinate \
@@ -305,6 +306,16 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--outSAMattributes Standard XS
 
 		#	Mode twopass?
+
+#	Try this sometime and compare
+#
+#### 2-pass Mapping
+#twopassMode                 None
+#    string: 2-pass mapping mode.
+#                            None        ... 1-pass mapping
+#                            Basic       ... basic 2-pass mapping, with all 1st pass junctions inserted into the genome indices on the fly
+#
+
 
 		chmod a-w ${f} ${f/.R1./.R2.}
 
@@ -429,6 +440,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	date
 
 
+	#	Want ONLY reads pairs with at least 1 alignment 
+
 	in_base=${out_base}
 	out_base=${in_base}
 	f=${out_base}.R1.fastq.gz
@@ -439,13 +452,17 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		# Alignment flags: PAIRED,PROPER_PAIR,UNMAP,MUNMAP,REVERSE,MREVERSE,READ1,READ2,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
 
-		bamtofastq gz=1 collate=1 inputformat=bam filename=${in_base}.bam \
-			exclude="DUP,SECONDARY,SUPPLEMENTARY" \
-			F=${out_base}.R1.fastq.gz \
-			F2=${out_base}.R2.fastq.gz \
-			S=${out_base}.S0.fastq.gz \
-			O=${out_base}.O1.fastq.gz \
-			O2=${out_base}.O2.fastq.gz
+		#bamtofastq gz=1 collate=1 inputformat=bam filename=${in_base}.bam \
+		#	exclude="DUP,SECONDARY,SUPPLEMENTARY" \
+		
+		samtools view -h -F3328 -O SAM ${in_base}.bam \
+			| awk '(/^@/)||(!and($2,4))||(!and($2,8))' \
+			| bamtofastq gz=1 collate=1 inputformat=sam \
+				F=${out_base}.R1.fastq.gz \
+				F2=${out_base}.R2.fastq.gz \
+				S=${out_base}.S0.fastq.gz \
+				O=${out_base}.O1.fastq.gz \
+				O2=${out_base}.O2.fastq.gz
 
 		count_fasta_reads.bash ${out_base}.{R1,R2,S0,O1,O2}.fastq.gz
 
@@ -454,6 +471,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 	date
+
 
 #	in_base=${out_base}
 #	out_base=${in_base}
@@ -512,17 +530,6 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	fi
 
 	date
-
-
-
-
-
-
-
-
-
-
-
 
 else
 
