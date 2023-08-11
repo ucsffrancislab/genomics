@@ -440,7 +440,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		# Alignment flags: PAIRED,PROPER_PAIR,UNMAP,MUNMAP,REVERSE,MREVERSE,READ1,READ2,SECONDARY,QCFAIL,DUP,SUPPLEMENTARY
 
 		bamtofastq gz=1 collate=1 inputformat=bam filename=${in_base}.bam \
-			exclude=DUP,SECONDARY,SUPPLEMENTARY \
+			exclude="DUP,SECONDARY,SUPPLEMENTARY" \
 			F=${out_base}.R1.fastq.gz \
 			F2=${out_base}.R2.fastq.gz \
 			S=${out_base}.S0.fastq.gz \
@@ -455,12 +455,22 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
-
-
+#	in_base=${out_base}
+#	out_base=${in_base}
+#	f=${out_base}.S0.fastq.gz.read_count.txt
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		echo "Creating $f"
+#		count_fasta_reads.bash ${out_base}.{S0,O1,O2}.fastq.gz
+#
+#		chmod a-w ${out_base}.{S0,O1,O2}.fastq.gz
+#
+#	fi
 
 	in_base=${out_base}
 	out_base=${in_base}
-	f=${out_base}.bam.read_count.txt
+	f=${out_base}.bam.deduped_read_count.txt
 	if [ -f $f ] && [ ! -w $f ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -479,16 +489,21 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		# 0x400  1024  DUP            PCR or optical duplicate
 		# 0x800  2048  SUPPLEMENTARY  supplementary alignment
 
-		# 2048 + 256 = 2312
+		# 2048 + 256 = 2304
+		# 2048 + 1024 + 256 = 3328
 
 		#  -f, --require-flags FLAG   ...have all of the FLAGs present
 		#  -F, --excl[ude]-flags FLAG ...have none of the FLAGs present
 		#      --rf, --incl-flags, --include-flags FLAG
 
-		samtools view -c -F 2312 ${in_base}.bam > ${out_base}.bam.read_count.txt
+		samtools view -c -F 3328 ${in_base}.bam > ${out_base}.bam.deduped_read_count.txt
 
-		samtools view -c -f 1024 -F 2312 ${in_base}.bam > ${out_base}.bam.dup_read_count.txt
+		samtools view -c -F 2304 ${in_base}.bam > ${out_base}.bam.read_count.txt
 
+		samtools view -c -f 1024 -F 2304 ${in_base}.bam > ${out_base}.bam.dup_read_count.txt
+
+
+		chmod a-w ${out_base}.bam.deduped_read_count.txt
 
 		chmod a-w ${out_base}.bam.read_count.txt
 
