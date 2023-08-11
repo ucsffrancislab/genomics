@@ -1,4 +1,35 @@
 
+
+
+20201006-GTEx/20230714-STAR - RUNNING ... After ...
+20201006-GTEx/20230*-RMHM
+	GTEx viral read count
+	tpm over total aligned to virus
+	end-to-end, bowtie2 q30, length filter of 50bp RMHM viral
+
+	include body site for sample
+ 	 sample, site, v1 count, v2 count, v3 count, ...
+	sample1, site,        #,        #,        #, ...
+	sample2, site,        #,        #,        #, ...
+	sample3, site,        #,        #,        #, ...
+	sample4, site,        #,        #,        #, ...
+	
+20201006-GTEx/20230714-Human_Virome_Analysis
+
+20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt - RUNNING
+20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38 - RUNNING
+20200720-TCGA-GBMLGG-RNA_bam/20230807-Human_Virome_Analysis - RUNNING
+
+20230726-Illumina-CystEV/20230809-preprocess
+20230726-Illumina-CystEV/20230809-REdiscoverTE
+20230726-Illumina-CystEV/20230809-iMOKA
+
+
+
+
+
+
+
 READ "A tissue level atlas of the healthy human virome" https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-020-00785-5 again
 	Questions
 		What was used to create the values in Table S3. Read count of the respective 39 viral species detected in this study?
@@ -26,7 +57,6 @@ Blood Correction Project
  20201006-GTEx/20230622-RMHMViral/
 
 
-20230726-Illumina-CystEV/20230801-iMOKA - NO SUCCESSFUL OUTPUT?
 
  
 20230726-Illumina-CystEV/
@@ -116,6 +146,7 @@ Compare the quality of this CystEV and 20220610-EV  - DONE
 20230726-Illumina-CystEV/20230801-cutadapt - DONE
 20230726-Illumina-CystEV/20230801-STAR - DONE
 20230726-Illumina-CystEV/20230801-REdiscoverTE - DONE
+20230726-Illumina-CystEV/20230801-iMOKA - DONE
 20230726-Illumina-CystEV Create and upload STAR alignment and featurecounts for ALL samples - DONE
 20230726-Illumina-CystEV Create and upload REdiscoverTE rollup for ALL samples - DONE
 
