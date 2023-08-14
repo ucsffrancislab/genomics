@@ -41,7 +41,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
-			--array*)
+			--array_file)
 				shift; array_file=$1; shift;;
 			--paired)
 				paired=true; shift;;
@@ -173,12 +173,15 @@ else
 	date=$( date "+%Y%m%d%H%M%S%N" )
 	echo "Preparing array job :${date}:"
 	array_file=${PWD}/$( basename $0 ).${date}
-	array_options="--array ${array_file} "
+	array_options="--array_file ${array_file} "
 	
 	threads=8
+	array=""
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
+			--array)
+				shift; array=$1; shift;;
 			-t|--threads)
 				shift; threads=$1; shift;;
 			-o|--out|--outdir|-e|--extension)
@@ -208,7 +211,9 @@ else
 
 		set -x  #       print expanded command before executing it
 
-		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=1-${max}%1 \
+		[ -z "${array}" ] && array="1-${max}"
+
+		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).$( date "+%Y%m%d%H%M%S%N" )-%A_%a.out.log \
