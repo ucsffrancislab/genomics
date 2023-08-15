@@ -2,6 +2,9 @@
 #	20230726-Illumina-CystEV/20230810-REdiscoverTE
 
 
+55 samples
+
+
 ONLY DEDUPED READS THAT ALIGNED TO HUMAN
 
 
@@ -29,25 +32,14 @@ REdiscoverTE_array_wrapper.bash --paired \
 
 ```
 
-
-
-
-
----
-
-
-
-
-
-
-
-
-
 ```
 
 REdiscoverTE_rollup.bash
 
 ```
+
+
+Wait ...
 
 
 Edit and run ...
