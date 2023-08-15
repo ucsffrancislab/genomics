@@ -41,21 +41,23 @@ done
 echo
 
 
-#echo -n "| Study |"
-#for s in ${samples} ; do
-#
+echo -n "| Study |"
+for s in ${samples} ; do
+
 #	study=$( awk -v s=$s 'BEGIN{FS=OFS="\t"}($1==s){print $6"-"$7}' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_8-1-23hmhmz.tsv )
-#
-#	echo -n " ${study} |"
-#done
-#echo
-#
-#
-#echo -n "| --- |"
-#for s in ${samples} ; do
-#	echo -n " --- |"
-#done
-#echo
+
+	study=$( awk -F, -v s=$s '($1==s){print $6,$7,$8,$9}' /francislab/data1/raw/20220610-EV/Sample\ covariate\ file_ids\ and\ indexes_for\ QB3_NovSeq\ SP\ 150PE_SFHH011\ S\ Francis_5-2-22hmh.csv )
+
+	echo -n " ${study} |"
+done
+echo
+
+
+echo -n "| --- |"
+for s in ${samples} ; do
+	echo -n " --- |"
+done
+echo
 
 
 echo -n "| Paired Raw R1 Read Count |"
