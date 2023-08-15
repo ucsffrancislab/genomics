@@ -60,3 +60,20 @@ box_upload.bash fastq-statistics.csv
 ```
 
 
+
+
+
+##	20230814
+
+```
+mkdir fastq
+for f in SFH*_S*_R*.fastq.gz ; do
+b=$( basename ${f} _001.fastq.gz )
+l=${b%%_*}
+r=${b##*_}
+ln -s ../${f} fastq/${l}_${r}.fastq.gz
+done
+```
+
+
+
