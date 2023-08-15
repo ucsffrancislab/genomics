@@ -55,4 +55,8 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bwa-index 
 ```
 
 
+14 days later, still not done.
+
+
+
 
