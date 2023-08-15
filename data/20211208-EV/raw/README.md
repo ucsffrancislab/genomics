@@ -84,4 +84,15 @@ sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' polyAT.md > polyAT.csv
 ```
 
 
+##	20230815
+
+```
+mkdir fastq
+for f in SFH*_S*_R*.fastq.gz ; do
+b=$( basename ${f} _001.fastq.gz )
+l=${b%%_*}
+r=${b##*_}
+ln -s ../${f} fastq/${l}_${r}.fastq.gz
+done
+```
 
