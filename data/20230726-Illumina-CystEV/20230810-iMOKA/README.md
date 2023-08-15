@@ -43,31 +43,6 @@ for k in 13 16 21 31 35 39 43 ; do
 done
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
----
-
-
-
-
-
-
-
-
-
-
-
-
 ```
 chmod -w out/*/preprocess/*/*bin
 ```
@@ -91,10 +66,13 @@ for k in 13 16 21 31 35 39 43 ; do
   sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${s}" \
    --output="${PWD}/logs/iMOKA.${s}.$( date "+%Y%m%d%H%M%S%N" ).out" \
    --time=720 --nodes=1 --ntasks=32 --mem=240G \
-   ~/.local/bin/iMOKA.bash --dir ${PWD}/out/${s} --k ${k} --step random_forest --random_forest --cross-validation 5
+   ~/.local/bin/iMOKA.bash --dir ${PWD}/out/${s} --k ${k} --step create --random_forest --cross-validation 5
 done ; done
 
 ```
+
+
+
 
 ```
 
@@ -153,7 +131,7 @@ chmod -w predictions/*/preprocess/*/*bin
 
 ```
 ssh d1
-/francislab/data1/working/20230726-Illumina-CystEV/20230801-iMOKA
+/francislab/data1/working/20230726-Illumina-CystEV/20230810-iMOKA
 
 ./predict.bash
 
@@ -172,7 +150,7 @@ done
 
 
 
-##	20230808
+##	20230814
 
 
 Run the old cyst fluid EV data from the last batch through this prediction model also?  20211208-EV
@@ -226,6 +204,15 @@ iMOKA_predict.bash \
 else
 echo ${model_base} does not exist. Skipping.
 fi
+done
+```
+
+
+
+```
+for f in 20211208-EV-predictions/grade_collapsed-??/* ; do
+echo $f
+~/.local/bin/box_upload.bash ${f}
 done
 ```
 
