@@ -104,6 +104,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Running STAR"
 
+
 		STAR_scratch.bash \
 			--runMode alignReads \
 			--runThreadN ${threads} \
@@ -116,7 +117,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--outSAMtype BAM SortedByCoordinate \
 			--outSAMattrRGline ID:${base} SM:${base} \
 			--outSAMunmapped Within KeepPairs \
-			--outFileNamePrefix ${outFileNamePrefix}
+			--outFileNamePrefix ${outFileNamePrefix} \
+			--outBAMsortingBinsN $[900/threads] \
+			--limitBAMsortRAM $[SLURM_NTASKS*7000000000]
 
 #			--outBAMsortingBinsN 10 \
 #			--limitBAMsortRAM $[SLURM_NTASKS*7000000000] \
