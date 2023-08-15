@@ -93,6 +93,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	set -x
 
 
+
+	UMI_LENGTH=9
+
+
+
+
 	out_base="${OUT}/${base}.format"
 	f=${out_base}.R1.fastq.gz
 	if [ -f $f ] && [ ! -w $f ] ; then
@@ -101,14 +107,17 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		\rm -f ${out_base}.R1.fastq ${out_base}.R2.fastq ${out_base}.R1.fastq.gz ${out_base}.R2.fastq.gz
 
+			#awk -F"\t" -v l=${UMI_LENGTH} -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.{l}GTT/ ){
+			#regex="^.{l}GTT"; 
+			#if($6 ~ regex ){
 
-		#	CHECK LENGTH OF UMI. HERE IT WAS ONLY 9bp
-
+		#	in order to use an awk variable inside a regex, the regex can't be inside //
+		#	it needs to be quoted.
 
 		out1=${out_base}.R1.fastq.gz
 		out2=${out_base}.R2.fastq.gz
 		paste <( zcat ${r1} | paste - - - - ) <( zcat ${r2} | paste - - - - ) |
-			awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.{9}GTT/ ){
+			awk -F"\t" -v l=${UMI_LENGTH} -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ "^.{"l"}GTT" ){
 				print $1 >> o1
 				print $2 >> o1
 				print $3 >> o1
@@ -145,9 +154,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		\rm -f ${out_base}.R1.fastq ${out_base}.R2.fastq ${out_base}.R1.fastq.gz ${out_base}.R2.fastq.gz
 
 		echo "Adding UMI to read name"
-		length=18
+		#length=18
 		paste <( zcat ${in_base}.R1.fastq.gz | paste - - - - ) <( zcat ${in_base}.R2.fastq.gz | paste - - - - ) |
-			awk -F"\t" -v b=${out_base} -v l=${length} '{
+			awk -F"\t" -v b=${out_base} -v l=${UMI_LENGTH} '{
 				#gsub(/ /,"-",$1)
 				split($1,readname1," ")
 				split($5,readname2," ")
@@ -275,7 +284,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			-a "A{10}" \
 			-A CCCCTGTCTCTTATACACATCT \
 			-G "T{10}" \
-			-U 21 \
+			-U $[UMI_LENGTH+3] \
 			-o ${out_base}.R1.fastq.gz -p ${out_base}.R2.fastq.gz \
 			${in_base}.R1.fastq.gz ${in_base}.R2.fastq.gz
 	fi
