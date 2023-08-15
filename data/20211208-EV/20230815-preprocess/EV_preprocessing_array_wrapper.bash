@@ -101,10 +101,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		\rm -f ${out_base}.R1.fastq ${out_base}.R2.fastq ${out_base}.R1.fastq.gz ${out_base}.R2.fastq.gz
 
+
+		#	CHECK LENGTH OF UMI. HERE IT WAS ONLY 9bp
+
+
 		out1=${out_base}.R1.fastq.gz
 		out2=${out_base}.R2.fastq.gz
 		paste <( zcat ${r1} | paste - - - - ) <( zcat ${r2} | paste - - - - ) |
-			awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.{18}GTT/ ){
+			awk -F"\t" -v o1=${out1%.gz} -v o2=${out2%.gz} '( $6 ~ /^.{9}GTT/ ){
 				print $1 >> o1
 				print $2 >> o1
 				print $3 >> o1
