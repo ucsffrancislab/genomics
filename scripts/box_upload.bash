@@ -7,10 +7,9 @@ BOX_BASE="ftps://ftp.box.com/Francis _Lab_Share"
 
 #dir=${PWD}
 dir=$( dirname $( realpath --no-symlinks ${1} ) )
-dir=${dir#/francislab/data1/raw/}
-dir=${dir#/francislab/data1/working/}
+dir=${dir#/francislab/data?/raw/}
+dir=${dir#/francislab/data?/workin*/}
 BOX="${BOX_BASE}/${dir}"
-
 echo $BOX
 
 while [ $# -gt 0 ] ; do
