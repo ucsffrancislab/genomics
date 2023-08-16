@@ -12,7 +12,12 @@ basedir=${PWD}
 #set -x
 
 
-for k in 13 16 21 31 35 39 43 ; do
+#for k in 13 16 21 31 35 39 43 ; do
+
+#for kdir in ${basedir}/out/?? ; do
+for kdir in ${basedir}/out/11 ; do
+
+	k=$( basename $kdir )
 
 	for var in grade_collapsed ; do
 
