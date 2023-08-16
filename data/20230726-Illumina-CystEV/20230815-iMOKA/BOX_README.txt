@@ -12,23 +12,15 @@ for samples from "Kirkwood Cyst Study" "cyst fluid"
 
 AND
 
-20220610-EV/20230814-preprocess
+20211208-EV/20230815-preprocess
 
-
+for samples "CF"
 
 
 
 
 
 "predictions" are of samples from "Kirkwood Cyst Study" "serum"
-
-
-
-
-"20211208-EV-predictions" are of the samples from 20211208-EV/20221026-iMOKA-paired
-
-
-
 
 
 
