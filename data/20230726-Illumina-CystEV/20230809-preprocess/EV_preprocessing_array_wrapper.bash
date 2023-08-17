@@ -290,9 +290,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		#	align with STAR
 		#	--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome \
+		#	--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.p13.genome \
 
 		STAR.bash --runMode alignReads \
-			--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.p13.genome \
+			--genomeDir /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome \
 			--runThreadN ${threads} \
 			--readFilesType Fastx \
 			--outSAMtype BAM SortedByCoordinate \
