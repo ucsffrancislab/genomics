@@ -40,7 +40,7 @@ while [ $# -gt 0 ] ; do
 		elif [ "${1: -1}" == "q" ] ; then
 			command="cat ${1} | paste - - - - "
 		elif [ "${1: -4}" == "a.gz" ] ; then
-			command="cat ${1} | paste - - "
+			command="zcat ${1} | paste - - "
 		elif [ "${1: -1}" == "a" ] ; then
 			command="cat ${1} | paste - - "
 		else
