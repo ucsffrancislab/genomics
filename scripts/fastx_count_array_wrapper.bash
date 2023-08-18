@@ -148,6 +148,8 @@ else
 
 		[ -z "${array}" ] && array="1-${max}"
 
+	set -x
+
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
