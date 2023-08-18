@@ -160,10 +160,8 @@ cd /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA
 
 
 ```
-for f in predictions/grade_collapsed-??/* ; do
-echo $f
-~/.local/bin/box_upload.bash ${f}
-done
+box_upload.bash predictions/grade_collapsed-??/*
+
 ```
 
 

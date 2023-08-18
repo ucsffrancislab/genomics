@@ -14,8 +14,7 @@ basedir=${PWD}
 
 #for k in 13 16 21 31 35 39 43 ; do
 
-#for kdir in ${basedir}/out/?? ; do
-for kdir in ${basedir}/out/11 ; do
+for kdir in ${basedir}/out/?? ; do
 
 	k=$( basename $kdir )
 
