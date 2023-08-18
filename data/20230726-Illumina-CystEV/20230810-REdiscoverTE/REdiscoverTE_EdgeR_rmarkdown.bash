@@ -258,19 +258,12 @@ else
 		#	[ -n "${strand}" ] && strand_option="--strand ${strand}"
 		[ -z "${array}" ] && array="1-${max}"
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
+--exclude=c4-n3,c4-n10 \
 			--parsable --job-name="$(basename $0)" \
 			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) ${array_options} )
 
-
-		#date=$( date "+%Y%m%d%H%M%S%N" )
-#
-#		sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-#			--array=1-${max}%8 --job-name="rmarkdown" \
-#			--output="${PWD}/logs/REdiscoverTE.${date}.rmarkdown.%A_%a.out" \
-#			--time=1440 --nodes=1 --ntasks=8 --mem=60G \
-#			${PWD}/REdiscoverTE_EdgeR_rmarkdown.bash
 
 		echo "Throttle with ..."
 		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
