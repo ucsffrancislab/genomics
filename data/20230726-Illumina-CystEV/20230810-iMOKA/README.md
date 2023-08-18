@@ -71,9 +71,6 @@ done ; done
 
 ```
 
-
-
-
 ```
 
 for k in 13 16 21 31 35 39 43 ; do
@@ -114,7 +111,6 @@ awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($7=="Kirkwood Cyst Study" && $8=="SE" 
 ```
 
 ```
-date=$( date "+%Y%m%d%H%M%S%N" )
 for k in 13 16 21 31 35 39 43 ; do
   iMOKA_count.bash -k ${k} --threads 64 --mem 490 --source_file ${PWD}/source.predict.tsv --dir ${PWD}/predictions
 done
