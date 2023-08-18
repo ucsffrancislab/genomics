@@ -40,6 +40,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	bowtie2_options=""
 	extension="_R1.fastq.gz"
 	outdir=""
+	paired=true
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
@@ -51,6 +52,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 				shift; extension=$1; shift;;
 			-x|-r|--ref)
 				shift; ref=$1; shift;;
+			--single)
+				paired=false; shift;;
 			-*)
 				bowtie2_options="${bowtie2_options} $1"
 				shift;;
@@ -122,7 +125,13 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	else
 		echo "Running bowtie2"
 
-		~/.local/bin/bowtie2.bash --threads ${SLURM_NTASKS} -x ${ref} -1 ${R1} -2 ${R2} ${bowtie2_options}
+		if ${paired} ; then
+			bowtie2_options="${bowtie2_options} -1 ${R1} -2 ${R2}"
+		else
+			bowtie2_options="${bowtie2_options} -U ${R1}"
+		fi
+
+		~/.local/bin/bowtie2.bash --threads ${SLURM_NTASKS} -x ${ref} ${bowtie2_options}
 
 		#chmod -w ${f} ${f}.csi
 	fi
