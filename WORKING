@@ -1,29 +1,97 @@
 
 
+Delete large, old, replaced or unusable data
 
-20201006-GTEx/20230714-STAR - RUNNING ... After ...
-20201006-GTEx/20230*-RMHM
-	GTEx viral read count
-	tpm over total aligned to virus
-	end-to-end, bowtie2 q30, length filter of 50bp RMHM viral
+du -sh {20200603-TCGA-GBMLGG-WGS,20200720-TCGA-GBMLGG-RNA_bam,20200909-TARGET-ALL-P2-RNA_bam,20201006-GTEx,Geuvadis,1000genomes}/*
 
-	include body site for sample
- 	 sample, site, v1 count, v2 count, v3 count, ...
-	sample1, site,        #,        #,        #, ...
-	sample2, site,        #,        #,        #, ...
-	sample3, site,        #,        #,        #, ...
-	sample4, site,        #,        #,        #, ...
-	
-20201006-GTEx/20230714-Human_Virome_Analysis
+ 18T	20200603-TCGA-GBMLGG-WGS/20200722-bamtofastq
+2.1T	20200603-TCGA-GBMLGG-WGS/20201001-bowtie2-hg38_rmsk
+844G	20200603-TCGA-GBMLGG-WGS/20201027-hkle-select
+383G	20200603-TCGA-GBMLGG-WGS/20201117-testing
+222G	20200603-TCGA-GBMLGG-WGS/20201221-CIRCexplorer2
+333G	20200603-TCGA-GBMLGG-WGS/20210617-hkle-select-sequencing
+4.6T	20200603-TCGA-GBMLGG-WGS/20210923-iMOKA-tumor-normal-test
+1.5T	20200603-TCGA-GBMLGG-WGS/20211021-2kupl-test
+5.2T	20200603-TCGA-GBMLGG-WGS/20220121-iMOKA
+501G	20200603-TCGA-GBMLGG-WGS/20220328-test-subset
+ 20T	20200603-TCGA-GBMLGG-WGS/20220329-hg38
+867G	20200603-TCGA-GBMLGG-WGS/20221129-MELT-2.2.2
+732G	20200603-TCGA-GBMLGG-WGS/20230110-MELT-2.0.5
+794G	20200603-TCGA-GBMLGG-WGS/20230113-MELT-2.1.5
+ 20T	20200603-TCGA-GBMLGG-WGS/20230124-hg38-bwa
+1.6T	20200603-TCGA-GBMLGG-WGS/20230202-bwa-MELT-2.1.5-SPLIT
+241G	20200603-TCGA-GBMLGG-WGS/20230803-cutadapt
+588G	20200603-TCGA-GBMLGG-WGS/20230804-bowtie2-HumanViral
 
-20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt - RUNNING
-20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38 - RUNNING
-20200720-TCGA-GBMLGG-RNA_bam/20230807-Human_Virome_Analysis - RUNNING
+6.5T	20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq
+6.9T	20200720-TCGA-GBMLGG-RNA_bam/20200805-STAR_hg38
+119G	20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE
+886G	20200720-TCGA-GBMLGG-RNA_bam/20200923-kraken2
+ 25G	20200720-TCGA-GBMLGG-RNA_bam/20201221-CIRCexplorer2
+791G	20200720-TCGA-GBMLGG-RNA_bam/20210725-iMOKA
+1.2T	20200720-TCGA-GBMLGG-RNA_bam/20220103-viral-chimera
+214G	20200720-TCGA-GBMLGG-RNA_bam/20220119-human-viral-chimera
+213G	20200720-TCGA-GBMLGG-RNA_bam/20220121-human-viral-chimera
+922G	20200720-TCGA-GBMLGG-RNA_bam/20220121-iMOKA
+345G	20200720-TCGA-GBMLGG-RNA_bam/20220524-iMOKA
+167G	20200720-TCGA-GBMLGG-RNA_bam/20230531-Viral
+7.5T	20200720-TCGA-GBMLGG-RNA_bam/20230628-STAR_hg38_XS
+4.7T	20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2
+3.9T	20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt
+149G	20200720-TCGA-GBMLGG-RNA_bam/20230807-Human_Virome_Analysis
+5.3T	20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38
 
-20230726-Illumina-CystEV/20230809-preprocess
-20230726-Illumina-CystEV/20230809-REdiscoverTE
-20230726-Illumina-CystEV/20230809-iMOKA
+4.9T	20200909-TARGET-ALL-P2-RNA_bam/20200910-bamtofastq
+3.9T	20200909-TARGET-ALL-P2-RNA_bam/20201208-herpes
+283G	20200909-TARGET-ALL-P2-RNA_bam/20220104-viral-chimera
+161G	20200909-TARGET-ALL-P2-RNA_bam/20220309-RepEnrich2-test
+123G	20200909-TARGET-ALL-P2-RNA_bam/20220309-SQuIRE-test
+4.2T	20200909-TARGET-ALL-P2-RNA_bam/20230710-TEProF2
 
+ 13T	20201006-GTEx/20201116-preprocess
+191G	20201006-GTEx/20201117-REdiscoverTE
+285G	20201006-GTEx/20230622-RMHMViral
+126G	20201006-GTEx/20230714-Human_Virome_Analysis
+8.3T	20201006-GTEx/20230714-STAR
+918G	20201006-GTEx/20230817-cutadapt
+
+776G	Geuvadis/20200311-viral_identification
+461G	1000genomes/20181010-unmapped-hhv6
+4.3T	1000genomes/20200311-viral_identification
+
+
+
+
+
+
+Re-preprocess GTEx and TCGA like our EV runs but with the Illumina adapters
+
+20230726-Illumina-CystEV Investigate Unaligned reads
+
+
+20201006-GTEx/20230714-STAR - DONE - DELETE?
+20201006-GTEx/20230714-Human_Virome_Analysis - RUNNING - STOP - REDO - DELETE?
+20201006-GTEx/20230816-RMHMViral - RUNNING - STOP - REDO - DELETE?
+
+20230726-Illumina-CystEV/20230809-preprocess - REDO - DONE
+20230726-Illumina-CystEV/20230810-iMOKA - REDO - DONE
+20230726-Illumina-CystEV/20230810-REdiscoverTE - REDO - DONE
+20211208-EV/20230815-preprocess - REDO - DONE
+20230726-Illumina-CystEV/20230815-iMOKA - REDO - DONE
+20230726-Illumina-CystEV/20230816-RMHMViral - REDO - DONE
+
+20201006-GTEx/20230714-Human_Virome_Analysis - STOP - DELETE?
+20201006-GTEx/20230714-STAR - STOP - DELETE?
+20201006-GTEx/20230816-RMHMViral - STOP - DELETE?
+
+20201006-GTEx/20230817-cutadapt - DONE
+20201006-GTEx/20230818-STAR-GRCh38 - RUNNING
+20201006-GTEx/20230819-RMHMViral - RUNNING
+20201006-GTEx/20230820-Human_Virome_Analysis - 
+
+20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt - REDO - DONE
+20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38 - REDO - RUNNING
+20200720-TCGA-GBMLGG-RNA_bam/20230807-Human_Virome_Analysis - REDO
 
 
 
@@ -55,8 +123,6 @@ Blood Correction Project
  GTEx Blood for patients with Brain
  Human GTEx Human Virome - process Blood exactly the same as the tissue was
  20201006-GTEx/20230622-RMHMViral/
-
-
 
  
 20230726-Illumina-CystEV/
@@ -92,7 +158,7 @@ Can you also take a couple cracks at normalizing the TCONS virus grouped tables?
 
 TCGA table - when you have a minute- can you do a test restricting to the same subjects in thr TEprof paper? TEProF2 Pan Cancer
 	Would be good to know if we have the figured out
-	Awaiting their UUID conversion table
+	Awaiting their UUID conversion table - RECEIVED
 
 
 Another idea come up in a meeting today. Remember how we looked for discordant reads (one HERV one human) in DNA WGS data? I’d like to talk about trying to implement that for viruses. Basically looking for viral integration events. Thoughts? Easy to modify HERV script?
@@ -100,15 +166,11 @@ Another idea come up in a meeting today. Remember how we looked for discordant r
 	/francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome.plus.viral-20230801
 	/francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM
 
+	20200603-TCGA-GBMLGG-WGS/20230804-bowtie2-HumanViral
+		That didn't work real well
+
 
  
-20200720-TCGA-GBMLGG-RNA_bam/20230628-STAR_hg38_XS/out/*.unmapped.fasta.gz
-20201006-GTEx/20230622-RMHMViral preprocessed-end2end DONE - NORMALIZE MATRIX - JOIN WITH SOURCE BODY SITE FOR GROUPING
-20201006-GTEx/20230712-STAR - test a few and compare to 20230622-RMHMViral alignments
-20201006-GTEx/    Human_Virome_Analysis - DEVELOPING
-20200720-TCGA-GBMLGG-RNA_bam/20230712-Human_Virome_Analysis - DEVELOPING - R1 finds few, R2 finds MANY !???
-
-
 20230426-PanCancerAntigens/20230426-explore - aligned viral proteins to TCONS proteins
 20230426-PanCancerAntigens/20230426-explore - merged viral proteins by virus, sum by virus, select only *_tumor "A tissue level atlas of the healthy human virome" - Is this PanCancer or HumanVirome???
 
@@ -133,6 +195,18 @@ Another idea come up in a meeting today. Remember how we looked for discordant r
 
 
 --------------------------------------------------
+
+20200720-TCGA-GBMLGG-RNA_bam/20230628-STAR_hg38_XS/out/*.unmapped.fasta.gz
+20201006-GTEx/20230622-RMHMViral preprocessed-end2end DONE - NORMALIZE MATRIX - JOIN WITH SOURCE BODY SITE FOR GROUPING
+20201006-GTEx/20230712-STAR - test a few and compare to 20230622-RMHMViral alignments
+20201006-GTEx/    Human_Virome_Analysis - DEVELOPING
+20200720-TCGA-GBMLGG-RNA_bam/20230712-Human_Virome_Analysis - DEVELOPING - R1 finds few, R2 finds MANY !???
+
+
+20230726-Illumina-CystEV/20230809-preprocess - DONE
+20230726-Illumina-CystEV/20230810-REdiscoverTE - DONE
+20230726-Illumina-CystEV/20230810-iMOKA - DONE
+20230726-Illumina-CystEV/20230815-iMOKA - DONE
 
 20211111-hg38-viral-homology/ - create blastn masked references "A tissue level atlas of the healthy human virome" - NO
 20211111-hg38-viral-homology - use blast to mask instead of bowtie2? - NO
