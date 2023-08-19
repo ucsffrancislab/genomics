@@ -34,3 +34,14 @@ logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_86.out.log:EXITING 
 
 
 
+
+```
+
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
+
+```
+
+
+
+
