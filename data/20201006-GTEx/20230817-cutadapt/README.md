@@ -25,3 +25,11 @@ cutadapt_array_wrapper.bash --threads 4 --extension _R1.fastq.gz \
 ```
 
 
+
+```
+
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
+
+```
+
