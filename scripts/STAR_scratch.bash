@@ -8,7 +8,8 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
-	module load CBI star/2.7.7a samtools/1.10
+	#module load CBI star/2.7.7a samtools/1.10
+	module load CBI star samtools
 fi
 set -x	#	print expanded command before executing it
 
