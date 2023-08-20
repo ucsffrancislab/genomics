@@ -19,16 +19,8 @@ STAR_array_wrapper.bash --threads 8 \
 ```
 
 
-
 ```
-grep "not enough mem" logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_*
-logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_217.out.log:EXITING because of fatal ERROR: not enough memory for BAM sorting: 
-logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_219.out.log:EXITING because of fatal ERROR: not enough memory for BAM sorting: 
-logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_246.out.log:EXITING because of fatal ERROR: not enough memory for BAM sorting: 
-logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_260.out.log:EXITING because of fatal ERROR: not enough memory for BAM sorting: 
-logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_328.out.log:EXITING because of fatal ERROR: not enough memory for BAM sorting: 
-logs/STAR_array_wrapper.bash.20230808115853017624055-1500227_86.out.log:EXITING because of fatal ERROR: not enough memory for BAM sorting: 
-
+sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --array=246%1 --exclude=c4-n3,c4-n10 --parsable --job-name=STAR_array_wrapper.bash --time=10080 --nodes=1 --ntasks=16 --mem=120000M --gres=scratch:450G --output=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38/logs/STAR_array_wrapper.bash.20230820081307292816571b-%A_%a.out.log /c4/home/gwendt/.local/bin/ucsffrancislab_genomics/STAR_array_wrapper.bash --array_file /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38/STAR_array_wrapper.bash.20230820081307292816571 --ref /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome --out /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38/out
 ```
 
 
