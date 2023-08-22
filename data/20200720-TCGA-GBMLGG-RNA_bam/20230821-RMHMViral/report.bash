@@ -73,12 +73,12 @@ for s in ${samples} ; do
 done
 echo
 
-echo -n "| hg38 unaligned Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
+#echo -n "| hg38 unaligned Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
 
 echo -n "| RMHM viral aligned Count |"
 for s in ${samples} ; do
