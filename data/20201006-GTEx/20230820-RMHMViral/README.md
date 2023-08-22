@@ -44,24 +44,27 @@ cat /francislab/data1/refs/refseq/viral-20210916/viral_sequences.txt | sed "s/['
 
 
 
+
+```
+cat /francislab/data1/raw/20201006-GTEx/SraRunTable.txt | awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$11}' | sort > body_site.csv
+
+```
+
+
 ```
 module load samtools
 for bam in out/*RMHM.bam ; do
 echo $bam
 for q in 20 25 30 ; do
 for l in 20 30 40 50 ; do
-samtools view -q ${q} ${bam} | awk -v l=${l} '(length($10)>l){print $3}' | sort | uniq -c | sort -k1nr > ${bam}.q${q}.l${l}.aligned_sequence_counts.txt
+o=${bam}.q${q}.l${l}.aligned_sequence_counts.txt
+if [ ! -f ${o} ] ; then
+samtools view -q ${q} ${bam} | awk -v l=${l} '(length($10)>l){print $3}' | sort | uniq -c | sort -k1nr > ${o}
+fi
 done ; done ; done
-```
-
-
-
-
-
-```
 
 ./report.bash > report.md
-sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '/^---/d' report.md > report.csv
 cat report.csv | datamash transpose -t, > report.t.csv
 box_upload.bash report.csv report.t.csv
 

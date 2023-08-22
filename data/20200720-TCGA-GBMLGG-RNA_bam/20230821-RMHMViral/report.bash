@@ -41,16 +41,17 @@ done
 echo
 
 
-#echo -n "| Body Site |"
-#for s in ${samples} ; do
-#
-##	study=$( awk -v s=$s 'BEGIN{FS=OFS="\t"}($1==s){print $6"-"$7}' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_8-1-23hmhmz.tsv )
-#
-#	echo -n " ${study} |"
-#done
-#echo
-#
-#
+echo -n "| diag : IDH |"
+for s in ${samples} ; do
+
+	#study=$( awk -v s=$s 'BEGIN{FS=OFS="\t"}($1==s){print $6"-"$7}' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_8-1-23hmhmz.tsv )
+	study=$( awk -v s=$s 'BEGIN{FS=OFS="\t"}{split(s,a,"-");if($1=="TCGA-"a[1]"-"a[2]){split($2,b,"-");print b[2]" : "$8}}' /francislab/data1/raw/20200720-TCGA-GBMLGG-RNA_bam/TCGA.Glioma.metadata.tsv )
+
+	echo -n " ${study} |"
+done
+echo
+
+
 #echo -n "| --- |"
 #for s in ${samples} ; do
 #	echo -n " --- |"
