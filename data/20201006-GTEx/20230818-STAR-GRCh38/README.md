@@ -43,6 +43,7 @@ STAR_array_wrapper.bash --array=288,723,761,1049,1050,1051,1052,1053,1054 --thre
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 cat report.csv | datamash transpose -t, > report.t.csv
+box_upload.bash report.csv report.t.csv
 
 ```
 
