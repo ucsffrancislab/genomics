@@ -14,7 +14,7 @@ Human_Virome_Analysis_array_wrapper.bash --threads 4 --extension .Aligned.sorted
 
 
 
-##	20230816
+##	20230821
 
 
 ```
@@ -22,9 +22,19 @@ for f in out/*.count.txt ; do
 echo $f
 id=$( basename ${f} .count.txt )
 rc=$( cat /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt/out/${id}_R1.fastq.gz.read_count.txt )
-awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${f%.txt}.normalized.txt
+o=${f%.txt}.normalized.txt
+if [ ! -f ${o} ] ; then
+awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${o}
+fi
 done
 ```
+
+
+
+```
+python3 ./merge.py --out merged.csv out/*.count.normalized.txt
+```
+
 
 
 
