@@ -44,7 +44,7 @@ echo
 echo -n "| Body Site |"
 for s in ${samples} ; do
 
-#	study=$( awk -v s=$s 'BEGIN{FS=OFS="\t"}($1==s){print $6"-"$7}' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_8-1-23hmhmz.tsv )
+	study=$( awk -v s=$s 'BEGIN{FS=OFS=","}($1==s){print $2}' body_site.csv )
 
 	echo -n " ${study} |"
 done
@@ -73,12 +73,12 @@ for s in ${samples} ; do
 done
 echo
 
-echo -n "| hg38 unaligned Count |"
-for s in ${samples} ; do
-	c=$(cat ${dir}/${s}.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt 2> /dev/null)
-	echo -n " ${c} |"
-done
-echo
+#echo -n "| hg38 unaligned Count |"
+#for s in ${samples} ; do
+#	c=$(cat ${dir}/${s}.Aligned.sortedByCoord.out.unmapped.fasta.gz.read_count.txt 2> /dev/null)
+#	echo -n " ${c} |"
+#done
+#echo
 
 echo -n "| RMHM viral aligned Count |"
 for s in ${samples} ; do
