@@ -63,7 +63,7 @@ done ; done ; done
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
 cat report.csv | datamash transpose -t, > report.t.csv
-
+box_upload.bash report.csv report.t.csv
 
 ```
 

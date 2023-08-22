@@ -59,7 +59,10 @@ for f in out/*.count.txt ; do
 echo $f
 srr=$( basename ${f} .count.txt )
 rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
-awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${f%.txt}.normalized.txt
+o=${f%.txt}.normalized.txt
+if [ ! -f ${o} ] ; then
+awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${o}
+fi
 done
 
 #awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/(2*rc))}' ${f} > ${f%.txt}.normalized.txt
