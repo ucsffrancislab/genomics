@@ -1,5 +1,18 @@
 
 
+
+Hey Guys- While im gone could you both try to poke at 2 things:
+1- The CSF/Serum analysis from the latest EV data. (This is preliminary data for the Oct 5th R01) I’m not sure exactly what to do but we have a couple of paired serum and CSF samples from low grade patients. I’m looking for evidence that some of the glioma predictive features are correlated between CSF and serum to help justify the approach. This doesn’t need to get fancy at all- So mayve we coudl take the top mers from the best IDHwt vs mt model and see if the IDH mt associated mers are correlated in blood and serum?
+We could also just use bulk gene or RE expression, but i bet that wont work well.
+Completely open to ideas!
+
+2- The GTEX virus analysis- Not as pressing as #1 but also important for the following grant submission, and hopefully a cool paper. You guys know the jist but i think it woudl be great to just take the first step and make a correlation table between those top viruses and gene expression just to see what happens.
+
+
+
+
+
+
 Delete large, old, replaced or unusable data
 
 du -sh {20200603-TCGA-GBMLGG-WGS,20200720-TCGA-GBMLGG-RNA_bam,20200909-TARGET-ALL-P2-RNA_bam,20201006-GTEx,Geuvadis,1000genomes}/*
@@ -61,41 +74,19 @@ du -sh {20200603-TCGA-GBMLGG-WGS,20200720-TCGA-GBMLGG-RNA_bam,20200909-TARGET-AL
 
 
 
-
-
-
 Re-preprocess GTEx and TCGA like our EV runs but with the Illumina adapters
 
 20230726-Illumina-CystEV Investigate Unaligned reads
 
-
-20201006-GTEx/20230714-STAR - DONE - DELETE?
-20201006-GTEx/20230714-Human_Virome_Analysis - RUNNING - STOP - REDO - DELETE?
-20201006-GTEx/20230816-RMHMViral - RUNNING - STOP - REDO - DELETE?
-
-20230726-Illumina-CystEV/20230809-preprocess - REDO - DONE
-20230726-Illumina-CystEV/20230810-iMOKA - REDO - DONE
-20230726-Illumina-CystEV/20230810-REdiscoverTE - REDO - DONE
-20211208-EV/20230815-preprocess - REDO - DONE
-20230726-Illumina-CystEV/20230815-iMOKA - REDO - DONE
-20230726-Illumina-CystEV/20230816-RMHMViral - REDO - DONE
-
-20201006-GTEx/20230714-Human_Virome_Analysis - STOP - DELETE?
-20201006-GTEx/20230714-STAR - STOP - DELETE?
-20201006-GTEx/20230816-RMHMViral - STOP - DELETE?
-
 20201006-GTEx/20230817-cutadapt - DONE
-20201006-GTEx/20230818-STAR-GRCh38 - RUNNING
+20201006-GTEx/20230818-STAR-GRCh38 - DONE
 20201006-GTEx/20230819-RMHMViral - RUNNING
-20201006-GTEx/20230820-Human_Virome_Analysis - 
+20201006-GTEx/20230820-Human_Virome_Analysis - RUNNING
 
 20200720-TCGA-GBMLGG-RNA_bam/20230807-cutadapt - REDO - DONE
-20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38 - REDO - RUNNING
-20200720-TCGA-GBMLGG-RNA_bam/20230807-Human_Virome_Analysis - REDO
-
-
-
-
+20200720-TCGA-GBMLGG-RNA_bam/20230807-STAR-GRCh38 - REDO - DONE
+20200720-TCGA-GBMLGG-RNA_bam/20230807-Human_Virome_Analysis - RUNNING
+20200720-TCGA-GBMLGG-RNA_bam/20230807-RMHMViral - PREPPING
 
 
 READ "A tissue level atlas of the healthy human virome" https://bmcbiol.biomedcentral.com/articles/10.1186/s12915-020-00785-5 again
@@ -114,9 +105,6 @@ Human-Virome
 	/francislab/data1/refs/Human_Virome_Analysis/bwa-index
 	Viral discovery - nominate and then align again to all inclusive reference ( hg38 and then RefSeq’s complete )( STAR ? ) 
 	(REFERENCE IS HUGE. Making require loads of memory. Using?)
-
-
-
 
 
 Blood Correction Project
@@ -195,6 +183,21 @@ Another idea come up in a meeting today. Remember how we looked for discordant r
 
 
 --------------------------------------------------
+
+20201006-GTEx/20230714-STAR - DONE - DELETE?
+20201006-GTEx/20230714-Human_Virome_Analysis - RUNNING - STOP - REDO - DELETE?
+20201006-GTEx/20230816-RMHMViral - RUNNING - STOP - REDO - DELETE?
+
+20230726-Illumina-CystEV/20230809-preprocess - REDO - DONE
+20230726-Illumina-CystEV/20230810-iMOKA - REDO - DONE
+20230726-Illumina-CystEV/20230810-REdiscoverTE - REDO - DONE
+20211208-EV/20230815-preprocess - REDO - DONE
+20230726-Illumina-CystEV/20230815-iMOKA - REDO - DONE
+20230726-Illumina-CystEV/20230816-RMHMViral - REDO - DONE
+
+20201006-GTEx/20230714-Human_Virome_Analysis - STOP - DELETE?
+20201006-GTEx/20230714-STAR - STOP - DELETE?
+20201006-GTEx/20230816-RMHMViral - STOP - DELETE?
 
 20200720-TCGA-GBMLGG-RNA_bam/20230628-STAR_hg38_XS/out/*.unmapped.fasta.gz
 20201006-GTEx/20230622-RMHMViral preprocessed-end2end DONE - NORMALIZE MATRIX - JOIN WITH SOURCE BODY SITE FOR GROUPING
