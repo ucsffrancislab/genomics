@@ -32,7 +32,7 @@ EV_preprocessing_array_wrapper.bash --threads 8 --out ${PWD}/out --extension _R1
 ```
 ./report.bash > report.md
 sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '2d' report.md > report.csv
-
+box_upload.bash report.csv
 ```
 
 
