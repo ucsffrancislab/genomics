@@ -16,6 +16,11 @@ Human_Virome_Analysis_array_wrapper.bash --threads 4 --extension .Aligned.sorted
 
 ##	20230821
 
+```
+awk 'BEGIN{FS="\t";OFS=","}{$1=$1;print}' /francislab/data1/raw/20200720-TCGA-GBMLGG-RNA_bam/TCGA.Glioma.metadata.tsv > tmp
+( ( head -1 tmp ) && ( tail -n +2 tmp | sort -t, -k1,1 ) ) > TCGA.Glioma.metadata.csv
+\rm tmp
+```
 
 ```
 for f in out/*.count.txt ; do
@@ -35,7 +40,13 @@ python3 ./merge.py --out merged.csv out/*.count.normalized.txt
 
 join -t, --header -1 3 -2 1 12915_2020_785_MOESM11_ESM.sorted.csv merged.sorted.csv | datamash transpose -t, | tail -n +3 > transposed.csv
 
-box_upload.bash transposed.csv
+awk 'BEGIN{OFS=FS=","}(NR==1){print "subject",$0;next}{split($1,a,"-");print "TCGA-"a[1]"-"a[2],$0}'transposed.csv > transposed_with_subject.csv
+
+join -t, --header TCGA.Glioma.metadata.csv transposed_with_subject.csv > transposed_with_subject_meta.csv
+
+
+
+box_upload.bash transposed.csv transposed_with_subject.csv transposed_with_subject_meta.csv
 ```
 
 
