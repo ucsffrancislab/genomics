@@ -6,20 +6,20 @@ echo "Slurm job id:${SLURM_JOBID}:"
 date
 
 set -e  #       exit if any command fails
-set -u  #       Error on usage of unset variables
+#set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
 
 function usage(){
-	set +x
 	echo
 	echo "Usage:"
 	echo
-	echo $0 --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
+	echo $0 --array_file my_commands
 	echo
-	echo $0 --threads 8 --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-STAR_hg38_strand/out 
-	echo --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
+	echo $0 --array_file my_commands --array 25-75 --threads 8 --mem 10G --scratch 200G
+	echo
+	echo $0 --array_file my_commands --array 10,15,25-35 --threads 8 --mem 10G --scratch 200G
 	echo
 	exit
 }
@@ -68,10 +68,11 @@ else
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
 	echo "Preparing array job :${date}:"
-#	array_file=${PWD}/$( basename $0 ).${date}
 	
-	threads=4
+	threads=""
 	array=""
+	mem=""
+	scratch=""
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
@@ -81,26 +82,39 @@ else
 				shift; array_file=$1; shift;;
 			-t|--threads)
 				shift; threads=$1; shift;;
-#			-o|--out|--outdir|-e|--extension|-r|--ref)
-#				array_options="${array_options} $1 $2"; shift; shift;;
+			-m|--mem)
+				shift; mem=$1; shift;;
+			-s|--scratch)
+				shift; scratch=$1; shift;;
 			-h|--help)
 				usage;;
-#			-*)
-#				array_options="${array_options} $1"; shift;;
 			*)
-				echo "Unknown param :${1}: Assuming file"; 
-				realpath --no-symlinks $1 >> ${array_file}; shift;;
+				echo "Unknown param :${1}:";
+				usage;;
 		esac
 	done
 
 	array_options="--array_file ${array_file} "
 
 	#	True if file exists and has a size greater than zero.
-	if [ -s ${array_file} ] ; then
+	if [ -n "${array_file}" ] && [ -s "${array_file}" ] ; then
+		
+		if [ -z "${threads}" ] ;then
+			threads=4
+		fi
 
-		# using M so can be more precise-ish
-		mem=$[threads*7500]M
-		scratch_size=$[threads*28]G	#	not always necessary
+		if [ -n "${mem}" ] ;then
+			# using M so can be more precise-ish
+			mem_option="--mem=${mem} "
+		else
+			mem_option="--mem=$[threads*7500]M "
+		fi
+
+		if [ -n "${scratch}" ] ;then
+			scratch_option="--gres=scratch:${scratch} "
+		else
+			scratch_option="--gres=scratch:$[threads*28]G "
+		fi
 
 		max=$( cat ${array_file} | wc -l )
 
@@ -112,10 +126,13 @@ else
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
 			--parsable --job-name="$(basename $0)" \
-			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+			--time=10080 --nodes=1 --ntasks=${threads} ${mem_option} ${scratch_option} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) ${array_options} )
 
+		echo
+		echo "Logging to ${PWD}/logs/$(basename $0).${date}-${array_id}_*.out.log"
+		echo
 		echo "Throttle with ..."
 		echo "scontrol update JobId=${array_id} ArrayTaskThrottle=8"
 
