@@ -15,19 +15,12 @@ function usage(){
 	echo
 	echo "Example: "
 	echo
-	echo "for v in \$( seq 10 ); do echo \"echo 's(\$v)^2 + c(\$v)^2' | bc -l\" ; done > my_commands"
+	echo "for v in \$( seq 10 ); do echo \"module load star; STAR --version; echo 's(\$v)^2 + c(\$v)^2' | bc -l\" ; done > my_commands"
 	echo
-	echo "cat my_commands "
-	echo "echo 's(1)^2 + c(1)^2' | bc -l"
-	echo "echo 's(2)^2 + c(2)^2' | bc -l"
-	echo "echo 's(3)^2 + c(3)^2' | bc -l"
-	echo "echo 's(4)^2 + c(4)^2' | bc -l"
-	echo "echo 's(5)^2 + c(5)^2' | bc -l"
-	echo "echo 's(6)^2 + c(6)^2' | bc -l"
-	echo "echo 's(7)^2 + c(7)^2' | bc -l"
-	echo "echo 's(8)^2 + c(8)^2' | bc -l"
-	echo "echo 's(9)^2 + c(9)^2' | bc -l"
-	echo "echo 's(10)^2 + c(10)^2' | bc -l"
+	echo "head -3 my_commands "
+	echo "module load star; STAR --version; echo 's(1)^2 + c(1)^2' | bc -l"
+	echo "module load star; STAR --version; echo 's(2)^2 + c(2)^2' | bc -l"
+	echo "module load star; STAR --version; echo 's(3)^2 + c(3)^2' | bc -l"
 	echo
 	echo $0 --array_file my_commands
 	echo c4-log2
@@ -52,9 +45,10 @@ function usage(){
 	echo Thu Aug 24 09:05:13 PDT 2023
 	echo Running line_number :10:
 	echo Using array_file :my_commands:
-	echo echo 's(10)^2 + c(10)^2' \| bc -l
-	echo Running :echo 's(10)^2 + c(10)^2' \| bc -l:
+	echo module load star\; STAR --version\; echo 's(1)^2 + c(1)^2' \| bc -l
+	echo Running :module load star\; STAR --version\; echo 's(1)^2 + c(1)^2' \| bc -l:
 	echo Thu Aug 24 09:05:13 PDT 2023
+	echo 2.7.10b
 	echo .99999999999999999997
 	echo Thu Aug 24 09:05:13 PDT 2023
 	echo 
