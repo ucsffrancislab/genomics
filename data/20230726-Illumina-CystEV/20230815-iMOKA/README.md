@@ -165,3 +165,49 @@ box_upload.bash predictions/grade_collapsed-??/*
 ```
 
 
+
+##	20230824
+
+
+```
+\rm iMOKA_commands
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
+for k in 11 13 16 21 25 31 35 39 43 47 51; do
+dir=${PWD}/out/grade_collapsed-${k}
+cat ${dir}/output_models/*.features | sort | uniq > ${dir}/select_kmers.txt
+echo "export SINGULARITY_BINDPATH=/francislab; export APPTAINER_BINDPATH=/francislab; export OMP_NUM_THREADS=8; export IMOKA_MAX_MEM_GB=50; singularity exec ${img} iMOKA_core create -i ${dir}/create_matrix.tsv -o ${dir}/create_matrix.json; singularity exec ${img} iMOKA_core extract -s ${dir}/create_matrix.json -i ${dir}/select_kmers.txt -o ${dir}/select_kmers.tsv" >> iMOKA_commands
+done
+
+commands_array_wrapper.bash --array_file iMOKA_commands --time 720 --threads 8 --mem 60G 
+```
+
+
+
+
+
+
+
+
+
+```
+\rm iMOKA_commands
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
+for k in 11 13 16 21 25 31 35 39 43 47 51; do
+mkdir -p ${PWD}/all/${k}
+cat ${PWD}/out/grade_collapsed-${k}/output_models/*.features | sort | uniq > ${PWD}/all/${k}/select_kmers.txt
+cat ${PWD}/{out,predictions}/${k}/create_matrix.tsv > ${PWD}/all/${k}/create_matrix.tsv
+echo "export SINGULARITY_BINDPATH=/francislab; export APPTAINER_BINDPATH=/francislab; export OMP_NUM_THREADS=8; export IMOKA_MAX_MEM_GB=50; singularity exec ${img} iMOKA_core create -i ${PWD}/all/${k}/create_matrix.tsv -o ${PWD}/all/${k}/create_matrix.json; singularity exec ${img} iMOKA_core extract -s ${PWD}/all/${k}/create_matrix.json -i ${PWD}/all/${k}/select_kmers.txt -o ${PWD}/all/${k}/select_kmers.tsv" >> iMOKA_commands
+done
+
+commands_array_wrapper.bash --array_file iMOKA_commands --time 720 --threads 8 --mem 60G 
+```
+
+
+
+
+
+
+
+
+
+
