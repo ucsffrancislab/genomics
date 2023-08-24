@@ -94,6 +94,11 @@ else
 		esac
 	done
 
+	if [ -n "$( declare -F module )" ] ; then
+		echo "Loading required modules"
+		module load CBI 	#	samtools star
+	fi
+
 	array_options="--array_file ${array_file} "
 
 	#	True if file exists and has a size greater than zero.
