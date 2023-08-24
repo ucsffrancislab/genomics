@@ -170,7 +170,7 @@ else
 		[ -z "${array}" ] && array="1-${max}"
 
 		#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
-		#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+		#	"hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
 		# --time=0 is actually invalid, at least here. Not passing a valies results in a 10 minute limit.
 
 		sbatch_command="sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
