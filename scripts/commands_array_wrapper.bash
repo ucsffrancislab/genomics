@@ -122,7 +122,7 @@ else
 				shift; array=$1; shift;;
 			--array_file)
 				shift; array_file=$( realpath $1 ); shift;;
-			--threads)
+			--ntasks|--threads)
 				shift; threads=$1; shift;;
 			--mem)
 				shift; mem=$1; shift;;
