@@ -253,9 +253,12 @@ else
 	mem=$[threads*7500]M
 	scratch_size=$[threads*28]G
 
+	#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
+	#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
-		--time=20160 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+		--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
 			$( realpath ${0} ) --in ${IN} --out ${OUT} 
 

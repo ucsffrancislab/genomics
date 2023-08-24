@@ -60,10 +60,13 @@ else
 
 		sed -i '1i sample\tquant_sf_path' $f
 
+		#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
+		#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+
 		sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="Rollup${d}" \
 			--output="${PWD}/logs/REdiscoverTE.${date}.rollup.${d}.out" \
-			--time=4320 --nodes=1 --ntasks=64 --mem=495G \
+			--time=14-0 --nodes=1 --ntasks=64 --mem=495G \
 			${0} \
 			--metadata=${OUTBASE}/REdiscoverTE.${d}.tsv \
 			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ \

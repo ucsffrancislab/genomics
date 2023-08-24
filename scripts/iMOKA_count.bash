@@ -42,10 +42,14 @@ for k in ${all_ks} ; do
 	echo $k
 
 	date=$( date "+%Y%m%d%H%M%S%N" )
+
+	#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
+	#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="iMOKA${k}" \
 		--output="${PWD}/logs/iMOKA.${k}.${date}.out" \
-		--time=1440 --nodes=1 --ntasks=${threads} --mem=${mem}G \
+		--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem}G \
 		~/.local/bin/iMOKA.bash --dir ${dir}/${k} --k ${k} --source_file ${source_file} --stopstep reduce
 
 done

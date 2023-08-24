@@ -137,9 +137,12 @@ else
 
 		mkdir -p ${PWD}/logs
 
+		#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
+		#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
+
 		sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="$(basename $0)" \
-			--time=10080 --nodes=1 --ntasks=${threads} --mem=${mem} \
+			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} \
 			--output=${PWD}/logs/$(basename $0).${date}.out.log \
 				$( realpath ${0} ) ${array_options}
 
