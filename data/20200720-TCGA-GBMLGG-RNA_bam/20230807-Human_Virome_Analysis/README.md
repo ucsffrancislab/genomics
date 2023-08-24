@@ -40,7 +40,7 @@ python3 ./merge.py --out merged.csv out/*.count.normalized.txt
 
 join -t, --header -1 3 -2 1 12915_2020_785_MOESM11_ESM.sorted.csv merged.sorted.csv | datamash transpose -t, | tail -n +3 > transposed.csv
 
-awk 'BEGIN{OFS=FS=","}(NR==1){print "subject",$0;next}{split($1,a,"-");print "TCGA-"a[1]"-"a[2],$0}'transposed.csv > transposed_with_subject.csv
+awk 'BEGIN{OFS=FS=","}(NR==1){print "subject",$0;next}{split($1,a,"-");print "TCGA-"a[1]"-"a[2],$0}' transposed.csv > transposed_with_subject.csv
 
 join -t, --header TCGA.Glioma.metadata.csv transposed_with_subject.csv > transposed_with_subject_meta.csv
 
@@ -50,4 +50,15 @@ box_upload.bash transposed.csv transposed_with_subject.csv transposed_with_subje
 ```
 
 
+No meta data for ...
+```
+TCGA-06-0675
+TCGA-06-0678
+TCGA-06-0680
+TCGA-06-0681
+TCGA-06-AABW
+TCGA-28-2510
+TCGA-28-2510
+TCGA-R8-A6YH
+```
 
