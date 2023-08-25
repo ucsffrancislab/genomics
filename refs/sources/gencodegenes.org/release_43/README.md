@@ -216,3 +216,12 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgen
   --genomeDir ${PWD}/GRCh38.p13.genome"
 ```
 
+
+##	20230825
+
+```
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.tRNAs.gtf.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.2wayconspseudos.gtf.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.polyAs.gtf.gz
+
+```
