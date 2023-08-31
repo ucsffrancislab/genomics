@@ -22,9 +22,13 @@ count=true
 sortbam=false
 discordant=false
 threads=0
+rg=""
 SELECT_ARGS=""
+
 while [ $# -gt 0 ] ; do
 	case $1 in
+		--rg)
+			shift; rg=$1; shift;;
 		-o|--output)
 			shift; output=$1; shift;;
 		--sort)
@@ -42,6 +46,12 @@ while [ $# -gt 0 ] ; do
 			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
 done
+
+if [ -z "${rg}" ] ; then
+	rg=$(basename $output .bam)
+	rg=${rg%.*}
+fi
+SELECT_ARGS="${SELECT_ARGS} --rg-id ${rg} --rg SM:${rg}"
 
 if ${discordant} ; then
 	SELECT_ARGS="${SELECT_ARGS} --un-conc-gz ${output%.bam}_R%.fastq.gz"
