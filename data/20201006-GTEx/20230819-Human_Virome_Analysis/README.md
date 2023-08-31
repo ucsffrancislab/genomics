@@ -87,3 +87,41 @@ box_upload.bash transposed_with_body_site.csv compared_with_body_site.csv
 
 
 
+
+
+These samples take a while ...
+```
+
+   1548391_[1284-1438%1] francislab, Human_Virome   gwendt PD     0:00    1    4  30000M (JobHeldUser)
+            1556438_1431  francislab Human_Virome   gwendt  R 4-01:49:06    1    4  30000M c4-n17
+            1556438_1422  francislab Human_Virome   gwendt  R 4-03:02:06    1    4  30000M c4-n17
+            1556438_1420  francislab Human_Virome   gwendt  R 4-03:05:06    1    4  30000M c4-n17
+            1556438_1412  francislab Human_Virome   gwendt  R 4-05:07:06    1    4  30000M c4-n17
+            1556438_1385  francislab Human_Virome   gwendt  R 4-08:55:06    1    4  30000M c4-n17
+            1556438_1370  francislab Human_Virome   gwendt  R 4-10:02:06    1    4  30000M c4-n17
+             1547450_997      common Human_Virome   gwendt  R 5-15:03:03    1    4  30000M c4-n2
+             1547450_782      common Human_Virome   gwendt  R 6-11:49:51    1    4  30000M c4-n2
+            1548391_1088      common Human_Virome   gwendt  R 6-12:04:58    1    4  30000M c4-n38
+            1548391_1087      common Human_Virome   gwendt  R 6-12:06:27    1    4  30000M c4-n5
+            1548391_1086      common Human_Virome   gwendt  R 6-12:11:55    1    4  30000M c4-n38
+            1548391_1085      common Human_Virome   gwendt  R 6-12:25:57    1    4  30000M c4-n38
+            1548391_1084      common Human_Virome   gwendt  R 6-13:04:28    1    4  30000M c4-n38
+            1548391_1083      common Human_Virome   gwendt  R 6-13:06:13    1    4  30000M c4-n38
+            1548391_1082      common Human_Virome   gwendt  R 6-14:21:48    1    4  30000M c4-n5
+            1548391_1081      common Human_Virome   gwendt  R 6-14:23:47    1    4  30000M c4-n38
+             1547450_385      common Human_Virome   gwendt  R 7-07:08:04    1    4  30000M c4-n5
+```
+
+
+
+
+```
+cat Human_Virome_Analysis_array_wrapper.bash.* | xargs -I% basename % .Aligned.sortedByCoord.out.bam | sort | uniq > input
+ls -1 out/*count.txt | xargs -I% basename % .count.txt > output
+for s in $( comm -23 input output ) ; do
+echo $s
+ll -tr out/${s}_*
+done
+```
+
+
