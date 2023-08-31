@@ -123,3 +123,48 @@ done
 
 
 
+##	20230828
+
+
+```
+awk -F, '(NR>1){print $8}' TABLE_TCGAID.csv | tr -d \" | cut -c 6- | uniq > their_sample_list
+
+ls /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/*R1.fastq.gz | xargs -I% basename % _R1.fastq.gz | cut -d+ -f1 | uniq > our_sample_list
+
+join our_sample_list their_sample_list > shared_sample_list1
+comm -12 our_sample_list their_sample_list > shared_sample_list2
+
+wc -l *sample_list*
+   726 our_sample_list
+   704 shared_sample_list1
+   704 shared_sample_list2
+ 11086 their_sample_list
+
+diff shared_sample_list*
+```
+
+
+
+```
+head -1 TABLE_TCGAID.csv | cut -d, -f10,13,8 | tr -d \" > TABLE_TCGAID.select.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){split($13,a,"-");print $10,a[2]"-"a[3]"-"a[4],$8}' TABLE_TCGAID.csv | sort -k1,2 | tr -d \" >> TABLE_TCGAID.select.csv
+```
+
+
+```
+head -1 Expression\ of\ Transcripts\ Across\ TCGA\ Samples-\ 2297.csv | tr -d \" > Expression\ of\ Transcripts\ Across\ TCGA\ Samples-\ 2297.sorted.csv 
+tail -n +2 Expression\ of\ Transcripts\ Across\ TCGA\ Samples-\ 2297.csv | sort -k1,2 | tr -d \" >> Expression\ of\ Transcripts\ Across\ TCGA\ Samples-\ 2297.sorted.csv &
+```
+
+
+```
+echo "File,Transcript Name,paper TPM,paper Intron Read Count,paper Present" > TCGA_Expression.select.translated.csv
+join --header -t, TCGA_Expression.select.csv Expression\ of\ Transcripts\ Across\ TCGA\ Samples-\ 2297.sorted.csv | awk 'BEGIN{FS=OFS=","}(NR>1){print $2,$4,$5,$6,$7}' | sort -k1,2 >> TCGA_Expression.select.translated.csv &
+
+sed 's/,/:/' TCGA_Expression.select.translated.csv > TCGA_Expression.select.translated.tojoin.csv
+
+```
+
+
+
+
