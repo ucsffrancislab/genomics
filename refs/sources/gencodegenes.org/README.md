@@ -64,6 +64,12 @@ wget ftp://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_3c/gencode.
 
 
 
+
+
+
+##	20230425 for TEProF2
+
+
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.annotation.gtf.gz
 
 # prep for TEProF2 (from TEProF2). Not sure if this went as expected
@@ -114,6 +120,17 @@ wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencod
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.lncRNA_transcripts.fa.gz
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/GRCh38.p13.genome.fa.gz
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/GRCh38.primary_assembly.genome.fa.gz
+
+
+
+##	20230830 Cleanup / organization
+
+```
+mkdir release_43/TEProF2
+mv *plus* *minus* OUTPUT_sorted.gtf release_43/TEProF2/
+```
+
+
 
 
 

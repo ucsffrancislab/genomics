@@ -1,6 +1,6 @@
 rmsk	/francislab/data1/refs/sources/genome.ucsc.edu/rmsk.bed.gz
 rmskannotationfile	/francislab/data1/refs/sources/genome.ucsc.edu/repeatmasker_hg38_description_uniq.lst
-gencodeplusdic	/francislab/data1/refs/sources/gencodegenes.org/genecode_plus.dic
-gencodeminusdic	/francislab/data1/refs/sources/gencodegenes.org/genecode_minus.dic
-plusintron	/francislab/data1/refs/sources/gencodegenes.org/OUTPUT_sorted.gtf_introns_plus_sorted.gz
-minusintron	/francislab/data1/refs/sources/gencodegenes.org/OUTPUT_sorted.gtf_introns_minus_sorted.gz
+gencodeplusdic	/francislab/data1/refs/sources/gencodegenes.org/release_43/TEProF2/genecode_plus.dic
+gencodeminusdic	/francislab/data1/refs/sources/gencodegenes.org/release_43/TEProF2/genecode_minus.dic
+plusintron	/francislab/data1/refs/sources/gencodegenes.org/release_43/TEProF2/OUTPUT_sorted.gtf_introns_plus_sorted.gz
+minusintron	/francislab/data1/refs/sources/gencodegenes.org/release_43/TEProF2/OUTPUT_sorted.gtf_introns_minus_sorted.gz
