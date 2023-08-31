@@ -95,3 +95,26 @@ awk 'BEGIN{OFS=FS=","}(NR>2 && $108<=1){print $1}' 41588_2023_1349_MOESM3_ESM/S1
 ```
 
 
+
+
+
+```
+awk -F, '(NR>1){print $8}' TABLE_TCGAID.csv | tr -d \" | cut -c 6- | uniq > their_sample_list
+
+ls /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200803-bamtofastq/out/*R1.fastq.gz | xargs -I% basename % _R1.fastq.gz | cut -d+ -f1 | uniq > our_sample_list
+
+join our_sample_list their_sample_list > shared_sample_list1
+comm -12 our_sample_list their_sample_list > shared_sample_list2
+
+wc -l *sample_list*
+   726 our_sample_list
+   704 shared_sample_list1
+   704 shared_sample_list2
+ 11086 their_sample_list
+
+diff shared_sample_list*
+```
+
+
+
+
