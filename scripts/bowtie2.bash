@@ -20,6 +20,7 @@ ARGS=$*
 
 count=true
 sortbam=false
+discordant=false
 threads=0
 SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
@@ -28,6 +29,8 @@ while [ $# -gt 0 ] ; do
 			shift; output=$1; shift;;
 		--sort)
 			shift; sortbam=true;;
+		--discordant)
+			shift; discordant=true;;
 		--nocount)
 			shift; count=false;;
 		-@|--threads)
@@ -40,12 +43,16 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
+if ${discordant} ; then
+	SELECT_ARGS="${SELECT_ARGS} --un-conc-gz ${output%.bam}_R%.fastq.gz"
+fi
 
 f=${output}
 if [ -f ${f} ] && [ ! -w ${f} ] ; then
 	echo "Write-protected ${f} exists. Skipping."
 else
 	echo "Creating ${f}"
+	mkdir -p $( dirname ${f} )
 	bowtie2 $SELECT_ARGS 2> ${f}.err.txt | samtools view -o ${f} -
 	#bowtie2 $SELECT_ARGS | samtools view -o ${f} -
 	if $sortbam; then
