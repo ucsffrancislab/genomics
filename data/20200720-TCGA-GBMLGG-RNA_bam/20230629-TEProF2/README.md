@@ -437,3 +437,147 @@ done
 
 
 
+##	20230828
+
+```
+tail -n +2 out/allCandidateStatistics.tsv | cut -f2 | uniq | sort | uniq > our_transcripts
+
+
+
+tail -n +2 /francislab/data1/refs/TEProf2/Expression\ of\ Transcripts\ Across\ TCGA\ Samples-\ 2297.csv | cut -d, -f2 | tr -d \" | uniq | sort | uniq > their_transcripts
+
+
+join our_transcripts their_transcripts > shared_transcripts1
+comm -12 our_transcripts their_transcripts > shared_transcripts2
+diff shared_transcripts?
+
+wc -l *_transcript*
+ 26581 our_transcripts
+  2297 their_transcripts
+  2215 shared_transcripts1
+  2215 shared_transcripts2
+
+```
+
+
+Covert this sample tsv to a subject sample type csv.
+
+
+```
+#head -1 out/allCandidateStatistics.tsv | sed 's/\t/,/g' > sampleTypeStatistics.csv
+#echo "File,Transcript_Name,Transcript Expression (TPM),Intron Read Count,Present" > sampleTypeStatistics.csv
+echo "File,Transcript Name,our TPM,our Intron Read Count,our Present" > sampleTypeStatistics.csv
+
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){c=1;next}{ 
+split($1,a,"-");$1=a[1]"-"a[2]"-"substr(a[3],1,2);
+if(($1==subj)&&($2==tcons)){
+ c+=1; tpm+=$3; irc+=$5;
+}else{
+ if(subj!=""){ 
+  #print subj,tcons,tpm/c,$4,irc 
+  ( ( (tpm/c)>=1 ) && ( irc>=1 ) ) ? p=1 : p=0
+  print subj,tcons,tpm/c,irc,p
+ }
+ c=1; subj=$1; tcons=$2; tpm=$3; irc=$5;
+}
+}END{ 
+ #print subj,tcons,tpm/c,$4,irc 
+ ( ( (tpm/c)>=1 ) && ( irc>=1 ) ) ? p=1 : p=0
+ print subj,tcons,tpm/c,irc,p
+}' out/allCandidateStatistics.tsv | sort -t, -k1,2 >> sampleTypeStatistics.csv
+
+```
+
+
+
+```
+sed 's/,/:/' sampleTypeStatistics.csv > sampleTypeStatistics.tojoin.csv
+
+wc -l sampleTypeStatistics.tojoin.csv /francislab/data1/refs/TEProf2/TCGA_Expression.select.translated.tojoin.csv
+  19138321 sampleTypeStatistics.tojoin.csv
+  25464543 /francislab/data1/refs/TEProf2/TCGA_Expression.select.translated.tojoin.csv
+
+join --header -t, sampleTypeStatistics.tojoin.csv /francislab/data1/refs/TEProf2/TCGA_Expression.select.translated.tojoin.csv > sampleTypeStatistics.tojoin.paper.csv
+
+wc -l sampleTypeStatistics.tojoin.paper.csv
+   1559361 sampleTypeStatistics.tojoin.paper.csv
+
+```
+
+
+##	20230829
+
+Posting to Slack ...
+
+
+
+
+##	20230830
+
+```
+awk 'BEGIN{FS=OFS=","}(NR>1 && ($26>0 || $38>0) ){print $1,$26,$38}' /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv > publishedS1.csv
+```
+
+
+
+
+```
+awk 'BEGIN{FS=OFS=","}(NR==1){print "subject",$0;next}{split($1,a,"-");print a[1]"-"a[2],$0}' sampleTypeStatistics.csv > sampleTypeStatistics.subject.csv
+
+join -t, --header subject_study.csv sampleTypeStatistics.subject.csv > sampleTypeStatistics.subject.study.ALL.csv
+
+head -1 sampleTypeStatistics.subject.study.ALL.csv > sampleTypeStatistics.subject.study.GBM.csv
+head -1 sampleTypeStatistics.subject.study.ALL.csv > sampleTypeStatistics.subject.study.LGG.csv
+
+awk -F, '($2=="GBM")' sampleTypeStatistics.subject.study.ALL.csv >> sampleTypeStatistics.subject.study.GBM.csv
+awk -F, '($2=="LGG")' sampleTypeStatistics.subject.study.ALL.csv >> sampleTypeStatistics.subject.study.LGG.csv
+
+echo "Transcript_Name,LGG" > sampleTypeStatistics.subject.study.LGG.counts.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && $7==1){tc[$4]+=1}END{for(i in tc){print i,tc[i]}}' sampleTypeStatistics.subject.study.LGG.csv | sort -k1,1 >> sampleTypeStatistics.subject.study.LGG.counts.csv &
+echo "Transcript_Name,GBM" > sampleTypeStatistics.subject.study.GBM.counts.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && $7==1){tc[$4]+=1}END{for(i in tc){print i,tc[i]}}' sampleTypeStatistics.subject.study.GBM.csv | sort -k1,1 >> sampleTypeStatistics.subject.study.GBM.counts.csv &
+
+```
+
+
+
+```
+echo "sample" > their_sample_list
+awk -F, '(NR>1){print $13}' /francislab/data1/refs/TEProf2/TABLE_TCGAID.csv | tr -d \" | cut -c 6- | uniq >> their_sample_list
+join -t, --header their_sample_list sampleTypeStatistics.csv > sampleTypeStatistics.shared.csv
+
+awk 'BEGIN{FS=OFS=","}(NR==1){print "subject",$0;next}{split($1,a,"-");print a[1]"-"a[2],$0}' sampleTypeStatistics.shared.csv > sampleTypeStatistics.shared.subject.csv
+
+join -t, --header subject_study.csv sampleTypeStatistics.shared.subject.csv > sampleTypeStatistics.shared.subject.study.ALL.csv
+
+head -1 sampleTypeStatistics.shared.subject.study.ALL.csv > sampleTypeStatistics.shared.subject.study.GBM.csv
+head -1 sampleTypeStatistics.shared.subject.study.ALL.csv > sampleTypeStatistics.shared.subject.study.LGG.csv
+
+awk -F, '($2=="GBM")' sampleTypeStatistics.shared.subject.study.ALL.csv >> sampleTypeStatistics.shared.subject.study.GBM.csv
+awk -F, '($2=="LGG")' sampleTypeStatistics.shared.subject.study.ALL.csv >> sampleTypeStatistics.shared.subject.study.LGG.csv
+
+echo "Transcript_Name,LGG" > sampleTypeStatistics.shared.subject.study.LGG.counts.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && $7==1){tc[$4]+=1}END{for(i in tc){print i,tc[i]}}' sampleTypeStatistics.shared.subject.study.LGG.csv | sort -k1,1 >> sampleTypeStatistics.shared.subject.study.LGG.counts.csv &
+echo "Transcript_Name,GBM" > sampleTypeStatistics.shared.subject.study.GBM.counts.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && $7==1){tc[$4]+=1}END{for(i in tc){print i,tc[i]}}' sampleTypeStatistics.shared.subject.study.GBM.csv | sort -k1,1 >> sampleTypeStatistics.shared.subject.study.GBM.counts.csv &
+
+```
+
+
+
+```
+
+python3 ./merge.py --int --output merged.all_studies.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.subject.study.GBM.counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.subject.study.LGG.counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.shared.subject.study.GBM.counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.shared.subject.study.LGG.counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20230710-TEProF2/subjectsStatistics.presence.ALL.counts.csv /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2/subjectsStatistics.presence.ALL.counts.csv /francislab/data1/working/20230628-Costello/20230707-TEProF2/subjectsStatistics.presence.ALL.counts.csv
+```
+
+Manually edit column names and upload
+```
+vi merged.all_studies.csv 
+
+box_upload.bash merged.all_studies.csv
+
+```
+
+
+
+
