@@ -2,6 +2,14 @@
 #	20200603-TCGA-GBMLGG-WGS/20230831-RMHMViral
 
 
+Searching for novel viral insertions
+
+
+Align raw data to viral
+
+minimize intermediate files so think I need to develope a chimera pipeline wrapper
+
+
 
 ```
 bowtie2_array_wrapper.bash --extension _R1.fastq.gz --very-sensitive -x /francislab/data1/working/20211111-hg38-viral-homology/RMHM --outdir ${PWD}/out --threads 8 /francislab/data1/working/20200603-TCGA-GBMLGG-WGS/20230803-cutadapt/out/02-*_R1.fastq.gz
