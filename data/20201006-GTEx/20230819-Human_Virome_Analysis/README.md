@@ -125,3 +125,18 @@ done
 ```
 
 
+
+
+
+
+
+
+
+
+After the shutdown, as these will likely have failed, ...
+
+
+```
+grep -vs -n -f output Human_Virome_Analysis_array_wrapper.bash.20230820172433271934742 | cut -d: -f1 | paste -sd,
+782,1081,1082,1083,1084,1085,1086,1087,1088,1370,1385,1412,1420,1422,1431
+```
