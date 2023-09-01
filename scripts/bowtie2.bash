@@ -49,7 +49,7 @@ done
 
 if [ -z "${rg}" ] ; then
 	rg=$(basename $output .bam)
-	rg=${rg%.*}
+	rg=${rg%%.*}
 fi
 SELECT_ARGS="${SELECT_ARGS} --rg-id ${rg} --rg SM:${rg}"
 
