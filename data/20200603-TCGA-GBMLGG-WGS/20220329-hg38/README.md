@@ -1,4 +1,5 @@
 
+#	20200603-TCGA-GBMLGG-WGS/20220329-hg38
 
 
 ```
@@ -64,5 +65,15 @@ date=$( date "+%Y%m%d%H%M%S" )
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="fc-x" --output="${PWD}/featureCount.${date}.out" --time=4320 --nodes=1 --ntasks=64 --mem=490G ~/.local/bin/featureCounts.bash -a ${PWD}/subset.gtf -t exon -g gene_name -T 64 -o ${PWD}/featureCounts.ncbiRefSeq.subset.exon.csv ${PWD}/out/*bam
 ```
 
+
+
+
+##	20230925
+
+Needed space so freed up 20TB
+
+```
+/bin/rm -rf out/*bam
+```
 
 
