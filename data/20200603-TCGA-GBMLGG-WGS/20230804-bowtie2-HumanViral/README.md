@@ -45,3 +45,48 @@ done
 
 
 
+##	20230906
+
+
+Look at the sequences
+```
+awk -F, -v accession=NC_053004.1 -v score=30 '(($10==accession)&&($9>score)){print $13}(($4==accession)&&($3>score)){print $7}' out/*discordant_matrix.joined.csv
+```
+
+
+
+
+```
+ln -s /francislab/data1/working/20211111-hg38-viral-homology/RMHM/NC_053004.1.fasta 
+
+ln -s /francislab/data1/working/20211111-hg38-viral-homology/RMHM/NC_037053.1.fasta 
+
+box_upload.bash NC_0*fasta
+```
+
+
+Extrac
+
+```
+module load samtools
+
+samtools view -h -q 40 -F14 out/02-2485-01A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam |  awk '(/^@/||$3=="NC_053004.1")' > 02-2485-01A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.F14.q40.NC_053004.1.viral.sam &
+
+samtools view -h -q 40 -F14 out/02-2485-01A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam |  awk '(/^@/||$7=="NC_053004.1")' > 02-2485-01A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.F14.q40.NC_053004.1.human.sam &
+
+
+samtools view -h -q 40 -F14 out/02-2485-10A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam |  awk '(/^@/||$3=="NC_037053.1")' > 02-2485-10A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.F14.q40.NC_037053.1.viral.sam &
+
+samtools view -h -q 40 -F14 out/02-2485-10A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam |  awk '(/^@/||$7=="NC_037053.1")' > 02-2485-10A-01D-1494.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.F14.q40.NC_037053.1.human.sam &
+
+
+for sam in *.sam ; do
+samtools sort -o ${sam%.sam}.bam ${sam}
+samtools index ${sam%.sam}.bam
+done
+
+box_upload.bash *bam *bam.bai
+
+```
+
+
