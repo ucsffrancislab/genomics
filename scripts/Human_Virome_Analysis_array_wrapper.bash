@@ -372,11 +372,63 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 			#	Creating db_for_second_blast
 
-			zcat ${outbase}_${RR}.blast.viral.fa.gz \
-				| blastn -db /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast \
-					-word_size 11 -outfmt 6 -num_threads ${threads} -evalue 0.01 | gzip > ${f}
-					#-out ${f} 
+#			zcat ${outbase}_${RR}.blast.viral.fa.gz \
+#				| blastn -db /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast \
+#					-word_size 11 -outfmt 6 -num_threads ${threads} -evalue 0.01 | gzip > ${f}
+#					#-out ${f} 
 	
+
+
+			#	wget https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSplit
+			#	chmod +x faSplit
+
+			#	zgrep -c "^>" /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral.fa.gz 
+			#	13057925
+			#	./faSplit sequence /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral.fa.gz 18 /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/
+			#	new faSplit or old. fa or fa.gz. Same bad result. Last file is always HUGEr than the rest?
+			#	grep -c "^>" /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/*fa
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/00.fa:212549
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/01.fa:211229
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/02.fa:210424
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/03.fa:210956
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/04.fa:210087
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/05.fa:210687
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/06.fa:210717
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/07.fa:209682
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/08.fa:210898
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/09.fa:210901
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/10.fa:209961
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/11.fa:211287
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/12.fa:209809
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/13.fa:210842
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/14.fa:211166
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/15.fa:210370
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/16.fa:211903
+			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/17.fa:9474457
+
+			#faSplit sequence ${outbase}_${RR}.blast.viral.fa.gz ${threads} 1_
+
+
+#awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%1000==0){file=sprintf("myseq%d.fa",n_seq);} print >> file; n_seq++; next;} { print >> file; }' < sequences.fa
+
+			#	./faSplit srquence 
+			# total_reads=$( zgrep -c "^>" /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral.fa.gz )
+			total_reads=$( zgrep -c "^>" ${outbase}_${RR}.blast.viral.fa.gz )
+			max_count=$[${total_reads}/${threads}+1]
+			\rm -f ${outbase}_${RR}.blast.viral-??.fa
+			zcat ${outbase}_${RR}.blast.viral.fa.gz | awk -v base=${outbase}_${RR}.blast.viral -v max_count=${max_count} 'function setfilename(){split_file=sprintf("%s-%02d.fa",base,filenum)}BEGIN {n_seq=0;filenum=0;setfilename()}( /^>/ ){ if(n_seq%max_count==0 ){filenum++;setfilename()};n_seq++}{print >> split_file}'
+
+			\rm -f ${outbase}_${RR}.blast.viral.commands.txt
+			for f in ${outbase}_${RR}.blast.viral-??.fa ; do
+				echo blastn -query ${f} -out ${f%.fa}.blastn.txt -db /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast -word_size 11 -outfmt 6 -num_threads 1 -evalue 0.01 >> ${outbase}_${RR}.blast.viral.commands.txt
+			done
+
+			parallel -j $threads < ${outbase}_${RR}.blast.viral.commands.txt
+
+			echo merging blast output
+
+			cat ${outbase}_${RR}.blast.viral-??.blastn.txt | gzip > ${f}
+
 			chmod -w ${f}
 		fi
 	
