@@ -346,3 +346,23 @@ done
 
 
 
+##	20230926
+
+
+```
+head -1 subjectsStatistics.presence.ALL.species.counts.csv > subjectsStatistics.presence.ALL.species.counts.CMV.csv
+grep "Human betaherpesvirus 5" subjectsStatistics.presence.ALL.species.counts.csv >> subjectsStatistics.presence.ALL.species.counts.CMV.csv
+box_upload.bash subjectsStatistics.presence.ALL.species.counts.CMV.csv
+```
+
+
+```
+o=select_CMV_blast.tsv
+i=/francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.tsv
+head -1 $i > ${o}
+while read tcons ; do
+grep "${tcons}_" ${i} >> ${o}
+done < <( cut -d, -f1 subjectsStatistics.presence.ALL.species.counts.CMV.csv )
+```
+
+
