@@ -532,3 +532,84 @@ done
 ```
 
 
+
+
+##	20230926
+
+
+
+```
+box_upload.bash select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.csv
+out=select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.CMV.csv
+head -1 select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.csv > ${out}
+grep ",Human betaherpesvirus 5" select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.005.trimandsort.species.csv >> ${out}
+box_upload.bash ${out}
+
+box_upload.bash select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.trimandsort.species.csv
+out=select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.trimandsort.species.CMV.csv
+head -1 select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.trimandsort.species.csv > ${out}
+grep ",Human betaherpesvirus 5" select_protein_accessions_IN_S10_All_ProteinSequences.blastp.e0.05.trimandsort.species.csv >> ${out}
+box_upload.bash ${out}
+
+```
+
+
+
+
+
+Human_betaherpesvirus_5
+
+
+```
+#blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences -query /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa > Human_betaherpesvirus_5_proteins_IN_S10_All_ProteinSequences.blastp.txt
+
+#blastp -db /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins -query /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences.fa > S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.blastp.txt
+
+#blastp -db /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences -query /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa -evalue 0.05 > Human_betaherpesvirus_5_proteins_IN_S10_All_ProteinSequences.blastp.e0.05.txt
+
+blastp -db /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins -query /francislab/data1/raw/20230426-PanCancerAntigens/S10_All_ProteinSequences.fa -evalue 0.05 > S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.blastp.e0.05.txt
+
+module load samtools
+
+samtools faidx  /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa 
+
+blast2sam.pl S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.blastp.e0.05.txt > S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.sam
+
+samtools view -o tmp -ht /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa.fai S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.sam
+
+samtools sort -o S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.bam tmp
+samtools index S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.bam
+
+
+box_upload.bash S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.ba*
+ln -s /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa
+box_upload.bash Human_betaherpesvirus_5_proteins.trim.fa
+```
+
+
+
+
+JUST SELECT TCONS POINTED OUT BY TEPROF on TARGET data set
+```
+cut -d, -f1 /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20230710-TEProF2/subjectsStatistics.presence.ALL.species.counts.CMV.csv > tmp
+
+grep -f tmp /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S10.csv | awk 'BEGIN{FS=",";OFS="_"}($13!="None"){print ">"$1,$2,$7,$9,$10;print $13}'  | sed 's/ /_/' > TARGET_S10_All_ProteinSequences.fa
+
+
+
+
+blastp -db /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins -query TARGET_S10_All_ProteinSequences.fa -evalue 0.05 > TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.blastp.e0.05.txt
+
+samtools faidx  /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa 
+
+blast2sam.pl TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.blastp.e0.05.txt > TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.sam
+
+samtools view -o tmp -ht /francislab/data1/working/20230413-VZV/Human_betaherpesvirus_5_proteins.trim.fa.fai TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.sam
+
+samtools sort -o TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.bam tmp
+samtools index TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.bam
+
+box_upload.bash TARGET_S10_All_ProteinSequences_IN_Human_betaherpesvirus_5_proteins.ba*
+```
+
+
