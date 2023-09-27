@@ -90,3 +90,33 @@ box_upload.bash *bam *bam.bai
 ```
 
 
+
+
+
+##	20230926
+
+
+```
+bowtie2-build NC_037053.1.fasta NC_037053.1
+
+
+bowtie2_array_wrapper.bash --threads 8 --very-sensitive --no-unal \
+  --ref ${PWD}/NC_037053.1 \
+  --out ${PWD}/out_NC_037053.1 \
+  ${PWD}/../20230803-cutadapt/out/02-2485-10A-01D-1494*_R1.fastq.gz
+
+bowtie2_array_wrapper.bash --threads 8 --very-sensitive --all --no-unal \
+  --ref ${PWD}/NC_037053.1 \
+  --out ${PWD}/out_NC_037053.1_all \
+  ${PWD}/../20230803-cutadapt/out/02-2485-10A-01D-1494*_R1.fastq.gz
+
+```
+
+
+
+
+samtools sort -O SAM -o - out_NC_037053.1_all/02-2485-10A-01D-1494.NC_037053.1.bam | awk '{$5="XXX";print}' > out_NC_037053.1_all/02-2485-10A-01D-1494.NC_037053.1.sam
+samtools sort -O SAM -o - out_NC_037053.1/02-2485-10A-01D-1494.NC_037053.1.bam | awk '{$5="XXX";print}' > out_NC_037053.1/02-2485-10A-01D-1494.NC_037053.1.sam
+
+sdiff out_NC_037053.1*/02-2485-10A-01D-1494.NC_037053.1.sam | head
+
