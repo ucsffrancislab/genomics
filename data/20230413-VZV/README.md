@@ -220,4 +220,24 @@ curl  --silent --ftp-create-dirs -netrc -T ${f} "${BOX}/"
 done
 ```
 
+##	20230926
+
+
+
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human_betaherpesvirus_5.fa > Human_betaherpesvirus_5_proteins.fa
+
+sed  -e '/^>/s/\(^.\{1,51\}\).*/\1/' Human_betaherpesvirus_5_proteins.fa > Human_betaherpesvirus_5_proteins.trim.fa
+
+makeblastdb -in Human_betaherpesvirus_5_proteins.trim.fa -input_type fasta -dbtype prot -title CMV_Proteins -out Human_betaherpesvirus_5_proteins -parse_seqids
+
+```
+
+
+
+
+
+
 
