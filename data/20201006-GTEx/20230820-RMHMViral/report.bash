@@ -88,20 +88,155 @@ done
 echo
 
 
-for q in 20 25 30 ; do
-for l in 20 30 40 50 ; do
+#	for q in 30 35 40 ; do
+#	for l in 40 50 60 70 80 90 ; do
+#	echo -n "| RMHM viral q${q} l${l} aligned Count |"
+#	for s in ${samples} ; do
+#		c=$( cat out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null | datamash -W sum 1 2> /dev/null)
+#		echo -n " ${c} |"
+#	done
+#	echo
+#	done
+#	done
+#	
+#	
+#	echo -n "| --- |"
+#	for s in ${samples} ; do
+#		echo -n " --- |"
+#	done
+#	echo
+#	
 
-echo -n "| RMHM viral q${q} l${l} aligned Count |"
+for q in 30 ; do
+for l in 30 30 40 50 60 ; do
+echo -n "| RMHM viral q${q} l${l} EBV Count |"
 for s in ${samples} ; do
-	c=$( cat out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null | datamash -W sum 1 2> /dev/null)
+	c=$( awk '($2=="NC_007605.1"){print $1}' out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null )
 	echo -n " ${c} |"
 done
 echo
-
 done
 done
+#	grep NC_007605 12915_2020_785_MOESM11_ESM.sorted.csv
+#	NC_007605.1,Human_gammaherpesvirus_4_complete_genome,ID_2
+#	EBV
+echo -n "| Human Virome EBV Count |"
+for s in ${samples} ; do
+	c=$( awk '($1=="ID_2"){print $2}' /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/${s}.count.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo 
+
+
+echo -n "| --- |"
+for s in ${samples} ; do
+	echo -n " --- |"
+done
+echo
 
 
 
 
+for q in 30 ; do
+for l in 30 40 50 60 ; do
+echo -n "| RMHM viral q${q} l${l} CMV Count |"
+for s in ${samples} ; do
+	c=$( awk '($2=="NC_006273.2"){print $1}' out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo
+done
+done
+#	grep NC_006273 12915_2020_785_MOESM11_ESM.sorted.csv
+#	NC_006273.2,Human_herpesvirus_5_strain_Merlin_complete_genome,ID_1242
+#	CMV
+echo -n "| Human Virome CMV Count |"
+for s in ${samples} ; do
+	c=$( awk '($1=="ID_1242"){print $2}' /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/${s}.count.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo 
 
+
+
+
+#	grep NC_001806 12915_2020_785_MOESM11_ESM.sorted.csv
+#	NC_001806.2,Human_herpesvirus_1_strain_17_complete_genome,ID_2457
+#	HSV1
+echo -n "| --- |"
+for s in ${samples} ; do
+	echo -n " --- |"
+done
+echo
+
+for q in 30 ; do
+for l in 30 40 50 60 ; do
+echo -n "| RMHM viral q${q} l${l} HSV1 Count |"
+for s in ${samples} ; do
+	c=$( awk '($2=="NC_001806.2"){print $1}' out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo
+done
+done
+echo -n "| Human Virome HSV1 Count |"
+for s in ${samples} ; do
+	c=$( awk '($1=="ID_2457"){print $2}' /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/${s}.count.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo 
+
+
+#	grep NC_001798 12915_2020_785_MOESM11_ESM.sorted.csv
+#	NC_001798.2,Human_herpesvirus_2_strain_HG52_complete_genome,ID_2456
+#	HSV2
+echo -n "| --- |"
+for s in ${samples} ; do
+	echo -n " --- |"
+done
+echo
+
+for q in 30 ; do
+for l in 30 40 50 60 ; do
+echo -n "| RMHM viral q${q} l${l} HSV2 Count |"
+for s in ${samples} ; do
+	c=$( awk '($2=="NC_001798.2"){print $1}' out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo
+done
+done
+echo -n "| Human Virome HSV2 Count |"
+for s in ${samples} ; do
+	c=$( awk '($1=="ID_2456"){print $2}' /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/${s}.count.txt 2> /dev/null )
+	echo -n " ${c} |"
+done
+echo 
+
+
+#	#	grep NC_009333 12915_2020_785_MOESM11_ESM.sorted.csv
+#	#	NC_009333.1,Human_herpesvirus_8_complete_genome,ID_1230
+#	#	KSHV
+#	echo -n "| --- |"
+#	for s in ${samples} ; do
+#		echo -n " --- |"
+#	done
+#	echo
+#	
+#	for q in 30 ; do
+#	for l in 30 40 50 60 ; do
+#	echo -n "| RMHM viral q${q} l${l} KSHV Count |"
+#	for s in ${samples} ; do
+#		c=$( awk '($2=="NC_009333.1"){print $1}' out/${s}.RMHM.bam.q${q}.l${l}.aligned_sequence_counts.txt 2> /dev/null )
+#		echo -n " ${c} |"
+#	done
+#	echo
+#	done
+#	done
+#	echo -n "| Human Virome KSHV Count |"
+#	for s in ${samples} ; do
+#		c=$( awk '($1=="ID_1230"){print $2}' /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/${s}.count.txt 2> /dev/null )
+#		echo -n " ${c} |"
+#	done
+#	echo 
+#	
