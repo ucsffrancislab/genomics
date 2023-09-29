@@ -125,14 +125,6 @@ done
 ```
 
 
-
-
-
-
-
-
-
-
 After the shutdown, as these will likely have failed, ...
 
 
@@ -140,3 +132,23 @@ After the shutdown, as these will likely have failed, ...
 grep -vs -n -f output Human_Virome_Analysis_array_wrapper.bash.20230820172433271934742 | cut -d: -f1 | paste -sd,
 782,1081,1082,1083,1084,1085,1086,1087,1088,1370,1385,1412,1420,1422,1431
 ```
+
+
+Gonna need to re-develope a fasta split and blast script as these are simply too large (not very) to blast in 14 days!!!!
+
+
+```
+sbatch --mail-user=George.Wendt@ucsf.edu --mail-type=FAIL --array=782,1081,1082,1083,1084,1085,1086,1087,1088,1370,1385,1412,1420,1422,1431%1 --exclude=c4-n3,c4-n10 --parsable --job-name=Human_Virome_Analysis_array_wrapper.bash --time=14-0 --nodes=1 --ntasks=8 --mem=60000M --gres=scratch:200G --output=/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/logs/Human_Virome_Analysis_array_wrapper.bash.20230925102026608468857-%A_%a.out.log /c4/home/gwendt/.local/bin/ucsffrancislab_genomics/Human_Virome_Analysis_array_wrapper.bash --array_file /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/Human_Virome_Analysis_array_wrapper.bash.20230925102026608468857 --extension .Aligned.sortedByCoord.out.bam --out /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out
+```
+
+Still not gonna be enough.
+
+These result in selected fasta files that are simply too big to blast in the time given. The largest is about 200x the size of a file that takes 14 days.
+
+
+
+
+
+
+
+
