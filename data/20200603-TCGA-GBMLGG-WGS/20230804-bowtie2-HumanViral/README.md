@@ -113,10 +113,40 @@ bowtie2_array_wrapper.bash --threads 8 --very-sensitive --all --no-unal \
 ```
 
 
-
+```
 
 samtools sort -O SAM -o - out_NC_037053.1_all/02-2485-10A-01D-1494.NC_037053.1.bam | awk '{$5="XXX";print}' > out_NC_037053.1_all/02-2485-10A-01D-1494.NC_037053.1.sam
 samtools sort -O SAM -o - out_NC_037053.1/02-2485-10A-01D-1494.NC_037053.1.bam | awk '{$5="XXX";print}' > out_NC_037053.1/02-2485-10A-01D-1494.NC_037053.1.sam
 
 sdiff out_NC_037053.1*/02-2485-10A-01D-1494.NC_037053.1.sam | head
+
+```
+
+
+##	20230928
+
+
+```
+module load samtools
+for bam in out/[0-9]*bam ; do 
+echo $bam
+o=${bam}.discordant_matrix.joined.csv
+if [ -f ${o} ] ; then
+echo "${o} exists. Skipping"
+else
+samtools view -F14 ${bam} | awk -v bam=${bam} '{OFS=","}(($3~/(chr|KI|GL)/&&$7~/(AC|NC)/)||($3~/(AC|NC)/&&$7~/(chr|KI|GL)/)){ read=(and(64,$2))?"1":"2"; pos=($3~/_/)?$4:int($4/1000)*1000;print $1,read,$5,$3,pos,length($10),$10 > bam".discordant_matrix."read".csv"}'
+sort -k1,1 ${bam}.discordant_matrix.1.csv > ${bam}.discordant_matrix.sorted.1.csv
+sort -k1,1 ${bam}.discordant_matrix.2.csv > ${bam}.discordant_matrix.sorted.2.csv
+join -t, ${bam}.discordant_matrix.sorted.1.csv ${bam}.discordant_matrix.sorted.2.csv > ${bam}.discordant_matrix.joined.csv
+fi
+done
+
+for f in out/*.discordant_matrix.joined.csv ; do
+echo $f
+awk -F, '($3>40)&&($9>40)&&($6>50)&&($12>50){print $10,$4,$5;print $4,$10,$11}' $f | grep "^.C_" | sort -k1,1 -k2,2 -k3n,3 | uniq -c | awk 'BEGIN{OFS=","}{print $2,$3,$4,$1}' > tmp
+join -t, tmp accession_description.csv
+done
+```
+
+
 
