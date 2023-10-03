@@ -15,11 +15,9 @@ STAR_array_wrapper.bash --threads 8 \
 ```
 
 
-
-
 ```
-samtools view -f66 out/SRR1069188.Aligned.sortedByCoord.out.bam NC_007605.1 | wc -l
+module load samtools
+for b in out/*bam ; do s=$( basename $b .Aligned.sortedByCoord.out.bam ); c=$( samtools view -f66 $b NC_007605.1 | wc -l ) ; echo $s,$c; done
 ```
-
 
 
