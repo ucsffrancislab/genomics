@@ -41,20 +41,23 @@ done
 echo
 
 
+echo -n "| biospecimen_repository_sample_id |"
+for s in ${samples} ; do
+	study=$( awk -v s=$s 'BEGIN{FS=OFS=","}($1==s){print $2}' biospecimen_repository_sample_id.csv )
+	echo -n " ${study} |"
+done
+echo
+
 echo -n "| BioSample |"
 for s in ${samples} ; do
-
 	study=$( awk -v s=$s 'BEGIN{FS=OFS=","}($1==s){print $2}' BioSample.csv )
-
 	echo -n " ${study} |"
 done
 echo
 
 echo -n "| Body Site |"
 for s in ${samples} ; do
-
 	study=$( awk -v s=$s 'BEGIN{FS=OFS=","}($1==s){print $2}' body_site.csv )
-
 	echo -n " ${study} |"
 done
 echo
