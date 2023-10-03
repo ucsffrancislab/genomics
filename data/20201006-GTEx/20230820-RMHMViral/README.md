@@ -93,3 +93,24 @@ box_upload.bash report.csv report.t.csv
 
 ```
 
+
+
+##	20231002
+
+
+```
+cat /francislab/data1/raw/20201006-GTEx/SraRunTable.csv | awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$8}' | sort > BioSample.csv
+
+./report.bash > report.md
+sed -e 's/ | /,/g' -e 's/ \?| \?//g' -e '/^---/d' report.md > report.csv
+cat report.csv | datamash transpose -t, > tmp
+head -1 tmp > report.t.csv
+tail -n +2 tmp | sort -t, -k2,2 >> report.t.csv
+
+box_upload.bash report.csv report.t.csv
+
+
+```
+
+
+
