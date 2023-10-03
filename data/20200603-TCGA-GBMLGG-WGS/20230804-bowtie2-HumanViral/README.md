@@ -137,7 +137,7 @@ else
 samtools view -F14 ${bam} | awk -v bam=${bam} '{OFS=","}(($3~/(chr|KI|GL)/&&$7~/(AC|NC)/)||($3~/(AC|NC)/&&$7~/(chr|KI|GL)/)){ read=(and(64,$2))?"1":"2"; pos=($3~/_/)?$4:int($4/1000)*1000;print $1,read,$5,$3,pos,length($10),$10 > bam".discordant_matrix."read".csv"}'
 sort -k1,1 ${bam}.discordant_matrix.1.csv > ${bam}.discordant_matrix.sorted.1.csv
 sort -k1,1 ${bam}.discordant_matrix.2.csv > ${bam}.discordant_matrix.sorted.2.csv
-join -t, ${bam}.discordant_matrix.sorted.1.csv ${bam}.discordant_matrix.sorted.2.csv > ${bam}.discordant_matrix.joined.csv
+join -t, ${bam}.discordant_matrix.sorted.1.csv ${bam}.discordant_matrix.sorted.2.csv > ${o}
 fi
 done
 
