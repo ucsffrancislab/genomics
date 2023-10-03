@@ -225,3 +225,19 @@ wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencod
 wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_43/gencode.v43.polyAs.gtf.gz
 
 ```
+
+##	20231002
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgenerate" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/STARgenerate.$( date "+%Y%m%d%H%M%S%N" ).log --export=None \
+ --wrap="module load star/2.7.7a && STAR --runThreadN 64 --runMode genomeGenerate \
+  --genomeFastaFiles ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/working/20211111-hg38-viral-homology/RMHM.fasta \
+  --sjdbGTFfile ${PWD}/gencode.v43.primary_assembly.annotation.gtf \
+  --genomeDir ${PWD}/GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM"
+
+```
+
+
+
