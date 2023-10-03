@@ -210,3 +210,22 @@ grep -vs "Illumina-1.8 35 74" encoding.csv
 24 are "corrupt"
 
 
+
+
+##	20231003
+
+
+
+
+```
+grep -vs Resequencing SraRunTable.csv > SraRunTable.NoResequencing.csv 
+
+wc -l SraRunTable*
+   24456 SraRunTable.csv
+   15221 SraRunTable.NoResequencing.csv
+
+```
+
+
+
+
