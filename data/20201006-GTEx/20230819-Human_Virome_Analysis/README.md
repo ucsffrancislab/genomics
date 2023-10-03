@@ -152,3 +152,68 @@ These result in selected fasta files that are simply too big to blast in the tim
 
 
 
+
+
+
+
+##	20231003
+
+New normal ...
+
+
+The number of RNA-Seq fragments assigned to a certain virus was divided by the total number of RNA-Seq fragments assigned to any human genes, the length of the human genome sequence, and the length of the viral genome sequence,
+
+
+the number of RNA-Seq fragments assigned to a certain virus (in out/*.count.txt)
+------------------------------------------------------------
+the total number of RNA-Seq fragments assigned to any human genes (/francislab/data1/working/20201006-GTEx/20230818-STAR-GRCh38/out/*.Aligned.sortedByCoord.out.bam.aligned_count.txt - close but not 100%)
+-----------------------------------------------------------------
+the length of the human genome sequence (fixed)
+---------------------------------------
+the length of the viral genome sequence
+
+Normalize inside the matrix rather than individually?
+
+
+
+```
+for f in out/*.count.txt ; do
+echo $f
+srr=$( basename ${f} .count.txt )
+rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
+o=${f%.txt}.renormalized.txt
+if [ ! -f ${o} ] ; then
+
+
+
+
+
+awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${o}
+
+
+
+
+
+
+
+fi
+done
+
+python3 ./merge.py --out merged.csv out/*.count.renormalized.txt
+
+( ( head -1 merged.csv ) && ( tail -n +2 merged.csv | sort -t, -k1,1 ) ) > merged.sorted.csv
+( ( head -2 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM11_ESM.tsv | tail -n 1 | sed 's/Refseq ID/Refseq_ID/' | sed $'s/\t/,/g' ) && ( tail -n +3 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM11_ESM.tsv | sed 's/[,"]//g' | sed $'s/\t/,/g' | sort -t, -k3 ) ) | awk 'BEGIN{FS=OFS=","}{print $1,$2,$3}' > 12915_2020_785_MOESM11_ESM.sorted.csv
+
+join -t, --header -1 3 -2 1 12915_2020_785_MOESM11_ESM.sorted.csv merged.sorted.csv | datamash transpose -t, | tail -n +3 > transposed.csv
+join -t, --header body_site.csv transposed.csv > transposed_with_body_site.csv
+
+join -t, --header transposed.csv <( tail -n +2 ~/github/ucsffrancislab/Human_Virome_analysis/12915_2020_785_MOESM3_ESM.csv | sed -e 's/ /_/g' -e '1s/,/,ppr /g' )  > compared.csv
+
+join -t, --header body_site.csv compared.csv > compared_with_body_site.csv
+
+box_upload.bash transposed_with_body_site.csv compared_with_body_site.csv
+
+```
+
+
+
