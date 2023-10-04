@@ -59,4 +59,16 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=bwa-index 
 
 
 
+##	20231004
+
+
+```
+blastdbcmd -entry all -db /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast -outfmt "%a,%l" > /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv
+
+wc -l /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv
+24478015 /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv
+
+sort -t, -k1,1 /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv > /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.sorted.csv
+
+```
 
