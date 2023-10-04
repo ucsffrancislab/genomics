@@ -117,8 +117,8 @@ box_upload.bash report.csv report.t.csv
 ##	20231003
 
 
-
 ```
+
 cat /francislab/data1/raw/20201006-GTEx/SraRunTable.csv | awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$10}' | sort > biospecimen_repository_sample_id.csv
 
 ./report.bash > report.md
@@ -129,11 +129,30 @@ tail -n +2 tmp | sort -t, -k2,2 >> report.t.csv
 
 box_upload.bash report.csv report.t.csv
 
-
 ```
 
 
+##	20231004
 
-##	20231003
+Extract and combine all EBV aligned reads ...
+
+
+
+```
+module load samtools
+cp /francislab/data1/working/20211111-hg38-viral-homology/RMHM/NC_007605.1.fasta ./
+samtools faidx NC_007605.1.fasta
+
+\rm tmp1
+for b in out/*bam ; do echo $b; samtools view $b NC_007605.1 >> tmp1 ; done
+
+samtools view -o tmp2 -ht NC_007605.1.fasta.fai tmp1
+samtools sort -o all_gtex_NC_007605.1.bam tmp2
+samtools index all_gtex_NC_007605.1.bam
+\rm tmp1 tmp2
+
+box_upload.bash all_gtex_NC_007605.1.bam all_gtex_NC_007605.1.bam.bai NC_007605.1.fasta NC_007605.1.fasta.fai
+```
+
 
 
