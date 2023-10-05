@@ -1,0 +1,65 @@
+
+#	20230628-Costello/20231004-cutadapt
+
+Redoing and probably correcting previous run 20230629-cutadapt
+
+568 samples
+
+
+```
+5'- AATGATACGGCGACCACCGAGATCTACACNNNNNNNNACACTCTTTCCCTACACGACGCTCTTCCGATCT-insert-AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG -3'
+3'- TTACTATGCCGCTGGTGGCTCTAGATGTGNNNNNNNNTGTGAGAAAGGGATGTGCTGCGAGAAGGCTAGA-insert-TCTAGCCTTCTCGTGTGCAGACTTGAGGTCAGTGNNNNNNNNTAGAGCATACGGCAGAAGACGAAC -5'
+          Illumina P5               i5            Truseq Read 1                          Truseq Read 2                 i7        Illumina P7
+
+insert-AGATCGGAAGAGCACACGTCTGAACTCCAGTCACNNNNNNNNATCTCGTATGCCGTCTTCTGCTTG -3'
+3'- TTACTATGCCGCTGGTGGCTCTAGATGTGNNNNNNNNTGTGAGAAAGGGATGTGCTGCGAGAAGGCTAGA-insert
+
+
+insert-AGATCGGAAGAGCACACGTCTGAACTCCAGTCAC NNNNNNNN ATCTCGTATGCCGTCTTCTGCTTG 
+tresni-AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT  NNNNNNNN GTGTAGATCTCGGTGGTCGCCGTATCATT
+
+```
+
+
+
+```
+
+cutadapt_array_wrapper.bash --threads 4 --extension _R1.fastq.gz \
+  --out ${PWD}/out \
+  --trim-n --match-read-wildcards --times 6 \
+  --error-rate 0.1 --overlap 5 --minimum-length 15 --quality-cutoff 25 \
+  -a "A{10}" -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+             -a AGATCGGAAGAGCACACGTCTGA \
+             -a      GGAAGAGCACACGTCTGAACTCC \
+             -a           AGCACACGTCTGAACTCCAGTCA \
+             -a ATCTCGTATGCCGTCTTCTGCTTG \
+  -G "T{10}" -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+             -A AGATCGGAAGAGCGTCGTGTAGG \
+             -A      GGAAGAGCGTCGTGTAGGGAAAG \
+             -A           AGCGTCGTGTAGGGAAAGAGTGT \
+             -A GTGTAGATCTCGGTGGTCGCCGTATCATT \
+    /francislab/data1/raw/20230628-Costello/fastq/*R1.fastq.gz
+
+
+```
+
+
+
+
+
+
+```
+paste <( zcat /francislab/data1/raw/20230628-Costello/fastq/2p300SF10711v1_S2_R1.fastq.gz ) <( zcat /francislab/data1/raw/20230628-Costello/fastq/2p300SF10711v1_S2_R2.fastq.gz ) | sed -n '2~4p' | head
+
+
+
+zgrep -m 1 -A3 @K00153:265:HH7MTBBXX:1:1102:8704:13130 /francislab/data1/raw/20230628-Costello/fastq/2p300SF10711v1_S2_R1.fastq.gz > test_R1.fastq 
+
+zgrep -m 1 -A 2 -B 1 AGCTCCTTAAAGCTTTTTTTTTTTTTTTAGTCTTATGCACCTAAGAGGCTA /francislab/data1/raw/20230628-Costello/fastq/2p300SF10711v1_S2_R2.fastq.gz > test_R2.fastq
+
+cutadapt --trim-n --match-read-wildcards --times 6 --error-rate 0.1 --overlap 5 --minimum-length 15 --quality-cutoff 25 -a 'A{10}' -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA -a AGATCGGAAGAGCACACGTCTGA -a GGAAGAGCACACGTCTGAACTCC -a AGCACACGTCTGAACTCCAGTCA -a ATCTCGTATGCCGTCTTCTGCTTG -G 'T{10}' -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT -A AGATCGGAAGAGCGTCGTGTAGG -A GGAAGAGCGTCGTGTAGGGAAAG -A AGCGTCGTGTAGGGAAAGAGTGT -A GTGTAGATCTCGGTGGTCGCCGTATCATT --cores 4 -o test_out_R1.fastq -p test_out_R2.fastq test_R1.fastq test_R2.fastq
+
+```
+
+
+
