@@ -244,3 +244,51 @@ box_upload.bash top10gt10*csv
 
 
 
+
+##	20231005
+
+
+```
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1}' /francislab/data1/raw/20201006-GTEx/SraRunTable.NoResequencing.csv | sort > Brain.NoResequencing.csv
+
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$11}' /francislab/data1/raw/20201006-GTEx/SraRunTable.NoResequencing.csv | sort > body_site.NoResequencing.csv
+
+cut -d, -f2 body_site.NoResequencing.csv | sort -u
+
+```
+
+
+Top 10 viruses based on the count of subjects with greater than 10 hits per virus
+Top 10 viruses based on the count of subjects with greater than 100 hits per virus
+Top 10 viruses based on the count of subjects with greater than 1000 hits per virus
+
+for each subset of subjects based on the brain site
+
+
+
+
+
+
+```
+for i in 10 100 1000 ; do
+tail -n +2 body_site.NoResequencing.csv | cut -d, -f2 | sort -u | while read site ; do
+echo $site
+echo "accession,subject_count" > tmp1
+for srr in $( awk -F, -v site="${site}" '( $2 == site ){print $1}' body_site.NoResequencing.csv ); do
+if [ -f out/${srr}.RMHM.bam.q30.l60.aligned_sequence_counts.txt ] ; then
+awk -v i=${i} '($1>i){print $2}' out/${srr}.RMHM.bam.q30.l60.aligned_sequence_counts.txt 
+fi
+done | sort | uniq -c | sort -k1nr,1 | head | awk '{print $2","$1}' | sort -t, -k1,1 >> tmp1
+join -t, --header accession_description.csv tmp1 > tmp2
+head -1 tmp2 > "top10gt${i}.${site// /_}.csv"
+tail -n +2 tmp2 | sort -t, -k3nr,3 >> "top10gt${i}.${site// /_}.csv"
+done
+done
+
+
+box_upload.bash top10gt10*.Brain*.csv
+
+```
+
+
+
