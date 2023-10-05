@@ -259,8 +259,11 @@ else
 		#	date=$( date "+%Y%m%d%H%M%S%N" )
 
 		set -x  #       print expanded command before executing it
-		#	strand_option=""
-		#	[ -n "${strand}" ] && strand_option="--strand ${strand}"
+
+		#	I'm using the XS attribute now so this is probably unnecessary
+		strand_option=""
+		[ -n "${strand}" ] && strand_option="--strand ${strand}"
+
 		[ -z "${array}" ] && array="1-${max}"
 
 		#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
