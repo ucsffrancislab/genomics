@@ -34,3 +34,23 @@ cat report.csv | datamash transpose -t, > report.t.csv
 box_upload.bash report.csv report.t.csv
 ```
 
+
+##	20231004
+
+Perhaps should have added shorter pieces of the adapters as many slip through
+
+Something like ... which I'm using for the Costello dataset now.
+
+```
+  -a "A{10}" -a AGATCGGAAGAGCACACGTCTGAACTCCAGTCA \
+             -a AGATCGGAAGAGCACACGTCTGA \
+             -a      GGAAGAGCACACGTCTGAACTCC \
+             -a           AGCACACGTCTGAACTCCAGTCA \
+             -a ATCTCGTATGCCGTCTTCTGCTTG \
+  -G "T{10}" -A AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT \
+             -A AGATCGGAAGAGCGTCGTGTAGG \
+             -A      GGAAGAGCGTCGTGTAGGGAAAG \
+             -A           AGCGTCGTGTAGGGAAAGAGTGT \
+             -A GTGTAGATCTCGGTGGTCGCCGTATCATT \
+
+```
