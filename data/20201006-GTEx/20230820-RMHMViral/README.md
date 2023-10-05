@@ -137,7 +137,6 @@ box_upload.bash report.csv report.t.csv
 Extract and combine all EBV aligned reads ...
 
 
-
 ```
 module load samtools
 cp /francislab/data1/working/20211111-hg38-viral-homology/RMHM/NC_007605.1.fasta ./
@@ -152,6 +151,95 @@ samtools index all_gtex_NC_007605.1.bam
 \rm tmp1 tmp2
 
 box_upload.bash all_gtex_NC_007605.1.bam all_gtex_NC_007605.1.bam.bai NC_007605.1.fasta NC_007605.1.fasta.fai
+```
+
+
+
+```
+python3 ~/.local/bin/merge_uniq-c.py --int -o merged.csv out/*.q30.l60.aligned_sequence_counts.txt
+
+
+awk '{c[$2]+=$1}END{for(i in c){if(c[i]>1000) print i}}' out/*.RMHM.bam.q30.l60.aligned_sequence_counts.txt > top_accessions
+
+for txt in out/*.RMHM.bam.q30.l60.aligned_sequence_counts.txt ; do
+echo $txt
+grep -f top_accessions ${txt} > ${txt%.txt}.top.txt
+done
+
+
+python3 ~/.local/bin/merge_uniq-c.py --int -o tmp1 out/*.q30.l60.aligned_sequence_counts.top.txt
+
+cat tmp1 | datamash transpose -t, > tmp2
+join -t, --header body_site.csv tmp2 > tmp3
+join -t, --header BioSample.csv tmp3 > tmp4
+join -t, --header biospecimen_repository_sample_id.csv tmp4 > tmp5
+cat tmp5 | datamash transpose -t, > tmp6
+
+head -3 tmp6 | sed 's/,/,description,/' > merged.top.csv
+join -t, --header accession_description.csv <( tail -n +4 tmp6 ) >> merged.top.csv
+cat merged.top.csv | datamash transpose -t, > merged.top.t.csv
+
+box_upload.bash merged.top.csv merged.top.t.csv
+\rm tmp?
+
+```
+
+
+
+```
+
+echo "accession,count" > tmp
+awk '{c[$2]+=$1}END{for(i in c){if(c[i]>1000) print i","c[i]}}' out/*.RMHM.bam.q30.l60.aligned_sequence_counts.txt | sort -t, -k1,1 >> tmp
+join -t, --header accession_description.csv tmp > total_counts.csv
+
+```
+
+
+
+
+Extract and combine all HSV1 aligned reads ...
+
+
+```
+module load samtools
+cp /francislab/data1/working/20211111-hg38-viral-homology/RMHM/NC_001806.2.fasta ./
+samtools faidx NC_001806.2.fasta
+
+\rm tmp1
+for b in out/*bam ; do echo $b; samtools view $b NC_001806.2 >> tmp1 ; done
+
+samtools view -o tmp2 -ht NC_001806.2.fasta.fai tmp1
+samtools sort -o all_gtex_NC_001806.2.bam tmp2
+samtools index all_gtex_NC_001806.2.bam
+\rm tmp1 tmp2
+
+box_upload.bash all_gtex_NC_001806.2.bam all_gtex_NC_001806.2.bam.bai NC_001806.2.fasta NC_001806.2.fasta.fai
+```
+
+
+
+
+```
+echo "accession,subject_count" > tmp1
+awk '($1>10){print $2}' out/*.RMHM.bam.q30.l60.aligned_sequence_counts.txt | sort | uniq -c | sort -k1nr,1 | head | awk '{print $2","$1}' | sort -t, -k1,1 >> tmp1
+join -t, --header accession_description.csv tmp1 > tmp2
+head -1 tmp2 > top10gt10.csv
+tail -n +2 tmp2 | sort -t, -k3nr,3 >> top10gt10.csv
+
+echo "accession,subject_count" > tmp1
+awk '($1>100){print $2}' out/*.RMHM.bam.q30.l60.aligned_sequence_counts.txt | sort | uniq -c | sort -k1nr,1 | head | awk '{print $2","$1}' | sort -t, -k1,1 >> tmp1
+join -t, --header accession_description.csv tmp1 > tmp2
+head -1 tmp2 > top10gt100.csv
+tail -n +2 tmp2 | sort -t, -k3nr,3 >> top10gt100.csv
+
+echo "accession,subject_count" > tmp1
+awk '($1>1000){print $2}' out/*.RMHM.bam.q30.l60.aligned_sequence_counts.txt | sort | uniq -c | sort -k1nr,1 | head | awk '{print $2","$1}' | sort -t, -k1,1 >> tmp1
+join -t, --header accession_description.csv tmp1 > tmp2
+head -1 tmp2 > top10gt1000.csv
+tail -n +2 tmp2 | sort -t, -k3nr,3 >> top10gt1000.csv
+
+box_upload.bash top10gt10*csv
+
 ```
 
 
