@@ -174,28 +174,31 @@ the length of the viral genome sequence
 
 Normalize inside the matrix rather than individually?
 
+```
+blastdbcmd -entry all -db /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast -outfmt "%a,%l" > /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv
+
+wc -l /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv
+24478015 /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv
+
+sort -t, -k1,1 /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.csv > /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.sorted.csv
+
+```
 
 
 ```
 for f in out/*.count.txt ; do
 echo $f
 srr=$( basename ${f} .count.txt )
-rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
+#rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
 o=${f%.txt}.renormalized.txt
 if [ ! -f ${o} ] ; then
-
-
-
-
-
-awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${o}
-
-
-
-
-
-
-
+#awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${o}
+gene_count=$( cat /francislab/data1/working/20201006-GTEx/20230818-STAR-GRCh38/out/${srr}.Aligned.sortedByCoord.out.bam.aligned_count.txt )
+while read accession count ; do
+l=$(awk -F, -v acc=${accession} '($1==acc){print $2;exit}' /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.sorted.csv)
+n=$( echo "${count} / ${gene_count} / 3000000000 / ${l}" | bc -l )
+echo -e "${accession}\t${n}" >> ${o}
+done < <( tail -n +2 ${f} )
 fi
 done
 
