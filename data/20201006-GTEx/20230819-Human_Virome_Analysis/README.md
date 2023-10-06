@@ -186,7 +186,7 @@ sort -t, -k1,1 /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.
 
 
 ```
-for f in out/*.count.txt ; do
+for f in out/SRR106*.count.txt ; do
 echo $f
 srr=$( basename ${f} .count.txt )
 #rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
@@ -194,9 +194,11 @@ o=${f%.txt}.renormalized.txt
 if [ ! -f ${o} ] ; then
 #awk -v rc=${rc} 'BEGIN{FS=OFS="\t"}(NR==1){print;next}(/^ID_/){print $1,(1000*$2/rc)}' ${f} > ${o}
 gene_count=$( cat /francislab/data1/working/20201006-GTEx/20230818-STAR-GRCh38/out/${srr}.Aligned.sortedByCoord.out.bam.aligned_count.txt )
+head -1 ${f} > ${o}
 while read accession count ; do
 l=$(awk -F, -v acc=${accession} '($1==acc){print $2;exit}' /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.sorted.csv)
-n=$( echo "${count} / ${gene_count} / 3000000000 / ${l}" | bc -l )
+echo "${count} / ${l} / ${gene_count} / 3000000000"
+n=$( echo "${count} / ${l} / ${gene_count} / 3000000000" | bc -l )
 echo -e "${accession}\t${n}" >> ${o}
 done < <( tail -n +2 ${f} )
 fi
