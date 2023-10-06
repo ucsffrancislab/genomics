@@ -47,3 +47,19 @@ box_upload.bash report.csv report.t.csv
 
 ```
 
+
+
+
+
+
+
+
+##	20231005
+
+
+
+featureCounts -a /francislab/data1/refs/sources/gencodegenes.org/release_43/gencode.v43.primary_assembly.annotation.gtf -t exon -g gene_name -o SRR1069188.Aligned.sortedByCoord.out.featureCounts.txt SRR1069188.Aligned.sortedByCoord.out.bam
+
+
+
+
