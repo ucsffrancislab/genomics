@@ -167,4 +167,30 @@ done
 ```
 
 
+##	20231010
+
+
+The above used a TCGA subject / sample name parsing which mucked up some data.
+
+
+
+```
+sed 's/\t/,/g' out/allCandidateStatistics.tsv > allCandidateStatistics.csv
+
+( head -1 allCandidateStatistics.csv | awk 'BEGIN{FS=OFS=","}{print $1,$2}' && \
+  tail -n +2 allCandidateStatistics.csv \
+  | grep -f viral_TCONS.0.05.txt \
+  | awk 'BEGIN{FS=OFS=","}{if(($3>=1)&&($5>=1)){print $1,$2}}' \
+) > allCandidateStatistics.presence.ALL.csv
+
+for s in ALL ; do
+a=allCandidateStatistics.presence.${s}.csv
+( head -1 ${a} | awk -v s=${s} 'BEGIN{FS=OFS=","}{print $2,s}' && tail -n +2 ${a} | cut -d, -f2 | sort | uniq -c | awk 'BEGIN{OFS=","}{print $2,$1}' ) > allCandidateStatistics.presence.${s}.counts.csv
+join --header -t, /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv allCandidateStatistics.presence.${s}.counts.csv > allCandidateStatistics.presence.${s}.species.counts.csv
+done
+
+box_upload.bash allCandidateStatistics*.csv
+```
+
+
 
