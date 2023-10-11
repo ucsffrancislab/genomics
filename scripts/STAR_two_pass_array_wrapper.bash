@@ -19,7 +19,9 @@ function usage(){
 	echo $0 --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
 	echo
 	echo $0 --threads 8 --out /francislab/data1/working/20200609_costello_RNAseq_spatial/20230424-STAR_hg38_strand/out 
-	echo --ref /PATH/TO/ref_genome.fa path/*1.fastq.gz
+	echo --ref /PATH/TO/ref_genome path/*1.fastq.gz
+	echo
+	echo "Note that the reference needs to also have a '.fa' present as well"
 	echo
 	exit
 }
@@ -93,8 +95,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo
 	echo "base : ${base}"
 	echo "ext : ${extension}"
-	echo "r1 : $R1"
-	echo "r2 : $R2"
+	echo "R1 : $R1"
+	echo "R2 : $R2"
 	#echo "bam : $bam"
 	echo 
 
@@ -130,7 +132,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 			STAR \
 				--genomeDir ${ref} \
-				--readFilesIn ${r1} ${r2} \
+				--readFilesIn ${R1} ${R2} \
 				--runThreadN ${threads} \
 				--outFilterMultimapScoreRange 1 \
 				--outFilterMultimapNmax 20 \
@@ -144,13 +146,21 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 				--outFilterScoreMinOverLread 0.33 \
 				--sjdbOverhang 100 \
 				--outSAMstrandField intronMotif \
-				--outSAMtype None \
-				--outSAMmode None \
 				--runMode alignReads \
 				--readFilesType Fastx \
 				--readFilesCommand zcat \
-				--outFileNamePrefix ${outFileNamePrefix}
+				--outFileNamePrefix ${outFileNamePrefix} \
+				--outSAMtype None \
+				--outSAMmode None
 
+				#--outSAMtype None \
+				#--outSAMmode None \
+
+				#--outSAMattributes NH HI NM MD AS XS \
+				#--outSAMtype BAM SortedByCoordinate \
+				#--outSAMheaderHD @HD VN:1.4 \
+				#--outSAMattrRGline ID:${base} SM:${base} \
+				#--outSAMunmapped Within KeepPairs \
 				#--outBAMsortingBinsN $[900/threads] \
 				#--limitBAMsortRAM $[SLURM_NTASKS*7000000000]
 
@@ -165,7 +175,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		STAR \
 			--runMode genomeGenerate \
 			--genomeDir ${PWD}/genome \
-			--genomeFastaFiles ${ref} \
+			--genomeFastaFiles ${ref}.fa \
 			--sjdbOverhang 100 \
 			--runThreadN ${threads} \
 			--sjdbFileChrStartEnd ${OUT}/1stPass/*.SJ.out.tab
@@ -184,7 +194,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 			STAR \
 				--genomeDir ${PWD}/genome \
-				--readFilesIn ${r1} ${r2}  \
+				--readFilesIn ${R1} ${R2}  \
 				--runThreadN ${threads} \
 				--outFilterMultimapScoreRange 1 \
 				--outFilterMultimapNmax 20 \
@@ -271,7 +281,7 @@ else
 		#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
 		#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
 
-		step1_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
+		step1_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%8 \
 			--parsable --job-name="1-$(basename $0)" \
 			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).1stPass.$( date "+%Y%m%d%H%M%S%N" )-%A_%a.out.log \
@@ -281,10 +291,10 @@ else
 		  --dependency=${step1_id} \
 			--parsable --job-name="2-$(basename $0)" \
 			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
-			--output=${PWD}/logs/$(basename $0).ReGenome.out.log \
+			--output=${PWD}/logs/$(basename $0).ReGenome.$( date "+%Y%m%d%H%M%S%N" ).out.log \
 					$( realpath ${0} ) regenome ${array_options} )
 
-		step3_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
+		step3_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%8 \
 		  --dependency=${step2_id} \
 			--parsable --job-name="3-$(basename $0)" \
 			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
