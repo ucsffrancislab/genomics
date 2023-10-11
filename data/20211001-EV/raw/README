@@ -46,3 +46,19 @@ curl -netrc -T ATCTCGTATGCCGTCTTCTGCTTG.after_sequence.txt "${BOX}/"
 
 
 
+##	20231010
+
+```
+mkdir fastq
+cd fastq
+for f in ../SF*fastq.gz ; do
+l=$( basename $f )
+l=${l/_001/}
+l=${l/_L001/}
+l=${l/_S?/}
+ln -s $f $l
+done
+
+```
+
+
