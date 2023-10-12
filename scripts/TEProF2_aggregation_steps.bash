@@ -11,7 +11,7 @@ set -o pipefail
 set -x  #       print expanded command before executing it
 
 CPC2=/c4/home/gwendt/github/nakul2234/CPC2_Archive/bin/CPC2.py
-TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
+TEPROF2=/c4/home/gwendt/github/ucsffrancislab/TEProf2Paper/bin
 ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-32}
 strand=""
