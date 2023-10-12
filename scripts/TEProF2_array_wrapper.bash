@@ -34,7 +34,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	mem=${SLURM_MEM_PER_NODE:-30000M}
 	echo "mem :${mem}:"
 
-	TEPROF2=/c4/home/gwendt/github/twlab/TEProf2Paper/bin
+	TEPROF2=/c4/home/gwendt/github/ucsffrancislab/TEProf2Paper/bin
 	ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 	extension="_R1.fastq.gz"
 	strand=""
