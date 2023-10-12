@@ -170,8 +170,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#	     --outFilterMultimapScoreRange 1 \
 	#	     --outFilterMultimapNmax 10 \
 	#	     --outFilterMismatchNmax 5 \		#	different that default 10
-	#	     --alignIntronMax 500000 \		#	different that default 0
-	#	     --alignMatesGapMax 1000000 \		#	different that default 0
+	#	     --alignIntronMax 500000 \		#	different that default 0 ( = 9*2^16 = 589824 )
+	#	     --alignMatesGapMax 1000000 \		#	different that default 0 ( = 9*2^16 = 589824 )
 	#	     --sjdbScore 2 \	#	different that default 2
 	#	     --alignSJDBoverhangMin 1 \	#	different that default 3
 	#	     --genomeLoad NoSharedMemory \
