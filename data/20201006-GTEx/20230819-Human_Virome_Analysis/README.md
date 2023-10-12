@@ -185,8 +185,10 @@ sort -t, -k1,1 /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.
 ```
 
 
+#echo "${count} / ${l} / ${gene_count} / 3000000000"
+
 ```
-for f in out/SRR106*.count.txt ; do
+for f in out/*.count.txt ; do
 echo $f
 srr=$( basename ${f} .count.txt )
 #rc=$( cat /francislab/data1/working/20201006-GTEx/20201116-preprocess/trimmed/${srr}_R1.fastq.gz.read_count.txt )
@@ -197,7 +199,6 @@ gene_count=$( cat /francislab/data1/working/20201006-GTEx/20230818-STAR-GRCh38/o
 head -1 ${f} > ${o}
 while read accession count ; do
 l=$(awk -F, -v acc=${accession} '($1==acc){print $2;exit}' /francislab/data1/refs/Human_Virome_Analysis/db_for_second_blast.accession-length.sorted.csv)
-echo "${count} / ${l} / ${gene_count} / 3000000000"
 n=$( echo "${count} / ${l} / ${gene_count} / 3000000000" | bc -l )
 echo -e "${accession}\t${n}" >> ${o}
 done < <( tail -n +2 ${f} )
@@ -221,4 +222,14 @@ box_upload.bash transposed_with_body_site.csv compared_with_body_site.csv
 ```
 
 
+##	20231011
 
+
+```
+
+awk '{l+=$2}END{print l}' /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome.fa.fai 
+
+3099750718
+
+
+```
