@@ -28,7 +28,7 @@ makeblastdb -parse_seqids \
   -title Human_herpes_protein_accessions
 
 
-echo "qaccver	saccver	pident	length	mismatch	gapopen	qstart	qend	sstart	send	evalue	bitscore" \
+echo -e "qaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
   > S10_All_ProteinSequences_fragments_in_Human_herpes_protein_accessions.blastp.e0.05.tsv
 blastp -db Human_herpes_protein_accessions \
   -outfmt 6 -evalue 0.05 \
@@ -39,7 +39,6 @@ blastp -db Human_herpes_protein_accessions \
   -evalue 0.05 \
   -query S10_All_ProteinSequences-tile-25-24.faa \
   >> S10_All_ProteinSequences_fragments_in_Human_herpes_protein_accessions.blastp.e0.05.txt &
-
 
 
 blast2sam.pl S10_All_ProteinSequences_fragments_in_Human_herpes_protein_accessions.blastp.e0.05.txt \
@@ -53,10 +52,9 @@ samtools index S10_All_ProteinSequences_fragments_in_Human_herpes_protein_access
 
 cat tmp | awk '{print $3}' | sort | uniq -c
 
-
 box_upload.bash Human_herpes_protein_accessions.fa* S10_All_ProteinSequences_fragments_in_Human_herpes_protein_accessions.blastp.e0.05.bam*
-
 ```
+
 
 
 
@@ -79,11 +77,10 @@ grep "^>" test.faa | grep -E -o "Human_.*herpesvirus_.*" | sort | uniq -c
 
 
 
-
-
 ```
 #cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human*herpes*.fa | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' > Human_herpes_proteins.faa
-cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human*herpes*.fa | sed  -e '/^>/s/Human_.*herpesvirus_\(.*\)$/HHV\1/' -e '/^>/s/HHV4_type_2/HHV4t2/' | awk 'BEGIN{FS=OFS="_"}(/^>/){s=$1"_"$2"_"$NF;for(i=3;i<NF;i++){s=s"_"$i}print s}(!/^>/){print}' | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' > Human_herpes_proteins.faa
+#cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human*herpes*.fa | sed  -e '/^>/s/Human_.*herpesvirus_\(.*\)$/HHV\1/' -e '/^>/s/HHV4_type_2/HHV4t2/' | awk 'BEGIN{FS=OFS="_"}(/^>/){s=$1"_"$2"_"$NF;for(i=3;i<NF;i++){s=s"_"$i}print s}(!/^>/){print}' | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' > Human_herpes_proteins.faa
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human*herpes*.fa | sed  -e '/^>/s/Human_.*herpesvirus_\(.*\)$/HHV\1/' -e '/^>/s/HHV4_type_2/HHV4t2/' | awk 'BEGIN{FS=OFS="_"}(/^>/){s=$1"_"$2"_"$NF;for(i=3;i<NF;i++){s=s"_"$i}print s}(!/^>/){print}' | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > Human_herpes_proteins.faa
 
 samtools faidx Human_herpes_proteins.faa
 
@@ -95,7 +92,7 @@ makeblastdb -parse_seqids \
   -title Human_herpes_proteins
 
 
-echo "qaccver	saccver	pident	length	mismatch	gapopen	qstart	qend	sstart	send	evalue	bitscore" \
+echo -e "qaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
   > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.tsv
 blastp -db Human_herpes_proteins \
   -outfmt 6 -evalue 0.05 \
@@ -109,18 +106,64 @@ blastp -db Human_herpes_proteins \
 
 
 
-blast2sam.pl S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.txt \
+
+
+
+blastp -db Human_herpes_proteins \
+  -outfmt 5 -evalue 0.05 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.xml &
+
+
+blast2bam S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.xml \
+  Human_herpes_proteins.faa S10_All_ProteinSequences-tile-25-24.faa \
   > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.sam
+samtools sort -o S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.bam \
+  S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.sam
 
-samtools view -o tmp -ht Human_herpes_proteins.faa.fai S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.sam
 
-samtools sort -o S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.bam tmp
-samtools index S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.bam
 
-cat tmp | awk '{print $3}' | sort | uniq -c | sort -k1n,1 | tail
+#blast2sam.pl S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.txt \
+#  > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.sam
+#
+#samtools view -o tmp -ht Human_herpes_proteins.faa.fai S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.sam
+#
+#samtools sort -o S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.bam tmp
+#samtools index S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.bam
+#
+#cat tmp | awk '{print $3}' | sort | uniq -c | sort -k1n,1 | tail
 
-box_upload.bash Human_herpes_proteins.fa* S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.[bt]* 
+box_upload.bash Human_herpes_proteins.fa* 
 
+box_upload.bash S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.*
+
+```
+
+
+
+
+Can you please filter these based on a % identity- greater than 40%, 60% and 80% then link them back to the TCONS in S1 from the paper so we can see the counts across the cancers?
+
+
+```
+tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | head -1 > S1.csv
+tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort -t, -k1,1 >> S1.csv
+
+base=S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.tsv
+sed 's/\t/,/g' ${base} > ${base%.tsv}.csv
+base=S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.csv
+awk 'BEGIN{FS=OFS=","}(NR==1){print "TCONS",$0}(NR>1){split($1,a,"_");print a[1]"_"a[2],$0}' ${base} > ${base%.csv}.TCONS.csv
+base=S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv
+
+join -t, --header S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv S1.csv > tmp
+
+
+awk -F, '( (NR==1) || ($4>=40) )' ${base} > ${base%.csv}.gt40.csv
+awk -F, '( (NR==1) || ($4>=60) )' ${base} > ${base%.csv}.gt60.csv
+awk -F, '( (NR==1) || ($4>=80) )' ${base} > ${base%.csv}.gt80.csv
+
+
+box_upload.bash ${base%.csv}.gt??.csv
 
 ```
 
