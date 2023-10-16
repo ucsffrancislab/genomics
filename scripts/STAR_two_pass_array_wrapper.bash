@@ -10,6 +10,8 @@ set -u  #       Error on usage of unset variables
 set -o pipefail
 #set -x  #       print expanded command before executing it
 
+#	Based on 
+#	https://docs.gdc.cancer.gov/Data/Bioinformatics_Pipelines/Expression_mRNA_Pipeline/#rna-seq-alignment-command-line-parameters
 
 function usage(){
 	set +x
