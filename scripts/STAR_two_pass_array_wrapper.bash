@@ -281,7 +281,7 @@ else
 		#	A time limit of zero requests that no time limit be imposed.  Acceptable time formats include "minutes", "minutes:seconds", 
 		#	"hours:minutes:sec‐onds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
 
-		step1_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%8 \
+		step1_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%4 \
 			--parsable --job-name="1-$(basename $0)" \
 			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).1stPass.$( date "+%Y%m%d%H%M%S%N" )-%A_%a.out.log \
@@ -294,7 +294,7 @@ else
 			--output=${PWD}/logs/$(basename $0).ReGenome.$( date "+%Y%m%d%H%M%S%N" ).out.log \
 					$( realpath ${0} ) regenome ${array_options} )
 
-		step3_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%8 \
+		step3_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%4 \
 		  --dependency=${step2_id} \
 			--parsable --job-name="3-$(basename $0)" \
 			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
