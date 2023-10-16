@@ -59,10 +59,13 @@ TEProF2_aggregation_steps.bash --threads 64 \
 
 
 
-##	20231010
+##	20231016
 
 
-The above used a TCGA subject / sample name parsing which mucked up some data.
+
+```
+tail -n +2 /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv | cut -d, -f1 | uniq > viral_TCONS.0.05.txt
+```
 
 
 
@@ -83,5 +86,6 @@ done
 
 box_upload.bash allCandidateStatistics*.csv
 ```
+
 
 
