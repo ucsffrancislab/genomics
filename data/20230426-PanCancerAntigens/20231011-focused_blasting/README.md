@@ -170,3 +170,20 @@ box_upload.bash ${base%.csv}.gt??.csv
 
 
 
+```
+awk '{print $2}' S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.tsv | sort | uniq -c | sort -k1n,1 | tail
+    162 YP_001129366.1_HHV8_K6
+    165 YP_401633.1_HHV4_tegument_protein_G75
+    169 YP_001129438.1_HHV4t2_BNRF1
+    183 YP_001129434.1_HHV8_ORF75
+    286 YP_081612.1_HHV5_envelope_protein_US28
+    605 YP_009137215.1_HHV2_serine-threonine_protein_kinas
+    768 YP_009137138.1_HHV1_serine-threonine_protein_kinas
+    908 YP_009137146.1_HHV1_virion_protein_US10
+   1090 NP_040188.1_HHV3_serine-threonine_protein_kinase_U
+   1590 YP_001129351.1_HHV8_ORF4
+```
+
+
+
+
