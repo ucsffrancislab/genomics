@@ -52,6 +52,24 @@ STAR_array_wrapper.bash --threads 16 \
 
 
 
+##	20231017
+
+```
+module load samtools
+for bam in out/SRR*.Aligned.sortedByCoord.out.bam ; do
+echo ${bam}
+base=$( basename ${bam} .Aligned.sortedByCoord.out.bam )
+o=${bam}.proper_pair_viral_counts.csv
+if [ ! -f ${o} ] ; then
+for virus in $( awk '($2~/^.C_/){print $2}' ${bam}.aligned_sequence_counts.txt ) ; do
+c=$( samtools view -c -q40 -f66 ${bam} ${virus} )
+if [ ${c} -gt 0 ] ; then
+echo ${virus},${c} >> ${o}
+fi
+done ; fi ; done
+
+```
+
 
 
 
