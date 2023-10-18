@@ -174,11 +174,17 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 		echo "### Step 3: Intermediate Index Generation."
 
+		#	20230628-Costello/20231016-STAR_two_pass
+		#	Fatal LIMIT error: the number of junctions to be inserted on the fly =4973683 is larger than the limitSjdbInsertNsj=1000000
+		#	Fatal LIMIT error: the number of junctions to be inserted on the fly =4973683 is larger than the limitSjdbInsertNsj=1000000
+		#	SOLUTION: re-run with at least --limitSjdbInsertNsj 4973683
+
 		STAR \
 			--runMode genomeGenerate \
 			--genomeDir ${PWD}/genome \
 			--genomeFastaFiles ${ref}.fa \
 			--sjdbOverhang 100 \
+			--limitSjdbInsertNsj 10000000 \
 			--runThreadN ${threads} \
 			--sjdbFileChrStartEnd ${OUT}/1stPass/*.SJ.out.tab
 
@@ -290,14 +296,14 @@ else
 					$( realpath ${0} ) 1st_pass ${array_options} )
 
 		step2_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-		  --dependency=${step1_id} \
+		  --dependency=afterok:${step1_id} \
 			--parsable --job-name="2-$(basename $0)" \
-			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+			--time=14-0 --nodes=1 --ntasks=64 --mem=495G --gres=scratch:2000G \
 			--output=${PWD}/logs/$(basename $0).ReGenome.$( date "+%Y%m%d%H%M%S%N" ).out.log \
 					$( realpath ${0} ) regenome ${array_options} )
 
 		step3_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%4 \
-		  --dependency=${step2_id} \
+		  --dependency=afterok:${step2_id} \
 			--parsable --job-name="3-$(basename $0)" \
 			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).2ndPass.$( date "+%Y%m%d%H%M%S%N" )-%A_%a.out.log \
