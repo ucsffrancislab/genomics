@@ -187,3 +187,55 @@ awk '{print $2}' S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.bla
 
 
 
+
+##	20231018
+
+
+AA molecular weight calculator
+
+
+For those same TCONS- lets also link them with the TCGA data from S1 and see which ones were in glioma
+I just quickly did the prediction for those 5 TCONS that we first nominated and they mostly come in at 53-92kDa
+
+
+read select TCONS tile list
+
+if in select tcons list
+compute molecular weight
+print tcons, tcons tile, AA, molecular weight
+
+```
+awk '($2=="NP_040188.1_HHV3_serine-threonine_protein_kinase_U"){split($1,a,"|");print a[1]}' S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.tsv | uniq | sort | uniq > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.NP_040188.tsv
+```
+
+
+```
+my_file = open("S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.NP_040188.tsv", "r") 
+data = my_file.read() 
+tcons = data.split("\n") 
+
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio.SeqIO.FastaIO import SimpleFastaParser
+
+import csv
+with open('output.csv', 'w', newline='') as csvfile:
+  writer = csv.writer(csvfile, delimiter=',',
+    dialect='unix',
+    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+  writer.writerow(["TCONS", "TCONS_FULL", "AA", "MW" ])
+  with open("S10_All_ProteinSequences.fa") as handle:
+    for values in SimpleFastaParser(handle):
+      if( values[0] in tcons ):
+        tc=values[0].split("_")
+        X = ProteinAnalysis(values[1])
+        writer.writerow([tc[0] + "_" + tc[1], values[0], values[1], "%0.2f" % X.molecular_weight() ])
+  
+```
+
+```
+
+join -t, --header output.csv S1.csv > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.NP_040188_with_MW.csv
+box_upload.bash S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.NP_040188_with_MW.csv
+
+```
+
