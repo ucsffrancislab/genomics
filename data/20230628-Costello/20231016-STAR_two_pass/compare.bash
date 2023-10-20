@@ -25,26 +25,36 @@ echo
 #done
 #echo
 
-echo -n "Uniquely mapped reads number"
+echo -n "1 Uniquely mapped reads number"
 for sample in ${samples} ; do
 	value=$( grep "Uniquely mapped reads number" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Uniquely mapped reads number"
+echo -n "2 Uniquely mapped reads number"
 for sample in ${samples} ; do
 	value=$( grep "Uniquely mapped reads number" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Uniquely mapped reads number change"
+echo -n "Uniquely mapped reads number change 2-1"
 for sample in ${samples} ; do
 	onepass=$( grep "Uniquely mapped reads number" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	twopass=$( grep "Uniquely mapped reads number" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	#value=$( echo "scale=2; ${twopass} - ${onepass}" | bc -l 2> /dev/null )
 	value=$( echo "${twopass} - ${onepass}" | bc -l 2> /dev/null )
+	echo -n ,${value}
+done
+echo
+
+echo -n "Uniquely mapped reads number change 2-1%"
+for sample in ${samples} ; do
+	onepass=$( grep "Uniquely mapped reads number" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
+	twopass=$( grep "Uniquely mapped reads number" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
+	#value=$( echo "scale=2; ${twopass} - ${onepass}" | bc -l 2> /dev/null )
+	value=$( echo "scale=2; 100 * ( ${twopass} - ${onepass} ) / ${onepass}" | bc -l 2> /dev/null )
 	echo -n ,${value}
 done
 echo
@@ -64,7 +74,7 @@ echo
 #done
 #echo
 #
-#echo -n "Number of reads unmapped: too many mismatches change"
+#echo -n "Number of reads unmapped: too many mismatches change 2-1"
 #for sample in ${samples} ; do
 #	onepass=$( grep "Number of reads unmapped: too many mismatches" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 #	twopass=$( grep "Number of reads unmapped: too many mismatches" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
@@ -75,21 +85,21 @@ echo
 #echo
 
 
-echo -n "Number of reads unmapped: too short"
+echo -n "1 Number of reads unmapped: too short"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads unmapped: too short" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads unmapped: too short"
+echo -n "2 Number of reads unmapped: too short"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads unmapped: too short" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads unmapped: too short change"
+echo -n "Number of reads unmapped: too short change 2-1"
 for sample in ${samples} ; do
 	onepass=$( grep "Number of reads unmapped: too short" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	twopass=$( grep "Number of reads unmapped: too short" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
@@ -100,21 +110,21 @@ done
 echo
 
 
-echo -n "Number of reads unmapped: other"
+echo -n "1 Number of reads unmapped: other"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads unmapped: other" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads unmapped: other"
+echo -n "2 Number of reads unmapped: other"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads unmapped: other" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads unmapped: other change"
+echo -n "Number of reads unmapped: other change 2-1"
 for sample in ${samples} ; do
 	onepass=$( grep "Number of reads unmapped: other" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	twopass=$( grep "Number of reads unmapped: other" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
@@ -124,21 +134,21 @@ for sample in ${samples} ; do
 done
 echo
 
-echo -n "Number of reads mapped to multiple loci"
+echo -n "1 Number of reads mapped to multiple loci"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads mapped to multiple loci" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads mapped to multiple loci"
+echo -n "2 Number of reads mapped to multiple loci"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads mapped to multiple loci" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads mapped to multiple loci change"
+echo -n "Number of reads mapped to multiple loci change 2-1"
 for sample in ${samples} ; do
 	onepass=$( grep "Number of reads mapped to multiple loci" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	twopass=$( grep "Number of reads mapped to multiple loci" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
@@ -148,21 +158,21 @@ for sample in ${samples} ; do
 done
 echo
 
-echo -n "Number of reads mapped to too many loci"
+echo -n "1 Number of reads mapped to too many loci"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads mapped to too many loci" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads mapped to too many loci"
+echo -n "2 Number of reads mapped to too many loci"
 for sample in ${samples} ; do
 	value=$( grep "Number of reads mapped to too many loci" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	echo -n ,${value}
 done
 echo
 
-echo -n "Number of reads mapped to too many loci change"
+echo -n "Number of reads mapped to too many loci change 2-1"
 for sample in ${samples} ; do
 	onepass=$( grep "Number of reads mapped to too many loci" ${one}/${sample}.Log.final.out | awk -F\| '{print $2}' )
 	twopass=$( grep "Number of reads mapped to too many loci" ${two}/${sample}.Log.final.out | awk -F\| '{print $2}' )
