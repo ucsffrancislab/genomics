@@ -239,3 +239,148 @@ box_upload.bash S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blas
 
 ```
 
+
+
+
+
+
+
+
+
+##	20231019 
+
+Hey hey, when you have a minute, could you please do the same tiled AA blastp for small pox (variola)?
+
+
+Try breaking up virus (or antigen) into smaller reads and cross blast
+
+~25bp AA
+
+Find areas of >30 percent identity.
+
+
+
+Done already above, but just in case
+```
+cat S10_All_ProteinSequences.fa | pepsyn tile -l 25 -p 24 - S10_All_ProteinSequences-tile-25-24.faa
+```
+
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Variola_virus.fa | sed  -e '/^>/s/[(),]//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > Variola_virus_proteins.faa
+
+module load samtools
+samtools faidx Variola_virus_proteins.faa
+
+module load blast
+makeblastdb -parse_seqids \
+  -in Variola_virus_proteins.faa \
+  -input_type fasta \
+  -dbtype prot \
+  -out Variola_virus_proteins \
+  -title Variola_virus_proteins
+
+
+echo -e "qaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.tsv
+blastp -db Variola_virus_proteins \
+  -outfmt 6 -evalue 0.05 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  >> S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.tsv &
+
+blastp -db Variola_virus_proteins \
+  -evalue 0.05 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.txt &
+
+blastp -db Variola_virus_proteins \
+  -outfmt 5 -evalue 0.05 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.xml &
+
+```
+
+WAIT
+
+```
+blast2bam S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.xml \
+  Variola_virus_proteins.faa S10_All_ProteinSequences-tile-25-24.faa \
+  > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.sam
+
+samtools sort -o S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.bam \
+  S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.sam
+samtools index S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.bam
+
+
+#blast2sam.pl S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.txt \
+#  > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.sam
+#
+#samtools view -o tmp -ht Variola_virus_proteins.faa.fai S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.sam
+#
+#samtools sort -o S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.bam tmp
+#samtools index S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.bam
+#
+#cat tmp | awk '{print $3}' | sort | uniq -c | sort -k1n,1 | tail
+
+box_upload.bash Variola_virus_proteins.fa* 
+
+box_upload.bash S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.*
+
+```
+
+
+
+
+Can you please filter these based on a % identity- greater than 40%, 60% and 80% then link them back to the TCONS in S1 from the paper so we can see the counts across the cancers?
+
+
+DONE ABOVE ALREADY
+```
+tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | head -1 > S1.csv
+tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort -t, -k1,1 >> S1.csv
+```
+
+
+```
+base=S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.tsv
+sed 's/\t/,/g' ${base} > ${base%.tsv}.csv
+base=S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.csv
+awk 'BEGIN{FS=OFS=","}(NR==1){print "TCONS",$0}(NR>1){split($1,a,"_");print a[1]"_"a[2],$0}' ${base} > ${base%.csv}.TCONS.csv
+base=S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.TCONS.csv
+
+join -t, --header S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.TCONS.csv S1.csv > tmp
+
+
+awk -F, '( (NR==1) || ($4>=40) )' ${base} > ${base%.csv}.gt40.csv
+awk -F, '( (NR==1) || ($4>=60) )' ${base} > ${base%.csv}.gt60.csv
+awk -F, '( (NR==1) || ($4>=80) )' ${base} > ${base%.csv}.gt80.csv
+
+
+box_upload.bash ${base%.csv}.gt??.csv
+
+```
+
+
+
+
+```
+awk '{print $2}' S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.tsv | sort | uniq -c | sort -k1n,1 | tail
+
+
+    356 NP_042172.1_hypothetical_protein_VARVgp128_Variola
+    365 NP_042102.1_hypothetical_protein_VARVgp058_Variola
+    365 NP_042225.1_hypothetical_protein_VARVgp181_Variola
+    376 NP_042094.1_DNA_polymerase_Variola_virus
+    429 NP_042127.1_hypothetical_protein_VARVgp083_Variola
+    434 NP_042233.1_hypothetical_protein_VARVgp189_Variola
+    494 NP_042151.1_hypothetical_protein_VARVgp107_Variola
+    736 NP_042238.1_hypothetical_protein_VARVgp194_Variola
+   1602 NP_042219.1_EEV_membrane_glycoprotein_Variola_viru
+   2785 NP_042056.1_secreted_complement-binding_protein_Va
+
+
+
+
+```
+
