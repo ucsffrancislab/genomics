@@ -73,3 +73,48 @@ done ; fi ; done
 
 
 
+
+##	20231018
+
+
+
+```
+
+echo "accession,description" > accession_description.csv
+cat /francislab/data1/refs/refseq/viral-20210916/viral_sequences.txt | sed "s/[',]//g" | xargs -I% basename % .fa | sed 's/_/,/2' | sort >> accession_description.csv
+
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1}' /francislab/data1/raw/20201006-GTEx/SraRunTable.NoResequencing.csv | sort > Brain.NoResequencing.csv
+
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$8}' /francislab/data1/raw/20201006-GTEx/SraRunTable.NoResequencing.csv | sort > BioSample.NoResequencing.csv
+
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$10}' /francislab/data1/raw/20201006-GTEx/SraRunTable.NoResequencing.csv | sort > biospecimen_repository_sample_id.NoResequencing.csv
+
+awk 'BEGIN{FPAT="([^,]+)|(\"[^\"]+\")";OFS=","}(NR==1 || $21=="Brain"){print $1,$11}' /francislab/data1/raw/20201006-GTEx/SraRunTable.NoResequencing.csv | sort > body_site.NoResequencing.csv
+
+cut -d, -f2 body_site.NoResequencing.csv | sort -u
+
+
+
+```
+
+python3 ./merge_proper_pair_viral_counts.py --int -o merged.csv out/*.proper_pair_viral_counts.csv
+
+cat merged.csv | datamash transpose -t, > tmp2
+join -t, --header body_site.NoResequencing.csv tmp2 > tmp3
+join -t, --header BioSample.NoResequencing.csv tmp3 > tmp4
+join -t, --header biospecimen_repository_sample_id.NoResequencing.csv tmp4 > tmp5
+cat tmp5 | datamash transpose -t, > tmp6
+
+head -3 tmp6 | sed 's/,/,description,/' > merged_raw_proper_pair_viral_counts.csv
+join -t, --header accession_description.csv <( tail -n +4 tmp6 ) >> merged_raw_proper_pair_viral_counts.csv
+
+cat merged_raw_proper_pair_viral_counts.csv | datamash transpose -t, > merged_raw_proper_pair_viral_counts.t.csv
+
+box_upload.bash merged_raw_proper_pair_viral_counts*csv
+\rm tmp?
+
+```
+
+
+
+
