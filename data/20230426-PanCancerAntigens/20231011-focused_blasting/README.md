@@ -157,10 +157,9 @@ base=S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TC
 
 join -t, --header S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv S1.csv > tmp
 
-
-awk -F, '( (NR==1) || ($4>=40) )' ${base} > ${base%.csv}.gt40.csv
-awk -F, '( (NR==1) || ($4>=60) )' ${base} > ${base%.csv}.gt60.csv
-awk -F, '( (NR==1) || ($4>=80) )' ${base} > ${base%.csv}.gt80.csv
+awk -F, '( (NR==1) || ($4>=40) )' tmp > ${base%.csv}.gt40.csv
+awk -F, '( (NR==1) || ($4>=60) )' tmp > ${base%.csv}.gt60.csv
+awk -F, '( (NR==1) || ($4>=80) )' tmp > ${base%.csv}.gt80.csv
 
 
 box_upload.bash ${base%.csv}.gt??.csv
@@ -351,10 +350,9 @@ base=S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.T
 
 join -t, --header S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.TCONS.csv S1.csv > tmp
 
-
-awk -F, '( (NR==1) || ($4>=40) )' ${base} > ${base%.csv}.gt40.csv
-awk -F, '( (NR==1) || ($4>=60) )' ${base} > ${base%.csv}.gt60.csv
-awk -F, '( (NR==1) || ($4>=80) )' ${base} > ${base%.csv}.gt80.csv
+awk -F, '( (NR==1) || ($4>=40) )' tmp > ${base%.csv}.gt40.csv
+awk -F, '( (NR==1) || ($4>=60) )' tmp > ${base%.csv}.gt60.csv
+awk -F, '( (NR==1) || ($4>=80) )' tmp > ${base%.csv}.gt80.csv
 
 
 box_upload.bash ${base%.csv}.gt??.csv
