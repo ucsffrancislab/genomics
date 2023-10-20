@@ -28,7 +28,7 @@ makeblastdb -parse_seqids \
   -title Human_herpes_protein_accessions
 
 
-echo -e "qaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
   > S10_All_ProteinSequences_fragments_in_Human_herpes_protein_accessions.blastp.e0.05.tsv
 blastp -db Human_herpes_protein_accessions \
   -outfmt 6 -evalue 0.05 \
@@ -92,7 +92,7 @@ makeblastdb -parse_seqids \
   -title Human_herpes_proteins
 
 
-echo -e "qaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
   > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.tsv
 blastp -db Human_herpes_proteins \
   -outfmt 6 -evalue 0.05 \
@@ -282,7 +282,7 @@ makeblastdb -parse_seqids \
   -title Variola_virus_proteins
 
 
-echo -e "qaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
   > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.05.tsv
 blastp -db Variola_virus_proteins \
   -outfmt 6 -evalue 0.05 \
