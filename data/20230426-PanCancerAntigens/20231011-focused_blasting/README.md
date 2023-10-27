@@ -377,8 +377,60 @@ awk '{print $2}' S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.bl
    1602 NP_042219.1_EEV_membrane_glycoprotein_Variola_viru
    2785 NP_042056.1_secreted_complement-binding_protein_Va
 
+```
+
+
+
+
+##	20231025
 
 
 
 ```
+for v in Variola_virus Human_herpes ; do
+base=S10_All_ProteinSequences_fragments_in_${v}_proteins.blastp.e0.05.TCONS.csv
+
+join -t, --header S10_All_ProteinSequences_fragments_in_${v}_proteins.blastp.e0.05.TCONS.csv S1.csv > tmp
+
+awk -F, '( (NR==1) || ($13>=25) )' tmp > ${base%.csv}.bitscoregt25.csv
+awk -F, '( (NR==1) || ($13>=30) )' tmp > ${base%.csv}.bitscoregt30.csv
+awk -F, '( (NR==1) || ($13>=35) )' tmp > ${base%.csv}.bitscoregt35.csv
+awk -F, '( (NR==1) || ($13>=40) )' tmp > ${base%.csv}.bitscoregt40.csv
+
+box_upload.bash ${base%.csv}.bitscoregt??.csv
+done
+
+```
+
+
+
+
+
+
+
+##	20231026
+
+
+Trying to filter the blast output xml file so that can create a bam file with just those alignments.
+
+
+```
+module load samtools
+for v in Human_herpes_proteins Variola_virus_proteins ; do
+for min in 30 35 40 ; do
+ xml=S10_All_ProteinSequences_fragments_in_${v}.blastp.e0.05.bitscoregt${min}.xml
+ xsltproc --param minimum-bit-score ${min} -o ${xml} blastxmlfilteronbitscore.xsl \
+  S10_All_ProteinSequences_fragments_in_${v}.blastp.e0.05.xml
+ sed -i 's/<Iteration_hits\/>/<Iteration_hits><Iteration_message>No hits found<\/Iteration_message><\/Iteration_hits>/g' ${xml}
+ blast2bam ${xml} ${v}.faa S10_All_ProteinSequences-tile-25-24.faa > ${xml%.xml}.sam
+ samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+ samtools index ${xml%.xml}.bam
+ #box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
+done
+done
+
+```
+My meddling breaks the sam file creation.
+
+
 
