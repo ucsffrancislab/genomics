@@ -421,16 +421,111 @@ for min in 30 35 40 ; do
  xml=S10_All_ProteinSequences_fragments_in_${v}.blastp.e0.05.bitscoregt${min}.xml
  xsltproc --param minimum-bit-score ${min} -o ${xml} blastxmlfilteronbitscore.xsl \
   S10_All_ProteinSequences_fragments_in_${v}.blastp.e0.05.xml
- sed -i 's/<Iteration_hits\/>/<Iteration_hits><Iteration_message>No hits found<\/Iteration_message><\/Iteration_hits>/g' ${xml}
+ sed -i 's/<Iteration_hits\/>/<Iteration_hits><\/Iteration_hits><Iteration_message>No hits found<\/Iteration_message>/g' ${xml}
  blast2bam ${xml} ${v}.faa S10_All_ProteinSequences-tile-25-24.faa > ${xml%.xml}.sam
  samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
  samtools index ${xml%.xml}.bam
- #box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
+ box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
 done
 done
 
 ```
-My meddling breaks the sam file creation.
+
+
+##	20231027
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human_alphaherpesvirus_3.fa | sed  -e '/^>/s/Human_alphaherpesvirus_3$/HHV3/' | awk 'BEGIN{FS=OFS="_"}(/^>/){s=$1"_"$2"_"$NF;for(i=3;i<NF;i++){s=s"_"$i}print s}(!/^>/){print}' | sed  -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > Human_alphaherpesvirus_3_proteins.faa
+
+module load samtools
+samtools faidx Human_alphaherpesvirus_3_proteins.faa
+```
+
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.genomic/NC_001348.1_Human_herpesvirus_3__complete_genome.fa | sed  -e '/^>/s/>\(.*\)$/>\1 \1/g' > Human_herpesvirus_3_genome.fna
+
+samtools faidx Human_herpesvirus_3_genome.fna
+
+makeblastdb -parse_seqids \
+  -in Human_herpesvirus_3_genome.fna \
+  -input_type fasta \
+  -dbtype nucl \
+  -out Human_herpesvirus_3_genome \
+  -title Human_herpesvirus_3_genome
+
+```
+
+Find locations of the viral proteins in the genome with tblastn.
+
+Whole or as Tiles???
+
+
+```
+
+xml=Human_alphaherpesvirus_3_proteins_in_Human_herpesvirus_3_genome.xml
+tblastn -db Human_herpesvirus_3_genome \
+  -evalue 0.05 \
+  -query Human_alphaherpesvirus_3_proteins.faa \
+  > ${xml%.xml}.txt
+tblastn -db Human_herpesvirus_3_genome \
+  -outfmt 6 -evalue 0.05 \
+  -query Human_alphaherpesvirus_3_proteins.faa \
+  > ${xml%.xml}.tsv
+tblastn -db Human_herpesvirus_3_genome \
+  -outfmt 5 -evalue 0.05 \
+  -query Human_alphaherpesvirus_3_proteins.faa \
+  > ${xml}
+blast2bam ${xml} /francislab/data1/refs/refseq/viral-20220923/viral.genomic/NC_001348.1_Human_herpesvirus_3__complete_genome.fa Human_alphaherpesvirus_3_proteins.faa > ${xml%.xml}.sam
+samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+samtools index ${xml%.xml}.bam
+
+box_upload.bash Human_herpesvirus_3_genome.fna* ${xml%.xml}.bam*
+
+```
+
+Create a gtf or gff from resulting regions.
+
+
+```
+samtools view Human_alphaherpesvirus_3_proteins_in_Human_herpesvirus_3_genome.bam | awk 'BEGIN{FS=OFS="\t"}{
+patsplit($6,a,/[[:digit:]]+/)
+cigarsum=0
+for(i=1;i<=length(a);i++){cigarsum+=a[i]}
+split($3,c,"_")
+print c[1]"_"c[2],"viral","protein",$4,$4+cigarsum,".","+",".","protein_id \""$1"\""
+}' > Human_alphaherpesvirus_3_proteins_in_Human_herpesvirus_3_genome.gtf
+
+```
+
+
+Run featureCounts on subjects viral alignment to these regions.
+
+
+```
+sbatch --job-name="featureCounts" --nodes=1 --ntasks=64 --mem=495G --time=14-0 --export=NONE --wrap="~/.local/bin/featureCounts.bash -T 64 -a /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_alphaherpesvirus_3_proteins_in_Human_herpesvirus_3_genome.gtf -t protein -g protein_id -o ${PWD}/featureCounts.HHV3_proteins.csv ${PWD}/out/*.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam"
+```
+
+
+
+Note that "NC_001348.1	121075	121125" was masked for Human Homology and is within NP_040184 and NP_040193 transcriptional regulator ICP4
+Both appear identical
+
+
+
+
+
+
+
+##	20231027b - xml to csv
+
+```
+
+xsltproc blastxmltocsv.xsl S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.xml
+
+```
 
 
 
