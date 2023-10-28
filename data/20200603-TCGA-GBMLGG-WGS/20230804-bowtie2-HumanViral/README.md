@@ -3,6 +3,7 @@
 #	20200603-TCGA-GBMLGG-WGS/20230804-bowtie2-HumanViral
 
 
+Why didn't I sort!
 
 ```
 bowtie2_array_wrapper.bash --threads 8 --very-sensitive \
@@ -147,6 +148,17 @@ awk -F, '($3>40)&&($9>40)&&($6>50)&&($12>50){print $10,$4,$5;print $4,$10,$11}' 
 join -t, tmp accession_description.csv
 done
 ```
+
+
+
+##	20231027
+
+
+```
+sbatch --job-name="featureCounts" --ntasks=64 --mem=495G --time=14-0 --export=NONE --wrap="~/.local/bin/featureCounts.bash -T 64 -a /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_alphaherpesvirus_3_proteins_in_Human_herpesvirus_3_genome.gtf -t protein -g protein_id -o ${PWD}/featureCounts.HHV3_proteins.csv ${PWD}/out/*.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam"
+
+```
+
 
 
 
