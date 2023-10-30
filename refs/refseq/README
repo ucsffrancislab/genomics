@@ -278,3 +278,14 @@ rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsy
 
 
 
+##	20231030
+
+
+When parsing out square brackets with sed, the closing bracket needs to come first in the list. `[][]` not `[[]]`
+
+```
+zcat /francislab/data1/refs/refseq/mRNA_Prot/human.*.protein.faa.gz | sed  -e '/^>/s/ \[Homo sapiens\]//g' -e '/^>/s/[],()\/[]//g' -e '/^>/s/->//g' -e '/^>/s/ /_/g' -e 's/'\''//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > mRNA_Prot.faa
+makeblastdb -parse_seqids -input_type fasta -dbtype prot -out mRNA_Prot -title mRNA_Prot -in mRNA_Prot.faa
+samtools faidx mRNA_Prot.faa
+```
+
