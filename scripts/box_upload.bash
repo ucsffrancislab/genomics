@@ -10,6 +10,7 @@ while [ $# -gt 0 ] ; do
 
 	#dir=${PWD}
 	dir=$( dirname $( realpath --no-symlinks ${1} ) )
+	dir=${dir#/francislab/data?/refs/}
 	dir=${dir#/francislab/data?/raw/}
 	dir=${dir#/francislab/data?/workin*/}
 	BOX="${BOX_BASE}/${dir}"
