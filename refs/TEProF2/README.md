@@ -310,13 +310,6 @@ box_upload.bash TCGA_Expression.select.translated.present.sample_type_aggregated
 
 
 
-
-
-
-
-
-
-
 ##	20231101
 
 Do something similar to count viral protein
@@ -365,9 +358,6 @@ Sample,Transcript ID,TPM,Intron Read,Present
 0010df1b-fe25-4e4d-8be4-dd1c51e79a68_gdc_realn_rehead,TCONS_00000246,1.05528361331982,0,0
 0010df1b-fe25-4e4d-8be4-dd1c51e79a68_gdc_realn_rehead,TCONS_00000346,0.000783539302956411,0,0
 ```
-
-
-
 
 
 
@@ -451,8 +441,53 @@ cat tmp4 | datamash transpose -t, > TCGA_Expression.select.translated.present.pr
 
 
 ```
+join --header -t, TCGA_Expression.select.translated.present.protein.sample_type_aggregated_by_study.table.csv \
+  /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_alphaherpesvirus_3.protein_translation_table.csv \
+  > TCGA_Expression.select.translated.present.protein.sample_type_aggregated_by_study.table.HHV3.csv
 
-join --header -t, TCGA_Expression.select.translated.present.protein.sample_type_aggregated_by_study.table.csv /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_alphaherpesvirus_3.protein_translation_table.csv > TCGA_Expression.select.translated.present.protein.sample_type_aggregated_by_study.table.HHV3.csv
+box_upload.bash TCGA_Expression.select.translated.present.protein.sample_type_aggregated_by_study.table.HHV3.csv
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	----
+
+Let's create tighter tables based on bitscore limits????
+
+```
+head -3 /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv
+TCONS,qaccver,saccver,pident,length,mismatch,gapopen,qstart,qend,sstart,send,evalue,bitscore
+TCONS_00000246,TCONS_00000246_HERVFH21-int_TAS1R1_+_104|373-398,YP_081561.1_HHV5_regulatory_protein_IE2,47.619,21,11,0,5,25,515,535,0.031,24.6
+TCONS_00000246,TCONS_00000246_HERVFH21-int_TAS1R1_+_104|374-399,YP_081561.1_HHV5_regulatory_protein_IE2,47.619,21,11,0,4,24,515,535,0.031,24.6
+```
+
+Filter on bitscore
+
+```
+echo "TCONS,accession" > TCONS_viral_protein_translation_table.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){split($3,a,".");print $1,a[1]}' 
+
+/francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.csv
+
+head -3 TCONS_viral_protein_translation_table.csv
+TCONS,accession
+TCONS_00000246,NP_050190
+TCONS_00000246,YP_081561
+```
+
+
+
+
 
