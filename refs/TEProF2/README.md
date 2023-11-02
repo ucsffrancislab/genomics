@@ -476,18 +476,73 @@ TCONS_00000246,TCONS_00000246_HERVFH21-int_TAS1R1_+_104|374-399,YP_081561.1_HHV5
 Filter on bitscore
 
 ```
-echo "TCONS,accession" > TCONS_viral_protein_translation_table.csv
-awk 'BEGIN{FS=OFS=","}(NR>1){split($3,a,".");print $1,a[1]}' 
+echo "TCONS,accession" > TCONS_viral_protein_translation_table.bitscoregt40.csv
+awk 'BEGIN{FS=OFS=","}((NR>1)&&($NF>40)){split($3,a,".");print $1,a[1]}' /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.bitscoregt40.csv
 
-/francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.csv
+echo "TCONS,accession" > TCONS_viral_protein_translation_table.bitscoregt35.csv
+awk 'BEGIN{FS=OFS=","}((NR>1)&&($NF>35)){split($3,a,".");print $1,a[1]}' /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.bitscoregt35.csv
 
-head -3 TCONS_viral_protein_translation_table.csv
-TCONS,accession
-TCONS_00000246,NP_050190
-TCONS_00000246,YP_081561
+echo "TCONS,accession" > TCONS_viral_protein_translation_table.bitscoregt30.csv
+awk 'BEGIN{FS=OFS=","}((NR>1)&&($NF>30)){split($3,a,".");print $1,a[1]}' /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.bitscoregt30.csv
+
+echo "TCONS,accession" > TCONS_viral_protein_translation_table.bitscoregt25.csv
+awk 'BEGIN{FS=OFS=","}((NR>1)&&($NF>25)){split($3,a,".");print $1,a[1]}' /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.bitscoregt25.csv
+
+wc -l TCONS_viral_protein_translation_table.*csv
+  770 TCONS_viral_protein_translation_table.bitscoregt25.csv
+  111 TCONS_viral_protein_translation_table.bitscoregt30.csv
+   17 TCONS_viral_protein_translation_table.bitscoregt35.csv
+    5 TCONS_viral_protein_translation_table.bitscoregt40.csv
+ 1984 TCONS_viral_protein_translation_table.csv
+
 ```
 
 
+
+
+
+
+
+```
+for bitscore in 25 30 35 40 ; do
+
+  echo "TCONS,accession" > TCONS_viral_protein_translation_table.bitscoregt${bitscore}.csv
+  awk -v bitscore=${bitscore} 'BEGIN{FS=OFS=","}((NR>1)&&($NF>bitscore)){split($3,a,".");print $1,a[1]}' \
+    /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.TCONS.csv \
+    | sort -t, -k1,2 | uniq >> TCONS_viral_protein_translation_table.bitscoregt${bitscore}.csv
+
+  join --header -t, TCONS_viral_protein_translation_table.bitscoregt${bitscore}.csv \
+    TCGA_Expression.select.translated.present.csv \
+    > TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.csv
+
+  echo "accession,Sample,Study,sampletype,paper Present" > TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.uniq_sample.csv
+  tail -n +2 TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.csv | cut -d, -f2,3,4,5,8 | sort | uniq \
+    >> TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.uniq_sample.csv
+
+  echo "Accession,Study,sampletype,Count" > TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.csv
+  awk 'BEGIN{FS=OFS=","}(NR>1){ a[$1][$3][$4]++ }END{for(i in a){for(j in a[i]){for(k in a[i][j]){print i,j,k,a[i][j][k]}}}}' \
+    TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.uniq_sample.csv | sort -t, -k1,3 \
+    >> TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.csv
+
+  awk 'BEGIN{FS=OFS=","}(NR>1){tcons[$1]++;study[$2]++;tn[$3]++;a[$1][$2][$3]=$4}END{s="Accession";for(j in study){for(k in tn){s=s","j"_"k}}print s; for(i in tcons){s=i;for(j in study){for(k in tn){v=a[i][j][k];v=(v>0)?v:0;s=s","v}}print s}}' \
+    TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.csv > tmp1
+  head -1 tmp1 > tmp2
+  tail -n +2 tmp1 | sort -t, -k1,1 >> tmp2
+  cat tmp2 | datamash transpose -t, > tmp3
+  head -1 tmp3 > tmp4
+  tail -n +2 tmp3 | sort -t, -k1,1 >> tmp4
+  cat tmp4 | datamash transpose -t, > TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.table.csv
+  \rm tmp?
+  box_upload.bash TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.table.csv
+
+  join --header -t, TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.table.csv \
+    /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_alphaherpesvirus_3.protein_translation_table.csv \
+    > TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.table.HHV3.csv
+
+  box_upload.bash TCGA_Expression.select.translated.present.protein.bitscoregt${bitscore}.sample_type_aggregated_by_study.table.HHV3.csv
+done
+
+```
 
 
 
