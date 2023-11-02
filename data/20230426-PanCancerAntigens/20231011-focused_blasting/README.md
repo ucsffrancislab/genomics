@@ -528,4 +528,196 @@ xsltproc blastxmltocsv.xsl S10_All_ProteinSequences_fragments_in_Human_herpes_pr
 ```
 
 
+##	20231030
 
+
+
+```
+samtools faidx Human_herpes_proteins.faa NP_040188.1_HHV3_serine-threonine_protein_kinase_U:188-237
+>NP_040188.1_HHV3_serine-threonine_protein_kinase_U:188-237
+RSVLRALQYLHNNSIIHRDIKSENIFINHPGDVCVGDFGAACFPVDINAN
+
+samtools faidx Human_herpes_proteins.faa NP_040188.1_HHV3_serine-threonine_protein_kinase_U:250-279
+>NP_040188.1_HHV3_serine-threonine_protein_kinase_U:250-279
+SPELLARDPYGPAVDIWSAGIVLFEMATGQ
+
+```
+
+
+
+```
+module load blast
+module load samtools
+zcat /francislab/data1/refs/refseq/mRNA_Prot/human.*.protein.faa.gz | sed  -e '/^>/s/ \[Homo sapiens\]//g' -e '/^>/s/[],()\/[]//g' -e '/^>/s/->//g' -e '/^>/s/ /_/g' -e 's/'\''//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > mRNA_Prot.faa
+makeblastdb -parse_seqids -input_type fasta -dbtype prot -out mRNA_Prot -title mRNA_Prot -in mRNA_Prot.faa
+samtools faidx mRNA_Prot.faa
+
+
+blastp -db mRNA_Prot \
+  -outfmt 6 -evalue 0.05 \
+  -query Human_herpes_proteins.faa \
+  > Human_herpes_proteins_in_mRNA_Prot.blastp.e0.05.tsv &
+
+blastp -db mRNA_Prot \
+  -outfmt 5 -evalue 0.05 \
+  -query Human_herpes_proteins.faa \
+  > Human_herpes_proteins_in_mRNA_Prot.blastp.e0.05.xml &
+
+
+xml=Human_herpes_proteins_in_mRNA_Prot.blastp.e0.05.xml
+blast2bam ${xml} mRNA_Prot.faa Human_herpes_proteins.faa > ${xml%.xml}.sam
+samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+samtools index ${xml%.xml}.bam
+box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
+
+module load samtools
+for min in 50 75 100 150 200 ; do
+ xml=Human_herpes_proteins_in_mRNA_Prot.blastp.e0.05.bitscoregt${min}.xml
+ xsltproc --param minimum-bit-score ${min} -o ${xml} blastxmlfilteronbitscore.xsl \
+  Human_herpes_proteins_in_mRNA_Prot.blastp.e0.05.xml
+ sed -i 's/<Iteration_hits\/>/<Iteration_hits>\n      <\/Iteration_hits>/g' ${xml}
+ blast2bam ${xml} mRNA_Prot.faa Human_herpes_proteins.faa > ${xml%.xml}.sam
+ samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+ samtools index ${xml%.xml}.bam
+ box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
+done
+
+```
+
+
+
+
+
+
+
+
+can lower the e-value. lets try 0.005 to make the list smaller
+
+Oh oh- Lets just do the one AA sequence :
+SPELLARDPYGPAVDIWSAGIVLFEMATGQ
+
+
+
+```
+
+blastp -db mRNA_Prot \
+  -outfmt 5 -evalue 0.005 \
+  -query Human_herpes_proteins.faa \
+  > Human_herpes_proteins_in_mRNA_Prot.blastp.e0.005.xml &
+
+
+xml=Human_herpes_proteins_in_mRNA_Prot.blastp.e0.005.xml
+blast2bam ${xml} mRNA_Prot.faa Human_herpes_proteins.faa > ${xml%.xml}.sam
+samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+samtools index ${xml%.xml}.bam
+box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
+
+module load samtools
+for min in 50 75 100 150 200 ; do
+ xml=Human_herpes_proteins_in_mRNA_Prot.blastp.e0.005.bitscoregt${min}.xml
+ xsltproc --param minimum-bit-score ${min} -o ${xml} blastxmlfilteronbitscore.xsl \
+  Human_herpes_proteins_in_mRNA_Prot.blastp.e0.005.xml
+ sed -i 's/<Iteration_hits\/>/<Iteration_hits>\n      <\/Iteration_hits>/g' ${xml}
+ blast2bam ${xml} mRNA_Prot.faa Human_herpes_proteins.faa > ${xml%.xml}.sam
+ samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+ samtools index ${xml%.xml}.bam
+ box_upload.bash ${xml%.xml}.bam ${xml%.xml}.bam.bai
+done
+
+```
+
+
+```
+
+echo -e ">sequence\nSPELLARDPYGPAVDIWSAGIVLFEMATGQ" > sequence.faa
+
+
+blastp -db mRNA_Prot \
+  -outfmt 6 -evalue 0.005 \
+  -query sequence.faa \
+  > sequence_in_mRNA_Prot.blastp.e0.005.tsv
+
+blastp -db mRNA_Prot \
+  -outfmt 5 -evalue 0.005 \
+  -query sequence.faa \
+  > sequence_in_mRNA_Prot.blastp.e0.005.xml
+
+xml=sequence_in_mRNA_Prot.blastp.e0.005.xml
+blast2bam ${xml} mRNA_Prot.faa Human_herpes_proteins.faa > ${xml%.xml}.sam
+samtools view -h -F4 ${xml%.xml}.sam | samtools sort -o ${xml%.xml}.bam -
+samtools index ${xml%.xml}.bam
+
+```
+
+
+
+
+##	20231031
+
+
+```
+echo "accession,withversion,description" > Human_alphaherpesvirus_3.protein_translation_table.csv
+ls -1 /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human_alphaherpesvirus_3.fa | cut -d/ -f8 | sed 's/_Human_alphaherpesvirus_3.fa//' | awk 'BEGIN{OFS=","}{split($0,a,".");split($0,b,"_");print a[1],b[1]"_"b[2],$0}' >> Human_alphaherpesvirus_3.protein_translation_table.csv
+
+
+```
+
+
+
+
+##	20231101
+
+
+
+```
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.tsv
+blastp -db Human_herpes_proteins \
+  -outfmt 6 -evalue 0.5 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  >> S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.tsv &
+
+```
+
+
+
+
+```
+awk '($2=="NP_040188.1_HHV3_serine-threonine_protein_kinase_U"){split($1,a,"|");print a[1]}' S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.tsv | uniq | sort | uniq > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.NP_040188.tsv
+```
+
+
+```
+module load WitteLab python3/3.9.1
+python3
+
+
+my_file = open("S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.NP_040188.tsv", "r") 
+data = my_file.read() 
+tcons = data.split("\n") 
+
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio.SeqIO.FastaIO import SimpleFastaParser
+
+import csv
+with open('output.csv', 'w', newline='') as csvfile:
+  writer = csv.writer(csvfile, delimiter=',',
+    dialect='unix',
+    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+  writer.writerow(["TCONS", "TCONS_FULL", "AA", "MW" ])
+  with open("S10_All_ProteinSequences.fa") as handle:
+    for values in SimpleFastaParser(handle):
+      if( values[0] in tcons ):
+        tc=values[0].split("_")
+        X = ProteinAnalysis(values[1])
+        writer.writerow([tc[0] + "_" + tc[1], values[0], values[1], "%0.2f" % X.molecular_weight() ])
+  
+```
+
+```
+
+join -t, --header output.csv S1.csv > S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.NP_040188_with_MW.csv
+box_upload.bash S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.NP_040188_with_MW.csv
+
+```
