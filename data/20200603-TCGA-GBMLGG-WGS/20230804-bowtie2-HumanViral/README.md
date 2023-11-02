@@ -159,6 +159,10 @@ sbatch --job-name="featureCounts" --ntasks=64 --mem=495G --time=14-0 --export=NO
 
 ```
 
+##	20231031
+```
+cat featureCounts.HHV3_proteins.csv | awk -F"\t" '{s=0;for(i=7;i<=NF;i++)s+=$i; print $1,s}'
+```
 
 
 
