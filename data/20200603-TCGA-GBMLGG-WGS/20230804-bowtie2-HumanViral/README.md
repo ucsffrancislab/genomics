@@ -166,3 +166,24 @@ cat featureCounts.HHV3_proteins.csv | awk -F"\t" '{s=0;for(i=7;i<=NF;i++)s+=$i; 
 
 
 
+
+
+
+
+
+##	20231107
+
+Redo featureCounting on all the samples
+
+
+```
+sbatch --job-name="featureCounts" --ntasks=64 --mem=495G --time=14-0 --export=NONE --wrap="~/.local/bin/featureCounts.bash -T 64 -a /francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_alphaherpesvirus_3_proteins_in_Human_herpesvirus_3_genome.gtf -t protein -g protein_id -o ${PWD}/featureCounts.HHV3_proteins.csv ${PWD}/out/*.GRCh38.primary_assembly.genome.plus.viral-20210916-RMHM.bam"
+
+```
+
+```
+cat featureCounts.HHV3_proteins.csv | awk -F"\t" '{s=0;for(i=7;i<=NF;i++)s+=$i; print $1,s}'
+```
+
+
+
