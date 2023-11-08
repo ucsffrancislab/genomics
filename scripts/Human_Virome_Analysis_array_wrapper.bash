@@ -306,7 +306,18 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#		-in virus_genome_for_first_blast.fas \
 			#		-out virus_genome_for_first_blast \
 			#		-title virus_genome_for_first_blast 
-	
+
+			
+			#	In the paper ...
+			#	Second, a 1st BLASTn search of the unmapped RNA-Seq reads was performed on the viral genome sequence database prepared above. 
+			#	The word size and E value parameters were set at 11 and 1.0e−10, respectively. 
+			#
+			#	In https://github.com/TheSatoLab/Human_Virome_analysis, code.sh did not use an evalue filter so neither did I
+			#	That said, its REALLY TIGHT. 1E-10?? Very small
+			#
+			#	That clearly would've made the blast results MUCH smaller and the second blast MUCH faster
+			#	but it also would've made the counts MUCH smaller and they are already too small. Hmmm?
+
 			zcat ${outbase}_${RR}.fasta.gz \
 				| blastn -db ${HVA}/virus_genome_for_first_blast \
 					-word_size 11 -outfmt 6 -num_threads ${threads} | gzip > ${f}
@@ -379,44 +390,24 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	
 
 
-			#	wget https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/faSplit
-			#	chmod +x faSplit
-
-			#	zgrep -c "^>" /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral.fa.gz 
-			#	13057925
-			#	./faSplit sequence /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral.fa.gz 18 /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/
-			#	new faSplit or old. fa or fa.gz. Same bad result. Last file is always HUGEr than the rest?
-			#	grep -c "^>" /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/*fa
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/00.fa:212549
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/01.fa:211229
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/02.fa:210424
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/03.fa:210956
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/04.fa:210087
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/05.fa:210687
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/06.fa:210717
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/07.fa:209682
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/08.fa:210898
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/09.fa:210901
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/10.fa:209961
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/11.fa:211287
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/12.fa:209809
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/13.fa:210842
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/14.fa:211166
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/15.fa:210370
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/16.fa:211903
-			#	/francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral/17.fa:9474457
-
-			#faSplit sequence ${outbase}_${RR}.blast.viral.fa.gz ${threads} 1_
 
 
-#awk 'BEGIN {n_seq=0;} /^>/ {if(n_seq%1000==0){file=sprintf("myseq%d.fa",n_seq);} print >> file; n_seq++; next;} { print >> file; }' < sequences.fa
+			#	blasting isn't really multithreaded as much as you'd like so split 
+			#	the fasta into smaller pieces and explicily blast in parallel
 
-			#	./faSplit srquence 
-			# total_reads=$( zgrep -c "^>" /francislab/data1/working/20201006-GTEx/20230819-Human_Virome_Analysis/out/SRR817658_R1.blast.viral.fa.gz )
 			total_reads=$( zgrep -c "^>" ${outbase}_${RR}.blast.viral.fa.gz )
 			max_count=$[${total_reads}/${threads}+1]
 			\rm -f ${outbase}_${RR}.blast.viral-??.fa
+
+			#	./faSplit sequence FILE.blast.viral.fa.gz 18 some_out_dir/
+			#	faSplit didn't work correctly. The last file always ended up HUGE?
+			#	so splitting the fasta file myself with awk
 			zcat ${outbase}_${RR}.blast.viral.fa.gz | awk -v base=${outbase}_${RR}.blast.viral -v max_count=${max_count} 'function setfilename(){split_file=sprintf("%s-%02d.fa",base,filenum)}BEGIN {n_seq=0;filenum=0;setfilename()}( /^>/ ){ if(n_seq%max_count==0 ){filenum++;setfilename()};n_seq++}{print >> split_file}'
+
+
+
+			#	The github repo code.sh showed an evalue of 0.01, but the paper doesn't mention one at all?
+			#	The alignments are filtered later with the "threshold" of 1e-10 so does it matter if it is here?
 
 			\rm -f ${outbase}_${RR}.blast.viral.commands.txt
 			for f in ${outbase}_${RR}.blast.viral-??.fa ; do
