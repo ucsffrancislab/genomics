@@ -721,3 +721,103 @@ join -t, --header output.csv S1.csv > S10_All_ProteinSequences_fragments_in_Huma
 box_upload.bash S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.NP_040188_with_MW.csv
 
 ```
+
+
+
+
+##	20231107
+
+
+```
+head -3 S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.5.tsv
+qaccver	saccver	pident	length	mismatch	gapopen	qstart	qend	sstart	send	evalue	bitscore
+TCONS_00000246_HERVFH21-int_TAS1R1_+_104|131-156	YP_073755.1_HHV7_tegument_protein_UL35	47.368	19	10	0	6	24	570	588	0.48	21.2
+TCONS_00000246_HERVFH21-int_TAS1R1_+_104|132-157	YP_073755.1_HHV7_tegument_protein_UL35	42.857	21	12	0	5	25	570	590	0.41	21.6
+
+head -3 /francislab/data1/refs/refseq/viral-20220923/herpes_protein_virus_translation_table.csv
+virus,accession,with_version,with_description
+Human_alphaherpesvirus_1,YP_009137073,YP_009137073.1,YP_009137073.1_neurovirulence_protein_ICP34.5_Human_alphaherpesvirus_1
+Human_alphaherpesvirus_1,YP_009137074,YP_009137074.1,YP_009137074.1_ubiquitin_E3_ligase_ICP0_Human_alphaherpesvirus_1
+
+head -3 /francislab/data1/refs/refseq/viral-20220923/herpes_virus_abbreviation_translation_table.csv
+virus,abbreviation
+Human_alphaherpesvirus_1,HHV1
+Human_alphaherpesvirus_2,HHV2
+```
+
+
+```
+join --header -t, /francislab/data1/refs/refseq/viral-20220923/herpes_virus_abbreviation_translation_table.csv \
+  /francislab/data1/refs/refseq/viral-20220923/herpes_protein_virus_translation_table.csv > tmp1
+
+head -3 tmp1
+virus,abbreviation,accession,with_version,with_description
+Human_alphaherpesvirus_1,HHV1,YP_009137073,YP_009137073.1,YP_009137073.1_neurovirulence_protein_ICP34.5_Human_alphaherpesvirus_1
+Human_alphaherpesvirus_1,HHV1,YP_009137074,YP_009137074.1,YP_009137074.1_ubiquitin_E3_ligase_ICP0_Human_alphaherpesvirus_1
+```
+
+
+```
+sed 's/\t/,/g' S10_All_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.tsv \
+  | awk 'BEGIN{FS=OFS=","}(NR>1){split($1,a,"_");split($2,b,".");print a[1]"_"a[2],b[1],$NF}' > tmp2
+
+head -3 tmp2
+TCONS_00000246,YP_081561,24.6
+TCONS_00000246,YP_081561,24.6
+TCONS_00000246,YP_081561,24.6
+
+sort -t, -k1,2 -k3nr tmp2 | uniq | head
+TCONS_00000246,NP_050190,23.9
+TCONS_00000246,YP_081561,24.6
+TCONS_00000667,YP_001129455,25.8
+TCONS_00000667,YP_001129455,24.3
+TCONS_00000667,YP_401658,25.8
+TCONS_00000667,YP_401658,24.3
+TCONS_00000802,YP_009137100,24.3
+TCONS_00000820,NP_040188,26.9
+TCONS_00000820,NP_040188,26.6
+TCONS_00000820,NP_040188,26.2
+
+sort -t, -k1,2 -k3nr tmp2 | uniq | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $2,$1,$3}' | head
+NP_050190,TCONS_00000246,23.9
+YP_081561,TCONS_00000246,24.6
+YP_001129455,TCONS_00000667,25.8
+YP_401658,TCONS_00000667,25.8
+YP_009137100,TCONS_00000802,24.3
+NP_040188,TCONS_00000820,26.9
+YP_009137138,TCONS_00000820,28.5
+YP_009137215,TCONS_00000820,27.3
+YP_081510,TCONS_00000820,23.9
+YP_001129393,TCONS_00001232,24.3
+```
+
+
+```
+sort -t, -k1,2 -k3nr tmp2 | uniq | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $2,$1,$3}' | sort -t, -k1,2 > tmp3
+
+head -3 tmp3
+NP_040125,TCONS_00071958,25.8
+NP_040125,TCONS_00115919,24.3
+NP_040127,TCONS_00037379,25.4
+
+tail -n +2 tmp1 | awk 'BEGIN{FS=OFS=","}{print $3,$2}' | sort -t, -k1,2 | uniq > tmp4
+head -3 tmp4
+NP_040124,HHV3
+NP_040125,HHV3
+NP_040126,HHV3
+
+
+echo "virus,protein,TCONS,bitscore" > virus_protein_TCONS_bitscore.csv
+join -t, tmp4 tmp3 | awk 'BEGIN{FS=OFS=","}{print $2,$1,$3,$4}' | sort -t, -k1,3 >> virus_protein_TCONS_bitscore.csv
+
+head -3 virus_protein_TCONS_bitscore.csv
+virus,protein,TCONS,bitscore
+HHV1,YP_009137074,TCONS_00009055,33.9
+HHV1,YP_009137074,TCONS_00030850,31.6
+
+box_upload.bash virus_protein_TCONS_bitscore.csv
+```
+
+
+
+
