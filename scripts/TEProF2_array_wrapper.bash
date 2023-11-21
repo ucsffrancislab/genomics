@@ -43,6 +43,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		case $1 in
 			--array_file)
 				shift; array_file=$1; shift;;
+			--arguments)
+				shift; ARGUMENTS=$1; shift;;
 			-o|--out)
 				shift; OUT=$1; shift;;
 			-e|--extension)
@@ -232,7 +234,7 @@ else
 				shift; array=$1; shift;;
 			-t|--threads)
 				shift; threads=$1; shift;;
-			-o|--out|--outdir|-e|--extension|-s|--strand)
+			-o|--out|--outdir|-e|--extension|-s|--strand|--arguments)
 				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
 				usage;;

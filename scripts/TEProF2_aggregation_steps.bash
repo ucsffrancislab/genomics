@@ -19,6 +19,8 @@ using_reference=false
 
 while [ $# -gt 0 ] ; do
 	case $1 in
+		--arguments)
+			shift; ARGUMENTS=$1; shift;;
 		-i|--in)
 			shift; IN=$1; shift;;
 		-t|--threads)
@@ -628,7 +630,7 @@ else
 		--job-name="$(basename $0)" \
 		--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
-			$( realpath ${0} ) --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
+			$( realpath ${0} ) --arguments ${ARGUMENTS} --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
 
 fi
 
