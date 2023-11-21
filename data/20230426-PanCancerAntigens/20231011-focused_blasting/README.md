@@ -820,4 +820,64 @@ box_upload.bash virus_protein_TCONS_bitscore.csv
 
 
 
+##	20231108
 
+```
+module load WitteLab python3/3.9.1
+python3
+
+
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio.SeqIO.FastaIO import SimpleFastaParser
+
+import csv
+with open('S10_All_ProteinSequences.MW.csv', 'w', newline='') as csvfile:
+  writer = csv.writer(csvfile, delimiter=',',
+    dialect='unix',
+    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+  writer.writerow(["TCONS", "TCONS_FULL", "AA", "MW" ])
+  with open("S10_All_ProteinSequences.fa") as handle:
+    for values in SimpleFastaParser(handle):
+      tc=values[0].split("_")
+      X = ProteinAnalysis(values[1])
+      writer.writerow([tc[0] + "_" + tc[1], values[0], values[1], "%0.2f" % X.molecular_weight() ])
+  
+```
+
+
+
+```
+module load WitteLab python3/3.9.1
+python3
+
+
+from Bio.SeqUtils.ProtParam import ProteinAnalysis
+from Bio.SeqIO.FastaIO import SimpleFastaParser
+
+import csv
+with open('Human_herpes_proteins.MW.csv', 'w', newline='') as csvfile:
+  writer = csv.writer(csvfile, delimiter=',',
+    dialect='unix',
+    quotechar='|', quoting=csv.QUOTE_MINIMAL)
+  writer.writerow(["TCONS", "TCONS_FULL", "AA", "MW" ])
+  with open("Human_herpes_proteins.faa") as handle:
+    for values in SimpleFastaParser(handle):
+      tc=values[0].split("_")
+      X = ProteinAnalysis(values[1])
+      writer.writerow([tc[0] + "_" + tc[1], values[0], values[1], "%0.2f" % X.molecular_weight() ])
+  
+```
+
+
+
+```
+module load blast
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.5.tsv
+blastp -db Variola_virus_proteins \
+  -outfmt 6 -evalue 0.5 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  >> S10_All_ProteinSequences_fragments_in_Variola_virus_proteins.blastp.e0.5.tsv &
+
+```
