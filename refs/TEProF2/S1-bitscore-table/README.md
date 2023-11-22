@@ -29,9 +29,6 @@ ls -1 /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human_alphahe
 join --header -t, /francislab/data1/refs/refseq/viral-20220923/herpes_virus_abbreviation_translation_table.csv \
   /francislab/data1/refs/refseq/viral-20220923/herpes_protein_virus_translation_table.csv > tmp1
 
-head -3 tmp1
-
-
 
 head -3 tmp1
 virus,abbreviation,accession,with_version,with_description
@@ -270,3 +267,47 @@ tail -n +2 tmp5 | sort -t, -k1,2 >> S1_virus_protein_bitscore.csv
 ```
 ./S1_virus_protein_bitscore.heatmap.py 
 ```
+
+
+
+
+##	20231121
+
+Can we also take a crack at all ‘human’ viruses? I know it will be messy
+
+
+```
+cat /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human_*.fa | sed  -e "/^>/s/'//g" -e '/^>/s/,//g' -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > All_Human_proteins.faa
+
+module load samtools
+samtools faidx All_Human_proteins.faa
+
+module load blast
+makeblastdb -parse_seqids \
+  -in All_Human_proteins.faa \
+  -input_type fasta \
+  -dbtype prot \
+  -out All_Human_proteins \
+  -title All_Human_proteins
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > S10_All_ProteinSequences_fragments_in_All_Human_proteins.blastp.e0.05.tsv
+blastp -db All_Human_proteins \
+  -outfmt 6 -evalue 0.05 \
+  -query S10_All_ProteinSequences-tile-25-24.faa \
+  >> S10_All_ProteinSequences_fragments_in_All_Human_proteins.blastp.e0.05.tsv
+
+
+
+
+
+
+echo "virus,accession,with_version,with_description" > all_human_protein_virus_translation_table.csv
+grep -i "_Human_" viral.protein.names.txt | sed -e 's/^>//' | awk 'BEGIN{FS=OFS="_"}{print $1,$2","$0}' | awk 'BEGIN{FS=".";OFS=","}{print $1,$0}' | awk 'BEGIN{FS="_Human";OFS=","}{print "Human"$NF,$0}' | sort >> all_human_protein_virus_translation_table.csv
+
+cut -d, -f1 all_human_protein_virus_translation_table.csv | uniq > all_human_virus_abbreviation_translation_table.csv 
+```
+
+
+
+
