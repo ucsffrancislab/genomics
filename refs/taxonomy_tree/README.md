@@ -1,14 +1,17 @@
 
+#	refs/taxonomy_tree
 
 
 
 For some reason, taxadb does not include all of the data in taxdump?
 
+```
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_wgs.accession2taxid.gz
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
 wget ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/pdb.accession2taxid.gz
+```
 
 Not sure why so many missing, so I will try to create my own csv files for direct import to database.
 Gotta merge nodes.dmp and names.dmp to make the "taxa" table.
@@ -17,6 +20,7 @@ The accessions tables is just all of the accession2taxid file.
 
 Found another cool tool. http://etetoolkit.org/
 
+```
 
 tar xfvz taxdump.tar.gz names.dmp
 names.dmp
@@ -75,17 +79,21 @@ ncbi_taxid,parent_taxid,tax_name,lineage_level
 accession
 taxid_id,accession
 
+```
 
 Better choose columns. taxid,parent_taxid,tax_name,lineage_level and taxid,accession
 
 
+```
 zcat *.accession2taxid.gz | awk 'BEGIN{FS="\t";OFS=","}($1!="accession"){print $3,$1}' > accession.unsorted.csv
 zcat /francislab/data1/refs/taxadb/nr.aT.csv.gz | awk 'BEGIN{FS=OFS=","}{print $2,$1}' >> accession.unsorted.csv
 #sort -t , -k 2 accession.unsorted.csv > accession.sorted.csv
 #uniq -d accession.sorted.csv
 
+```
 Using tabs as separators for simplicity. Outputing pipes as separators as commas and quotes in data.
 
+```
 awk 'BEGIN{FS="\t";OFS="|"}(FNR==NR && $7=="scientific name"){taxid_names[$1]=$3}(FNR!=NR){print $1,$3,taxid_names[$1],$5}' names.dmp  nodes.dmp > taxa.csv
 
 
@@ -170,7 +178,90 @@ CREATE UNIQUE INDEX "accession_accession" ON "accession" ("accession");
 
 
 
+```
 
+
+
+
+##	20231122
+
+Rebuilding with the latest data
+
+
+```
+
+Two set of files are available for download. 
+The first set contains accession to taxid mapping for live sequence records:
+
+nucl_wgs.accession2taxid.gz
+TaxID mapping for live nucleotide sequence records of type WGS or TSA.
+
+nucl_gb.accession2taxid.gz
+TaxID mapping for live nucleotide sequence records that are not WGS or TSA.
+
+prot.accession2taxid.gz
+TaxID mapping for live protein sequence records which have GI identifiers.
+
+prot.accession2taxid.FULL.gz
+TaxID mapping for all live protein sequence records, including GI-less WGS proteins
+
+prot.accession2taxid.FULL.NN.gz
+TaxID mapping for all live protein sequence records, split into smaller files
+containing 400 million rows each.
+```
+
+
+
+```
+mkdir 20231122
+cd 20231122
+
+wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
+wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
+wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_wgs.accession2taxid.gz
+wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
+wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.gz
+wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/pdb.accession2taxid.gz
+```
+
+
+```
+zcat *.accession2taxid.gz | head -3
+accession	accession.version	taxid	gi
+A00001	A00001.1	10641	58418
+A00002	A00002.1	9913	2
+
+zcat prot.accession2taxid.FULL.gz | head -3
+accession.version	taxid
+0308206A	8058
+0308221A	9606
+```
+
+
+
+
+```
+zcat *.accession2taxid.gz | awk 'BEGIN{FS="\t";OFS=","}($1!="accession"){print $3,$1}' > accession.unsorted.csv
+
+zcat prot.accession2taxid.FULL.gz | awk 'BEGIN{FS="\t";OFS=","}(NR>1){split($1,a,".");print $2,a[1]}' >> accession.unsorted.csv
+
+
+awk 'BEGIN{FS="\t";OFS="|"}(FNR==NR && $7=="scientific name"){taxid_names[$1]=$3}(FNR!=NR){print $1,$3,taxid_names[$1],$5}' names.dmp  nodes.dmp > taxa.csv
+
+
+sqlite3 taxonomy.sqlite
+CREATE TABLE IF NOT EXISTS "taxa" ("taxid" INTEGER NOT NULL PRIMARY KEY, "parent_taxid" INTEGER NOT NULL, "tax_name" VARCHAR(255) NOT NULL, "lineage_level" VARCHAR(255) NOT NULL);
+CREATE TABLE IF NOT EXISTS "accession" ("taxid" INTEGER NOT NULL, "accession" VARCHAR(255) NOT NULL, FOREIGN KEY ("taxid") REFERENCES "taxa" ("taxid"));
+CREATE INDEX "accession_taxid" ON "accession" ("taxid");
+CREATE UNIQUE INDEX "accession_accession" ON "accession" ("accession");
+CREATE INDEX "taxa_parent_taxid" ON "taxa" ("parent_taxid");
+CREATE UNIQUE INDEX "taxa_taxid" ON "taxa" ("taxid");
+.separator "|"
+.import taxa.csv taxa
+.separator ,
+.import accession.unsorted.csv accession
+
+```
 
 
 
