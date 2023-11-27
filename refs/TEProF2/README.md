@@ -546,3 +546,39 @@ done
 
 
 
+
+
+
+##	20231121 New Files available
+
+
+
+On the same site (https://wangftp.wustl.edu/~nshah/ucsf/TCGA33Download/), you should see three new files:
+
+1. Expression_of_transcripts_Across_TCGA-ALL.csv
+-This is the raw table with all the expression and counts for TCGA. These are the main columns that I think you will be interested i: 1) TranscriptID- File with label from TCGA, 2) variable- the TCONS transcript ID for the transcripts listed in the paper, 3) intronread- the number of reads for the unique intron unction closest to candidate gene. We used this as a filter and this had to be a t least 1 for a candidate to be present in a file, and 4) stringtieTPM- The tpm calculated from stringtie, this had to be at least 1 in our analysis. 
+2. Expression_of_transcripts_Across_GTEx-ALL.csv
+-This is the raw table with all the expression and counts for GTEx. These are the main columns that I think you will be interested i: 1) TranscriptID- File with label from GTEx, 2) variable- the TCONS transcript ID for the transcripts listed in the paper, 3) intronread- the number of reads for the unique intron unction closest to candidate gene. We used this as a filter and this had to be a t least 1 for a candidate to be present in a file, and 4) value The tpm calculated from stringtie, this had to be at least 1 in our analysis. 
+-Note, due to memory issues we had filtered this already for transcripts that had TPM of 1, so it only has rows for transcripts that have TPM of at least 1 in a sample. I will have to see if I can get the original raw data. 
+3. TCGALabels.csv
+-This is the file with mappings that we used in the analysis for TCGA IDs and the IDs of the files. 
+
+Hope this helps!
+
+```
+wget https://wangftp.wustl.edu/~nshah/ucsf/TCGA33Download/Expression_of_transcripts_Across_GTEx-ALL.csv
+chmod 400 Expression_of_transcripts_Across_GTEx-ALL.csv
+
+wget https://wangftp.wustl.edu/~nshah/ucsf/TCGA33Download/Expression_of_transcripts_Across_TCGA-ALL.csv
+chmod 400 Expression_of_transcripts_Across_TCGA-ALL.csv
+
+wget https://wangftp.wustl.edu/~nshah/ucsf/TCGA33Download/TCGALabels.csv
+chmod 400 TCGALabels.csv
+
+```
+
+
+
+
+
+
