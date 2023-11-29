@@ -65,15 +65,6 @@ TEProF2_aggregation_steps.bash --threads 64 \
 
 
 
-
-
------
-
-
-##	20231016
-
-
-
 ```
 tail -n +2 /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/select_protein_accessions_IN_S10_S2_ProteinSequences.blastp.e0.05.trimandsort.species.TCONS.csv | cut -d, -f1 | uniq > viral_TCONS.0.05.txt
 ```
@@ -100,3 +91,25 @@ box_upload.bash allCandidateStatistics*.csv
 
 
 
+
+
+```
+tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S2.csv | head -1 | awk -F, '{print $1}' > S2_TranscriptID.txt
+tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S2.csv | awk -F, '{print $1}' | sort >> S2_TranscriptID.txt
+
+
+
+```
+
+
+
+
+
+```
+
+python3 ./merge.py --int --output merged.all_studies.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.subject.study.GBM.counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.subject.study.LGG.counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.shared.subject.study.GBM.counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20230629-TEProF2/sampleTypeStatistics.shared.subject.study.LGG.counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20230710-TEProF2/subjectsStatistics.presence.ALL.counts.csv /francislab/data1/working/20220804-RaleighLab-RNASeq/20230512-TEProF2/subjectsStatistics.presence.ALL.counts.csv /francislab/data1/working/20230628-Costello/20230707-TEProF2/allCandidateStatistics.presence.ALL.counts.csv /francislab/data1/working/20230628-Costello/20231120-TEProF2/allCandidateStatistics.presence.ALL.counts.csv
+
+
+join --header -t, S2_TranscriptID.txt merged.all_studies.csv > merged.all_studies.S2.csv
+
+```
