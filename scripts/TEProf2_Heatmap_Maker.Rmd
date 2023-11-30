@@ -13,7 +13,8 @@ args = commandArgs(trailingOnly=TRUE)
 output_file = paste(normalizePath(args[1]),"html", sep=".")
 print(output_file)
 
-rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+rmarkdown::render(newfname, output_dir = dirname(output_file), output_file = output_file )
 q("no")
 
 
@@ -85,38 +86,66 @@ mat_row = data.frame(group=row_groups)
 rownames(mat_row)= df1$protein
 df2=(df1[,-c(1:2)])
 row.names(df2)= df1$protein
-mat_colors <- list(group = brewer.pal(length(unique(row_groups)), "Set3"))
+
+
+
+
+#	mat_colors <- list(group = brewer.pal(length(unique(row_groups)), "Set3"))
+mat_colors <- list(group = rainbow(length(unique(row_groups))))
 names(mat_colors$group) <- unique(row_groups)
+
+
+
 
 mgaps = c(0, gaps, nrow(df2))
 
 #TCGA tumors only --------------------------
-df3= df2[, grep("_tumor", colnames(df3))]
+#df3 = df2[, grep("_tumor", colnames(df3))]
+df3 = df2[, grep("_tumor", colnames(df2))]
 # -------------------------------------------
 
 # Reorder rows so they are clustered within group. 
 row.order = c()
+#for(i in c(1:(length(mgaps)-1))){
+#	row.order = c(row.order, hclust(dist(df3[c((mgaps[i]+1):(mgaps[i+1])),]))$order + mgaps[i] )
+#}
+
+
 for(i in c(1:(length(mgaps)-1))){
-row.order = c(row.order, hclust(dist(df3[c((mgaps[i]+1):(mgaps[i+1])),]))$order + mgaps[i] )
+	if(mgaps[i+1]- mgaps[i] < 2){
+		row.order = c(row.order,c((mgaps[i]+1):(mgaps[i+1])))
+	}else{
+		row.order = c(row.order, hclust(dist(df3[c((mgaps[i]+1):(mgaps[i+1])),]))$order + mgaps[i] )
+	}
 }
+
+
+
 df4 = df3[row.order,]
 
 #df4= df3[, grep("_normal", colnames(df3))]
 
 dfb = as.matrix(df4)
 mat_breaks <- quantile_breaks(df4, 100)
+
 # Alternative approach 
 dfb=unlist(df4)
 dfb=dfb[which(dfb >0)]
 mat_breaks = seq(min(dfb), max(dfb), ceiling((max(dfb)-min(dfb))/10))
 mat_breaks = c(0, mat_breaks)
-colorpal= c("lightyellow", colorRampPalette(c("orange", "red", "darkred", "black"))(length(mat_breaks)-1))
+colorpal = c("lightyellow", colorRampPalette(c("orange", "red", "darkred", "black"))(length(mat_breaks)-1))
 
-
-
-pheat.plot=pheatmap(df4, cluster_rows = F, cluster_cols = T,annotation_row = mat_row,col=colorpal,show_colnames = TRUE , show_rownames = TRUE,gaps_row =gaps, annotation_colors =mat_colors, main = "", breaks=mat_breaks)
+pheat.plot=pheatmap(df4,
+	cluster_rows = F,
+	cluster_cols = T,
+	annotation_row = mat_row,
+	col=colorpal,
+	show_colnames = TRUE , 
+	show_rownames = TRUE,
+	gaps_row =gaps, 
+	main = "", 
+	breaks=mat_breaks)
+#	annotation_colors =mat_colors, 
   
-
-  
-
 ```
+
