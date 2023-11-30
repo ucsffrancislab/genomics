@@ -9,8 +9,11 @@ writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
 args = commandArgs(trailingOnly=TRUE)
 #print(normalizePath(args[1]))
 
+args[1] = normalizePath(args[1])
+
 #output_file = paste(basename(fname),basename(args[1]),"html", sep=".")
-output_file = paste(normalizePath(args[1]),"html", sep=".")
+#output_file = paste(normalizePath(args[1]),"html", sep=".")
+output_file = paste(args[1],"html", sep=".")
 print(output_file)
 
 #rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
