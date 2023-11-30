@@ -86,7 +86,7 @@ from matplotlib.colors import LogNorm
 
 
 
-fig = plt.figure(figsize=(25, 200))
+fig = plt.figure(figsize=(25, 320))
 
 sns_plot=sns.heatmap(df,
 	norm=LogNorm(),
