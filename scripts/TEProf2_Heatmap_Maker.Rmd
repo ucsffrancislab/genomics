@@ -135,17 +135,42 @@ mat_breaks = seq(min(dfb), max(dfb), ceiling((max(dfb)-min(dfb))/10))
 mat_breaks = c(0, mat_breaks)
 colorpal = c("lightyellow", colorRampPalette(c("orange", "red", "darkred", "black"))(length(mat_breaks)-1))
 
+#pheat.plot=pheatmap(df4,
+#	cluster_rows = F,
+#	cluster_cols = T,
+#	annotation_row = mat_row,
+#	col=colorpal,
+#	show_colnames = TRUE , 
+#	show_rownames = TRUE,
+#	gaps_row =gaps, 
+#	main = "", 
+#	breaks=mat_breaks)
+##	annotation_colors =mat_colors, 
+
+
 pheat.plot=pheatmap(df4,
 	cluster_rows = F,
 	cluster_cols = T,
 	annotation_row = mat_row,
 	col=colorpal,
-	show_colnames = TRUE , 
+	show_colnames = TRUE,
 	show_rownames = TRUE,
-	gaps_row =gaps, 
-	main = "", 
-	breaks=mat_breaks)
-#	annotation_colors =mat_colors, 
+	gaps_row = gaps,
+	annotation_colors = mat_colors,
+	main = "",
+	breaks = mat_breaks,
+	fontsize_row = 4,
+	fontsize_col=7)
+
+save_pheatmap_pdf <- function(z, filename, width, height) {
+  stopifnot(!missing(z))
+  stopifnot(!missing(filename))
+  pdf(filename, width=width, height=height)
+  grid::grid.newpage()
+  grid::grid.draw(z$gtable)
+  dev.off()
+}
+save_pheatmap_pdf(pheat.plot, paste(normalizePath(args[1]),"pdf", sep="."), 8, nrow(df4)/10)
   
 ```
 
