@@ -220,9 +220,9 @@ wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz
 wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_gb.accession2taxid.gz
 wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/nucl_wgs.accession2taxid.gz
 wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.gz
-wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/prot.accession2taxid.FULL.gz
 wget -b ftp://ftp.ncbi.nih.gov/pub/taxonomy/accession2taxid/pdb.accession2taxid.gz
 ```
+
 
 
 ```
@@ -230,23 +230,62 @@ zcat *.accession2taxid.gz | head -3
 accession	accession.version	taxid	gi
 A00001	A00001.1	10641	58418
 A00002	A00002.1	9913	2
-
-zcat prot.accession2taxid.FULL.gz | head -3
-accession.version	taxid
-0308206A	8058
-0308221A	9606
 ```
 
 
 
-
 ```
-zcat *.accession2taxid.gz | awk 'BEGIN{FS="\t";OFS=","}($1!="accession"){print $3,$1}' > accession.unsorted.csv
-
-zcat prot.accession2taxid.FULL.gz | awk 'BEGIN{FS="\t";OFS=","}(NR>1){split($1,a,".");print $2,a[1]}' >> accession.unsorted.csv
-
-
 awk 'BEGIN{FS="\t";OFS="|"}(FNR==NR && $7=="scientific name"){taxid_names[$1]=$3}(FNR!=NR){print $1,$3,taxid_names[$1],$5}' names.dmp  nodes.dmp > taxa.csv
+
+
+
+zcat *.accession2taxid.gz | awk 'BEGIN{FS="\t";OFS=","}(($1!="accession")&&($3!=0)){print $3,$1}' > accession.unsorted.csv
+chmod 400 accession.unsorted.csv
+```
+
+Don't use prot.accession2taxid.FULL.gz
+It contains duplicates and pairings of accession and taxid that are different in the other files.
+As well as extra fields with colons and commas.
+Note the differences in fields from the WITHGI and FULL versions
+
+```
+zgrep -n : prot.accession2taxid.FULL.gz
+42:0403181A:PDB=1BP2,2BPP	9913
+59:0407244A:PDB=1GF2	9606
+313:0706243A:PDB=1HOE,2AIT,3AIT,4AIT	1932
+321:0707237A:PDB=3ICB	9913
+346:0710290A:PDB=1CTS	9825
+373:0801257A:PDB=2STV	12054
+465:0807298A:PDB=3PGM	4932
+570:0902204A:PDB=2MCM	1917
+862:1004262A:PDB=1C5A	9825
+1813:1202232A:PDB=1IFC	10116
+2727:1309311A:PDB=1EMD,2CMD	562
+3229:1411165A:PDB=1PPO	3649
+3575:1513188A:PDB=1BBC,1POD	9606
+```
+
+
+```
+sort --parallel=32 -t, -k2,2 -k1,1r accession.unsorted.csv > accession.sorted.csv
+uniq -d accession.sorted.csv > accession.sorted.dups.csv
+uniq accession.sorted.csv > accession.sorted.uniq.csv
+gzip accession.sorted.csv &
+gzip accession.unsorted.csv &
+```
+
+No dupes here.
+
+
+
+
+Let's see if there are any repeated accessions.
+
+
+```
+
+
+module load sqlite
 
 
 sqlite3 taxonomy.sqlite
@@ -259,10 +298,37 @@ CREATE UNIQUE INDEX "taxa_taxid" ON "taxa" ("taxid");
 .separator "|"
 .import taxa.csv taxa
 .separator ,
-.import accession.unsorted.csv accession
+.import accession.sorted.uniq.csv accession
 
 ```
 
+
+
+
+
+
+```
+
+select a.accession, t1.taxid, t1.tax_name, t1.lineage_level, t2.taxid, t2.tax_name, t2.lineage_level, t3.taxid, t3.tax_name, t3.lineage_level, t4.taxid, t4.tax_name, t4.lineage_level, t5.taxid, t5.tax_name, t5.lineage_level, t6.taxid, t6.tax_name, t6.lineage_level from accession a join taxa t1 on t1.taxid = a.taxid join taxa t2 on t2.taxid = t1.parent_taxid join taxa t3 on t3.taxid = t2.parent_taxid join taxa t4 on t4.taxid = t3.parent_taxid join taxa t5 on t5.taxid = t4.parent_taxid join taxa t6 on t6.taxid = t5.parent_taxid where a.accession = 'NC_006273';
+```
+
+
+
+
+
+
+
+
+
+```
+
+
+select a.accession, t.tax_name from accession a join taxa t on t.taxid=a.taxid where a.accession== "NP_040188";
+accession|tax_name
+NP_040188|Human alphaherpesvirus 3
+
+
+```
 
 
 
