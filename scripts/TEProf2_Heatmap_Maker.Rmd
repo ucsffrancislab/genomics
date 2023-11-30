@@ -1,3 +1,23 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+args = commandArgs(trailingOnly=TRUE)
+#print(normalizePath(args[1]))
+
+#output_file = paste(basename(fname),basename(args[1]),"html", sep=".")
+output_file = paste(normalizePath(args[1]),"html", sep=".")
+print(output_file)
+
+rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+q("no")
+
+
+
 ---
 title: "TEProf2_Heatmaps"
 author: "Geno Guerra"
@@ -5,11 +25,24 @@ date: "2023-11-23"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
 
+```{r args}
+args
+```
+
+```{r args1}
+args[1]
+```
+
+
+```{r setup, include=FALSE}
 # Process the data 
 
-datafile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/TEProf2/S1_S10_S2_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.csv"
+#datafile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/TEProf2/S1_S10_S2_ProteinSequences_fragments_in_Human_herpes_proteins.blastp.e0.05.csv"
+#datafile = normalizePath(args[1])
+
+datafile = args[1]
+
 
 # Read in the datafile
 
@@ -32,6 +65,7 @@ quantile_breaks <- function(xs, n) {
 Make sure install.packages("pheatmap") is run to install the necessary package. 
 
 ```{r heatmap setup, echo = FALSE, warning=FALSE}
+library(RColorBrewer)
 library(pheatmap)  # RUN 
 
 df0 =df#[which(df$GTEx_Total_without_Testis ==0),]
