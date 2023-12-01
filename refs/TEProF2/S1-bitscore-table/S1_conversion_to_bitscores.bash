@@ -13,16 +13,32 @@ fi
 # makeblastdb -in S10_S2_ProteinSequences.fa -input_type fasta -dbtype prot -out S10_S2_ProteinSequences -title S10_S2_ProteinSequences -parse_seqids
 
 TCONS_FASTA=/francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences.faa
-TCONS_FASTA_BASE=$( basename ${TCONS_FASTA} .faa )
 #PROTEIN_FASTA=All_Human_proteins.faa
-PROTEIN_FASTA=Human_herpes_proteins.faa
+#PROTEIN_FASTA=Human_herpes_proteins.faa
 #PROTEIN_FASTA=Variola_virus_proteins.faa
-PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .faa )
 EVALUE=0.05
+
+
+while [ $# -gt 0 ] ; do
+	case $1 in
+		--tcons)
+			shift; TCONS_FASTA=$1; shift;;
+		--protein)
+			shift; PROTEIN_FASTA=$1; shift;;
+		*)
+			echo "Unknown"; exit 1;;
+	esac
+done
+
+TCONS_FASTA_BASE=$( basename ${TCONS_FASTA} .faa )
+PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .faa )
+
 
 
 echo "Tiling TCONS protein sequences"
 
+
+echo "Assuming it is done already"
 #	scp c4:/francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences-tile-25-24.faa ./
 #cat ${TCONS_FASTA} | pepsyn tile -l 25 -p 24 - ${TCONS_FASTA_BASE}-tile-25-24.faa
 
@@ -36,7 +52,7 @@ samtools faidx ${TCONS_FASTA_BASE}-tile-25-24.faa
 
 
 
-echo "Preparing sequence names"
+#	echo "Preparing sequence names"
 #	Remove characters that makeblastdb angry
 #	Shorten to 50 chars
 #	Add second iteration which was used by blast2bam or something but is otherwise ignored
@@ -75,6 +91,12 @@ head ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.ts
 
 
 
+
+#echo "virus,accession,with_version,with_description" > ${PROTEIN_FASTA_BASE}.virus_translation_table.csv
+#sed -e 's/^>//' viral.protein.names.txt | awk 'BEGIN{FS=OFS="_"}{print $1,$2","$0}' | awk 'BEGIN{FS=".";OFS=","}{print $1,$0}' | 
+#awk 'BEGIN{FS="_Human";OFS=","}{print "Human"$NF,$0}'
+#sort >> ${PROTEIN_FASTA_BASE}.virus_translation_table.csv
+
 #	scp c4:/francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/Human_herpes_proteins.faa ./
 #	All_Human_proteins.faa
 
@@ -83,16 +105,11 @@ head ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.ts
 #
 #cut -d, -f1 all_human_protein_virus_translation_table.csv | uniq > all_human_virus_abbreviation_translation_table.csv 
 
-
 #	Herpes viruses
 #	grep "_Human_" viral.protein.names.txt | grep herpes | sed -e 's/^>//' | awk 'BEGIN{FS=OFS="_"}{print $1,$2","$0}' | awk 'BEGIN{FS=".";OFS=","}{print $1,$0}' | awk 'BEGIN{FS="_Human";OFS=","}{print "Human"$NF,$0}' | sort >> ${PROTEIN_FASTA_BASE}.virus_translation_table.csv
 
-
 #	Variola virus
 #grep "_Variola_virus$" viral.protein.names.txt | sed -e 's/^>//' | awk 'BEGIN{FS=OFS="_"}{print $1,$2","$0}' | awk 'BEGIN{FS=".";OFS=","}{print "Variola_virus",$1,$0}' | sort >> ${PROTEIN_FASTA_BASE}.virus_translation_table.csv
-
-
-
 
 #echo "accession,withversion,description" > Human_alphaherpesvirus_3.protein_translation_table.csv
 #ls -1 /francislab/data1/refs/refseq/viral-20220923/viral.protein/*_Human_alphaherpesvirus_3.fa | cut -d/ -f8 | sed 's/_Human_alphaherpesvirus_3.fa//' | awk 'BEGIN{OFS=","}{split($0,a,".");split($0,b,"_");print a[1],b[1]"_"b[2],$0}' >> Human_alphaherpesvirus_3.protein_translation_table.csv
@@ -104,6 +121,10 @@ head ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.ts
 #virus,abbreviation,accession,with_version,with_description
 #Human_alphaherpesvirus_1,HHV1,YP_009137073,YP_009137073.1,YP_009137073.1_neurovirulence_protein_ICP34.5_Human_alphaherpesvirus_1
 #Human_alphaherpesvirus_1,HHV1,YP_009137074,YP_009137074.1,YP_009137074.1_ubiquitin_E3_ligase_ICP0_Human_alphaherpesvirus_1
+
+
+
+
 
 
 
@@ -172,7 +193,10 @@ head tmp3
 
 
 #tail -n +2 all_human_protein_virus_translation_table.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' | sort -t, -k1,2 | uniq > tmp4
-tail -n +2 ${PROTEIN_FASTA_BASE}.virus_translation_table.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' | sort -t, -k1,2 | uniq > tmp4
+#tail -n +2 ${PROTEIN_FASTA_BASE}.virus_translation_table.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' | sort -t, -k1,2 | uniq > tmp4
+#tail -n +2 virus_translation_table.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' | sort -t, -k1,2 | uniq > tmp4
+#tail -n +2 virus_translation_table.20200507.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' | sort -t, -k1,2 | uniq > tmp4
+tail -n +2 virus_translation_table.20231122.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1}' | sort -t, -k1,2 | uniq > tmp4
 
 echo head tmp4
 head tmp4
@@ -364,6 +388,11 @@ head tmp11 | cut -c1-150
 
 
 cp tmp11 S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.csv
-./S1_virus_protein_bitscore.heatmap.py S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.csv
+#./S1_virus_protein_bitscore.heatmap.py S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.csv
+
+#../../../scripts/
+
+TEProf2_Heatmap_Maker.Rmd S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.csv
+
 
 
