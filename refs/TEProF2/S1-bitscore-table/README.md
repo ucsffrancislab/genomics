@@ -151,6 +151,7 @@ scp c4:/francislab/data1/refs/TEProf2/TCONS_viral_protein_translation_table.* ./
 scp c4:/francislab/data1/refs/TEProf2/TCGA_Expression.select.translated.present.sample_aggregated_by_study.csv ./
 scp c4:/francislab/data1/refs/TEProf2/TCGA_Expression.select.translated.present.csv ./
 
+scp c4:/francislab/data1/refs/refseq/viral-20220923/virus_translation_table*csv ./
 
 
 scp c4:/francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_blasting/virus_protein_TCONS_bitscore.csv ./
@@ -311,3 +312,65 @@ cut -d, -f1 all_human_protein_virus_translation_table.csv | uniq > all_human_vir
 
 
 
+
+
+##	20231128
+
+ALL viral proteins, not just human
+
+ Can we get the entire viral protein database blased against the tumor specific TCONS?
+I know it will be huge, but we are going to get there anyway!!
+
+
+```
+scp c4:/francislab/data1/refs/refseq/viral-20220923/*.protein.faa.gz ./
+
+ed -e '/^>/s/[ \/,]/_/g'
+
+zcat /francislab/data1/refs/refseq/mRNA_Prot/human.*.protein.faa.gz | sed  -e '/^>/s/ \[Homo sapiens\]//g' 
+
+zcat viral.?.protein.faa.gz | sed -e '/^>/s/[],()\/[]//g' -e "/^>/s/'//g" -e '/^>/s/->//g' -e '/^>/s/ /_/g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > All_proteins.faa
+```
+
+
+##	20231129
+
+
+```
+scp c4:/francislab/data1/refs/refseq/viral-20220923/virus_translation_table*csv ./
+
+head -1 virus_translation_table.20200507.csv > virus_translation_table.csv
+tail -n +2 virus_translation_table.202*.csv | sort -u | grep -vs "^," | grep -vs "^$" | grep -vs "^==" >> virus_translation_table.csv
+
+```
+
+
+```
+[gwendt@c4-dev3 /francislab/data1/refs/refseq/viral-20220923]$ grep YP_009100985 virus_translation_table.202*
+virus_translation_table.20200507.csv:Listeria phage WIL-1,YP_009100985,YP_009100985.1,YP_009100985.1_recombination_exonuclease_Listeria_phage_WIL-1
+virus_translation_table.20231122.csv:,YP_009100985,YP_009100985.1,YP_009100985.1_recombination_exonuclease_Listeria_phage_WIL-1
+[gwendt@c4-dev3 /francislab/data1/refs/refseq/viral-20220923]$ grep YP_009153153 virus_translation_table.202*
+virus_translation_table.20200507.csv:Klebsiella phage K64-1,YP_009153153,YP_009153153.1,YP_009153153.1_hypothetical_protein_ACQ27_gp13_Klebsiella_phage_K64-1
+virus_translation_table.20231122.csv:,YP_009153153,YP_009153153.1,YP_009153153.1_hypothetical_protein_ACQ27_gp13_Klebsiella_phage_K64-1
+[gwendt@c4-dev3 /francislab/data1/refs/refseq/viral-20220923]$ grep YP_010065083 virus_translation_table.202*
+virus_translation_table.20200507.csv:,YP_010065083,YP_010065083.1,YP_010065083.1_hypothetical_protein_KMB90_gp46_Vibrio_virus_2019VC1
+virus_translation_table.20231122.csv:,YP_010065083,YP_010065083.1,YP_010065083.1_hypothetical_protein_KMB90_gp46_Vibrio_virus_2019VC1
+[gwendt@c4-dev3 /francislab/data1/refs/refseq/viral-20220923]$ grep YP_010298128 virus_translation_table.202*
+virus_translation_table.20200507.csv:,YP_010298128,YP_010298128.1,YP_010298128.1_AAA_family_ATPase_Serratia_phage_KpZh_1
+virus_translation_table.20231122.csv:,YP_010298128,YP_010298128.1,YP_010298128.1_AAA_family_ATPase_Serratia_phage_KpZh_1
+[gwendt@c4-dev3 /francislab/data1/refs/refseq/viral-20220923]$ grep YP_010298522 virus_translation_table.202*
+virus_translation_table.20200507.csv:,YP_010298522,YP_010298522.1,YP_010298522.1_AAA_family_ATPase_Serratia_phage_KpYy_2_45
+virus_translation_table.20231122.csv:,YP_010298522,YP_010298522.1,YP_010298522.1_AAA_family_ATPase_Serratia_phage_KpYy_2_45
+```
+
+
+
+
+```
+
+scp c4:/francislab/data1/refs/refseq/viral-20231129/viral.1.protein.faa.gz ./
+
+zcat viral.?.protein.faa.gz | sed -e '/^>/s/[],()\/[]//g' -e "/^>/s/'//g" -e '/^>/s/->//g' -e '/^>/s/ /_/g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/g' > All_proteins.faa
+
+
+```
