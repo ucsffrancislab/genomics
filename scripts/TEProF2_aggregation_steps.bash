@@ -262,7 +262,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		else
 			gff3_annotated_filtered_test_all=${reference_merged_candidates_gtf%.gtf}.gff3_annotated_filtered_test_all
 			${TEPROF2}/mergeAnnotationProcess_Ref.R \
-        -f ${gff3_annotated_filtered_test_all} \
+				-f ${gff3_annotated_filtered_test_all} \
 				-a ${ARGUMENTS}
 
 			# README says to use -g, but script actually uses -f
