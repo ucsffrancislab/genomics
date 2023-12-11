@@ -81,7 +81,7 @@ refs/TEProF2/S1-bitscore-table/S1.csv
 refs/TEProF2/S1-bitscore-table/S1.list.csv
 refs/TEProF2/S1-bitscore-table/S1.sorted.csv
 refs/TEProF2/S1-bitscore-table/S1.sorted.select.csv
-refs/TEProF2/S1-bitscore-table/*S10_*_ProteinSequences_fragments_in_*_proteins*blastp.e*.?sv*
+refs/TEProF2/S1-bitscore-table/*S10_*_ProteinSequences_fragments_in_*_proteins*blastp.e*.*
 refs/TEProF2/S1-bitscore-table/S10_S2_ProteinSequences-tile-25-24.fa*
 refs/TEProF2/S1-bitscore-table/S1_virus_protein_bitscore*
 refs/TEProF2/S1-bitscore-table/TCGA_Expression.select.translated.present.csv
