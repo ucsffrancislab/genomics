@@ -160,6 +160,9 @@ scp c4:/francislab/data1/working/20230426-PanCancerAntigens/20231011-focused_bla
 
 scp c4:/francislab/data1/refs/refseq/viral-20220923/viral.protein/NP_040188.1_serine-threonine_protein_kinase_US3_Human_alphaherpesvirus_3.fa ./
 
+
+scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translation_table.20231122.csv ./
+
 ```
 
 
@@ -374,3 +377,22 @@ zcat viral.?.protein.faa.gz | sed -e '/^>/s/[],()\/[]//g' -e "/^>/s/'//g" -e '/^
 
 
 ```
+
+##	20231207
+
+
+```
+scp c4:/francislab/data1/refs/refseq/viral-20231129/viral.protein.faa.gz ./
+scp c4:/francislab/data1/refs/refseq/viral-20231129/viral.1.protein.faa.gz ./
+scp c4:/francislab/data1/refs/refseq/viral-20231129/viral.protein.names.txt ./
+scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translation_table.20231122b.csv ./
+scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translation_table.20231122.csv ./
+scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_translation_table.20231122.csv ./
+scp c4:/francislab/data1/refs/refseq/viral-20231129/*_proteins.faa* ./
+
+scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translation_table.20231129.20231122.csv ./
+
+```
+
+
+
