@@ -26,18 +26,11 @@ opt$args[1] = normalizePath(opt$args[1])
 print(opt$args)
 print(opt$args[1])
 
-#####outfile = paste(datafile, ".bitscoreGTE", bitscore_thresh, ".", layer2, ".pdf", sep = "")
-#####output_file = paste(basename(fname),basename(args[1]),"html", sep=".")
-#####output_file = paste(normalizePath(args[1]),"html", sep=".")
-#####output_file = paste(args[1],"html", sep=".")
+output_base = paste( gsub(".csv","",opt$args[1]) , "bitscoreGTE", opt$options$bitscore_thresh, opt$options$layer2, sep=".")
+output_file = paste(output_base, "html", sep=".")
+print(output_file)
 
-#output_file = paste(opt$args[1],"html", sep=".")
-opt$output_base = paste( gsub(".csv","",opt$args[1]) , "bitscoreGTE", opt$options$bitscore_thresh, opt$options$layer2, sep=".")
-opt$output_file = paste(opt$output_base, "html", sep=".")
-print(opt$output_file)
-
-#####rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
-rmarkdown::render(newfname, output_dir = dirname(opt$output_file), output_file = opt$output_file )
+rmarkdown::render(newfname, output_dir = dirname(output_file), output_file = output_file )
 
 q("no")
 
@@ -65,17 +58,16 @@ args[1]
 ```
 
 
-```{r setup, include=FALSE}
-# Process the data 
+Process the data 
 
-#datafile = args[1]
+```{r setup, include=FALSE}
 datafile = opt$args[1]
 ```
 
 
-```{r}
-# Read in the datafile
+Read in the datafile
 
+```{r}
 df = read.csv(datafile, header=TRUE, sep = ",")
 colnames(df)[which(colnames(df)=="name")]= "virus"
 colnames(df)[which(colnames(df)=="accession")]= "protein"
@@ -103,27 +95,27 @@ dfmax =  apply(dfa[,-c(1:8)], 1, max, na.rm=TRUE)
 
 
 ```{r}
-df0=dfa[which(dfmax >= opt$options$bitscore_thresh), ]
-uv=levels(as.factor(df0$virus))
+df0 = dfa[which(dfmax >= opt$options$bitscore_thresh), ]
+uv = levels(as.factor(df0$virus))
 u2 = levels(as.factor(df0[,opt$options$layer2]))
 ```
 
 
+Need to reorder the data so that it is collected by group
 ```{r}
-gaps =c()
-# Need to reorder the data so that it is collected by group
-ordered= c()
+gaps = c()
+ordered = c()
 ```
 
 
 ```{r}
 for(j in c(1:length(u2))){
-	uv2=levels(as.factor(df0$virus[which(df0[opt$options$layer2]== u2[j])]))
+	uv2 = levels(as.factor(df0$virus[which(df0[opt$options$layer2]== u2[j])]))
 
 	for(k in c(1:length(uv2))){
 		ordered = c(ordered,which(df0$virus ==uv2[k]) )
 		#if(k!=length(uv2)){
-		gaps=c(gaps,length(ordered))
+		gaps =c (gaps,length(ordered))
 		# }
 	}
 
@@ -143,7 +135,7 @@ row_groups = df1$virus
 mat_row = data.frame(group=row_groups)
 rownames(mat_row)= df1$protein
 annotation_rows = data.frame(virus = df1$virus, level2 = df1[,opt$options$layer2])
-rownames(annotation_rows)= df1$protein
+rownames(annotation_rows) = df1$protein
 ```
 
 
@@ -152,26 +144,31 @@ colnames(annotation_rows) = c("virus", opt$options$layer2)
 ```
 
 ```{r t3}
-df2=(df1[,-c(1:4)])
+df2 = (df1[,-c(1:4)])
 ```
 
 
 ```{r t4}
-row.names(df2)= df1$protein
+row.names(df2) = df1$protein
 #mat_colors <- list(group = rainbow(length(unique(row_groups))))
 #names(mat_colors$group) <- unique(row_groups)
+mgaps = c(0, gaps)
 ```
 
 
+TCGA tumors only
 ```{r t5}
-mgaps = c(0, gaps)
+df3 = df2[, grep("_tumor", colnames(df2))]
+```
 
-#TCGA tumors only --------------------------
-df3= df2[, grep("_tumor", colnames(df2))]
-# -------------------------------------------
 
-# Reorder rows so they are clustered within group. 
+Reorder rows so they are clustered within group. 
+```{r t6}
 row.order = c()
+```
+
+
+```{r t7}
 for(i in c(1:(length(mgaps)-1))){
 	if(mgaps[i+1]- mgaps[i] < 2){
 		row.order = c(row.order,c((mgaps[i]+1):(mgaps[i+1])))
@@ -179,32 +176,37 @@ for(i in c(1:(length(mgaps)-1))){
 		row.order = c(row.order, hclust(dist(df3[c((mgaps[i]+1):(mgaps[i+1])),]))$order + mgaps[i] )
 	}
 }
+```
+
+
+```{r t8}
 df4 = df3[row.order,]
 
 #df4= df3[, grep("_normal", colnames(df3))]
 
 dfb = as.matrix(df4)
 #mat_breaks <- quantile_breaks(df4, 100)
+
 # Alternative approach 
-dfb=unlist(df4)
-dfb=dfb[which(dfb >0)]
+dfb = unlist(df4)
+dfb = dfb[which(dfb >0)]
 mat_breaks = seq(min(dfb), max(dfb), ceiling((max(dfb)-min(dfb))/10))
 mat_breaks = c(0, mat_breaks)
-colorpal= c("lightyellow", colorRampPalette(c("orange", "red", "darkred", "black"))(length(mat_breaks)-1))
+colorpal = c("lightyellow", colorRampPalette(c("orange", "red", "darkred", "black"))(length(mat_breaks)-1))
 
-mygaps= gaps	#c(0,gaps, 0,gaps, 0,gaps)
-pheat.plot=pheatmap(df4,
+mygaps = gaps	#c(0,gaps, 0,gaps, 0,gaps)
+pheat.plot = pheatmap(df4,
 	cluster_rows = F,
 	cluster_cols = T,
 	annotation_row = annotation_rows,
-	col=colorpal,
+	col = colorpal,
 	show_colnames = TRUE ,
 	show_rownames = TRUE,
-	gaps_row =mygaps,
+	gaps_row = mygaps,
 	main = "",
-	breaks=mat_breaks,
+	breaks = mat_breaks,
 	fontsize_row = 4,
-	fontsize_col=7,
+	fontsize_col = 7,
 	fontsize = 5)
 
 #annotation_colors =mat_colors
@@ -217,9 +219,9 @@ save_pheatmap_pdf <- function(z, filename, width, height) {
 	grid::grid.draw(z$gtable)
 	dev.off()
 }
-##save_pheatmap_pdf(pheat.plot, output_file, 8, nrow(df4)/10+3)
-##save_pheatmap_pdf(pheat.plot, paste(normalizePath(args[1]),"pdf", sep="."), 8, nrow(df4)/10+3)
-save_pheatmap_pdf(pheat.plot, paste(opt$output_base,"pdf", sep="."), 8, nrow(df4)/10+3)
+
+
+save_pheatmap_pdf(pheat.plot, paste(output_base,"pdf", sep="."), 8, nrow(df4)/10+3)
 
 ```
 
