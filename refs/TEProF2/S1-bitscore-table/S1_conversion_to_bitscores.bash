@@ -31,6 +31,7 @@ while [ $# -gt 0 ] ; do
 done
 
 TCONS_FASTA_BASE=$( basename ${TCONS_FASTA} .faa )
+PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .gz )
 PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .faa )
 
 
