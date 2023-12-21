@@ -170,11 +170,13 @@ scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translat
 ##	Start with S1 so get all studies
 
 
-
+```
 head S1.csv 
 Transcript ID,Subfam,Chr TE,Start TE,End TE,Location TE,Gene,Splice Target,Strand,ACC_tumor,ACC_normal,BLCA_tumor,BLCA_normal,BRCA_tumor,BRCA_normal,CESC_tumor,CESC_normal,CHOL_tumor,CHOL_normal,COAD_tumor,COAD_normal,DLBC_tumor,DLBC_normal,ESCA_tumor,ESCA_normal,GBM_tumor,GBM_normal,HNSC_tumor,HNSC_normal,KICH_tumor,KICH_normal,KIRC_tumor,KIRC_normal,KIRP_tumor,KIRP_normal,LAML_tumor,LAML_normal,LGG_tumor,LGG_normal,LIHC_tumor,LIHC_normal,LUAD_tumor,LUAD_normal,LUSC_tumor,LUSC_normal,MESO_tumor,MESO_normal,OV_tumor,OV_normal,PAAD_tumor,PAAD_normal,PCPG_tumor,PCPG_normal,PRAD_tumor,PRAD_normal,READ_tumor,READ_normal,SARC_tumor,SARC_normal,SKCM_tumor,SKCM_normal,STAD_tumor,STAD_normal,TGCT_tumor,TGCT_normal,THCA_tumor,THCA_normal,THYM_tumor,THYM_normal,UCEC_tumor,UCEC_normal,UCS_tumor,UCS_normal,UVM_tumor,UVM_normal,Adipose Tissue_gtex,Ovary_gtex,Vagina_gtex,Breast_gtex,Salivary Gland_gtex,Adrenal Gland_gtex,Spleen_gtex,Esophagus_gtex,Prostate_gtex,Testis_gtex,Nerve_gtex,Brain_gtex,Thyroid_gtex,Lung_gtex,Skin_gtex,Blood_gtex,Blood Vessel_gtex,Pituitary_gtex,Heart_gtex,Colon_gtex,Pancreas_gtex,Stomach_gtex,Muscle_gtex,Small Intestine_gtex,Uterus_gtex,Kidney_gtex,Liver_gtex,Cervix Uteri_gtex,Bladder_gtex,Fallopian Tube_gtex,Tumor Total,Normal Total,GTEx Total,GTEx Total without Testis
 TCONS_00000050,AluY,chr1,928111,928412,intron_2,SAMD11,exon_3,+,2,0,8,0,36,0,7,0,1,0,2,0,0,0,4,0,0,0,2,0,0,5,12,0,16,1,4,0,21,0,1,0,4,0,5,0,10,0,42,0,6,0,17,0,20,1,0,0,21,0,2,0,8,1,14,0,18,1,0,0,45,4,9,0,0,0,5,8,4,7,0,6,31,32,32,49,15,2,24,19,15,0,54,85,34,14,2,8,1,14,13,12,6,0,1,1,337,13,494,445
 TCONS_00000056,L2a,chr1,968519,968877,intron_2,PLEKHN1,exon_3,+,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+```
+
 
 ```
 sed '1s/ /_/g' S1.csv | cut -d, -f1,10- | tr -d "\r" > S1._.csv
@@ -393,6 +395,84 @@ scp c4:/francislab/data1/refs/refseq/viral-20231129/*_proteins.faa* ./
 scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translation_table.20231129.20231122.csv ./
 
 ```
+
+
+
+##	20231211
+
+
+```
+zcat human.*.protein.faa.gz | sed -e '/^>/s/ \[Homo sapiens\]//' -e '/^>/s/[] \/,[]/_/g' -e "/^>/s/'//g" -e '/^>/s/->//g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' -e '/^>/s/>\(.*\)$/>\1 \1/' > human.protein.faa.gz
+```
+
+
+```
+for b in 45 40 35 ; do
+for l in phylum class order family subfamily genus ; do
+for s in All All_Human Human_herpes ; do
+TEProf2_Heatmap_Maker.Rmd -b ${b} -l ${l} S1_S10_S2_ProteinSequences_fragments_in_${s}_proteins.extra.blastp.e0.05.csv
+done ; done ; done
+```
+
+
+```
+for b in 35 30 ; do
+TEProf2_Heatmap_Maker.Rmd -b ${b} -l genus S1_S10_S2_ProteinSequences_fragments_in_Variola_virus_proteins.extra.blastp.e0.05.csv
+done
+```
+
+
+```
+for b in 70 65 60 ; do
+TEProf2_Heatmap_Maker.Rmd -b ${b} -l genus S1_S10_S2_ProteinSequences_fragments_in_human.protein.extra.blastp.e0.05.csv
+done
+```
+
+
+```
+zgrep -h "^>" ~/Downloads/human.*.protein.faa.gz | cut -d" " -f2- | sed -e 's/ \[Homo sapiens\]//' -e 's/[] \/,[]/_/g' -e "s/'//g" -e 's/->//g' -e 's/^>//' | awk -F. '{print $1}' > col1
+
+zgrep -h "^>" ~/Downloads/human.*.protein.faa.gz | sed -e 's/^>//' | cut -d. -f1 > col2
+
+zgrep -h "^>" ~/Downloads/human.*.protein.faa.gz | sed -e 's/ \[Homo sapiens\]//' -e 's/[] \/,[]/_/g' -e "s/'//g" -e 's/->//g' -e 's/^>//' | awk -F_ '{print $1"_"$2}' > col3
+
+zgrep -h "^>" ~/Downloads/human.*.protein.faa.gz | sed -e 's/ \[Homo sapiens\]//' -e 's/[] \/,[]/_/g' -e "s/'//g" -e 's/->//g' -e 's/^>//' > col4
+
+echo "virus,accession,with_version,with_description" > human.protein.translation_table.csv
+paste -d, col1 col2 col3 col4 | sort -t, -k2,2 >> human.protein.translation_table.csv
+```
+
+
+```
+awk '((NR>1)&&($NF >= 60)){print $2}' S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.tsv | uniq | sort | uniq > S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.bitscoreGTE.60.list.txt &
+awk '((NR>1)&&($NF >= 65)){print $2}' S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.tsv | uniq | sort | uniq > S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.bitscoreGTE.65.list.txt &
+awk '((NR>1)&&($NF >= 70)){print $2}' S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.tsv | uniq | sort | uniq > S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.bitscoreGTE.70.list.txt &
+```
+
+
+
+
+
+##	20231215
+
+Could you please provide some counts? Like how many Human and viral AA sequences there are, and how many are over a few GT thresholds?
+I guess the length of the AA sequences are also important, perhaps the number of tiles?
+
+
+
+```
+for s in All_Human_proteins All_proteins Human_herpes_proteins Variola_virus_proteins human.protein ; do
+for i in 00 20 30 40 50 60 70 ; do
+echo $s $i
+awk -v i=$i '((NR>1)&&($NF >= i)){print $2}' S10_S2_ProteinSequences_fragments_in_${s}.blastp.e0.05.tsv | sort | uniq -c > S10_S2_ProteinSequences_fragments_in_${s}.blastp.e0.05.bitscoreGTE.${i}.list.counts.txt
+done ; done
+```
+
+
+
+
+
+
 
 
 
