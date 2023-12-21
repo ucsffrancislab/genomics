@@ -106,3 +106,13 @@ refs/TEProF2/S1-bitscore-table/20231207/
 scripts/umi_dedup_paired.py
 scripts/vcf_reference_compare.bash
 singularity/ubuntu-xenial-16.04-cloudimg-console.log
+refs/TEProF2/S1-bitscore-table/S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.bitscoreGTE.*.list*.txt
+refs/TEProF2/S1-bitscore-table/S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.list.txt
+refs/TEProF2/S1-bitscore-table/S10_S2_ProteinSequences_fragments_in_human.protein.blastp.e0.05.tsv
+refs/TEProF2/S1-bitscore-table/S1_S10_S2_ProteinSequences_fragments_in_human.protein.accession_only.blastp.e0.05.csv
+refs/TEProF2/S1-bitscore-table/S1_S10_S2_ProteinSequences_fragments_in_human.protein.extra.blastp.e0.05.bitscoreGTE.*.genus.*
+refs/TEProF2/S1-bitscore-table/S1_S10_S2_ProteinSequences_fragments_in_human.protein.extra.blastp.e0.05.csv
+refs/TEProF2/S1-bitscore-table/col*
+refs/TEProF2/S1-bitscore-table/human.protein.faa.gz*
+refs/TEProF2/S1-bitscore-table/human.protein.p*
+refs/TEProF2/S1-bitscore-table/human.protein.translation_table.csv
