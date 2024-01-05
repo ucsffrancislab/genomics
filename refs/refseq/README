@@ -289,3 +289,52 @@ makeblastdb -parse_seqids -input_type fasta -dbtype prot -out mRNA_Prot -title m
 samtools faidx mRNA_Prot.faa
 ```
 
+
+##	20231229
+
+
+
+
+zcat /francislab/data1/refs/refseq/bacteria-20210916/bacteria.genomic.fna.gz | grep -is "^>" | sed -e '/^>/s/[],:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' > bacteria.genomic.txt &
+
+
+```
+grep -c "^>NC_" bacteria.genomic.txt 
+6550
+wc -l bacteria.genomic.txt 
+24423009 bacteria.genomic.txt
+
+grep -vs "^>NC_" bacteria.genomic.txt | grep -vs "^>NZ_" | grep -vs "^>NG_" | grep -vs "^>NR_" | grep -vs "^>NT_"
+```
+
+Clean up names and split fasta by name. Only want the NC_*. Delete the rest once extracted.
+```
+#zcat bacteria.*.*.genomic.fna.gz | sed -e '/^>/s/[],:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' -e '/^>/s/\(^.\{1,250\}\).*/\1/' | gzip  > bacteria.genomic.cleaned.fna.gz
+nohup zcat /francislab/data1/refs/refseq/bacteria-20210916/bacteria.*.*.genomic.fna.gz | sed -e '/^>/s/[],:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' | gzip > /francislab/data1/refs/refseq/bacteria-20210916/bacteria.genomic.cleaned2.fna.gz &
+```
+Take forever and a day
+```
+nohup faSplit byname bacteria.genomic.cleaned2.fna.gz individual/ &
+```
+
+```
+mkdir individual_NC_only
+mv individual/NC_* individual_NC_only/
+/bin/rm -rf individual/
+cat individual_NC_only/*fa | gzip > NC_bacteria.fna.gz
+
+module load bowtie2
+bowtie2-build NC_bacteria.fna.gz NC_bacteria
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=Clean \
+  --output="${PWD}/cleaning.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/refs/refseq/clean.bash
+
+```
+
+
+
+
