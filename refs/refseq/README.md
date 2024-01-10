@@ -333,6 +333,12 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=Clean \
   --output="${PWD}/cleaning.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14000 --nodes=1 --ntasks=8 --mem=60G /francislab/data1/refs/refseq/clean.bash
 
+mkdir /francislab/data1/refs/refseq/bacteria-20210916/individual/
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=Split \
+  --output="${PWD}/faSplit.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="faSplit byname /francislab/data1/refs/refseq/bacteria-20210916/bacteria.genomic.cleaned4.fna.gz /francislab/data1/refs/refseq/bacteria-20210916/individual/"
+
 ```
 
 
