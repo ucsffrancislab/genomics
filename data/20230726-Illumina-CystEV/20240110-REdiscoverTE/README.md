@@ -40,4 +40,20 @@ nonHG_serum
 
 ```
 
+```
+mkdir -p out
+for d in /francislab/data1/working/20211208-EV/20240109-REdiscoverTE/out/*.salmon.REdiscoverTE.k15 \
+  /francislab/data1/working/20230726-Illumina-CystEV/20230810-REdiscoverTE/out/*.salmon.REdiscoverTE.k15 ; do
+ln -s $d out/
+done
+```
+
+
+
+```
+
+REdiscoverTE_rollup.bash
+
+```
+
 
