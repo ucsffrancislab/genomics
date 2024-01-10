@@ -301,6 +301,7 @@ box_upload.bash dump/11/kmers-head*
 
 
 20230103 - Just noticed that when I predicted, there was a character difference which made the ratio on the final line wrong.
+Reran. Somehow it didnt actually make a difference.
 
 
 
@@ -426,10 +427,40 @@ AAAAAAAAAAG,19860.5,21991.1,27012.8,15947,21304.6,40168.6,18902.9,21521.3,22412.
 
 
 ```
+awk -v dir="zscores_filtered/11/preprocess" 'BEGIN{FS=",";OFS="\t"}
+(NR==1){ 
+split($0,columns,",")
+for(i=1;i<=NF;i++){ if($i=="input"){input_col=i;break}} 
+for(i=input_col;i<=NF;i++){ if($i=="id_z"){id_z_col=i;break}} 
+print $0; print input_col; print id_z_col; sample_count=id_z_col-input_col-1; print sample_count 
+for(i=2;i<input_col;i++){ system("mkdir -p "dir"/"columns[i]) }
+}
+(NR>1){
+count_close_to_zero=0; for(i=input_col+1;i<id_z_col;i++){ if(($i>-3.5)&&($i<3.5)){count_close_to_zero+=1} }
+if(count_close_to_zero<(0.9*sample_count)){
+for(i=2;i<input_col;i++){ 
+print $1,$i >> dir"/"columns[i]"/"columns[i]".tsv"
+} } }' dump/11/kmers.count.Zscores.reordered.joined.csv
 
-head dump/11/kmers.count.Zscores.reordered.joined.csv | awk -F, '(NR==1){ for(i=1;i<=NF;i++){ if($i=="input"){input_col=i;break}} print input_col}'
+```
 
 
+
+
+
+```
+k=11
+dir=${PWD}/zscores_filtered/${k}/
+create_matrix=${dir}/create_matrix.tsv
+awk -v d=${dir} 'BEGIN{OFS=FS="\t"}($3!="blank"){
+ print d"preprocess/"$2"/"$2".tsv",$2,$3
+}' ${PWD}/dump/${k}/create_matrix.tsv > ${create_matrix}
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.zscore.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=10000 --nodes=1 --ntasks=32 --mem=240G \
+  ~/.local/bin/iMOKA.bash --dir ${dir} --k ${k} --step create
 
 ```
 
@@ -440,4 +471,222 @@ head dump/11/kmers.count.Zscores.reordered.joined.csv | awk -F, '(NR==1){ for(i=
 
 
 
+##	20240108
 
+3 days and still running. i don't think its working.
+
+
+test
+
+```
+k=11
+dir=${PWD}/retest/${k}/
+mkdir -p $dir
+create_matrix=${dir}/create_matrix.tsv
+awk -v d=${dir} 'BEGIN{OFS=FS="\t"}($3!="blank"){
+ print d"preprocess/"$2"/"$2".tsv",$2,$3
+}' ${PWD}/dump/${k}/create_matrix.tsv > ${create_matrix}
+
+ln -s /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/out/11/preprocess/ ${PWD}/retest/${k}/
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.retest.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=10000 --nodes=1 --ntasks=32 --mem=240G \
+  ~/.local/bin/iMOKA.bash --dir ${dir} --k ${k} --step create
+
+```
+
+That was fast.
+
+
+
+
+
+Trying to convert to sorted bins
+
+```
+singularity exec iMOKA.img iMOKA_core create -i zscores_filtered/11/create_matrix.tsv -o zscores_filtered/11/matrix.json 
+```
+
+
+
+
+
+
+
+
+###	Rerunning all with the dumped RAW values and zscores on RESCALED values
+
+dump to tsv ... dump/11/kmers.tsv.gz
+
+```
+\rm iMOKA_commands
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
+for k in 11 13 16 21 25 31 35 39 43 47 51; do
+mkdir -p ${PWD}/dump/${k}
+cat ${PWD}/{out,blank}/${k}/create_matrix.tsv | grep -vs SFHH00 > ${PWD}/dump/${k}/create_matrix.tsv
+echo "export SINGULARITY_BINDPATH=/francislab; export APPTAINER_BINDPATH=/francislab; export OMP_NUM_THREADS=32; export IMOKA_MAX_MEM_GB=220; singularity exec ${img} iMOKA_core create -i ${PWD}/dump/${k}/create_matrix.tsv -o ${PWD}/dump/${k}/create_matrix.json; singularity exec ${img} iMOKA_core dump -i ${PWD}/dump/${k}/create_matrix.json -o ${PWD}/dump/${k}/kmers.rescaled.tsv; gzip ${PWD}/dump/${k}/kmers.rescaled.tsv; singularity exec ${img} iMOKA_core dump --raw -i ${PWD}/dump/${k}/create_matrix.json -o ${PWD}/dump/${k}/kmers.raw.tsv; gzip ${PWD}/dump/${k}/kmers.raw.tsv" >> iMOKA_commands
+done
+
+commands_array_wrapper.bash --array_file iMOKA_commands --time 720 --threads 32 --mem 240G 
+```
+
+
+
+convert to csv ... dump/11/kmers.count.csv.gz
+
+zscores computed to ... dump/11/kmers.count.Zscores.csv.gz
+
+reorder zscores to ... dump/11/kmers.count.Zscores.reorder.csv.gz
+(note leaving the trailing "id,group,input" just cause its easier, then ignore it later.)
+
+```
+module load r
+#for k in 11 13 16 21 25 31 35 39 43 47 51; do
+for k in 11 ; do
+zcat ${PWD}/dump/${k}/kmers.raw.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.raw.count.csv
+zcat ${PWD}/dump/${k}/kmers.rescaled.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.rescaled.count.csv
+elledge_Zscore_analysis.R ${PWD}/dump/${k}/kmers.rescaled.count.csv
+
+sed -i '1 s/,/_z,/g' ${PWD}/dump/${k}/kmers.rescaled.count.Zscores.csv
+awk 'BEGIN{FS=OFS=","}{print $(NF-2),$0}' ${PWD}/dump/${k}/kmers.rescaled.count.Zscores.csv > ${PWD}/dump/${k}/kmers.rescaled.count.Zscores.reordered.csv
+gzip ${PWD}/dump/${k}/kmers.rescaled.count.Zscores.csv
+done
+```
+
+
+
+join to ... 
+
+```
+join --header -t, dump/11/kmers.raw.count.csv dump/11/kmers.rescaled.count.Zscores.reordered.csv > dump/11/kmers.count.Zscores.reordered.joined.csv
+gzip dump/11/kmers.raw.count.csv
+gzip dump/11/kmers.rescaled.count.csv
+gzip dump/11/kmers.rescaled.count.Zscores.reordered.csv
+```
+
+process compute and print new kmer tsv files
+
+
+```
+head dump/11/kmers.count.Zscores.reordered.joined.csv
+
+id,2_2,2_3,2_4,2_5,2_6,2_7,2_9,4_1,4_2,4_4,4_5,4_6,4_7,4_8,input,2_2_z,2_3_z,2_4_z,2_5_z,2_6_z,2_7_z,2_9_z,4_1_z,4_2_z,4_4_z,4_5_z,4_6_z,4_7_z,4_8_z,id_z,group_z,input
+AAAAAAAAAAA,213533,402483,193401,192968,294870,257501,198657,145156,469123,244148,260164,136522,238819,332900,64585,26.530141064702,30.8919296420663,18.6911943122779,22.5309953123833,29.3785741467186,23.7866483797062,18.6837993684122,30.0653679842025,31.3780339725042,16.0718009181584,17.8393861395377,15.7809851614883,16.6344122131289,13.1957945288144,AAAAAAAAAAA,73,31515200
+AAAAAAAAAAC,4633,9995,3863,4948,7227,1768,4983,1587,8444,1537,2965,3568,6078,6672,250,-0.57800306559934,-0.570723514857385,-0.479477805288554,-0.648244309535677,-0.537642773616751,-0.511306013336593,-0.608975875091876,2.33061579842224,-0.544299084571831,-0.354066676911819,-0.607227720803483,-0.649723217813516,-0.627730198719661,-0.687604090239235,AAAAAAAAAAC,69,122794
+AAAAAAAAAAG,2051,5210,2048,2124,3250,1470,2316,793,4451,1174,1726,1485,2627,3732,336,-0.769270301537397,-0.746684201634108,-1.10635884698986,-0.751228254954141,-0.751623594775967,-0.681186790924955,-0.81213310982856,-0.136328788785707,-0.747129289391139,-0.585096423534813,-0.706870511412341,-0.749373278577219,-0.760092743561761,-0.923653158457521,AAAAAAAAAAG,70,163393
+AAAAAAAAAAT,11462,25041,10148,11360,18940,3540,11492,3704,21902,3278,6372,7757,14500,15346,658,0.0494025999914976,0.0327967845406966,0.375966957669004,0.0154945903316173,0.115288369474927,-0.0689148322791389,0.00723031334308198,1.67825614918959,0.057144737040279,0.115298735808653,-0.116618300479394,-0.119546504825515,-0.0858792204287556,-0.0948185703137878,AAAAAAAAAAT,72,326244
+AAAAAAAAACA,3760,8419,3180,3966,6011,1451,4146,1239,7023,1214,2400,2849,4934,5186,200,-0.494278735542997,-0.465151340099824,-0.28462426253603,-0.569506916012177,-0.442617915623989,-0.405876380356149,-0.502508409302832,1.81964895940281,-0.448024106899436,-0.318679466533567,-0.527904548513684,-0.573279883977352,-0.552177148964907,-0.563691321070819,AAAAAAAAACA,68,97866.3
+AAAAAAAAACC,1554,3385,1373,1662,2305,649,1771,559,2938,625,1034,1232,2120,2296,69,-0.663082259285981,-0.644908829748575,-0.397377255716704,-0.725926469750381,-0.620335529125549,-0.523493898756265,-0.668865570725022,2.65418289139744,-0.619471374391503,-0.336961115202922,-0.694147183835091,-0.729362252988332,-0.711327675488793,-0.747318231199592,AAAAAAAAACC,63,34262.4
+AAAAAAAAACG,173,455,168,184,326,62,207,81,352,58,126,139,250,361,0,11.1955162277015,13.2794154521353,11.8345278846643,9.66749258892634,14.2127813354088,12.6812758133416,10.964975694159,19.8297119354221,12.0742301091129,14.5525411380703,10.5515934613404,8.95318217175057,10.2586073318526,14.9342224995851,AAAAAAAAACG,1,0
+AAAAAAAAACT,542,1417,518,613,1012,127,633,160,1210,108,304,391,806,927,23,-0.0326093007402607,0.100365206655792,0.709986602080665,-0.145221898996942,0.165614616914387,-0.107690282560451,-0.00413686101780592,1.99262025469254,0.140753877897595,-0.0478444120777881,-0.211475346578055,-0.251602919433054,-0.14408006589481,0.0212396807047908,AAAAAAAAACT,48,11309.1
+AAAAAAAAAGA,1272,3132,1206,1345,2001,841,1451,490,2585,589,1072,896,1651,2229,199,-0.656939418492521,-0.628225649347773,-0.704952301102263,-0.680256398902394,-0.633003052801352,-0.571060500326188,-0.665778272329503,-0.0012372026519241,-0.623507995669951,-0.584791094009123,-0.625152898732472,-0.65624454877392,-0.652971144688475,-0.711384072796817,AAAAAAAAAGA,68,97163.2
+
+```
+
+
+
+```
+awk -v dir="zscores_filtered/11/preprocess" 'BEGIN{FS=",";OFS="\t"}
+(NR==1){ 
+split($0,columns,",")
+for(i=1;i<=NF;i++){ if($i=="input"){input_col=i;break}} 
+for(i=input_col;i<=NF;i++){ if($i=="id_z"){id_z_col=i;break}} 
+print $0; print input_col; print id_z_col; sample_count=id_z_col-input_col-1; print sample_count 
+for(i=2;i<input_col;i++){ system("mkdir -p "dir"/"columns[i]) }
+}
+(NR>1){
+count_close_to_zero=0; for(i=input_col+1;i<id_z_col;i++){ if(($i>-3.5)&&($i<3.5)){count_close_to_zero+=1} }
+if(count_close_to_zero<(0.9*sample_count)){
+for(i=2;i<input_col;i++){ 
+print $1,$i >> dir"/"columns[i]"/"columns[i]".tsv"
+} } }' dump/11/kmers.count.Zscores.reordered.joined.csv
+
+```
+
+
+
+
+
+```
+k=11
+dir=${PWD}/zscores_filtered/${k}/
+create_matrix=${dir}/create_matrix.tsv
+awk -v d=${dir} 'BEGIN{OFS=FS="\t"}($3!="blank"){
+ print d"preprocess/"$2"/"$2".tsv",$2,$3
+}' ${PWD}/dump/${k}/create_matrix.tsv > ${create_matrix}
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.zscore.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=10000 --nodes=1 --ntasks=32 --mem=240G \
+  ~/.local/bin/iMOKA.bash --dir ${dir} --k ${k} --step create --random_forest --cross-validation 5
+
+```
+
+
+
+### Run iMOKA special on many k
+
+
+
+
+```
+for k in 11 13 16 21 25 31 35 39 43 47 51; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  ${PWD}/iMOKA_special.bash --k ${k}
+done
+```
+
+k above 35 crashed the zscore script. Testing with more memory
+
+```
+for k in 35 39 43 47 51; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  ${PWD}/iMOKA_special.bash --k ${k}
+done
+```
+
+
+
+
+##	20240109
+
+Try to predict on serum ...
+
+```
+/francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/predictions/${k}/preprocess/*/
+```
+
+and older data
+```
+/francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/out/${k}/preprocess/SFHH0*/
+```
+
+
+
+
+```
+for k in 11 13 16 21 25 31 35 39 43 47 51; do
+
+for k in 31 25 21 16 13 11 ; do
+mkdir -p ${PWD}/predictions.older/${k}
+cat ${PWD}/out/${k}/create_matrix.tsv | grep SFHH00 > ${PWD}/predictions.older/${k}/predict_matrix.tsv
+~/.local/bin/iMOKA_predict.bash --threads 8 \
+--model_base /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/zscores_filtered/${k} \
+--predict_matrix  ${PWD}/predictions.older/${k}/predict_matrix.tsv \
+--predict_out ${PWD}/predictions.older/${k}
+
+mkdir -p ${PWD}/predictions.serum/${k}
+cat ${PWD}/predictions/${k}/create_matrix.tsv > ${PWD}/predictions.serum/${k}/predict_matrix.tsv
+~/.local/bin/iMOKA_predict.bash --threads 8 \
+--model_base /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/zscores_filtered/${k} \
+--predict_matrix  ${PWD}/predictions.serum/${k}/predict_matrix.tsv \
+--predict_out ${PWD}/predictions.serum/${k}
+done
+
+```

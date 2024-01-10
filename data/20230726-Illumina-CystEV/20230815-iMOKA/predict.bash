@@ -67,6 +67,23 @@ for kdir in ${basedir}/out/?? ; do
 			#singularity exec ${img} predict.py ${predict_out}/topredict.tsv ${model} ${model_name}.predictions.json \
 			#	| awk 'NR > 1 {print}' > ${model_name}.predictions.tsv
 			mkdir -p ${predict_out}/
+			#	
+			#	usage: predict.py [-h] [-t THREADS] input model output
+			#	
+			#	Predict the class of samples using k-mer features.
+			#	
+			#	positional arguments:
+			#	  input                 Input file, containing the k-mer or feature matrix. First line have to contain the samples names, the second line the corresponding
+			#	                        groups, or NA if unknown. The first column has to be the feaures names. The matrix is then organized with features on the rows and
+			#	                        samples on the columns.
+			#	  model                 The model obtained from random_forest.py
+			#	  output                Output file in json format
+			#	
+			#	optional arguments:
+			#	  -h, --help            show this help message and exit
+			#	  -t THREADS, --threads THREADS
+			#	                        The number of threads to use. Default: -1 (automatic)
+			#	
 			singularity exec ${img} predict.py ${predict_out}/topredict.tsv ${model} ${model_name}.predictions.json \
 				| tail -n +2 > ${predict_out}/$(basename ${model_name} ).predictions.tsv
 		done
