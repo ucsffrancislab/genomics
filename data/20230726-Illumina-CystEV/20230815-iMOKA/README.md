@@ -646,7 +646,7 @@ k above 35 crashed the zscore script. Testing with more memory
 for k in 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
   --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  --time=14000 --nodes=1 --ntasks=64 --mem=490G \
   ${PWD}/iMOKA_special.bash --k ${k}
 done
 ```
@@ -690,3 +690,80 @@ cat ${PWD}/predictions/${k}/create_matrix.tsv > ${PWD}/predictions.serum/${k}/pr
 done
 
 ```
+
+
+
+
+##	20240110
+
+Include k=9
+
+```
+iMOKA_count.bash -k ${k} --threads 32 --mem 240G --dir ${PWD}/blank --source_file ${PWD}/source.blanks.tsv
+
+iMOKA_count.bash -k ${k} --threads 32 --mem 240G --source_file ${PWD}/source.predict.tsv --dir ${PWD}/predictions
+
+iMOKA_count.bash -k ${k} --threads 32 --mem 240G
+```
+
+
+
+
+Rerun random forest and predictions
+
+
+```
+for k in 9 11 13 16 21 25 31 35 39 43 47 51; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  ${PWD}/iMOKA_special.bash --k ${k} --random_forest --cross-validation 2
+done
+```
+
+
+
+
+```
+box_upload.bash zscores_filtered/*/{output_fi.tsv,output_predictions.tsv,output.json,aggregated.json}
+```
+
+
+```
+for k in 11 13 16 21 25 31 35 39 43 47 51; do
+mkdir -p ${PWD}/predictions.older/${k}
+cat ${PWD}/out/${k}/create_matrix.tsv | grep SFHH00 > ${PWD}/predictions.older/${k}/predict_matrix.tsv
+~/.local/bin/iMOKA_predict.bash --threads 8 \
+--model_base /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/zscores_filtered/${k} \
+--predict_matrix  ${PWD}/predictions.older/${k}/predict_matrix.tsv \
+--predict_out ${PWD}/predictions.older/${k}
+
+mkdir -p ${PWD}/predictions.serum/${k}
+cat ${PWD}/predictions/${k}/create_matrix.tsv > ${PWD}/predictions.serum/${k}/predict_matrix.tsv
+~/.local/bin/iMOKA_predict.bash --threads 8 \
+--model_base /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/zscores_filtered/${k} \
+--predict_matrix  ${PWD}/predictions.serum/${k}/predict_matrix.tsv \
+--predict_out ${PWD}/predictions.serum/${k}
+done
+
+```
+
+
+
+```
+box_upload.bash predictions.*/*/{select_kmers.txt,topredict.tsv,predict_matrix.tsv,*.predictions.tsv}
+```
+
+
+
+##	20240111
+
+Testing
+
+```
+iMOKA_Train_Test_Analysis_Plotter.Rmd
+```
+
+
+
+

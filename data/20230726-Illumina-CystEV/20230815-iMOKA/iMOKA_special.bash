@@ -13,6 +13,7 @@ fi
 set -x
 
 
+random_forest=""
 #SELECT_ARGS=""
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -30,8 +31,8 @@ while [ $# -gt 0 ] ; do
 #			shift; threads=$1; shift;;
 #		--reduce)
 #			shift; reduce="${reduce} $1 $2"; shift; shift;;
-#		--random_forest)
-#			shift; random_forest="${random_forest} $1 $2"; shift; shift;;
+		--random_forest)
+			shift; random_forest="${random_forest} $1 $2"; shift; shift;;
 #		*)
 #			SELECT_ARGS="${SELECT_ARGS} $1"; shift;;
 	esac
@@ -123,5 +124,9 @@ awk -v d=${dir} 'BEGIN{OFS=FS="\t"}($3!="blank"){
  print d"preprocess/"$2"/"$2".tsv",$2,$3
 }' ${PWD}/dump/${k}/create_matrix.tsv > ${create_matrix}
 
-~/.local/bin/iMOKA.bash --dir ${dir} --k ${k} --step create --random_forest --cross-validation 5
+random_forest_option=""
+[ -n "${random_forest}" ] && random_forest_option="--random_forest ${random_forest}"
+
+~/.local/bin/iMOKA.bash --dir ${dir} --k ${k} --step create ${random_forest_option}
+
 
