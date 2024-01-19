@@ -68,11 +68,27 @@ gzip ${PWD}/dump/${k}/kmers.rescaled.tsv
 #	dump raw kmers to be put back based on zscore results
 singularity exec ${img} iMOKA_core dump --raw -i ${PWD}/dump/${k}/create_matrix.json -o ${PWD}/dump/${k}/kmers.raw.tsv; gzip ${PWD}/dump/${k}/kmers.raw.tsv
 
-#	convert tsv to csv plus add header and merge the blanks as "input"
-zcat ${PWD}/dump/${k}/kmers.raw.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.raw.count.csv
 
-#	convert tsv to csv plus add header and merge the blanks as "input"
-zcat ${PWD}/dump/${k}/kmers.rescaled.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.rescaled.count.csv
+
+
+
+
+#	#	convert tsv to csv plus add header and merge the last 2 as blanks as "input"
+#	zcat ${PWD}/dump/${k}/kmers.raw.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.raw.count.csv
+#	
+#	#	convert tsv to csv plus add header and merge the last 2 as blanks as "input"
+#	zcat ${PWD}/dump/${k}/kmers.rescaled.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.rescaled.count.csv
+
+
+#	convert tsv to csv plus add header and merge the last 4 as blanks as "input"
+zcat ${PWD}/dump/${k}/kmers.raw.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-4);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-4);i++){s=s","$i};print s,($(NF-3)+$(NF-2)+$(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.raw.count.csv
+
+#	convert tsv to csv plus add header and merge the last 4 as blanks as "input"
+zcat ${PWD}/dump/${k}/kmers.rescaled.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-4);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-4);i++){s=s","$i};print s,($(NF-3)+$(NF-2)+$(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.rescaled.count.csv
+
+
+
+
 
 
 
@@ -111,6 +127,9 @@ if(count_close_to_zero<(0.9*sample_count)){
 for(i=2;i<input_col;i++){ 
 print $1,$i >> dir"/"columns[i]"/"columns[i]".tsv"
 } } }' ${PWD}/dump/${k}/kmers.count.Zscores.reordered.joined.csv
+
+#	why sample_count=id_z_col-input_col-1
+#	why not just sample_count=input_col-1
 
 
 
