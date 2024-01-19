@@ -341,6 +341,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=Split \
 
 ```
 
-
+Cleaning took over 2 days. And Splitting took 4 so far
 
 
