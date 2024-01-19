@@ -626,7 +626,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
 
 
 
-### Run iMOKA special on many k
+### Run iMOKA zscore_filter on many k
 
 
 
@@ -634,9 +634,9 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
 ```
 for k in 11 13 16 21 25 31 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
-  --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --output="${PWD}/logs/iMOKA.zscore_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14000 --nodes=1 --ntasks=32 --mem=240G \
-  ${PWD}/iMOKA_special.bash --k ${k}
+  ${PWD}/iMOKA_zscore_filter.bash --k ${k}
 done
 ```
 
@@ -645,9 +645,9 @@ k above 35 crashed the zscore script. Testing with more memory
 ```
 for k in 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
-  --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --output="${PWD}/logs/iMOKA.zscore_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14000 --nodes=1 --ntasks=64 --mem=490G \
-  ${PWD}/iMOKA_special.bash --k ${k}
+  ${PWD}/iMOKA_zscore_filter.bash --k ${k}
 done
 ```
 
@@ -699,11 +699,11 @@ done
 Include k=9
 
 ```
-iMOKA_count.bash -k ${k} --threads 32 --mem 240G --dir ${PWD}/blank --source_file ${PWD}/source.blanks.tsv
+iMOKA_count.bash -k ${k} --threads 32 --mem 240 --dir ${PWD}/blank --source_file ${PWD}/source.blanks.tsv
 
-iMOKA_count.bash -k ${k} --threads 32 --mem 240G --source_file ${PWD}/source.predict.tsv --dir ${PWD}/predictions
+iMOKA_count.bash -k ${k} --threads 32 --mem 240 --source_file ${PWD}/source.predict.tsv --dir ${PWD}/predictions
 
-iMOKA_count.bash -k ${k} --threads 32 --mem 240G
+iMOKA_count.bash -k ${k} --threads 32 --mem 240
 ```
 
 
@@ -715,9 +715,9 @@ Rerun random forest and predictions
 ```
 for k in 9 11 13 16 21 25 31 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
-  --output="${PWD}/logs/iMOKA.special.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --output="${PWD}/logs/iMOKA.zscore_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14000 --nodes=1 --ntasks=32 --mem=240G \
-  ${PWD}/iMOKA_special.bash --k ${k} --random_forest --cross-validation 2
+  ${PWD}/iMOKA_zscore_filter.bash --k ${k} --random_forest --cross-validation 2
 done
 ```
 
@@ -765,5 +765,69 @@ iMOKA_Train_Test_Analysis_Plotter.Rmd
 ```
 
 
+
+##	20240118
+
+```
+for k in 10 12; do
+iMOKA_count.bash -k ${k} --threads 32 --mem 240 --dir ${PWD}/blank --source_file ${PWD}/source.blanks.tsv
+iMOKA_count.bash -k ${k} --threads 32 --mem 240 --source_file ${PWD}/source.predict.tsv --dir ${PWD}/predictions
+iMOKA_count.bash -k ${k} --threads 32 --mem 240
+done
+```
+
+
+
+```
+for k in 10 12; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.zscore_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  ${PWD}/iMOKA_zscore_filter.bash --k ${k} --random_forest --cross-validation 2
+done
+```
+
+
+
+
+
+
+
+
+
+##	20240119
+
+
+```
+awk -v pwd=${PWD} 'BEGIN{FS=OFS="\t"}($7=="blank"){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,$7,pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz;"pwd"/in/"$1"_O1.fastq.gz;"pwd"/in/"$1"_O2.fastq.gz" } }' /francislab/data1/raw/20230726-Illumina-CystEV/cyst_fluid_et_al_ev_manifest_library_index_and_covarate_file_with_analysis_groups_8-1-23hmhmz.tsv > source.blanks.tsv
+```
+
+7_7 and 8_4 appear rather empty?? Use all 4 blanks
+
+```
+for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
+  iMOKA_count.bash -k ${k} --threads 16 --mem 120 --dir ${PWD}/blank --source_file ${PWD}/source.blanks.tsv
+done
+```
+
+
+```
+for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.zscore_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  ${PWD}/iMOKA_zscore_filter.bash --k ${k} --random_forest --cross-validation 2
+done
+```
+
+
+```
+for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
+  --output="${PWD}/logs/iMOKA.blank_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
+  ${PWD}/iMOKA_blank_filter.bash --k ${k} --random_forest --cross-validation 2
+done
+```
 
 
