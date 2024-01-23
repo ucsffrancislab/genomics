@@ -810,7 +810,6 @@ for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
 done
 ```
 
-
 ```
 for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
@@ -821,13 +820,61 @@ done
 ```
 
 
+
+
+
+
+
 ```
 for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
   --output="${PWD}/logs/iMOKA.blank_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14000 --nodes=1 --ntasks=32 --mem=240G \
-  ${PWD}/iMOKA_blank_filter.bash --k ${k} --random_forest --cross-validation 2
+  ${PWD}/iMOKA_blank_filter.bash --k ${k} \
+    --random_forest --cross-validation 2 \
+    --random_forest --max-features 5
 done
 ```
 
+
+
+
+```
+for k in 9 10 11 12 13 16 21 25 31 ; do
+mkdir -p ${PWD}/predictions.older/${k}
+cat ${PWD}/out/${k}/create_matrix.tsv | grep SFHH00 > ${PWD}/predictions.older/${k}/predict_matrix.tsv
+~/.local/bin/iMOKA_predict.bash --threads 8 \
+--model_base /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/blanks_filtered/${k} \
+--predict_matrix  ${PWD}/predictions.older/${k}/predict_matrix.tsv \
+--predict_out ${PWD}/predictions.older/${k}
+
+mkdir -p ${PWD}/predictions.serum/${k}
+cat ${PWD}/predictions/${k}/create_matrix.tsv > ${PWD}/predictions.serum/${k}/predict_matrix.tsv
+~/.local/bin/iMOKA_predict.bash --threads 8 \
+--model_base /francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA/blanks_filtered/${k} \
+--predict_matrix  ${PWD}/predictions.serum/${k}/predict_matrix.tsv \
+--predict_out ${PWD}/predictions.serum/${k}
+done
+
+```
+
+
+
+
+
+```
+box_upload.bash blanks_filtered/*/{output_fi.tsv,output_predictions.tsv,output.json,aggregated.json}
+```
+
+```
+box_upload.bash 20240119_RF_accuracy_plots.blanks_filter.*.pdf
+```
+
+
+```
+module load r
+
+./iMOKA_Train_Test_Analysis_Plotter.Rmd
+
+```
 
