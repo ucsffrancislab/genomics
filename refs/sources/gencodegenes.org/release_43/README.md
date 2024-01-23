@@ -267,5 +267,12 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgen
 ```
 
 
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2-build-bacteria" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2-build-bacteria.log --export=None \
+ --wrap="module load bowtie2 && bowtie2-build --threads 64 \
+  /francislab/data1/refs/refseq/bacteria-20210916/NC_only.fa.gz \
+  /francislab/data1/refs/refseq/bacteria-20210916/NC_only"
+```
 
 
