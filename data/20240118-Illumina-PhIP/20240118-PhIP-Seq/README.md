@@ -102,3 +102,32 @@ print $0,meanbt2e2e,meanbt2loc,meanbwt,medbt2e2e,medbt2loc,medbwt
 ```
 box_upload.bash merged.3versions.HAPLib.1.with_protein_virus_seqs_unique.with_means_and_medians.count.csv
 ```
+
+
+
+##	20240124
+
+What is everything? Align to my human+viral+bacterial reference. Will everything align?
+
+```
+module load samtools bowtie2
+INDEX=/francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome.viral-20230801.bacteria-20210916-NC_only
+baseind=$( basename $INDEX)
+for fq in fastq/*fastq.gz ; do
+echo $fq
+s=$(basename $fq .fastq.gz)_bt2_hvb
+bam=${fq%.fastq.gz}_bt2_hvb.${baseind}.bam
+bowtie2.bash -x ${INDEX} --very-sensitive -U $fq --sort --output ${bam}
+samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${s}" | tr "\\t" "," > ${bam%.bam}.count.csv
+done
+
+```
+
+No. Surprisingly not. PhiX is really the only thing that aligns.
+
+Rather interesting that very little aligns to viral which is part of the tile reference?
+
+
+
+
+
