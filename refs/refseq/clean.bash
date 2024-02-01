@@ -8,7 +8,14 @@ date
 
 #	zcat /francislab/data1/refs/refseq/bacteria-20210916/bacteria.*.*.genomic.fna.gz | sed -e '/^>/s/[],;:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' -e '/^>/s/(^.{1,245}).*/\1/' | gzip > /francislab/data1/refs/refseq/bacteria-20210916/bacteria.genomic.cleaned5.fna.gz
 
-zcat /francislab/data1/refs/refseq/viral-20230801/viral.*.*.genomic.fna.gz | sed -e '/^>/s/[],;:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' -e '/^>/s/(^.{1,245}).*/\1/' | gzip > /francislab/data1/refs/refseq/viral-20230801/viral.genomic.cleaned.fna.gz
+#zcat /francislab/data1/refs/refseq/viral-20230801/viral.*.*.genomic.fna.gz | sed -e '/^>/s/[],;:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' -e '/^>/s/(^.{1,245}).*/\1/' | gzip > /francislab/data1/refs/refseq/viral-20230801/viral.genomic.cleaned.fna.gz
+
+
+
+
+zcat /francislab/data1/refs/refseq/protozoa-20240125/protozoa.*.*.genomic.fna.gz | \
+sed -e '/^>/s/[]*,;:\(\)\/'' []/_/g' -r -e '/^>/s/_{2,}/_/g' -e '/^>/s/(^.{1,245}).*/\1/' | gzip \
+> /francislab/data1/refs/refseq/protozoa-20240125/protozoa.genomic.cleaned.fna.gz
 
 
 
