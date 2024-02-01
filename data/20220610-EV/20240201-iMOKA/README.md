@@ -100,7 +100,7 @@ and these are bigger 145-983MB (1 is 419k)
 
 
 ```
-for k in 9 10 11 12 13 16 21 25 31 35 39 43 47 51; do
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 39 43 47 51; do
   iMOKA_count.bash -k ${k} --threads 16 --mem 120
 done
 ```
@@ -170,7 +170,7 @@ awk 'BEGIN{FS=",";OFS="\t"}($3=="blank"){print $1,$3}' 20230727.metadata.csv >> 
 
 
 ```
-for k in 9 10 11 12 13 14 15 16 21 25 31 35 39 43 47 51; do
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 39 43 47 51; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
   --output="${PWD}/logs/iMOKA.zscore_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14000 --nodes=1 --ntasks=32 --mem=240G \
