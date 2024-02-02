@@ -319,7 +319,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#-A CCCCTGTCTCTTATACACATCTGACGCTGCCGACGA \
 	
 			#	paired end
-			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 4 \
+			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 12 \
 				--cores ${threads} --error-rate 0.1 \
 				--overlap 5 --minimum-length 15 --quality-cutoff 25 \
 				-a    CTGTCTCTTATACACATCT \

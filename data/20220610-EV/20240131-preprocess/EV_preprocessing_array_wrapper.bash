@@ -320,8 +320,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#-a    CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
 			#-A CCCCTGTCTCTTATACACATCTGACGCTGCCGACGA \
 	
+# more "times" better trims R2 of the -G poly strings
+
 			#	paired end
-			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 4 \
+			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 12 \
 				--cores ${threads} --error-rate 0.1 \
 				--overlap 5 --minimum-length 15 --quality-cutoff 25 \
 				-a    CTGTCTCTTATACACATCT \
