@@ -96,14 +96,6 @@ singularity exec ${img} iMOKA_core dump --raw -i ${PWD}/dump/${k}/create_matrix.
 
 
 
-#	#	convert tsv to csv plus add header and merge the last 2 as blanks as "input"
-#	zcat ${PWD}/dump/${k}/kmers.raw.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.raw.count.csv
-#	
-#	#	convert tsv to csv plus add header and merge the last 2 as blanks as "input"
-#	zcat ${PWD}/dump/${k}/kmers.rescaled.tsv.gz | awk 'BEGIN{FS="\t";OFS=","}(NR==1){s="id"; for(i=2;i<=(NF-2);i++){s=s","$i};print s,"input"} (NR>2){s=$1; for(i=2;i<=(NF-2);i++){s=s","$i};print s,($(NF-1)+$NF)}' > ${PWD}/dump/${k}/kmers.rescaled.count.csv
-
-
-#	ITS 6 NOT 4
 
 #	Header is 2 lines. Ignore the second one.
 
