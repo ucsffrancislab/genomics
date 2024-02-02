@@ -320,8 +320,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#-a    CTGTCTCTTATACACATCTCCGAGCCCACGAGAC \
 			#-A CCCCTGTCTCTTATACACATCTGACGCTGCCGACGA \
 	
+#	more "times" better trims R2 of the -G poly strings
+
 			#	paired end
-			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 4 \
+			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 12 \
 				--cores ${threads} --error-rate 0.1 \
 				--overlap 5 --minimum-length 15 --quality-cutoff 25 \
 				-a    CTGTCTCTTATACACATCT \
@@ -390,7 +392,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#	trim polyA and polyT from both reads so can compare kmers in single-end and paired-end data
 	
 			#	single end ( UMI trimming occurred previously so no need for a -u or -U )
-			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 4 \
+			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 7 \
 				--cores ${threads} --error-rate 0.1 \
 				--overlap 5 --minimum-length 15 --quality-cutoff 25 \
 				-a "A{10}" \
