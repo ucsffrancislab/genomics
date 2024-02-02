@@ -1,0 +1,194 @@
+#!/usr/bin/env Rscript
+
+mwd = getwd()
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+library("optparse")
+option_list = list(
+	make_option(c("-k", "--ks"), type="character", default="9,10,11,12,13", 
+		help="comma separated list of ks to be used", metavar="character")
+#	make_option(c("-b", "--bitscore_thresh"), type="character", default="0", 
+#		help="bit score threshold", metavar="character")
+); 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser, positional_arguments=TRUE);
+print(opt)
+print(opt$args)
+
+#opt$args[1] = normalizePath(opt$args[1])
+#print(opt$args)
+#print(opt$args[1])
+#
+#output_base = paste( gsub(".csv","",opt$args[1]) , "bitscoreGTE", opt$options$bitscore_thresh, opt$options$layer2, sep=".")
+
+output_base = "test_plotter"
+output_file = paste(output_base, "html", sep=".")
+print(output_file)
+
+rmarkdown::render(newfname, output_dir = dirname(output_file), output_file = output_file )
+
+q("no")
+
+
+
+
+---
+title: "EV_prediction_analysis"
+author: "Geno Guerra"
+date: '2023-08-08'
+output:  
+  html_document:
+    toc: true # table of content true
+    toc_depth: 3  # upto three depths of headings (specified by #, ## and ###)
+    number_sections: true  ## if you want number sections at each table header
+    theme: united  # many options for theme, this one is my favorite.
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+library(stats)
+library(kableExtra)
+library(knitr)
+library(corrplot)
+library(ggplot2)
+library(rjson)
+library(ggpubr)
+
+knitr::opts_chunk$set(echo = TRUE)
+#boxdir = "/Users/gguerra/Library/CloudStorage/Box-Box"
+```
+
+# Introduction
+
+The goal of this script is to understand and aggregate information on test samples when applying the iMOKA random forest. 
+
+```{r data read in, echo = FALSE}
+# Path to the iMOKA
+# mwd =paste(boxdir, "/Francis _Lab_Share/20230726-Illumina-CystEV/20230815-iMOKA", sep = "")
+#mwd = "/francislab/data1/working/20230726-Illumina-CystEV/20230815-iMOKA"
+#mwd = "/francislab/data1/working/20220610-EV/20240123-iMOKA"
+
+#Folder of the actual iMOKA results, should occur within mwd
+imoka="zscores_filtered"
+#imoka="blanks_filtered"
+
+#date= "20240119"
+#date= "20240126"
+date = format(Sys.Date(),"%Y%m%d")
+
+cat("Analysis Summary:\n")
+# The folder locations of test samples. Ones not included in the initial iMOKA run. Should occur within mwd
+#types = c("predictions.older", "predictions.serum")
+types = c("predictions")
+
+#ks = c("11","16", "21", "31")
+
+# List of K-values which were run. 
+#ks=c(11, 13,16,21, 25, 31)#, 16,21,31,35,39,43)
+#ks=c(9,10,11,12,13,16,21)
+#ks=c(9,10,11,12,13,14,15,16,21,25,31,35,39,43,47,51)
+#ks=c(9,10,11)
+#ks=c(9,10,11,12,13,14,15,16,17,18,19,20,21,25,31)
+
+ks=as.numeric(strsplit(opt$options$ks,",")[[1]])
+
+
+models=c(0:49)
+
+
+
+
+
+for(type in types){
+
+	pdf(file=paste(mwd, "/", type, "/", date, "_RF_accuracy_plots.pdf", sep = ""), onefile = TRUE, width = 10, height= 10)
+
+	test_results = list()
+	train_results= list()
+
+
+	# K loop 
+	for(i in c(1:length(ks))){
+		k = ks[i]
+		print(k)
+    
+    
+		test_accuracies= c()
+		train_accuracies=c()
+
+		# First, collect the accuracy metrics for the test and the training samples 
+
+		# Read in train file 
+		train_filename=paste(mwd, "/",imoka,"/", k,"/output.json", sep = "")
+		if(file.exists(train_filename)){
+
+			trains= fromJSON(file = train_filename)
+
+			for(model in models){
+				print(model)
+				# Train  
+				tac = trains$best_feature_models[[model+1]]$models[[1]]$acc
+				train_accuracies = c(train_accuracies, tac)
+
+				# Test
+				test_filename=paste(mwd, "/", type, "/", k,"/",model,"_RF.predictions.tsv", sep = "")
+				accval = grep("Accuracy", readLines(test_filename), value=TRUE)
+				if(length(accval) >0){
+					accuracy = as.numeric(strsplit(accval, split = " ")[[1]][2])
+				}else{
+					accuracy = 0
+				}
+				test_accuracies = c(test_accuracies, accuracy)
+
+			}
+
+			print("  -1")
+			train_results[[i]] = train_accuracies
+			test_results[[i]] = test_accuracies
+			rm(train_accuracies)
+			rm(test_accuracies)
+		}
+    
+	}
+
+
+	# Plotters ---------------- 
+
+
+	# Process the file into the shape we need. 
+	melted_dat = data.frame(mat.or.vec(0,3))
+	if(length(train_results )> 0){
+		for(i in c(1:length(train_results))){
+			temp = cbind(train_results[[i]], test_results[[i]], rep(ks[i], length(train_results[[i]])))
+			melted_dat=rbind(melted_dat, temp)
+		}
+		colnames(melted_dat)= c("Train_Accuracy","Test_Accuracy", "K_Length")
+		melted_dat$K_Length = as.factor(melted_dat$K_Length)
+		melted_dat$Train_Accuracy = as.numeric(melted_dat$Train_Accuracy )
+		melted_dat$Test_Accuracy = as.numeric(melted_dat$Test_Accuracy )
+
+		print("  -2")
+		train_title = paste(type, ": Training Accuracy, split ", sep = "")
+		test_title = paste(type, ": Test Accuracy, split ",  sep = "")
+		scat_title= paste(type, ": Train vs Test Accuracy, split ",  sep = "")
+		p1= ggplot(melted_dat, aes(x=Train_Accuracy, fill = K_Length))+geom_density(alpha=0.5) +
+			ggtitle(train_title)+ xlim(0,1)
+		p2= ggplot(melted_dat, aes(x=Test_Accuracy, fill = K_Length))+geom_density(alpha=0.5) +
+			ggtitle(test_title)+ xlim(0,1)
+		p3 = ggplot(melted_dat, aes(x=Train_Accuracy, y= Test_Accuracy,
+			color=K_Length))+geom_point()+ggtitle(scat_title)+xlim(0,1) + ylim(0,1)
+		print(ggarrange(p1,p2,ncol=1))
+		print(p3)
+	}
+	print("  -3")
+	rm(test_results)
+	rm(train_results)
+}
+dev.off()
+```
+
