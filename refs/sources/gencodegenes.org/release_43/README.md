@@ -303,3 +303,12 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgen
 
 
 
+
+##	20240202
+
+
+SPARC regions
+chr4 87473335 87531061
+chr5 151661096 151686975
+
+
