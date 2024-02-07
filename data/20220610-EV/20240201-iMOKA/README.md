@@ -86,16 +86,17 @@ NOTE these are 23-400 MB
 /francislab/data1/working/20210428-EV/20240130-preprocess/out/SFHH005*.deduped.bam
 ```
 
-and these are bigger 145-983MB (1 is 419k)
+and these are bigger 103-825 MB (1 is 419k)
 
 ```
 /francislab/data1/working/20220610-EV/20240131-preprocess/out/SFHH011*deduped.bam
 ```
 
 
+80-705 MB
+
 ```
-95-847 MB
-/francislab/data1/working/20230726-Illumina-CystEV/20240131-preprocess/out/SFHH011*deduped.bam
+/francislab/data1/working/20230726-Illumina-CystEV/20240131-preprocess/out/*deduped.bam
 ```
 
 
@@ -225,7 +226,7 @@ Execution halted
 
 ```
 
-for k in 9 10 11 12 13 ; do
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 ; do
 
 mkdir -p ${PWD}/predictions/${k}
 
@@ -242,6 +243,89 @@ done
 ```
 
 
+
+```
+iMOKA_Train_Test_Analysis_Plotter.Rmd --ks 9,10,11,12,13,14,15,16,17,18,19,20,21,25,31
+```
+
+
+```
+zcat dump/11/kmers.raw.tsv.gz | tail -n +3 | awk 'function median(nums)
+> { asort(nums); l=length(nums); return ((l % 2 == 0) ? ( nums[l/2] + nums[(l/2) + 1] ) / 2 : nums[int(l/2) + 1]) }{ 
+> s=$2;for(i=3;i<=NF-6;i++){s=s","$i}
+> split(s,z,",")
+> a=median(z)
+> s=$(NF-5);for(i=(NF-4);i<=NF;i++){s=s","$i}
+> split(s,z,",")
+> b=median(z)
+> print $1,a,b
+> }' | sort -k3nr | head
+GGGGGGGGGGG 131924 11573
+GTCTCTTATAC 0 783
+TCTCTTATACA 5 780
+TCTTATACACA 22.5 739.5
+CTCTTATACAC 2.5 730.5
+TTATACACATC 0 676
+CTTATACACAT 7 671
+TATACACATCT 9 633
+TGTCTCTTATA 2.5 626
+CTGTCTCTTAT 5 538.5
+
+
+zcat dump/11/kmers.raw.tsv.gz | tail -n +3 | awk 'function median(nums)
+{ asort(nums); l=length(nums); return ((l % 2 == 0) ? ( nums[l/2] + nums[(l/2) + 1] ) / 2 : nums[int(l/2) + 1]) }{ 
+s=$2;for(i=3;i<=NF-6;i++){s=s","$i}
+split(s,z,",")
+a=median(z)
+s=$(NF-5);for(i=(NF-4);i<=NF;i++){s=s","$i}
+split(s,z,",")
+b=median(z)
+print $1,a,b
+}' | sort -k2nr | head
+GGGGGGGGGGG 131924 11573
+GGGGACGGATC 32408.5 2.5
+GGGACGGATCG 32233 2.5
+GGGGGACGGAT 31937 8
+GGACGGATCGC 31416.5 2.5
+GGGGGATGACG 29156.5 0
+GGGGATGACGG 28999.5 0
+GGGATGACGGT 28893.5 0
+GGGGGGACGGA 28568.5 11
+GATGACGGTAC 28435 0
+```
+
+
+
+
+
+
+
+
+##	20240206
+
+
+```
+for k in 9 11 13 15 17 19 ; do
+./tf_test.bash ${k}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}"   --output="${PWD}/tf_test.${k}.$( date "+%Y%m%d%H%M%S%N" ).out"   --time=14000 --nodes=1 --ntasks=64 --mem=490G   --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_test.py ${k}"
+done
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
 
 
 
@@ -284,39 +368,6 @@ done
 
 
 
-
-##	20240129
-
-
-Loop though kmer counts and take median of samples and blanks
-
-
-```
-zcat dump/13/kmers.raw.tsv.gz | tail -n +3 | awk 'function median(nums)
-{ asort(nums); l=length(nums); return ((l % 2 == 0) ? ( nums[l/2] + nums[(l/2) + 1] ) / 2 : nums[int(l/2) + 1]) }{ 
-s=$2;for(i=3;i<=NF-6;i++){s=s","$i}
-split(s,z,",")
-a=median(z)
-s=$(NF-5);for(i=(NF-4);i<=NF;i++){s=s","$i}
-split(s,z,",")
-b=median(z)
-print $1,a,b
-}' | sort -k3nr | head
-
-
-
-zcat dump/13/kmers.raw.tsv.gz | tail -n +3 | awk 'function median(nums)
-{ asort(nums); l=length(nums); return ((l % 2 == 0) ? ( nums[l/2] + nums[(l/2) + 1] ) / 2 : nums[int(l/2) + 1]) }{ 
-s=$2;for(i=3;i<=NF-6;i++){s=s","$i}
-split(s,z,",")
-a=median(z)
-s=$(NF-5);for(i=(NF-4);i<=NF;i++){s=s","$i}
-split(s,z,",")
-b=median(z)
-print $1,a,b
-}' | sort -k2nr | head
-
-```
 
 
 
