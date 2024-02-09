@@ -391,3 +391,89 @@ Don't trust any k>=35. For some reason dumping to a file skips many kmers?
 
 
 
+
+
+
+
+##	20240209
+
+
+iWhenever you have a min, could you please mess with the V01 EV data (from any/all the sequencing runs)? What I would like to look at is a metric of concordance between the technical replicates. We did that before, but I think we didnt clean up the k-mer tables.
+9:33
+I have been going through the comments from reviewers on the grant and they are asking for this. We need to show that the assay is reproducible. So perhaps try the z-scpre filtering with the blanks on the v01 samples?
+
+Correct. Correlation of z-score filtered kmer would be best I think
+
+
+
+Not entirely sure what to do
+
+
+
+
+
+```
+grep "test-se" *.metadata.csv
+20220610.metadata.csv:SFHH011I,A02,1-11,1,Test-SE1,SE,Test-SE,Test-SE,Test-SE,Test-SE,M,63
+20220610.metadata.csv:SFHH011S,C03,2-11,1,Test-SE2,SE,Test-SE,Test-SE,Test-SE,Test-SE,M,63
+20220610.metadata.csv:SFHH011AC,E04,3-11,1,Test-SE3,SE,Test-SE,Test-SE,Test-SE,Test-SE,M,63
+20220610.metadata.csv:SFHH011BB,F07,6-11,1,Test-SE6,SE,Test-SE,Test-SE,Test-SE,Test-SE,M,63
+20220610.metadata.csv:SFHH011BZ,F10,9-11,1,Test-SE9,SE,Test-SE,Test-SE,Test-SE,Test-SE,M,63
+20220610.metadata.csv:SFHH011CH,F11,10-11,1,Test-SE10,SE,Test-SE,Test-SE,Test-SE,Test-SE,M,63
+
+grep V0 *.metadata.csv 
+20210428.metadata.csv:SFHH005k,V01-control-(S1),,
+20210428.metadata.csv:SFHH005ag,V01-control-(S1),,
+
+grep serum control 20230727.metadata.csv 
+20230727.metadata.csv:1_10,serum control_SE_na,serum control,na
+20230727.metadata.csv:2_10,serum control_SE_na,serum control,na
+20230727.metadata.csv:3_9,serum control_SE_na,serum control,na
+20230727.metadata.csv:4_9,serum control_SE_na,serum control,na
+20230727.metadata.csv:5_10,serum control_SE_na,serum control,na
+20230727.metadata.csv:6_2,serum control_SE_na,serum control,na
+20230727.metadata.csv:7_6,serum control_SE_na,serum control,na
+20230727.metadata.csv:8_3,serum control_SE_na,serum control,na
+```
+
+
+
+```
+\rm source.V01.tsv
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($2~/^V01/){ if(system("test -f in/"$1"_S0.fastq.gz")==0){ print $1,"V01",pwd"/in/"$1"_S0.fastq.gz" } }' 20210428.metadata.csv >> source.V01.tsv
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($7=="Test-SE"){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,"V01",pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz;"pwd"/in/"$1"_O1.fastq.gz;"pwd"/in/"$1"_O2.fastq.gz" } }' 20220610.metadata.csv >> source.V01.tsv
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($3=="serum control"){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,"V01",pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz;"pwd"/in/"$1"_O1.fastq.gz;"pwd"/in/"$1"_O2.fastq.gz" } }' 20230727.metadata.csv >> source.V01.tsv
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($2~/^blank/){ if(system("test -f in/"$1"_S0.fastq.gz")==0){ print $1,"blank",pwd"/in/"$1"_S0.fastq.gz" } }' 20210428.metadata.csv >> source.V01.tsv
+awk -v pwd=${PWD} 'BEGIN{FS=",";OFS="\t"}($3=="blank"){ if(system("test -f in/"$1"_R1.fastq.gz")==0){ print $1,"blank",pwd"/in/"$1"_R1.fastq.gz;"pwd"/in/"$1"_R2.fastq.gz;"pwd"/in/"$1"_O1.fastq.gz;"pwd"/in/"$1"_O2.fastq.gz" } }' 20230727.metadata.csv >> source.V01.tsv
+```
+
+
+```
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 ; do
+  iMOKA_count.bash -k ${k} --threads 16 --mem 120 --source_file ${PWD}/source.V01.tsv --dir ${PWD}/V01
+done
+```
+
+
+```
+img=/francislab/data2/refs/singularity/iMOKA_extended-1.1.5.img
+export SINGULARITY_BINDPATH=/francislab
+export APPTAINER_BINDPATH=/francislab
+export OMP_NUM_THREADS=32
+export IMOKA_MAX_MEM_GB=220
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 ; do
+singularity exec ${img} iMOKA_core dump -i ${PWD}/V01/${k}/matrix.json -o ${PWD}/V01/${k}/kmers.rescaled.tsv
+gzip ${PWD}/V01/${k}/kmers.rescaled.tsv
+singularity exec ${img} iMOKA_core dump --raw -i ${PWD}/V01/${k}/matrix.json -o ${PWD}/V01/${k}/kmers.raw.tsv
+gzip ${PWD}/V01/${k}/kmers.raw.tsv
+done
+```
+
+
+
+
+
+
+
+
+
