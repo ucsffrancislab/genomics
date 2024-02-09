@@ -305,69 +305,88 @@ GATGACGGTAC 28435 0
 
 
 ```
-for k in 9 11 13 15 17 19 ; do
+for k in 9 11 13 15 17 19 21 25 31 35 ; do
 ./tf_test.bash ${k}
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}"   --output="${PWD}/tf_test.${k}.$( date "+%Y%m%d%H%M%S%N" ).out"   --time=14000 --nodes=1 --ntasks=64 --mem=490G   --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_test.py ${k}"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}" --output="${PWD}/tf_test.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n38 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_test.py ${k}"
+done
+```
+
+
+k>=39 doesn't work. The extraction of the kmer matrix is very small for some reason.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	20240207
+
+
+Actually run iMOKA to create select kmer matrices to use in tensor flow
+
+
+```
+chmod -w out/*/preprocess/*/*bin
+```
+
+
+
+#  ln -s ../${k}/create_matrix.tsv out/${s}/
+/francislab/data1/working/20220610-EV/20240201-iMOKA/out/9/preprocess/SFHH011CG/SFHH011CG.tsv	SFHH011CG	GBM
+
+
+```
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 39 43 47 51; do
+for s in IDH-${k} ; do
+mkdir -p out/${s}
+\rm -f out/${s}/create_matrix.tsv
+awk -v k=$k 'BEGIN{FS=",";OFS="\t"}( ($2=="Diffuse-Astrocytoma") || ($2=="Oligodendroglioma") || ($2=="GBM" && $3=="IDH-mutant") ){print "/francislab/data1/working/20220610-EV/20240201-iMOKA/out/"k"/preprocess/"$1"/"$1".tsv",$1,"IDH-MT"}' 20210428.metadata.csv >> out/${s}/create_matrix.tsv
+awk -v k=$k 'BEGIN{FS=",";OFS="\t"}( $2=="GBM" && $3=="IDH1R132H-WT" ){print "/francislab/data1/working/20220610-EV/20240201-iMOKA/out/"k"/preprocess/"$1"/"$1".tsv",$1,"IDH-WT"}' 20210428.metadata.csv >> out/${s}/create_matrix.tsv
+awk -v k=$k 'BEGIN{FS=",";OFS="\t"}( $7=="case control" && $8=="GBM" && $9=="Primary" ){print "/francislab/data1/working/20220610-EV/20240201-iMOKA/out/"k"/preprocess/"$1"/"$1".tsv",$1,"IDH-WT"}' 20220610.metadata.csv >> out/${s}/create_matrix.tsv
+done ; done
+```
+
+
+Tried this before with all of the samples and it didn't keep any kmers.
+Rerunning with a different create_matrix and it seems to be going well.
+
+
+```
+
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 39 43 47 51; do
+ for s in IDH-${k} ; do
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${s}" \
+   --output="${PWD}/logs/iMOKA.${s}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+   --time=720 --nodes=1 --ntasks=32 --mem=240G \
+   ~/.local/bin/iMOKA.bash --dir ${PWD}/out/${s} --k ${k} --step create --random_forest --cross-validation 2
+done ; done
+
+```
+
+
+
+```
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 39 43 47 ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}" --output="${PWD}/tf_test.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n38 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_test.py ${k}"
 done
 ```
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
----
-
-
-
-
-
-
-##	Blank filter and predict
-
-    --random_forest --max-features 5
-
-```
-for k in 9 10 11 12 13 14 15 16 21 25 31 35 39 43 47 51; do
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="${k}" \
-  --output="${PWD}/logs/iMOKA.blank_filter.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14000 --nodes=1 --ntasks=32 --mem=240G \
-  ${PWD}/iMOKA_blank_filter.bash --k ${k} \
-    --random_forest --cross-validation 2
-done
-```
-
-
-
-```
-
-for k in 9 10 11 12 13 14 15 16 21; do
-
-mkdir -p ${PWD}/blank_predictions/${k}
-
-join -1 2 -2 1 <( sort -k2,2 ${PWD}/out/${k}/create_matrix.tsv)  <( sort -k1,1 ${PWD}/test_ids.tsv ) \
-  | awk 'BEGIN{OFS="\t"}{print $2,$1,$4}' > ${PWD}/blank_predictions/${k}/predict_matrix.tsv
-
-~/.local/bin/iMOKA_predict.bash --threads 8 \
---model_base ${PWD}/blanks_filtered/${k} \
---predict_matrix  ${PWD}/blank_predictions/${k}/predict_matrix.tsv \
---predict_out ${PWD}/blank_predictions/${k}
-
-done
-
-```
-
-
-
+Don't trust any k>=35. For some reason dumping to a file skips many kmers?
 
 
 
