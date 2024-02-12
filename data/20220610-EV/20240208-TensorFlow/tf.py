@@ -10,7 +10,7 @@ print(k)
 import pandas as pd
 
 #	All kmers
-#dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/tf_test/'+str(k)+'/kmers.rescaled.tsv.gz',sep="\t",header=[0,1],index_col=[0]).transpose()
+#dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/tf/'+str(k)+'/kmers.rescaled.tsv.gz',sep="\t",header=[0,1],index_col=[0]).transpose()
 
 #	those kmers selected by iMOKA for IDH-MT and IDH-WT classification
 #dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/out/IDH-'+str(k)+'/aggregated.kmers.matrix',sep="\t",header=[0,1],index_col=[0]).transpose()
@@ -23,12 +23,12 @@ import pandas as pd
 
 
 #	All kmers
-dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240208-TensorFlow/tf_test/'+str(k)+'/kmers.rescaled.tsv.gz',sep="\t",header=[0,1],index_col=[0]).transpose()
+dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240208-TensorFlow/tf/'+str(k)+'/kmers.rescaled.tsv.gz',sep="\t",header=[0,1],index_col=[0]).transpose()
 
 #	select specific
-kmers = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/zscores_filtered/'+str(k)+'/aggregated.kmers.matrix',sep="\t",header=[0,1],index_col=[0]).transpose()
+#kmers = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/zscores_filtered/'+str(k)+'/aggregated.kmers.matrix',sep="\t",header=[0,1],index_col=[0]).transpose()
 
-dataset=dataset[kmers.columns.to_numpy()]
+#dataset=dataset[kmers.columns.to_numpy()]
 
 
 
@@ -42,7 +42,7 @@ print(x.head())
 y = dataset.reset_index().set_index("level_0")['group']
 print(y.head())
 
-y = y.replace(['IDH-WT','IDH-MT'],[0,1])
+y = y.replace(['IDH-WT','IDH-MT','control'],[0,1,2])
 print(y.head())
 
 #	for some reason, y needs to be a number
@@ -50,9 +50,9 @@ print(y.head())
 
 
 
-train_ids=["SFHH005ae","SFHH005n","SFHH005j","SFHH005ad","SFHH005p","SFHH005l","SFHH005f","SFHH005ab","SFHH005ah","SFHH005x","SFHH005al","SFHH005ac","SFHH005b","SFHH005s","SFHH005ao","SFHH005ap","SFHH005c","SFHH005r","SFHH005af","SFHH005i","SFHH005z","SFHH005q","SFHH005w","SFHH005d","SFHH005u","SFHH005ai","SFHH005m","SFHH005a","SFHH005o","SFHH005an","SFHH005am","SFHH005h","SFHH011BJ","SFHH011BA","SFHH011X","SFHH011BG","SFHH011AW","SFHH011G","SFHH011AH","SFHH011AO","SFHH011AR","SFHH011BQ"]
+train_ids=pd.read_csv("train_ids.tsv",sep="\t",header=None)[0].to_numpy()
 
-test_ids=["SFHH005y","SFHH005aq","SFHH005t","SFHH005g","SFHH005aj","SFHH005aa","SFHH005ak","SFHH005e","SFHH011BC","SFHH011K","SFHH011Z","SFHH011P","SFHH011J","SFHH011AF","SFHH011BK","SFHH011AX"]
+test_ids=pd.read_csv("test_ids.tsv",sep="\t",header=None)[0].to_numpy()
 
 x_train=x.loc[train_ids]
 x_test=x.loc[test_ids]
@@ -110,16 +110,44 @@ model = tf.keras.models.Sequential()
 
 
 
-model.add(tf.keras.layers.Dense(256, activation='sigmoid'))
-model.add(tf.keras.layers.Dense(256, activation='sigmoid'))
-model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+#model.add(tf.keras.layers.Dense(256, activation='sigmoid'))
+#model.add(tf.keras.layers.Dense(256, activation='sigmoid'))
+#model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+
+#model.add(tf.keras.layers.Dense(1024, activation='relu'))
+#model.add(tf.keras.layers.Dense(512, activation='relu'))
+#model.add(tf.keras.layers.Dense(256, activation='relu'))
+#model.add(tf.keras.layers.Dense(128, activation='relu'))
+
+model.add(tf.keras.layers.Dense(2048, activation='relu',
+                 kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+model.add(tf.keras.layers.Dropout(0.5))
+model.add(tf.keras.layers.Dense(1024, activation='relu',
+                 kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+model.add(tf.keras.layers.Dropout(0.5))
+model.add(tf.keras.layers.Dense(512, activation='relu',
+                 kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+model.add(tf.keras.layers.Dropout(0.5))
+#model.add(tf.keras.layers.Dense(256, activation='relu',
+#                 kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+#model.add(tf.keras.layers.Dropout(0.5))
+#model.add(tf.keras.layers.Dense(128, activation='relu',
+#                 kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+#model.add(tf.keras.layers.Dropout(0.5))
+#model.add(tf.keras.layers.Dense(64, activation='relu',
+#                 kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+#model.add(tf.keras.layers.Dropout(0.5))
+model.add(tf.keras.layers.Dense(3, activation='softmax'))
 
 
 
 
 
 
-model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+#model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+
+
 
 #	Why adam?
 #	What are alternatives?
@@ -134,7 +162,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy']
 
 
 
-model.fit(x_train, y_train, batch_size=64, epochs=10000)
+model.fit(x_train, y_train, batch_size=64, epochs=100)
 
 #	the cancer.csv run 
 #	showed 15/15

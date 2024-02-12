@@ -6,7 +6,7 @@ set -u
 
 k=$1
 
-mkdir tf/${k}
+mkdir -p tf/${k}
 
 join -1 2 -2 1 <( sort -k2,2 ${PWD}/out/${k}/create_matrix.tsv)  <( sort -k1,1 ${PWD}/train_ids.tsv ${PWD}/test_ids.tsv )| awk 'BEGIN{OFS="\t"}{print $2,$1,$4}' > tf/${k}/create_matrix.tsv
 
