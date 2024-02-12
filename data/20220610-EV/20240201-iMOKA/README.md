@@ -470,10 +470,81 @@ done
 ```
 
 
+```
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 35 ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}" --output="${PWD}/logs/iMOKA_zscore_filter_V01.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n38 ${PWD}/iMOKA_zscore_filter_V01.bash --k ${k}
+done
+```
 
 
 
 
+
+
+
+#join --header -t, ${PWD}/V01/${k}/kmers.raw.count.csv ${PWD}/V01/${k}/kmers.rescaled.count.Zscores.reordered.csv > ${PWD}/V01/${k}/kmers.raw.count.Zscores.reordered.joined.csv
+join --header -t, ${PWD}/V01/${k}/kmers.rescaled.count.csv ${PWD}/V01/${k}/kmers.rescaled.count.Zscores.reordered.csv > ${PWD}/V01/${k}/kmers.rescaled.count.Zscores.reordered.joined.csv
+
+
+
+
+
+
+
+
+
+
+
+Run ttests comparing each row?
+```
+module load WitteLab python3/3.9.1
+
+import pandas as pd
+from scipy import stats
+
+dataset = pd.read_csv('V01/9/kmers.count.Zscores.reordered.joined.csv',sep=",",index_col=0) 
+
+t,p = stats.ttest_ind(dataset['SFHH005k'].to_numpy(),dataset['SFHH005ag'].to_numpy())
+
+```
+
+##	20240212
+
+
+```
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 ; do
+echo $f
+gunzip -v V01/${k}/kmers.rescaled.count.csv.gz
+gunzip -v V01/${k}/kmers.rescaled.count.Zscores.reordered.csv.gz
+join --header -t, V01/${k}/kmers.rescaled.count.csv V01/${k}/kmers.rescaled.count.Zscores.reordered.csv > V01/${k}/kmers.rescaled.count.Zscores.reordered.joined.csv
+gzip -v V01/${k}/kmers.rescaled.count.csv
+gzip -v V01/${k}/kmers.rescaled.count.Zscores.reordered.csv
+done
+```
+
+
+No. Useless. Try Pearson's correlation
+
+Pearson’s r Value	Correlation Between x and y
+equal to 1	perfect positive linear relationship
+greater than 0	positive correlation
+equal to 0	no linear relationship
+less than 0	negative correlation
+equal to -1	perfect negative linear relationship
+
+
+
+
+```
+module load WitteLab python3/3.9.1
+python3
+```
+
+loop through giant matrix. Split and keep only those with all absolute zscores larger than 3.5
+
+```
+./correlated.py
+```
 
 
 
