@@ -52,10 +52,37 @@ awk -F, '{print $7,$8,$9}' 20220610.metadata.csv | sort | uniq -c
 
 ```
 
-awk 'BEGIN{FS=",";OFS="\t"}($7=="case control" && $8=="GBM" && $9=="Primary"){print $1,"IDH-WT"}' 20220610.metadata.csv | shuf|shuf|shuf | tee >(head -10 >> train_ids.tsv) | tail -n 8 >> test_ids.tsv
-awk 'BEGIN{FS=",";OFS="\t"}($7=="case control" && $8=="control" && $9=="control"){print $1,"control"}' 20220610.metadata.csv | shuf|shuf|shuf | tee >(head -10 >> train_ids.tsv) | tail -n 8 >> test_ids.tsv
+awk 'BEGIN{FS=",";OFS="\t"}($7=="case control" && $8=="GBM" && $9=="Primary"){print $1,"IDH-WT"}' 20220610.metadata.csv | shuf|shuf|shuf | tee >(head -14 >> train_ids.tsv) | tail -n 4 >> test_ids.tsv
+awk 'BEGIN{FS=",";OFS="\t"}($7=="case control" && $8=="control" && $9=="control"){print $1,"control"}' 20220610.metadata.csv | shuf|shuf|shuf | tee >(head -14 >> train_ids.tsv) | tail -n 4 >> test_ids.tsv
 
 ```
+
+```
+chmod 400 test_ids.tsv train_ids.tsv
+```
+
+
+
+
+
+
+```
+for k in 10 ; do
+./tf.bash ${k}
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}" --output="${PWD}/logs/tf.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n38 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf.py ${k}"
+done
+```
+
+
+
+
+
+
+
+
+
+
+
 
 
 
