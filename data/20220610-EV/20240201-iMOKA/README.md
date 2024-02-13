@@ -548,3 +548,14 @@ loop through giant matrix. Split and keep only those with all absolute zscores l
 
 
 
+
+
+```
+singularity exec ${img} iMOKA_core dump --help
+
+src/Process/BinaryMatrixHandler.cpp
+src/Matrix/Kmer.h
+```
+
+
+
