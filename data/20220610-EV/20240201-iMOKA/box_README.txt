@@ -9,3 +9,10 @@
 20230726-Illumina-CystEV/20240131-preprocess
 
 
+
+
+zscore from phip seq filtering using blanks from multiple datasets
+
+
+comparing V01 samples based on zscore filtered kmer counts from multiple datasets
+
