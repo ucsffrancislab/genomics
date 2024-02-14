@@ -31,6 +31,9 @@ dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240208-TensorFlow
 #dataset=dataset[kmers.columns.to_numpy()]
 
 
+#	dataset=dataset.drop(
+
+dataset[dataset.index.get_level_values("group").isin(['control', 'IDH-MT'])]
 
 
 print(dataset.size)
