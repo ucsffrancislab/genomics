@@ -28,7 +28,7 @@ dataset = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/tf_t
 #	select specific:w
 kmers = pd.read_csv('/francislab/data1/working/20220610-EV/20240201-iMOKA/zscores_filtered/'+str(k)+'/aggregated.kmers.matrix',sep="\t",header=[0,1],index_col=[0]).transpose()
 
-dataset=dataset[kmers.columns.to_numpy()]
+#dataset=dataset[kmers.columns.to_numpy()]
 
 
 
