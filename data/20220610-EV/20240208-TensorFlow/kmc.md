@@ -199,4 +199,15 @@ done
 
 
 
+##	20240216
+
+Note that iMOKA defaults to a minCount of 5 for kmc. I did not. My matrix is gonna be much bigger
+
+iMOKA
+ 24929959
+
+kmc-0 (roughly)
+989949357
+
+
 

@@ -100,6 +100,7 @@ import math
 
 #	this took hours and never finished
 train_ds = tfdf.keras.pd_dataframe_to_tf_dataset(train_ds_pd, label='group')
+
 test_ds = tfdf.keras.pd_dataframe_to_tf_dataset(test_ds_pd, label='group')
 
 
@@ -115,7 +116,8 @@ test_ds = tfdf.keras.pd_dataframe_to_tf_dataset(test_ds_pd, label='group')
 
 
 # Train the model
-model = tfdf.keras.RandomForestModel()
+model = tfdf.keras.RandomForestModel(verbose=2, num_threads=64)
+
 model.fit(train_ds)
 
 # Look at the model.
@@ -124,11 +126,19 @@ model.summary()
 # Evaluate the model.
 model.evaluate(test_ds)
 
+
+evaluation = model.evaluate(test_ds, return_dict=True)
+
+for name, value in evaluation.items():
+  print(f"{name}: {value:.4f}")
+
+
 # Export to a TensorFlow SavedModel.
 # Note: the model is compatible with Yggdrasil Decision Forests.
 #model.save("project/model")
 
 
+model.save("/francislab/data1/working/20220610-EV/20240208-TensorFlow/tf_dt.model")
 
 
 
