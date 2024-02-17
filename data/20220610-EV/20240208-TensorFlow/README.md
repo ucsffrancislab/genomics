@@ -77,12 +77,51 @@ done
 
 
 
+##	20240214
+
+```
+k=18
+[gwendt@c4-dev3 /francislab/data1/working/20220610-EV/20240208-TensorFlow]$ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}" --output="${PWD}/tf_dt.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n38 --wrap="module load WitteLab python3/3.9.1 ; ${PWD}/tf_dt.py ${k}"
+Submitted batch job 1684615
+```
 
 
 
 
+```
+threads=16
+maxRam=64
+minCounts="0"
+file_type="fq"
+kmcCounterVal="4294967295"
+
+mkdir kmc_dir
+
+for kmer_len in 18 ; do
+echo $kmer_len
+for id in $( cut -f2 tf/18/create_matrix.tsv | paste -sd" " ) ; do
+echo $id
+ls -1 in/${id}_*.fastq.gz > kmc_dir/kmc_input
+./bin/kmc -k${kmer_len} -t${threads} -m${maxRam} -cs${kmcCounterVal} -ci${minCounts} -b -${file_type} @kmc_dir/kmc_input kmc_dir/${id}.${kmer_len} ${TMPDIR} 2>> kmc_dir/kmc.err >> kmc_dir/kmc.out
+done
+done
 
 
+
+for kmer_len in 18 ; do
+echo $kmer_len
+for id in $( cut -f2 tf/18/create_matrix.tsv | paste -sd" " ) ; do
+id=${id}.${kmer_len}
+echo $id
+./bin/kmc_tools transform kmc_dir/${id} dump -s kmc_dir/${id}.raw.tsv
+cat kmc_dir/${id}.raw.tsv | datamash sum 2 > kmc_dir/${id}.total_kmer_count
+total_kmer_count=$( cat kmc_dir/${id}.total_kmer_count )
+awk -v sample=${id} -v total_kmer_count=${total_kmer_count} 'BEGIN{FS=OFS="\t";print "kmer",sample}{$2=$2*1000000000/total_kmer_count;print}' kmc_dir/${id}.raw.tsv > kmc_dir/${id}.normalized.tsv
+done
+done
+
+
+```
 
 
 
