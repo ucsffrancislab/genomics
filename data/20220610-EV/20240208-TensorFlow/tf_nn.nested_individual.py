@@ -7,13 +7,13 @@ kmer_matrix_file = sys.argv[2]
 train_ids_file = sys.argv[3]
 test_ids_file = sys.argv[4]
 out_dir = sys.argv[5]
-#kmers_file = sys.argv[6]
+kmers_file = sys.argv[6]
 
 print("kmer_matrix_file : " + kmer_matrix_file )
 print("train_ids_file : " + train_ids_file )
 print("test_ids_file : " + test_ids_file )
 print("out_dir : " + out_dir )
-#print("kmers_file : " + kmers_file )
+print("kmers_file : " + kmers_file )
 
 #import gc
 #gc.enable()
@@ -34,24 +34,35 @@ print("len(dataset.columns) : "+str(len(dataset.columns)))
 print(dataset.head())
 
 # select specific
-#if kmers_file:
-#	#	kmer - score
-#	kmers = pd.read_csv(kmers_file,sep="\t",header=[0],index_col=[0])
-#	kmers = kmers.sort_values(kmers.columns[0])
-#	print(kmers.head())
-#	print("Drop the bottom 10%")
-#	ten_percent=int(0.1*len(kmers))
-#	dataset=dataset.drop(columns=kmers.iloc[0:ten_percent].index.to_numpy())
-
-for j in range(int(i)):
-	print("Removing kmers from round "+str(j))
-	kmers_file=out_dir+"feature_importances."+str(j)+".tsv"
+if kmers_file:
+	print("Selecting the top 90% of kmers from the last round")
+	#	kmer - score
+	#kmers_file=out_dir+"feature_importances."+str(i)+".tsv"
 	kmers = pd.read_csv(kmers_file,sep="\t",header=[0],index_col=[0])
 	kmers = kmers.sort_values(kmers.columns[0])
 	print(kmers.head())
+	#print("Drop the bottom 10%")
 	ten_percent=int(0.1*len(kmers))
-	dataset=dataset.drop(columns=kmers.iloc[0:ten_percent].index.to_numpy())
-	del kmers, kmers_file
+	#dataset=pd.DataFrame(dataset,columns=kmers.iloc[ten_percent:].index.to_numpy())
+	dataset=dataset.loc[:,kmers.iloc[ten_percent:].index.to_list()]
+	del kmers
+
+
+#for j in range(int(i)):
+#	print("Removing kmers from round "+str(j))
+#	kmers_file=out_dir+"feature_importances."+str(j)+".tsv"
+#	kmers = pd.read_csv(kmers_file,sep="\t",header=[0],index_col=[0])
+#	kmers = kmers.sort_values(kmers.columns[0])
+#	print(kmers.head())
+#	ten_percent=int(0.1*len(kmers))
+#	dataset=dataset.drop(columns=kmers.iloc[0:ten_percent].index.to_numpy())
+#	del kmers, kmers_file
+
+
+
+
+#	should also merge both of these scripts so all of the code is together
+#	but call with different options (kinda like my array_wrapper scripts)
 
 
 
