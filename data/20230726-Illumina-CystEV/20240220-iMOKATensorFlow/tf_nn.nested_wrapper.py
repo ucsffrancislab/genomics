@@ -13,13 +13,13 @@ import pandas as pd
 base_dir="/francislab/data1/working/20230726-Illumina-CystEV/20240220-iMOKATensorFlow/"
 kmer_matrix_file=base_dir+"/tf/"+str(k)+"/kmers.rescaled.tsv.gz"
 
-#working_dir=base_dir+"/CF-SE/"+str(k)+"/"
-#train_ids_file=base_dir+"train_ids.tsv"
-#test_ids_file=base_dir+"test_ids.tsv"
+working_dir=base_dir+"/CF-SE/"+str(k)+"/"
+train_ids_file=base_dir+"train_ids.tsv"
+test_ids_file=base_dir+"test_ids.tsv"
 
-working_dir=base_dir+"/CF/"+str(k)+"/"
-train_ids_file=base_dir+"cf_train_ids.tsv"
-test_ids_file=base_dir+"cf_test_ids.tsv"
+#working_dir=base_dir+"/CF/"+str(k)+"/"
+#train_ids_file=base_dir+"cf_train_ids.tsv"
+#test_ids_file=base_dir+"cf_test_ids.tsv"
 
 import os
 os.makedirs(working_dir, exist_ok=True)
@@ -33,7 +33,8 @@ import subprocess
 feature_importances=[]
 predictions=[]
 
-for i in range(200):
+#for i in range(200):
+for i in range(1):
 
 	subprocess.run(["python3", base_dir+"tf_nn.nested_individual.py",
 		str(i),kmer_matrix_file,train_ids_file,test_ids_file,out_dir,kmers_file])

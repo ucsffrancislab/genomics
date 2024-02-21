@@ -100,28 +100,53 @@ done
 
 
 
-Hey Jake- Do you think it would be possible to take the 30 cyst EV samples we have and train a model on them (just one K, like 18) , then test the model on the 15 kirkwood serum samples we have?
-This is for the grant re submission. It would be great if we could show some predictive power in serum.
-I was thinking one length of K, around 18-20 because our tester serum correlations are highest in that range
-20230726-Illumina-CystEV/20240220-iMOKATensorFlow
-20211208-EV/20230815-preprocess/out/*.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.R1.fastq.gz
-20211208-EV/20240220-preprocess
-20230726-Illumina-CystEV/20240131-preprocess/out/*.format.umi.trim.Aligned.sortedByCoord.out.umi_tag.fixmate.deduped.R1.fastq.gz
-
-
-
 
 Test
 ```
 k=9 && sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}tf" --output="${PWD}/tf_nn.nested_wrapper.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.nested_wrapper.py ${k}"
 
-```
 
-wait
-
-
+Run
 ```
 k=18 && sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}tf" --output="${PWD}/tf_nn.nested_wrapper.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.nested_wrapper.py ${k}"
 
 ```
+
+Modify the script to use the other set of train and test ids and rerun.
+
+Nothing really found
+
+
+
+##	Retry with several k but no long iterations
+
+
+```
+for k in 11 13 15 17 19 21 23 ; do
+  iMOKA_count.bash -k ${k} --threads 16 --mem 120
+done
+```
+
+
+```
+for k in 11 13 15 17 19 21 23 ; do
+  tf.bash ${k}
+done
+
+```
+
+
+
+Run CF-SE first
+
+```
+for k in 11 13 15 17 19 21 23 ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}tf" --output="${PWD}/tf_nn.nested_wrapper.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.nested_wrapper.py ${k}"
+done
+
+```
+
+Once done, change train/test files and redo for CF-only
+
+
 
