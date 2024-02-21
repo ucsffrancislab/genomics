@@ -131,3 +131,78 @@ Rather interesting that very little aligns to viral which is part of the tile re
 
 
 
+
+
+
+##	20240220
+
+Investigate trimming the reference and the reads to see if more align.
+I suspect that less will align.
+
+". In “script.align.sh”, “bowtie -3 25” trims 25 nucleotides off the 3’ end of each sequencing read. This is done if sequencing reads are 75 nucleotides in length. The reference file only includes the first 50 nucleotides of each member of the library, so the sequencing reads must be trimmed down to 50 nucleotides to align correctly to the reference."
+
+
+The reference sequences for HAPLIB.1 are 168bp.
+Our reads are 151bp.
+
+Most of the previous alignments occured at position 1.
+
+Trim reference sequence to first 50bp and create appropriate indexes.
+Add '-3 101' to bowtie and bowtie2 calls
+
+
+
+
+
+```
+module load samtools bowtie
+INDEX=/francislab/data1/refs/PhIP-Seq/HAPLib.1.50
+baseind=$( basename $INDEX)
+for fq in fastq/*fastq.gz ; do
+echo $fq
+s=$(basename $fq .fastq.gz)_bwt
+bam=${fq%.fastq.gz}_bwt.${baseind}.bam
+bowtie -3 101 -n 3 -l 30 -e 1000 --tryhard --nomaqround --norc --best --sam --quiet -x ${INDEX} $fq | samtools sort -o ${bam}
+samtools index ${bam}
+samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${s}" | tr "\\t" "," > ${bam%.bam}.count.csv
+done
+
+INDEX=/francislab/data1/refs/PhIP-Seq/HAPLib.1.50
+baseind=$( basename $INDEX)
+for fq in fastq/*fastq.gz ; do
+echo $fq
+s=$(basename $fq .fastq.gz)_bt2allloc
+bam=${fq%.fastq.gz}_bt2allloc.${baseind}.bam
+bowtie2.bash -3 101 -x ${INDEX} --all --very-sensitive-local -U $fq --sort --output ${bam}
+samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${s}" | tr "\\t" "," > ${bam%.bam}.count.csv
+done
+
+INDEX=/francislab/data1/refs/PhIP-Seq/HAPLib.1.50
+baseind=$( basename $INDEX)
+for fq in fastq/*fastq.gz ; do
+echo $fq
+s=$(basename $fq .fastq.gz)_bt2alle2e
+bam=${fq%.fastq.gz}_bt2alle2e.${baseind}.bam
+bowtie2.bash -3 101 -x ${INDEX} --all --very-sensitive -U $fq --sort --output ${bam}
+samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${s}" | tr "\\t" "," > ${bam%.bam}.count.csv
+done
+
+```
+
+
+
+
+```
+merge_all_combined_counts_files.py --output merged.3versions.HAPLib.1.50.count.csv fastq/S?_b*.*HAPLib.1.50.count.csv
+
+join -t, fastq/S1_bwt.HAPLib.1*count.csv | awk -F, '{s2+=$2;s3+=$3}END{print s2,s3;print (s2-s3)/s3;}'
+join -t, fastq/S2_bwt.HAPLib.1*count.csv | awk -F, '{s2+=$2;s3+=$3}END{print s2,s3;print (s2-s3)/s3;}'
+join -t, fastq/S3_bwt.HAPLib.1*count.csv | awk -F, '{s2+=$2;s3+=$3}END{print s2,s3;print (s2-s3)/s3;}'
+join -t, fastq/S4_bwt.HAPLib.1*count.csv | awk -F, '{s2+=$2;s3+=$3}END{print s2,s3;print (s2-s3)/s3;}'
+
+```
+
+
+
+
+
