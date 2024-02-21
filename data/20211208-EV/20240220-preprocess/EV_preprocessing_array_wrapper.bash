@@ -333,6 +333,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	
 #	more "times" better trims R2 of the -G poly strings.
 
+#	 I am STILL GETTING polyA and polyT left in R2. Either increase "--times" or add "A{50} and T{50}"
+
 			#	paired end
 			~/.local/bin/cutadapt.bash --trim-n --match-read-wildcards --times 12 \
 				--cores ${threads} --error-rate 0.1 \
