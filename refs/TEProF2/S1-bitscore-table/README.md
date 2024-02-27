@@ -398,6 +398,22 @@ scp c4:/francislab/data1/refs/refseq/viral-20231129/virus_taxonomy_tree_translat
 
 
 
+
+
+
+##	Unknown
+
+
+```
+./S1_conversion_to_bitscores.bash --protein All_proteins.faa
+./S1_conversion_to_bitscores.bash --protein All_Human_proteins.faa
+./S1_conversion_to_bitscores.bash --protein Human_herpes_proteins.faa
+./S1_conversion_to_bitscores.bash --protein Variola_virus_proteins.faa 
+./S1_conversion_to_bitscores.bash --protein human.protein.faa.gz 
+```
+
+
+
 ##	20231211
 
 
@@ -467,9 +483,6 @@ echo $s $i
 awk -v i=$i '((NR>1)&&($NF >= i)){print $2}' S10_S2_ProteinSequences_fragments_in_${s}.blastp.e0.05.tsv | sort | uniq -c > S10_S2_ProteinSequences_fragments_in_${s}.blastp.e0.05.bitscoreGTE.${i}.list.counts.txt
 done ; done
 ```
-
-
-
 
 
 

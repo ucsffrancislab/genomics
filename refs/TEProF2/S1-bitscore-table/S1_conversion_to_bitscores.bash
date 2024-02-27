@@ -30,9 +30,10 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-TCONS_FASTA_BASE=$( basename ${TCONS_FASTA} .faa )
+TCONS_FASTA_BASE=$( basename ${TCONS_FASTA} .gz )
+TCONS_FASTA_BASE=$( basename ${TCONS_FASTA_BASE} .faa )
 PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .gz )
-PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .faa )
+PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA_BASE} .faa )
 
 
 
@@ -41,9 +42,20 @@ echo "Tiling TCONS protein sequences"
 
 echo "Assuming it is done already"
 #	scp c4:/francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences-tile-25-24.faa ./
-#cat ${TCONS_FASTA} | pepsyn tile -l 25 -p 24 - ${TCONS_FASTA_BASE}-tile-25-24.faa
-echo "head ${TCONS_FASTA_BASE}-tile-25-24.faa"
-head ${TCONS_FASTA_BASE}-tile-25-24.faa
+
+f=${TCONS_FASTA_BASE}-tile-25-24.faa
+if [ -f ${f} ] ; then
+	echo "${f} exists. Skipping."
+else
+	if [ "${TCONS_FASTA: -3}" == ".gz" ] ; then
+		command="zcat"
+	else
+		command="cat"
+	fi
+	eval ${command} ${TCONS_FASTA} | pepsyn tile -l 25 -p 24 - ${f}
+fi
+echo "head ${f}"
+head ${f}
 #	samtools faidx ${TCONS_FASTA_BASE}-tile-25-24.faa
 
 
@@ -76,18 +88,22 @@ head ${TCONS_FASTA_BASE}-tile-25-24.faa
 #	  -dbtype prot \
 #	  -out ${PROTEIN_FASTA_BASE} \
 #	  -title ${PROTEIN_FASTA_BASE}
-#	
-#	echo "Blasting TCONS tiles to ${PROTEIN_FASTA_BASE}"
-#	
-#	echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
-#	  > ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv
-#	blastp -db ${PROTEIN_FASTA_BASE} \
-#	  -outfmt 6 -evalue ${EVALUE} \
-#	  -query ${TCONS_FASTA_BASE}-tile-25-24.faa \
-#	  >> ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv
-#	
-#	echo "head ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv"
-#	head ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv
+
+echo "Blasting ${TCONS_FASTA_BASE} tiles to ${PROTEIN_FASTA_BASE}"
+
+f=${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv
+if [ -f ${f} ] ; then
+	echo "${f} exists. Skipping."
+else
+	echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  	> ${f}
+	blastp -db ${PROTEIN_FASTA_BASE} \
+  	-outfmt 6 -evalue ${EVALUE} \
+  	-query ${TCONS_FASTA_BASE}-tile-25-24.faa \
+  	>> ${f}
+fi
+echo "head ${f}"
+head ${f}
 
 
 
