@@ -241,3 +241,74 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgen
 
 
 
+
+##	20240122
+
+Create reference with human, viral and bacteria
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2-build-hg38-viral-bacteria" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2-build-hg38-viral-bacteria.log --export=None \
+ --wrap="module load bowtie2 && bowtie2-build --threads 64 \
+  ${PWD}/GRCh38.primary_assembly.genome.fa,/francislab/data1/refs/refseq/viral-20230801/viral.genomic.cleaned.fna.gz,/francislab/data1/refs/refseq/bacteria-20210916/NC_only.fa.gz \
+  ${PWD}/GRCh38.primary_assembly.genome.viral-20230801.bacteria-20210916-NC_only"
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgenerate-hg38-viral-bacteria" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/STARgenerate.$( date "+%Y%m%d%H%M%S%N" ).log --export=None \
+ --wrap="module load star/2.7.7a && STAR --runThreadN 64 --runMode genomeGenerate \
+--limitGenomeGenerateRAM 400000000000 \
+  --genomeFastaFiles ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/refs/refseq/viral-20230801/viral.genomic.cleaned.fna /francislab/data1/refs/refseq/bacteria-20210916/NC_only.fa \
+  --sjdbGTFfile ${PWD}/gencode.v43.primary_assembly.annotation.gtf \
+  --genomeDir ${PWD}/GRCh38.primary_assembly.genome.viral-20210916.bacteria-20210916-NC_only"
+
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2-build-bacteria" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2-build-bacteria.log --export=None \
+ --wrap="module load bowtie2 && bowtie2-build --threads 64 \
+  /francislab/data1/refs/refseq/bacteria-20210916/NC_only.fa.gz \
+  /francislab/data1/refs/refseq/bacteria-20210916/NC_only"
+```
+
+
+
+##	20240125
+
+Create reference with human, viral and bacteria
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="bowtie2-build-hg38-viral-bacteria-protozoa" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/bowtie2-build-hg38-viral-bacteria-protozoa.log --export=None \
+ --wrap="module load bowtie2 && bowtie2-build --threads 64 \
+  ${PWD}/GRCh38.primary_assembly.genome.fa,/francislab/data1/refs/refseq/viral-20230801/viral.genomic.cleaned.fna.gz,/francislab/data1/refs/refseq/bacteria-20210916/NC_only.fa.gz,/francislab/data1/refs/refseq/protozoa-20240125/NC_only.fa.gz \
+  ${PWD}/GRCh38.primary_assembly.genome+viral+bacteria+protozoa"
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL   --job-name="STARgenerate-hg38-viral-bacteria-protozoa" \
+ --time=10080 --nodes=1 --ntasks=64 --mem=490G --output=${PWD}/STARgenerate.$( date "+%Y%m%d%H%M%S%N" ).log --export=None \
+ --wrap="module load star/2.7.7a && STAR --runThreadN 64 --runMode genomeGenerate \
+--limitGenomeGenerateRAM 500000000000 \
+  --genomeFastaFiles ${PWD}/GRCh38.primary_assembly.genome.fa /francislab/data1/refs/refseq/viral-20230801/viral.genomic.cleaned.fna /francislab/data1/refs/refseq/bacteria-20210916/NC_only.fa /francislab/data1/refs/refseq/protozoa-20240125/NC_only.fa \
+  --sjdbGTFfile ${PWD}/gencode.v43.primary_assembly.annotation.gtf \
+  --genomeDir ${PWD}/GRCh38.primary_assembly.genome+viral+bacteria+protozoa"
+
+```
+
+
+
+
+##	20240202
+
+
+SPARC regions
+chr4 87473335 87531061
+chr5 151661096 151686975
+
+
