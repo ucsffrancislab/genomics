@@ -110,3 +110,29 @@ done
 
 
 
+##	20240129 - blank content investigation
+
+
+/francislab/data1/working/20210428-EV/20230605-preprocessing
+
+/francislab/data1/working/20230726-Illumina-CystEV/20230809-preprocess
+
+```
+SFHH005v	blank
+SFHH005ar	blank
+1_11	blank
+4_10	blank
+7_7	blank
+8_4	blank
+```
+
+```
+bowtie2_array_wrapper.bash --sort --extension .fastq.gz --very-sensitive --threads 32 \
+-x /francislab/data1/refs/sources/gencodegenes.org/release_43/GRCh38.primary_assembly.genome+viral+bacteria+protozoa \
+--outdir ${PWD}/GRCh38.primary_assembly.genome+viral+bacteria+protozoa \
+${PWD}/out/SFHH005{v,ar}.umi_tag.dups.deduped.fastq.gz
+```
+
+
+
+

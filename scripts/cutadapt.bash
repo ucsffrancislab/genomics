@@ -10,7 +10,9 @@ set -u	#	Error on usage of unset variables
 set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
-	module load CBI cutadapt
+	#module load CBI cutadapt
+	#	I installed my own newer version with pip
+	module load WitteLab python3/3.9.1
 fi
 set -x
 
