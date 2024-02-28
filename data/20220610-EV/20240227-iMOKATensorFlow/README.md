@@ -46,10 +46,23 @@ done
 
 
 ```
+for k in 9 10 11 12 13 14 15 16 17 18 19 20 21 25 31 ; do
+  tf.bash ${k}
+done
+```
+
+
+
+
+```
 ln -s ../20240208-TensorFlow/train_ids.tsv
 ln -s ../20240208-TensorFlow/test_ids.tsv
 ```
 
 
+
+```
+k=9 && sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}t" --output="${PWD}/tf_nn.nested.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.nested.py -k ${k} --kmer_matrix=${PWD}/tf/${k}/kmers.rescaled.tsv.gz --train_ids=${PWD}/train_ids.tsv --test_ids=${PWD}/test_ids.tsv --out_dir=${PWD}/tf_nn/${k}/"
+```
 
 

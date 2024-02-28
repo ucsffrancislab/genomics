@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-print("Running nested neural net wrapper")
+print("Running nested neural net")
 
+import os
 import sys
 import psutil
 import numpy as np
 import pandas as pd
 import subprocess
-import tensorflow as tf
 
 import gc
 gc.enable()
@@ -26,7 +26,7 @@ parser.add_argument('--kmer_matrix', nargs=1, type=str, help='kmer matrix filena
 parser.add_argument('--train_ids', nargs=1, type=str, help='training ids filename to %(prog)s (default: %(default)s)')
 parser.add_argument('--test_ids', nargs=1, type=str, help='testing ids filename to %(prog)s (default: %(default)s)')
 parser.add_argument('--out_dir', nargs=1, type=str, help='out_dir to %(prog)s (default: %(default)s)')
-parser.add_argument('--select_kmers', nargs=1, type=str, help='select kmers filename to %(prog)s (default: %(default)s)')
+parser.add_argument('--select_kmers', nargs=1, type=str, default=[''], help='select kmers filename to %(prog)s (default: %(default)s)')
 
 # read arguments from the command line
 args = parser.parse_args()
@@ -50,11 +50,19 @@ train_ids_file = args.train_ids[0]
 print( "Using train_ids_file: ", train_ids_file )
 test_ids_file = args.test_ids[0]
 print( "Using test_ids_file: ", test_ids_file )
+out_dir = args.out_dir[0]
+print( "Using out_dir: ", out_dir )
+os.makedirs(out_dir, exist_ok=True)
+
+#if args.select_kmers:
+	#if isinstance(args.output,list):
 select_kmers_file = args.select_kmers[0]
 print( "Using select_kmers_file: ", select_kmers_file )
 
 
 if iteration > 0:
+
+	import tensorflow as tf
 
 	print("Running iteration "+str(iteration))
 	psutil.virtual_memory()
@@ -70,13 +78,11 @@ if iteration > 0:
 	if select_kmers_file:
 		print("Selecting the top 90% of kmers from the last round")
 		#	kmer - score
-		#kmers_file = out_dir+"feature_importances."+str(i)+".tsv"
 		kmers = pd.read_csv(select_kmers_file,sep="\t",header=[0],index_col=[0])
 		kmers = kmers.sort_values(kmers.columns[0])
 		print(kmers.head())
 		#print("Drop the bottom 10%")
 		ten_percent = int(0.1*len(kmers))
-		#dataset = pd.DataFrame(dataset,columns=kmers.iloc[ten_percent:].index.to_numpy())
 		dataset = dataset.loc[:,kmers.iloc[ten_percent:].index.to_list()]
 		del kmers
 	
@@ -129,8 +135,10 @@ if iteration > 0:
 	model = tf.keras.models.Sequential()
 	
 	print("1 layer of 512")
+	print("1 layer of 256")
 	
 	model.add(tf.keras.layers.Dense(512, activation="sigmoid"))
+	model.add(tf.keras.layers.Dense(256, activation="sigmoid"))
 	model.add(tf.keras.layers.Dense(1, activation="sigmoid"))
 	
 	print("Compile")
@@ -145,27 +153,38 @@ if iteration > 0:
 	model.evaluate(x_test, y_test)
 	
 	out = y_test.to_frame()
-	out[i] = model.predict(x_test).flatten()
-	out.to_csv(out_dir+"predictions."+str(i)+".tsv",index_label="sample",sep="\t")
+	out[iteration] = model.predict(x_test).flatten()
+	out.to_csv(out_dir+"predictions."+str(iteration)+".tsv",index_label="sample",sep="\t")
 	
-	df = pd.DataFrame({"kmer":x_train.columns, i:np.sum(np.abs(model.get_weights()[0]), axis=1)})
-	df.set_index("kmer").to_csv( out_dir+"feature_importances."+str(i)+".tsv",index_label="kmer",sep="\t")
+	df = pd.DataFrame({"kmer":x_train.columns, iteration:np.sum(np.abs(model.get_weights()[0]), axis=1)})
+	df.set_index("kmer").to_csv( out_dir+"feature_importances."+str(iteration)+".tsv",index_label="kmer",sep="\t")
 
 else:
 
-	feature_importances=[]
-	predictions=[]
+	print("Zeroth iteration. Running wrapper.")
+
+	feature_importances = []
+	predictions = []
 	
-	for i in range(iterations):
-	
-		subprocess.run(["python3", __file__,
+	for i in range(1,iterations+1):
+
+		print("Prepping iteration :"+str(i))
+
+		command = ["python3", __file__,
 			"--kmer_length", str(kmer_length),
-			"--iteration", str(i+1),
+			"--iteration", str(i),
+			"--epochs", str(epochs),
 			"--kmer_matrix", kmer_matrix_file,
 			"--train_ids", train_ids_file,
 			"--test_ids", test_ids_file,
-			"--out_dir", out_dir,
-			"--select_kmers_file", select_kmers_file])
+			"--out_dir", out_dir ]
+			#"--out_dir", out_dir + str(kmer_length) + "/"]
+
+		if select_kmers_file:
+			command.append( "--select_kmers" )
+			command.append( select_kmers_file )
+
+		subprocess.run(command)
 	
 		#	read predictions output
 		#	append to predictions matrix
@@ -175,9 +194,10 @@ else:
 	
 		#	read feature importance output
 		#	append to feature importance matrix
+		select_kmers_file = out_dir+"feature_importances."+str(i)+".tsv"
 	
 		feature_importances.append(
-			pd.read_csv( out_dir+"feature_importances."+str(i)+".tsv",sep="\t",header=0,index_col=[0]))
+			pd.read_csv( select_kmers_file, sep="\t",header=0,index_col=[0]))
 
 
 
@@ -186,19 +206,15 @@ else:
 	#print(accuracies)
 	
 	#	concat and save predictions
-	
 	pd.concat(predictions, axis=1, sort=True).to_csv(out_dir+"predictions.csv",index_label=["sample"])
 	
 	#	concat and save feature importances
-	
 	pd.concat(feature_importances, axis=1, sort=True).to_csv(out_dir+"feature_importances.csv",index_label=["kmer"])
 	
-	dataset = pd.read_csv(kmer_matrix_file ,sep="\t",header=[0,1],index_col=[0]).transpose()
-	
-	dataset = dataset[dataset.index.get_level_values("group").isin(["IDH-WT", "IDH-MT"])]
-	
 	#	create a matrix of the select kmers and their counts
-	kmers = pd.read_csv(kmers_file,sep="\t",header=[0],index_col=[0])
+	dataset = pd.read_csv(kmer_matrix_file ,sep="\t",header=[0,1],index_col=[0]).transpose()
+	dataset = dataset[dataset.index.get_level_values("group").isin(["IDH-WT", "IDH-MT"])]
+	kmers = pd.read_csv(select_kmers_file,sep="\t",header=[0],index_col=[0])
 	kmers = kmers.sort_values(kmers.columns[0])
 	ten_percent = int(0.1*len(kmers))
 	dataset = dataset.loc[:,kmers.iloc[ten_percent:].index.to_list()]
@@ -220,6 +236,6 @@ else:
 #	c4-n39 - has a GPU but not big enough so crashes
 
 
-#	k=9 && sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}t" --output="${PWD}/tf_nn.nested_wrapper.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.nested.py -k ${k} --kmer_matrix=${PWD}/tf/${k}/kmers.rescaled.tsv.gz --train_ids=${PWD}/train_ids.tsv --test_ids=${PWD}/test_ids.tsv out_dir=${PWD}/tf_nn/"
+#	k=9 && sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="${k}t" --output="${PWD}/tf_nn.nested.${k}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.nested.py -k ${k} --kmer_matrix=${PWD}/tf/${k}/kmers.rescaled.tsv.gz --train_ids=${PWD}/train_ids.tsv --test_ids=${PWD}/test_ids.tsv --out_dir=${PWD}/tf_nn/${k}/"
 
 
