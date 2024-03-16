@@ -191,3 +191,100 @@ done
 
 
 
+
+
+##	20240315
+
+```
+fastx_count_array_wrapper.bash ${PWD}/fastq/SRR???????.fastq.gz
+fastx_count_array_wrapper.bash ${PWD}/fastq/SRR*_1.fastq.gz
+```
+
+I just noticed that the provided fasta reference file contains 21bp prefix and suffixes. Odd. I don't expect them in the data.
+
+AGCCATCCGCAGTTCGAGAAA 
+
+GACTACAAGGACGACGATGAT
+
+Need to recreate from PhIP-PND-2018/library_design/human_peptidome_oligo_pool.csv.
+
+```
+mv PhIP-PND-2018/library_design/human_peptidome_oligo_pool.fasta PhIP-PND-2018/library_design/human_peptidome_oligo_pool.fasta.bad
+
+awk -F, '{ print ">"$1; print $3 }' PhIP-PND-2018/library_design/human_peptidome_oligo_pool.csv > PhIP-PND-2018/library_design/human_peptidome_oligo_pool.fasta
+
+bowtie2-build PhIP-PND-2018/library_design/human_peptidome_oligo_pool.fasta PhIP-PND-2018/library_design/human_peptidome_oligo_pool
+
+```
+
+
+Looks like the prefixes and suffixes exist in the data but not the reference. Not sure what that means.
+```
+grep AGCCATCCGCAGTTCGAGAAA /francislab/data1/working/20231227-PRJNA507500/20231227-PhIP-Seq/PhIP-PND-2018/library_design/human_peptidome_oligo_pool.csv 
+
+grep GACTACAAGGACGACGATGAT /francislab/data1/working/20231227-PRJNA507500/20231227-PhIP-Seq/PhIP-PND-2018/library_design/human_peptidome_oligo_pool.csv 
+```
+
+```
+zgrep AGCCATCCGCAGTTCGAGAAA fastq/SRR8*q.gz > AGCCATCCGCAGTTCGAGAAA.txt &
+
+fastq/SRR8259414_1.fastq.gz:AGCAGGGCGCGCATGGCGATGCGGTGATTCTGGGCATGAGCAGCCTGGAACAGCTGGAACAGAACCTGGCGGCGGCGGAAGAAGGCCCACTGGAACCGGCGGATGGCTCCAGGAATTCCTGGAGCCATCCGCAGTTCGAGAAAAAAATGCT
+fastq/SRR8259414_1.fastq.gz:AGCAGGGCGCGCATGGCGATGCGGTGATTCTGGGCATGAGCAGCCTGGAACAGCTGGAACAGAACCTGGCGGCGGCGGAAGAAGGCCCACTGGAACCGGCGGATGGCTCCAGGAATTCCTGGAGCCATCCGCAGTTCGAGAAAAAAATGCT
+fastq/SRR8259414_1.fastq.gz:AGCAGGGCGCGCATGGCGATGCGGTGATTCTGGGCATGAGCAGCCTGGAACAGCTGGAACAGAACCTGGCGGCGGCGGAAGAAGGCCCACTGGAACCGGCGGATGGCTCCAGGAATTCCTGGAGCCATCCGCAGTTCGAGAAAAAAATGCT
+fastq/SRR8259414_1.fastq.gz:AGCAGGGCGCGCATGGCGATGCGGTGATTCTGGGCATGAGCAGCCTGGAACAGCTGGAACAGAACCTGGCGGCGGCGGAAGAAGGCCCACTGGAACCGGCGGATGGCTCCAGGAATTCCTGGAGCCATCCGCAGTTCGAGAAAAAAATGCT
+
+zgrep GACTACAAGGACGACGATGAT fastq/SRR8*q.gz > GACTACAAGGACGACGATGAT.txt &
+
+
+[1]-  Exit 1                  zgrep AGCCATCCGCAGTTCGAGAAA fastq/SRR8*q.gz > AGCCATCCGCAGTTCGAGAAA.txt
+[2]+  Exit 1                  zgrep GACTACAAGGACGACGATGAT fastq/SRR8*q.gz > GACTACAAGGACGACGATGAT.txt
+
+
+wc -l AGCCATCCGCAGTTCGAGAAA.txt GACTACAAGGACGACGATGAT.txt
+        717 AGCCATCCGCAGTTCGAGAAA.txt
+  182919831 GACTACAAGGACGACGATGAT.txt
+  182920548 total
+
+```
+
+
+
+
+
+```
+mkdir out-loc
+
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive-local --threads 8 \
+-x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+--single --extension .fastq.gz --outdir ${PWD}/out-loc \
+${PWD}/fastq/SRR???????.fastq.gz
+
+
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive-local --threads 8 \
+-x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+--extension _1.fastq.gz --outdir ${PWD}/out-loc \
+${PWD}/fastq/SRR*_1.fastq.gz
+
+```
+
+
+
+
+```
+mkdir out-e2e
+
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --threads 8 \
+-x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+--single --extension .fastq.gz --outdir ${PWD}/out-e2e \
+${PWD}/fastq/SRR???????.fastq.gz
+
+
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --threads 8 \
+-x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+--extension _1.fastq.gz --outdir ${PWD}/out-e2e \
+${PWD}/fastq/SRR*_1.fastq.gz
+
+```
+
+
+
