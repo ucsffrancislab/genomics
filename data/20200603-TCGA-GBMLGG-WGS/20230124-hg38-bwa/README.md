@@ -77,3 +77,42 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="bcftoolsm
 ```
 
 
+
+
+
+##	20240312
+
+
+
+```
+mkdir tf
+
+cd tf
+for b in ../out/*bam ../out/*.bam.bai ; do
+ln -s $b
+done
+cd ..
+
+bcftools_mpileup_call_array_wrapper.bash -q 40 --skip-variants indels \
+ --ref /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/20180810/hg38.chrXYM_alts.fa \
+ ${PWD}/tf/*bam
+```
+
+No. WAY TOO BIG. Stick with existing merged vcf and see what happens.
+
+
+```
+zcat merged.vcf.gz | tail -n +624 | cut -f1,2,10- | sed -e 's/^#//' -e 's/:[^\t]*//g' -e 's/\.\/\./0/g' -e 's/0\/1/1/g' -e 's/1\/0/1/g' -e 's/1\/1/2/g' -e 's/0\/2/3/g' -e 's/2\/0/3/g' -e 's/1\/2/4/g' -e 's/2\/1/4/g' -e 's/2\/2/5/g' -e 's/0\/3/6/g' -e 's/3\/0/6/g' -e 's/1\/3/7/g' -e 's/3\/1/7/g' -e 's/2\/3/8/g' -e 's/3\/2/8/g' -e 's/3\/3/9/g' > merged.tsv
+```
+
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="tftest" --output="${PWD}/tf_nn.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=64 --mem=490G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ${PWD}/tf_nn.py"
+
+```
+
+
+
+
