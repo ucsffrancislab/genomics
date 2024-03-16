@@ -206,3 +206,84 @@ join -t, fastq/S4_bwt.HAPLib.1*count.csv | awk -F, '{s2+=$2;s3+=$3}END{print s2,
 
 
 
+##	20240312
+
+
+
+```
+mkdir bam
+
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
+echo $baseind
+INDEX=/francislab/data1/refs/PhIP-Seq/${baseind}
+for fq in ${PWD}/fastq/*fastq.gz ; do
+echo $fq
+s=$(basename $fq .fastq.gz)_bt2allloc
+bam=${PWD}/bam/${s}.${baseind}.bam
+echo ~/.local/bin/bowtie2.bash --threads 8 -x ${INDEX} --all --very-sensitive-local -U $fq --sort --output ${bam} >> commands
+done
+done
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 8 --mem 60G 
+```
+
+
+```
+module load samtools
+mkdir bam
+
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
+echo $baseind
+INDEX=/francislab/data1/refs/PhIP-Seq/${baseind}
+for fq in fastq/*fastq.gz ; do
+echo $fq
+s=$(basename $fq .fastq.gz)_bt2allloc
+bam=bam/${s}.${baseind}.bam
+samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${s}" | tr "\\t" "," > ${bam%.bam}.count.csv
+done
+done
+```
+
+
+
+```
+
+echo ",S0,S1,S2,S3,S4"
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
+out="${baseind}"
+for s in S0 S1 S2 S3 S4 ; do
+c=$( cat bam/${s}_bt2allloc.${baseind}.bam.aligned_count.txt )
+out="${out},${c}"
+done
+echo $out
+done
+
+
+```
+
+
+```
+
+for f in fastq/S?.fastq.gz; do c=$( zcat $f | sed -n '1~4p' | wc -l ); echo ${f} - ${c} ; done
+fastq/S0.fastq.gz - 873253
+fastq/S1.fastq.gz - 580253
+fastq/S2.fastq.gz - 608726
+fastq/S3.fastq.gz - 629263
+fastq/S4.fastq.gz - 621223
+```
+
+
+
+```
+,             S0,     S1,     S2,     S3,     S4
+Reads,    873253, 580253, 608726, 629263, 621223
+HAPLib.1,  10184, 552506, 574784, 583053, 587388
+HAPLib.2,   2560, 142367, 148772, 152180, 152675
+LExPELib.1,   28,   1746,   1948,   1871,   2139
+LExPELib.2,   34,   2395,   2675,   2638,   2985
+vir3,        404,  20598,  21617,  22296,  22695
+VIR3_clean, 1389,  74641,  78170,  79804,  81040
+```
+
+
+
