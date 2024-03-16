@@ -63,3 +63,79 @@ VIR3_clean is 115753 168bp sequences
 
 
 
+
+
+##	20240314
+
+```
+./EV_preprocessing_array_wrapper.bash --threads 8 --out ${PWD}/out --extension .fastq.gz \
+  ${PWD}/fastq/*.fastq.gz
+
+```
+
+```
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do 
+echo $baseind; 
+INDEX=/francislab/data1/refs/PhIP-Seq/${baseind}; 
+for fq in ${PWD}/out/*fastq.gz ; do 
+echo $fq; 
+s=$(basename $fq .fastq.gz)_bt2alle2e; 
+bam=${PWD}/out/${s}.${baseind}.bam; 
+echo ~/.local/bin/bowtie2.bash --threads 8 -x ${INDEX} --all --very-sensitive -U $fq --sort --output ${bam} >> commands; 
+done; done 
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 8 --mem 60G 
+```
+
+
+```
+
+echo ",S0,S1,S2,S3,S4" > counts.csv
+
+out="Total Reads"
+for s in S0 S1 S2 S3 S4 ; do
+c=$( cat fastq/${s}.fastq.gz.read_count.txt )
+out="${out},${c}"
+done
+echo $out >> counts.csv
+
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
+out="${baseind}"
+for s in S0 S1 S2 S3 S4 ; do
+c=$( cat bam/${s}_bt2allloc.${baseind}.bam.aligned_count.txt )
+out="${out},${c}"
+done
+echo $out >> counts.csv
+done
+
+out="Trimmed Reads"
+for s in S0 S1 S2 S3 S4 ; do
+c=$( cat out/${s}.fastq.gz.read_count.txt )
+out="${out},${c}"
+done
+echo $out >> counts.csv
+
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
+out="${baseind}"
+for s in S0 S1 S2 S3 S4 ; do
+c=$( cat out/${s}_bt2alle2e.${baseind}.bam.aligned_count.txt )
+out="${out},${c}"
+done
+echo $out >> counts.csv
+done
+
+```
+
+
+
+
+###	Try RapSearch2
+
+```
+for f in ${PWD}/out/S?.fastq.gz; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="$(basename $f)" --output="${PWD}/logs/rapsearch.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --wrap="~/github/zhaoyanswill/RAPSearch2/RAPSearch2.24_64bits/bin/rapsearch -q <(zcat ${f}) -d /francislab/data1/refs/PhIP-Seq/VIR3_clean.uniq.RapSearch2 -o ${f}.rapsearch2 -z 8"
+done
+
+
+```
+
