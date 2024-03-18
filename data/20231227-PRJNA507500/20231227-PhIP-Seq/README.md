@@ -288,3 +288,209 @@ ${PWD}/fastq/SRR*_1.fastq.gz
 
 
 
+
+Their paper says that they used PEAR which is nice, but don't give details.
+
+`Reads were quality filtered, paired-end reconciled (PEAR v0.9.8; Zhang et al., 2014) and aligned to a reference database of the full library (bowtie2 v2.3.1; Langmead and Salzberg, 2012). Sequence alignment map files were parsed using a suite of in-house analysis tools (Python/Pandas), and individual phage counts were normalized to reads per 100k (rpK) by dividing by the sum of counts and multiplying by 100,000.`
+
+
+
+
+UNDO / REDO
+
+After looking at the data and what PEAR produces, I suggest just using R1 (for the paired end) and right trimming GACTACAAGGACGACGATGAT which seems to coincide with PEAR's assembled results.
+
+Quick look showed nearly all R1 contain GACTACAAGGACGACGATGAT. Only about 45% of single ended contain GACTACAAGGACGACGATGAT
+
+
+
+fcaa059_supplementary_data.pdf says
+primer design:
+forward: CTACGAATTCCTGGAGCCATCCGCAGTTCG
+reverse: CTACAAGCTTCTTATCATCGTCGTCCTTGTAGTC
+
+ELAVL4_fwd: GAACCGATTACTGTGAAGTTTGCCAAC 
+ELAVL4_rev: GTAGACAAAGATGCACCACCCAGTTC
+
+
+
+cutadapt to quality filter and trim single ended and R1 
+left trim AGCCATCCGCAGTTCGAGAAA
+right trim GACTACAAGGACGACGATGAT
+
+right trim CTACGAATTCCTGGAGCCATCCGCAGTTCG
+?CTACAAGCTTCTTATCATCGTCGTCCTTGTAGTC?
+
+AGACGGTGCTGGGCAAACGTGGCTG usually trails CTACGAATTCCTGGAGCCATCCGCAGTTCG
+
+
+```
+      717 AGCCATCCGCAGTTCGAGAAA.txt
+182919831 GACTACAAGGACGACGATGAT.txt
+      301 CTACAAGCTTCTTATCATCGTCGTCCTTGTAGTC.txt
+       77 CTACGAATTCCTGGAGCCATCCGCAGTTCG.txt
+        0 GAACCGATTACTGTGAAGTTTGCCAAC.txt
+        0 GTAGACAAAGATGCACCACCCAGTTC.txt
+```
+
+
+
+##	20240316
+
+316 total
+
+```
+./preprocessing_array_wrapper.bash --threads 8 --out ${PWD}/out \
+  --extension .fastq.gz ${PWD}/fastq/SRR???????.fastq.gz
+
+./preprocessing_array_wrapper.bash --threads 8 --out ${PWD}/out \
+  --extension _1.fastq.gz ${PWD}/fastq/SRR*_1.fastq.gz
+
+mkdir out-loc
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive-local --threads 8 \
+ -x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+ --single --extension .trim.fastq.gz --outdir ${PWD}/out-loc \
+ ${PWD}/out/SRR*.trim.fastq.gz
+
+mkdir out-e2e
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --threads 8 \
+ -x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+ --single --extension .trim.fastq.gz --outdir ${PWD}/out-e2e \
+ ${PWD}/out/SRR*.trim.fastq.gz
+
+```
+
+
+
+individual phage counts were normalized to reads per 100k (rpK) by dividing by the sum of counts and multiplying by 100,000.
+
+```
+for f in out-{e2e,loc}/*.human_peptidome_oligo_pool.bam.aligned_count.txt ; do
+echo $f
+sum=$( cat $f )
+awk -v sum=${sum} '{$1=100000*$1/sum;print}' ${f%%aligned_count.txt}aligned_sequence_counts.txt > ${f%%aligned_count.txt}normalized_aligned_sequence_counts.txt
+done
+
+```
+
+
+
+
+
+
+##	20240318
+
+
+Merge everything in a single matrix and have a looksie
+
+```
+python3 ~/.local/bin/merge_uniq-c.py -o merged.csv out-e2e/*normalized_aligned_sequence_counts.txt
+
+cat merged.csv | datamash transpose -t, > tmp1
+
+awk 'BEGIN{FS="\t";OFS=","}(NR>1){print $4,$10}' filereport_read_run_PRJNA507500_tsv.txt | sort | awk 'BEGIN{FS=OFS=",";print "sample","patient"}{if( $2=="Viral sample from Escherichia phage T7" ){ $2=sprintf("control_%02d", ++i ) }print $1,$2}' > tmp2
+
+join --header -t, tmp2 tmp1 > tmp3
+
+cut -d, -f2 tmp3 > tmp4
+cut -d, -f1,3- tmp3 > tmp5
+paste -d, tmp4 tmp5 > tmp6
+head -n 1 tmp6 > tmp7
+tail -n +2 tmp6 | sort -t, -k1,1 >> tmp7
+
+```
+
+`filereport_read_run_PRJNA507500_tsv.txt` uses leading 0s in patient number. `sample_info` does not. correcting
+(change `patient_1_CSF_rep1` to `patient_01_CSF_rep1`)
+
+duplicated `patient_01_CSF_rep3` ??
+
+```
+
+cut -d, -f2- PhIP-PND-2018/experimental_data/sample_info.csv | sed '/patient_[[:digit:]]_/s/patient_/patient_0/' | uniq > tmp8
+
+head -n 1 tmp8 > tmp9
+tail -n +2 tmp8 | sort -t, -k1,1 >> tmp9
+
+join --header -t, -a2 -oauto tmp9 tmp7 > tmp10
+```
+
+
+
+```
+wc -l tmp10
+317 tmp10
+
+awk -F, '{print NF}' tmp10 | uniq
+652416
+
+```
+ 
+How to determine Anti Yo and Anti Hu? And what does that mean?
+
+Anti-Yo antibodies, also known as anti-Purkinje cell cytoplasmic antibody 1 (PCA-1)
+Anti-Yo =? PCA1
+Anti-Hu - guessing ANNA1
+
+"the anti-Yo (n = 36 patients) and anti-Hu (n = 44 patients) syndromes."
+
+```
+grep PCA PhIP-PND-2018/experimental_data/sample_info.csv| cut -d, -f2 | cut -d_ -f2 | uniq | wc -l
+37
+
+grep ANNA PhIP-PND-2018/experimental_data/sample_info.csv| cut -d, -f2 | cut -d_ -f2 | uniq | wc -l
+44
+```
+
+Not sure if that's correct, but close. Perhaps, one sample doesn't actually exist. CHECK THIS.
+
+I'm gonna use the contents of each `PhIP-PND-2018/experimental_data/*_data` dir.
+
+
+Healthy data are those that were lost during the join so need to put them back
+
+```
+ll PhIP-PND-2018/experimental_data/*_data/*v | wc -l
+316
+
+ll PhIP-PND-2018/experimental_data/YO_data/*v | wc -l
+115
+
+ll PhIP-PND-2018/experimental_data/HU_data/*v | wc -l
+151
+
+ll PhIP-PND-2018/experimental_data/healthy_data/*v | wc -l
+50
+
+ls -1 PhIP-PND-2018/experimental_data/YO_data/ | cut -d_ -f1,2 | uniq | wc -l
+37
+
+ls -1 PhIP-PND-2018/experimental_data/HU_data/ | cut -d_ -f1,2 | uniq | wc -l
+44
+```
+
+The paper says anti-Yo is 36. Again I have 37?
+
+Cool
+
+
+
+
+```
+mv tmp10 final_matrix.csv
+chmod 400 final_matrix.csv
+gzip final_matrix.csv
+\rm tmp*
+```
+
+
+
+"We identified in our control IPs a set of the 100 most abundant peptides that also have a standard deviation less than their mean. This ‘internal control’ set represented the most abundant and consistent phage carried along specifically by the protein-AG beads or other reagents, in the absence of any antibody. We calculated a sample-specific scaling factor, defined as the ratio of median abundances (rpK) of these 100 peptides in our controls to their abundance in the given sample. Fold-change values were multiplied by their sample-specific scaling factor."
+
+
+
+
+
+
+
+
