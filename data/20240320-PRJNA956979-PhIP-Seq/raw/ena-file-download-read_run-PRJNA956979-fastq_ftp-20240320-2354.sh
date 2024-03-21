@@ -1,0 +1,10 @@
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/060/SRR24205960/SRR24205960_2.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/062/SRR24205962/SRR24205962_1.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/059/SRR24205959/SRR24205959_1.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/058/SRR24205958/SRR24205958_2.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/060/SRR24205960/SRR24205960_1.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/061/SRR24205961/SRR24205961_1.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/058/SRR24205958/SRR24205958_1.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/059/SRR24205959/SRR24205959_2.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/061/SRR24205961/SRR24205961_2.fastq.gz
+wget -nc ftp://ftp.sra.ebi.ac.uk/vol1/fastq/SRR242/062/SRR24205962/SRR24205962_2.fastq.gz
