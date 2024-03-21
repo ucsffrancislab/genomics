@@ -488,8 +488,300 @@ gzip final_matrix.csv
 "We identified in our control IPs a set of the 100 most abundant peptides that also have a standard deviation less than their mean. This ‘internal control’ set represented the most abundant and consistent phage carried along specifically by the protein-AG beads or other reagents, in the absence of any antibody. We calculated a sample-specific scaling factor, defined as the ratio of median abundances (rpK) of these 100 peptides in our controls to their abundance in the given sample. Fold-change values were multiplied by their sample-specific scaling factor."
 
 
+```
+zcat final_matrix.csv.gz | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}(NR>9){ s=0;for(i=2;i<=NF;i++){s+=$i};print s }' | datamash min 1 q1 1 median 1 mean 1 q3 1 max 1
+
+0.00708649	1.454915	6.73065	48.436022195343	24.48185	521264
+
+zcat final_matrix.csv.gz | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}(NR>9){ s=0;for(i=2;i<=NF;i++){s+=$i};print s }' | wc -l
+652407
+
+zcat final_matrix.csv.gz | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}(NR>9){ s=0;for(i=2;i<=NF;i++){s+=$i};if(s>2){print s} }' | wc -l
+461230
+```
 
 
+
+
+
+
+##	20240319
+
+```
+module load WitteLab python3/3.9.1
+python3
+```
+
+
+```
+from datetime import datetime
+import pandas as pd
+datetime.now().strftime("%H:%M:%S")
+
+df=pd.read_csv('final_matrix.csv.gz',dtype={
+    1:str,2:str,3:str,4:str,5:str,6:str
+})
+
+datetime.now().strftime("%H:%M:%S")
+
+```
+
+
+
+
+```
+zcat final_matrix.csv.gz | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}
+(NR>9){ 
+sum=0;for(i=2;i<=NF;i++){sum+=$i}
+mean=sum/(NF-1)
+sigma=0;for(i=2;i<=NF;i++){sigma+=($i-mean)^2}
+stddev=(sigma/(NF-1))^0.5
+if(stddev<mean)print($1,mean,stddev,stddev<mean)
+}'
+```
+
+
+```
+gi|112382237|ref|NP_663780.2|_synemin_isoform_A_[Homo_sapiens]_fragment_2,3.90175,3.82067,1
+gi|115292438|ref|NP_001041677.1|_cementoblastoma-derived_protein_1_[Homo_sapiens]_fragment_8,3.70168,3.65174,1
+gi|28872814|ref|NP_060363.2|_semaphorin-4G_isoform_1_precursor_[Homo_sapiens]_fragment_24,5.58683,5.09348,1
+gi|767961880|ref|XP_011537699.1|_PREDICTED:_deleted_in_malignant_brain_tumors_1_protein_isoform_X11_[Homo_sapiens]_fragment_73,1.46114,1.44627,1
+```
+
+Only 4?  That was for all samples and IS NOT what they did. They did controls ONLY.
+
+
+"We identified in our control IPs a set of the 100 most abundant peptides that also have a standard deviation less than their mean."
+
+```
+zcat final_matrix.csv.gz | datamash transpose -t, | head -100 | cut -c1-150
+file_id,control_01,control_02,control_03,control_04,control_05,control_06,control_07,control_08,control_09,control_10,control_11,control_12,control_13
+GROUP,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,ANNA1,ANNA1,ANNA1,ANNA1,ANNA1,ANNA1,ANNA1,ANNA1,PCA1,PCA1,ANNA1,ANNA1,ANNA1,ANNA1,ANNA1,ANNA1,
+TYPE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,CSF,CSF,CSF,CSF,SERUM,SERUM,CSF,CSF,CSF,CSF,CSF,CSF,SERUM,SERUM,SERUM,SERUM,CSF,CSF,SERUM,SERUM
+DRAW DATE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,7/6/16,7/6/16,unk,unk,7/6/16,7/6/16,unk,unk,unk,unk,10/28/14,10/28/14,2/26/15,2/26/15,10/5
+SEX,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,F,F,F,F,F,F,unk,unk,unk,unk,M,M,M,M,F,F,F,F,F,F,M,M,M,M,M,M,M,M,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,F,
+CANCER,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+AGE,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,18,18,18,18,18,18,unk,unk,unk,unk,11,11,11,11,60,60,53,53,53,53,64,64,64,64,73,73,73,73,63,63,63
+TITER,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1024.0,1024.0,,,30720.0,30720.0,,,,,256.0,256.0,7680.0,7680.0,61440.0,61440.0,256.0,256.0,6144
+sample,SRR8425734,SRR8425735,SRR8425736,SRR8425737,SRR8425738,SRR8425739,SRR8425740,SRR8425741,SRR8425742,SRR8425743,SRR8425744,SRR8425745,SRR8425746,
+gi|10047090|ref|NP_055147.1|_small_muscular_protein_[Homo_sapiens]_fragment_0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+gi|10047090|ref|NP_055147.1|_small_muscular_protein_[Homo_sapiens]_fragment_1,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+gi|10047090|ref|NP_055147.1|_small_muscular_protein_[Homo_sapiens]_fragment_2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,
+gi|10047100|ref|NP_057387.1|_WW_domain-binding_protein_5_[Homo_sapiens]_fragment_0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.120145,0.0,0.0,0.0,0.0,0.0,0.0,0.
+gi|10047100|ref|NP_057387.1|_WW_domain-binding_protein_5_[Homo_sapiens]_fragment_2,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+gi|10047100|ref|NP_057387.1|_WW_domain-binding_protein_5_[Homo_sapiens]_fragment_3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+```
+
+
+```
+zcat final_matrix.csv.gz | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}
+(NR>9){ 
+sum=0;for(i=2;i<=51;i++){sum+=$i}
+mean=sum/(51-1)
+sigma=0;for(i=2;i<=51;i++){sigma+=($i-mean)^2}
+stddev=(sigma/(51-1))^0.5
+if(stddev<mean)print($1,mean,stddev,stddev<mean)
+}'
+```
+
+Hmm. Just one? Something's wrong.
+
+```
+gi|768007069|ref|XP_011524869.1|_PREDICTED:_zinc_finger_protein_550_isoform_X1_[Homo_sapiens]_fragment_8,0.0740172,0.0666633,1
+```
+
+
+
+
+```
+grep --no-filename 'gi|578830991|ref|XP_006721985.1|_PREDICTED:_neurofibromin_isoform_X1_\[Homo_sapiens\]_fragment_21' out-e2e/{SRR8425734,SRR8425735,SRR8425736,SRR8425737,SRR8425738,SRR8425739,SRR8425740,SRR8425741,SRR8425742,SRR8425743,SRR8425744,SRR8425745,SRR8425746,SRR8425747,SRR8425748,SRR8425749,SRR8425750,SRR8425751,SRR8425752,SRR8425753,SRR8425754,SRR8425755,SRR8425756,SRR8425757,SRR8425758,SRR8425759,SRR8425760,SRR8425761,SRR8425762,SRR8425763,SRR8425764,SRR8425765,SRR8425766,SRR8425767,SRR8425768,SRR8425769,SRR8425770,SRR8425771,SRR8425772,SRR8425773,SRR8425774,SRR8425775,SRR8425776,SRR8425777,SRR8425778,SRR8425779,SRR8425780,SRR8425781,SRR8425782,SRR8425783}*normal* | cut -d" " -f1
+
+0.0376349
+0.0328823
+0.0179941
+0.289012
+1.98618
+0.201266
+0.0236633
+0.014173
+0.0388862
+0.0496311
+0.213082
+
+
+grep --no-filename '^gi|578830991|ref|XP_006721985.1|_PREDICTED:_neurofibromin_isoform_X1_\[Homo_sapiens\]_fragment_21' PhIP-PND-2018/experimental_data/healthy_data/healthy_serum_*_peptide_counts.csv | cut -d, -f2
+
+0.39876992769599995
+0.080263070239
+0.0665182422954
+0.0639192469801
+0.215086604621
+0.0545329417141
+0.059114127508
+0.163829503728
+0.788341653258
+4.17341065635
+0.140564634079
+0.06030439245130001
+
+```
+
+My counts are smaller and fewer than theirs. Hmm.
+
+Did I overfilter on quality?
+Did I align too tightly?
+Did I normalize incorrectly?
+Should I try local rather than end-to-end?
+Perhaps --all?
+
+They didn't provide the parameters that they used for filtering and alignment
+
+
+
+
+
+
+
+Testing
+
+
+```
+mkdir outtest
+for s in SRR8425734 SRR8425735 SRR8425736 SRR8425737 SRR8425738 SRR8425739 SRR8425740 SRR8425741 SRR8425742 SRR8425743 SRR8425744 SRR8425745 SRR8425746 SRR8425747 SRR8425748 SRR8425749 SRR8425750 SRR8425751 SRR8425752 SRR8425753 SRR8425754 SRR8425755 SRR8425756 SRR8425757 SRR8425758 SRR8425759 SRR8425760 SRR8425761 SRR8425762 SRR8425763 SRR8425764 SRR8425765 SRR8425766 SRR8425767 SRR8425768 SRR8425769 SRR8425770 SRR8425771 SRR8425772 SRR8425773 SRR8425774 SRR8425775 SRR8425776 SRR8425777 SRR8425778 SRR8425779 SRR8425780 SRR8425781 SRR8425782 SRR8425783 ; do
+echo $s
+if [ -f fastq/${s}.fastq.gz ] ;then
+ln -s ../fastq/${s}.fastq.gz outtest/${s}.fastq.gz
+else
+ln -s ../fastq/${s}_1.fastq.gz outtest/${s}.fastq.gz
+fi
+done
+```
+
+
+```
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive-local --threads 8 \
+ -x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+ --single --extension .fastq.gz --outdir ${PWD}/outtest \
+ ${PWD}/outtest/SRR*.fastq.gz
+```
+
+```
+grep --no-filename 'gi|578830991|ref|XP_006721985.1|_PREDICTED:_neurofibromin_isoform_X1_\[Homo_sapiens\]_fragment_21' outtest/{SRR8425734,SRR8425735,SRR8425736,SRR8425737,SRR8425738,SRR8425739,SRR8425740,SRR8425741,SRR8425742,SRR8425743,SRR8425744,SRR8425745,SRR8425746,SRR8425747,SRR8425748,SRR8425749,SRR8425750,SRR8425751,SRR8425752,SRR8425753,SRR8425754,SRR8425755,SRR8425756,SRR8425757,SRR8425758,SRR8425759,SRR8425760,SRR8425761,SRR8425762,SRR8425763,SRR8425764,SRR8425765,SRR8425766,SRR8425767,SRR8425768,SRR8425769,SRR8425770,SRR8425771,SRR8425772,SRR8425773,SRR8425774,SRR8425775,SRR8425776,SRR8425777,SRR8425778,SRR8425779,SRR8425780,SRR8425781,SRR8425782,SRR8425783}*.aligned_sequence_counts.txt | cut -f1
+```
+
+Even less.
+
+
+
+
+
+
+##	20240302
+
+Using `--all` suggested a possible increase in these numbers.
+
+```
+mkdir out-e2e-all
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --all --threads 8 \
+ -x ~/github/derisilab-ucsf/PhIP-PND-2018/library_design/human_peptidome_oligo_pool \
+ --single --extension .trim.fastq.gz --outdir ${PWD}/out-e2e-all \
+ ${PWD}/out/SRR*.trim.fastq.gz
+```
+
+```
+for f in out-e2e-all/*.human_peptidome_oligo_pool.bam.aligned_count.txt ; do
+echo $f
+sum=$( cat $f )
+awk -v sum=${sum} '{$1=100000*$1/sum;print}' ${f%%aligned_count.txt}aligned_sequence_counts.txt > ${f%%aligned_count.txt}normalized_aligned_sequence_counts.txt
+done
+
+```
+
+
+
+
+
+
+
+
+
+
+
+Merge everything in a single matrix and have a looksie
+
+```
+python3 ~/.local/bin/merge_uniq-c.py -o merged.all.csv out-e2e-all/*normalized_aligned_sequence_counts.txt
+
+chmod 400 merged.all.csv
+gzip merged.all.csv
+
+
+zcat merged.all.csv.gz | datamash transpose -t, > tmp1
+
+awk 'BEGIN{FS="\t";OFS=","}(NR>1){print $4,$10}' filereport_read_run_PRJNA507500_tsv.txt | sort | awk 'BEGIN{FS=OFS=",";print "sample","patient"}{if( $2=="Viral sample from Escherichia phage T7" ){ $2=sprintf("control_%02d", ++i ) }print $1,$2}' > tmp2
+
+join --header -t, tmp2 tmp1 > tmp3
+
+cut -d, -f2 tmp3 > tmp4
+cut -d, -f1,3- tmp3 > tmp5
+paste -d, tmp4 tmp5 > tmp6
+head -n 1 tmp6 > tmp7
+tail -n +2 tmp6 | sort -t, -k1,1 >> tmp7
+
+```
+
+`filereport_read_run_PRJNA507500_tsv.txt` uses leading 0s in patient number. `sample_info` does not. correcting
+(change `patient_1_CSF_rep1` to `patient_01_CSF_rep1`)
+
+duplicated `patient_01_CSF_rep3` ?? so added uniq
+
+```
+
+cut -d, -f2- PhIP-PND-2018/experimental_data/sample_info.csv | sed '/patient_[[:digit:]]_/s/patient_/patient_0/' | uniq > tmp8
+
+head -n 1 tmp8 > tmp9
+tail -n +2 tmp8 | sort -t, -k1,1 >> tmp9
+
+join --header -t, -a2 -oauto tmp9 tmp7 > tmp10
+```
+
+
+
+```
+wc -l tmp10
+317 
+
+awk -F, '{print NF}' tmp10 | uniq
+729880
+```
+ 
+
+
+```
+mv tmp10 final_matrix.all.csv
+chmod 400 final_matrix.all.csv
+gzip final_matrix.all.csv
+\rm tmp*
+```
+
+
+```
+zcat final_matrix.all.csv.gz | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}
+(NR>9){ 
+sum=0;for(i=2;i<=51;i++){sum+=$i}
+mean=sum/(51-1)
+sigma=0;for(i=2;i<=51;i++){sigma+=($i-mean)^2}
+stddev=(sigma/(51-1))^0.5
+if(stddev<mean)print($1,mean,stddev,stddev<mean)
+}'
+```
+
+```
+gi|768007069|ref|XP_011524869.1|_PREDICTED:_zinc_finger_protein_550_isoform_X1_[Homo_sapiens]_fragment_8,0.0750526,0.066209,1
+```
+
+
+All that and still just one!
 
 
 
