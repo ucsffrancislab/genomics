@@ -118,3 +118,48 @@ diff shared_sample_list*
 
 
 
+
+##	20240321
+
+Noticing that there's no difference between S10_All_ProteinSequences.fa and S10_S2_ProteinSequences.fa
+
+Is that because none were filtered out of All or too many are in S2? S10 is only S2 so didn't really need to grep.
+
+field 13 is the modified sequence. Not sure why there are entries that have "None" in this table.
+```
+head -2 41588_2023_1349_MOESM3_ESM/S10.csv 
+Supplementary Table 10. Protein prediction of candidate transcripts,,,,,,,,,,,,,,,,,
+Transcript ID,Subfam,Chr TE,Start TE,End TE,Location TE,Gene,Splice Target,Strand,Index of Start Codon,Frame,Frame Type,Protein Sequence,Original Protein Sequence,Strategy,,,
+```
+
+
+S1 contains ALL of the TCONS transcript ids, but ALL of the sequences were not included
+```
+cut -d, -f1 41588_2023_1349_MOESM3_ESM/S1.csv | tail -n +3 | sort | uniq | wc -l
+26816
+```
+
+Nevertheless
+
+
+I created SPARC_VZV_peptides.faa
+```
+>SPARC_peptide
+HPVELLARDFEKNYN
+>VZV_peptide
+SPELLARDPYGPAVDIWSAGIVLFEMATGQ
+```
+and then blasted to the select 2834 TCONS sequences
+```
+blastp -query SPARC_VZV_peptides.faa \
+-db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences \
+-outfmt 6 -out SPARC_VZV_peptides_in_TCONS_sequences.tsv
+```
+
+I uploaded both SPARC_VZV_peptides* to box Francis _Lab_Share 20230413-VZV
+https://ucsf.app.box.com/folder/203303184636
+
+There are several "matches". Not sure if that is what you were looking for or helpful.
+
+
+
