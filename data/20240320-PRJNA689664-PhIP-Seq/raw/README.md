@@ -23,5 +23,12 @@ No papers found using this dataset just yet.
 Since we don't know exactly what was done, I could simple blastx to viral proteins?
 
 
+```
+mkdir fastq
+cd fastq/
+ena-file-download-read_run-PRJNA689664-fastq_ftp-20240320-2354.sh
+fastx_count_array_wrapper.bash SRR1336*
+```
+
 
 
