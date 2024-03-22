@@ -12,7 +12,7 @@ Antibody repertoires in a general adult Arab population (Part I : sample 1 to 10
 
 https://www.ebi.ac.uk/ena/browser/view/PRJNA688708
 
-We provide raw sequence read data from Phage-Immunoprecipitation Sequencing (PhIP-Seq) experiments using serum samples obtained from 798 Qatari nationals or long-term residents who had previously participated in the Qatar Genome Programme (QGP). This submission has 788 samples, i.e. sample Id 11 to 798. Each sample has been submitted with a technical repeat. Therefore, total number of entries in this submission is 1576 (=788*2). The first 10 samples (i.e. Sample ID 1 to 10) can be found with SRA submission ID PRJNA685111.
+We provide raw sequence read data from Phage-Immunoprecipitation Sequencing (PhIP-Seq) experiments using serum samples obtained from 798 Qatari nationals or long-term residents who had previously participated in the Qatar Genome Programme (QGP). This submission has 788 samples, i.e. sample Id 11 to 798. Each sample has been submitted with a technical repeat. Therefore, total number of entries in this submission is 1576 (=788\*2). The first 10 samples (i.e. Sample ID 1 to 10) can be found with SRA submission ID PRJNA685111.
 
 
 Antibody repertoires in a general adult Arab population (Part II : sample 11 to 798)
@@ -27,4 +27,12 @@ https://www.frontiersin.org/journals/immunology/articles/10.3389/fimmu.2022.8564
 https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9393332/
 
 
+
+```
+mkdir fastq
+cd fastq/
+../ena-file-download-read_run-PRJNA685111-fastq_ftp-20240320-2352.sh
+../ena-file-download-read_run-PRJNA688708-fastq_ftp-20240320-2353.sh
+fastx_count_array_wrapper.bash SRR*
+```
 
