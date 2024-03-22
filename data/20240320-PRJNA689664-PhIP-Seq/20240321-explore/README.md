@@ -18,8 +18,11 @@ Nope
 
 
 
+Removed --all
+
+
 ```
-bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --all --threads 8  \
+bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --threads 8  \
   -x /francislab/data1/refs/PhIP-Seq/VIR3_clean \
   --single --extension .fastq.gz --outdir ${PWD}/out \
   /francislab/data1/raw/20240320-PRJNA689664-PhIP-Seq/fastq/*fastq.gz
@@ -109,3 +112,7 @@ Reference of sequences with lengths to match reads?
 Normalize by raw read count or aligned read count?
 
 Preprocessing at all here or use as is?
+
+Align with --all?
+
+
