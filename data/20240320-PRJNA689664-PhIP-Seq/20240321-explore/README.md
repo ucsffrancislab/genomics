@@ -2,6 +2,10 @@
 #	20240320-PRJNA689664-PhIP-Seq/20240321-explore
 
 
+540 fastq (270 samples most with 2 replicates)
+
+232 children plus some other stuff
+
 
 ```
 bowtie2_array_wrapper.bash --no-unal --sort --very-sensitive --all --threads 8  \
@@ -95,3 +99,13 @@ gzip final.matrix.normalized.csv
 
 
 
+
+
+##	Notes
+
+
+Reference of sequences with lengths to match reads?
+
+Normalize by raw read count or aligned read count?
+
+Preprocessing at all here or use as is?
