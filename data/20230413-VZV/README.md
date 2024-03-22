@@ -241,3 +241,56 @@ makeblastdb -in Human_betaherpesvirus_5_proteins.trim.fa -input_type fasta -dbty
 
 
 
+##	20240321
+
+
+
+/francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences.fa
+
+
+blastp -query /francislab/data1/working/20230413-VZV/Human_alphaherpesvirus_3_proteins.fa
+-db /francislab/data1/refs/sources/gencodegenes.org/release_43/SPARC
+
+
+I’m wondering if any of the TE modified antigens look similar to SPARC? I guess that is a circular way of looking at what we already looked at, but do you see what I’m getting at?
+
+
+
+```
+blastp -query /francislab/data1/working/20230413-VZV/Human_alphaherpesvirus_3_proteins.fa \
+-db /francislab/data1/refs/sources/gencodegenes.org/release_43/SPARC
+
+blastp -query /francislab/data1/refs/sources/gencodegenes.org/release_43/SPARC.fa \
+-db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences
+```
+
+
+SPARC_VZV_peptides.faa
+```
+>SPARC_peptide
+HPVELLARDFEKNYN
+>VZV_peptide
+SPELLARDPYGPAVDIWSAGIVLFEMATGQ
+```
+
+```
+blastp -query SPARC_VZV_peptides.faa \
+-db /francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences \
+-outfmt 6 -out SPARC_VZV_peptides_in_TCONS_sequences.tsv
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
