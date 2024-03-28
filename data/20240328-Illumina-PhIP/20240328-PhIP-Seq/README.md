@@ -90,10 +90,10 @@ commands_array_wrapper.bash --array_file commands --time 720 --threads 8 --mem 6
 
 ```
 
-echo ",S1,S2,S3,S4" > counts.csv
+echo ",S0,S1,S2,S3,S4" > counts.csv
 
 #out="Total Reads"
-#for s in S1 S2 S3 S4 ; do
+#for s in S0 S1 S2 S3 S4 ; do
 #c=$( cat fastq/${s}.fastq.gz.read_count.txt )
 #out="${out},${c}"
 #done
@@ -101,7 +101,7 @@ echo ",S1,S2,S3,S4" > counts.csv
 #
 #for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
 #out="${baseind}"
-#for s in S1 S2 S3 S4 ; do
+#for s in S0 S1 S2 S3 S4 ; do
 #c=$( cat bam/${s}_bt2allloc.${baseind}.bam.aligned_count.txt )
 #out="${out},${c}"
 #done
@@ -109,7 +109,7 @@ echo ",S1,S2,S3,S4" > counts.csv
 #done
 
 out="Trimmed Reads"
-for s in S1 S2 S3 S4 ; do
+for s in S0 S1 S2 S3 S4 ; do
 c=$( cat out/${s}.fastq.gz.read_count.txt )
 out="${out},${c}"
 done
@@ -117,7 +117,7 @@ echo $out >> counts.csv
 
 for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do
 out="${baseind}"
-for s in S1 S2 S3 S4 ; do
+for s in S0 S1 S2 S3 S4 ; do
 c=$( cat out/${s}_bt2alle2e.${baseind}.bam.aligned_count.txt )
 out="${out},${c}"
 done
