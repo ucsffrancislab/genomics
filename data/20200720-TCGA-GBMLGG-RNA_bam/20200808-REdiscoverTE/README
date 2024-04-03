@@ -1,4 +1,18 @@
 
+#	20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE
+
+
+```
+module load r
+
+R
+
+g=readRDS('GENE_2_counts_normalized.RDS')
+write.table(t(g$counts),file='GENE_2_counts_normalized.tsv',quote=F,sep="\t",row.names=TRUE,col.name=NA)
+
+r=readRDS('RE_all_2_counts_normalized.RDS')
+write.table(t(r$counts),file='RE_all_2_counts_normalized.tsv',quote=F,sep="\t",row.names=TRUE,col.name=NA)
+```
 
 
 
