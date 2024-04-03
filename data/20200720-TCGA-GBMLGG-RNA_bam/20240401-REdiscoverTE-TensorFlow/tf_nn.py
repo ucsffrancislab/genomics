@@ -23,21 +23,17 @@ parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
 parser.add_argument('files', nargs='*', help='files help')
 parser.add_argument('-V','--version', action='version', version='%(prog)s 1.1')
 
-
-#parser.add_argument('-f', '--features_file', nargs=1, type=str, default=['Select.txt'],
-
-parser.add_argument('-f', '--features_file', nargs=1, type=str, default=[''],
+parser.add_argument('--features_file', nargs=1, type=str, default=[''],
 	help='file containing list of columns to use %(prog)s (default: %(default)s)')
 
-parser.add_argument('-o', '--outcome_column', nargs=1, type=str, default=['Survival_months'],
+parser.add_argument('--outcome_column', nargs=1, type=str, default=['Survival_months'],
 	help='predict this output column %(prog)s (default: %(default)s)')
 
-parser.add_argument('-n', '--neuron_counts', nargs=1, type=str, default=['512,256'],
+parser.add_argument('--neuron_counts', nargs=1, type=str, default=['512,256'],
 	help='comma separated list of neuron counts to %(prog)s (default: %(default)s)')
 
-parser.add_argument('-a', '--attributes', nargs=1, type=str, default=['Age,sex'],
+parser.add_argument('--attributes', nargs=1, type=str, default=['Age,sex'],
 	help='comma separated list of other attributes to include %(prog)s (default: %(default)s)')
-
 
 parser.add_argument('--final_layer', nargs=1, choices=['basic', 'continuous', 'category'], default=['basic'],
 	help='choose how to work that final layer %(prog)s (default: %(default)s)')
@@ -46,14 +42,14 @@ parser.add_argument('--category_count', nargs=1, type=int, default=[5],
 	help='number of final categories in predict column %(prog)s (default: %(default)s)')
 
 
-#parser.add_argument('-o', '--output', nargs=1, type=str, default='merged.csv.gz', help='output csv filename to %(prog)s (default: %(default)s)')
+parser.add_argument('--train_matrix', nargs=1, type=str, default=['gbm_train.tsv'],
+	help='tsv training matrix filename to %(prog)s (default: %(default)s)')
 
-#parser.add_argument('-s', '--sep', nargs=1, type=str, default='\t', help='the separator to %(prog)s (default: %(default)s)')
+parser.add_argument('--test_matrix', nargs=1, type=str, default=['gbm_test.tsv'],
+	help='tsv testing matrix filename to %(prog)s (default: %(default)s)')
 
-#	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
-#parser.add_argument('--int', action='store_true', help='convert values to ints to %(prog)s (default: %(default)s)')
-
-#parser.add_argument('--seqint', action='store_true', help='items are ints so sort like it : %(prog)s (default: %(default)s)')
+parser.add_argument('--epochs', nargs=1, type=int, default=[100], 
+	help='model epochs to %(prog)s (default: %(default)s)')
 
 
 # read arguments from the command line
@@ -61,24 +57,16 @@ args = parser.parse_args()
 
 
 
-
-
+epochs = args.epochs[0]
 features_file = args.features_file[0]
 outcome_column = args.outcome_column[0]
 neuron_counts = args.neuron_counts[0]
 final_layer = args.final_layer[0]
 category_count = args.category_count[0]
-
-
-#attributes=['Age','sex','CDKN2A_re','EGFR_re',outcome_column]
-#attributes=['Age','sex',outcome_column]
-#for count in [int(ele) for ele in neuron_counts.split(',')]:
+train_matrix = args.train_matrix[0]
+test_matrix = args.test_matrix[0]
 
 attributes = args.attributes[0].split(',')+[outcome_column]
-
-
-
-
 
 
 #	python3 -m pip install --user --upgrade "tensorflow[and-cuda]" didn't stop the warnings
@@ -97,6 +85,8 @@ def read_a_csv(filename):
 	df = pd.read_csv(filename,sep="\t",header=[0],index_col=[0])	#,nrows=100)
 	print("Done : ", datetime.now().strftime("%H:%M:%S") , flush=True)
 
+	df.fillna(0,inplace=True)
+
 	if 'sex' in df.columns:
 		df['sex'].replace(to_replace={'female':0, 'male':1}, inplace=True)
 	if 'MGMT' in df.columns:
@@ -109,17 +99,21 @@ def read_a_csv(filename):
 	return df
 
 
-train_data = read_a_csv("gbm_train.tsv")
+train_data = read_a_csv(train_matrix)
 train_data = train_data[features+attributes]
 train_outcome = train_data.pop(outcome_column)
-print(train_data.head())
-print(train_outcome.head())
+print("Training data", flush=True)
+print(train_data.head(), flush=True)
+print("Training outcomes", flush=True)
+print(train_outcome.head(), flush=True)
 
-test_data = read_a_csv("gbm_test.tsv")
+test_data = read_a_csv(test_matrix)
 test_data = test_data[features+attributes]
 test_outcome = test_data.pop(outcome_column)
-print(test_data.head())
-print(test_outcome.head())
+print("Testing data", flush=True)
+print(test_data.head(), flush=True)
+print("Testing outcomes", flush=True)
+print(test_outcome.head(), flush=True)
 
 
 #	https://www.tensorflow.org/tutorials/keras/regression
@@ -171,8 +165,10 @@ elif final_layer == 'category':
 		metrics=['accuracy'])
 
 
+model.summary()
 
-model.fit(train_data, train_outcome, epochs=1000)
+
+model.fit(train_data, train_outcome, epochs=epochs)
 
 
 if final_layer in ['basic','category']:
@@ -192,11 +188,12 @@ print(out.to_string(), flush=True)
 
 if final_layer in ['continuous']:
 
-	from sklearn.metrics import mean_absolute_error, mean_squared_error
+	from sklearn.metrics import mean_absolute_error, mean_squared_error, root_mean_squared_error
 
 	mae = mean_absolute_error(out["prediction"], out[outcome_column])
-	mse = mean_squared_error(out["prediction"], out[outcome_column], squared=True)
+	#mse = mean_squared_error(out["prediction"], out[outcome_column], squared=True)
+	mse = root_mean_squared_error(out["prediction"], out[outcome_column])
 
-	print(f"mae:{round(mae,2)} mse:{round(mse,2)}")
+	print(f"mae:{round(mae,2)} mse:{round(mse,2)}", flush=True)
 
 
