@@ -144,9 +144,54 @@ CDKN2A_re
 ```
 module load WitteLab python3/3.9.1
 
-./tf_nn.py
+./tf_nn.py -h
 ```
 
+
+
+
+```
+module load WitteLab python3/3.9.1
+
+./tf_nn.py --attributes Age,sex --features_file AllREsMinusXs.txt --neuron_counts 512,256 --outcome_column Survival_months --final_layer continuous
+mae:1.81 mse:6.72
+
+
+./tf_nn.py --attributes Age,sex,CDKN2A_re,EGFR_re --features_file AllREsMinusXs.txt --neuron_counts 512,256 --outcome_column Survival_months --final_layer continuous
+mae:1.61 mse:6.09
+
+
+
+
+
+./tf_nn.py --attributes Age,sex --features_file SelectREs.txt --neuron_counts 512,256 --outcome_column Survival_months --final_layer continuous
+mae:2.75 mse:13.18
+
+
+./tf_nn.py --attributes Age,sex,CDKN2A_re,EGFR_re --features_file SelectREs.txt --neuron_counts 512,256 --outcome_column Survival_months --final_layer continuous
+mae:2.74 mse:14.24
+
+
+./tf_nn.py --attributes Age,sex,CDKN2A_re,EGFR_re --features_file SelectREs.txt --neuron_counts 128,64 --outcome_column Survival_months --final_layer continuous
+mae:3.61 mse:23.7
+
+
+./tf_nn.py --attributes Age,sex,CDKN2A_re,EGFR_re --features_file AllREsMinusXs.txt --neuron_counts 1024,512,256 --outcome_column Survival_months --final_layer continuous
+mae:1.7 mse:6.56
+
+
+
+
+
+./tf_nn.py --attributes Age,sex,CDKN2A_re,EGFR_re --features_file Select.txt --neuron_counts 512,256 --outcome_column MGMT --final_layer basic
+
+80%
+
+./tf_nn.py --attributes Age,sex --features_file AllREsMinusXs.txt --neuron_counts 512,256 --outcome_column MGMT --final_layer basic
+
+95%
+
+```
 
 
 
