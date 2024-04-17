@@ -203,6 +203,8 @@ mae:1.7 mse:6.56
 
 ##	20240402
 
+NOTE that all that is below ended badly. The splitting of data into train and test resulted in some in both and some in none.
+This performed great, but is quite wrong. Redoing with a sigh.
 
 ```
 ln -s ../20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.tsv 
@@ -248,14 +250,20 @@ head -1 GENE_2_counts_normalized.tsv | tr "\t" "\n" > AllGenes.txt
 
 head -1 GENE_2_counts_normalized.subject_unique.metadata.tsv > GENE_2_counts_normalized.subject_unique.metadata.train.tsv
 head -1 GENE_2_counts_normalized.subject_unique.metadata.tsv > GENE_2_counts_normalized.subject_unique.metadata.test.tsv
-tail -n +2 GENE_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf| tee >(head -60 | sort>> GENE_2_counts_normalized.subject_unique.metadata.train.tsv) | tail -n 17 | sort>> GENE_2_counts_normalized.subject_unique.metadata.test.tsv
+tail -n +2 GENE_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf| > tmp
+head -60 tmp | sort >> GENE_2_counts_normalized.subject_unique.metadata.train.tsv
+tail -n 17 tmp | sort >> GENE_2_counts_normalized.subject_unique.metadata.test.tsv
 
+
+#tail -n +2 GENE_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf| tee >(head -60 | sort>> GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv) | tail -n 17 | sort>> GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
 
 for i in $( seq 0 9 ) ; do
 echo $i
 head -1 GENE_2_counts_normalized.subject_unique.metadata.tsv > GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv
 head -1 GENE_2_counts_normalized.subject_unique.metadata.tsv > GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
-tail -n +2 GENE_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf| tee >(head -60 | sort>> GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv) | tail -n 17 | sort>> GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
+tail -n +2 GENE_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf > tmp
+head -60 tmp | sort >> GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv
+tail -n 17 tmp | sort >> GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
 done
 ```
 
@@ -311,9 +319,9 @@ IID
 mkdir logs
 for i in $( seq 0 9 ) ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="MGMT-${i}" --output="${PWD}/logs/tf_nn.Genes.MGMT.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllGenes.txt --neuron_counts 512,256 --outcome_column MGMT --final_layer basic --train_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="MGMT-${i}" --output="${PWD}/logs/tf_nn.Genes.MGMT.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllGenes.txt --neuron_counts 256,128 --outcome_column MGMT --final_layer basic --train_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv"
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="Survival-${i}" --output="${PWD}/logs/tf_nn.Genes.Survival_months.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllGenes.txt --neuron_counts 512,256 --outcome_column Survival_months --final_layer continuous --train_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv --epochs 1000"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="Survival-${i}" --output="${PWD}/logs/tf_nn.Genes.Survival_months.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllGenes.txt --neuron_counts 512,256 --outcome_column Survival_months --final_layer continuous --train_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv --epochs 500"
 
 done
 
@@ -350,7 +358,9 @@ for i in $( seq 0 9 ) ; do
 echo $i
 head -1 RE_all_2_counts_normalized.subject_unique.metadata.tsv > RE_all_2_counts_normalized.subject_unique.metadata.${i}.train.tsv
 head -1 RE_all_2_counts_normalized.subject_unique.metadata.tsv > RE_all_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
-tail -n +2 RE_all_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf| tee >(head -60 | sort>> RE_all_2_counts_normalized.subject_unique.metadata.${i}.train.tsv) | tail -n 17 | sort>> RE_all_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
+tail -n +2 RE_all_2_counts_normalized.subject_unique.metadata.tsv |shuf|shuf|shuf > tmp
+head -60 tmp | sort >> RE_all_2_counts_normalized.subject_unique.metadata.${i}.train.tsv
+tail -n 17 tmp | sort >> RE_all_2_counts_normalized.subject_unique.metadata.${i}.test.tsv
 done
 ```
 
@@ -367,6 +377,31 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="Survival-$
 done
 
 ```
+
+
+
+
+##	20240404
+
+
+
+Trying to refine the model, but I have my doubts
+
+```
+for i in $( seq 0 9 ) ; do
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="MGMT-${i}" --output="${PWD}/logs/tf_nn.Genes.MGMT.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllGenes.txt --neuron_counts 32,16 --outcome_column MGMT --final_layer basic --train_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv --epochs 200"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="Survival-${i}" --output="${PWD}/logs/tf_nn.Genes.Survival_months.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllGenes.txt --neuron_counts 32,16 --outcome_column Survival_months --final_layer continuous --train_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/GENE_2_counts_normalized.subject_unique.metadata.${i}.test.tsv --epochs 200"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="MGMT-${i}" --output="${PWD}/logs/tf_nn.RE.MGMT.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllRE_all.txt --neuron_counts 32,16 --outcome_column MGMT --final_layer basic --train_matrix ${PWD}/RE_all_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/RE_all_2_counts_normalized.subject_unique.metadata.${i}.test.tsv --epochs 200"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name="Survival-${i}" --output="${PWD}/logs/tf_nn.RE.Survival_months.${i}.$( date "+%Y%m%d%H%M%S%N" ).out" --time=14000 --nodes=1 --ntasks=8 --mem=60G --exclude=c4-n37,c4-n38,c4-n39 --wrap="module load WitteLab python3/3.9.1; ./tf_nn.py --attributes Age,sex --features_file ${PWD}/AllRE_all.txt --neuron_counts 32,16 --outcome_column Survival_months --final_layer continuous --train_matrix ${PWD}/RE_all_2_counts_normalized.subject_unique.metadata.${i}.train.tsv --test_matrix ${PWD}/RE_all_2_counts_normalized.subject_unique.metadata.${i}.test.tsv --epochs 200"
+
+done
+```
+
 
 
 
