@@ -135,7 +135,11 @@ model.add(normalizer)
 #	bumping one up to 128 causes almost all predictions to be flat (7.959686)
 
 for count in [int(ele) for ele in neuron_counts.split(',')]:
-	model.add(tf.keras.layers.Dense(count, activation='relu'))
+	#	relu can make final predictions flat
+	#model.add(tf.keras.layers.Dense(count, activation='sigmoid', activity_regularizer=(tf.keras.regularizers.L2(l2=0.001))))
+	model.add(tf.keras.layers.Dense(count, activation='relu', activity_regularizer=(tf.keras.regularizers.L2(l2=0.001))))
+	model.add(tf.keras.layers.Dropout(0.3))
+
 
 #	for just select 35 REs 2x 64 neuron layers worked decently
 
@@ -144,6 +148,7 @@ if final_layer == 'basic':
 
 	#	Normal / Basic
 	model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+	#model.add(tf.keras.layers.Dense(1, activation='relu'))
 	model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
 elif final_layer == 'continuous':
@@ -152,8 +157,9 @@ elif final_layer == 'continuous':
 	model.add(tf.keras.layers.Dense(1))
 	#	tried learning rates 0.1 and 0.01. 0.001 is nice.
 	model.compile(
-		optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+		optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
 		loss='mean_absolute_error')
+	#	loss='mean_squared_error')
 
 elif final_layer == 'category':
 
@@ -168,6 +174,23 @@ elif final_layer == 'category':
 model.summary()
 
 
+
+
+#class_weight = {
+#    0:1/sum(y_train[:,0]), 
+#    1:1/sum(y_train[:,1]), 
+#    2:1/sum(y_train[:,2]), 
+#    3:1/sum(y_train[:,3]),
+#    4:1/sum(y_train[:,4]),
+#    5:1/sum(y_train[:,5]),
+#    6:1/sum(y_train[:,6])
+#}
+#model.fit(X_train, y_train, epochs = epochs, batch_size=batch_size, validation_split=0.2, class_weight = class_weight)
+
+#	x = Dense(nb_classes, activation='softmax', activity_regularizer=l2(0.001))(x)
+
+
+
 model.fit(train_data, train_outcome, epochs=epochs)
 
 
@@ -177,11 +200,11 @@ if final_layer in ['basic','category']:
 
 
 
-model.predict(test_data).flatten()
+print(model.predict(test_data).flatten())
+
 
 out = test_outcome.to_frame()
 out['prediction'] = model.predict(test_data).flatten().round(3)
-
 print(out.to_string(), flush=True)
 
 
@@ -192,8 +215,8 @@ if final_layer in ['continuous']:
 
 	mae = mean_absolute_error(out["prediction"], out[outcome_column])
 	#mse = mean_squared_error(out["prediction"], out[outcome_column], squared=True)
-	mse = root_mean_squared_error(out["prediction"], out[outcome_column])
+	rmse = root_mean_squared_error(out["prediction"], out[outcome_column])
 
-	print(f"mae:{round(mae,2)} mse:{round(mse,2)}", flush=True)
+	print(f"mae:{round(mae,2)} rmse:{round(rmse,2)}", flush=True)
 
 
