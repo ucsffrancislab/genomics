@@ -61,4 +61,61 @@ done
 
 
 
+##	20240402
 
+Downloading reprocessed files
+
+
+
+```
+mkdir download2
+cd download2
+wget https://launch.basespace.illumina.com/CLI/latest/amd64-linux/bs
+chmod +x bs
+```
+
+
+```
+bs download project -i 414057833
+cd ..
+```
+
+
+```
+mkdir fastq2
+cd fastq2
+
+for f in ../download2/*/*fastq.gz ; do
+echo $f
+b=$( basename $f _L001_R1_001.fastq.gz ) 
+echo $b
+b=${b##*_}
+echo $b
+ln -s ${f} ${b}.fastq.gz
+done
+```
+
+
+
+```
+for f in S?.fastq.gz ; do
+echo $f
+zcat $f | sed -n '1~4p' | cut -d: -f10 | sort | uniq -c | sort -k1nr,1 > ${f}.indexes.txt
+done
+```
+
+
+
+```
+echo ",AACCAAG,AACCGCA,AACCTGC,AACGACC"
+for i in AACCAAG AACCGCA AACCTGC AACGACC ; do
+echo -n $i
+for j in AACCAAG AACCGCA AACCTGC AACGACC ; do
+c=$( ~/github/ucsffrancislab/genomics/source/levenshtein $i $j | cut -f3 )
+echo -n ",${c}"
+done 
+echo 
+done
+
+
+```
