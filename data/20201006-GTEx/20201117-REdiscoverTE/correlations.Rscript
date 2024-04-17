@@ -1,0 +1,56 @@
+#!/usr/bin/env Rscript
+
+#	module load r
+#	R -e "install.packages('ggcorrplot')"
+
+
+library(ggcorrplot)
+
+
+Sys.time()
+g = readRDS('GENE_2_counts_normalized.RDS')
+Sys.time()
+
+
+#for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily', 'RE_all') ) {
+for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily') ) {
+
+#for (re in c('RE_exon_repFamily') ) {
+	print(re)
+
+	Sys.time()
+	r=readRDS(paste0(re,'_2_counts_normalized.RDS'))
+	Sys.time()
+
+	print("Correlating")
+	c=cor(t(g$counts),t(r$counts))
+	Sys.time()
+
+	print("Saving TSV")
+	write.table(c, file = paste0("GENE_x_",re,".correlation.tsv.gz"), row.names=TRUE, sep="\t", col.names = NA)
+
+#	print("Plotting")
+#	#png(paste0("GENE_x_",re,".correlation.png"), width = 800, height = 600)
+#
+#	#visualize correlation matrix
+#	plt = ggcorrplot(c, outline.color = "white", lab=TRUE)
+#	#print(plt)
+#
+#	#ggsave(paste0("GENE_x_",re,".correlation.png"), width = 800, height = 600)
+#	ggsave(paste0("GENE_x_",re,".correlation.png"), width = 8, height = 10)
+#
+#
+#
+#	#	can't use hc.order on non-square?
+#	#	Error in stats::hclust(dd, method = hc.method) : 
+#	#	  dissimilarities of improper length
+#	#	Calls: ggcorrplot -> .hc_cormat_order -> <Anonymous> -> <Anonymous>
+#	#	In addition: Warning message:
+#	#	In as.dist.default((1 - cormat)/2) : non-square matrix
+#	#	Execution halted
+#
+#	dev.off()
+
+}
+
+
