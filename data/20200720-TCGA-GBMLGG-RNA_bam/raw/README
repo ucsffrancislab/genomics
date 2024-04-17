@@ -33,3 +33,40 @@ Need to add a suffix as there are many duplicates
 
 
 
+##	20240405
+
+
+```
+wget https://tcga-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA.COAD.sampleMap%2FCOAD_clinicalMatrix
+awk -F"\t" '{print NF}' TCGA.COAD.sampleMap%2FCOAD_clinicalMatrix | uniq -c
+    552 133
+
+
+
+
+
+wget https://toil-xena-hub.s3.us-east-1.amazonaws.com/download/TcgaTargetGtex_gene_expected_count.gz
+awk -F"\t" '{print NF}' TcgaTargetGtex_gene_expected_count | uniq -c
+  60499 19110
+zcat TcgaTargetGtex_gene_expected_count.gz | datamash transpose | tr "\t" , > TcgaTargetGtex_gene_expected_count.transposed.csv
+awk -F, '{print NF}' TcgaTargetGtex_gene_expected_count.transposed.csv | uniq -c
+  19110 60499
+head -1 TcgaTargetGtex_gene_expected_count.transposed.csv > TcgaTargetGtex_gene_expected_count.transposed.sorted.csv
+tail -n +2 TcgaTargetGtex_gene_expected_count.transposed.csv | sort -t, -k1,1 >> TcgaTargetGtex_gene_expected_count.transposed.sorted.csv
+
+
+
+wget https://toil-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA_survival_data
+awk -F"\t" '{print NF}' TCGA_survival_data | uniq -c
+  10497 9
+head -1 TCGA_survival_data | tr "\t" , > TCGA_survival_data.sorted.csv
+tail -n +2 TCGA_survival_data | tr "\t" , | sort -t, -k1,1  >> TCGA_survival_data.sorted.csv
+
+
+
+
+
+```
+
+
+
