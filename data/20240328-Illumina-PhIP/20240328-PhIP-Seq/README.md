@@ -127,3 +127,30 @@ done
 ```
 
 
+
+##	20240422
+
+
+```
+ln -s /francislab/data1/raw/20240328-Illumina-PhIP/fastq2
+
+./EV_preprocessing_array_wrapper.bash --threads 8 --out ${PWD}/out2 --extension .merged.fastq.gz \
+  ${PWD}/fastq2/*.merged.fastq.gz
+
+```
+
+```
+for baseind in HAPLib.1 HAPLib.2 LExPELib.1 LExPELib.2 vir3 VIR3_clean ; do 
+echo $baseind; 
+INDEX=/francislab/data1/refs/PhIP-Seq/${baseind}; 
+for fq in ${PWD}/out2/*fastq.gz ; do 
+echo $fq; 
+s=$(basename $fq .fastq.gz)_bt2alle2e; 
+bam=${PWD}/out2/${s}.${baseind}.bam; 
+echo ~/.local/bin/bowtie2.bash --threads 8 -x ${INDEX} --all --very-sensitive -U $fq --sort --output ${bam} >> commands; 
+done; done 
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 8 --mem 60G 
+```
+
+
