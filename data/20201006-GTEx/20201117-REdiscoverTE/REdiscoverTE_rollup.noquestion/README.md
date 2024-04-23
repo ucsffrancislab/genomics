@@ -161,3 +161,26 @@ Compare sites to other sites
 
 Just one "site" for tcga
 
+
+
+
+##	20240422
+
+```
+tail -n +2 GENE_x_RE_all.correlation.tsv | cut -f1 | tr -d \" > GENEs
+head -1 GENE_x_RE_all.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" > RE_all
+
+```
+
+```
+wc -l GENEs RE_all
+  55670 GENEs
+   4788 RE_all
+```
+
+
+
+
+
+
+
