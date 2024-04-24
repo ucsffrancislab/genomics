@@ -39,6 +39,32 @@ else
 	OUTBASE="${PWD}/rollup"
 	mkdir -p ${OUTBASE}
 
+	datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/
+
+	while [ $# -gt 0 ] ; do
+		case $1 in
+			--datadir)
+				shift; datadir=$1; shift;;
+#			--array)
+#				shift; array=$1; shift;;
+#			-t|--threads)
+#				shift; threads=$1; shift;;
+#			-o|--out|--outdir|-e|--extension)
+#				array_options="${array_options} $1 $2"; shift; shift;;
+#			--paired)
+#				array_options="${array_options} $1"; shift;;
+#			-h|--help)
+#				usage;;
+#			-*)
+#				array_options="${array_options} $1"; shift;;
+#			*)
+#				echo "Unknown param :${1}: Assuming file"; 
+#				realpath --no-symlinks $1 >> ${array_file}; shift;;
+		esac
+	done
+
+
+
 	ls -1 ${INDIR}/*.salmon.REdiscoverTE.k${k}/quant.sf.gz \
 		| awk -F/ '{split($8,a,".");print a[1]"\t"$0}' > ${OUTBASE}/REdiscoverTE.tsv
 
@@ -69,7 +95,7 @@ else
 			--time=14-0 --nodes=1 --ntasks=64 --mem=495G \
 			${0} \
 			--metadata=${OUTBASE}/REdiscoverTE.${d}.tsv \
-			--datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/ \
+			--datadir=${datadir} \
 			--nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/
 
 			#${PWD}/REdiscoverTE_rollup.bash \
