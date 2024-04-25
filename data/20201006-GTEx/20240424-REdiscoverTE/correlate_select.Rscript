@@ -1,0 +1,117 @@
+#!/usr/bin/env Rscript
+
+#	module load r
+#	R -e "install.packages('ggcorrplot')"
+#	library(ggcorrplot)
+#	heatmaps are simply too huge to view
+
+library("optparse")
+ 
+option_list = list(
+#	make_option(c("-a", "--first_file"), type="character", default=NULL, 
+#		help="first matrix file name", metavar="character"),
+#	make_option(c("-b", "--second_file"), type="character", default=NULL, 
+#		help="second matrix file name", metavar="character"),
+	make_option(c("-s", "--select"), type="character", default=NULL, 
+		help="select samples list file name", metavar="character")
+); 
+ 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+#message( "First File: ",opt$first_file )
+#message( "Second File:  ",opt$second_file )
+#message( "Select: ",opt$select )
+#message()
+
+#if (is.null(opt$first_file)){
+#	print_help(opt_parser)
+#	stop("First file required.\n", call.=FALSE)
+#}
+
+#if (is.null(opt$second_file)){
+#	print_help(opt_parser)
+#	stop("Second file required.\n", call.=FALSE)
+#}
+
+
+if (!is.null(opt$select)){
+	ids <- read.table(opt$select, header=F)
+}
+
+library("dplyr")
+library("tidyselect")
+
+
+
+
+
+Sys.time()
+g = readRDS('GENE_2_counts_normalized.RDS')
+g = g$counts
+message(str(dim(g)))
+Sys.time()
+
+if( exists('ids') ){
+	message("Selecting sample ids")
+	g = as.data.frame(g) %>% select(any_of(ids$V1))
+	g = data.matrix(g)	#, rownames.force = NA)
+	message(str(dim(g)))
+}
+
+
+for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily', 'RE_all') ) {
+#for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily') ) {
+#for (re in c('RE_exon_repFamily') ) {
+	print(re)
+
+	Sys.time()
+	r=readRDS(paste0(re,'_2_counts_normalized.RDS'))
+	r=r$counts
+	message(str(dim(r)))
+	if( exists('ids') ){
+		message("Selecting sample ids")
+		r = as.data.frame(r) %>% select(any_of(ids$V1))
+		r = data.matrix(r)	#, rownames.force = NA)
+		message(str(dim(r)))
+		outfile = paste0("GENE_x_",re,".",basename(opt$select),".correlation.tsv")
+	} else {
+		outfile = paste0("GENE_x_",re,".correlation.tsv")
+	}
+	Sys.time()
+
+	print("Correlating")
+	c=cor(t(g),t(r))
+	Sys.time()
+
+	print("Saving TSV")
+	
+	#write.table(c, file = paste0("GENE_x_",re,".correlation.tsv.gz"), row.names=TRUE, sep="\t", col.names = NA)
+	write.table(c, file = outfile, row.names=TRUE, sep="\t", col.names = NA)
+
+
+#	print("Plotting")
+#	#png(paste0("GENE_x_",re,".correlation.png"), width = 800, height = 600)
+#
+#	#visualize correlation matrix
+#	plt = ggcorrplot(c, outline.color = "white", lab=TRUE)
+#	#print(plt)
+#
+#	#ggsave(paste0("GENE_x_",re,".correlation.png"), width = 800, height = 600)
+#	ggsave(paste0("GENE_x_",re,".correlation.png"), width = 8, height = 10)
+#
+#
+#
+#	#	can't use hc.order on non-square?
+#	#	Error in stats::hclust(dd, method = hc.method) : 
+#	#	  dissimilarities of improper length
+#	#	Calls: ggcorrplot -> .hc_cormat_order -> <Anonymous> -> <Anonymous>
+#	#	In addition: Warning message:
+#	#	In as.dist.default((1 - cormat)/2) : non-square matrix
+#	#	Execution halted
+#
+#	dev.off()
+
+}
+
+
