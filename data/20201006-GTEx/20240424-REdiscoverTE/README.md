@@ -138,8 +138,8 @@ Just one "site" for tcga
 
 ```BASH
 
-tail -n +2 GENE_x_RE_all.correlation.tsv | cut -f1 | tr -d \" > GENEs
-head -1 GENE_x_RE_all.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" > RE_all
+tail -n +2 GENE_x_RE_all.correlation.tsv | cut -f1 | tr -d \" | sort > GENEs
+head -1 GENE_x_RE_all.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all
 
 ```
 
