@@ -62,9 +62,9 @@ if( exists('ids') ){
 }
 
 
-for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily', 'RE_all') ) {
+for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily', 'RE_all_repFamily', 'RE_all') ) {
 #for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_repFamily', 'RE_intron', 'RE_intron_repFamily') ) {
-#for (re in c('RE_exon_repFamily') ) {
+#for (re in c('RE_all_repFamily') ) {
 	print(re)
 
 	Sys.time()
