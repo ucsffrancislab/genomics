@@ -45,6 +45,8 @@ else
 		case $1 in
 			--datadir)
 				shift; datadir=$1; shift;;
+			-i|--in|--indir)
+				shift; INDIR=$1; shift;;
 			-o|--out|--outdir|--outbase)
 				shift; OUTBASE=$1; shift;;
 #			--array)
