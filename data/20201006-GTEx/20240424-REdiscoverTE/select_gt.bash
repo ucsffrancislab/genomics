@@ -3,7 +3,8 @@
 tsv=$1
 
 echo $tsv
-base=$( basename ${tsv} .tsv )
+#base=$( basename ${tsv} .tsv )
+base=${tsv%.tsv}
 for min in 0.8 0.9 0.95 0.99 ; do
 	echo $min
 	out=${base}.gt${min}.tsv
