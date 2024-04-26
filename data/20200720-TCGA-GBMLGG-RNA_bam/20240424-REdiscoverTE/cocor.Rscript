@@ -71,8 +71,8 @@ dim(GTExShared)
 
 library('cocor')
 
-GTEx_count=231
-TCGA_count=846
+GTEx_count=37
+TCGA_count=155
 
 #print(paste(gene,re,GTExShared[gene,re], TCGAShared[gene,re]))
 
