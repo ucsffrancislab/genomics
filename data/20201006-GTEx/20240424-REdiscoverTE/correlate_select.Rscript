@@ -12,6 +12,8 @@ option_list = list(
 #		help="first matrix file name", metavar="character"),
 #	make_option(c("-b", "--second_file"), type="character", default=NULL, 
 #		help="second matrix file name", metavar="character"),
+	make_option(c("-i", "--indir"), type="character", default=NULL, 
+		help="source dir", metavar="character"),
 	make_option(c("-s", "--select"), type="character", default=NULL, 
 		help="select samples list file name", metavar="character")
 ); 
@@ -29,10 +31,10 @@ opt = parse_args(opt_parser);
 #	stop("First file required.\n", call.=FALSE)
 #}
 
-#if (is.null(opt$second_file)){
-#	print_help(opt_parser)
-#	stop("Second file required.\n", call.=FALSE)
-#}
+if (is.null(opt$indir)){
+	print_help(opt_parser)
+	stop("indir required.\n", call.=FALSE)
+}
 
 
 if (!is.null(opt$select)){
@@ -47,7 +49,7 @@ library("tidyselect")
 
 
 Sys.time()
-g = readRDS('GENE_2_counts_normalized.RDS')
+g = readRDS(paste(opt$indir,'GENE_2_counts_normalized.RDS',sep="/"))
 g = g$counts
 message(str(dim(g)))
 Sys.time()
@@ -66,7 +68,7 @@ for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_rep
 	print(re)
 
 	Sys.time()
-	r=readRDS(paste0(re,'_2_counts_normalized.RDS'))
+	r=readRDS(paste(opt$indir,paste0(re,'_2_counts_normalized.RDS'),sep="/"))
 	r=r$counts
 	message(str(dim(r)))
 	if( exists('ids') ){
@@ -74,9 +76,9 @@ for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_rep
 		r = as.data.frame(r) %>% select(any_of(ids$V1))
 		r = data.matrix(r)	#, rownames.force = NA)
 		message(str(dim(r)))
-		outfile = paste0("GENE_x_",re,".",basename(opt$select),".correlation.tsv")
+		outfile = paste(opt$indir,paste0("GENE_x_",re,".",basename(opt$select),".correlation.tsv"),sep="/")
 	} else {
-		outfile = paste0("GENE_x_",re,".correlation.tsv")
+		outfile = paste(opt$indir,paste0("GENE_x_",re,".correlation.tsv"),sep="/")
 	}
 	Sys.time()
 
