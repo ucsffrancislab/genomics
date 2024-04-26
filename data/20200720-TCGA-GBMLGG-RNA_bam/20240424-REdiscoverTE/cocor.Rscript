@@ -1,18 +1,60 @@
 #!/usr/bin/env Rscript
 
 
+
+
+library("optparse")
+ 
+option_list = list(
+	make_option(c("--tcga"), type="character", default=NULL, 
+		help="TCGA correlation matrix tsv name", metavar="character"),
+	make_option(c("--gtex"), type="character", default=NULL, 
+		help="GTEx correlation matrix tsv name", metavar="character"),
+	make_option(c("--shared_genes"), type="character", default=NULL, 
+		help="shared gene file name", metavar="character"),
+	make_option(c("--shared_res"), type="character", default=NULL, 
+		help="shared RE file name", metavar="character")
+); 
+ 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+
+if (is.null(opt$tcga)){
+	print_help(opt_parser)
+	stop("tcga required.\n", call.=FALSE)
+}
+
+if (is.null(opt$gtex)){
+	print_help(opt_parser)
+	stop("gtex required.\n", call.=FALSE)
+}
+
+if (is.null(opt$shared_genes)){
+	print_help(opt_parser)
+	stop("shared_genes required.\n", call.=FALSE)
+}
+
+if (is.null(opt$shared_res)){
+	print_help(opt_parser)
+	stop("shared_res required.\n", call.=FALSE)
+}
+
+
+
+
 #	These 2 matrics are a bit different and will likely need trimmed.
 
 #	Don't use data.table. It gets wonky.
 
 
 require('data.table')
-TCGA=fread('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/GENE_x_RE_all.tumor_ids.correlation.tsv')
+TCGA=fread(opt$tcga)
 TCGA=as.data.frame(TCGA)
 rownames(TCGA)=TCGA$V1
 TCGA$V1=NULL
 
-GTEx=fread('/francislab/data1/working/20201006-GTEx/20201117-REdiscoverTE/REdiscoverTE_rollup.noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv')
+GTEx=fread(opt$gtex)
 GTEx=as.data.frame(GTEx)
 rownames(GTEx)=GTEx$V1
 GTEx$V1=NULL
@@ -22,10 +64,10 @@ GTEx$V1=NULL
 
 
 
-shared_genes=as.character(fread('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/GENEs.shared',header=F)$V1)
+shared_genes=as.character(fread(opt$shared_genes,header=F)$V1)
 shared_genes[0:5]
 
-shared_res=as.character(fread('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/RE_all.shared',header=F)$V1)
+shared_res=as.character(fread(opt$shared_res,header=F)$V1)
 shared_res[0:5]
 
 TCGA[0:5,0:5]
@@ -77,9 +119,11 @@ TCGA_count=155
 #print(paste(gene,re,GTExShared[gene,re], TCGAShared[gene,re]))
 
 out<-data.frame()
-for( gene in shared_genes[1:100] ){
+#for( gene in shared_genes[1:100] ){
+for( gene in shared_genes ){
 print(gene)
-for( re in shared_res[1:100] ){
+#for( re in shared_res[1:100] ){
+for( re in shared_res ){
  if( is.na(GTExShared[gene,re]) || is.na(TCGAShared[gene,re]) ){
    out[gene,re] = NA
  } else {
@@ -88,7 +132,7 @@ for( re in shared_res[1:100] ){
  }
 } }
 
-write.table(out,file="/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/cocor.csv", quote=F,sep=",",row.names=TRUE,col.name=NA)	#,row.names=F)
+write.table(out,file="cocor.csv", quote=F,sep=",",row.names=TRUE,col.name=NA)	#,row.names=F)
 
 
 
