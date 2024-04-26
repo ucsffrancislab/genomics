@@ -13,6 +13,7 @@ REdiscoverTE_array_wrapper.bash --paired \
 ```
 
 
+---
 
 Quick run of just select
 
@@ -74,7 +75,7 @@ done
 REdiscoverTE_array_wrapper.bash --paired \
   --out ${PWD}/GBMWTFirstTumors_out \
   --extension _R1.fastq.gz \
-  ${PWD}/GBMWTFirstTumors/*_R1.fastq.gz
+  ${PWD}/GBMWTFirstTumors_in/*_R1.fastq.gz
 
 ```
 
