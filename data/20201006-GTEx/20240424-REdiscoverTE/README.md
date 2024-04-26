@@ -1,22 +1,14 @@
 
 #	20201006-GTEx/20240424-REdiscoverTE
 
-1438 files
+1438 total files
 
 Approx 1-2 hours each
 
-```BASH
-
-REdiscoverTE_array_wrapper.bash --paired \
-  --out ${PWD}/out \
-  --extension _R1.fastq.gz \
-  ${PWD}/../20230817-cutadapt/out/*_R1.fastq.gz
-
-```
 
 
 
----
+##	Quick Run on Select
 
 
 
@@ -65,21 +57,10 @@ REdiscoverTE_array_wrapper.bash --paired \
 
 REdiscoverTE_rollup.bash \
 --indir ${PWD}/Cerebellum_out \
---datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation_noquestion \
+--datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
 --outbase ${PWD}/Cerebellum_REdiscoverTE_rollup_noquestion
 
 ```
-
-
-
-```BASH
-
-REdiscoverTE_EdgeR_rmarkdown.bash
-
-```
-
-
-
 
 
 Redo correlations on a subset of the columns (basically by sample location "cerebellum" )
@@ -104,6 +85,92 @@ Redo correlations on a subset of the columns (basically by sample location "cere
 
 
 
+
+```BASH
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=correlate --time=1-0 --nodes=1 --ntasks=4 --mem=30G \
+  --output=${PWD}/logs/correlate_select.Cerebellum.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/correlate_select.Rscript --indir ${PWD}/Cerebellum_REdiscoverTE_rollup_noquestion --select ${PWD}/Cerebellum"
+
+```
+
+
+Filter greater than 0.8, 0.9, 0.95, 0.99
+
+```BASH
+
+\rm commands
+for tsv in Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_*.correlation.tsv ; do
+echo "${PWD}/select_gt.bash ${tsv}"
+done > commands
+commands_array_wrapper.bash --array_file commands --time 720 --threads 4 --mem 30G 
+
+```
+
+
+
+```BASH
+
+tail -n +2 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv | cut -f1 | tr -d \" | sort > GENEs.Cerebellum
+head -1 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all.Cerebellum
+
+```
+
+```BASH
+
+wc -l GENEs.Cerebellum RE_all.Cerebellum
+ 47024 GENEs.Cerebellum
+  3583 RE_all.Cerebellum
+
+```
+
+
+
+```BASH
+
+box_upload.bash GENEs.Cerebellum RE_all.Cerebellum Cerebellum_REdiscoverTE_rollup_noquestion/*tsv
+
+```
+
+
+
+
+
+
+
+
+
+
+
+##	Complete Run
+
+
+```BASH
+
+REdiscoverTE_array_wrapper.bash --paired \
+  --out ${PWD}/out \
+  --extension _R1.fastq.gz \
+  ${PWD}/../20230817-cutadapt/out/*_R1.fastq.gz
+
+```
+
+```BASH
+
+REdiscoverTE_rollup.bash \
+--indir ${PWD}/out \
+--datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
+--outbase ${PWD}/REdiscoverTE_rollup_noquestion
+
+```
+
+```BASH
+
+REdiscoverTE_EdgeR_rmarkdown.bash
+
+```
+
+
 ```BASH
 
 \rm commands
@@ -118,58 +185,4 @@ commands_array_wrapper.bash --array_file commands --time 720 --threads 4 --mem 3
 
 
 
-
-
-
-Filter greater than 0.8, 0.9
-Are there 1s? Yes
-Grepping like this doesn't work since there are scientific notations on occasion.
-Gonna need to use awk or something
-
-```BASH
-
-\rm commands
-for tsv in GENE_x_RE_*.correlation.tsv ; do
-echo "$( realpath ${PWD}/select_gt.bash ) $( realpath ${tsv} )"
-done > commands
-commands_array_wrapper.bash --array_file commands --time 720 --threads 4 --mem 30G 
-
-```
-
-
-
-
-
-
-RNA expression of retroviral element RNLTR12-int is crucial for myelination
-RNLTR12-int binds to SOX10 to regulate Mbp expression
-RNLTR12-int-like sequences (RetroMyelin) were identified in all jawed vertebrates
-Convergent evolution likely led to RetroMyelin acquisition, adapted for myelination
-
-
-run r cocor to compare gtex to tcga
-
-Compare sites to other sites
-
-Just one "site" for tcga
-
-
-
-
-##	20240422
-
-```BASH
-
-tail -n +2 GENE_x_RE_all.correlation.tsv | cut -f1 | tr -d \" | sort > GENEs
-head -1 GENE_x_RE_all.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all
-
-```
-
-```BASH
-
-wc -l GENEs RE_all
-  55670 GENEs
-   4788 RE_all
-
-```
 
