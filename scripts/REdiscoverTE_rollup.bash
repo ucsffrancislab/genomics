@@ -5,7 +5,8 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
-if [ $# -gt 0 ] ; then
+#if [ $# -gt 0 ] ; then
+if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	set -e	#	exit if any command fails
 	set -u	#	Error on usage of unset variables
@@ -16,17 +17,36 @@ if [ $# -gt 0 ] ; then
 	fi
 	set -x	#	print expanded command before executing it
 
+	#ARGS=$*
+	ARGS=""
+	#	given that these params are directed at an R script, they are separated by a =
+	#echo "Parsing $* before calling rollup.R"
+	while [ $# -gt 0 ] ; do
+		case $1 in
+#			--datadir)
+#				shift; datadir=$1; shift;;
+#			-i|--in|--indir)
+#				shift; INDIR=$1; shift;;
+#			-o|--out|--outdir|--outbase)
+#				shift; OUTBASE=$1; shift;;
+			--outbase=*)
+				OUTBASE=$( echo $1 | cut -d= -f2 ); shift;;
+			*)
+				ARGS="${ARGS} $1"; shift;;
+		esac
+	done
 
-	~/github/ucsffrancislab/REdiscoverTE/rollup.R $*
+	#~/github/ucsffrancislab/REdiscoverTE/rollup.R $*
+	~/github/ucsffrancislab/REdiscoverTE/rollup.R $ARGS
 
-	if [ $( ls -1d rollup/rollup.* | wc -l ) -gt 1 ] ; then
-		REdiscoverTE_rollup_merge.Rscript
+	if [ $( ls -1d ${OUTBASE}/rollup.* | wc -l ) -gt 1 ] ; then
+		REdiscoverTE_rollup_merge.Rscript --outdir=${OUTBASE}
 	else
-		ln -s $( basename $( ls -1d rollup/rollup.* ) ) rollup/rollup.merged
+		ln -s $( basename $( ls -1d ${OUTBASE}/rollup.* ) ) ${OUTBASE}/rollup.merged
 	fi
 
-	for f in rollup/rollup.merged/* ; do
-		ln -s rollup.merged/$( basename ${f} ) rollup/$( basename ${f} )
+	for f in ${OUTBASE}/rollup.merged/* ; do
+		ln -s rollup.merged/$( basename ${f} ) ${OUTBASE}/$( basename ${f} )
 	done
 
 else
@@ -37,7 +57,6 @@ else
 	date=$( date "+%Y%m%d%H%M%S" )
 
 	OUTBASE="${PWD}/rollup"
-	mkdir -p ${OUTBASE}
 
 	datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/
 
@@ -67,6 +86,7 @@ else
 		esac
 	done
 
+	mkdir -p ${OUTBASE}
 
 
 	ls -1 ${INDIR}/*.salmon.REdiscoverTE.k${k}/quant.sf.gz \
@@ -100,7 +120,7 @@ else
 			${0} \
 			--metadata=${OUTBASE}/REdiscoverTE.${d}.tsv \
 			--datadir=${datadir} \
-			--nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/
+			--nozero --threads=64 --assembly=hg38 --outdir=${OUTDIR}/ --outbase=${OUTBASE}
 
 			#${PWD}/REdiscoverTE_rollup.bash \
 #	Question or no question? That is the question.

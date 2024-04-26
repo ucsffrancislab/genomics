@@ -4,6 +4,28 @@
 #	module load r
 
 
+library("optparse")
+ 
+option_list = list(
+#	make_option(c("-p", "--plot_prefix"), type="character", default=NULL, 
+#		help="plot title prefix", metavar="character"),
+#	make_option(c("-m", "--manhattan"), type="character", default=NULL, 
+#		help="manhattan.plot file name", metavar="character"),
+#	make_option(c("-q", "--qq"), type="character", default=NULL, 
+#		help="qq file name", metavar="character"),
+#	make_option(c("-o", "--outpath"), type="character", default="./", 
+#		help="output file name [default= %default]", metavar="character")
+
+	optparse::make_option(c("-o", "--outdir"), dest="outdir", type="character", default='rollup_output_dir',
+		help="The output directory for Rollup results, which will be created by this program.")
+); 
+ 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+
+
+
 
 #	--dirs rollup.00 rollup.01 rollup.02
 #	--out rollup.merged
@@ -46,7 +68,8 @@ files=c(
 	'RE_intron_repFamily_3_TPM.RDS')
 
 #	mkdir out
-outdir="rollup/rollup.merged"
+#outdir="rollup/rollup.merged"
+outdir=paste(opt$outdir,"rollup.merged",sep='/')
 #mkdir(outdir)
 dir.create(outdir, showWarnings = TRUE, recursive = FALSE, mode = "0700")
 
@@ -58,7 +81,8 @@ dir.create(outdir, showWarnings = TRUE, recursive = FALSE, mode = "0700")
 for( file in files ){
 	first=TRUE
 	#for( dir in dirs ){
-	for( dir in list.files(path='rollup', pattern='rollup...$', full.names = TRUE)){
+	#for( dir in list.files(path='rollup', pattern='rollup...$', full.names = TRUE)){
+	for( dir in list.files(path=opt$outdir, pattern='rollup...$', full.names = TRUE)){
 		if( first ){
 			message("Reading first")
 			first=FALSE
@@ -89,7 +113,8 @@ for( file in files ){
 		}
 	}
 	message("Writing MERGED")
-	saveRDS(res, file=file.path(outdir,file))
+	#saveRDS(res, file=file.path(outdir,file))
+	saveRDS(res, file=file.path(opt$outdir,file))
 }
 
 
