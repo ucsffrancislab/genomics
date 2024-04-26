@@ -55,8 +55,17 @@ dim(GTExShared)
 #	wc -l /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/tumor_ids 
 #	846 tumor_ids
 
+#	ll GBMWTFirstTumors/*R1.fastq.gz | wc -l
+#	155
+
+
 #	wc -l /francislab/data1/working/20201006-GTEx/20201117-REdiscoverTE/REdiscoverTE_rollup.noquestion/Cerebellum
 #	231 /francislab/data1/working/20201006-GTEx/20201117-REdiscoverTE/REdiscoverTE_rollup.noquestion/Cerebellum
+#	WRONG - That's the total amount, not what I have
+
+#	ll Cerebellum/*R1.fastq.gz | wc -l
+#	37
+
 
 
 
