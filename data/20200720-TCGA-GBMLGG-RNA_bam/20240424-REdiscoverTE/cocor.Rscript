@@ -13,7 +13,9 @@ option_list = list(
 	make_option(c("--shared_genes"), type="character", default=NULL, 
 		help="shared gene file name", metavar="character"),
 	make_option(c("--shared_res"), type="character", default=NULL, 
-		help="shared RE file name", metavar="character")
+		help="shared RE file name", metavar="character"),
+	make_option(c("--output"), type="character", default="cocor.tsv", 
+		help="output file name", metavar="character")
 ); 
  
 opt_parser = OptionParser(option_list=option_list);
@@ -30,15 +32,15 @@ if (is.null(opt$gtex)){
 	stop("gtex required.\n", call.=FALSE)
 }
 
-if (is.null(opt$shared_genes)){
-	print_help(opt_parser)
-	stop("shared_genes required.\n", call.=FALSE)
-}
-
-if (is.null(opt$shared_res)){
-	print_help(opt_parser)
-	stop("shared_res required.\n", call.=FALSE)
-}
+#if (is.null(opt$shared_genes)){
+#	print_help(opt_parser)
+#	stop("shared_genes required.\n", call.=FALSE)
+#}
+#
+#if (is.null(opt$shared_res)){
+#	print_help(opt_parser)
+#	stop("shared_res required.\n", call.=FALSE)
+#}
 
 
 
@@ -49,26 +51,46 @@ if (is.null(opt$shared_res)){
 
 
 require('data.table')
-TCGA=fread(opt$tcga)
+TCGA=fread(opt$tcga, na.strings=getOption("datatable.na.strings",""))
 TCGA=as.data.frame(TCGA)
-rownames(TCGA)=TCGA$V1
-TCGA$V1=NULL
+#rownames(TCGA)=TCGA$V1
+#TCGA$V1=NULL
+#dim(TCGA)
+#length(TCGA[[colnames(TCGA)[1]]])
+#print(TCGA[[colnames(TCGA)[1]]])
+rownames(TCGA)=TCGA[[colnames(TCGA)[1]]]
+TCGA[[colnames(TCGA)[1]]]=NULL
 
-GTEx=fread(opt$gtex)
+GTEx=fread(opt$gtex, na.strings=getOption("datatable.na.strings",""))
 GTEx=as.data.frame(GTEx)
-rownames(GTEx)=GTEx$V1
-GTEx$V1=NULL
-
+#rownames(GTEx)=GTEx$V1
+#GTEx$V1=NULL
+#dim(GTEx)
+#length(GTEx[[colnames(GTEx)[1]]])
+#print(GTEx[[colnames(GTEx)[1]]])
+rownames(GTEx)=GTEx[[colnames(GTEx)[1]]]
+GTEx[[colnames(GTEx)[1]]]=NULL
 
 #	Need to select only those shared rows and columns
 
 
-
-shared_genes=as.character(fread(opt$shared_genes,header=F)$V1)
+if (is.null(opt$shared_genes)){
+	shared_genes=as.character(rownames(TCGA))
+}else{
+	shared_genes=as.character(fread(opt$shared_genes,header=F)$V1)
+}
 shared_genes[0:5]
 
-shared_res=as.character(fread(opt$shared_res,header=F)$V1)
+if (is.null(opt$shared_res)){
+	shared_res=as.character(colnames(TCGA))
+}else{
+	shared_res=as.character(fread(opt$shared_res,header=F)$V1)
+}
 shared_res[0:5]
+
+
+
+
 
 TCGA[0:5,0:5]
 TCGAShared=TCGA[which(row.names(TCGA) %in% shared_genes), shared_res]
@@ -132,7 +154,9 @@ for( re in shared_res ){
  }
 } }
 
-write.table(out,file="cocor.csv", quote=F,sep=",",row.names=TRUE,col.name=NA)	#,row.names=F)
+#write.table(out,file="cocor.csv", quote=F,sep=",",row.names=TRUE,col.name=NA)	#,row.names=F)
+
+write.table(out,file=opt$output, quote=F,sep="\t",row.names=TRUE,col.name=NA)
 
 
 
