@@ -222,6 +222,112 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 ```
 
 
+So this is gonna take about 5 days.
+
+Probably a good idea to prefilter shared genes and REs and break up the input and process in several different jobs and then concatenate results.
+
+Looks like the whole script is using about 20GB of memory.
+
+The smaller jobs probably will not need this much as the matrix will be smaller.
+
+Could break this up into 16 different jobs and process with just 4CPU/30GB or possibly even 32 on 2CPU/15GB.
+
+
+
+
+
+
+
+
+[1] 46032  3169
+
+wc -l shared_*
+ 46034 shared_genes
+  3170 shared_res
+
+Not sure yet, but I think that the Rscript is gonna drop the NA "gene"
+
+```
+echo "Gene" > shared_genes
+cat /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENEs.Cerebellum.GBMWTFirstTumors.shared >> shared_genes
+echo "RE" > shared_res
+cat /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/RE_all.Cerebellum.GBMWTFirstTumors.shared >> shared_res
+
+for f in /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.tsv /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv ; do
+echo $f
+echo "substituting"
+cat $f | tr -d \" | tr "\t" \; > tmp1
+echo "sorting"
+head -1 tmp1 > tmp2
+tail -n +2 tmp1 | sort -t\; -k1,1 >> tmp2
+echo "joining"
+join --header -t\; shared_genes tmp2 > tmp3
+echo "transposing"
+cat tmp3 | datamash transpose -t \; > tmp4
+echo "sorting"
+head -1 tmp4 > tmp5
+tail -n +2 tmp4 | sort -t\; -k1,1 >> tmp5
+echo "joining"
+join --header -t\; shared_res tmp5 > tmp6
+echo "transposing to output"
+cat tmp6 | datamash transpose -t \; | tr \; "\t" > $( basename $f .tsv ).shared.tsv
+done
+
+\rm tmp*
+
+wc -l *.shared.tsv
+     46034 GENE_x_RE_all.Cerebellum.correlation.shared.tsv
+     46034 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv
+
+
+awk -F"\t" '{print NF}' GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv | uniq
+3170
+awk -F"\t" '{print NF}' GENE_x_RE_all.Cerebellum.correlation.shared.tsv | uniq
+3170
+
+
+
+for f in GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv GENE_x_RE_all.Cerebellum.correlation.shared.tsv ; do
+echo $f
+awk -F"\t" '(NR==1){header=$0;c=0;i=1;n=sprintf("%03d",i);print header > FILENAME"."n}(NR>1){
+if( c >= 1000 ){
+c=0;i++;n=sprintf("%03d",i);
+print header > FILENAME"."n
+}
+c++;print >> FILENAME"."n
+}' $f
+done
+```
+
+
+
+
+
+Split things up. Each takes about an hour.
+```
+
+\rm commands
+for i in $( seq -w 001 047 ) ; do
+echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.Cerebellum.correlation.shared.tsv.${i} --output=cocor.${i}.tsv"
+done > commands
+commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 15G 
+
+```
+
+
+```
+
+cp cocor.001.tsv cocor.tsv
+for i in $( seq -w 002 047 ) ; do
+tail -n +2 cocor.${i}.tsv >> cocor.tsv
+done
+
+```
+
+
+
+
+
 
 
 ##	Complete Run
@@ -255,4 +361,151 @@ REdiscoverTE_rollup.bash \
 #	REdiscoverTE_EdgeR_rmarkdown.bash
 
 ```
+
+
+
+
+
+
+##	cocor distribution
+
+
+
+```BASH
+
+module load WitteLab python3/3.9.1
+python3
+
+```
+
+
+
+```python
+
+
+import pandas as pd
+df=pd.read_csv('cocor.tsv',sep='\t',index_col=0)
+df.head()
+df.describe().T.to_csv('cocor.RE.describe.tsv',sep='\t')
+df.T.describe().T.to_csv('cocor.GENE.describe.tsv',sep='\t')
+
+```
+
+What produces 0 in the cocor matrix?
+
+Where are they 0?
+
+```BASH
+
+( head -1 cocor.tsv && grep -m1 -P '\t0\t' cocor.tsv ) | awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){print $1;for(i=2;i<=NF;i++){if($i==0){print h[i],i}}}'
+ENSG00000000971
+(CCACCCG)n 573
+(CCCGA)n 662
+(CCCTGCT)n 704
+(GCAC)n 1222
+(TCCTCTT)n 2602
+(TCTCGC)n 2634
+tRNA-Leu-CTG 2868
+(TTGTTTG)n 2974
+(TTTATCT)n 2984
+(TTTATTC)n 2987
+(TTTTTGT)n 3049
+
+```
+
+Find the values in the source matrices that are being compared.
+
+
+
+```BASH
+for f in GENE_x_RE_all.*.correlation.shared.tsv; do
+echo $f
+( head -1 $f && grep -m1 "^ENSG00000000971" $f ) | awk -F"\t" '{print $2868}'
+done
+
+
+GENE_x_RE_all.Cerebellum.correlation.shared.tsv
+tRNA-Leu-CTG
+0.968869096164028
+GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv
+tRNA-Leu-CTG
+0.0241762547961101
+
+```
+
+```
+library('cocor')
+GTEx_count=37
+TCGA_count=155
+
+pvalue = cocor.indep.groups( 0.968869096164028, 0.0241762547961101,  GTEx_count, TCGA_count, 
+     alternative = "two.sided", test = "fisher1925", alpha = 0.05, null.value = 0, return.htest = TRUE)$fisher1925$p.value
+
+print( pvalue )
+
+[1] 0
+
+
+
+unk = cocor.indep.groups( 0.968869096164028, 0.0241762547961101,  GTEx_count, TCGA_count, 
+     alternative = "two.sided", test = "fisher1925", alpha = 0.05, null.value = 0, return.htest = TRUE)
+
+print( unk )
+
+
+$fisher1925
+
+	Fisher's z (1925)
+
+data:  
+z = 10.802, p-value < 2.2e-16
+alternative hypothesis: true difference in correlations is not equal to 0
+sample estimates:
+     r1.jk      r2.hm 
+0.96886910 0.02417625 
+
+
+$zou2007
+
+	Zou's (2007) confidence interval
+
+data:  
+
+alternative hypothesis: true difference in correlations is not equal to 0
+sample estimates:
+     r1.jk      r2.hm 
+0.96886910 0.02417625 
+```
+
+
+
+
+
+
+
+Can you pull the co expression row for that RE, i.e. which genes come up as correlated in the GTEX data?
+
+
+
+```
+
+cat GENE_x_RE_all.Cerebellum.correlation.shared.tsv | datamash transpose > GENE_x_RE_all.Cerebellum.correlation.shared.T.tsv
+( head -1 GENE_x_RE_all.Cerebellum.correlation.shared.T.tsv && grep -m1 "^HERVS71-int" GENE_x_RE_all.Cerebellum.correlation.shared.T.tsv ) | awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if(sqrt($i^2)<=0.0005){print h[i]" "$i > "GENE_x_RE_all.Cerebellum.correlation.shared.T."$1".csv"}}}'
+join ENSG_Symbol.tsv GENE_x_RE_all.Cerebellum.correlation.shared.T.HERVS71-int.csv
+
+cat GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv | datamash transpose > GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.tsv
+( head -1 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.tsv && grep -m1 "^HERVS71-int" GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.tsv ) | awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if(sqrt($i^2)<=0.0005){print h[i]" "$i > "GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T."$1".csv"}}}'
+join ENSG_Symbol.tsv GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.HERVS71-int.csv 
+
+```
+
+
+
+
+
+
+
+
+
+
 
