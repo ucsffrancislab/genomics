@@ -433,7 +433,7 @@ tRNA-Leu-CTG
 
 ```
 
-```
+```R
 library('cocor')
 GTEx_count=37
 TCGA_count=155
@@ -505,6 +505,125 @@ join ENSG_Symbol.tsv GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.HERVS71
 
 
 
+
+
+
+```BASH
+
+module load r
+
+```
+
+
+
+```R
+
+r=readRDS(paste('GBMWTFirstTumors_REdiscoverTE_rollup_noquestion','RE_all_2_counts_normalized.RDS',sep="/"))
+r=r$counts
+write.table(r, file=paste('GBMWTFirstTumors_REdiscoverTE_rollup_noquestion','RE_all_2_counts_normalized.tsv',sep="/"),
+  row.names=TRUE, sep="\t", col.names = NA)
+
+```
+
+```BASH
+
+REdiscoverTE_median_plotter.Rmd GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_repFamily_2_counts_normalized.RDS
+
+```
+
+
+
+
+
+for the TCGA and GTEX ‘only’ files. Can we come up with a way to cull that list by genes that are expressed in a majority of subjects?
+
+So you are looking to find those that are in a majority of subjects in TCGA or GTEx?
+
+Yep- no big rush, but Im still curious if there are extreme examples where its completely absent in one or the other… but real not just noise
+
+
+```
+
+for RE in $( grep -v ")n\$" RE_all.Cerebellum.GBMWTFirstTumors.GTEx_only ) ; do
+echo $RE
+grep \"${RE}\" /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.tsv | datamash transpose | datamash -H mean 1 q1 1 median 1 q3 1 iqr 1 sstdev 1 jarque 1 
+done
+
+
+for RE in $( grep -v ")n\$" RE_all.Cerebellum.GBMWTFirstTumors.TCGA_only ) ; do
+echo $RE
+grep \"${RE}\" /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.tsv | datamash transpose | datamash -H mean 1 q1 1 median 1 q3 1 iqr 1 sstdev 1 jarque 1 
+done
+
+```
+
+
+
+
+##	20240502
+
+
+Filter out Simple Repeats and those with medians == 0
+
+
+
+```R
+
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.RDS")
+r=r$counts
+r=r[!grepl(")n$", row.names(r)),]
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('TCGA_Good_RE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.RDS")
+r=r$counts
+r=r[!grepl(")n$", row.names(r)),]
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('GTEx_Good_RE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=r$counts
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('TCGA_Good_GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=r$counts
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('GTEx_Good_GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+```
+
+
+
+
+```BASH
+cat <( tail -n +2 GTEx_Good_RE.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_RE.tsv | cut -f1 ) | sort | uniq > Good_RE.one
+cat <( tail -n +2 GTEx_Good_GENE.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_GENE.tsv | cut -f1 ) | sort | uniq > Good_GENE.one
+
+cat <( tail -n +2 GTEx_Good_RE.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_RE.tsv | cut -f1 ) | sort | uniq -d > Good_RE.both
+cat <( tail -n +2 GTEx_Good_GENE.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_GENE.tsv | cut -f1 ) | sort | uniq -d > Good_GENE.both
+
+sed -i '1iGENE' Good_GENE.one
+sed -i '1iGENE' Good_GENE.both
+sed -i '1iRE' Good_RE.one
+sed -i '1iRE' Good_RE.both
+```
+
+
+```BASH
+sed 's/\t/;/g' cocor.tsv > tmp
+
+for s in one both ; do
+echo $s
+join --header -t\; Good_GENE.${s} tmp | datamash transpose -t\; > tmp1
+join --header -t\; Good_RE.${s} tmp1 | datamash transpose -t\; > tmp2
+sed 's/;/\t/g' tmp2 > cocor.${s}.tsv
+done
+```
 
 
 
