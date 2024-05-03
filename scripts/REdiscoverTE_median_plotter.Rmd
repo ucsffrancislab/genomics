@@ -67,6 +67,9 @@ r=readRDS( opt$args[1] )
 r=r$counts
 ```
 
+```{r}
+dim(r)
+```
 
 
 ```{r}
@@ -120,12 +123,20 @@ xlab="Median"
 Basically, all except 2 are in one bar. Not helpful.
 
 
+```{r}
+
+length(medians[which(medians==0)])
+
+```
+
+
 Drop all of the simple repeats ( in the format of "(....)n" ).
 
 Many are 0.
 
 ```{r}
 r=r[!grepl(")n$", row.names(r)),]
+dim(r)
 ```
 
 Many are still 0.
@@ -140,6 +151,13 @@ r=r[!grepl("LSU-rRNA_Hsa", row.names(r)),]
 ```{r}
 medians=apply(r,1,median)
 ```
+
+```{r}
+
+length(medians[which(medians==0)])
+
+```
+
 
 ```{r}
 min(medians)
@@ -174,5 +192,77 @@ xlab="Median"
 ```
 
 
+Reset
 
+```{r}
+r=readRDS( opt$args[1] )
+r=r$counts
+r=r[!grepl(")n$", row.names(r)),]
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+```
+
+
+
+```{r}
+
+length(medians)
+
+```
+
+
+```{r}
+
+length(medians[which(medians==0)])
+
+```
+
+
+```{r}
+hist(medians[which(medians <3000)],
+breaks=100,
+ylim=c(0,50),
+main="Median Histogram",
+xlab="Median"
+)
+```
+
+
+```{r}
+hist(medians[which(medians <3000)],
+breaks=100,
+ylim=c(0,100),
+main="Median Histogram",
+xlab="Median"
+)
+```
+
+
+```{r}
+hist(medians[which(medians <3000)],
+breaks=100,
+ylim=c(0,500),
+main="Median Histogram",
+xlab="Median"
+)
+```
+
+
+```{r}
+hist(medians[which(medians <3000)],
+breaks=100,
+ylim=c(0,1000),
+main="Median Histogram",
+xlab="Median"
+)
+```
+
+```{r}
+hist(medians[which(medians <300)],
+breaks=100,
+ xlim=c(0,300),
+main="Median Histogram",
+xlab="Median"
+)
+```
 
