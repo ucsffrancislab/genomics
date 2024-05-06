@@ -628,3 +628,23 @@ done
 
 
 
+
+Each take about 2 hours
+
+```BASH
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.one --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/cocor.one.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.one.tsv"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.both --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/cocor.both.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.both.tsv"
+
+```
+
+
+

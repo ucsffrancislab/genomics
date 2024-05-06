@@ -1,0 +1,137 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+library("optparse")
+option_list = list();
+#option_list = list(
+#	make_option(c("--rds"), type="character", default="", 
+#		help="rds file name", metavar="character")
+#); 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser, positional_arguments=TRUE);
+print(opt)
+#print(opt$args)
+
+#opt$args[1] = normalizePath(opt$args[1])
+#print(opt$args)
+#print(opt$args[1])
+
+#print(opt$options$rds)
+#opt$options$rds = normalizePath(opt$options$rds)
+#print(opt$options$rds)
+#output_base = paste( gsub(".RDS","",opt$options$rds) , "median", sep=".")
+
+print(opt$args[1])
+opt$args[1] = normalizePath(opt$args[1])
+print(opt$args[1])
+output_base = paste( gsub(".tsv","",opt$args[1]) , "heatmap", sep=".")
+output_file = paste(output_base, "html", sep=".")
+print(output_file)
+
+rmarkdown::render(newfname, output_dir = dirname(output_file), output_file = output_file )
+
+q("no")
+
+
+
+
+---
+title: "REdiscoverTE Cocor Heatmap"
+author: "Jake W"
+date: "2024-05-01"
+output: html_document
+---
+
+
+```{r args}
+args
+```
+
+
+```{r "Figure Settings", include = FALSE}
+knitr::opts_chunk$set(fig.width=12, fig.height=72) 
+```
+
+```{r "Requires", include = FALSE}
+library('data.table')
+library('pheatmap')
+```
+
+
+
+
+```{r "Read data"}
+#r=readRDS( opt$options$rds )
+#r=read.table( opt$args[1], sep="\t", header=TRUE )
+
+r=fread(opt$args[1], na.strings=getOption("datatable.na.strings",""))
+r=as.data.frame(r)
+
+
+rownames(r)=r[[colnames(r)[1]]]
+r[[colnames(r)[1]]]=NULL
+r[0:4,0:4]
+```
+
+```{r "Dim"}
+dim(r)
+```
+
+
+
+```{r "Log"}
+# Replace zeros
+r[r==0]=2.2e-16
+
+# Define Log function 
+#log_fun=function(x){ 
+# a= -log(x,base=10)
+# paste(a)}
+log_fun=function(x){ -log(x,base=10) }
+
+# Apply function to every entry
+r1=data.frame(lapply(r,log_fun)) 
+```
+
+
+
+```{r "Update r"}
+row.names(r1)=row.names(r)
+colnames(r1)=colnames(r)
+```
+
+
+```{r "Plot"}
+
+#[1:1000,],
+pheat.plot = pheatmap(r1,
+show_colnames=FALSE,show_rownames=FALSE
+)
+pheat.plot
+```
+
+
+```{r "Save Plot to PDF"}
+
+save_pheatmap_pdf <- function(z, filename, width, height) {
+	stopifnot(!missing(z))
+	stopifnot(!missing(filename))
+	pdf(filename, width=width, height=height)
+	grid::grid.newpage()
+	grid::grid.draw(z$gtable)
+	dev.off()
+}
+
+#save_pheatmap_pdf(pheat.plot, paste(output_base,"pdf", sep="."), 8, nrow(r)/10+3)
+save_pheatmap_pdf(pheat.plot, paste(output_base,"pdf", sep="."), 8, nrow(r)/9)
+
+```
+
+
+
