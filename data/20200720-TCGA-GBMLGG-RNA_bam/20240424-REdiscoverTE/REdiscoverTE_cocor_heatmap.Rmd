@@ -110,8 +110,9 @@ colnames(r1)=colnames(r)
 ```{r "Plot"}
 
 #[1:1000,],
+#show_colnames=FALSE,
 pheat.plot = pheatmap(r1,
-show_colnames=FALSE,show_rownames=FALSE
+show_rownames=FALSE
 )
 pheat.plot
 ```
