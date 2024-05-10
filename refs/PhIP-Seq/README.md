@@ -102,12 +102,38 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $17
 
 
 ```
+zcat VIR3_clean.fna.gz | cut -c1-70 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-70.fna.gz
 zcat VIR3_clean.fna.gz | cut -c1-75 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-75.fna.gz
 zcat VIR3_clean.fna.gz | cut -c1-80 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-80.fna.gz
 zcat VIR3_clean.fna.gz | cut -c1-84 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-84.fna.gz
 zcat VIR3_clean.fna.gz | cut -c1-85 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-85.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-90 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-90.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-95 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-95.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-100 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-100.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-110 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-110.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-120 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-120.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-130 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-130.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-140 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-140.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-150 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-150.fna.gz
+zcat VIR3_clean.fna.gz | cut -c1-160 | paste - - | sort | uniq | awk '{print $1;print $2}' | gzip > VIR3_clean.1-160.fna.gz
 
 module load bowtie2
 bowtie2-build VIR3_clean.1-75.fna.gz VIR3_clean.1-75
 bowtie2-build VIR3_clean.1-84.fna.gz VIR3_clean.1-84
+
+bowtie2-build VIR3_clean.1-70.fna.gz VIR3_clean.1-70
+bowtie2-build VIR3_clean.1-80.fna.gz VIR3_clean.1-80
+bowtie2-build VIR3_clean.1-90.fna.gz VIR3_clean.1-90
+bowtie2-build VIR3_clean.1-100.fna.gz VIR3_clean.1-100
+bowtie2-build VIR3_clean.1-110.fna.gz VIR3_clean.1-110
+bowtie2-build VIR3_clean.1-120.fna.gz VIR3_clean.1-120
+bowtie2-build VIR3_clean.1-130.fna.gz VIR3_clean.1-130
+bowtie2-build VIR3_clean.1-140.fna.gz VIR3_clean.1-140
+bowtie2-build VIR3_clean.1-150.fna.gz VIR3_clean.1-150
+bowtie2-build VIR3_clean.1-160.fna.gz VIR3_clean.1-160
 ```
+
+
+
+
+
