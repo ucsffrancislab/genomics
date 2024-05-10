@@ -97,7 +97,8 @@ else
 	ls -1 ${INDIR}/*.salmon.REdiscoverTE.k${k}/quant.sf.gz \
 		| awk -F/ '{split($8,a,".");print a[1]"\t"$0}' > ${OUTBASE}/REdiscoverTE.tsv
 
-	split --lines=1000 --numeric-suffixes --additional-suffix=.tsv ${OUTBASE}/REdiscoverTE.tsv ${OUTBASE}/REdiscoverTE.
+	#split --lines=1000 --numeric-suffixes --additional-suffix=.tsv ${OUTBASE}/REdiscoverTE.tsv ${OUTBASE}/REdiscoverTE.
+	split --lines=500 --numeric-suffixes --additional-suffix=.tsv ${OUTBASE}/REdiscoverTE.tsv ${OUTBASE}/REdiscoverTE.
 
 	#for f in ${OUTBASE}/REdiscoverTE.??.tsv ; do	#	always 2 digits?
 	for f in ${OUTBASE}/REdiscoverTE.*.tsv ; do
@@ -121,7 +122,7 @@ else
 		sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="Rollup${d}" \
 			--output="${PWD}/logs/REdiscoverTE.${date}.rollup.${d}.out" \
-			--time=14-0 --nodes=1 --ntasks=64 --mem=495G \
+			--time=1-0 --nodes=1 --ntasks=64 --mem=495G \
 			${0} \
 			--metadata=${OUTBASE}/REdiscoverTE.${d}.tsv \
 			--datadir=${datadir} \
