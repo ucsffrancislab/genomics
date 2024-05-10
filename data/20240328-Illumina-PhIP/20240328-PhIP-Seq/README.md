@@ -312,7 +312,7 @@ done >> align_analysis.all.csv
 
 
 ```
-zcat /francislab/data1/refs/PhIP-Seq/VIR3_clean.fna.gz | paste - - | awk '{print $1"-a";print substr($2,1,70); print $1"-b";print substr($2,49,70);print $1"-c";print substr($2,99)}' | gzip > VIR3_clean.70.fna.gz
+zcat /francislab/data1/refs/PhIP-Seq/VIR3_clean.uniq.fna.gz | paste - - | awk '{print $1"-a";print substr($2,1,70); print $1"-b";print substr($2,49,70);print $1"-c";print substr($2,99)}' | gzip > VIR3_clean.uniq.70.fna.gz
 ```
 
 ```
@@ -439,5 +439,93 @@ samtools view -F20 out2/VIR3_clean.bt2alle2e.VIR3_clean.bam | cut -f4 | sort -n 
 samtools view -f4 out2/VIR3_clean.bt2alle2e.VIR3_clean.bam 
 
 ```
+
+
+
+
+
+##	20240508 - investigating homology and database size
+
+
+```
+\rm commands
+for l in 70 80 90 100 110 120 130 140 150 160 168 ; do
+baseind="VIR3_clean.1-${l}"
+echo $baseind; 
+INDEX=/francislab/data1/refs/PhIP-Seq/${baseind}; 
+for fq in ${PWD}/out2/*fastq.gz ; do 
+echo $fq; 
+s=$(basename $fq .fastq.gz)_bt2e2e; 
+bam=${PWD}/out2/${s}.${baseind}.bam; 
+echo ~/.local/bin/bowtie2.bash --threads 8 -x ${INDEX} --very-sensitive -U $fq --sort --output ${bam} >> commands; 
+done; done 
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 8 --mem 60G 
+```
+
+
+
+
+```
+module load samtools
+
+for s in S0 S1 S2 S3 S4 ; do
+for l in 70 80 90 100 110 120 130 140 150 160 168 ; do
+baseind="VIR3_clean.1-${l}"
+a=$( samtools view -c -F3840 ${PWD}/out2/${s}_bt2e2e.${baseind}.bam )
+b=$( samtools view -F3860 ${PWD}/out2/${s}_bt2e2e.${baseind}.bam | cut -f4 | awk '($1<5)' | wc -l )
+c=$( echo "scale=2; 100 * ${b} / ${a}" | bc -l 2> /dev/null )
+echo "${l} - ${s} - ${c}"
+done
+done
+```
+
+
+
+
+
+
+```
+samtools view -h -F3860 out2/VIR3_clean.70_bt2alle2e.VIR3_clean.1-75.bam | samtools depth - | awk '($3>5)'
+```
+
+
+
+
+
+```
+\rm commands
+for l in 70 80 90 100 110 120 130 140 150 160 168 ; do
+baseind="VIR3_clean.1-${l}"
+INDEX=/francislab/data1/refs/PhIP-Seq/${baseind}; 
+for fa in VIR3_clean.uniq.70.fna.gz ; do 
+echo $fa; 
+s=$(basename $fa .fna.gz)_bt2e2e; 
+bam=${PWD}/out2/${s}.${baseind}.bam; 
+echo ~/.local/bin/bowtie2.bash --threads 8 -x ${INDEX} --very-sensitive -U $fa -f --sort --output ${bam} >> commands; 
+done; done 
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 8 --mem 60G 
+```
+
+
+
+```
+for l in 70 80 90 100 110 120 130 140 150 160 168 ; do
+echo $l
+samtools view -F20 out2/VIR3_clean.70_bt2e2e.VIR3_clean.1-${l}.bam | cut -f4 | sort -n | uniq -c | awk '$1>1000'
+done
+```
+
+
+
+
+
+
+
+
+These initial VIR3 sequences are supposed to be overlapping by 84 bp which is why they also align at position 85 as well!
+
+
 
 
