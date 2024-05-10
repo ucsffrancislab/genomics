@@ -164,6 +164,16 @@ REdiscoverTE_rollup.bash \
 
 ```
 
+AFTER COMPLETION
+
+```BASH
+
+REdiscoverTE_rollup_merge.bash --outbase ${PWD}/REdiscoverTE_rollup_noquestion
+
+```
+
+
+
 ```BASH
 
 REdiscoverTE_EdgeR_rmarkdown.bash
@@ -185,4 +195,14 @@ commands_array_wrapper.bash --array_file commands --time 720 --threads 4 --mem 3
 
 
 
+
+##	20240507 - Change from RE_all to RE_all_repFamily
+
+
+```BASH
+
+tail -n +2 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv | cut -f1 | tr -d \" | sort > GENEs_x_RE_all_repFamily.Cerebellum
+head -1 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all_repFamily.Cerebellum
+
+```
 
