@@ -27,10 +27,10 @@ date
 #				shift; datadir=$1; shift;;
 #			-i|--in|--indir)
 #				shift; INDIR=$1; shift;;
-#			-o|--out|--outdir|--outbase)
-#				shift; OUTBASE=$1; shift;;
-			--outbase=*)
-				OUTBASE=$( echo $1 | cut -d= -f2 ); shift;;
+			-o|--out|--outdir|--outbase)
+				shift; OUTBASE=$1; shift;;
+#			--outbase=*)
+#				OUTBASE=$( echo $1 | cut -d= -f2 ); shift;;
 			*)
 				ARGS="${ARGS} $1"; shift;;
 		esac
