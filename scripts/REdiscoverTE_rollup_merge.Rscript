@@ -80,9 +80,11 @@ dir.create(outdir, showWarnings = TRUE, recursive = FALSE, mode = "0700")
 
 for( file in files ){
 	first=TRUE
+	message(file)
 	#for( dir in dirs ){
 	#for( dir in list.files(path='rollup', pattern='rollup...$', full.names = TRUE)){
 	for( dir in list.files(path=opt$outdir, pattern='rollup...$', full.names = TRUE)){
+		message(dir)
 		if( first ){
 			message("Reading first")
 			first=FALSE
