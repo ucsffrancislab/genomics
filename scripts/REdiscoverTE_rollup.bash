@@ -39,15 +39,20 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#~/github/ucsffrancislab/REdiscoverTE/rollup.R $*
 	~/github/ucsffrancislab/REdiscoverTE/rollup.R $ARGS
 
-	if [ $( ls -1d ${OUTBASE}/rollup.* | wc -l ) -gt 1 ] ; then
-		REdiscoverTE_rollup_merge.Rscript --outdir=${OUTBASE}
-	else
-		ln -s $( basename $( ls -1d ${OUTBASE}/rollup.* ) ) ${OUTBASE}/rollup.merged
-	fi
 
-	for f in ${OUTBASE}/rollup.merged/* ; do
-		ln -s rollup.merged/$( basename ${f} ) ${OUTBASE}/$( basename ${f} )
-	done
+
+#	ONLY MERGE ONCE, NOT AFTER EVERY SUBSET FINISHES
+
+
+#	if [ $( ls -1d ${OUTBASE}/rollup.* | wc -l ) -gt 1 ] ; then
+#		REdiscoverTE_rollup_merge.Rscript --outdir=${OUTBASE}
+#	else
+#		ln -s $( basename $( ls -1d ${OUTBASE}/rollup.* ) ) ${OUTBASE}/rollup.merged
+#	fi
+#
+#	for f in ${OUTBASE}/rollup.merged/* ; do
+#		ln -s rollup.merged/$( basename ${f} ) ${OUTBASE}/$( basename ${f} )
+#	done
 
 else
 
