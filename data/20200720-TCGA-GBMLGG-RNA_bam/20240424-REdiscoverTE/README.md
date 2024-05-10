@@ -350,9 +350,20 @@ REdiscoverTE_array_wrapper.bash --paired \
 REdiscoverTE_rollup.bash \
 --indir ${PWD}/out \
 --datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation_noquestion \
---outbase ${PWD}/EdiscoverTE_rollup_noquestion
+--outbase ${PWD}/REdiscoverTE_rollup_noquestion
 
 ```
+
+
+
+AFTER COMPLETION
+
+```BASH
+
+REdiscoverTE_rollup_merge.bash --outbase ${PWD}/REdiscoverTE_rollup_noquestion
+
+```
+
 
 
 
@@ -565,8 +576,6 @@ done
 
 Filter out Simple Repeats and those with medians == 0
 
-
-
 ```R
 
 r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.RDS")
@@ -648,3 +657,386 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 
 
 
+##	20240506
+
+
+```
+
+awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i==0)print $1"\t"h[i]}}'  cocor.both.tsv > cocor.both.0.tsv
+
+awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i==0)print $1"\t"h[i]}}'  cocor.one.tsv > cocor.one.0.tsv
+
+
+join ENSG_Symbol.tsv cocor.both.0.tsv | sed 's/ /\t/g' > cocor.both.0.symbol.tsv
+
+join ENSG_Symbol.tsv cocor.one.0.tsv | sed 's/ /\t/g' > cocor.one.0.symbol.tsv
+
+```
+
+
+
+
+```BASH
+
+module load WitteLab python3/3.9.1
+python3
+
+```
+
+
+```python
+import pandas as pd
+
+diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv",
+sep="\t",index_col=0)
+
+z=pd.read_csv("cocor.both.0.symbol.tsv",sep="\t",header=None,names=['GENE','Symbol','RE'])
+
+def get_diff_value(row):
+	return diff.loc[row['GENE'],row['RE']]
+
+z['diff'] = z.apply(get_diff_value, axis=1)
+
+z.to_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.both.0.tsv",sep="\t",index=False)
+
+
+```
+
+
+
+
+
+
+
+
+##	20240507 - Change from RE_all to RE_all_repFamily
+
+
+
+```BASH
+
+tail -n +2 GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv | cut -f1 | tr -d \" | sort > GENEs_x_RE_all_repFamily.GBMWTFirstTumors
+head -1 GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all_repFamily.GBMWTFirstTumors
+
+```
+
+
+```BASH
+
+module load WitteLab python3/3.9.1
+python3
+
+```
+
+```python3
+
+import pandas as pd
+
+TCGA=pd.read_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv',sep='\t',index_col=0)
+GTEx=pd.read_csv('/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv',sep='\t',index_col=0)
+
+GTEx.shape
+(47024, 49)
+TCGA.shape
+(52441, 48)
+
+d=TCGA-GTEx
+d.to_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv',sep='\t')
+
+```
+
+
+```BASH
+
+for f in RE_all_repFamily ; do
+echo ${f}
+comm -23 /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/${f}.Cerebellum ${f}.GBMWTFirstTumors > ${f}.Cerebellum.GBMWTFirstTumors.GTEx_only
+comm -13 /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/${f}.Cerebellum ${f}.GBMWTFirstTumors > ${f}.Cerebellum.GBMWTFirstTumors.TCGA_only
+comm -12 /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/${f}.Cerebellum ${f}.GBMWTFirstTumors > ${f}.Cerebellum.GBMWTFirstTumors.shared
+done
+
+```
+
+
+
+```
+
+echo "RE" > shared_res_repFamily
+cat /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/RE_all_repFamily.Cerebellum.GBMWTFirstTumors.shared >> shared_res_repFamily
+
+for f in /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv ; do
+echo $f
+echo "substituting"
+cat $f | tr -d \" | tr "\t" \; > tmp1
+echo "sorting"
+head -1 tmp1 > tmp2
+tail -n +2 tmp1 | sort -t\; -k1,1 >> tmp2
+echo "joining"
+join --header -t\; shared_genes tmp2 > tmp3
+echo "transposing"
+cat tmp3 | datamash transpose -t \; > tmp4
+echo "sorting"
+head -1 tmp4 > tmp5
+tail -n +2 tmp4 | sort -t\; -k1,1 >> tmp5
+echo "joining"
+join --header -t\; shared_res_repFamily tmp5 > tmp6
+echo "transposing to output"
+cat tmp6 | datamash transpose -t \; | tr \; "\t" > $( basename $f .tsv ).shared.tsv
+done
+
+\rm tmp*
+
+wc -l *.shared.tsv
+     46034 GENE_x_RE_all.Cerebellum.correlation.shared.tsv
+     46034 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv
+     46034 GENE_x_RE_all_repFamily.Cerebellum.correlation.shared.tsv
+     46034 GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv
+
+
+awk -F"\t" '{print NF}' GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv | uniq
+49
+awk -F"\t" '{print NF}' GENE_x_RE_all_repFamily.Cerebellum.correlation.shared.tsv | uniq
+49
+
+
+
+for f in GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv GENE_x_RE_all_repFamily.Cerebellum.correlation.shared.tsv ; do
+echo $f
+awk -F"\t" '(NR==1){header=$0;c=0;i=1;n=sprintf("%03d",i);print header > FILENAME"."n}(NR>1){
+if( c >= 1000 ){
+c=0;i++;n=sprintf("%03d",i);
+print header > FILENAME"."n
+}
+c++;print >> FILENAME"."n
+}' $f
+done
+```
+
+
+
+
+Split things up. Each takes about an hour.
+```
+
+\rm commands
+for i in $( seq -w 001 047 ) ; do
+echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all_repFamily.Cerebellum.correlation.shared.tsv.${i} --output=cocor.repFamily.${i}.tsv"
+done > commands
+commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 15G 
+
+```
+
+
+```
+
+cp cocor.repFamily.001.tsv cocor.repFamily.tsv
+for i in $( seq -w 002 047 ) ; do
+tail -n +2 cocor.repFamily.${i}.tsv >> cocor.repFamily.tsv
+done
+
+```
+
+
+
+Filter out Simple Repeats and those with medians == 0
+
+```R
+
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_repFamily_2_counts_normalized.RDS")
+r=r$counts
+r=r[!grepl(")n$", row.names(r)),]
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('TCGA_Good_RE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_repFamily_2_counts_normalized.RDS")
+r=r$counts
+r=r[!grepl(")n$", row.names(r)),]
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('GTEx_Good_RE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=r$counts
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('TCGA_Good_GENE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=r$counts
+medians=apply(r,1,median)
+medians=medians[which(medians>0)]
+write.table(medians, file=paste('GTEx_Good_GENE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+
+```
+
+
+
+
+
+
+
+```BASH
+cat <( tail -n +2 GTEx_Good_RE.repFamily.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_RE.repFamily.tsv | cut -f1 ) | sort | uniq > Good_RE.repFamily.one
+cat <( tail -n +2 GTEx_Good_GENE.repFamily.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_GENE.repFamily.tsv | cut -f1 ) | sort | uniq > Good_GENE.repFamily.one
+
+cat <( tail -n +2 GTEx_Good_RE.repFamily.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_RE.repFamily.tsv | cut -f1 ) | sort | uniq -d > Good_RE.repFamily.both
+cat <( tail -n +2 GTEx_Good_GENE.repFamily.tsv | cut -f1 ) <( tail -n +2 TCGA_Good_GENE.repFamily.tsv | cut -f1 ) | sort | uniq -d > Good_GENE.repFamily.both
+
+sed -i '1iGENE' Good_GENE.repFamily.one
+sed -i '1iGENE' Good_GENE.repFamily.both
+sed -i '1iRE' Good_RE.repFamily.one
+sed -i '1iRE' Good_RE.repFamily.both
+```
+
+
+```BASH
+sed 's/\t/;/g' cocor.repFamily.tsv > tmp
+
+for s in one both ; do
+echo $s
+join --header -t\; Good_GENE.repFamily.${s} tmp | datamash transpose -t\; > tmp1
+join --header -t\; Good_RE.repFamily.${s} tmp1 | datamash transpose -t\; > tmp2
+sed 's/;/\t/g' tmp2 > cocor.repFamily.${s}.tsv
+done
+```
+
+
+
+
+
+Each take about 2 hours
+
+```BASH
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.one --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/cocor.repFamily.one.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.repFamily.one.tsv"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.both --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/cocor.repFamily.both.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.repFamily.both.tsv"
+
+```
+
+
+
+
+```
+
+awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i==0)print $1"\t"h[i]}}'  cocor.repFamily.both.tsv > cocor.repFamily.both.0.tsv
+
+awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i==0)print $1"\t"h[i]}}'  cocor.repFamily.one.tsv > cocor.repFamily.one.0.tsv
+
+
+join ENSG_Symbol.tsv cocor.repFamily.both.0.tsv | sed 's/ /\t/g' > cocor.repFamily.both.0.symbol.tsv
+
+join ENSG_Symbol.tsv cocor.repFamily.one.0.tsv | sed 's/ /\t/g' > cocor.repFamily.one.0.symbol.tsv
+
+```
+
+
+
+
+```BASH
+
+module load WitteLab python3/3.9.1
+python3
+
+```
+
+
+```python
+import pandas as pd
+
+TCGA=pd.read_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv',sep='\t',index_col=0)
+GTEx=pd.read_csv('/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv',sep='\t',index_col=0)
+diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv",
+sep="\t",index_col=0)
+
+z=pd.read_csv("cocor.repFamily.both.0.symbol.tsv",sep="\t",header=None,names=['GENE','Symbol','RE'])
+
+def get_diff_value(row):
+	return diff.loc[row['GENE'],row['RE']]
+
+z['diff'] = z.apply(get_diff_value, axis=1)
+
+def get_TCGA_value(row):
+	return TCGA.loc[row['GENE'],row['RE']]
+
+z['TCGA'] = z.apply(get_TCGA_value, axis=1)
+
+def get_GTEx_value(row):
+	return GTEx.loc[row['GENE'],row['RE']]
+
+z['GTEx'] = z.apply(get_GTEx_value, axis=1)
+
+z.to_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.0.tsv",sep="\t",index=False)
+
+```
+
+
+
+```BASH
+
+box_upload.bash cocor.repFamily.*heatmap* GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.0.tsv
+
+```
+
+
+
+
+##	20240508
+
+
+Increase p-value threshold in search hoping to include L1s.
+
+Search for L1 threshold.
+
+
+
+
+
+```
+for t in 1e-7 1e-8 1e-9 ; do
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.repFamily.both.tsv > cocor.repFamily.both.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.repFamily.one.tsv > cocor.repFamily.one.${t}.tsv
+join ENSG_Symbol.tsv cocor.repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.repFamily.both.${t}.symbol.tsv
+join ENSG_Symbol.tsv cocor.repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.repFamily.one.${t}.symbol.tsv
+done
+```
+
+
+
+
+```python
+import pandas as pd
+
+TCGA=pd.read_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv',sep='\t',index_col=0)
+GTEx=pd.read_csv('/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv',sep='\t',index_col=0)
+diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv",
+sep="\t",index_col=0)
+
+z=pd.read_csv("cocor.repFamily.both.1e-7.symbol.tsv",sep="\t",header=None,names=['GENE','Symbol','RE'])
+
+def get_diff_value(row):
+	return diff.loc[row['GENE'],row['RE']]
+
+z['diff'] = z.apply(get_diff_value, axis=1)
+
+def get_TCGA_value(row):
+	return TCGA.loc[row['GENE'],row['RE']]
+
+z['TCGA'] = z.apply(get_TCGA_value, axis=1)
+
+def get_GTEx_value(row):
+	return GTEx.loc[row['GENE'],row['RE']]
+
+z['GTEx'] = z.apply(get_GTEx_value, axis=1)
+
+z.to_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.1e-7.tsv",sep="\t",index=False)
+
+```
