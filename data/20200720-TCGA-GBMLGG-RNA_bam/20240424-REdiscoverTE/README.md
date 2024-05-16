@@ -822,7 +822,7 @@ done
 
 
 
-Split things up. Each takes about an hour.
+Split things up. Each takes about a minute!
 ```
 
 \rm commands
@@ -849,27 +849,27 @@ Filter out Simple Repeats and those with medians == 0
 
 ```R
 
-r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_repFamily_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_repFamily_3_TPM.RDS")
 r=r$counts
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
 write.table(medians, file=paste('TCGA_Good_RE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
-r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_repFamily_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_repFamily_3_TPM.RDS")
 r=r$counts
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
 write.table(medians, file=paste('GTEx_Good_RE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
-r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_3_TPM.RDS")
 r=r$counts
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
 write.table(medians, file=paste('TCGA_Good_GENE.repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
-r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_3_TPM.RDS")
 r=r$counts
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
