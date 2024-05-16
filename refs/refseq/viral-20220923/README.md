@@ -46,3 +46,22 @@ sed -e 's/^>//' viral.protein.names.txt | awk 'BEGIN{FS=OFS="_"}{print $1,$2","$
 
 
 
+
+##	20240513
+
+
+BLAST Database creation error: Near line 1, the local id is too long.  Its length is 56 but the maximum allowed local id length is 50.  Please find and correct all local ids that are too long.
+
+
+```
+
+cat viral.protein/*_Human_*herpesvirus_*.fa | sed -e '/^>/s/[ \/,]/_/g' -e '/^>/s/\(^.\{1,50\}\).*/\1/' | makeblastdb -dbtype prot -input_type fasta -title HerpesProteins -parse_seqids -out HerpesProteins
+
+cat viral.protein/*_Human_*herpesvirus_3.fa | sed -e '/^>/s/[ \/,]/_/g' -e '/^>/s/\(^.\{1,50\}\).*/\1/' | makeblastdb -dbtype prot -input_type fasta -title VZVProteins -parse_seqids -out VZVProteins
+
+```
+
+
+
+
+
