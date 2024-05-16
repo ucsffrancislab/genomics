@@ -137,3 +137,66 @@ bowtie2-build VIR3_clean.1-160.fna.gz VIR3_clean.1-160
 
 
 
+##	20240513
+
+
+
+Hey Jake - when you have a minute, could you please compare the VZV (and I guess the human herpesviruses), to the peptide sequences in the LEX library? I’m thinking the same way (20AA tiles) we did this before. Id like to know if VZV has homology to any of those AA sequences and the herpesviurses will be a good comparison. Thanks!
+
+Somehow, field 19 of this CSV seems like its hard to parse even though double double quotes is apparently appropriate.
+
+```
+"CHAIN 1..175; /note=""E1B protein, small T-antigen""; /id=""PRO_0000221710"""
+```
+parses to
+```
+"CHAIN 1..176; /note=""E1B protein
+```
+
+
+
+```
+
+zcat HAP_LExP_Peptide_Oligo_Metadata_for_Distribution.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}(NR>1 && $4=="\"LExPELib.1\""){a=substr($17,2,length($17)-2);gsub(/[ \(\)]/,"_",a);b=substr($3,2,length($3)-2);print ">"$2"_"a;print b}' | gzip > LExPELib.1.tiles.faa.gz
+
+zcat HAP_LExP_Peptide_Oligo_Metadata_for_Distribution.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}(NR>1 && $4=="\"LExPELib.2\""){a=substr($17,2,length($17)-2);gsub(/[ \(\)]/,"_",a);b=substr($3,2,length($3)-2);print ">"$2"_"a;print b}' | gzip > LExPELib.2.tiles.faa.gz
+
+```
+
+SPELLARDPYGPAVDIWSAGIVLFEMATGQ
+
+```
+
+zcat LExPELib.1.tiles.faa.gz | sed -e '/^>/s/[ \/,]/_/g' -e '/^>/s/\(^.\{1,50\}\).*/\1/' | makeblastdb -dbtype prot -input_type fasta -title LExPELib.1.tiles -parse_seqids -out LExPELib.1.tiles
+
+zcat LExPELib.2.tiles.faa.gz | sed -e '/^>/s/[ \/,]/_/g' -e '/^>/s/\(^.\{1,50\}\).*/\1/' | makeblastdb -dbtype prot -input_type fasta -title LExPELib.2.tiles -parse_seqids -out LExPELib.2.tiles
+
+```
+Why?
+
+I'm blastin the tiles to Herpes Virus DB.
+
+
+
+```
+
+zcat LExPELib.1.tiles.faa.gz | blastp -db /francislab/data1/refs/refseq/viral-20220923/HerpesProteins -outfmt 6 -out LExPELib.1.tiles.in.HerpesProteins.tsv
+
+zcat LExPELib.2.tiles.faa.gz | blastp -db /francislab/data1/refs/refseq/viral-20220923/HerpesProteins -outfmt 6 -out LExPELib.2.tiles.in.HerpesProteins.tsv
+
+```
+
+
+
+
+
+
+
+##	20240516
+
+I tried several different FPAT regexes without success. I think that best way to deal with these double quotes inside a double quoted dataset is to change them to something else prior to parsing, do whatever, then change back.
+
+```
+cat test.csv | sed 's/""/\x0\x0/g'  | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]*\")"}{for(i=1;i<=NF;i++){print i":"$i}}' | sed 's/\x0/"/g'
+```
+
