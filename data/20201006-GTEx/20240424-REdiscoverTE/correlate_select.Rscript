@@ -49,7 +49,8 @@ library("tidyselect")
 
 
 Sys.time()
-g = readRDS(paste(opt$indir,'GENE_2_counts_normalized.RDS',sep="/"))
+#g = readRDS(paste(opt$indir,'GENE_2_counts_normalized.RDS',sep="/"))
+g = readRDS(paste(opt$indir,'GENE_3_TPM.RDS',sep="/"))
 g = g$counts
 message(str(dim(g)))
 Sys.time()
@@ -68,7 +69,8 @@ for (re in c('RE_exon', 'RE_exon_repFamily', 'RE_intergenic', 'RE_intergenic_rep
 	print(re)
 
 	Sys.time()
-	r=readRDS(paste(opt$indir,paste0(re,'_2_counts_normalized.RDS'),sep="/"))
+	#r=readRDS(paste(opt$indir,paste0(re,'_2_counts_normalized.RDS'),sep="/"))
+	r=readRDS(paste(opt$indir,paste0(re,'_3_TPM.RDS'),sep="/"))
 	r=r$counts
 	message(str(dim(r)))
 	if( exists('ids') ){

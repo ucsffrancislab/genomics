@@ -184,7 +184,7 @@ REdiscoverTE_EdgeR_rmarkdown.bash
 ```BASH
 
 \rm commands
-echo "module load r; $( realpath ${PWD}/correlate_select.Rscript ) > commands
+echo "module load r; $( realpath ${PWD}/correlate_select.Rscript )" > commands
 for f in Amygdala AnteriorCingulateCortex Caudate CerebellarHemisphere Cerebellum Cortex FrontalCortex Hippocampus Hypothalamus NucleusAccumbens Putamen SpinalCord SubstantiaNigra ; do
 echo "module load r; $( realpath ${PWD}/correlate_select.Rscript ) --select ${PWD}/${f}"
 done >> commands

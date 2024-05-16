@@ -94,6 +94,11 @@ awk 'BEGIN{FS=OFS="\t"}(NR>1){print $4,$5}' /francislab/data1/refs/REdiscoverTE/
 
 
 
+Initially this process was done on the `2_counts_normalized.RDS` files. We have/are redone/redoing it on the `3_TPM.RDS` files.
+
+
+
+
 
 ```BASH
 
@@ -194,10 +199,15 @@ import pandas as pd
 TCGA=pd.read_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.tsv',sep='\t',index_col=0)
 GTEx=pd.read_csv('/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv',sep='\t',index_col=0)
 
+#GTEx.shape
+#(55670, 4788)
+#TCGA.shape
+#(55662, 6515)
+
 GTEx.shape
-(55670, 4788)
+(47024, 3583)
 TCGA.shape
-(55662, 6515)
+(52441, 4634)
 
 d=TCGA-GTEx
 d.to_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv',sep='\t')
@@ -213,12 +223,12 @@ box_upload.bash GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GB
 
 
 ```BASH
-
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-  --job-name=cocor --time=14-0 --nodes=1 --ntasks=8 --mem=60G \
-  --output=${PWD}/logs/cocor.$( date "+%Y%m%d%H%M%S%N" ).out.log \
-  --wrap "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.tsv --gtex=/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv --shared_genes=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENEs.Cerebellum.GBMWTFirstTumors.shared --shared_res=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/RE_all.Cerebellum.GBMWTFirstTumors.shared"
-
+#
+#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+#  --job-name=cocor --time=14-0 --nodes=1 --ntasks=8 --mem=60G \
+#  --output=${PWD}/logs/cocor.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+#  --wrap "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.tsv --gtex=/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv --shared_genes=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENEs.Cerebellum.GBMWTFirstTumors.shared --shared_res=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/RE_all.Cerebellum.GBMWTFirstTumors.shared"
+#
 ```
 
 
@@ -237,13 +247,6 @@ Could break this up into 16 different jobs and process with just 4CPU/30GB or po
 
 
 
-
-
-[1] 46032  3169
-
-wc -l shared_*
- 46034 shared_genes
-  3170 shared_res
 
 Not sure yet, but I think that the Rscript is gonna drop the NA "gene"
 
@@ -330,6 +333,9 @@ done
 
 
 
+
+
+
 ##	Complete Run
 
 
@@ -342,9 +348,6 @@ REdiscoverTE_array_wrapper.bash --paired \
 
 ```
 
-
-
-
 ```BASH
 
 REdiscoverTE_rollup.bash \
@@ -354,8 +357,6 @@ REdiscoverTE_rollup.bash \
 
 ```
 
-
-
 AFTER COMPLETION
 
 ```BASH
@@ -364,14 +365,20 @@ REdiscoverTE_rollup_merge.bash --outbase ${PWD}/REdiscoverTE_rollup_noquestion
 
 ```
 
-
-
-
 ```BASH
 
 #	REdiscoverTE_EdgeR_rmarkdown.bash
 
 ```
+
+
+
+
+
+
+
+
+
 
 
 
@@ -410,6 +417,7 @@ Where are they 0?
 
 ( head -1 cocor.tsv && grep -m1 -P '\t0\t' cocor.tsv ) | awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){print $1;for(i=2;i<=NF;i++){if($i==0){print h[i],i}}}'
 ENSG00000000971
+(AAGGGA)n 51
 (CCACCCG)n 573
 (CCCGA)n 662
 (CCCTGCT)n 704
@@ -437,10 +445,10 @@ done
 
 GENE_x_RE_all.Cerebellum.correlation.shared.tsv
 tRNA-Leu-CTG
-0.968869096164028
+0.968945933355241  # 0.968869096164028
 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv
 tRNA-Leu-CTG
-0.0241762547961101
+0.00395619460372738 # 0.0241762547961101
 
 ```
 
@@ -526,19 +534,18 @@ module load r
 ```
 
 
-
 ```R
 
-r=readRDS(paste('GBMWTFirstTumors_REdiscoverTE_rollup_noquestion','RE_all_2_counts_normalized.RDS',sep="/"))
+r=readRDS(paste('GBMWTFirstTumors_REdiscoverTE_rollup_noquestion','RE_all_3_TPM.RDS',sep="/"))
 r=r$counts
-write.table(r, file=paste('GBMWTFirstTumors_REdiscoverTE_rollup_noquestion','RE_all_2_counts_normalized.tsv',sep="/"),
+write.table(r, file=paste('GBMWTFirstTumors_REdiscoverTE_rollup_noquestion','RE_all_3_TPM.tsv',sep="/"),
   row.names=TRUE, sep="\t", col.names = NA)
 
 ```
 
 ```BASH
 
-REdiscoverTE_median_plotter.Rmd GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_repFamily_2_counts_normalized.RDS
+REdiscoverTE_median_plotter.Rmd GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_repFamily_3_TPM.RDS
 
 ```
 
@@ -557,13 +564,13 @@ Yep- no big rush, but Im still curious if there are extreme examples where its c
 
 for RE in $( grep -v ")n\$" RE_all.Cerebellum.GBMWTFirstTumors.GTEx_only ) ; do
 echo $RE
-grep \"${RE}\" /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.tsv | datamash transpose | datamash -H mean 1 q1 1 median 1 q3 1 iqr 1 sstdev 1 jarque 1 
+grep \"${RE}\" /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_3_TPM.tsv | datamash transpose | datamash -H mean 1 q1 1 median 1 q3 1 iqr 1 sstdev 1 jarque 1 
 done
 
 
 for RE in $( grep -v ")n\$" RE_all.Cerebellum.GBMWTFirstTumors.TCGA_only ) ; do
 echo $RE
-grep \"${RE}\" /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.tsv | datamash transpose | datamash -H mean 1 q1 1 median 1 q3 1 iqr 1 sstdev 1 jarque 1 
+grep \"${RE}\" /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_3_TPM.tsv | datamash transpose | datamash -H mean 1 q1 1 median 1 q3 1 iqr 1 sstdev 1 jarque 1 
 done
 
 ```
@@ -578,27 +585,27 @@ Filter out Simple Repeats and those with medians == 0
 
 ```R
 
-r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/RE_all_3_TPM.RDS")
 r=r$counts
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
 write.table(medians, file=paste('TCGA_Good_RE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
-r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/RE_all_3_TPM.RDS")
 r=r$counts
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
 write.table(medians, file=paste('GTEx_Good_RE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
-r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_3_TPM.RDS")
 r=r$counts
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
 write.table(medians, file=paste('TCGA_Good_GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
-r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_2_counts_normalized.RDS")
+r=readRDS("/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_3_TPM.RDS")
 r=r$counts
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
