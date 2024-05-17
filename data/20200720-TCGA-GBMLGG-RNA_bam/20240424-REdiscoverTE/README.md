@@ -686,27 +686,15 @@ join ENSG_Symbol.tsv cocor.one.0.tsv | sed 's/ /\t/g' > cocor.one.0.symbol.tsv
 ```BASH
 
 module load WitteLab python3/3.9.1
-python3
 
 ```
 
 
-```python
-import pandas as pd
-
-diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv",
-sep="\t",index_col=0)
-
-z=pd.read_csv("cocor.both.0.symbol.tsv",sep="\t",header=None,names=['GENE','Symbol','RE'])
-
-def get_diff_value(row):
-	return diff.loc[row['GENE'],row['RE']]
-
-z['diff'] = z.apply(get_diff_value, axis=1)
-
-z.to_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.both.0.tsv",sep="\t",index=False)
-
-
+```BASH
+./matrix_select_and_diff.py \
+ -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.Cerebellum.correlation.tsv \
+ -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.tsv \
+ -s cocor.both.0.symbol.tsv -o GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.both.0.tsv
 ```
 
 
@@ -951,38 +939,15 @@ join ENSG_Symbol.tsv cocor.repFamily.one.0.tsv | sed 's/ /\t/g' > cocor.repFamil
 ```BASH
 
 module load WitteLab python3/3.9.1
-python3
 
 ```
 
 
-```python
-import pandas as pd
-
-TCGA=pd.read_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv',sep='\t',index_col=0)
-GTEx=pd.read_csv('/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv',sep='\t',index_col=0)
-diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv",
-sep="\t",index_col=0)
-
-z=pd.read_csv("cocor.repFamily.both.0.symbol.tsv",sep="\t",header=None,names=['GENE','Symbol','RE'])
-
-def get_diff_value(row):
-	return diff.loc[row['GENE'],row['RE']]
-
-z['diff'] = z.apply(get_diff_value, axis=1)
-
-def get_TCGA_value(row):
-	return TCGA.loc[row['GENE'],row['RE']]
-
-z['TCGA'] = z.apply(get_TCGA_value, axis=1)
-
-def get_GTEx_value(row):
-	return GTEx.loc[row['GENE'],row['RE']]
-
-z['GTEx'] = z.apply(get_GTEx_value, axis=1)
-
-z.to_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.0.tsv",sep="\t",index=False)
-
+```BASH
+./matrix_select_and_diff.py \
+ -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv \
+ -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv \
+ -s cocor.repFamily.both.0.symbol.tsv -o GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.0.tsv
 ```
 
 
@@ -1018,32 +983,10 @@ done
 
 
 
-
-```python
-import pandas as pd
-
-TCGA=pd.read_csv('/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv',sep='\t',index_col=0)
-GTEx=pd.read_csv('/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv',sep='\t',index_col=0)
-diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv",
-sep="\t",index_col=0)
-
-z=pd.read_csv("cocor.repFamily.both.1e-7.symbol.tsv",sep="\t",header=None,names=['GENE','Symbol','RE'])
-
-def get_diff_value(row):
-	return diff.loc[row['GENE'],row['RE']]
-
-z['diff'] = z.apply(get_diff_value, axis=1)
-
-def get_TCGA_value(row):
-	return TCGA.loc[row['GENE'],row['RE']]
-
-z['TCGA'] = z.apply(get_TCGA_value, axis=1)
-
-def get_GTEx_value(row):
-	return GTEx.loc[row['GENE'],row['RE']]
-
-z['GTEx'] = z.apply(get_GTEx_value, axis=1)
-
-z.to_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.1e-7.tsv",sep="\t",index=False)
-
+```BASH
+./matrix_select_and_diff.py \
+ -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv \
+ -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv \
+ -s cocor.repFamily.both.1e-7.symbol.tsv -o GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.repFamily.both.1e-7.tsv
 ```
+
