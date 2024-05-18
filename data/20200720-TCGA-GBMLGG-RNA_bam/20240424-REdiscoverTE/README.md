@@ -955,14 +955,21 @@ box_upload.bash *.CerebellumSelect.GBMWTFirstTumors.*
 
 
 wc -l *.shared.tsv
-     46034 GENE_x_RE_all.CerebellumSelect.correlation.shared.tsv
-     46034 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv
+     45421 GENE_x_RE_all.CerebellumSelect.correlation.shared.tsv
+     45421 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv
+     45421 GENE_x_RE_all_repFamily.CerebellumSelect.correlation.shared.tsv
+     45421 GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv
+
 
 
 awk -F"\t" '{print NF}' GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv | uniq
-3170
+3107
 awk -F"\t" '{print NF}' GENE_x_RE_all.CerebellumSelect.correlation.shared.tsv | uniq
-3170
+3107
+awk -F"\t" '{print NF}' GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv | uniq
+48
+awk -F"\t" '{print NF}' GENE_x_RE_all_repFamily.CerebellumSelect.correlation.shared.tsv | uniq
+48
 ```
 
 
@@ -986,7 +993,7 @@ Each takes about an hour.
 
 \rm commands
 for i in $( seq -w 001 047 ) ; do
-echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.CerebellumSelect.correlation.shared.tsv.${i} --output=cocor.${i}.tsv"
+echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.CerebellumSelect.correlation.shared.tsv.${i} --output=cocor.RE_all.${i}.tsv"
 echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all_repFamily.CerebellumSelect.correlation.shared.tsv.${i} --output=cocor.RE_all_repFamily.${i}.tsv"
 done > commands
 commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 15G 
