@@ -32,20 +32,8 @@ if (is.null(opt$gtex)){
 	stop("gtex required.\n", call.=FALSE)
 }
 
-#if (is.null(opt$shared_genes)){
-#	print_help(opt_parser)
-#	stop("shared_genes required.\n", call.=FALSE)
-#}
-#
-#if (is.null(opt$shared_res)){
-#	print_help(opt_parser)
-#	stop("shared_res required.\n", call.=FALSE)
-#}
 
 
-
-
-#	These 2 matrics are a bit different and will likely need trimmed.
 
 #	Don't use data.table. It gets wonky.
 
@@ -53,23 +41,14 @@ if (is.null(opt$gtex)){
 require('data.table')
 TCGA=fread(opt$tcga, na.strings=getOption("datatable.na.strings",""))
 TCGA=as.data.frame(TCGA)
-#rownames(TCGA)=TCGA$V1
-#TCGA$V1=NULL
-#dim(TCGA)
-#length(TCGA[[colnames(TCGA)[1]]])
-#print(TCGA[[colnames(TCGA)[1]]])
 rownames(TCGA)=TCGA[[colnames(TCGA)[1]]]
 TCGA[[colnames(TCGA)[1]]]=NULL
 
 GTEx=fread(opt$gtex, na.strings=getOption("datatable.na.strings",""))
 GTEx=as.data.frame(GTEx)
-#rownames(GTEx)=GTEx$V1
-#GTEx$V1=NULL
-#dim(GTEx)
-#length(GTEx[[colnames(GTEx)[1]]])
-#print(GTEx[[colnames(GTEx)[1]]])
 rownames(GTEx)=GTEx[[colnames(GTEx)[1]]]
 GTEx[[colnames(GTEx)[1]]]=NULL
+
 
 #	Need to select only those shared rows and columns
 
@@ -90,14 +69,14 @@ shared_res[0:5]
 
 
 
+#	sometimes there aren't this many columns
 
-
-TCGA[0:5,0:5]
+#TCGA[0:5,0:5]
 TCGAShared=TCGA[which(row.names(TCGA) %in% shared_genes), shared_res]
 dim(TCGA)
 dim(TCGAShared)
 
-GTEx[0:5,0:5]
+#GTEx[0:5,0:5]
 GTExShared=GTEx[which(row.names(GTEx) %in% shared_genes), shared_res]
 dim(GTEx)
 dim(GTExShared)
@@ -135,7 +114,9 @@ dim(GTExShared)
 
 library('cocor')
 
-GTEx_count=37
+#GTEx_count=37
+#	dropped "SRR627429","SRR627451","SRR627462"
+GTEx_count=34
 TCGA_count=155
 
 #print(paste(gene,re,GTExShared[gene,re], TCGAShared[gene,re]))
@@ -143,16 +124,22 @@ TCGA_count=155
 out<-data.frame()
 #for( gene in shared_genes[1:100] ){
 for( gene in shared_genes ){
-print(gene)
-#for( re in shared_res[1:100] ){
-for( re in shared_res ){
- if( is.na(GTExShared[gene,re]) || is.na(TCGAShared[gene,re]) ){
-   out[gene,re] = NA
- } else {
-   out[gene,re] = cocor.indep.groups( GTExShared[gene,re], TCGAShared[gene,re], GTEx_count, TCGA_count, 
-     alternative = "two.sided", test = "fisher1925", alpha = 0.05, null.value = 0, return.htest = TRUE)$fisher1925$p.value
- }
-} }
+	print(paste0("GENE ",gene))
+	#for( re in shared_res[1:100] ){
+	for( re in shared_res ){
+		print(paste0("  RE ",re))
+		if( is.na(GTExShared[gene,re]) || is.na(TCGAShared[gene,re]) ){
+			out[gene,re] = NA
+		} else {
+			print( class(GTExShared[gene,re] ) ) # character????
+			print( class(TCGAShared[gene,re] ) )
+			print( paste0( "    GTExShared[gene,re] ", GTExShared[gene,re] ) )
+			print( paste0( "    TCGAShared[gene,re] ", TCGAShared[gene,re] ) )
+			out[gene,re] = cocor.indep.groups( as.numeric(GTExShared[gene,re]), as.numeric(TCGAShared[gene,re]), GTEx_count, TCGA_count, 
+				alternative = "two.sided", test = "fisher1925", alpha = 0.05, null.value = 0, return.htest = TRUE)$fisher1925$p.value
+		}
+	}
+}
 
 #write.table(out,file="cocor.csv", quote=F,sep=",",row.names=TRUE,col.name=NA)	#,row.names=F)
 
