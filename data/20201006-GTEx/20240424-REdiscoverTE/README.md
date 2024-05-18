@@ -206,3 +206,150 @@ head -1 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebe
 
 ```
 
+
+
+
+
+##	Something is off with 3 subjects/samples so removing and rerunning analyses
+
+
+SRR627429 SRR627451 SRR627462
+
+
+
+
+```BASH
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=correlate --time=1-0 --nodes=1 --ntasks=4 --mem=30G \
+  --output=${PWD}/logs/correlate_select.CerebellumSelect.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/correlate_select.Rscript --indir ${PWD}/Cerebellum_REdiscoverTE_rollup_noquestion --select ${PWD}/CerebellumSelect"
+
+```
+
+
+Filter greater than 0.8, 0.9, 0.95, 0.99
+
+```BASH
+
+\rm commands
+for tsv in Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_*.CerebellumSelect.correlation.tsv ; do
+echo "${PWD}/select_gt.bash ${tsv}"
+done > commands
+commands_array_wrapper.bash --array_file commands --time 720 --threads 4 --mem 30G 
+
+```
+
+
+
+```BASH
+
+tail -n +2 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.CerebellumSelect.correlation.tsv | cut -f1 | tr -d \" | sort > GENEs.CerebellumSelect
+head -1 Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.CerebellumSelect.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all.CerebellumSelect
+
+```
+
+```BASH
+
+wc -l GENEs.CerebellumSelect RE_all.CerebellumSelect
+ 47024 GENEs.CerebellumSelect
+  3583 RE_all.CerebellumSelect
+
+```
+
+
+
+```BASH
+
+box_upload.bash GENEs.CerebellumSelect RE_all.CerebellumSelect Cerebellum_REdiscoverTE_rollup_noquestion/*.CerebellumSelect.*tsv
+
+```
+
+
+
+
+###	Rollup with just the select samples
+
+
+Using the existing rollup matrix results in a lot of NAs. Rolling up without the 3 offending samples.
+
+```BASH
+mkdir CerebellumSelect_out
+for s in $( cat CerebellumSelect ) ; do
+if [ -d out/${s}.salmon.REdiscoverTE.k15 ] ; then
+ln -s ../out/${s}.salmon.REdiscoverTE.k15 CerebellumSelect_out/
+fi
+done
+```
+
+```BASH
+
+REdiscoverTE_rollup.bash \
+--indir ${PWD}/CerebellumSelect_out \
+--datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
+--outbase ${PWD}/CerebellumSelect_REdiscoverTE_rollup_noquestion
+
+```
+
+
+AFTER COMPLETION
+
+```BASH
+
+REdiscoverTE_rollup_merge.bash --outbase ${PWD}/CerebellumSelect_REdiscoverTE_rollup_noquestion
+
+```
+
+
+
+```BASH
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=correlate --time=1-0 --nodes=1 --ntasks=4 --mem=30G \
+  --output=${PWD}/logs/correlate_select.CerebellumSelect.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/correlate_select.Rscript --indir ${PWD}/CerebellumSelect_REdiscoverTE_rollup_noquestion --select ${PWD}/CerebellumSelect"
+
+```
+
+
+Filter greater than 0.8, 0.9, 0.95, 0.99
+
+```BASH
+
+\rm commands
+for tsv in CerebellumSelect_REdiscoverTE_rollup_noquestion/GENE_x_RE_*.CerebellumSelect.correlation.tsv ; do
+echo "${PWD}/select_gt.bash ${tsv}"
+done > commands
+commands_array_wrapper.bash --array_file commands --time 720 --threads 4 --mem 30G 
+
+```
+
+
+
+```BASH
+
+tail -n +2 CerebellumSelect_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.CerebellumSelect.correlation.tsv | cut -f1 | tr -d \" | sort > GENE.CerebellumSelect
+head -1 CerebellumSelect_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.CerebellumSelect.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all.CerebellumSelect
+head -1 CerebellumSelect_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.CerebellumSelect.correlation.tsv | datamash transpose | tail -n +2 | tr -d \" | sort > RE_all_repFamily.CerebellumSelect
+
+```
+
+```BASH
+
+wc -l *.CerebellumSelect 
+ 46278 GENE.CerebellumSelect
+  3491 RE_all.CerebellumSelect
+    49 RE_all_repFamily.CerebellumSelect
+
+```
+
+
+
+```BASH
+
+box_upload.bash *.CerebellumSelect CerebellumSelect_REdiscoverTE_rollup_noquestion/*.CerebellumSelect.*tsv
+
+```
+
+
+
