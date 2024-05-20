@@ -10,57 +10,61 @@ r=r$counts
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
-write.table(medians, file=paste('TCGA_Good_RE_all.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+write.table(medians, file=paste('TCGA_Good.RE_all.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
 r=readRDS(paste(dir,"RE_all_repFamily_3_TPM.RDS",sep="/"))
 r=r$counts
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
-write.table(medians, file=paste('TCGA_Good_RE_repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+write.table(medians, file=paste('TCGA_Good.RE_all_repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
 r=readRDS(paste(dir,"GENE_3_TPM.RDS",sep="/"))
 r=r$counts
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
-write.table(medians, file=paste('TCGA_Good_GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+write.table(medians, file=paste('TCGA_Good.GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
 
 
 
-dir="/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion"
+dir="/francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/CerebellumSelect_REdiscoverTE_rollup_noquestion"
 
 r=readRDS(paste(dir,"RE_all_3_TPM.RDS",sep="/"))
 r=r$counts
-r=r[,-which(colnames(r) %in% c("SRR627429","SRR627451","SRR627462"))]
 
+#	If they aren't in the list this fails and returns nothing?
+#r=r[,-which(colnames(r) %in% c("SRR627429","SRR627451","SRR627462"))]
 #	drop SRR627429 SRR627451 SRR627462
 
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
-write.table(medians, file=paste('GTEx_Good_RE_all.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+write.table(medians, file=paste('GTEx_Good.RE_all.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
 
 r=readRDS(paste(dir,"GENE_3_TPM.RDS",sep="/"))
 r=r$counts
-r=r[,-which(colnames(r) %in% c("SRR627429","SRR627451","SRR627462"))]
 
+#	If they aren't in the list this fails and returns nothing?
+#r=r[,-which(colnames(r) %in% c("SRR627429","SRR627451","SRR627462"))]
 #	drop SRR627429 SRR627451 SRR627462
 
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
-write.table(medians, file=paste('GTEx_Good_GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+write.table(medians, file=paste('GTEx_Good.GENE.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
 
 r=readRDS(paste(dir,"RE_all_repFamily_3_TPM.RDS",sep="/"))
-r=r[,-which(colnames(r) %in% c("SRR627429","SRR627451","SRR627462"))]
+
+#	If they aren't in the list this fails and returns nothing?
+#r=r[,-which(colnames(r) %in% c("SRR627429","SRR627451","SRR627462"))]
 #	drop SRR627429 SRR627451 SRR627462
 
 r=r$counts
 r=r[!grepl(")n$", row.names(r)),]
 medians=apply(r,1,median)
 medians=medians[which(medians>0)]
-write.table(medians, file=paste('GTEx_Good_RE_repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
+write.table(medians, file=paste('GTEx_Good.RE_all_repFamily.tsv',sep="/"), row.names=TRUE, sep="\t", col.names = NA, quote=FALSE)
 
 
 

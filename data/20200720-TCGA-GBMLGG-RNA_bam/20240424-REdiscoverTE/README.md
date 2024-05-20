@@ -992,7 +992,7 @@ Each takes about an hour.
 ```
 
 \rm commands
-for i in $( seq -w 001 047 ) ; do
+for i in $( seq -w 001 046 ) ; do
 echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all.CerebellumSelect.correlation.shared.tsv.${i} --output=cocor.RE_all.${i}.tsv"
 echo "module load r; ${PWD}/cocor.Rscript --tcga=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.shared.tsv.${i} --gtex=/francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GENE_x_RE_all_repFamily.CerebellumSelect.correlation.shared.tsv.${i} --output=cocor.RE_all_repFamily.${i}.tsv"
 done > commands
@@ -1004,7 +1004,7 @@ commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 1
 ```
 
 cp cocor.RE_all.001.tsv cocor.RE_all.tsv
-for i in $( seq -w 002 047 ) ; do
+for i in $( seq -w 002 046 ) ; do
 tail -n +2 cocor.RE_all.${i}.tsv >> cocor.RE_all.tsv
 done
 
@@ -1013,11 +1013,169 @@ done
 ```
 
 cp cocor.RE_all_repFamily.001.tsv cocor.RE_all_repFamily.tsv
-for i in $( seq -w 002 047 ) ; do
+for i in $( seq -w 002 046 ) ; do
 tail -n +2 cocor.RE_all_repFamily.${i}.tsv >> cocor.RE_all_repFamily.tsv
 done
 
 ```
+
+
+Filter out Simple Repeats and those with medians == 0
+
+```BASH
+
+module load r
+./filter_medians.Rscript 
+
+```
+
+
+```BASH
+cat <( tail -n +2 GTEx_Good.GENE.tsv | cut -f1 ) <( tail -n +2 TCGA_Good.GENE.tsv | cut -f1 ) | sort | uniq > Good.GENE.one
+cat <( tail -n +2 GTEx_Good.GENE.tsv | cut -f1 ) <( tail -n +2 TCGA_Good.GENE.tsv | cut -f1 ) | sort | uniq -d > Good.GENE.both
+
+cat <( tail -n +2 GTEx_Good.RE_all.tsv | cut -f1 ) <( tail -n +2 TCGA_Good.RE_all.tsv | cut -f1 ) | sort | uniq > Good.RE_all.one
+cat <( tail -n +2 GTEx_Good.RE_all.tsv | cut -f1 ) <( tail -n +2 TCGA_Good.RE_all.tsv | cut -f1 ) | sort | uniq -d > Good.RE_all.both
+
+cat <( tail -n +2 GTEx_Good.RE_all_repFamily.tsv | cut -f1 ) <( tail -n +2 TCGA_Good.RE_all_repFamily.tsv | cut -f1 ) | sort | uniq > Good.RE_all_repFamily.one
+cat <( tail -n +2 GTEx_Good.RE_all_repFamily.tsv | cut -f1 ) <( tail -n +2 TCGA_Good.RE_all_repFamily.tsv | cut -f1 ) | sort | uniq -d > Good.RE_all_repFamily.both
+
+sed -i '1iGENE' Good.GENE.one
+sed -i '1iGENE' Good.GENE.both
+sed -i '1iRE' Good.RE_all.one
+sed -i '1iRE' Good.RE_all.both
+sed -i '1iRE' Good.RE_all_repFamily.one
+sed -i '1iRE' Good.RE_all_repFamily.both
+```
+
+
+```BASH
+sed 's/\t/;/g' cocor.RE_all_repFamily.tsv > tmp
+
+for s in one both ; do
+echo $s
+join --header -t\; Good.GENE.${s} tmp | datamash transpose -t\; > tmp1
+join --header -t\; Good.RE_all_repFamily.${s} tmp1 | datamash transpose -t\; > tmp2
+sed 's/;/\t/g' tmp2 > cocor.RE_all_repFamily.${s}.tsv
+done
+
+
+sed 's/\t/;/g' cocor.RE_all.tsv > tmp
+
+for s in one both ; do
+echo $s
+join --header -t\; Good.GENE.${s} tmp | datamash transpose -t\; > tmp1
+join --header -t\; Good.RE_all.${s} tmp1 | datamash transpose -t\; > tmp2
+sed 's/;/\t/g' tmp2 > cocor.RE_all.${s}.tsv
+done
+
+\rm tmp*
+
+```
+
+
+
+Each take about 2 hours
+
+```BASH
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.one --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/cocor.RE_all_repFamily.one.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all_repFamily.one.tsv"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.both --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/cocor.RE_all_repFamily.both.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all_repFamily.both.tsv"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.one --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/cocor.RE_all.one.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all.one.tsv"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=Rmd.both --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/cocor.RE_all.both.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all.both.tsv"
+
+```
+
+
+
+
+```
+for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 0 ; do
+echo $t
+echo cocor.RE_all_repFamily.both.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.both.tsv > cocor.RE_all_repFamily.both.${t}.tsv
+join ENSG_Symbol.tsv cocor.RE_all_repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.${t}.symbol.tsv
+echo cocor.RE_all_repFamily.one.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.one.tsv > cocor.RE_all_repFamily.one.${t}.tsv
+join ENSG_Symbol.tsv cocor.RE_all_repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.${t}.symbol.tsv
+echo cocor.RE_all.both.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all.both.tsv > cocor.RE_all.both.${t}.tsv
+join ENSG_Symbol.tsv cocor.RE_all.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.both.${t}.symbol.tsv
+echo cocor.RE_all.one.${t}.symbol.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all.one.tsv > cocor.RE_all.one.${t}.tsv
+join ENSG_Symbol.tsv cocor.RE_all.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.one.${t}.symbol.tsv
+done
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```BASH
+
+module load WitteLab python3/3.9.1
+
+for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 0 ; do
+echo $t
+
+./matrix_select_and_diff.py \
+ -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/CerebellumSelect_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.CerebellumSelect.correlation.tsv \
+ -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv \
+ -s cocor.RE_all_repFamily.both.${t}.symbol.tsv -o GENE_x_RE_all_repFamily.GBMWTFirstTumors.CerebellumSelect.correlation.TCGA-GTEx.cocor.RE_all_repFamily.both.${t}.tsv
+
+./matrix_select_and_diff.py \
+ -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/CerebellumSelect_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.CerebellumSelect.correlation.tsv \
+ -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all.GBMWTFirstTumors.correlation.tsv \
+ -s cocor.RE_all.both.${t}.symbol.tsv -o GENE_x_RE_all_repFamily.GBMWTFirstTumors.CerebellumSelect.correlation.TCGA-GTEx.cocor.RE_all.both.${t}.tsv
+
+done
+
+```
+
+
+
+
+
+
+```BASH
+./matrix_select_and_diff.py \
+ -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv \
+ -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv \
+ -s cocor.RE_all_repFamily.both.1e-7.symbol.tsv -o GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.RE_all_repFamily.both.1e-7.tsv
+```
+
+
+
+
+
 
 
 
