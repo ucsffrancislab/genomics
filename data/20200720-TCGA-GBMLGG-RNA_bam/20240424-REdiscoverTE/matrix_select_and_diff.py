@@ -73,7 +73,7 @@ diff=tumor-normal
 #diff=pd.read_csv("GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.tsv", sep="\t",index_col=0)
 
 print("Reading Select "+ args.select[0])
-z=pd.read_csv(args.select[0],sep="\t",header=None,names=['GENE','Symbol','RE'])
+z=pd.read_csv(args.select[0],sep="\t",header=None,names=['GENE','Symbol','RE','p-value'])
 #"cocor.repFamily.both.1e-7.symbol.tsv"
 
 def get_diff_value(row):

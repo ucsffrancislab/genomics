@@ -1108,42 +1108,33 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 
 
 ```
-for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 0 ; do
+for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 1e-13 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 0 ; do
 echo $t
 echo cocor.RE_all_repFamily.both.${t}.tsv
-awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.both.tsv > cocor.RE_all_repFamily.both.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all_repFamily.both.tsv > cocor.RE_all_repFamily.both.${t}.tsv
 join ENSG_Symbol.tsv cocor.RE_all_repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.${t}.symbol.tsv
 echo cocor.RE_all_repFamily.one.${t}.tsv
-awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.one.tsv > cocor.RE_all_repFamily.one.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all_repFamily.one.tsv > cocor.RE_all_repFamily.one.${t}.tsv
 join ENSG_Symbol.tsv cocor.RE_all_repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.${t}.symbol.tsv
 echo cocor.RE_all.both.${t}.tsv
-awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all.both.tsv > cocor.RE_all.both.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all.both.tsv > cocor.RE_all.both.${t}.tsv
 join ENSG_Symbol.tsv cocor.RE_all.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.both.${t}.symbol.tsv
 echo cocor.RE_all.one.${t}.symbol.tsv
-awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all.one.tsv > cocor.RE_all.one.${t}.tsv
+awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all.one.tsv > cocor.RE_all.one.${t}.tsv
 join ENSG_Symbol.tsv cocor.RE_all.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.one.${t}.symbol.tsv
 done
 ```
 
 
 
-
-
-
-
-
-
-
-
-
-
+NO "one"s?
 
 
 ```BASH
 
 module load WitteLab python3/3.9.1
 
-for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 0 ; do
+for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 1e-13 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 0 ; do
 echo $t
 
 ./matrix_select_and_diff.py \
@@ -1163,19 +1154,13 @@ done
 
 
 
-
-
-```BASH
-./matrix_select_and_diff.py \
- -n /francislab/data1/working/20201006-GTEx/20240424-REdiscoverTE/Cerebellum_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.Cerebellum.correlation.tsv \
- -t /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240424-REdiscoverTE/GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.tsv \
- -s cocor.RE_all_repFamily.both.1e-7.symbol.tsv -o GBMWTFirstTumors_REdiscoverTE_rollup_noquestion/GENE_x_RE_all_repFamily.GBMWTFirstTumors.correlation.TCGA-GTEx.cocor.RE_all_repFamily.both.1e-7.tsv
 ```
+ 
+for t in 0 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 1e-13 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 ; do 
+box_upload.bash cocor.RE_all*.${t}.symbol.tsv
+box_upload.bash cocor.RE_all*.${t}.tsv
+box_upload.bash GENE_x_RE_all*.GBMWTFirstTumors.CerebellumSelect.correlation.TCGA-GTEx.cocor.RE_all*.both.${t}.tsv 
+done
 
-
-
-
-
-
-
+```
 
