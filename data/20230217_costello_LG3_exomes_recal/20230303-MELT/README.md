@@ -509,3 +509,37 @@ curl  --silent --ftp-create-dirs -netrc -T merged_normal_tumor_melt.nondot_mutat
 
 
 
+
+##	20240522 - at Geno's request
+
+
+
+```
+
+echo "sample,chr10:129766800,chr12:109222793,chr3:52373789,chr8:11564661,chr6:31664357" > output.csv
+for vcf in vcfallq60/*.vcf.gz ; do 
+echo -n $( basename ${vcf} .vcf.gz )
+for region in chr10:129766800 chr12:109222793 chr3:52373789 chr8:11564661 chr6:31664357 ; do
+line=$( bcftools view --no-header ${vcf} ${region} | awk '{gsub(/0/,$4,$NF);gsub(/1/,$5,$NF);print $NF}' )
+echo -n ",${line}"
+done ; echo ; done >> output.csv
+
+```
+
+Those were hg38 coordinates, but these vcfs were created from hg19.
+
+chr10	131565064	.	A	G	203.417	.	DP=13;VDB=0.90784;SGB=-0.683931;MQSBZ=0;FS=0;MQ0F=0;AC=2;AN=2;DP4=0,0,11,2;MQ=60	GT:PL	1/1:233,39,0
+
+
+```
+
+echo "sample,chr10:131565064,chr12:109660598,chr3:52407805,chr8:11422170,chr6:31632134" > hg19.csv
+for vcf in vcfallq60/*.vcf.gz ; do 
+echo -n $( basename ${vcf} .vcf.gz )
+for region in chr10:131565064 chr12:109660598 chr3:52407805 chr8:11422170 chr6:31632134 ; do
+line=$( bcftools view --no-header ${vcf} ${region} | awk '{split($NF,a,":");gt=a[1];gsub(/0/,$4,gt);gsub(/1/,$5,gt);print gt}' )
+echo -n ",${line}"
+done ; echo ; done >> hg19.csv &
+
+```
+
