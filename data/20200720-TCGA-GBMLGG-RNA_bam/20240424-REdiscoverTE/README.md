@@ -171,9 +171,9 @@ done
 
 ```BASH
 
-join GENE.Cerebellum.GBMWTFirstTumors.GTEx_only ENSG_Symbol.tsv > GENE.Cerebellum.GBMWTFirstTumors.GTEx_only.Symbol
-join GENE.Cerebellum.GBMWTFirstTumors.TCGA_only ENSG_Symbol.tsv > GENE.Cerebellum.GBMWTFirstTumors.TCGA_only.Symbol
-join GENE.Cerebellum.GBMWTFirstTumors.shared ENSG_Symbol.tsv > GENE.Cerebellum.GBMWTFirstTumors.shared.Symbol
+join GENE.Cerebellum.GBMWTFirstTumors.GTEx_only <( tail -n +2 ENSG_Symbol.tsv ) > GENE.Cerebellum.GBMWTFirstTumors.GTEx_only.Symbol
+join GENE.Cerebellum.GBMWTFirstTumors.TCGA_only <( tail -n +2 ENSG_Symbol.tsv ) > GENE.Cerebellum.GBMWTFirstTumors.TCGA_only.Symbol
+join GENE.Cerebellum.GBMWTFirstTumors.shared <( tail -n +2 ENSG_Symbol.tsv ) > GENE.Cerebellum.GBMWTFirstTumors.shared.Symbol
 
 ```
 
@@ -484,11 +484,11 @@ Can you pull the co expression row for that RE, i.e. which genes come up as corr
 
 cat GENE_x_RE_all.Cerebellum.correlation.shared.tsv | datamash transpose > GENE_x_RE_all.Cerebellum.correlation.shared.T.tsv
 ( head -1 GENE_x_RE_all.Cerebellum.correlation.shared.T.tsv && grep -m1 "^HERVS71-int" GENE_x_RE_all.Cerebellum.correlation.shared.T.tsv ) | awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if(sqrt($i^2)<=0.0005){print h[i]" "$i > "GENE_x_RE_all.Cerebellum.correlation.shared.T."$1".csv"}}}'
-join ENSG_Symbol.tsv GENE_x_RE_all.Cerebellum.correlation.shared.T.HERVS71-int.csv
+join <( tail -n +2 ENSG_Symbol.tsv ) GENE_x_RE_all.Cerebellum.correlation.shared.T.HERVS71-int.csv
 
 cat GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.tsv | datamash transpose > GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.tsv
 ( head -1 GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.tsv && grep -m1 "^HERVS71-int" GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.tsv ) | awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if(sqrt($i^2)<=0.0005){print h[i]" "$i > "GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T."$1".csv"}}}'
-join ENSG_Symbol.tsv GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.HERVS71-int.csv 
+join <( tail -n +2 ENSG_Symbol.tsv ) GENE_x_RE_all.GBMWTFirstTumors.correlation.shared.T.HERVS71-int.csv 
 
 ```
 
@@ -623,9 +623,9 @@ awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i=
 awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i==0)print $1"\t"h[i]}}'  cocor.RE_all.one.tsv > cocor.RE_all.one.0.tsv
 
 
-join ENSG_Symbol.tsv cocor.RE_all.both.0.tsv | sed 's/ /\t/g' > cocor.RE_all.both.0.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all.both.0.tsv | sed 's/ /\t/g' > cocor.RE_all.both.0.symbol.tsv
 
-join ENSG_Symbol.tsv cocor.RE_all.one.0.tsv | sed 's/ /\t/g' > cocor.RE_all.one.0.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all.one.0.tsv | sed 's/ /\t/g' > cocor.RE_all.one.0.symbol.tsv
 
 ```
 
@@ -826,9 +826,9 @@ awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i=
 awk -F"\t" '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i==0)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.one.tsv > cocor.RE_all_repFamily.one.0.tsv
 
 
-join ENSG_Symbol.tsv cocor.RE_all_repFamily.both.0.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.0.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all_repFamily.both.0.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.0.symbol.tsv
 
-join ENSG_Symbol.tsv cocor.RE_all_repFamily.one.0.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.0.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all_repFamily.one.0.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.0.symbol.tsv
 
 ```
 
@@ -875,8 +875,8 @@ Search for L1 threshold.
 for t in 1e-7 1e-8 1e-9 ; do
 awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.both.tsv > cocor.RE_all_repFamily.both.${t}.tsv
 awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]}}'  cocor.RE_all_repFamily.one.tsv > cocor.RE_all_repFamily.one.${t}.tsv
-join ENSG_Symbol.tsv cocor.RE_all_repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.${t}.symbol.tsv
-join ENSG_Symbol.tsv cocor.RE_all_repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.${t}.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all_repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.${t}.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all_repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.${t}.symbol.tsv
 done
 ```
 
@@ -916,9 +916,9 @@ done
 
 ```BASH
 
-join GENE.CerebellumSelect.GBMWTFirstTumors.GTEx_only ENSG_Symbol.tsv > GENE.CerebellumSelect.GBMWTFirstTumors.GTEx_only.Symbol
-join GENE.CerebellumSelect.GBMWTFirstTumors.TCGA_only ENSG_Symbol.tsv > GENE.CerebellumSelect.GBMWTFirstTumors.TCGA_only.Symbol
-join GENE.CerebellumSelect.GBMWTFirstTumors.shared    ENSG_Symbol.tsv > GENE.CerebellumSelect.GBMWTFirstTumors.shared.Symbol
+join GENE.CerebellumSelect.GBMWTFirstTumors.GTEx_only <( tail -n +2 ENSG_Symbol.tsv ) > GENE.CerebellumSelect.GBMWTFirstTumors.GTEx_only.Symbol
+join GENE.CerebellumSelect.GBMWTFirstTumors.TCGA_only <( tail -n +2 ENSG_Symbol.tsv ) > GENE.CerebellumSelect.GBMWTFirstTumors.TCGA_only.Symbol
+join GENE.CerebellumSelect.GBMWTFirstTumors.shared    <( tail -n +2 ENSG_Symbol.tsv ) > GENE.CerebellumSelect.GBMWTFirstTumors.shared.Symbol
 
 ```
 
@@ -1112,16 +1112,16 @@ for t in 1e-7 1e-8 1e-9 1e-10 1e-11 1e-12 1e-13 1e-14 1e-15 1e-16 1e-17 1e-18 1e
 echo $t
 echo cocor.RE_all_repFamily.both.${t}.tsv
 awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all_repFamily.both.tsv > cocor.RE_all_repFamily.both.${t}.tsv
-join ENSG_Symbol.tsv cocor.RE_all_repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.${t}.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all_repFamily.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.both.${t}.symbol.tsv
 echo cocor.RE_all_repFamily.one.${t}.tsv
 awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all_repFamily.one.tsv > cocor.RE_all_repFamily.one.${t}.tsv
-join ENSG_Symbol.tsv cocor.RE_all_repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.${t}.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all_repFamily.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all_repFamily.one.${t}.symbol.tsv
 echo cocor.RE_all.both.${t}.tsv
 awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all.both.tsv > cocor.RE_all.both.${t}.tsv
-join ENSG_Symbol.tsv cocor.RE_all.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.both.${t}.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all.both.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.both.${t}.symbol.tsv
 echo cocor.RE_all.one.${t}.symbol.tsv
 awk -F"\t" -v t=$t '(NR==1){for(i=2;i<=NF;i++){h[i]=$i}}(NR>1){for(i=2;i<=NF;i++){if($i<=t)print $1"\t"h[i]"\t"$i}}'  cocor.RE_all.one.tsv > cocor.RE_all.one.${t}.tsv
-join ENSG_Symbol.tsv cocor.RE_all.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.one.${t}.symbol.tsv
+join <( tail -n +2 ENSG_Symbol.tsv ) cocor.RE_all.one.${t}.tsv | sed 's/ /\t/g' > cocor.RE_all.one.${t}.symbol.tsv
 done
 ```
 
@@ -1264,4 +1264,67 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 done ; done
 
 ```
+
+
+
+
+
+
+##	20240523
+
+I added a header line to the ENSG_Symbol.tsv and modified the above.
+
+datamash and cut are a pain and can't use a tab as a separator.
+
+Semi-colon
+
+```BASH
+#tail -n +2 /francislab/data1/refs/ucsf500_genes_list.csv | awk -F, '{print $1;print $2}' | grep -vs none | sort >> UCSF500
+#tail -n +2 /francislab/data1/refs/UCSF500_genes.csv | tr -d "\r" | sort >> UCSF500
+
+echo Gene > UCSF500
+tail -n +2 /francislab/data1/refs/UCSF500_genes.csv | sort >> UCSF500
+
+```
+
+```BASH
+
+for s in both one ; do
+
+join --header -t\; <( sed 's/\t/;/g' ENSG_Symbol.tsv )  <( sed 's/\t/;/g' cocor.RE_all.${s}.tsv ) | cut -d\; -f2- > tmp1
+head -1 tmp1 > tmp2
+tail -n +2 tmp1 | sort -t\; -k1,1 >> tmp2
+join --header -t\; UCSF500 tmp2 | sed 's/;/\t/g' > cocor.RE_all.UCSF500.${s}.tsv
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=${s} --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/cocor.RE_all.${s}.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all.UCSF500.${s}.tsv"
+
+done
+
+```
+
+
+
+
+Filter out RE's from threshold
+
+```BASH
+
+for t in 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 0 ; do 
+for s in both one ; do
+
+sed 's/\t/;/g' cocor.RE_all.UCSF500.${s}.tsv | datamash transpose -t\; > tmp1
+join --header -t\; cocor.RE_all.${s}.${t}.RE_all.txt tmp1 | datamash transpose -t\; | sed 's/;/\t/g' > cocor.RE_all.UCSF500.${s}.${t}.tsv
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=${s}.${t} --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/cocor.RE_all.${s}.${t}.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all.UCSF500.${s}.${t}.tsv"
+
+done ; done
+
+```
+
 
