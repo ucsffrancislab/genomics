@@ -1164,3 +1164,104 @@ done
 
 ```
 
+
+
+##	20240522
+
+Rollup primary and only first tumors
+
+
+688 samples
+
+
+```BASH
+
+mkdir FirstTumors_out
+for s in $( cat FirstTumors ) ; do
+if [ -d out/${s}.salmon.REdiscoverTE.k15 ] ; then
+ln -s ../out/${s}.salmon.REdiscoverTE.k15 FirstTumors_out/
+fi
+done
+
+```
+
+
+
+```BASH
+
+REdiscoverTE_rollup.bash \
+--indir ${PWD}/FirstTumors_out \
+--datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
+--outbase ${PWD}/FirstTumors_REdiscoverTE_rollup_noquestion
+
+```
+
+AFTER COMPLETION
+
+```BASH
+
+REdiscoverTE_rollup_merge.bash --outbase ${PWD}/FirstTumors_REdiscoverTE_rollup_noquestion
+
+```
+
+```BASH
+
+box_upload.bash FirstTumors_REdiscoverTE_rollup_noquestion/*RDS
+
+```
+
+
+
+
+
+
+
+
+Make matrices smaller before creating the previous GBMWTFirstTumors heatmaps
+* Filter on UCSF 500
+* Filter on only those that have good correlation or low p-value
+
+
+```BASH
+
+for t in 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 0 ; do 
+for s in both one ; do
+
+echo "GENE" > cocor.RE_all.${s}.${t}.GENE.txt
+cut -f1 cocor.RE_all.${s}.${t}.tsv | sort | uniq >> cocor.RE_all.${s}.${t}.GENE.txt
+echo "RE" > cocor.RE_all.${s}.${t}.RE_all.txt
+cut -f2 cocor.RE_all.${s}.${t}.tsv | sort | uniq >> cocor.RE_all.${s}.${t}.RE_all.txt
+
+done ; done
+
+```
+
+
+```BASH
+
+for t in 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 0 ; do 
+for s in both one ; do
+
+join --header -t\; cocor.RE_all.${s}.${t}.GENE.txt <( sed 's/\t/;/g' cocor.RE_all.${s}.tsv ) | datamash transpose -t\; > tmp
+join --header -t\; cocor.RE_all.${s}.${t}.RE_all.txt tmp | datamash transpose -t\; | sed 's/;/\t/g' > cocor.RE_all.${s}.${t}.tsv
+\rm tmp
+
+done ; done
+
+```
+
+
+```BASH
+
+for t in 1e-14 1e-15 1e-16 1e-17 1e-18 1e-19 1e-20 0 ; do 
+for s in both one ; do
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=${s}.${t} --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/cocor.RE_all.${s}.${t}.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; ${PWD}/REdiscoverTE_cocor_heatmap.Rmd ${PWD}/cocor.RE_all.${s}.${t}.tsv"
+
+done ; done
+
+```
+
