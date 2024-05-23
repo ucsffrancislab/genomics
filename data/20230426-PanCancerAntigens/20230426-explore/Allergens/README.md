@@ -224,3 +224,39 @@ done ; done ; done
 
 
 
+##	20240523
+
+
+
+
+```
+echo TranscriptID > GBM_tumor_gte_1_TranscriptID.txt
+tail -n +3 41588_2023_1349_MOESM3_ESM/S1.csv | awk -F, '($26>=1){print $1}' | sort >> GBM_tumor_gte_1_TranscriptID.txt
+
+join --header -t, GBM_tumor_gte_1_TranscriptID.txt 41588_2023_1349_MOESM3_ESM/S10.sorted.csv | awk -F, '(NR>1 && $13!="None"){print ">"$1"-"$10;print $13}' > S10_GBM_tumor_gte_1.faa
+
+makeblastdb -in S10_GBM_tumor_gte_1.faa -input_type fasta -dbtype prot -out S10_GBM_tumor_gte_1 -title S10_GBM_tumor_gte_1 -parse_seqids
+
+```
+
+
+
+```
+
+for e in 0.05 0.005 0.0005 ; do
+for a in AllergenOnline AllergenOnlineAir ; do
+for s in S10_GBM_tumor_gte_1 ; do
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${a}_IN_${s}.blastp.e${e}.tsv
+blastp -db ${s} -outfmt 6 \
+  -query ${a}.faa -evalue ${e} >> ${a}_IN_${s}.blastp.e${e}.tsv &
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${s}_IN_${a}.blastp.e${e}.tsv
+blastp -db ${a} -outfmt 6 \
+  -query ${s}.faa -evalue ${e} >> ${s}_IN_${a}.blastp.e${e}.tsv &
+
+done ; done ; done
+
+```
