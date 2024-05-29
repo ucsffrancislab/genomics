@@ -243,9 +243,9 @@ makeblastdb -in S10_GBM_tumor_gte_1.faa -input_type fasta -dbtype prot -out S10_
 
 ```
 
-for e in 0.05 0.005 0.0005 ; do
+for e in 10 0.5 0.05 0.005 0.0005 ; do
 for a in AllergenOnline AllergenOnlineAir ; do
-for s in S10_GBM_tumor_gte_1 ; do
+for s in S10 S10_GBM_tumor_gte_10 S10_GBM_tumor_gte_1 ; do
 
 echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
   > ${a}_IN_${s}.blastp.e${e}.tsv
@@ -258,5 +258,117 @@ blastp -db ${a} -outfmt 6 \
   -query ${s}.faa -evalue ${e} >> ${s}_IN_${a}.blastp.e${e}.tsv &
 
 done ; done ; done
+
+```
+
+
+
+
+##	20240528
+
+
+
+One thing I could use a hand with is making a heat map based in you allergens/TCONS you already made. (edited) 
+
+Its just for the grant and just needs to look pretty
+
+based on the blast results?
+
+yep- I’m not sure which one to use though. Maybe the 0.05 in GBM?
+I also wonder if we should run the food set also?
+
+you want a heat map of bitscores?
+What food set?
+i see
+Was I correct calling "Aero" the respiratory?
+and "airway"
+
+Yes- but I noticed that some area really really high. I think you ran the whole protein not the tile?
+That is OK for this… we just need to scale it or something
+
+It would be good to be able to have “Respiratory” and “Food” sections on the heat map.
+I think animal and plant is good
+
+Yes, I used the full length Allergen and TCONS transcripts
+
+Perfectly fine for this, we could just cap the bit score at 40 or something for plotting
+
+
+
+
+
+
+
+
+
+```
+
+tail -n +2 AllergenOnline.csv | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($8!="\"\"" && $4~/(Food)/){print "cat AllergenOnline/"$8".faa"}' | tr -d \" | sh | sed -e '/^>/s/[], ():;,=\/[]/_/g' -e '/^>/s/__/_/g' -e '/^>/s/\(^.\{1,51\}\).*/\1/' > AllergenOnlineFood.faa
+makeblastdb -in AllergenOnlineFood.faa -input_type fasta -dbtype prot -out AllergenOnlineFood -title AllergenOnlineFood -parse_seqids
+
+```
+
+
+```
+
+for e in 10 0.5 0.05 0.005 0.0005 ; do
+for a in AllergenOnlineFood ; do
+for s in S10 S10_GBM_tumor_gte_10 S10_GBM_tumor_gte_1 ; do
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${a}_IN_${s}.blastp.e${e}.tsv
+blastp -db ${s} -outfmt 6 \
+  -query ${a}.faa -evalue ${e} >> ${a}_IN_${s}.blastp.e${e}.tsv &
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${s}_IN_${a}.blastp.e${e}.tsv
+blastp -db ${a} -outfmt 6 \
+  -query ${s}.faa -evalue ${e} >> ${s}_IN_${a}.blastp.e${e}.tsv &
+
+done ; done ; done
+
+```
+
+
+
+
+
+
+
+```
+
+./blast_bitscore_heatmap.Rmd S10_GBM_tumor_gte_1_IN_AllergenOnlineAir.blastp.e0.5.tsv 
+./blast_bitscore_heatmap.Rmd S10_GBM_tumor_gte_1_IN_AllergenOnlineFood.blastp.e0.5.tsv 
+./blast_bitscore_heatmap.Rmd AllergenOnlineAir_IN_S10_GBM_tumor_gte_1.blastp.e0.5.tsv
+./blast_bitscore_heatmap.Rmd AllergenOnlineFood_IN_S10_GBM_tumor_gte_1.blastp.e0.5.tsv
+
+./blast_bitscore_heatmap.Rmd S10_GBM_tumor_gte_1_IN_AllergenOnlineAir.blastp.e0.05.tsv 
+./blast_bitscore_heatmap.Rmd S10_GBM_tumor_gte_1_IN_AllergenOnlineFood.blastp.e0.05.tsv 
+./blast_bitscore_heatmap.Rmd AllergenOnlineAir_IN_S10_GBM_tumor_gte_1.blastp.e0.05.tsv
+./blast_bitscore_heatmap.Rmd AllergenOnlineFood_IN_S10_GBM_tumor_gte_1.blastp.e0.05.tsv
+
+
+
+
+```
+
+
+
+```
+open S10_GBM_tumor_gte_1_IN_*blastp.e0.5.heatmap.html *_IN_S10_GBM_tumor_gte_1.blastp.e0.5.heatmap.html
+```
+
+
+
+
+
+
+
+
+##	Deving a shiny app to allow for some playing with the heatmap
+
+```
+
+R -e "library(shiny);runApp(launch.browser = TRUE)"
 
 ```
