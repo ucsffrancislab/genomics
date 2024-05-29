@@ -6,16 +6,18 @@ library('tidyr')
 
 
 # Define UI for data upload app ----
+#	fluidPage is apparently 12 unit wide.
+#	by default the sidebarPanel is then 4 units wide and the mainPanel is 8
 ui <- fluidPage(
 
   # App title ----
-  titlePanel("Uploading Files"),
+  titlePanel("Blast outfmt=6 Heatmap"),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
 
     # Sidebar panel for inputs ----
-    sidebarPanel(
+    sidebarPanel( width = 2,
 
       # Input: Select a file ----
       fileInput("file1", "Choose TSV File",
@@ -37,11 +39,15 @@ ui <- fluidPage(
 					label = "Minimum Percent Ident",
 					value = 25, min = 0, max = 100, step = 1),
 
-			#	need better slider
+			sliderInput(inputId = "max_evalue_exponent", 
+					label = "Maximum e-value EXPONENT",
+					value = -1, min = -30, max = 1, step = 1),
 
-			shinyWidgets::sliderTextInput("maxevalue","Maximum e-Value:",
-				choices=c(0, 0.000001, 0.000005, 0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10),
-				selected=0.5, grid = T ),
+			#	need better slider
+#
+#			shinyWidgets::sliderTextInput("maxevalue","Maximum e-Value:",
+#				choices=c(0, 0.000001, 0.000005, 0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5, 10),
+#				selected=0.5, grid = T ),
 
 			sliderInput(inputId = "minbitscore", 
 					label = "Minimum bit score",
@@ -56,7 +62,7 @@ ui <- fluidPage(
 
       # Output: Data file ----
       #tableOutput("contents")
-			plotOutput(outputId = "plot",height="800px")
+			plotOutput(outputId = "plot",height="1000px")
 
     )
   )
@@ -81,9 +87,6 @@ server <- function(input, output) {
                  header = input$header, 
                  sep = "\t")
 
-print("input$header")
-print(input$header)
-
 				if( input$header == FALSE ){
 					colnames(blast)=c(
 						"qaccver","saccver","pident","length","mismatch","gapopen","qstart","qend","sstart","send","evalue","bitscore")
@@ -91,7 +94,9 @@ print(input$header)
 
 				#	column types can be a problem if has a header and box is unchecked
 
-				blast = blast[ which( blast['evalue'] <= input$maxevalue ), ]
+				#blast = blast[ which( blast['evalue'] <= input$maxevalue ), ]
+
+				blast = blast[ which( blast['evalue'] <= 10**input$max_evalue_exponent ), ]
 
 				blast = blast[ which( blast['bitscore'] >= input$minbitscore ), ]
 
@@ -118,7 +123,12 @@ print(input$header)
 
 				#colnames(r1)=colnames(r)
 	
-				pheatmap(df1)
+				pheatmap(df1,
+					main=input$file1$name,
+					fontsize=16,
+					fontsize_row=10,
+					fontsize_col=10,
+				)
       },
       error = function(e) {
         # return a safeError if a parsing error occurs
