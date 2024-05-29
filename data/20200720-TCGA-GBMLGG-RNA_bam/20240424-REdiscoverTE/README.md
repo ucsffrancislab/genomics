@@ -1328,3 +1328,32 @@ done ; done
 ```
 
 
+
+
+
+##	20240528
+
+Hey 
+@Jake
+ can you generate a subset of the cocor matrix with only these RE elements?
+BC200
+LTR7Y
+LTR16A
+MER61D
+
+EDIT: Probably just grepping these from the thresheld tsv is actually easiest, now that I think of it. (edited) 
+
+and produce some basic thresholding tsv? like 1e-2? We are interested in Genes that have significant relationships with those 4.
+
+
+```
+sed 's/\t/;/g' cocor.RE_all.tsv | datamash transpose -t\; > tmp1
+join --header -t\; GenoSelectRE tmp1 > tmp2
+cat tmp2 | datamash transpose -t\; > tmp3
+
+for t in 1e-2 ; do
+awk -F";" -v t=$t '(NR==1){print}(NR>1){ for(i=2;i<=NF;i++){if($i<=t)print;break} }' tmp3 > tmp4
+join --header -t\; <( sed 's/\t/;/g' ENSG_Symbol.tsv ) tmp4 | sed 's/;/\t/g' | gzip > cocor.RE_all.GenoSelectRE.1e-2.tsv.gz
+done
+
+```
