@@ -18,11 +18,11 @@ ui <- fluidPage(
     sidebarPanel(
 
       # Input: Select a file ----
-      fileInput("file1", "Choose CSV File",
+      fileInput("file1", "Choose TSV File",
                 multiple = FALSE,
-                accept = c("text/csv",
-                         "text/comma-separated-values,text/plain",
-                         ".csv")),
+                accept = c("text/tsv", "text/tab-separated-values,text/plain", ".tsv")),
+
+                #accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".tsv")),
 
       # Horizontal line ----
       tags$hr(),
