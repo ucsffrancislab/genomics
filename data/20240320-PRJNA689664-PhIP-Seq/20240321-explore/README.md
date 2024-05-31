@@ -325,3 +325,19 @@ done
 
 ```
 
+
+
+
+
+
+```
+
+ for s in idxstats q20 q30 q40 ; do
+  for r in All8 TR1 TR2 Zero ; do
+   ./merge_lists_to_matrix.py -o ${s}.${r}.above_threshold.csv Zscores/${s}.${r}.*.virus_scores.abovethreshold.txt
+  done
+done
+
+
+
+```
