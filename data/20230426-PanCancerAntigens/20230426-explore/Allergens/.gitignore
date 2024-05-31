@@ -12,3 +12,5 @@ S10_*IN_Allergen*.blastp.*.tsv
 S10_*IN_Allergen*.blastp.*.heatmap.html
 Allergen*IN_S10*.blastp.*.tsv
 Allergen*IN_S10*.blastp.*.heatmap.html
+GBM_tumor_gte_1_TranscriptID.txt
+noheader_AllergenOnlineFood_IN_S10_GBM_tumor_gte_10.blastp.e0.05.tsv
