@@ -23,7 +23,8 @@ ui <- fluidPage(
 			# Input: Select a file ----
 			fileInput("file1", "Choose TSV File",
 				multiple = FALSE,
-				accept = c("text/tsv", "text/tab-separated-values,text/plain", ".tsv",
+				accept = c(".gz", 
+                   "text/tsv", "text/tab-separated-values,text/plain", ".tsv",
                    "text/csv", "text/comma-separated-values,text/plain", ".csv")),
 
 			# Input: Checkbox if file has header ----
