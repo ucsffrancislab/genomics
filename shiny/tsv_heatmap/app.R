@@ -5,6 +5,8 @@ library('pheatmap')
 library('tidyr')
 #library('dplyr')
 
+options(shiny.maxRequestSize = 50*1024^2)
+
 
 # Define UI for data upload app ----
 #	fluidPage is apparently 12 unit wide.
@@ -70,6 +72,7 @@ server <- function(input, output, session) {
 		tryCatch(
 			{
 				df <- read.csv( input$file1$datapath,
+					na.strings = c("", "-"),
 					header = input$header, 
 					sep = input$sep
 				)
@@ -102,6 +105,7 @@ server <- function(input, output, session) {
 					label = "Maximum:",
 					min   = floor(min(df)),
 					max   = ceiling(max(df)),
+					step  = 10,
 					value = max(df)
 				)
 			})
@@ -111,6 +115,7 @@ server <- function(input, output, session) {
 					label = "Minimum:",
 					min   = floor(min(df)),
 					max   = ceiling(max(df)),
+					step  = 10,
 					value = min(df)
 				)
 			})
