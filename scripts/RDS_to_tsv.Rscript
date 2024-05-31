@@ -1,0 +1,17 @@
+#!/usr/bin/env Rscript
+
+args = commandArgs(trailingOnly=TRUE)
+
+for( arg in args ){
+
+	r=readRDS( arg )
+
+	r=r$counts
+
+	write.table(r,file=paste(arg,"tsv",sep="."), quote=F, sep="\t", row.names=T, col.name=NA)
+
+	#	col.names=NA adds the empty header column for the index
+
+}
+
+
