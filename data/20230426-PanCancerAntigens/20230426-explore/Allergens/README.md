@@ -372,3 +372,32 @@ open S10_GBM_tumor_gte_1_IN_*blastp.e0.5.heatmap.html *_IN_S10_GBM_tumor_gte_1.b
 R -e "library(shiny);runApp(launch.browser = TRUE)"
 
 ```
+
+
+
+
+```
+
+for a in AllergenOnlineAir AllergenOnlineFood ; do
+for task in blastp-short ; do
+for word_size in 2 3 ; do
+for e in 10 ; do
+for s in S10 ; do
+for threshold in 10 5 1 ; do
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${a}_IN_${s}.${task}.e${e}.${word_size}.${threshold}.tsv
+blastp -db ${s} -outfmt 6 -word_size ${word_size} -threshold ${threshold} \
+  -query ${a}.faa -evalue ${e} >> ${a}_IN_${s}.${task}.e${e}.${word_size}.${threshold}.tsv &
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${s}_IN_${a}.${task}.e${e}.${word_size}.${threshold}.tsv
+blastp -db ${a} -outfmt 6 -word_size ${word_size} -threshold ${threshold} \
+  -query ${s}.faa -evalue ${e} >> ${s}_IN_${a}.${task}.e${e}.${word_size}.${threshold}.tsv &
+
+done ; done ; done ; done ; done ; done
+
+```
+
+
+
