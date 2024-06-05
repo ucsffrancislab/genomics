@@ -51,7 +51,11 @@ ui <- fluidPage(
 
 			sliderInput(inputId = "minbitscore", 
 					label = "Minimum bit score",
-					value = 20, min = 0, max = 500, step = 1)
+					value = 20, min = 0, max = 500, step = 1),
+
+			selectInput('scale', 'pHeatmap Scale', c('none','row','column')),
+
+			selectInput('variable', 'variable', c('bitscore','evalue')),
 		),
 
 		#qaccver	saccver	pident	length	mismatch	gapopen	qstart	qend	sstart	send	evalue	bitscore
@@ -102,12 +106,12 @@ server <- function(input, output) {
 
 				blast = blast[ which( blast['pident'] >= input$minpident ), ]
 
-				blast = blast[c('qaccver','saccver','bitscore')]
+				blast = blast[c('qaccver','saccver',input$variable)]
 
 				#print(head(blast))
 
 				df = blast %>% 
-					pivot_wider( names_from = qaccver, values_from = bitscore, values_fn = max, values_fill = 0)
+					pivot_wider( names_from = qaccver, values_from = input$variable, values_fn = max, values_fill = 0)
 
 				df = as.data.frame(df)
 
@@ -128,6 +132,7 @@ server <- function(input, output) {
 					fontsize=16,
 					fontsize_row=10,
 					fontsize_col=10,
+					scale=input$scale
 				)
       },
       error = function(e) {
