@@ -227,5 +227,97 @@ wc -l SraRunTable*
 ```
 
 
+##	20240605
+
+```
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}(NR==1){for(i=1;i<=NF;i++)print i" : "$i}' SraRunTable.csv 
+1 : Run
+2 : analyte_type
+3 : Assay Type
+4 : AssemblyName
+5 : AvgSpotLen
+6 : Bases
+7 : BioProject
+8 : BioSample
+9 : biospecimen_repository
+10 : biospecimen_repository_sample_id
+11 : body_site
+12 : Bytes
+13 : Center Name
+14 : Consent_Code
+15 : Consent
+16 : DATASTORE filetype
+17 : DATASTORE provider
+18 : DATASTORE region
+19 : Experiment
+20 : gap_accession
+21 : histological_type
+22 : Instrument
+23 : Is_Tumor
+24 : Library Name
+25 : LibraryLayout
+26 : LibrarySelection
+27 : LibrarySource
+28 : Organism
+29 : Platform
+30 : ReleaseDate
+31 : Sample Name
+32 : sex
+33 : SRA Study
+34 : study_design
+35 : study_name
+36 : submitted_subject_id
+37 : molecular_data_type
+38 : alignment_software (exp)
+39 : AvgReadLength (run)
+40 : coverage (run)
+41 : lsid (exp)
+42 : lsid (run)
+43 : project (exp)
+44 : project (run)
+45 : run_barcode (run)
+46 : run_name (run)
+47 : work_request (exp)
+48 : work_request (run)
+49 : flowcell_barcode (run)
+50 : gssr_id (exp)
+51 : gssr_id (run)
+52 : material_type (exp)
+53 : read_group_id (run)
+54 : research_project (exp)
+55 : research_project (run)
+56 : root_sample_id (exp)
+57 : root_sample_id (run)
+58 : sample_id (exp)
+59 : sample_id (run)
+60 : analysis_type (exp)
+61 : analysis_type (run)
+62 : instrument_name (run)
+63 : lane (run)
+64 : library_type (exp)
+65 : library_type (run)
+66 : sample_type (exp)
+67 : product_order (exp)
+68 : product_order (run)
+69 : data_type (exp)
+70 : data_type (run)
+71 : product_part_number (exp)
+72 : product_part_number (run)
+73 : sample_barcode (exp)
+74 : sample_barcode (run)
+75 : is_technical_control
+76 : target_set (exp)
+77 : primary_disease (exp)
+78 : secondary_accessions (run)
+```
 
 
+```
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16~/bam/ && $21=="Brain" && $25=="PAIRED" && $60!="Resequencing"){print $1}' SraRunTable.csv | sort | uniq | wc -l 
+350
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $11=="Brain - Cerebellum" && $16~/bam/ && $21=="Brain" && $25=="PAIRED" && $60!="Resequencing"){print $1}' SraRunTable.csv | sort | uniq | wc -l 
+37
+
+```
