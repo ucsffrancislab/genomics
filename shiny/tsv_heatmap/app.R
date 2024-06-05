@@ -39,6 +39,8 @@ ui <- fluidPage(
 				Tab = "\t"),
 				selected = "\t"),
 
+			selectInput('scale', 'pHeatmap Scale', c('none','row','column')),
+
 			uiOutput("slider_maximum"),
 			uiOutput("slider_minimum"),
 			#verbatimTextOutput("breaks")
@@ -132,6 +134,7 @@ server <- function(input, output, session) {
 			fontsize=16,
 			fontsize_row=10,
 			fontsize_col=10,
+			scale=input$scale
 		)
 
 	})	#	output$plot <- renderPlot({
