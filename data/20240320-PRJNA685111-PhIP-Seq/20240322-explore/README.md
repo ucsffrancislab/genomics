@@ -221,6 +221,8 @@ commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 1
 
 
 ```
+mkdir Zscores
+mv *.count.Zscores.*.csv Zscores/
 
 for sample in $( tail -n +2 filereport_combined.tsv | cut -f10 | grep -vs input | sed 's/_TR.$//' | sort | uniq ) ; do
  echo ${PWD}/elledge_calc_scores_nofilter.bash $sample
@@ -256,6 +258,38 @@ done
 
 ```
 
+
+
+
+Large variation in bam file size
+
+```
+
+ll -Sr out/*bam | head
+-r--r----- 1 gwendt francislab    551773 May 24 20:46 out/SRR13346395.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab    553015 May 24 12:33 out/SRR13335598.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab    585065 May 24 12:22 out/SRR13335544.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab    710357 May 24 12:01 out/SRR13335434.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab    721304 May 24 12:13 out/SRR13335503.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab    845268 May 24 12:21 out/SRR13335543.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab   1020794 May 24 12:13 out/SRR13335502.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab   1363639 May 24 20:30 out/SRR13346358.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab   1467331 May 24 10:56 out/SRR13335107.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab   1659468 May 24 20:45 out/SRR13346394.VIR3_clean.1-80.bam
+
+ll -Sr out/*bam | tail
+-r--r----- 1 gwendt francislab 109383257 May 24 19:12 out/SRR13346140.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 110165029 May 24 12:20 out/SRR13335532.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 110413570 May 24 19:25 out/SRR13346203.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 111250323 May 24 17:57 out/SRR13345923.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 111333718 May 24 12:32 out/SRR13335587.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 112397361 May 24 19:26 out/SRR13346206.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 113121208 May 24 11:00 out/SRR13335122.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 116288308 May 24 17:06 out/SRR13335993.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 124019110 May 24 11:15 out/SRR13335190.VIR3_clean.1-80.bam
+-r--r----- 1 gwendt francislab 130445817 May 24 17:10 out/SRR13336010.VIR3_clean.1-80.bam
+
+```
 
 
 
