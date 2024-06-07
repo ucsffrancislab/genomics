@@ -26,8 +26,8 @@ ui <- fluidPage(
 			fileInput("file1", "Choose TSV File",
 				multiple = FALSE,
 				accept = c(".gz", 
-                   "text/tsv", "text/tab-separated-values,text/plain", ".tsv",
-                   "text/csv", "text/comma-separated-values,text/plain", ".csv")),
+					"text/tsv", "text/tab-separated-values,text/plain", ".tsv",
+					"text/csv", "text/comma-separated-values,text/plain", ".csv")),
 
 			# Input: Checkbox if file has header ----
 			checkboxInput("header", "Header", TRUE),
@@ -45,26 +45,28 @@ ui <- fluidPage(
 			uiOutput("slider_minimum"),
 			#verbatimTextOutput("breaks")
 
-		),
+		),	#	sidebarPanel( width = 2,
 
 
 		# Main panel for displaying outputs ----
 		mainPanel(
 
-		# Output: Data file ----
-		#tableOutput("contents")
-			plotOutput(outputId = "plot",height="1000px")
+			# Output: Tabset w/ plot, summary, and table ----
+			tabsetPanel(type = "tabs",
+				tabPanel("Plot", plotOutput(outputId = "plot",height="1000px")),
+				tabPanel("Table", tableOutput("table"))
+			)
 
-		)
-	)
-)
+		)	#	mainPanel(
+	)	#	sidebarLayout(
+)	#	ui <- fluidPage(
 
 
 
 # Define server logic to read selected file ----
 server <- function(input, output, session) {
 
-	output$plot <- renderPlot({
+	df <- reactive({
 
 		# input$file1 will be NULL initially. After the user selects
 		# and uploads a file, 
@@ -123,8 +125,18 @@ server <- function(input, output, session) {
 			})
 		}
 
+		return( df )
+	})
+
+
+
+	output$plot <- renderPlot({
+		req(input$file1)
+
 		maximum <- if(is.null(input$maximum))  1e10 else input$maximum
 		minimum <- if(is.null(input$minimum)) 1e-10 else input$minimum
+
+		df=df()
 
 		pheatmap( df[ 
 			apply(df, 1, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ),
@@ -138,6 +150,13 @@ server <- function(input, output, session) {
 		)
 
 	})	#	output$plot <- renderPlot({
+
+	output$table <- renderTable({
+		req(input$file1)
+		head(df(),50)
+}, rownames = TRUE)
+
+
 }	#	server <- function(input, output) {
 
 # Create Shiny app ----
