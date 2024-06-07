@@ -401,3 +401,41 @@ done ; done ; done ; done ; done ; done
 
 
 
+
+
+##	20240605
+
+
+
+```
+
+mkdir S10
+faSplit byname S10.faa S10/
+
+for f in S10/*fa ; do
+b=${f%.fa}
+faSplit size ${f} 25 ${b}_tiles -extra=25 -oneFile
+done
+
+
+```
+
+
+```
+for a in AllergenOnlineAir AllergenOnlineFood ; do
+for task in blastp-short ; do
+for word_size in 2 3 ; do
+for e in 10 ; do
+for s in S10_tiles ; do
+for threshold in 5 3 1 ; do
+
+echo -e "qaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore" \
+  > ${s}_IN_${a}.${task}.e${e}.${word_size}.${threshold}.tsv
+blastp -db ${a} -outfmt 6 -word_size ${word_size} -threshold ${threshold} \
+  -query ${s}.faa -evalue ${e} >> ${s}_IN_${a}.${task}.e${e}.${word_size}.${threshold}.tsv &
+
+done ; done ; done ; done ; done ; done
+
+```
+
+

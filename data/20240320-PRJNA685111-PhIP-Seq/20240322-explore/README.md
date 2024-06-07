@@ -130,71 +130,132 @@ bowtie2_array_wrapper.bash --norc --single --very-sensitive --sort --extension .
 ```
 
 
-```
-samtools view out/SRR13277039.VIR3_clean.1-80.bam | cut -f5 | sort -k1n | uniq -c
-  65728 0
-      2 2
-  35985 3
-     12 4
-     20 5
-  50286 8
-     22 14
-     49 16
-      2 21
-    164 22
-  87108 23
-  53204 24
-     12 25
-    195 26
-    213 27
-     14 32
-     21 33
-     21 34
-     30 35
-    206 36
-    435 37
-   1809 38
-   2576 39
-  35245 40
- 577703 42
-```
 
 
-samtools idxstats will treat all these the same.
-Its much faster, yes.
+
+
+
+
+
+
 
 
 ```
 
-samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${SAMPLE_ID}" | tr "\\t" "," > ${bam%.bam}.idxstats.count.csv
-samtools  $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${SAMPLE_ID}" | tr "\\t" "," > ${bam%.bam}.idxstats.count.csv
+for bam in ${PWD}/out/*bam ; do
+ echo ${PWD}/count_alignments.bash ${bam}
+done > commands
+commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 15G 
 
+```
+
+
+Note: To perform the Z-score analysis, count.combined files are merged into a table, and columns corresponding with no-serum controls are summed in a column called "input".
+
+
+
+Create "zero" input column
+
+```
+
+for s in idxstats q20 q30 q40 ; do
+ merge_all_combined_counts_files_add_zero.py -o ${s}.Zero.count.csv.gz out/*.${s}.count.csv.gz
+ chmod 400 ${s}.Zero.count.csv.gz
+done
 
 ```
 
 
+
+
 ```
-SAMPLE_ID=.......
 
-#	Not sure why the `samtools view -u` is needed.
-#	  -u, --uncompressed         Uncompressed BAM output (and default to --bam)
+r="Zero"
+for s in idxstats q20 q30 q40 ; do
 
-bowtie -3 25 -n 3 -l 30 -e 1000 --tryhard --nomaqround --norc --best --sam --quiet \
-	-x ${INDEX} \
-	$fq \
-	| samtools view -u - \
-	| samtools sort -T ${fq%.fastq.gz}.2.temp.bam -o ${fq%.fastq.gz}.bam
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=${s}.${r} --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/Zscore.${s}.${r}.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; elledge_Zscore_analysis.R ${PWD}/${s}.${r}.count.csv.gz"
 
+done
 
-bam=${fq%.fastq.gz}.bam
-samtools index $bam
-
-
-#samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e '1 i id\tSAMPLE_ID' | tr "\\t" "," > ${bam%.bam}.count.csv
-samtools idxstats $bam | cut -f 1,3 | sed -e '/^\*\t/d' -e "1 i id\t${SAMPLE_ID}" | tr "\\t" "," > ${bam%.bam}.count.csv
-
-
-csv=${bam%.bam}.count.csv
-gzip $csv
 ```
+
+
+
+I think that the output of the zscore command needs to have the columns reordered.
+
+They are "all of the samples ...,id,group,input"
+
+Not sure if "input" is needed anymore or what "group" is.
+
+
+```
+
+#awk 'BEGIN{FS=OFS=","}(NR==1){print $5,$6,$1,$2,$3,$4,$7}(NR>1){printf "%d,%d,%.2g,%.2g,%.2g,%.2g,%d\n",$5,$6,$1,$2,$3,$4,$7}' \
+#  Elledge/fastq_files/merged.combined.count.Zscores.csv > Elledge/fastq_files/merged.combined.count.Zscores.reordered.csv
+
+```
+
+
+
+
+
+This is over 3000 commands. Should join the 4 different "s" types
+
+```
+
+r="Zero"
+
+for t in $( tail -n +2 filereport_combined.tsv | cut -f10 | sort | sed 's/_TR.$//' | uniq | grep -vs input ) ; do
+ samples=$( grep ${t}_ filereport_combined.tsv | cut -f4 | paste -sd" " )
+ echo "module load WitteLab python3/3.9.1; booleanize_Zscore_replicates.py -s ${t} -m ${PWD}/idxstats.${r}.count.Zscores.csv ${samples}; booleanize_Zscore_replicates.py -s ${t} -m ${PWD}/q20.${r}.count.Zscores.csv ${samples}; booleanize_Zscore_replicates.py -s ${t} -m ${PWD}/q30.${r}.count.Zscores.csv ${samples}; booleanize_Zscore_replicates.py -s ${t} -m ${PWD}/q40.${r}.count.Zscores.csv ${samples}"
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 15G 
+
+```
+
+
+
+
+```
+
+for sample in $( tail -n +2 filereport_combined.tsv | cut -f10 | grep -vs input | sed 's/_TR.$//' | sort | uniq ) ; do
+ echo ${PWD}/elledge_calc_scores_nofilter.bash $sample
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 720 --threads 2 --mem 15G 
+
+```
+
+
+
+```
+
+for f in *.virus_scores.csv ; do
+echo $f
+join -t, ${f} <( tail -n +2 /c4/home/gwendt/github/ucsffrancislab/PhIP-Seq/Elledge/VirScan_viral_thresholds.csv ) | awk -F, '($2>$3){print $1}' > ${f%.csv}.abovethreshold.txt
+done
+
+```
+
+
+
+
+
+
+```
+
+r="Zero"
+
+for s in idxstats q20 q30 q40 ; do
+ ./merge_lists_to_matrix.py -o ${s}.${r}.above_threshold.csv Zscores/${s}.${r}.*.virus_scores.abovethreshold.txt
+done
+
+```
+
+
+
 
