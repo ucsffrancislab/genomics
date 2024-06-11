@@ -119,7 +119,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo 
 
 	r1=${line}
-	r2=${line/_R1./_R2.}
+	#r2=${line/_R1./_R2.}
+	r2=${line/1.fast/2.fast}
 
 	date=$( date "+%Y%m%d%H%M%S%N" )
 
@@ -264,11 +265,14 @@ else
 	
 	threads=4
 	array=""
+	time="1-0"
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
 			--array)
 				shift; array=$1; shift;;
+			--time)
+				shift; time=$1; shift;;
 #			-o|--out|-e|--extension)
 #				array_options="${array_options} $1 $2"; shift; shift;;
 			-@|-t|--threads)
@@ -309,7 +313,7 @@ else
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
 			--parsable --job-name="$(basename $0)" \
-			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} \
+			--time=${time} --nodes=1 --ntasks=${threads} --mem=${mem} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) ${array_options} )
 	
