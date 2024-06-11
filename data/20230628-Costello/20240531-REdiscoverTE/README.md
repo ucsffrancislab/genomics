@@ -12,6 +12,15 @@ REdiscoverTE_array_wrapper.bash --paired \
   --extension _R1.fastq.gz \
   ${PWD}/../20231004-cutadapt/out/*_R1.fastq.gz
 
+
+REdiscoverTE_array_wrapper.bash --paired \
+  --array 413-568 --time 1-0 \
+  --out ${PWD}/out \
+  --extension _R1.fastq.gz \
+  ${PWD}/../20231004-cutadapt/out/*_R1.fastq.gz
+
+
+
 ```
 
 
