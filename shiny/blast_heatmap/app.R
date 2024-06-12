@@ -66,7 +66,7 @@ ui <- fluidPage(
 )	#	ui <- fluidPage(
 
 # Define server logic to read selected file ----
-server <- function(input, output) {
+server <- function(input, output, session) {
 
 	df <- reactive({
 
