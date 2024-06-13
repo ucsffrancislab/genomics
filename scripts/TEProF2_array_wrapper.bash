@@ -227,11 +227,14 @@ else
 	
 	threads=4
 	array=""
+	time="1-0"
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
 			--array)
 				shift; array=$1; shift;;
+			--time)
+				shift; time=$1; shift;;
 			-t|--threads)
 				shift; threads=$1; shift;;
 			-o|--out|--outdir|-e|--extension|-s|--strand|--arguments)
@@ -274,7 +277,7 @@ else
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
 			--parsable --job-name="$(basename $0)" \
-			--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+			--time=${time} --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) ${array_options} )
 

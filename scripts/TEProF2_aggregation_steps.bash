@@ -16,6 +16,7 @@ ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-32}
 strand=""
 using_reference=false
+time="1-0"
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -25,6 +26,8 @@ while [ $# -gt 0 ] ; do
 			shift; IN=$1; shift;;
 		-t|--threads)
 			shift; threads=$1; shift;;
+		--time)
+			shift; time=$1; shift;;
 		-o|--out)
 			shift; OUT=$1; shift;;
 		-r|--reference_merged_candidates_gtf)
@@ -548,7 +551,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="finalStatisticsOutput" \
-			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
 			--output=${OUT}/finalStatisticsOutput.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
@@ -564,7 +567,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="translationPart1" \
-			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
 			--output=${OUT}/translationPart1.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
@@ -582,7 +585,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="CPC2" \
-			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
 			--output=${OUT}/CPC2.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
@@ -598,7 +601,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="translationPart2" \
-			--time=20160 --nodes=1 --ntasks=4 --mem=30G \
+			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
 			--output=${OUT}/translationPart2.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
@@ -628,7 +631,7 @@ else
 
 	sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 		--job-name="$(basename $0)" \
-		--time=14-0 --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
+		--time=${time} --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
 			$( realpath ${0} ) --arguments ${ARGUMENTS} --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
 
