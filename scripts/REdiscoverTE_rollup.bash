@@ -61,7 +61,7 @@ else
 
 	date=$( date "+%Y%m%d%H%M%S" )
 
-	OUTBASE="${PWD}/rollup"
+	OUTBASE="${PWD}/rollup.k${k}"
 
 	datadir=/francislab/data1/refs/REdiscoverTE/rollup_annotation/
 

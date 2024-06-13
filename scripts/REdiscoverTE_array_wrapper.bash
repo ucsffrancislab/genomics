@@ -38,11 +38,14 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	extension="_R1.fastq.gz"
 	paired=false
+	k=15
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
 			--array_file)
 				shift; array_file=$1; shift;;
+			-k)
+				shift; k=$1; shift;;
 			--paired)
 				paired=true; shift;;
 			-o|--out)
@@ -104,7 +107,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	#if [ -d $f ] ; then
 	#	echo "Directory $f exists. Skipping."
 
-	f=${OUT}/${base}.salmon.REdiscoverTE.k15/quant.sf.gz
+	f=${OUT}/${base}.salmon.REdiscoverTE.k${k}/quant.sf.gz
 	if [ -f ${f} ] && [ ! -w ${f} ] ; then
 		echo "Write-protected $f exists. Skipping."
 	else
@@ -125,7 +128,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		#scratch_out=${TMPDIR}/$( basename ${f} )
 		scratch_out=${TMPDIR}/$( basename ${d} )
 
-		index=${SALMON}/REdiscoverTE.k15
+		index=${SALMON}/REdiscoverTE.k${k}
 		cp -r ${index} ${TMPDIR}/
 		scratch_index=${TMPDIR}/$( basename ${index} )
 
@@ -188,7 +191,7 @@ else
 				shift; time=$1; shift;;
 			-t|--threads)
 				shift; threads=$1; shift;;
-			-o|--out|--outdir|-e|--extension)
+			-o|--out|--outdir|-e|--extension|-k)
 				array_options="${array_options} $1 $2"; shift; shift;;
 			--paired)
 				array_options="${array_options} $1"; shift;;
