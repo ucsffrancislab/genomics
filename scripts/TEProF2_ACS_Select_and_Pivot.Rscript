@@ -1,0 +1,49 @@
+#!/usr/bin/env Rscript
+
+library('tidyr')
+library("optparse")
+ 
+option_list = list(
+	optparse::make_option(c("-i", "--in"), dest="input", type="character", default='allCandidateStatistics.tsv',
+		help="The input file, which was be created by TEProF2."),
+	optparse::make_option(c("-o", "--out"), dest="out", type="character", default='presence.tsv',
+		help="The output file, which will be created by this program.")
+); 
+ 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser)	#, positional_arguments = TRUE);
+
+acs <- read.csv(opt$input, header = TRUE, sep = "\t")
+
+acs$present <- with(acs, ifelse( Transcript.Expression..TPM.>1 & Intron.Read.Count>1, 1, 0))
+
+#        File Transcript_Name Transcript.Expression..TPM.
+#  Fraction.of.Total.Gene.Expression Intron.Read.Count present
+
+
+#	cleanup
+#	File	Transcript_Name	Transcript Expression (TPM)	Fraction of Total Gene Expression	Intron Read Count
+
+#	just the 3 values needed from row, column and value
+
+acs = acs[c('File','Transcript_Name','present')]
+
+
+#	Pivot ( they should all be 1 or 0 and shouldn't be any duplicates )
+
+df = acs %>% pivot_wider( names_from = File, values_from = present, values_fn = max, values_fill = 0)
+
+
+#	convert the weird "data.table" to a "data.frame"
+
+df = as.data.frame(df)
+
+
+row.names(df)=df[[colnames(df)[1]]]
+df[[colnames(df)[1]]]=NULL
+
+#	write csv
+
+write.table(df, file=opt$out, quote=F, sep="\t", row.names=TRUE, col.name=NA)
+
+
