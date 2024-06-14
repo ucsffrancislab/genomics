@@ -226,3 +226,22 @@ save_pheatmap_pdf(pheat.plot, paste(output_base,"pdf", sep="."), 8, nrow(df4)/10
 ```
 
 
+
+
+```
+#	TEProF2_Heatmap_Maker.Rmd ${PWD}/S1_S10_S2_ProteinSequences_fragments_in_All_proteins.blastp.e0.05.csv
+
+#	This is a heatmap maker for a weirdly specific format. These are the highest bitscores when blasting these sequences to viruses or vice versa and put in a table if the TCONS was in the tumor or normal group.
+
+#	head github/ucsffrancislab/genomics/refs//TEProF2/S1-bitscore-table/20231128/S1_S10_S2_ProteinSequences_fragments_in_All_proteins.blastp.e0.05.csv
+#	virus,protein,ACC_tumor,ACC_normal,BLCA_tumor,BLCA_normal,BRCA_tumor,BRCA_normal,CESC_tumor,CESC_normal,CHOL_tumor,CHOL_normal,COAD_tumor,COAD_normal,DLBC_tumor,DLBC_normal,ESCA_tumor,ESCA_normal,GBM_tumor,GBM_normal,HNSC_tumor,HNSC_normal,KICH_tumor,KICH_normal,KIRC_tumor,KIRC_normal,KIRP_tumor,KIRP_normal,LAML_tumor,LAML_normal,LGG_tumor,LGG_normal,LIHC_tumor,LIHC_normal,LUAD_tumor,LUAD_normal,LUSC_tumor,LUSC_normal,MESO_tumor,MESO_normal,OV_tumor,OV_normal,PAAD_tumor,PAAD_normal,PCPG_tumor,PCPG_normal,PRAD_tumor,PRAD_normal,READ_tumor,READ_normal,SARC_tumor,SARC_normal,SKCM_tumor,SKCM_normal,STAD_tumor,STAD_normal,TGCT_tumor,TGCT_normal,THCA_tumor,THCA_normal,THYM_tumor,THYM_normal,UCEC_tumor,UCEC_normal,UCS_tumor,UCS_normal,UVM_tumor,UVM_normal,Adipose_Tissue_gtex,Ovary_gtex,Vagina_gtex,Breast_gtex,Salivary_Gland_gtex,Adrenal_Gland_gtex,Spleen_gtex,Esophagus_gtex,Prostate_gtex,Testis_gtex,Nerve_gtex,Brain_gtex,Thyroid_gtex,Lung_gtex,Skin_gtex,Blood_gtex,Blood_Vessel_gtex,Pituitary_gtex,Heart_gtex,Colon_gtex,Pancreas_gtex,Stomach_gtex,Muscle_gtex,Small_Intestine_gtex,Uterus_gtex,Kidney_gtex,Liver_gtex,Cervix_Uteri_gtex,Bladder_gtex,Fallopian_Tube_gtex,Tumor_Total,Normal_Total,GTEx_Total,GTEx_Total_without_Testis
+#	,YP_009100985,32.0,0,32.0,0,32.0,32.0,32.0,0,0,0,32.0,0,0,0,32.0,0,0,0,32.0,0,0,0,32.0,0,0,0,0,0,32.0,0,32.0,0,32.0,0,32.0,0,0,0,32.0,0,0,0,32.0,0,32.0,0,32.0,0,32.0,0,32.0,32.0,32.0,0,32.0,0,0,0,32.0,0,32.0,0,32.0,0,0,0,32.0,0,0,0,0,0,0,32.0,0,32.0,32.0,32.0,32.0,0,0,0,0,0,0,32.0,0,0,0,32.0,0,0,0,0,0,0,32.0,32.0,32.0,32.0,YP_009153153,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32.3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32.3,0,0,0
+#	Abalone herpesvirus Victoria/AUS/2009,YP_006908763,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33.5,0,33.5,0,33.5,0,0,0,0,0,33.5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33.5,0,0,0
+#	Abelson murine leukemia virus,NP_057866,47.0,0,49.7,0,49.7,0,49.7,0,0,0,49.7,0,49.7,0,49.7,0,49.7,0,49.7,0,49.7,49.7,49.7,0,49.7,0,40.8,0,49.7,0,47.0,0,49.7,47.0,49.7,0,40.4,0,49.7,0,49.7,0,47.8,0,0,0,49.7,0,47.0,0,47.0,0,49.7,32.0,49.7,0,47.0,0,47.8,0,49.7,0,49.7,0,0,0,47.8,49.7,0,0,0,47.0,0,47.0,47.8,49.7,0,49.7,49.7,33.5,47.0,47.0,0,49.7,47.0,49.7,0,0,0,0,0,0,47.8,0,0,0,49.7,49.7,49.7,49.7
+#	Abelson murine leukemia virus,NP_955595,47.0,0,49.7,0,49.7,0,49.7,0,0,0,49.7,0,49.7,0,49.7,0,49.7,0,49.7,0,49.7,49.7,49.7,0,49.7,0,41.2,0,49.7,0,47.0,0,49.7,47.0,49.7,0,41.2,0,49.7,0,49.7,0,49.3,0,0,0,49.7,0,47.0,0,47.0,0,49.7,32.3,49.7,0,47.0,0,48.5,0,49.7,0,49.7,0,0,0,49.3,49.7,0,0,0,47.0,0,47.0,49.3,49.7,0,49.7,49.7,33.9,47.0,47.0,0,49.7,47.0,49.7,0,0,0,0,0,0,49.3,0,0,0,49.7,49.7,49.7,49.7
+#	Acanthamoeba polyphaga mimivirus,YP_003986502,0,0,0,0,31.2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31.2,0,0,0,0,0,0,0,0,0,0,0,0,0,31.2,0,0,0,0,0,0,0,0,0,0,31.2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31.2,0,31.2,0
+
+```
+
+
+
