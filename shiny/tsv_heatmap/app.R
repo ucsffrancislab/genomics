@@ -41,8 +41,10 @@ ui <- fluidPage(
 
 			selectInput('scale', 'pHeatmap Scale', c('none','row','column')),
 
-			uiOutput("slider_maximum"),
-			uiOutput("slider_minimum"),
+			textInput("maximum","Maximum"),
+			textInput("minimum","Minimum"),
+			#uiOutput("slider_maximum"),
+			#uiOutput("slider_minimum"),
 			#verbatimTextOutput("breaks")
 
 		),	#	sidebarPanel( width = 2,
@@ -101,29 +103,29 @@ server <- function(input, output, session) {
 			filedatapath=session$userData$filedatapath
 		}
 
-		if( input$file1$datapath != filedatapath ){
-			session$userData$filedatapath=input$file1$datapath
-			output$slider_maximum <- renderUI({
-				sliderInput(
-					inputId = "maximum",
-					label = "Maximum:",
-					min   = floor(min(df)),
-					max   = ceiling(max(df)),
-					step  = 10,
-					value = max(df)
-				)
-			})
-			output$slider_minimum <- renderUI({
-				sliderInput(
-					inputId = "minimum",
-					label = "Minimum:",
-					min   = floor(min(df)),
-					max   = ceiling(max(df)),
-					step  = 10,
-					value = min(df)
-				)
-			})
-		}
+#		if( input$file1$datapath != filedatapath ){
+#			session$userData$filedatapath=input$file1$datapath
+#			output$slider_maximum <- renderUI({
+#				sliderInput(
+#					inputId = "maximum",
+#					label = "Maximum:",
+#					min   = floor(min(df)),
+#					max   = ceiling(max(df)),
+#					step  = 10,
+#					value = max(df)
+#				)
+#			})
+#			output$slider_minimum <- renderUI({
+#				sliderInput(
+#					inputId = "minimum",
+#					label = "Minimum:",
+#					min   = floor(min(df)),
+#					max   = ceiling(max(df)),
+#					step  = 10,
+#					value = min(df)
+#				)
+#			})
+#		}
 
 		return( df )
 	})
@@ -133,15 +135,14 @@ server <- function(input, output, session) {
 	output$plot <- renderPlot({
 		req(input$file1)
 
-		maximum <- if(is.null(input$maximum))  1e10 else input$maximum
-		minimum <- if(is.null(input$minimum)) 1e-10 else input$minimum
+		maximum	<- if(is.null(input$maximum))  1e10 else strtoi(input$maximum)
+		minimum <- if(is.null(input$minimum)) 1e-10 else strtoi(input$minimum)
 
 		df=df()
 
 		pheatmap( df[ 
 			apply(df, 1, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ),
 			apply(df, 2, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ) ],
-
 			main=input$file1$name,
 			fontsize=16,
 			fontsize_row=10,
