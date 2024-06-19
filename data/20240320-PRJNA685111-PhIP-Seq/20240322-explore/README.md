@@ -293,3 +293,25 @@ ll -Sr out/*bam | tail
 
 
 
+
+
+
+
+##	20240614
+
+
+
+
+
+
+```
+
+join -t, --header /francislab/data1/refs/PhIP-Seq/VIR3_clean.circos_framework.uniq.clean.csv <( zcat idxstats.Zero.count.csv.gz ) | head
+
+
+join -t, --header /francislab/data1/refs/PhIP-Seq/VIR3_clean.circos_framework.uniq.clean.csv <( zcat idxstats.Zero.count.csv.gz ) | cut -d, -f1-1599 | gzip > idxstats.withNames.count.csv.gz
+
+```
+
+
+
