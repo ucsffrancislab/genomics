@@ -200,3 +200,73 @@ I tried several different FPAT regexes without success. I think that best way to
 cat test.csv | sed 's/""/\x0\x0/g'  | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]*\")"}{for(i=1;i<=NF;i++){print i":"$i}}' | sed 's/\x0/"/g'
 ```
 
+
+
+
+
+##	20240613
+
+There should be just 115753 uniqued on just ids.
+
+```
+zgrep -c "^>" VIR3_clean.uniq.fna.gz 
+115753
+
+```
+
+
+```
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$10,$12}' | sort -t, -k3,3 -k2,2 -k1,1 > VIR3_clean.circos_framework.csv
+
+```
+
+
+
+```
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$10,$12}' | sort -t, -k3,3 -k2,2 -k1,1 | uniq > VIR3_clean.circos_framework.uniq.csv
+
+```
+
+This will still result in many "duplicates" as some sequence ids have different protein names.
+
+```
+grep "^87073," VIR3_clean.circos_framework.uniq.csv 
+
+87073,"Polyprotein, ",Encephalomyocarditis virus
+87073,Genome polyprotein [Cleaved into: Protein VP0 (VP4-VP2); Protein VP4 (P1A) (Rho) (Virion protein 4); Protein VP2 (Beta) (P1B) (Virion protein 2); Protein VP3 (Gamma) (P1C) (Virion protein 3); Protein VP1 (Alpha) (P1D) (Virion protein 1)] (Fragment),Encephalomyocarditis virus
+87073,Genome polyprotein [Cleaved into: Protein VP0 (VP4-VP2); Protein VP4 (P1A) (Rho) (Virion protein 4); Protein VP2 (Beta) (P1B) (Virion protein 2); Protein VP3 (Gamma) (P1C) (Virion protein 3); Protein VP1 (Alpha) (P1D) (Virion protein 1); Protein 2A (P2A) (G); Protein 2B (I) (P2B); Protein 2C (C) (P2C) (EC 3.6.1.15); Protein 3A (P3A); Protein 3B (P3B) (H) (VPg); Picornain 3C (EC 3.4.22.28) (Protease 3C) (P3C) (p22); RNA-directed RNA polymerase 3D-POL (E) (P3D-POL) (EC 2.7.7.48)],Encephalomyocarditis virus
+```
+
+
+```
+wc -l VIR3_clean.circos_framework.*
+  128257 VIR3_clean.circos_framework.csv
+  117936 VIR3_clean.circos_framework.uniq.csv
+  246193 total
+```
+
+Over 2,000 duplicates will still be there. Deal with it.
+
+
+
+
+Just can't have commas when using "join" as it is very elementary.
+It also MUST be sorted by id to match the sort on the tile counts used in the dataset.
+
+
+```
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{gsub(/,/,";",$10);gsub(/\"/,"",$10);print $17,$10,$12}' | sort -t, -k1n,1 -k2,2 -k3,3 | uniq | sed '1i id,protein,species' > VIR3_clean.circos_framework.uniq.clean.csv
+
+```
+
+
+
+
+
+
+
+
+
