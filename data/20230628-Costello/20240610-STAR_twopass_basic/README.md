@@ -1,8 +1,9 @@
 
 #	20230628-Costello/20240610-STAR_twopass_basic
 
-
 Rerunning using STAR's Basic twopassMode rather than manually with entire dataset's splice junctions.
+
+568 samples
 
 
 ```
