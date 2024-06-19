@@ -1,5 +1,5 @@
 
-#	20230628-Costello/20240610-STAR_twopass_basic
+#	20230628-Costello/20240610-STAR_twopass_basic-hg38_v43
 
 Rerunning using STAR's Basic twopassMode rather than manually with entire dataset's splice junctions.
 

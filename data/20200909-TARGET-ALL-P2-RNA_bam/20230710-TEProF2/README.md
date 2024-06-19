@@ -38,6 +38,7 @@ done | sort | uniq -c
 This data is predominantly stranded.
 
 
+20240619 - Then why didn't I pass the strand to it?
 
 
 

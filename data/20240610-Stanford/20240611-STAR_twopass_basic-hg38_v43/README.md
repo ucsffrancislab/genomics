@@ -1,5 +1,5 @@
 
-#	20240610-Stanford/20240611-STAR_twopass_basic
+#	20240610-Stanford/20240611-STAR_twopass_basic-hg38_v43
 
 
 ```

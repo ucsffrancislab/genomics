@@ -9,7 +9,7 @@
 
 ```
 module load WitteLab python3/3.9.1
-base=${PWD}/../20240611-STAR_twopass_basic/out
+base=${PWD}/../20240611-STAR_twopass_basic-hg38_v43/out
 dir=${base}/strand_check
 mkdir ${dir}
 for bai in ${base}/*Aligned.sortedByCoord.out.bam.bai; do
@@ -21,7 +21,7 @@ done
 ```
 
 ```
-base=${PWD}/../20240611-STAR_twopass_basic/out
+base=${PWD}/../20240611-STAR_twopass_basic-hg38_v43/out
 dir=${base}/strand_check
 for f in ${dir}/*.strand_check.txt ; do
 awk -F: '($1=="Fraction of reads explained by \"1+-,1-+,2++,2--\""){if($2<0.1){print "--fr"}else if($2>0.9){print "--rf"}else{print "none"}}' ${f}
@@ -46,7 +46,7 @@ TEProF2_array_wrapper.bash --threads 4 \
   --arguments /francislab/data1/refs/TEProf2/rnapipelinerefhg38/TEProF2.arguments.txt \
   --out ${PWD}/in \
   --extension .Aligned.sortedByCoord.out.bam \
-  ${PWD}/../20240611-STAR_twopass_basic/out/*.Aligned.sortedByCoord.out.bam
+  ${PWD}/../20240611-STAR_twopass_basic-hg38_v43/out/*.Aligned.sortedByCoord.out.bam
 
 ```
 
