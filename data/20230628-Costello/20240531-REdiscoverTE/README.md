@@ -30,8 +30,8 @@ REdiscoverTE_array_wrapper.bash --paired \
 
 REdiscoverTE_rollup.bash \
 --indir ${PWD}/out \
---datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation_noquestion \
---outbase ${PWD}/REdiscoverTE_rollup_noquestion
+--datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
+--outbase ${PWD}/REdiscoverTE_rollup.noquestion
 
 ```
 
@@ -39,7 +39,7 @@ AFTER COMPLETION
 
 ```BASH
 
-REdiscoverTE_rollup_merge.bash --outbase ${PWD}/REdiscoverTE_rollup_noquestion
+REdiscoverTE_rollup_merge.bash --outbase ${PWD}/REdiscoverTE_rollup.noquestion
 
 ```
 
