@@ -1,19 +1,20 @@
 #!/usr/bin/env Rscript
 
 library('tidyr')
-library("optparse")
+#library("optparse")
  
-option_list = list(
-	optparse::make_option(c("-i", "--in"), dest="input", type="character", default='allCandidateStatistics.tsv',
-		help="The input file, which was be created by TEProF2."),
-	optparse::make_option(c("-o", "--out"), dest="out", type="character", default='presence.tsv',
-		help="The output file, which will be created by this program.")
-); 
- 
-opt_parser = OptionParser(option_list=option_list);
-opt = parse_args(opt_parser)	#, positional_arguments = TRUE);
+#option_list = list(
+#	optparse::make_option(c("-i", "--in"), dest="input", type="character", default='allCandidateStatistics.tsv',
+#		help="The input file, which was be created by TEProF2."),
+#	optparse::make_option(c("-o", "--out"), dest="out", type="character", default='presence.tsv',
+#		help="The output file, which will be created by this program.")
+#); 
+# 
+#opt_parser = OptionParser(option_list=option_list);
+#opt = parse_args(opt_parser)	#, positional_arguments = TRUE);
 
-acs <- read.csv(opt$input, header = TRUE, sep = "\t")
+#acs <- read.csv(opt$input, header = TRUE, sep = "\t")
+acs <- read.csv(file('stdin'), header = TRUE, sep = "\t")
 
 acs$present <- with(acs, ifelse( Transcript.Expression..TPM.>1 & Intron.Read.Count>1, 1, 0))
 
@@ -44,6 +45,7 @@ df[[colnames(df)[1]]]=NULL
 
 #	write csv
 
-write.table(df, file=opt$out, quote=F, sep="\t", row.names=TRUE, col.name=NA)
+#write.table(df, file=opt$out, quote=F, sep="\t", row.names=TRUE, col.name=NA)
+write.table(df, file="", quote=F, sep="\t", row.names=TRUE, col.name=NA)
 
 
