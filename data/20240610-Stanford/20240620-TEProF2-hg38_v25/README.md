@@ -123,7 +123,7 @@ Assuming that (2) is the last column
 ```
 
 module load r
-TEProF2_ACS_Select_and_Pivot.Rscript -i out/allCandidateStatistics.tsv -o presence.tsv
+TEProF2_ACS_Select_and_Pivot.Rscript < out/allCandidateStatistics.tsv > presence.tsv
 
 ```
 
