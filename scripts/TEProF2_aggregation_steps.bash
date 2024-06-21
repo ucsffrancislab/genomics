@@ -559,54 +559,62 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			#-e $TREATMENTLABEL
 	fi
 
-	echo ${TEPROF2}/translationPart1.R 
-	f=${OUT}/candidates.fa
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		date=$( date "+%Y%m%d%H%M%S%N" )
-		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-			--job-name="translationPart1" \
-			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
-			--output=${OUT}/translationPart1.${date}.out.log \
-			--parsable --dependency=${dependency_id} \
-			--chdir=${OUT} \
-			--wrap="${TEPROF2}/translationPart1.R;chmod -w ${f}" )
-	fi
+#	My primary used output is from allCandidateStatistics.tsv
 
 
-	#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
+#	Never really use the output of any of this.
 
-	echo ${CPC2} -i candidates.fa -o candidates_cpcout.fa
-	f=${OUT}/candidates_cpcout.fa
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		date=$( date "+%Y%m%d%H%M%S%N" )
-		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-			--job-name="CPC2" \
-			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
-			--output=${OUT}/CPC2.${date}.out.log \
-			--parsable --dependency=${dependency_id} \
-			--chdir=${OUT} \
-			--wrap="${CPC2} -i candidates.fa -o ${f};chmod -w ${f}" )
-	fi
+#	echo ${TEPROF2}/translationPart1.R 
+#	f=${OUT}/candidates.fa
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		date=$( date "+%Y%m%d%H%M%S%N" )
+#		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+#			--job-name="translationPart1" \
+#			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
+#			--output=${OUT}/translationPart1.${date}.out.log \
+#			--parsable --dependency=${dependency_id} \
+#			--chdir=${OUT} \
+#			--wrap="${TEPROF2}/translationPart1.R;chmod -w ${f}" )
+#	fi
+#
+#
+#	#	candidates_cpcout.fa is NOT a FASTA file. It is a tsv
+#
+#	echo ${CPC2} -i candidates.fa -o candidates_cpcout.fa
+#	f=${OUT}/candidates_cpcout.fa
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		date=$( date "+%Y%m%d%H%M%S%N" )
+#		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+#			--job-name="CPC2" \
+#			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
+#			--output=${OUT}/CPC2.${date}.out.log \
+#			--parsable --dependency=${dependency_id} \
+#			--chdir=${OUT} \
+#			--wrap="${CPC2} -i candidates.fa -o ${f};chmod -w ${f}" )
+#	fi
+#
+#
+#	echo ${TEPROF2}/translationPart2.R
+#	f=${OUT}/Step13.RData
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		date=$( date "+%Y%m%d%H%M%S%N" )
+#		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+#			--job-name="translationPart2" \
+#			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
+#			--output=${OUT}/translationPart2.${date}.out.log \
+#			--parsable --dependency=${dependency_id} \
+#			--chdir=${OUT} \
+#			--wrap="${TEPROF2}/translationPart2.R;chmod -w ${f}" )
+#	fi
 
 
-	echo ${TEPROF2}/translationPart2.R
-	f=${OUT}/Step13.RData
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		date=$( date "+%Y%m%d%H%M%S%N" )
-		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-			--job-name="translationPart2" \
-			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
-			--output=${OUT}/translationPart2.${date}.out.log \
-			--parsable --dependency=${dependency_id} \
-			--chdir=${OUT} \
-			--wrap="${TEPROF2}/translationPart2.R;chmod -w ${f}" )
-	fi
+
   
 	date
 
