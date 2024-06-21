@@ -74,13 +74,23 @@ allCandidateStatistics.tsv appears to be the "final" data, so the latter steps m
 
 
 
+v25
+```
+head out/allCandidateStatistics.tsv 
+File	Transcript_Name	Transcript Expression (TPM)	Fraction of Total Gene Expression	Intron Read Count
+SRR3163500	TCONS_00000050	0.0270023307666542	1	0
+SRR3163503	TCONS_00000050	0	0	0
+SRR3163510	TCONS_00000050	0.284509957197453	1	0
+SRR3163511	TCONS_00000050	0	0	0
+SRR3163516	TCONS_00000050	4.31358694382964	1	0
+SRR3163500	TCONS_00000056	0.758606207777073	0.189844122353419	0
+SRR3163503	TCONS_00000056	1.16488043462576	0.230703735058075	0
+SRR3163510	TCONS_00000056	1.1018191227404	0.216242729992587	0
+SRR3163511	TCONS_00000056	2.66982917988048	0.27769733824597	0
+```
 
 
----
-
-
-
-
+v43
 ```
 head out/allCandidateStatistics.tsv 
 
@@ -112,6 +122,7 @@ Assuming that (2) is the last column
 
 ```
 
+module load r
 TEProF2_ACS_Select_and_Pivot.Rscript -i out/allCandidateStatistics.tsv -o presence.tsv
 
 ```
