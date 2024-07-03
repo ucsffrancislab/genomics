@@ -135,14 +135,16 @@ server <- function(input, output, session) {
 	output$plot <- renderPlot({
 		req(input$file1)
 
-		maximum	<- if(is.null(input$maximum))  1e10 else strtoi(input$maximum)
-		minimum <- if(is.null(input$minimum)) 1e-10 else strtoi(input$minimum)
-
 		df=df()
 
-		pheatmap( df[ 
+		maximum	<- if(is.null(input$maximum) || input$maximum=="" ) max(df) else strtoi(input$maximum)
+		minimum <- if(is.null(input$minimum) || input$minimum=="" ) min(df) else strtoi(input$minimum)
+
+		tmpdf = df[ 
 			apply(df, 1, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ),
-			apply(df, 2, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ) ],
+			apply(df, 2, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ) ]
+
+		pheatmap(tmpdf,
 			main=input$file1$name,
 			fontsize=16,
 			fontsize_row=10,
@@ -154,7 +156,18 @@ server <- function(input, output, session) {
 
 	output$table <- renderTable({
 		req(input$file1)
-		head(df(),50)
+
+		df=df()
+
+		maximum	<- if(is.null(input$maximum) || input$maximum=="" ) max(df) else strtoi(input$maximum)
+		minimum <- if(is.null(input$minimum) || input$minimum=="" ) min(df) else strtoi(input$minimum)
+
+		df[
+			apply(df, 1, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ),
+			apply(df, 2, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ) ]
+
+		#head(df(),50)
+
 }, rownames = TRUE)
 
 
