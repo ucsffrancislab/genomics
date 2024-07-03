@@ -62,6 +62,9 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		module load CBI r/4.2.3 samtools cufflinks bedtools2
 			# bwa bedtools2 star/2.7.7a
 
+		module load WitteLab python3/3.9.1
+
+
 		#	http://ccb.jhu.edu/software/stringtie/dl/		gffread / stringtie / gffcompare 
 		#	http://ccb.jhu.edu/software/stringtie/dl/gffread-0.12.7.Linux_x86_64.tar.gz
 		#	http://ccb.jhu.edu/software/stringtie/dl/stringtie-2.2.1.Linux_x86_64.tar.gz
