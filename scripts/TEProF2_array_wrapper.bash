@@ -171,50 +171,50 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 
-	#	Not sure if these annotated files are really needed.
-
-
-
-	#(1) <gtffile>_annotated_test_all
-	#(2) <gtffile>_annotated_filtered_test_all
-	#(3) <gtffile>_annotated_test*
-	#(4) <gtffile>_annotated_filtered_test*
-
-	infile=${f}
-	outbase=${OUT}/${base}
-	f=${outbase}.unique.gtf_annotated_test_all
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		echo "(1/8) Annotate GTF Files"
-		echo "rmskhg38_annotate_gtf_update_test_tpm"
-
-		${TEPROF2}/rmskhg38_annotate_gtf_update_test_tpm.py ${infile} ${ARGUMENTS}
-
-		chmod -w ${f}
-	fi
-
-	date
-
-	outbase=${OUT}/${base}
-	#for s in annotated_filtered_test_all annotated_test_all ; do
-	for s in annotated_filtered_test_all ; do
-
-		#(1) <gtffile>annotated_filtered_test(all)_c
-
-		f=${outbase}.unique.gtf_${s}_c
-		if [ -f $f ] && [ ! -w $f ] ; then
-			echo "Write-protected $f exists. Skipping."
-		else
-			echo "(2/8) Annotate GTF Files"
-			echo "annotationtpmprocess.py filtered"
-
-			${TEPROF2}/annotationtpmprocess.py ${infile}_${s}
-
-			chmod -w ${f}
-		fi
-
-	done
+#	#	Not sure if these annotated files are really needed.
+#
+#
+#
+#	#(1) <gtffile>_annotated_test_all
+#	#(2) <gtffile>_annotated_filtered_test_all
+#	#(3) <gtffile>_annotated_test*
+#	#(4) <gtffile>_annotated_filtered_test*
+#
+#	infile=${f}
+#	outbase=${OUT}/${base}
+#	f=${outbase}.unique.gtf_annotated_test_all
+#	if [ -f $f ] && [ ! -w $f ] ; then
+#		echo "Write-protected $f exists. Skipping."
+#	else
+#		echo "(1/8) Annotate GTF Files"
+#		echo "rmskhg38_annotate_gtf_update_test_tpm"
+#
+#		${TEPROF2}/rmskhg38_annotate_gtf_update_test_tpm.py ${infile} ${ARGUMENTS}
+#
+#		chmod -w ${f}
+#	fi
+#
+#	date
+#
+#	outbase=${OUT}/${base}
+#	#for s in annotated_filtered_test_all annotated_test_all ; do
+#	for s in annotated_filtered_test_all ; do
+#
+#		#(1) <gtffile>annotated_filtered_test(all)_c
+#
+#		f=${outbase}.unique.gtf_${s}_c
+#		if [ -f $f ] && [ ! -w $f ] ; then
+#			echo "Write-protected $f exists. Skipping."
+#		else
+#			echo "(2/8) Annotate GTF Files"
+#			echo "annotationtpmprocess.py filtered"
+#
+#			${TEPROF2}/annotationtpmprocess.py ${infile}_${s}
+#
+#			chmod -w ${f}
+#		fi
+#
+#	done
 
 	date
 
