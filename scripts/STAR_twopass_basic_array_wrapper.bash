@@ -189,6 +189,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	date
 
+	echo "Runtime : $((SECONDS/3600)) hrs $((SECONDS%3600/60)) mins $((SECONDS%3600%60)) secs"
+
 else
 
 	date=$( date "+%Y%m%d%H%M%S%N" )

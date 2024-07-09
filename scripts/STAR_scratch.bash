@@ -84,3 +84,6 @@ else
 	#	unnecessary as STAR.bash will chmod files if successfull?
 	#chmod -R a-w ${f}
 fi
+
+echo "Runtime : $((SECONDS/3600)) hrs $((SECONDS%3600/60)) mins $((SECONDS%3600%60)) secs"
+
