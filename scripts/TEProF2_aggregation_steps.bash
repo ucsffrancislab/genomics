@@ -644,7 +644,7 @@ else
 		--job-name="$(basename $0)" \
 		--time=${time} --nodes=1 --ntasks=${threads} --mem=${mem} --gres=scratch:${scratch_size} \
 		--output=${PWD}/logs/$(basename $0).${date}.out.log \
-			$( realpath ${0} ) --arguments ${ARGUMENTS} --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
+			$( realpath ${0} ) --time ${time} --arguments ${ARGUMENTS} --in ${IN} --out ${OUT} ${strand_option} ${reference_merged_candidates_gtf_option}
 
 fi
 
