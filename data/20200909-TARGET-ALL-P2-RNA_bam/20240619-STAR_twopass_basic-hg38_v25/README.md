@@ -13,3 +13,9 @@ STAR_twopass_basic_array_wrapper.bash --threads 8 \
   ${PWD}/../20240618-cutadapt/out/*_R1.fastq.gz
 
 ```
+
+
+Many need more memory
+
+
+
