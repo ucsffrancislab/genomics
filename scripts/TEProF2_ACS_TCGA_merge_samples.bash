@@ -14,9 +14,14 @@
 #	SRR3163511	TCONS_00000056	2.65967395243595	0.277697354966442	0
 
 
-head -1 $1 | sed 's/\t/,/g'
+#head -1 $1 | sed 's/\t/,/g'
 
-awk 'BEGIN{FS="\t";OFS=","}
+#awk 'BEGIN{FS="\t";OFS=","}
+
+
+head -1 $1
+
+awk 'BEGIN{FS="\t";OFS="\t"}
 (NR==1){c=1;next}
 {
 	split($1,a,"-")
