@@ -554,7 +554,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		date=$( date "+%Y%m%d%H%M%S%N" )
 		dependency_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 			--job-name="finalStatisticsOutput" \
-			--time=${time} --nodes=1 --ntasks=4 --mem=30G \
+			--time=14-0 --nodes=1 --ntasks=4 --mem=30G \
 			--output=${OUT}/finalStatisticsOutput.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
 			--chdir=${OUT} \
