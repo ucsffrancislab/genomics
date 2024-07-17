@@ -21,3 +21,9 @@ case_submitter_id	project_id	primary_diagnosis	race	ethnicity	gender	RE_names	ID
 ```
 
 
+
+awk -F"\t" '($3=="Brain Lower Grade Glioma"){print $1}' TCGA.Tissue_Source_Site_Codes.tsv > TCGA.LGG_codes.txt
+
+awk -F"\t" '($3=="Glioblastoma multiforme"){print $1}' TCGA.Tissue_Source_Site_Codes.tsv > TCGA.GBM_codes.txt
+
+
