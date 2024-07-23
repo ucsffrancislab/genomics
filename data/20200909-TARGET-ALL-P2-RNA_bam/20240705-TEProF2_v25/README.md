@@ -27,8 +27,9 @@ done | sort | uniq -c
 ```
 
 ```
-      6 none
-     37 --rf
+      5 --fr
+     43 none
+    484 --rf
 ```
 
 Quick check suggests that this data is mostly stranded, but it was aligned with the XS attribute so not passing the strand.

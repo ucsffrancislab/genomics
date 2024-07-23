@@ -1357,3 +1357,48 @@ join --header -t\; <( sed 's/\t/;/g' ENSG_Symbol.tsv ) tmp4 | sed 's/;/\t/g' | g
 done
 
 ```
+
+
+
+##	20240722
+
+
+
+
+
+```
+module load r
+R
+
+g = readRDS('FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.RDS')
+g = g$counts
+write.table(g, file = 'FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.csv', row.names=TRUE, sep="=", col.names = NA, quote=FALSE)
+```
+
+Use = as separator as data contains ,. Join doesn't work with tabs.
+
+Note that the gene annotation table is not 1:1 for ensemble ID to symbol. There are 206 symbols with multiple ensemble IDs. What to do? I'm going to sum the rows.
+
+
+```
+echo -e "ensembl_ID=symbol" > tmp1
+tail -n +2 /francislab/data1/refs/REdiscoverTE/rollup_annotation/GENCODE.V26.Basic_Gene_Annotation_md5.tsv | cut -f4,5 --output-delimiter== | sort -t= -k1,1 | uniq >> tmp1
+
+join --header -t= tmp1 FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.csv | cut -d= -f2- > tmp2
+
+head -1 tmp2 > FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.csv
+tail -n +2 tmp2 | sort -t= -k1,1 >> FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.csv
+
+
+sed 's/=/\t/g' FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.csv > FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.tsv
+
+```
+
+```
+module load WitteLab python3/3.9.1
+REdiscoverTE_groupby_symbol_and_sum.py FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.tsv > FirstTumors_REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv
+
+
+```
+
+

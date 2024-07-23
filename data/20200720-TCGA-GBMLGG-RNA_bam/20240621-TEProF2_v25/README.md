@@ -65,18 +65,6 @@ TEProF2_aggregation_steps.bash --threads 64 \
 
 
 
-
-
-
-
-
-
-
-
----
-
-
-
 They used `allCandidateStatistics.tsv` to call a subject for counting, not the RData.
 
 Here, we have multiple samples for a single subject so I'm going to merge.
@@ -85,15 +73,23 @@ Average TPM and sum Intron Count.
 
 v25
 ```
-
-
-
+head out/allCandidateStatistics.tsv 
+File	Transcript_Name	Transcript Expression (TPM)	Fraction of Total Gene Expression	Intron Read Count
+02-0047-01A-01R-1849-01+1	TCONS_00000050	0.50712927793349	1	0
+02-0047-01A-01R-1849-01+2	TCONS_00000050	0.702084330169596	1	0
+02-0055-01A-01R-1849-01+1	TCONS_00000050	5.38472194067597	0.879995682393212	0
+02-0055-01A-01R-1849-01+2	TCONS_00000050	7.49422976863848	0.87485072489723	0
+02-2483-01A-01R-1849-01+1	TCONS_00000050	1.72138643580422	0.154011010336908	0
+02-2483-01A-01R-1849-01+2	TCONS_00000050	0.811066819089807	0.100073532323997	0
+02-2485-01A-01R-1849-01+1	TCONS_00000050	0.0196635814592191	0.0083143595654682	0
+02-2485-01A-01R-1849-01+2	TCONS_00000050	0.0280386588432175	0.00874336705056585	0
+02-2486-01A-01R-1849-01+1	TCONS_00000050	0	0	0
 ```
 
 
 
 
-
+v43
 ```
 head out/allCandidateStatistics.tsv 
 File	Transcript_Name	Transcript Expression (TPM)	Fraction of Total Gene Expression	Intron Read Count
@@ -136,10 +132,57 @@ tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOES
 
 Covert this sample tsv to a subject csv.
 ```
-TEProF2_ACS_TCGA_merge_samples.bash out/allCandidateStatistics.tsv > allCandidateSubjectStatistics.csv
+TEProF2_ACS_TCGA_merge_samples.bash out/allCandidateStatistics.tsv > allCandidateSubjectStatistics.tsv
 
 module load r
-TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics.csv > presence.tsv
+TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics.tsv > presence.tsv
+
+```
+
+
+```
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,TCGA-Brain"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence.tsv > counts.csv
+
+join --header -t, -a1 -a2 -e0 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv counts.csv > tmp
+
+```
+
+
+This is kinda useless. It is the same for the Stanford Myeloma data
+
+```
+
+awk -F, '(NR>1){print NF}' tmp | sort -n | uniq -c
+    917 2
+   1152 109
+  25664 110
+
+```
+
+
+
+```
+tail -n +2 /francislab/data1/refs/TCGA/TCGA.GBM_codes.txt | sed -e 's/^/^/' -e 's/$/-/' > GBM
+tail -n +2 /francislab/data1/refs/TCGA/TCGA.LGG_codes.txt | sed -e 's/^/^/' -e 's/$/-/' > LGG
+
+head -1 allCandidateSubjectStatistics.tsv > allCandidateSubjectStatistics.GBM.tsv
+head -1 allCandidateSubjectStatistics.tsv > allCandidateSubjectStatistics.LGG.tsv
+
+grep -f GBM allCandidateSubjectStatistics.tsv >> allCandidateSubjectStatistics.GBM.tsv
+grep -f LGG allCandidateSubjectStatistics.tsv >> allCandidateSubjectStatistics.LGG.tsv
+
+module load r
+TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics.GBM.tsv > presence.GBM.tsv
+TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics.LGG.tsv > presence.LGG.tsv
+
+
+
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,GBM"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence.GBM.tsv > counts.GBM.csv
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,LGG"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence.LGG.tsv > counts.LGG.csv
+
+
+join --header -t, -a1 -a2 -e0 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv counts.GBM.csv > tmp1
+join --header -t, -a1 -a2 -e0 tmp1 counts.LGG.csv > tmp2
 
 ```
 
@@ -152,9 +195,20 @@ TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics.csv > prese
 
 
 
-awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,Stanford"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence.tsv > counts.csv
 
-join --header -t, -a1 -a2 -e0 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv counts.csv > tmp
+
+
+
+
+
+
+
+
+
+
+
+---
+
 
    1152 109
   25665 110
