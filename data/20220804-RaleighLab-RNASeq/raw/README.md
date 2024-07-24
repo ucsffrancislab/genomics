@@ -224,3 +224,10 @@ done
 
 
 ```
+
+##	20240723
+
+
+```
+cp /raleighlab/data1/naomi/HKU/*fastq.gz ./20240723/
+```
