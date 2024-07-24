@@ -34,3 +34,35 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="featureCo
 
 
 
+
+
+
+
+##	20240723
+
+
+
+```
+tail -n +2 featureCounts.exon.gene_name.csv | cut -f1,7- | sed -e '1s/.Aligned.sortedByCoord.out.bam//g' -e '1s"/francislab/data1/working/20201006-GTEx/20240618-STAR_twopass_basic-hg38_v25/out/""g' > tmp1
+
+head -1 tmp1 > featureCounts.exon.gene_name.clean.tsv
+tail -n +2 tmp1 | sort -k1,1 >> featureCounts.exon.gene_name.clean.tsv
+
+```
+
+
+
+```
+import pandas as pd
+df=pd.read_csv('featureCounts.exon.gene_name.clean.tsv',sep="\t")
+df.set_index('Geneid',inplace=True)
+
+m=df.median(axis='columns')
+m[m>0]
+
+s=df.sum(axis='columns')
+s[s>50]
+```
+
+
+
