@@ -86,10 +86,10 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "extension :${extension}:"
 
 
-	if [ -n "$( declare -F module )" ] ; then
-		echo "Loading required modules"
-		module load CBI samtools star/2.7.7a
-	fi
+#	if [ -n "$( declare -F module )" ] ; then
+#		echo "Loading required modules"
+#		#module load CBI samtools star/2.7.7a
+#	fi
 	
 	date
 	
