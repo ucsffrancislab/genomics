@@ -381,17 +381,44 @@ join --header -t= tmp1 REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.csv | cu
 head -1 tmp2 > REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.csv
 tail -n +2 tmp2 | sort -t= -k1,1 >> REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.csv
 
-
 sed 's/=/\t/g' REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.csv > REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.tsv
-
 ```
+
 
 ```
 module load WitteLab python3/3.9.1
-REdiscoverTE_groupby_symbol_and_sum.py REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.tsv > REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv
+REdiscoverTE_groupby_symbol_and_sum.py REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.tsv > tmp3
 
+head -1 tmp3 > REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv
+tail -n +2 tmp3 | sort -k1,1 >> REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv
+```
+
+
+
+
+
+```
+import pandas as pd
+df=pd.read_csv('REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv',sep="\t")
+df.set_index('symbol',inplace=True)
+
+m=df.median(axis='columns')
+m[m>0]
+
+s=df.sum(axis='columns')
+s[s>50]
 
 ```
 
 
+
+
+```
+cut -f1 REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv > REdiscoverTE_rollup_noquestion/GENE.txt
+join --header REdiscoverTE_rollup_noquestion/GENE.txt /francislab/data1/working/20201006-GTEx/20240618-STAR_twopass_basic-hg38_v25/featureCounts.exon.gene_name.txt > shared
+
+wc -l REdiscoverTE_rollup_noquestion/GENE.txt /francislab/data1/working/20201006-GTEx/20240618-STAR_twopass_basic-hg38_v25/featureCounts.exon.gene_name.txt shared
+
+join --header shared REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv | sed 's/ /\t/g' > REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.shared.tsv
+```
 
