@@ -1,8 +1,9 @@
 
 #	20220804-RaleighLab-RNASeq/20240723-cutadapt
 
+QM238 raw files are corrupt
 
-302 paired end samples
+301 paired end samples
 
 
 ```
