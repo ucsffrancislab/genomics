@@ -557,8 +557,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 			--time=14-0 --nodes=1 --ntasks=4 --mem=30G \
 			--output=${OUT}/finalStatisticsOutput.${date}.out.log \
 			--parsable --dependency=${dependency_id} \
-			--chdir=${OUT} \
-			--wrap="${TEPROF2}/finalStatisticsOutput.R -a ${ARGUMENTS};chmod -w ${f}" )
+			--export=None --chdir=${OUT} \
+			--wrap="module load r;${TEPROF2}/finalStatisticsOutput.R -a ${ARGUMENTS};chmod -w ${f}" )
 			#-e $TREATMENTLABEL
 	fi
 
