@@ -65,6 +65,21 @@ TEProF2_aggregation_steps.bash --threads 64 \
 
 
 
+```
+module load r
+TEProF2_ACS_Select_and_Pivot.Rscript < out/allCandidateStatistics.tsv > presence.tsv
+```
+
+
+```
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,GTEx 1438"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence.tsv > counts.csv
+
+```
+
+
+
+
+
 
 
 
