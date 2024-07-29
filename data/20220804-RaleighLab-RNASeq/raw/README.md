@@ -231,3 +231,8 @@ done
 ```
 cp /raleighlab/data1/naomi/HKU/*fastq.gz ./20240723/
 ```
+
+QM238 files are corrupt.
+
+
+
