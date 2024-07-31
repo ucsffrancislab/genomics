@@ -582,3 +582,134 @@ chmod 400 TCGALabels.csv
 
 
 
+
+##	20240729
+
+
+
+```
+module load WitteLab python3/3.9.1
+
+./merge.py -o S1.all.merged.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv 
+
+
+./merge.py -o tmp.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.S2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv 
+
+join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt tmp.csv > S1.all.S2.merged.csv 
+```
+
+
+
+Why are there missing transcripts?
+
+There are almost 1000 TCONS NEVER found by our runs. Guessing they aren't in the reference?
+
+```
+comm -23 <( tail -n +2 S1.all.merged.TranscriptIDs.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt ) | wc -l
+917
+```
+
+
+Found by us but not in the paper?
+```
+comm -23 <( tail -n +2 S1.all.merged.TranscriptIDs.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt ) | head
+TCONS_00000080
+TCONS_00000090
+TCONS_00000091
+TCONS_00000219
+TCONS_00000277
+TCONS_00000766
+TCONS_00000818
+TCONS_00000861
+TCONS_00000938
+TCONS_00000958
+```
+
+
+
+
+```
+cut -d, -f1 /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv > ALL.TranscriptIDs.found_by_us.txt
+
+wc -l ALL.TranscriptIDs.found_by_us.txt 
+26582 ALL.TranscriptIDs.found_by_us.txt
+
+wc -l /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt
+26817 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt
+
+join --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt <( cut -d, -f1 /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv ) > S1.TranscriptIDs.found_by_us.txt
+
+wc -l S1.TranscriptIDs.found_by_us.txt
+25665 S1.TranscriptIDs.found_by_us.txt
+
+wc -l /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt
+2298 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt
+
+join --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt <( cut -d, -f1 /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv ) > S2.TranscriptIDs.found_by_us.txt
+
+wc -l S2.TranscriptIDs.found_by_us.txt
+2216 S2.TranscriptIDs.found_by_us.txt
+
+
+There are 1152 TCONS that the paper finds, that we NEVER find.
+
+comm -13 <( tail -n +2 ALL.TranscriptIDs.found_by_us.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt ) | wc -l
+1152
+
+And we find 917 that are not in the paper.
+
+comm -23 <( tail -n +2 ALL.TranscriptIDs.found_by_us.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.TranscriptIDs.txt ) | wc -l
+917
+
+
+82 of the S2 TCONS we NEVER find.
+
+comm -13 <( tail -n +2 S2.TranscriptIDs.found_by_us.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt )  | wc -l
+82
+
+
+comm -13 <( tail -n +2 S2.TranscriptIDs.found_by_us.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt ) | head
+TCONS_00000560
+TCONS_00011670
+TCONS_00013166
+TCONS_00013168
+TCONS_00013492
+TCONS_00020682
+TCONS_00021241
+TCONS_00021242
+TCONS_00023165
+TCONS_00027845
+
+
+```
+
+WHY?
+
+
+Using the first, TCONS_00000560, as an example.
+
+Looks like 75 of these are not in the candidate_names.txt file which is created with their script and their reference file. 
+
+Nothing to do with any data set.
+
+Curious.
+
+```
+comm -13 <( tail -n +2 S2.TranscriptIDs.found_by_us.txt )  <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt )  > missing_S2_transcriptids
+
+
+grep -f /francislab/data1/refs/TEProf2/missing_S2_transcriptids candidate_names.txt 
+TCONS_00027845
+TCONS_00059672
+TCONS_00078774
+TCONS_00101140
+TCONS_00108523
+TCONS_00112046
+TCONS_00123813
+```
+
+
+
+
+
+
