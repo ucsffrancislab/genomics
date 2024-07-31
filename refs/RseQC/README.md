@@ -1,4 +1,5 @@
 
+#	RseQC
 
 
 Use RseQC to infer strandedness needed by TEProF2 / Stringtie
@@ -91,4 +92,9 @@ The XS flag is assigned only for spliced reads based on the intron motif of the 
 For an unstranded library, the read may be sequenced from the 1st cDNA strand (opposite to RNA),
 but the intron motif allows to determine the actual RNA strand.
 
+
+
+
+
+python3 -m pip install --upgrade --user cython bx-python pysam RSeQC numpy
 
