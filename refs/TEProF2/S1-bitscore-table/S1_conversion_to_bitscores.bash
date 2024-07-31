@@ -7,17 +7,20 @@ set -o pipefail
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
 	module load CBI samtools blast
+	module load WitteLab python3/3.9.1
 fi
 
+#	python3 -m pip install --upgrade --user numpy scipy biopython==1.69 click tqdm pepsyn phip-stat pip wheel
 
-# makeblastdb -in S10_S2_ProteinSequences.fa -input_type fasta -dbtype prot -out S10_S2_ProteinSequences -title S10_S2_ProteinSequences -parse_seqids
+
+
 
 TCONS_FASTA=/francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences.faa
-#PROTEIN_FASTA=All_Human_proteins.faa
+PROTEIN_FASTA=All_Human_proteins.faa
 #PROTEIN_FASTA=Human_herpes_proteins.faa
 #PROTEIN_FASTA=Variola_virus_proteins.faa
 EVALUE=0.05
-
+TILESIZE=25
 
 while [ $# -gt 0 ] ; do
 	case $1 in
@@ -25,6 +28,10 @@ while [ $# -gt 0 ] ; do
 			shift; TCONS_FASTA=$1; shift;;
 		--protein)
 			shift; PROTEIN_FASTA=$1; shift;;
+		--evalue)
+			shift; EVALUE=$1; shift;;
+		--tilesize)
+			shift; TILESIZE=$1; shift;;
 		*)
 			echo "Unknown"; exit 1;;
 	esac
@@ -35,15 +42,12 @@ TCONS_FASTA_BASE=$( basename ${TCONS_FASTA_BASE} .faa )
 PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA} .gz )
 PROTEIN_FASTA_BASE=$( basename ${PROTEIN_FASTA_BASE} .faa )
 
+OVERLAP=$[TILESIZE-1]
 
 
 echo "Tiling TCONS protein sequences"
 
-
-echo "Assuming it is done already"
-#	scp c4:/francislab/data1/raw/20230426-PanCancerAntigens/S10_S2_ProteinSequences-tile-25-24.faa ./
-
-f=${TCONS_FASTA_BASE}-tile-25-24.faa
+f=${TCONS_FASTA_BASE}-tile-${TILESIZE}-${OVERLAP}.faa
 if [ -f ${f} ] ; then
 	echo "${f} exists. Skipping."
 else
@@ -52,11 +56,11 @@ else
 	else
 		command="cat"
 	fi
-	eval ${command} ${TCONS_FASTA} | pepsyn tile -l 25 -p 24 - ${f}
+	eval ${command} ${TCONS_FASTA} | pepsyn tile -l ${TILESIZE} -p ${OVERLAP} - ${f}
 fi
 echo "head ${f}"
 head ${f}
-#	samtools faidx ${TCONS_FASTA_BASE}-tile-25-24.faa
+samtools faidx ${TCONS_FASTA_BASE}-tile-${TILESIZE}-${OVERLAP}.faa
 
 
 
@@ -80,18 +84,18 @@ head ${f}
 #	
 #	#echo "Indexing fasta"
 #	#samtools faidx ${PROTEIN_FASTA}
-#	
-#	echo "Making blastdb"
-#	makeblastdb -parse_seqids \
-#	  -in ${PROTEIN_FASTA} \
-#	  -input_type fasta \
-#	  -dbtype prot \
-#	  -out ${PROTEIN_FASTA_BASE} \
-#	  -title ${PROTEIN_FASTA_BASE}
+
+echo "Making blastdb"
+makeblastdb -parse_seqids \
+  -in ${PROTEIN_FASTA} \
+  -input_type fasta \
+  -dbtype prot \
+  -out ${PROTEIN_FASTA_BASE} \
+  -title ${PROTEIN_FASTA_BASE}
 
 echo "Blasting ${TCONS_FASTA_BASE} tiles to ${PROTEIN_FASTA_BASE}"
 
-f=${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv
+f=${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.${TILESIZE}-${OVERLAP}.blastp.e${EVALUE}.tsv
 if [ -f ${f} ] ; then
 	echo "${f} exists. Skipping."
 else
@@ -99,7 +103,7 @@ else
   	> ${f}
 	blastp -db ${PROTEIN_FASTA_BASE} \
   	-outfmt 6 -evalue ${EVALUE} \
-  	-query ${TCONS_FASTA_BASE}-tile-25-24.faa \
+  	-query ${TCONS_FASTA_BASE}-tile-${TILESIZE}-${OVERLAP}.faa \
   	>> ${f}
 fi
 echo "head ${f}"
@@ -145,10 +149,16 @@ head ${f}
 
 echo "Convert from tab separated to comma separated"
 echo "select the TCONS base, accession without version and bitscore"
-sed 's/\t/,/g' ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.tsv \
-  | awk 'BEGIN{FS=OFS=","}(NR>1){split($1,a,"_");split($2,b,".");print a[1]"_"a[2],b[1],$NF}' > tmp2
-echo "head tmp2"
-head tmp2
+echo "and trimed any suffix from TCONS ( TCONS_00000246-104|100-125 -> TCONS_00000246 )"
+
+sed 's/\t/,/g' ${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.${TILESIZE}-${OVERLAP}.blastp.e${EVALUE}.tsv \
+  | awk 'BEGIN{FS=OFS=","}(NR>1){split($1,a,"_");split(a[2],b,"|");split($2,c,".");print a[1]"_"b[1],c[1],$NF}' > tcons_accession_bitscore.csv
+
+#split($2,b,".");print a[1]"_"a[2],b[1],$NF}' > tcons_accession_bitscore.csv
+
+
+echo "head tcons_accession_bitscore.csv"
+head tcons_accession_bitscore.csv
 #TCONS_00000560,YP_009505610,25.4
 #TCONS_00000560,YP_009505610,25.0
 #TCONS_00000560,YP_009505610,25.0
@@ -160,7 +170,7 @@ head tmp2
 #TCONS_00000667,YP_001129455,25.8
 #TCONS_00000667,YP_401658,25.8
 
-#sort -t, -k1,2 -k3nr tmp2 | uniq | head
+#sort -t, -k1,2 -k3nr tcons_accession_bitscore.csv | uniq | head
 #TCONS_00000246,NP_050190,23.9
 #TCONS_00000246,YP_081561,24.6
 #TCONS_00000667,YP_001129455,25.8
@@ -172,7 +182,7 @@ head tmp2
 #TCONS_00000820,NP_040188,26.6
 #TCONS_00000820,NP_040188,26.2
 
-#sort -t, -k1,2 -k3nr tmp2 | uniq | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $2,$1,$3}' | head
+#sort -t, -k1,2 -k3nr tcons_accession_bitscore.csv | uniq | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $2,$1,$3}' | head
 #NP_050190,TCONS_00000246,23.9
 #YP_081561,TCONS_00000246,24.6
 #YP_001129455,TCONS_00000667,25.8
@@ -186,9 +196,9 @@ head tmp2
 
 
 echo "sort and select highest bitscore for each pair of accession / TCONS"
-sort -t, -k1,2 -k3nr tmp2 | uniq | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $2,$1,$3}' | sort -t, -k1,2 > tmp3
-echo "head tmp3"
-head tmp3
+sort -t, -k1,2 -k3nr tcons_accession_bitscore.csv | uniq | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $2,$1,$3}' | sort -t, -k1,2 > accession_tcons_highestbitscore.csv
+echo "head accession_tcons_highestbitscore.csv"
+head accession_tcons_bitscore.csv
 #AP_000108,TCONS_00016038,25.0
 #AP_000108,TCONS_00060502,25.0
 #AP_000108,TCONS_00101289,25.4
@@ -243,11 +253,21 @@ echo "the uniq seems to be unnecessary"
 ##echo "accession,order,family,name" > tmp4c
 ##tail -n +2 virus_taxonomy_tree_translation_table.20231122.csv | awk 'BEGIN{FS=OFS=","}{print $4,$1,$2,$3}' | sort -t, -k1,2 >> tmp4c
 
-echo "Testing translation table with order,family,subfamily,genus,"
-echo "accession,phylum,class,order,family,subfamily,genus,name" > tmp4c
-tail -n +2 virus_taxonomy_tree_translation_table.20231129.20231122.csv | awk 'BEGIN{FS=OFS=","}{print $8,$1,$2,$3,$4,$5,$6,$7}' | sort -t, -k1,8 >> tmp4c
-echo head tmp4c
-head tmp4c
+
+
+
+
+
+#	echo "Testing translation table with order,family,subfamily,genus,"
+#	echo "accession,phylum,class,order,family,subfamily,genus,name" > tmp4c
+#	tail -n +2 virus_taxonomy_tree_translation_table.20231129.20231122.csv | awk 'BEGIN{FS=OFS=","}{print $8,$1,$2,$3,$4,$5,$6,$7}' | sort -t, -k1,8 >> tmp4c
+#	echo head tmp4c
+#	head tmp4c
+
+
+
+
+
 
 
 
@@ -266,7 +286,7 @@ head tmp4c
 ###	
 ###	echo "virus,protein,TCONS,bitscore" > tmp5
 ###	#virus_protein_TCONS_bitscore.csv
-###	join -t, tmp4 tmp3 | awk 'BEGIN{FS=OFS=","}{print $2,$1,$3,$4}' | sort -t, -k1,3 >> tmp5
+###	join -t, tmp4 accession_tcons_bitscore.csv | awk 'BEGIN{FS=OFS=","}{print $2,$1,$3,$4}' | sort -t, -k1,3 >> tmp5
 ###	#virus_protein_TCONS_bitscore.csv
 ###	
 ###	#head -3 virus_protein_TCONS_bitscore.csv
@@ -293,7 +313,7 @@ head tmp4c
 ###	Why do this then rearrange and resort?
 ##
 ###	echo "order,family,virus,protein,TCONS,bitscore" > tmp5b
-###	join -t, tmp4b tmp3 | awk 'BEGIN{FS=OFS=","}{print $2,$3,$4,$1,$5,$6}' | sort -t, -k1,5 >> tmp5b
+###	join -t, tmp4b accession_tcons_bitscore.csv | awk 'BEGIN{FS=OFS=","}{print $2,$3,$4,$1,$5,$6}' | sort -t, -k1,5 >> tmp5b
 ###	echo head tmp5b
 ###	head tmp5b
 ##
@@ -307,29 +327,31 @@ head tmp4c
 ###	Algavirales,Phycodnaviridae,Acanthocystis turfacea chlorella virus 1,YP_001427086,TCONS_00040986,35.4
 ###	Algavirales,Phycodnaviridae,Acanthocystis turfacea chlorella virus 1,YP_001427086,TCONS_00079225,33.5
 ###	Algavirales,Phycodnaviridae,Acanthocystis turfacea chlorella virus 1,YP_001427086,TCONS_00080445,36.6
-##
-##
-##
-###tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | head -1 > S1.csv
-###tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort -t, -k1,1 >> S1.csv
-###
-###sed '1s/ /_/g' S1.csv | cut -d, -f1,10- | tr -d "\r" > S1._.csv
-###
-###echo "Transcript_ID,Study_SampleType,Count" > S1.list.csv
-###awk 'BEGIN{FS=OFS=","}(NR==1){for(i=2;i<=NF;i++){k[i]=$i}}(NR>1){ for(i=2;i<=NF;i++){if($i>0){print $1,k[i],$i}}}' S1._.csv >> S1.list.csv
-##
-##
+
+
+
+
+tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | head -1 > S1.csv
+tail -n +3 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | sort -t, -k1,1 >> S1.csv
+
+sed '1s/ /_/g' S1.csv | cut -d, -f1,10- | tr -d "\r" > S1._.csv
+
+echo "Transcript_ID,Study_SampleType,Count" > S1.list.csv
+awk 'BEGIN{FS=OFS=","}(NR==1){for(i=2;i<=NF;i++){k[i]=$i}}(NR>1){ for(i=2;i<=NF;i++){if($i>0){print $1,k[i],$i}}}' S1._.csv >> S1.list.csv
+
+
+
 ###tail -n +2 tmp5 | awk 'BEGIN{FS=OFS=","}{print $3,$1,$2,$4}' | sort -t, -k1,3 >> tmp13
 ###tail -n +2 virus_protein_TCONS_bitscore.csv | awk 'BEGIN{FS=OFS=","}{print $3,$1,$2,$4}' | sort -t, -k1,3 >> TCONS_virus_protein_bitscore.csv
 
 
 
-echo "Add virus description to table"
-echo "Rearrange columns and sort by TCONS"
+#echo "Add virus description to table"
+#echo "Rearrange columns and sort by TCONS"
 
 ##echo "Transcript_ID,virus,protein,bitscore" > tmp13
-##join -t, tmp4 tmp3 | awk 'BEGIN{FS=OFS=","}{print $3,$2,$1,$4}' | sort -t, -k1,3 >> tmp13
-##wc -l tmp3 tmp4 tmp13
+##join -t, tmp4 accession_tcons_bitscore.csv | awk 'BEGIN{FS=OFS=","}{print $3,$2,$1,$4}' | sort -t, -k1,3 >> tmp13
+##wc -l accession_tcons_bitscore.csv tmp4 tmp13
 ##echo head tmp13
 ##head tmp13
 #	Transcript_ID,virus,protein,bitscore
@@ -345,8 +367,8 @@ echo "Rearrange columns and sort by TCONS"
 
 
 ##echo "Transcript_ID,order,family,virus,protein,bitscore" > tmp13b
-##join -t, tmp4b tmp3 | awk 'BEGIN{FS=OFS=","}{print $5,$2,$3,$4,$1,$6}' | sort -t, -k1,5 >> tmp13b
-##wc -l tmp3 tmp4b tmp13b
+##join -t, tmp4b accession_tcons_bitscore.csv | awk 'BEGIN{FS=OFS=","}{print $5,$2,$3,$4,$1,$6}' | sort -t, -k1,5 >> tmp13b
+##wc -l accession_tcons_bitscore.csv tmp4b tmp13b
 ##echo head tmp13b
 ##head tmp13b
 #	Transcript_ID,order,family,virus,protein,bitscore
@@ -399,12 +421,26 @@ echo "Joining viral protein accessions and bitscores to S1 table list."
 #	TCONS_00000246,Lefavirales,Baculoviridae,Neodiprion lecontei nucleopolyhedrovirus,YP_025249,34.7,TGCT_tumor,2
 
 
-echo "Transcript_ID,accession,bitscore" > tmp3c
-awk 'BEGIN{FS=OFS=","}{print $2,$1,$3}' tmp3 | sort -t, -k1,3 >> tmp3c
-join --header -t, tmp3c S1.list.csv > tmp6c
-wc -l tmp3c S1.list.csv tmp6c
-echo head tmp6c
-head tmp6c
+
+
+
+
+#	Not sure why I didn't do this in the beginning
+
+echo "Transcript_ID,accession,bitscore" > tcons_accession_highestbitscore.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$3}' accession_tcons_highestbitscore.csv | sort -t, -k1,3 >> tcons_accession_highestbitscore.csv
+
+##	Done above now
+##	TCONS_00000246-104|100-125
+##	TCONS_00000246
+##awk 'BEGIN{FS=OFS=","}{ split($2,a,"-"); print a[1],$1,$3}' accession_tcons_highestbitscore.csv | sort -t, -k1,3 | uniq >> tcons_accession_highestbitscore.csv
+
+
+join --header -t, tcons_accession_highestbitscore.csv S1.list.csv > tcons_accession_highestbitscore_tcgastudy_count.csv
+wc -l tcons_accession_highestbitscore.csv S1.list.csv tcons_accession_highestbitscore_tcgastudy_count.csv
+echo head tcons_accession_highestbitscore_tcgastudy_count.csv
+head tcons_accession_highestbitscore_tcgastudy_count.csv
+
 #	Transcript_ID,accession,bitscore,Study_SampleType,Count
 #	TCONS_00000246,NP_042110,23.5,LUAD_tumor,5
 #	TCONS_00000246,NP_042110,23.5,STAD_tumor,1
@@ -463,9 +499,9 @@ echo "Drop TCONS Transcript ID and Count"
 #	Lefavirales,Baculoviridae,Neodiprion lecontei nucleopolyhedrovirus,YP_025249,TGCT_tumor,34.7
 
 echo "Keeping just protein,Study_SampleType,bitscore"
-awk 'BEGIN{FS=OFS=","}{print $2,$4,$3}' tmp6c > tmp7c
-echo head tmp7c
-head tmp7c
+awk 'BEGIN{FS=OFS=","}{print $2,$4,$3}' tcons_accession_highestbitscore_tcgastudy_count.csv > accession_tcgastudy_bitscore.csv
+echo head accession_tcgastudy_bitscore.csv
+head accession_tcgastudy_bitscore.csv
 #	accession,Study_SampleType,bitscore
 #	NP_042110,LUAD_tumor,23.5
 #	NP_042110,STAD_tumor,23.5
@@ -519,10 +555,10 @@ head tmp7c
 
 echo "select protein,Study_SampleType,bitscore and sort by bitscore so can select highest"
 
-echo "protein,Study_SampleType,bitscore" > tmp8c
-tail -n +2 tmp7c | sort -t, -k1,2 -k3nr >> tmp8c
-echo head tmp8c
-head tmp8c
+echo "protein,Study_SampleType,bitscore" > accession_tcgastudy_bitscore_sorted.csv
+tail -n +2 accession_tcgastudy_bitscore.csv | sort -t, -k1,2 -k3nr >> accession_tcgastudy_bitscore_sorted.csv
+echo head accession_tcgastudy_bitscore_sorted.csv
+head accession_tcgastudy_bitscore_sorted.csv
 
 #	protein,Study_SampleType,bitscore
 #	NP_042045,ACC_tumor,22.7
@@ -580,10 +616,10 @@ head tmp8c
 
 echo "select highest (first actually, so better be sorted) bitscore for protein,Study_SampleType relationship"
 
-echo "protein,Study_SampleType,bitscore" > tmp9c
-tail -n +2 tmp8c | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $1,$2,$3}' >> tmp9c
-echo head tmp9c
-head tmp9c
+echo "protein,Study_SampleType,bitscore" > accession_tcgastudy_highestbitscore.csv
+tail -n +2 accession_tcgastudy_bitscore_sorted.csv | awk 'BEGIN{FS=OFS=","}( k[$1][$2] == "" ){k[$1][$2]=$3;print $1,$2,$3}' >> accession_tcgastudy_highestbitscore.csv
+echo head accession_tcgastudy_highestbitscore.csv
+head accession_tcgastudy_highestbitscore.csv
 
 #	protein,Study_SampleType,bitscore
 #	NP_042045,ACC_tumor,22.7
@@ -685,7 +721,7 @@ END{
 		}
 		print s
 	}
-}' tmp9c > tmp10c
+}' accession_tcgastudy_highestbitscore.csv > tmp10c
 echo "head tmp10c | cut -c1-150"
 head tmp10c | cut -c1-150
 
@@ -708,22 +744,37 @@ tail -n +2 tmp10c | sort -t, -k1,1 >> tmp11c
 echo "head tmp11c | cut -c1-150"
 head tmp11c | cut -c1-150
 
-cp tmp11c S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.accession_only.blastp.e${EVALUE}.csv
-join --header -t, tmp4c tmp11c > tmp12c
-wc -l tmp4c tmp11c tmp12c
-echo "head tmp12c | cut -c1-150"
-head tmp12c | cut -c1-150
 
 
-echo "Reordering the joined columns"
-
-#awk 'BEGIN{FS=OFS=","}{x=$1;$1=$2;$2=$3;$3=$4;$4=x;print}' tmp12c > tmp14c
-awk 'BEGIN{FS=OFS=","}{x=$1;$1=$2;$2=$3;$3=$4;$4=$5;$5=$6;$6=$7;$7=$8;$8=x;print}' tmp12c > tmp14c
-echo "head tmp14c | cut -c1-150"
-head tmp14c | cut -c1-150
 
 
-cp tmp14c S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.extra.blastp.e${EVALUE}.csv
+
+cp tmp11c S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.${TILESIZE}-${OVERLAP}.accession_only.blastp.e${EVALUE}.csv
+
+
+
+
+#	#	Only virus has the tmp4c
+#	
+#	
+#	
+#	join --header -t, tmp4c tmp11c > tmp12c
+#	wc -l tmp4c tmp11c tmp12c
+#	echo "head tmp12c | cut -c1-150"
+#	head tmp12c | cut -c1-150
+#	
+#	
+#	
+#	
+#	echo "Reordering the joined columns"
+#	
+#	#awk 'BEGIN{FS=OFS=","}{x=$1;$1=$2;$2=$3;$3=$4;$4=x;print}' tmp12c > tmp14c
+#	awk 'BEGIN{FS=OFS=","}{x=$1;$1=$2;$2=$3;$3=$4;$4=$5;$5=$6;$6=$7;$7=$8;$8=x;print}' tmp12c > tmp14c
+#	echo "head tmp14c | cut -c1-150"
+#	head tmp14c | cut -c1-150
+#	
+#	
+#	cp tmp14c S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.extra.${TILESIZE}-${OVERLAP}.blastp.e${EVALUE}.csv
 
 
 #cp tmp11 S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.csv
@@ -732,6 +783,5 @@ cp tmp14c S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.extra.blastp
 #../../../scripts/
 
 #	TEProf2_Heatmap_Maker.Rmd S1_${TCONS_FASTA_BASE}_fragments_in_${PROTEIN_FASTA_BASE}.blastp.e${EVALUE}.csv
-
 
 
