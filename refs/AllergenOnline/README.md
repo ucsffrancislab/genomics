@@ -11,8 +11,8 @@ http://www.allergenonline.org/
 ```
 "Species","Common","IUIS Allergen","Type","Group","Allergenicity","Length","Accession","GI#","1st Version"
 
-
-awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $8,$1,$4}' AllergenOnline.csv | tr -d \" > AllergenGroups.csv
+echo "accession,species,type" > AllergenGroups.csv
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1 && $8!="\"\""){split($8,a,".");print a[1],$1,$4}' AllergenOnline.csv | tr -d \" | sort -t, -k1,1 >> AllergenGroups.csv
 
 ```
 
