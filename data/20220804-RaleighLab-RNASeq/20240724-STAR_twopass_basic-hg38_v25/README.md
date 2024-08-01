@@ -2,7 +2,7 @@
 #	20220804-RaleighLab-RNASeq/20240724-STAR_twopass_basic-hg38_v25
 
 
-302 samples
+302 samples (1 corrupt. 301 actual samples.)
 
 
 These have already been trimmed, so I am treating them as such. I'm probably wrong.
