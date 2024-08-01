@@ -67,6 +67,8 @@ else
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
+			-k|--k)
+				shift; k=$1; shift;;
 			--datadir)
 				shift; datadir=$1; shift;;
 			-i|--in|--indir)
