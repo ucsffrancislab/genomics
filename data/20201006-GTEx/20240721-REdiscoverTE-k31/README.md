@@ -157,7 +157,7 @@ REdiscoverTE_array_wrapper.bash --paired -k 31 \
 
 ```BASH
 
-REdiscoverTE_rollup.bash \
+REdiscoverTE_rollup.bash -k 31 \
 --indir ${PWD}/out \
 --datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
 --outbase ${PWD}/REdiscoverTE_rollup_noquestion
