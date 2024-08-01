@@ -439,3 +439,63 @@ done ; done ; done ; done ; done ; done
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	20240729
+
+
+
+Hey Jake- When you start back up this week, could you please do something that I specifically asked you not to do previously :joy:
+
+Id like to get some graphics for allergens that share homology to tumor specific antigens across the TCGA previously I asked you to just do it in GBM. ( I believe its in here: /Users/stephenfrancis/Box/Francis _Lab_Share/20230426-PanCancerAntigens/20230426-explore) Now id like to do the same thing but in all the TCGA cancers basically I want a graphic that looks like this for the most prevelent allergens that share tumor antigen homology like this:
+
+Found it ... https://ucsf.app.box.com/file/1383873776437
+
+S1_S10_S2_ProteinSequences_fragments_in_Human_herpes_proteins.extra.blastp.e0.05.csv.bitscoreGTE30.family.pdf
+
+/francislab/data1/refs/TEProf2/S1-bitscore-table
+
+
+
+
+```
+cd 25
+../S1_conversion_to_bitscores.bash --evalue 10 --tilesize 25 \
+  --tcons /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/Allergens/S10.faa \
+  --protein /francislab/data1/refs/AllergenOnline/AllergenOnline.faa
+ 
+join -t, --header /francislab/data1/refs/AllergenOnline/AllergenGroups.csv S1_S10_fragments_in_AllergenOnline.25-24.accession_only.blastp.e10.csv > S1_S10_fragments_in_AllergenOnline.25-24.extra.blastp.e10.csv
+
+module load r
+../TEProF2_Heatmap_Maker.Rmd S1_S10_fragments_in_AllergenOnline.25-24.extra.blastp.e10.csv 
+
+
+cd ../50
+../S1_conversion_to_bitscores.bash --evalue 10 --tilesize 50 \
+  --tcons /francislab/data1/working/20230426-PanCancerAntigens/20230426-explore/Allergens/S10.faa \
+  --protein /francislab/data1/refs/AllergenOnline/AllergenOnline.faa
+ 
+join -t, --header /francislab/data1/refs/AllergenOnline/AllergenGroups.csv S1_S10_fragments_in_AllergenOnline.50-49.accession_only.blastp.e10.csv > S1_S10_fragments_in_AllergenOnline.50-49.extra.blastp.e10.csv
+
+module load r
+../TEProF2_Heatmap_Maker.Rmd S1_S10_fragments_in_AllergenOnline.50-49.extra.blastp.e10.csv 
+
+```
+
+This TEProF2_Heatmap_Maker.Rmd isn't working 
+
+
