@@ -1402,3 +1402,38 @@ REdiscoverTE_groupby_symbol_and_sum.py FirstTumors_REdiscoverTE_rollup_noquestio
 ```
 
 
+
+
+
+
+
+
+
+
+##	20240731
+
+
+```BASH
+
+REdiscoverTE_rollup.bash -k 15 \
+--indir ${PWD}/out \
+--datadir /francislab/data1/refs/REdiscoverTE/rollup_annotation.noquestion \
+--outbase ${PWD}/REdiscoverTE_rollup_noquestion
+
+```
+
+AFTER COMPLETION
+
+```BASH
+
+REdiscoverTE_rollup_merge.bash --outbase ${PWD}/REdiscoverTE_rollup_noquestion
+
+```
+
+```BASH
+
+box_upload.bash REdiscoverTE_rollup_noquestion/*RDS
+
+```
+
+
