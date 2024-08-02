@@ -65,6 +65,7 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	echo "mem :${mem}:"
 
 	extension=".fastq.gz"
+	paired=true
 	ARGS=""
 
 	while [ $# -gt 0 ] ; do
@@ -75,6 +76,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 				shift; OUT=$1; mkdir -p ${OUT}; shift;;
 			-e|--extension)
 				shift; extension=$1; shift;;
+			--single)
+				paired=false; shift;;
 			*)
 				#echo "Unknown param :${1}:"; usage ;;
 				echo "Unknown param :${1}:"
@@ -135,12 +138,11 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 
 	out_base=${OUT}/${base}
-	f=${out_base}_R1.fastq.gz
-	f2=${out_base}_R2.fastq.gz
-	if [ -f $f ] && [ ! -w $f ] ; then
-		echo "Write-protected $f exists. Skipping."
-	else
-		echo "Creating $f"
+
+
+
+
+	if ${paired} ; then
 
 		#	https://teichlab.github.io/scg_lib_structs/methods_html/Illumina.html
 
@@ -215,9 +217,32 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 #			--quality-cutoff 25 \
 #			-o ${f} -p ${f2} ${r1} ${r2}
 
-		~/.local/bin/cutadapt.bash ${ARGS} --cores ${threads} -o ${f} -p ${f2} ${r1} ${r2}
+		f=${out_base}_R1.fastq.gz
+		f2=${out_base}_R2.fastq.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
 
-		chmod a-w ${f} ${f2}
+			~/.local/bin/cutadapt.bash ${ARGS} --cores ${threads} -o ${f} -p ${f2} ${r1} ${r2}
+
+			chmod a-w ${f} ${f2}
+		fi
+
+	else
+
+		f=${out_base}.fastq.gz
+		if [ -f $f ] && [ ! -w $f ] ; then
+			echo "Write-protected $f exists. Skipping."
+		else
+			echo "Creating $f"
+
+			~/.local/bin/cutadapt.bash ${ARGS} --cores ${threads} -o ${f} ${r1}
+
+			chmod a-w ${f}
+		fi
+
+
 	fi
 
 
@@ -281,6 +306,8 @@ else
 				shift; threads=$1; shift;;
 			-h|--help)
 				usage;;
+			-*)
+				array_options="${array_options} $1"; shift;;
 			*)
 				if [ -f ${1} ] ; then
 					echo "Unknown param :${1}: Assuming file"; 
