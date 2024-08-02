@@ -53,6 +53,19 @@ TEProF2_array_wrapper.bash --threads 4 \
 
 
 
+223 and 151 failed due to memory
+
+```
+
+TEProF2_array_wrapper.bash --array 151,223 --threads 8 \
+  --arguments /francislab/data1/refs/TEProf2/rnapipelinerefhg38/TEProF2.arguments.txt \
+  --out ${PWD}/in \
+  --extension .Aligned.sortedByCoord.out.bam \
+  /francislab/data1/working/20220804-RaleighLab-RNASeq/20240724-STAR_twopass_basic-hg38_v25/out/*.Aligned.sortedByCoord.out.bam
+
+```
+
+
 ```
 
 TEProF2_aggregation_steps.bash --threads 64 \
@@ -72,7 +85,13 @@ TEProF2_aggregation_steps.bash --threads 64 \
 
 
 
+##	20240802
+```
 
+TEProF2_aggregation_steps.bash --threads 64 \
+  --arguments /francislab/data1/refs/TEProf2/rnapipelinerefhg38/TEProF2.arguments.txt \
+  --reference_merged_candidates_gtf /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_candidates.gtf \
+  --in  ${PWD}/in --out ${PWD}/out2
 
-
+```
 

@@ -56,3 +56,15 @@ join --header -t, /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.T
 
 
 
+
+
+
+
+##	20240802
+```
+TEProF2_aggregation_steps.bash --threads 64 \
+  --arguments /francislab/data1/refs/TEProf2/rnapipelinerefhg38/TEProF2.arguments.txt \
+  --reference_merged_candidates_gtf /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_candidates.gtf \
+  --in  ${PWD}/in --out ${PWD}/out2
+```
+
