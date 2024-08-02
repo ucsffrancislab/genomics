@@ -713,3 +713,226 @@ TCONS_00123813
 
 
 
+
+
+
+
+##	20240801
+
+
+```
+tail -n +2 41588_2023_1349_MOESM3_ESM/S10.csv |head -1 | awk -F, '{for(i=1;i<=NF;i++){print i"-"$i}}'
+1-Transcript ID
+2-Subfam
+3-Chr TE
+4-Start TE
+5-End TE
+6-Location TE
+7-Gene
+8-Splice Target
+9-Strand
+10-Index of Start Codon
+11-Frame
+12-Frame Type
+13-Protein Sequence
+14-Original Protein Sequence
+15-Strategy
+16-
+17-
+18-
+```
+
+```
+tail -n +3 41588_2023_1349_MOESM3_ESM/S10.csv | sort -k1,1 -k10n,10 | awk 'BEGIN{FS=OFS=","}($13!="None"){print ">"$1"-"$10;print $13}' > S10.faa
+
+```
+
+
+```
+tail -n +2 41588_2023_1349_MOESM3_ESM/S1.csv |head -1 | awk -F, '{for(i=1;i<=NF;i++){print i"-"$i}}'
+1-Transcript ID
+2-Subfam
+3-Chr TE
+4-Start TE
+5-End TE
+6-Location TE
+7-Gene
+8-Splice Target
+9-Strand
+10-ACC_tumor
+11-ACC_normal
+12-BLCA_tumor
+13-BLCA_normal
+14-BRCA_tumor
+15-BRCA_normal
+16-CESC_tumor
+17-CESC_normal
+18-CHOL_tumor
+19-CHOL_normal
+20-COAD_tumor
+21-COAD_normal
+22-DLBC_tumor
+23-DLBC_normal
+24-ESCA_tumor
+25-ESCA_normal
+26-GBM_tumor
+27-GBM_normal
+28-HNSC_tumor
+29-HNSC_normal
+30-KICH_tumor
+31-KICH_normal
+32-KIRC_tumor
+33-KIRC_normal
+34-KIRP_tumor
+35-KIRP_normal
+36-LAML_tumor
+37-LAML_normal
+38-LGG_tumor
+39-LGG_normal
+40-LIHC_tumor
+41-LIHC_normal
+42-LUAD_tumor
+43-LUAD_normal
+44-LUSC_tumor
+45-LUSC_normal
+46-MESO_tumor
+47-MESO_normal
+48-OV_tumor
+49-OV_normal
+50-PAAD_tumor
+51-PAAD_normal
+52-PCPG_tumor
+53-PCPG_normal
+54-PRAD_tumor
+55-PRAD_normal
+56-READ_tumor
+57-READ_normal
+58-SARC_tumor
+59-SARC_normal
+60-SKCM_tumor
+61-SKCM_normal
+62-STAD_tumor
+63-STAD_normal
+64-TGCT_tumor
+65-TGCT_normal
+66-THCA_tumor
+67-THCA_normal
+68-THYM_tumor
+69-THYM_normal
+70-UCEC_tumor
+71-UCEC_normal
+72-UCS_tumor
+73-UCS_normal
+74-UVM_tumor
+75-UVM_normal
+76-Adipose Tissue_gtex
+77-Ovary_gtex
+78-Vagina_gtex
+79-Breast_gtex
+80-Salivary Gland_gtex
+81-Adrenal Gland_gtex
+82-Spleen_gtex
+83-Esophagus_gtex
+84-Prostate_gtex
+85-Testis_gtex
+86-Nerve_gtex
+87-Brain_gtex
+88-Thyroid_gtex
+89-Lung_gtex
+90-Skin_gtex
+91-Blood_gtex
+92-Blood Vessel_gtex
+93-Pituitary_gtex
+94-Heart_gtex
+95-Colon_gtex
+96-Pancreas_gtex
+97-Stomach_gtex
+98-Muscle_gtex
+99-Small Intestine_gtex
+100-Uterus_gtex
+101-Kidney_gtex
+102-Liver_gtex
+103-Cervix Uteri_gtex
+104-Bladder_gtex
+105-Fallopian Tube_gtex
+106-Tumor Total
+107-Normal Total
+108-GTEx Total
+109-GTEx Total without Testis
+```
+
+
+
+
+
+
+Once RaleighLab is complete ...
+
+
+```
+module load WitteLab python3/3.9.1
+
+./merge.py -o S1.all.merged.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20220804-RaleighLab-RNASeq/20240725-TEProF2_v25/counts.csv /francislab/data1/working/20201006-GTEx/20240705-TEProF2_v25/counts.csv
+
+
+./merge.py -o tmp.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.S2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20220804-RaleighLab-RNASeq/20240725-TEProF2_v25/counts.csv /francislab/data1/working/20201006-GTEx/20240705-TEProF2_v25/counts.csv
+
+join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt tmp.csv > S1.all.S2.merged.csv 
+```
+
+
+
+
+annotatedcufftranscripts$uniqid <- paste(
+
+annotatedcufftranscripts$subfamTE,
+annotatedcufftranscripts$startTE,
+annotatedcufftranscripts$gene1,
+annotatedcufftranscripts$exonintron1, 
+annotatedcufftranscripts$number1, 
+annotatedcufftranscripts$gene2, 
+annotatedcufftranscripts$exonintron2, 
+annotatedcufftranscripts$number2,
+annotatedcufftranscripts$transcriptstart2
+
+,sep = "_")
+
+
+22362 TCONS_00078773 L1MB7_18937350_ENSG00000283809_intron_4_ENSG00000283809_exon_5_18906238
+22363 TCONS_00078774 L1MB7_18937350_ENSG00000283809_intron_4_ENSG00000283809_exon_5_18906238
+
+
+
+31706 TCONS_00108522                     L1PA2_93586902_None_None_None_GNGT1_exon_1_93906586
+31707 TCONS_00108523                     L1PA2_93586902_None_None_None_GNGT1_exon_1_93906586
+
+
+
+
+
+##	20240802
+
+
+I THINK that I missed again. I THINK that I used the old gff3_annotated_filtered_test_all
+
+Creating from the new file.
+
+
+
+```
+~/.local/bin/gffread -E /francislab/data1/refs/TEProf2/reference_merged_candidates.gtf -o- | tail -n +2 > reference_merged_candidates.gff3
+chmod -w reference_merged_candidates.gff3
+```
+
+(5/8) Annotate Merged Transcripts
+
+```
+/c4/home/gwendt/github/ucsffrancislab/TEProf2Paper/bin/rmskhg38_annotate_gtf_update_test_tpm_cuff.py \
+  /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_candidates.gff3 \
+  /francislab/data1/refs/TEProf2/rnapipelinerefhg38/TEProF2.arguments.txt 
+
+chmod -w /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_candidates.gff3*
+
+```
+
+
