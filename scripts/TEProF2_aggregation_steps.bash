@@ -16,7 +16,7 @@ ARGUMENTS=/francislab/data1/refs/TEProf2/TEProF2.arguments.txt
 threads=${SLURM_NTASKS:-32}
 strand=""
 using_reference=false
-time="1-0"
+time="14-0"
 
 while [ $# -gt 0 ] ; do
 	case $1 in
