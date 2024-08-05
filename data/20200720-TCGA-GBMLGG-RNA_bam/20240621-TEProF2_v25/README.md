@@ -610,6 +610,7 @@ box_upload.bash merged.all_studies.csv
 
 
 ##	20240802
+
 ```
 
 TEProF2_aggregation_steps.bash --threads 64 \
@@ -618,4 +619,31 @@ TEProF2_aggregation_steps.bash --threads 64 \
   --in  ${PWD}/in --out ${PWD}/out2
 
 ```
+
+
+```
+TEProF2_ACS_TCGA_merge_samples.bash out2/allCandidateStatistics.tsv > allCandidateSubjectStatistics2.tsv
+
+
+tail -n +2 /francislab/data1/refs/TCGA/TCGA.GBM_codes.txt | sed -e 's/^/^/' -e 's/$/-/' > GBM
+tail -n +2 /francislab/data1/refs/TCGA/TCGA.LGG_codes.txt | sed -e 's/^/^/' -e 's/$/-/' > LGG
+
+head -1 allCandidateSubjectStatistics2.tsv > allCandidateSubjectStatistics2.GBM.tsv
+head -1 allCandidateSubjectStatistics2.tsv > allCandidateSubjectStatistics2.LGG.tsv
+
+grep -f GBM allCandidateSubjectStatistics2.tsv >> allCandidateSubjectStatistics2.GBM.tsv
+grep -f LGG allCandidateSubjectStatistics2.tsv >> allCandidateSubjectStatistics2.LGG.tsv
+
+module load r
+TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics2.GBM.tsv > presence2.GBM.tsv
+TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics2.LGG.tsv > presence2.LGG.tsv
+TEProF2_ACS_Select_and_Pivot.Rscript < allCandidateSubjectStatistics2.tsv > presence2.tsv
+
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,GBM 184"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence2.GBM.tsv > counts2.GBM.csv
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,LGG 516"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence2.LGG.tsv > counts2.LGG.csv
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,TCGA 700"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence2.tsv > counts2.csv
+```
+
+
+
 

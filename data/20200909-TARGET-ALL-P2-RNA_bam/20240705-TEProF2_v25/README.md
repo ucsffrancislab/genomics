@@ -102,3 +102,14 @@ TEProF2_aggregation_steps.bash --threads 64 \
   --reference_merged_candidates_gtf /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_candidates.gtf \
   --in  ${PWD}/in --out ${PWD}/out2
 ```
+
+
+```
+module load r
+TEProF2_ACS_Select_and_Pivot.Rscript < out2/allCandidateStatistics.tsv > presence2.tsv
+
+awk 'BEGIN{FS="\t";OFS=","}(NR==1){print "Transcript,TARGET 532"}(NR>1){c=0;for(i=2;i<=NF;i++){c+=$i};print $1,c}' presence2.tsv > counts2.csv
+
+```
+
+

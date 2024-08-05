@@ -936,3 +936,31 @@ chmod -w /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_cand
 ```
 
 
+
+
+##	20240805
+
+
+Prep to merge all of the newly newly process with the most recent annotated merged transcripts.
+
+
+
+```
+module load WitteLab python3/3.9.1
+
+./merge.py -o S1.all2.merged.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts2.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts2.csv 
+
+
+./merge.py -o tmp.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.S2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts2.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts2.csv 
+
+join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt tmp.csv > S1.all2.S2.merged.csv 
+```
+
+
+
+
+
+
+
+
+
