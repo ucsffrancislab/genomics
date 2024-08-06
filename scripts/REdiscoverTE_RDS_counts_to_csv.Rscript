@@ -4,7 +4,7 @@ library("optparse")
  
 opt = parse_args(
 	OptionParser(option_list=list(
-		make_option(c("-s", "--sep"), type="character", default=",", 
+		make_option(c("-s", "--sep"), type="character", default="\t", 
 			help="output separator", metavar="character")
 		)
 	), positional_arguments = TRUE)
