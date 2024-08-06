@@ -353,3 +353,12 @@ box_upload.bash *.CerebellumSelect CerebellumSelect_REdiscoverTE_rollup_noquesti
 
 
 
+##	20240806
+
+```
+module load r
+
+REdiscoverTE_RDS_counts_to_csv.Rscript REdiscoverTE_rollup_noquestion/RE_all_repFamily_3_TPM.RDS
+
+```
+

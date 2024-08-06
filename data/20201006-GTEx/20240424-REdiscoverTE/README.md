@@ -422,3 +422,26 @@ wc -l REdiscoverTE_rollup_noquestion/GENE.txt /francislab/data1/working/20201006
 join --header shared REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.tsv | sed 's/ /\t/g' > REdiscoverTE_rollup_noquestion/GENE_1_raw_counts.symbols.summed.shared.tsv
 ```
 
+
+
+
+##	20240806
+
+
+
+
+
+#RE_all_repFamily_3_TPM.RDS
+
+
+```
+module load r
+
+REdiscoverTE_RDS_counts_to_csv.Rscript REdiscoverTE_rollup_noquestion/RE_all_repFamily_3_TPM.RDS
+
+```
+
+
+
+
+
