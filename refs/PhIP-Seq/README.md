@@ -256,17 +256,33 @@ Just can't have commas when using "join" as it is very elementary.
 It also MUST be sorted by id to match the sort on the tile counts used in the dataset.
 
 
+
+
+
+
+
+
+##	20240807
+
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$12}' | sort -t, -k1n,1 -k3,3 | uniq | sed '1i id,species' > VIR3_clean.uniq.csv
 ```
 
-zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{gsub(/,/,";",$10);gsub(/\"/,"",$10);print $17,$10,$12}' | sort -t, -k1n,1 -k2,2 -k3,3 | uniq | sed '1i id,protein,species' > VIR3_clean.circos_framework.uniq.clean.csv
 
-```
-
+Noticed that 1 id 89962 goes by 2 different names but may be the same amino acid
 
 
 
 
 
+import difflib
+peptide=              "ZZZZSEQUENCEZZZZZZZZZZZZZZZZZ"
+already_found_peptide="AAAAAAAAAAAAAAAAASEQUENCEAAAA"
+matcher = difflib.SequenceMatcher(None, peptide,already_found_peptide)
+match = matcher.find_longest_match(0, len(peptide), 0, len(already_found_peptide))         
+match.size
+8
 
 
 
