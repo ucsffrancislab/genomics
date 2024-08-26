@@ -743,7 +743,7 @@ tail -n +2 41588_2023_1349_MOESM3_ESM/S10.csv |head -1 | awk -F, '{for(i=1;i<=NF
 ```
 
 ```
-tail -n +3 41588_2023_1349_MOESM3_ESM/S10.csv | sort -k1,1 -k10n,10 | awk 'BEGIN{FS=OFS=","}($13!="None"){print ">"$1"-"$10;print $13}' > S10.faa
+tail -n +3 41588_2023_1349_MOESM3_ESM/S10.csv | sort -t, -k1,1 -k10n,10 | awk 'BEGIN{FS=OFS=","}($13!="None"){print ">"$1"-"$10;print $13}' > S10.faa
 
 ```
 
@@ -938,6 +938,9 @@ chmod -w /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_cand
 
 
 
+
+
+
 ##	20240805
 
 
@@ -948,19 +951,36 @@ Prep to merge all of the newly newly process with the most recent annotated merg
 ```
 module load WitteLab python3/3.9.1
 
-./merge.py -o S1.all2.merged.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts2.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts2.csv 
+./merge.py -o S1.all.combined.merged.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts.LGG.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts2.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20220804-RaleighLab-RNASeq/20240725-TEProF2_v25/counts2.csv /francislab/data1/working/20201006-GTEx/20240705-TEProF2_v25/counts2.csv 
 
 
-./merge.py -o tmp.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.S2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts2.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts2.csv 
+./merge.py -o S1.all2.merged.csv /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.sorted.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.GBM.csv /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20240621-TEProF2_v25/counts2.LGG.csv /francislab/data1/working/20240610-Stanford/20240717-TEProF2-hg38_v25/counts2.csv /francislab/data1/working/20200909-TARGET-ALL-P2-RNA_bam/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20230628-Costello/20240705-TEProF2_v25/counts2.csv /francislab/data1/working/20220804-RaleighLab-RNASeq/20240725-TEProF2_v25/counts2.csv /francislab/data1/working/20201006-GTEx/20240705-TEProF2_v25/counts2.csv 
 
-join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt tmp.csv > S1.all2.S2.merged.csv 
+
+join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt S1.all2.merged.csv > S1.all2.S2.merged.csv 
+join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S2.TranscriptIDs.txt S1.all.combined.merged.csv > S1.all.combined.S2.merged.csv 
+
 ```
 
 
+##	20240807
+
+
+```
+join -t, --header /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S1.GTEx_Total_without_Testis_LTE_1.TranscriptIDs.txt <( tail -n +2 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10.csv ) > 41588_2023_1349_MOESM3_ESM/S10.GTEx_Total_without_Testis_LTE_1.csv
 
 
 
+tail -n +2 41588_2023_1349_MOESM3_ESM/S10.GTEx_Total_without_Testis_LTE_1.csv | awk 'BEGIN{FS=OFS=","}($13!="None"){print ">"$1"-"$10;print $13}' > S10.GTEx_Total_without_Testis_LTE_1.faa
+
+```
 
 
+##	20240826
+
+
+```
+box_upload.bash S1.all.combined.merged.csv S1.all2.merged.csv S1.all2.S2.merged.csv S1.all.combined.S2.merged.csv
+```
 
 
