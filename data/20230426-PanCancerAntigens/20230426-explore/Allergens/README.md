@@ -499,3 +499,22 @@ module load r
 This TEProF2_Heatmap_Maker.Rmd isn't working 
 
 
+
+
+##	20240807
+
+
+```
+
+mkdir 20240807
+cd 20240807
+
+mkdir 50
+cd 50
+
+../S1_conversion_to_bitscores.bash --evalue 10 --tilesize 50 \
+  --tcons /francislab/data1/refs/TEProf2/S10.GTEx_Total_without_Testis_LTE_1.faa \
+  --protein /francislab/data1/refs/AllergenOnline/AllergenOnline.faa
+
+
+```
