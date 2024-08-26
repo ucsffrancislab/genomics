@@ -58,7 +58,9 @@ for filename in args.files:
 		print(d.head())
 
 		print("Appending")
-		data_frames.append(d)
+
+                #   convert to strings to don't get converted to floats if any are missing in concat
+		data_frames.append(d.astype('string'))
 	else:
 		print(filename + " is empty")
 
@@ -68,7 +70,7 @@ if len(data_frames) > 0:
 	df = pd.concat(data_frames, axis=1, sort=True)
 	data_frames = []
 
-	print("Replacing all NaN with 0")
+#	print("Replacing all NaN with 0")
 #	df.fillna(0, inplace=True)
 
 #	df.info(verbose=True)
