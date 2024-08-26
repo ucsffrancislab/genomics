@@ -115,36 +115,10 @@ tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.SE3.virus_scores.csv
 ```
 
 
-```
 
 
-```
+Why some have big numbers, big zscore and True, but 0 in virus score
 
+The calc score script processes in an the order of most found which biases those with more in the library.
 
-
-```
-
-for f in *.virus_scores.csv ; do
-echo $f
-join -t, ${f} <( tail -n +2 /c4/home/gwendt/github/ucsffrancislab/PhIP-Seq/Elledge/VirScan_viral_thresholds.csv ) | awk -F, '($2>$3){print $1}' > ${f%.csv}.abovethreshold.txt
-done
-
-```
-
-
-
-
-
-
-```
-
- for s in idxstats q20 q30 q40 ; do
-  for r in All8 TR1 TR2 Zero ; do
-   ./merge_lists_to_matrix.py -o ${s}.${r}.above_threshold.csv Zscores/${s}.${r}.*.virus_scores.abovethreshold.txt
-  done
-done
-
-
-
-```
 
