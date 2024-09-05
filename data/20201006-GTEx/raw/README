@@ -321,3 +321,148 @@ awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $11=="Brain - Cerebellu
 37
 
 ```
+
+
+
+
+
+```
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $3}' SraRunTable.csv | sort | uniq -c
+      1 Assay Type
+  22544 RNA-Seq
+   1302 WGS
+    609 WXS
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $25}' SraRunTable.csv | sort | uniq -c
+      1 LibraryLayout
+  24436 PAIRED
+     19 SINGLE
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $26}' SraRunTable.csv | sort | uniq -c
+      1 LibrarySelection
+  22544 cDNA
+    609 Hybrid Selection
+   1302 RANDOM
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $27}' SraRunTable.csv | sort | uniq -c
+      1 LibrarySource
+   1911 GENOMIC
+  22544 TRANSCRIPTOMIC
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $37}' SraRunTable.csv | sort | uniq -c
+      1 molecular_data_type
+     95 
+  21022 "Allele-Specific Expression,RNA Seq (NGS)"
+   1430 RNA Seq (NGS)
+      4 "RNA Seq (NGS),Allele-Specific Expression"
+   1904 SNP/CNV Genotypes (NGS)
+
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $60}' SraRunTable.csv | sort | uniq -c
+      1 analysis_type (exp)
+  15220 
+   9235 Resequencing
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $61}' SraRunTable.csv | sort | uniq -c
+      1 analysis_type (run)
+  15220 
+   9235 Resequencing
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $64}' SraRunTable.csv | sort | uniq -c
+      1 library_type (exp)
+  15220 
+     65 cDNAShotgunReadTwoSense
+   7911 cDNAShotgunStrandAgnostic
+    609 HybridSelection
+    650 WholeGenomeShotgun
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $65}' SraRunTable.csv | sort | uniq -c
+      1 library_type (run)
+  15220 
+     65 cDNAShotgunReadTwoSense
+   7911 cDNAShotgunStrandAgnostic
+    609 HybridSelection
+    650 WholeGenomeShotgun
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $66}' SraRunTable.csv | sort | uniq -c
+      1 sample_type (exp)
+  15259 
+   9120 Normal
+     76 Tumor
+
+
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $11}' SraRunTable.csv | sort | uniq -c
+      1 body_site
+    870 Adipose - Subcutaneous
+    597 Adipose - Visceral (Omentum)
+    366 Adrenal Gland
+    564 Artery - Aorta
+    324 Artery - Coronary
+    826 Artery - Tibial
+     21 Bladder
+    191 Brain - Amygdala
+    235 Brain - Anterior cingulate cortex (BA24)
+    315 Brain - Caudate (basal ganglia)
+    274 Brain - Cerebellar Hemisphere
+    342 Brain - Cerebellum
+    310 Brain - Cortex
+    265 Brain - Frontal Cortex (BA9)
+    244 Brain - Hippocampus
+    244 Brain - Hypothalamus
+    288 Brain - Nucleus accumbens (basal ganglia)
+    241 Brain - Putamen (basal ganglia)
+    178 Brain - Spinal cord (cervical c-1)
+    170 Brain - Substantia nigra
+    526 Breast - Mammary Tissue
+    666 Cells - Cultured fibroblasts
+    284 Cells - EBV-transformed lymphocytes
+    248 Cells - Leukemia cell line (CML)
+     12 Cervix - Ectocervix
+     10 Cervix - Endocervix
+    427 Colon - Sigmoid
+    491 Colon - Transverse
+    439 Esophagus - Gastroesophageal Junction
+    778 Esophagus - Mucosa
+    690 Esophagus - Muscularis
+     14 Fallopian Tube
+    530 Heart - Atrial Appendage
+    625 Heart - Left Ventricle
+     86 Kidney - Cortex
+    326 Liver
+    883 Lung
+    174 Minor Salivary Gland
+   1101 Muscle - Skeletal
+    781 Nerve - Tibial
+    250 Ovary
+    462 Pancreas
+    321 Pituitary
+    278 Prostate
+    681 Skin - Not Sun Exposed (Suprapubic)
+    924 Skin - Sun Exposed (Lower leg)
+    247 Small Intestine - Terminal Ileum
+    287 Spleen
+    479 Stomach
+    486 Testis
+    850 Thyroid
+    213 Uterus
+    225 Vagina
+   2796 Whole Blood
+```
+
+
+```
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}($3=="RNA-Seq" && $25=="PAIRED" && $11~/^Brain/ && $60!="Resequencing" && $66!="Normal"){print $26,$27,$37,$64,$65}' SraRunTable.csv | sort | uniq -c
+     10 cDNA,TRANSCRIPTOMIC,,,
+   1955 cDNA,TRANSCRIPTOMIC,"Allele-Specific Expression,RNA Seq (NGS)",,
+    166 cDNA,TRANSCRIPTOMIC,RNA Seq (NGS),,
+
+awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}($3=="RNA-Seq" && $25=="PAIRED" && $11~/^Brain/ && $60!="Resequencing" && $66!="Tumor"){print $26,$27,$37,$64,$65}' SraRunTable.csv | sort | uniq -c
+     10 cDNA,TRANSCRIPTOMIC,,,
+   2028 cDNA,TRANSCRIPTOMIC,"Allele-Specific Expression,RNA Seq (NGS)",,
+    166 cDNA,TRANSCRIPTOMIC,RNA Seq (NGS),,
+
+```
+
+
+SRR1120781,RNA:Total RNA,RNA-Seq,GCF_000001405.25,152,6146383720,PRJNA75899,SAMN02465127,GTEx,GTEX-U3ZN-1726-SM-4DXUQ,Esophagus - Mucosa,2891252711,BI,1,GRU,"bam,sra","gs,ncbi,s3","gs.US,ncbi.dbgap,s3.us-east-1",SRX434924,phs000424,Esophagus,Illumina HiSeq 2000,No,Solexa-159875,PAIRED,cDNA,TRANSCRIPTOMIC,Homo sapiens,ILLUMINA,2014-01-16T00:00:00Z,GTEX-U3ZN-1726-SM-4DXUQ,female,SRP012682,Cross-Sectional,Genotype-Tissue Expression (GTEx),GTEX-U3ZN,"Allele-Specific Expression,RNA Seq (NGS)",,,,broadinstitute.org:bsp.prod.sample:4DXUQ,broadinstitute.org:bsp.prod.sample:4DXUQ,G35309,G35309,H0R53ADXX130528,130528_SL-HAA_0164_BFCH0R53ADXX,36298,36298,H0R53ADXX,330418.0,330418.0,RNA:Total RNA,H0R53.1,RP-16,RP-16,SM-2UFAJ,SM-2UFAJ,SM-4DXUQ,SM-4DXUQ,Resequencing,Resequencing,SL-HAA,1,cDNAShotgunStrandAgnostic,cDNAShotgunStrandAgnostic,Normal,PDO-1037,PDO-1037,RNA,RNA,P-RNA-0002,P-RNA-0002,,,,,,
