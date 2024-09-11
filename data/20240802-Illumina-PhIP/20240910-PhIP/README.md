@@ -1,0 +1,179 @@
+
+#	20240802-Illumina-PhIP/20240910-PhIP
+
+
+REDO
+
+ONLY PRIMARY READS
+ONLY WITH START NEAR 1
+ONLY QUALITY > 40?
+NOT idxstats
+
+
+
+```
+
+mkdir -p out
+module load samtools
+for bam in ../20240803-bowtie2/out/*bam ; do
+  SAMPLE_ID=$( basename ${bam} .VIR3_clean.1-160.bam )
+  echo $bam
+  echo $SAMPLE_ID
+  samtools view -F SECONDARY,SUPPLEMENTARY -q 40 ${bam} | awk '( $4 < 10 ){print $3}' | sort -k1n | uniq -c | awk '{print $2","$1}' | sed -e "1 i id,${SAMPLE_ID}" | gzip > out/${SAMPLE_ID}.q40.count.csv.gz
+  chmod 440 out/${SAMPLE_ID}.q40.count.csv.gz
+done
+
+```
+
+Note: To perform the Z-score analysis, count.combined files are merged into a table, and columns corresponding with no-serum controls are summed in a column called "input".
+
+Separate the "input" samples
+
+```
+
+mkdir out/input
+
+for sample in $( awk -F, '($3=="blank"){print $1}' /francislab/data1/raw/20240802-Illumina-PhIP/manifest.csv ) ; do
+ mv out/${sample}.q40.count.csv.gz out/input
+done
+
+```
+
+Then sum them with `sum_counts_files.py`
+
+```
+module load WitteLab python3/3.9.1
+sum_counts_files.py -o out/input/All.count.csv out/input/*.q40.count.csv.gz
+sed -i '1s/sum/input/' out/input/All.count.csv
+gzip out/input/All.count.csv
+
+```
+
+Create count matrices to feed to Z-score
+
+```
+
+merge_all_combined_counts_files.py --int -o All.count.csv.gz out/*.q40.count.csv.gz out/input/All.count.csv.gz
+chmod 400 All.count.csv.gz
+
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=zscore --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/Zscore.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  --wrap "module load r; elledge_Zscore_analysis.R ${PWD}/All.count.csv.gz"
+
+```
+
+
+
+
+
+I think that the output of the zscore command needs to have the columns reordered.
+
+They are "all of the samples ...,id,group,input"
+
+Not sure if "input" is needed anymore or what "group" is.
+
+
+```
+
+#awk 'BEGIN{FS=OFS=","}(NR==1){print $5,$6,$1,$2,$3,$4,$7}(NR>1){printf "%d,%d,%.2g,%.2g,%.2g,%.2g,%d\n",$5,$6,$1,$2,$3,$4,$7}' \
+#  Elledge/fastq_files/merged.combined.count.Zscores.csv > Elledge/fastq_files/merged.combined.count.Zscores.reordered.csv
+
+```
+
+
+
+
+
+This is over 4000 commands. Should join the 4 different "s" types
+
+```
+module load WitteLab python3/3.9.1
+booleanize_Zscore_replicates.py -s SE1 -m ${PWD}/All.count.Zscores.csv S1 S2
+booleanize_Zscore_replicates.py -s SE2 -m ${PWD}/All.count.Zscores.csv S5 S6
+booleanize_Zscore_replicates.py -s SE3 -m ${PWD}/All.count.Zscores.csv S9 S10
+
+```
+
+
+
+
+
+```
+for length in 5 7 ; do
+for sample in SE1 SE2 SE3 ; do
+echo ${sample}.${length}
+elledge_calc_scores_nofilter.py All.count.Zscores.${sample}.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.csv Species ${length} > tmp
+head -1 tmp > All.count.Zscores.${sample}.${length}.virus_scores.csv
+tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.${sample}.${length}.virus_scores.csv
+done ; done
+
+```
+
+
+
+
+
+
+
+Threshold check
+
+
+~/github/ucsffrancislab/PhIP-Seq/Elledge/VirScan_viral_thresholds.csv 
+
+
+A sample is determined to be seropositive for a virus if the virus_score > VirScan_viral_threshold and if at least one public epitope from that virus scores as a hit. The file “VirScan_viral_thresholds” contains the thresholds for each virus (Supplementary materials).
+
+
+GREATER THAN THRESHOLD. NOT GREATER THAN OR EQUAL TO THE THRESHOLD.
+
+
+
+
+```
+
+for length in 5 7 ; do
+for sample in SE1 SE2 SE3 ; do
+echo ${sample}.${length}
+join --header -t, ~/github/ucsffrancislab/PhIP-Seq/Elledge/VirScan_viral_thresholds.csv All.count.Zscores.${sample}.${length}.virus_scores.csv | awk 'BEGIN{FS=OFS=","}(NR==1){print "Species",$3}(NR>1 && $3>$2){print $1,$3}' > All.count.Zscores.${sample}.${length}.virus_scores.threshold.csv
+done ; done
+
+```
+
+
+```
+
+#for sample in SE1 SE2 SE3 ; do
+#join -t, <( tail -n +2 All.count.Zscores.${sample}.csv | sort -t, -k1,1 ) <( tail -n +2 /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.sorted.csv ) | awk -F, '($2=="True"){print $6}' | sort | uniq > All.count.Zscores.${sample}.found_public_epitopes.csv
+#sed -i '1iSpecies' All.count.Zscores.${sample}.found_public_epitopes.csv
+#done
+
+```
+
+
+
+```
+
+for length in 5 7 ; do
+for sample in SE1 SE2 SE3 ; do
+echo ${sample}.${length}
+
+join -t, <( sort -t, -k1,1 All.count.Zscores.${sample}.csv.${length}.peptides.txt ) <( tail -n +2 /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.sorted.csv ) | awk -F, '{print $2}' | sort | uniq > All.count.Zscores.${sample}.${length}.found_public_epitopes.txt
+sed -i '1ispecies' All.count.Zscores.${sample}.${length}.found_public_epitopes.txt
+
+join --header -t, All.count.Zscores.${sample}.${length}.found_public_epitopes.txt All.count.Zscores.${sample}.${length}.virus_scores.threshold.csv > All.count.Zscores.${sample}.${length}.seropositive.csv
+
+sed -i "1s/$/-${length}/" All.count.Zscores.${sample}.${length}.seropositive.csv
+
+done ; done
+
+./merge.py -o merged.seropositive.csv --int All*.seropositive.csv
+
+```
+
+
+
