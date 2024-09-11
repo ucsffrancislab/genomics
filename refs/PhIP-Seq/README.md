@@ -286,3 +286,55 @@ match.size
 
 
 
+
+##	20240909
+
+
+```
+1,
+2 - Aclstr50,
+3 - Bclstr50,
+4 - Entry,
+5 - Gene names,
+6 - Gene ontology (GO),
+7 - Gene ontology IDs,
+8 - Genus,
+9 - Organism,
+10 - Protein names,
+11 - Sequence,
+12 - Species,
+13 - Subcellular location,
+14 - Version (entry),
+15 - Version (sequence),
+16 - end,
+17 - id,
+18 - oligo,
+19 - source,
+20 - start,
+21 - peptide
+```
+
+    columns = ['id', 'Species', 'Organism', 'Entry', 'peptide']
+
+```
+#zcat VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$12,$9,$4,$21}' \
+
+echo "id,Species,peptide" > VIR3_clean.virus_score.csv
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$12,$21}' \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  | sort -t, -k1n,1 | uniq >> VIR3_clean.virus_score.csv
+
+
+
+```
+
+
+
+
+
