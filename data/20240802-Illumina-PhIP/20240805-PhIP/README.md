@@ -122,3 +122,47 @@ Why some have big numbers, big zscore and True, but 0 in virus score
 The calc score script processes in an the order of most found which biases those with more in the library.
 
 
+
+
+##	20240909
+
+
+
+
+
+```
+
+module load WitteLab python3/3.9.1
+
+elledge_calc_scores_nofilter.py All.count.Zscores.SE1.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.csv.gz Species 7 > tmp
+head -1 tmp > All.count.Zscores.SE1.virus_scores2.csv
+tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.SE1.virus_scores2.csv
+elledge_calc_scores_nofilter.py All.count.Zscores.SE2.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.csv.gz Species 7 > tmp
+head -1 tmp > All.count.Zscores.SE2.virus_scores2.csv
+tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.SE2.virus_scores2.csv
+elledge_calc_scores_nofilter.py All.count.Zscores.SE3.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.csv.gz Species 7 > tmp
+head -1 tmp > All.count.Zscores.SE3.virus_scores2.csv
+tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.SE3.virus_scores2.csv
+
+```
+
+
+
+
+```
+
+join -t, <( tail -n +2 All.count.Zscores.SE1.csv | sort -t, -k1,1 ) <( tail -n +2 /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.sorted.csv ) | awk -F, '($2=="True"){print $6}' | sort | uniq > All.count.Zscores.SE1.found_public_epitopes.csv
+sed -i '1iSpecies' All.count.Zscores.SE1.found_public_epitopes.csv
+join -t, <( tail -n +2 All.count.Zscores.SE2.csv | sort -t, -k1,1 ) <( tail -n +2 /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.sorted.csv ) | awk -F, '($2=="True"){print $6}' | sort | uniq > All.count.Zscores.SE2.found_public_epitopes.csv
+sed -i '1iSpecies' All.count.Zscores.SE2.found_public_epitopes.csv
+join -t, <( tail -n +2 All.count.Zscores.SE3.csv | sort -t, -k1,1 ) <( tail -n +2 /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.sorted.csv ) | awk -F, '($2=="True"){print $6}' | sort | uniq > All.count.Zscores.SE3.found_public_epitopes.csv
+sed -i '1iSpecies' All.count.Zscores.SE3.found_public_epitopes.csv
+
+join --header -t, All.count.Zscores.SE1.found_public_epitopes.csv All.count.Zscores.SE1.virus_scores2.csv > All.count.Zscores.SE1.seropositive.csv
+join --header -t, All.count.Zscores.SE2.found_public_epitopes.csv All.count.Zscores.SE2.virus_scores2.csv > All.count.Zscores.SE2.seropositive.csv
+join --header -t, All.count.Zscores.SE3.found_public_epitopes.csv All.count.Zscores.SE3.virus_scores2.csv > All.count.Zscores.SE3.seropositive.csv
+
+```
+
+
+
