@@ -101,10 +101,12 @@ python /app/alphafold/run_alphafold.py "$@"' > /app/run_alphafold.sh \
 ENTRYPOINT ["/app/run_alphafold.sh"]
 
 
-
+#	run the test data. Works in docker, but in singularity need to change directory.
+#	Conversion to singularity does not respect the WORKDIR or ENTRYPOINT options
 RUN echo $'#!/bin/bash\n\
 ldconfig\n\
-python /app/alphafold/run_alphafold_test.py "$@"' > /app/run_alphafold_test.sh \
+cd /app/alphafold/\n\
+python run_alphafold_test.py "$@"' > /app/run_alphafold_test.sh \
   && chmod +x /app/run_alphafold_test.sh
 #RUN pip3 install mock
 
