@@ -337,4 +337,56 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS
 
 
 
+##	20240917
+
+
+```
+
+tail -n +2 public_epitope_annotations.sorted.csv | awk 'BEGIN{FS=OFS=","}{print $1,$5,$3}' | sort -t, -k1n,1 > public_epitope_annotations.clean.csv
+sed -i '1iid,species,public_epitope' public_epitope_annotations.clean.csv
+chmod 400 public_epitope_annotations.clean.csv
+
+#	too many duplicate records with differing proteins
+#84182,Influenza A virus,Non-structural protein 1 (NS1) (NS1A),Vir2,197,TLQRFAWGSSNENGGPPLTPKQKRKMARTARSKVRRDKMAD
+#84182,Influenza A virus,Nonstructural protein 1,Vir2,197,TLQRFAWGSSNENGGPPLTPKQKRKMARTARSKVRRDKMAD
+
+#echo "id,Species,protein,source,start,peptide" > VIR3_clean.select.csv
+#zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{gsub(/,/," ",$10);print $17,$12,$10,$19,$20,$21}' \
+#  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+#  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+#  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+#  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+#  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+#  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+#  -e 's/New York virus (NYV)/New York virus/g' \
+#  | sort -t, -k1n,1 | uniq >> VIR3_clean.select.csv
+
+
+# a few duplicates with differing start positions
+#echo "id,Species,source,start,peptide" > VIR3_clean.select.csv
+#zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$12,$19,$20,$21}' \
+#  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+#  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+#  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+#  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+#  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+#  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+#  -e 's/New York virus (NYV)/New York virus/g' \
+#  | sort -t, -k1n,1 | uniq >> VIR3_clean.select.csv
+
+
+echo "id,Species,protein,source,start,peptide" > VIR3_clean.select.csv
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{gsub(/,/," ",$10);print $17,$12,$10,$19,$20,$21}' \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  | sort -t, -k1n,1 | uniq | awk -F, '(!seen[$1]){print;seen[$1]++}' >> VIR3_clean.select.csv
+
+
+```
+
 
