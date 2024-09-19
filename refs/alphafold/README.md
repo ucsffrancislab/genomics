@@ -76,3 +76,10 @@ With --nv, it took 1.5 hours.
 Without it, it took 
 
 
+`--writable-tmpfs` get rid of the line 
+```
+/sbin/ldconfig.real: Can't create temporary cache file /etc/ld.so.cache~: Read-only file system
+```
+Yay!
+
+
