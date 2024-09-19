@@ -78,16 +78,11 @@ That should be good.
 
 
 
----
-
-
-
-
 ##	Upload
 
 Copy the files locally.
 ```
-scp c4:/francislab/data1/working/20210302-AGS-illumina/20210302-prep_for_imputation/*vcf.gz ./
+scp c4:/francislab/data1/working/20240918-MeningiomaGWAS/20240918-prep_for_imputation/*vcf.gz ./
 ```
 
 Then upload to the web app.
@@ -95,17 +90,30 @@ Then upload to the web app.
 
 
 
+
+
+##	Impute
+
 https://imputation.biodatacatalyst.nhlbi.nih.gov/
 
-Login
-
-Run > Genotype Imputation (Minimac4) 1.5.7
 
 
-Name : 20210302
+Genotype Imputation (Minimac4) 2.0.0-beta3
+This is the new Imputation Server Pipeline using Minimac4. Documentation can be found here.
+
+If your input data is GRCh37/hg19 please ensure chromosomes are encoded without prefix (e.g. 20).
+If your input data is GRCh38/hg38 please ensure chromosomes are encoded with prefix 'chr' (e.g. chr20).
+
+There is a limit of three concurrent jobs per person. The TOPMed imputation server is a free resource, and these limits allow us to provide service to a wide audience. We reserve the right to terminate users who violate this policy.      https://topmedimpute.readthedocs.io/en/latest/
+
+
+
+
+
+Name : 20240918-MeningiomaGWAS
 
 Reference Panel : 
-* **TOPMed r2** (only option)
+* **TOPMed r3** (only option)  (NOT r2 like previous runs)
 
 Input Files : File Upload (selected my local copies for upload)
 
@@ -121,23 +129,39 @@ rsq Filter :
 * 0.3
 
 Phasing : 
-* **Eagle v2.4 (unphased input)**
-* No phasing (phased input)
+* **Eagle v2.4 (phased output)** ( previously I has this ... as **Eagle v2.4 (unphased input)** ?)
+* No phasing ( previously I had this as ... * No phasing (phased input) ?)
 
-QC Frequency Check : 
+
+Population (New option)
+* TOPMed r3
+* * **vs TOPMed panel**
+* * Skip
+
+
+Mode
+* **Quality Control & Imputation**
+* Quality Control & Phasing
+* Quality Control Only
+
+
+
+QC Frequency Check :  (Removed option)
 * **vs TOPMed Panel**
 * Skip
 
-Mode : 
-* **Quality Control and Imputation**
-* Quality Control and Phasing Only
-* Quality Control Only
+
+* **Generate Meta-imputation File**
 
 
 **Submit Job**
 
 
 Wait for files to upload.  This took me about 15 minutes.
+
+
+
+---
 
 
 ```
