@@ -57,3 +57,179 @@ sh Run-plink.sh > Run-plink.sh.log
 ```
 
 
+
+
+
+
+```BASH
+module load htslib/1.10.2
+
+for vcf in *vcf; do
+echo $vcf
+bgzip $vcf
+done
+
+chmod a-w *{bim,bed,fam,vcf.gz}
+```
+
+That should be good.
+
+
+
+
+
+---
+
+
+
+
+##	Upload
+
+Copy the files locally.
+```
+scp c4:/francislab/data1/working/20210302-AGS-illumina/20210302-prep_for_imputation/*vcf.gz ./
+```
+
+Then upload to the web app.
+
+
+
+
+https://imputation.biodatacatalyst.nhlbi.nih.gov/
+
+Login
+
+Run > Genotype Imputation (Minimac4) 1.5.7
+
+
+Name : 20210302
+
+Reference Panel : 
+* **TOPMed r2** (only option)
+
+Input Files : File Upload (selected my local copies for upload)
+
+Array build : 
+* **GRCh37/hg19**
+* GRCh38/hg38
+
+rsq Filter : 
+* off
+* 0.001
+* **0.1**
+* 0.2
+* 0.3
+
+Phasing : 
+* **Eagle v2.4 (unphased input)**
+* No phasing (phased input)
+
+QC Frequency Check : 
+* **vs TOPMed Panel**
+* Skip
+
+Mode : 
+* **Quality Control and Imputation**
+* Quality Control and Phasing Only
+* Quality Control Only
+
+
+**Submit Job**
+
+
+Wait for files to upload.  This took me about 15 minutes.
+
+
+```
+Input Validation
+
+22 valid VCF file(s) found.
+
+Samples: 4619
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9
+SNPs: 292290
+Chunks: 291
+Datatype: unphased
+Build: hg19
+Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Population: all
+Phasing: eagle
+Mode: imputation
+Rsq filter: 0.1
+```
+
+```
+Quality Control
+
+Uploaded data is hg19 and reference is hg38.
+
+Lift Over
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 97,485
+Reference Overlap: 99.68 %
+Match: 290,463
+Allele switch: 699
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 0
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 80
+SNPs call rate < 90%: 98
+
+Excluded sites in total: 178
+Remaining sites in total: 291,064
+See snps-excluded.txt for details
+Typed only sites: 923
+See typed-only.txt for details
+
+Warning: 3 Chunk(s) excluded: < 3 SNPs (see chunks-excluded.txt for details).
+Warning: 1 Chunk(s) excluded: at least one sample has a call rate < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 288
+```
+
+```
+Quality Control (Report)
+
+Execution successful.
+```
+
+Then wait for the process. Started ...
+...
+
+
+I was emailed a password which I put in a file called `password`
+
+```BASH
+mkdir imputation
+cd imputation
+
+
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252522/085409efc0892e98d3fcc413e994e7a07c2733c44cd78135338878b2c3c00ef8
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252526/1b9458a179ac90808e6f9c22ee92a7e3729cb841c7eabdd98cee4cac123468a9
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252528/3aaab82245adcdd73eb57f697ba6a5e8dded3c9885d6bcfec33960cccf67d392
+wget https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252529/f42ccda4a2eba4f60d3f1c102c63dbec4c28ab6415ba1a14c24e9ecf9581fea8
+
+
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252522/085409efc0892e98d3fcc413e994e7a07c2733c44cd78135338878b2c3c00ef8 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252526/1b9458a179ac90808e6f9c22ee92a7e3729cb841c7eabdd98cee4cac123468a9 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252528/3aaab82245adcdd73eb57f697ba6a5e8dded3c9885d6bcfec33960cccf67d392 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/252529/f42ccda4a2eba4f60d3f1c102c63dbec4c28ab6415ba1a14c24e9ecf9581fea8 | bash
+
+chmod a-w *
+
+for zip in chr*zip ; do
+echo $zip
+unzip -P $( cat password ) $zip
+done
+```
+
+
