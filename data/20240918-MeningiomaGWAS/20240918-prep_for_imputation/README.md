@@ -151,7 +151,8 @@ QC Frequency Check :  (Removed option)
 * Skip
 
 
-* **Generate Meta-imputation File**
+
+X **Generate Meta-imputation File**
 
 
 **Submit Job**
