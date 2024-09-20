@@ -59,8 +59,23 @@ RUN wget -q -P /tmp \
 #    && conda install -y -c nvidia cuda=${CUDA_VERSION} \
 #    && conda install -y -c conda-forge openmm=8.0.0 pdbfixer \
 #    && conda clean --all --force-pkgs-dirs --yes
-
-#/bin/bash: /opt/conda/lib/libtinfo.so.6: no version information available (required by /bin/bash)
+#
+#
+#1044.0 Solving environment: ...working... failed
+#1044.1 
+#1044.1 InvalidSpec: The package "nvidia/linux-64::cuda-compiler==12.6.1=0" is not available for the specified platform
+#1044.1 
+#------
+#AlphaFold-2.3.3.Dockerfile:58
+#--------------------
+#  57 |     ENV LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
+#  58 | >>> RUN conda install -qy conda==24.1.2 pip python=3.11 \
+#  59 | >>>     && conda install -y -c nvidia cuda=${CUDA_VERSION} \
+#  60 | >>>     && conda install -y -c conda-forge openmm=8.0.0 pdbfixer \
+#  61 | >>>     && conda clean --all --force-pkgs-dirs --yes
+#  62 |     
+#--------------------
+#ERROR: failed to solve: process "/bin/bash -o pipefail -c conda install -qy conda==24.1.2 pip python=3.11     && conda install -y -c nvidia cuda=${CUDA_VERSION}     && conda install -y -c conda-forge openmm=8.0.0 pdbfixer     && conda clean --all --force-pkgs-dirs --yes" did not complete successfully: exit code: 1
 
 ENV PATH="/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
