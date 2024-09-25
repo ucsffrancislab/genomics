@@ -383,32 +383,84 @@ Mode: imputation
 
 
 
-
-
-
 Quality Control
+```
+Skip allele frequency check.
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 108,112
+Reference Overlap: 99.77 %
+Match: 439,945
+Allele switch: 0
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 0
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 898
+SNPs call rate < 90%: 0
+
+Excluded sites in total: 898
+Remaining sites in total: 439,945
+See snps-excluded.txt for details
+Typed only sites: 1,019
+See typed-only.txt for details
+Warning: 1 Chunk(s) excluded: < 3 SNPs (see chunks-excluded.txt for details).
+Remaining chunk(s): 152
+
+Quality Control Report
+```
 
 
 
 
+```
+Phasing and Imputation
+Phasing with Eagle (152/152)
 
+Imputation (152/154)   <----- ?
 
 
 Ancestry Estimation
+Prepare Data (1/1)
 
+Prepare Data (85/85)
 
+Estimate Ancestry
 
-
-
+Visualize Ancestry
 
 
 Polygenic Scores
+Trait Category: all
+Number of Scores: 0
+
+Calculate Polygenic Scores (152/153)   <----- ?
+
+Analyze Polygenic Scores
+
+Merge Polygenic Scores
+
+Create Ploygenic Score Report
+
+Data have been exported successfully. We have sent a notification email to jakewendt@gmail.com
+```
 
 
 
 
 
+```
+mkdir pgs; cd pgs
+curl -sL https://imputationserver.sph.umich.edu/get/5yGtUUVw7kZGliSzs27T8A7mh6YNAsE6fecqlWLG | bash
 
-
+```
 
 
