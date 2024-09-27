@@ -48,7 +48,6 @@ done
 Then sum them with `sum_counts_files.py`
 
 ```
-module load WitteLab python3/3.9.1
 sum_counts_files.py -o out/input/All.count.csv out/input/*.q40.count.csv.gz
 sed -i '1s/sum/input/' out/input/All.count.csv
 gzip out/input/All.count.csv
@@ -102,7 +101,6 @@ Not sure if "input" is needed anymore or what "group" is.
 Determine actual hits by zscore threshold in both replicates
 
 ```
-module load WitteLab python3/3.9.1
 chmod -w All.count.Zscores.csv
 booleanize_Zscore_replicates.py -s SE1 -m ${PWD}/All.count.Zscores.csv S1 S2
 booleanize_Zscore_replicates.py -s SE2 -m ${PWD}/All.count.Zscores.csv S5 S6
@@ -211,8 +209,53 @@ done
 
 
 
+Zscores with public epitopes
 
-##	20240917
+```
+
+wc -l /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv 
+364 /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
+
+zcat All.count.Zscores.csv.gz | awk 'BEGIN{FS=OFS=","}{print $7,$1,$2,$3,$4,$5,$6}' > tmp
+head -1 tmp > All.count.Zscores.reordered.join_sorted.csv
+tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.reordered.join_sorted.csv
+
+
+join --header -t, /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.join_sorted.csv All.count.Zscores.reordered.join_sorted.csv > public_epitope_annotations.Zscores.csv 
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	---
 
 
 ```
@@ -236,7 +279,6 @@ id,species,public_epitope
 head /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
 
 python3 ./mega_merge.py /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
-
 
 
 python3 ./mega_merge.py -o SE1.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz out/S2.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
