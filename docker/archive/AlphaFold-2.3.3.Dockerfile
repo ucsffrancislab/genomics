@@ -51,6 +51,7 @@ RUN wget -q -P /tmp \
     && bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda \
     && rm /tmp/Miniconda3-latest-Linux-x86_64.sh
 
+
 # Install conda packages.
 #ENV PATH="/opt/conda/bin:$PATH"
 #ENV LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
@@ -58,9 +59,23 @@ RUN wget -q -P /tmp \
 #    && conda install -y -c nvidia cuda=${CUDA_VERSION} \
 #    && conda install -y -c conda-forge openmm=8.0.0 pdbfixer \
 #    && conda clean --all --force-pkgs-dirs --yes
-
-#/bin/bash: /opt/conda/lib/libtinfo.so.6: no version information available (required by /bin/bash)
-
+#
+#
+#1044.0 Solving environment: ...working... failed
+#1044.1 
+#1044.1 InvalidSpec: The package "nvidia/linux-64::cuda-compiler==12.6.1=0" is not available for the specified platform
+#1044.1 
+#------
+#AlphaFold-2.3.3.Dockerfile:58
+#--------------------
+#  57 |     ENV LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
+#  58 | >>> RUN conda install -qy conda==24.1.2 pip python=3.11 \
+#  59 | >>>     && conda install -y -c nvidia cuda=${CUDA_VERSION} \
+#  60 | >>>     && conda install -y -c conda-forge openmm=8.0.0 pdbfixer \
+#  61 | >>>     && conda clean --all --force-pkgs-dirs --yes
+#  62 |     
+#--------------------
+#ERROR: failed to solve: process "/bin/bash -o pipefail -c conda install -qy conda==24.1.2 pip python=3.11     && conda install -y -c nvidia cuda=${CUDA_VERSION}     && conda install -y -c conda-forge openmm=8.0.0 pdbfixer     && conda clean --all --force-pkgs-dirs --yes" did not complete successfully: exit code: 1
 
 ENV PATH="/opt/conda/bin:$PATH"
 ENV LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
@@ -70,31 +85,13 @@ RUN conda install -qy conda==24.5.0 pip python=3.11 \
  && conda clean --all --force-pkgs-dirs --yes
 
 
+
 #	MAKE SURE THAT THERE'S NOTHING BIG OR SECRET HERE!
 COPY . /app/alphafold
 RUN wget -q -P /app/alphafold/alphafold/common/ \
   https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
 
 
-#	requests.exceptions.InvalidURL: Not supported URL scheme http+docker
-#	Recommend requests < 2.32.0 for the time being
-
-#Traceback (most recent call last):
-#  File "/app/alphafold/run_alphafold_test.py", line 23, in <module>
-#    import mock
-#ModuleNotFoundError: No module named 'mock'
-
-
-#	https://github.com/google-deepmind/alphafold/issues/867
-# 'requests<2.29.0' 'urllib3<2.0'
-#	TypeError: HTTPConnection.request() got an unexpected keyword argument 'chunked'
-
-#/opt/conda/lib/python3.11/site-packages/requests/__init__.py:109: RequestsDependencyWarning: urllib3 (2.2.2) or chardet (None)/charset_normalizer (3.3.2) doesn't match a supported version!
-
-
-
-#    && pip3 install -r /app/alphafold/requirements.txt 'requests<2.29.0' 'urllib3<2.0' --no-cache-dir \
-#	requests==2.28.2
 # Install pip packages.
 RUN pip3 install --upgrade pip --no-cache-dir \
     && pip3 install -r /app/alphafold/requirements.txt mock --no-cache-dir \
@@ -105,6 +102,7 @@ RUN pip3 install --upgrade pip --no-cache-dir \
 
 #      jax==0.4.26 \
 #      jaxlib==0.4.26+cuda12.cudnn89 \
+
 
 # Add SETUID bit to the ldconfig binary so that non-root users can run it.
 RUN chmod u+s /sbin/ldconfig.real
@@ -132,19 +130,4 @@ ldconfig\n\
 cd /app/alphafold/\n\
 python run_alphafold_test.py "$@"' > /app/run_alphafold_test.sh \
   && chmod +x /app/run_alphafold_test.sh
-
-#	I just can't get this to work in docker no matter which package versions I use.
-#	I don't think that this would ever work in singularity.
-#RUN echo $'#!/bin/bash\n\
-#ldconfig\n\
-#cd /app/alphafold/\n\
-#python docker/run_docker.py "$@"' > /app/run_docker.sh \
-#  && chmod +x /app/run_docker.sh
-
-RUN echo $'#!/bin/bash\n\
-ldconfig\n\
-cd /app/alphafold/\n\
-python run_alphafold220.py "$@"' > /app/run_alphafold220.sh \
-  && chmod +x /app/run_alphafold220.sh
-
 

@@ -83,3 +83,58 @@ Without it, it took
 Yay!
 
 
+
+
+
+
+```
+
+sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="Test" --output="${PWD}/Test.$( date "+%Y%m%d%H%M%S%N" ).out" --time=288 --nodes=1 --ntasks-per-node=1 --gres=gpu:1 --partition=common --mem=30G --wrap="singularity exec --writable-tmpfs --nv alphafold233.sif python3 -c \"import tensorflow as tf; print('Num GPUs Available: ',len(tf.config.experimental.list_physical_devices('GPU'))); print('Tensorflow version: ',tf.__version__)\""
+
+```
+
+
+
+singularity pull docker://tensorflow/tensorflow:latest-gpu
+
+singularity exec --writable-tmpfs --nv tensorflow_latest-gpu.sif bash
+
+
+
+
+
+
+
+
+
+```
+
+ssh -t gwendt@c4-log1 ssh gwendt@c4-gpudev1
+
+
+singularity pull docker://tensorflow/tensorflow:latest-gpu
+
+nvidia-smi
+
+
+singularity exec --writable-tmpfs --nv tensorflow_latest-gpu.sif bash
+
+nvidia-smi
+
+python3 
+
+import tensorflow as tf
+print('Tensorflow version: ',tf.__version__)
+
+print('Num GPUs Available: ',len(tf.config.experimental.list_physical_devices('GPU')))
+
+print(tf.config.list_physical_devices('GPU'))
+
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
+
+```
+
+
+
+
