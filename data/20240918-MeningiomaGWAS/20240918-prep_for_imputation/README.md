@@ -161,45 +161,58 @@ X **Generate Meta-imputation File**
 Wait for files to upload.  This took me about 15 minutes.
 
 
-
----
-
-
 ```
 Input Validation
-
 22 valid VCF file(s) found.
 
-Samples: 4619
+Samples: 4231
 Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9
-SNPs: 292290
+SNPs: 441862
 Chunks: 291
 Datatype: unphased
 Build: hg19
-Reference Panel: apps@topmed-r2@1.0.0 (hg38)
+Reference Panel: apps@topmed-r3@1.0.0 (hg38)
 Population: all
 Phasing: eagle
 Mode: imputation
 Rsq filter: 0.1
-```
 
 ```
+
 Quality Control
 
+```
 Uploaded data is hg19 and reference is hg38.
 
+Lift Over [17/22]
+
+Analyze file MENINGIOMA_GWAS_SHARED-updated-chr4.vcf.gz...
+
+
+```
+
+Quality Control
+```
+Uploaded data is hg19 and reference is hg38.
+```
+
+```
 Lift Over
+```
 
+```
 Calculating QC Statistics
+```
 
+```
 Statistics:
-Alternative allele frequency > 0.5 sites: 97,485
-Reference Overlap: 99.68 %
-Match: 290,463
-Allele switch: 699
+Alternative allele frequency > 0.5 sites: 108,047
+Reference Overlap: 97.87 %
+Match: 431,388
+Allele switch: 780
 Strand flip: 0
 Strand flip and allele switch: 0
-A/T, C/G genotypes: 0
+A/T, C/G genotypes: 4
 Filtered sites:
 Filter flag set: 0
 Invalid alleles: 0
@@ -207,25 +220,41 @@ Multiallelic sites: 0
 Duplicated sites: 0
 NonSNP sites: 0
 Monomorphic sites: 0
-Allele mismatch: 80
-SNPs call rate < 90%: 98
+Allele mismatch: 134
+SNPs call rate < 90%: 0
+```
 
-Excluded sites in total: 178
-Remaining sites in total: 291,064
+```
+Excluded sites in total: 914
+Remaining sites in total: 431,392
 See snps-excluded.txt for details
-Typed only sites: 923
+Typed only sites: 9,418
 See typed-only.txt for details
 
-Warning: 3 Chunk(s) excluded: < 3 SNPs (see chunks-excluded.txt for details).
-Warning: 1 Chunk(s) excluded: at least one sample has a call rate < 50.0% (see chunks-excluded.txt for details).
-Remaining chunk(s): 288
+Warning: 3 Chunk(s) excluded: < 20 SNPs (see chunks-excluded.txt for details).
+Warning: 2 Chunk(s) excluded: reference overlap < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 287
 ```
 
-```
+
 Quality Control (Report)
+```
+Running Command...
 
 Execution successful.
+
 ```
+
+
+
+https://imputation.biodatacatalyst.nhlbi.nih.gov/#!jobs/job-20240919-150354-655/results
+
+
+---
+
+
+
+
 
 Then wait for the process. Started ...
 ...
