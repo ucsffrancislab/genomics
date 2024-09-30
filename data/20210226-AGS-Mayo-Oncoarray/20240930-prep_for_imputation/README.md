@@ -73,3 +73,81 @@ That should be good.
 
 
 
+
+##  Upload
+
+Copy the files locally.
+```
+scp c4:/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20240930-prep_for_imputation/*vcf.gz ./
+```
+
+Then upload to the web app.
+
+
+
+
+
+https://imputationserver.sph.umich.edu/#!run/imputationserver2-pgs
+
+
+
+Reference Panel
+* 1000G Phase 1 v3 Shapeit2 (no singletons) (GRCh37/hg19)
+* 1000G Phase 3 (GRCh38/hg38) pBETA]
+* 1000G Phase 3 30x (GRCh38/hg38) [BETA}
+* **1000G Phase 3 v5 (GRCh37/hg19)**
+* CAAPA African American Panel (GRCh37/hg19)
+* Genome Asia Pilot - GAsP (GRCh37/hg19)
+* HRC r1.1 2016 (GRCh37/hg19)
+* HapMap 2 (GRCh37/hg19)
+* Samoan (GRCh37/hg19)
+
+
+Array Build
+* **GRCh37/hg19**
+* GRCh38/hg38
+
+rsq Filter
+* off
+* **0.3**
+* 0.8
+
+PGS Calculation
+
+
+Scores
+* **PGS-Catalog v20240318**
+
+
+Trait Category
+* Biological process (39 scoores)
+* Body measurement (257 scores)
+* Cancer (659 scores)
+* Cardiovascular disease (266 scores)
+* Cardiovascular measurement (142 sccoores)
+* Digestive system disorder (350 scores)
+* Hematological measurement (342 scores)
+* Immune system disorder (203 scores)
+* Inflammatory measurement (46 scores)
+* Lipid or lipoprotein measurement (339 scores)
+* Liver enzyme measurement (28 scores)
+* Metabolic disorder (223 scores)
+* Neurological disorder (239 scores)
+* Other disease (260 scores)
+* Other measurement (1,843 scores)
+* Other trait (190 scores)
+* Sex-specific PGS (18 scores)
+* **All traits (4,489 scores)**
+
+
+
+Ancestry Estimation
+* Disabled
+* **Worldwide (HGDP)**
+
+
+
+
+
+
+
