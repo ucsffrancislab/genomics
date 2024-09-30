@@ -138,3 +138,105 @@ print(device_lib.list_local_devices())
 
 
 
+python3 ./run_alphafold.py   --bfd_database_path=/francislab/data1/refs/alphafold/databases/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt   --uniref30_database_path=/francislab/data1/refs/alphafold/databases/uniref30/UniRef30_2021_03   --pdb70_database_path=/francislab/data1/refs/alphafold/databases/pdb70/pdb70   --uniref90_database_path=/francislab/data1/refs/alphafold/databases/uniref90/uniref90.fasta   --mgnify_database_path=/francislab/data1/refs/alphafold/databases/mgnify/mgy_clusters_2022_05.fa   --template_mmcif_dir=/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/   --obsolete_pdbs_path=/francislab/data1/refs/alphafold/databases/pdb_mmcif/obsolete.dat   --use_gpu_relax   --data_dir=/francislab/data1/refs/alphafold/databases/   --max_template_date=2020-05-14   --model_preset=monomer   --fasta_paths=/francislab/data1/refs/alphafold/SPELLARDPYGPAVDIWSAGIVLFEMATGQ.faa   --output_dir=/francislab/data1/refs/alphafold/
+
+
+
+
+
+
+
+
+##	20240928
+
+Can't get an image to build and work 100%
+
+Gonna see if I can find some actual image
+
+Found 2
+
+https://github.com/prehensilecode/alphafold_singularity
+
+This is amd64?
+https://cloud.sylabs.io/library/prehensilecode/alphafold_singularity/alphafold
+
+singularity pull --arch amd64 library://prehensilecode/alphafold_singularity/alphafold:sha256.ce979c6b4baaa56d5b782eb3fd3d5f5eda326d602cd4761af50992bf1b3bc876
+
+singularity pull library://prehensilecode/alphafold_singularity/alphafold
+
+Downloaded and it seems to run.
+Shows up on `watch nvidia-smi` and `nvtop`
+Uses GPU memory. Haven't seen it use the actual GPU though?
+Use GPU CPU in a few short spikes near the end during model prediction.
+
+
+
+And 
+
+singularity pull docker://catgumag/alphafold
+
+https://hub.docker.com/r/catgumag/alphafold
+
+
+Neither have cuda installed with tensorflow and tensorflow does not see the GPU.
+Jax is what uses the GPU.
+
+Many of the processes in this application do not use GPU.
+
+Both take just about an hour to prediction SPELLARDPYGPAVDIWSAGIVLFEMATGQ.faa
+catgumag was 45 min, prehensile was 1:06. Could be normal.
+
+
+AlphaFold does not use TensorFlow on the GPU (instead it uses JAX).Jan 2, 2024
+
+
+
+
+
+This fails quite commonly
++ git clone --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite
+Cloning into '/tmp/hh-suite'...
+remote: Enumerating objects: 9214, done.
+remote: Counting objects: 100% (634/634), done.
+remote: Compressing objects: 100% (181/181), done.
+error: RPC failed; curl 18 transfer closed with outstanding read data remaining
+fatal: The remote end hung up unexpectedly
+fatal: early EOF
+fatal: index-pack failed
+
+
+ZZ
+
+git clone http://github.com/large-repository --depth 1
+cd large-repository
+git fetch --unshallow
+
+Still happens
+
+Try 
+wget https://github.com/soedinglab/hh-suite/releases/download/v3.3.0/hhsuite-3.3.0-SSE2-Linux.tar.gz
+tar xvfz
+....
+...
+
+OR try some setting changes and clone over ssh. Not sure if that'll work in container prep
+
+```
+
+git config --global http.postBuffer 524288000  # Set a larger buffer size
+git config --global core.compression 0         # Disable compression
+git clone git@github.com:soedinglab/hh-suite
+
+```
+
+
+
+
+
+
+
+
+python3 -m pip install --upgrade --no-cache-dir --user -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html jax==0.4.25 jaxlib==0.4.25+cuda11.cudnn86 'orbax-checkpoint<0.6.4' 'optax<0.2.3' 'flax<0.9.0'
+
+
+
