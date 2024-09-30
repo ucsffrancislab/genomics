@@ -239,4 +239,12 @@ git clone git@github.com:soedinglab/hh-suite
 python3 -m pip install --upgrade --no-cache-dir --user -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html jax==0.4.25 jaxlib==0.4.25+cuda11.cudnn86 'orbax-checkpoint<0.6.4' 'optax<0.2.3' 'flax<0.9.0'
 
 
+sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="Alpha" --output="${PWD}/$( date "+%Y%m%d%H%M%S%N" ).out" --time=2880 \
+--nodes=1 --ntasks-per-node=1 --gres=gpu:1 --partition=common --mem=30G \
+--wrap="singularity exec --nv --writable-tmpfs \
+  --bind /francislab,/scratch \
+  /francislab/data1/refs/alphafold/AlphaFold-from_prehensilecode.sif \
+  /app/run_alphafold.sh --bfd_database_path=/francislab/data1/refs/alphafold/databases/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt --uniref30_database_path=/francislab/data1/refs/alphafold/databases/uniref30/UniRef30_2021_03 --pdb70_database_path=/francislab/data1/refs/alphafold/databases/pdb70/pdb70 --uniref90_database_path=/francislab/data1/refs/alphafold/databases/uniref90/uniref90.fasta --mgnify_database_path=/francislab/data1/refs/alphafold/databases/mgnify/mgy_clusters_2022_05.fa --template_mmcif_dir=/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/ --obsolete_pdbs_path=/francislab/data1/refs/alphafold/databases/pdb_mmcif/obsolete.dat --use_gpu_relax --data_dir=/francislab/data1/refs/alphafold/databases/ --max_template_date=2020-05-14 --model_preset=monomer --fasta_paths=/francislab/data1/refs/alphafold/SPELLARDPYGPAVDIWSAGIVLFEMATGQ.faa --output_dir=/francislab/data1/refs/alphafold/"
+
+
 
