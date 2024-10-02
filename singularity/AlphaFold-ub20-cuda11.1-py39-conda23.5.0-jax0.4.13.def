@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
+From: nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu20.04
 Stage: spython-base
 
 # Based on definition file from prehensilecode
@@ -87,11 +87,15 @@ Stage: spython-base
 	#	Do I really need to reinstall conda?
 	conda install -qy conda==23.5.0 \
 	&& conda install -y -c conda-forge \
+		ncurses \
 		python==3.9 \
 		cudatoolkit==11.1.1 \
 		pdbfixer==1.9 \
 		pip \
 	&& conda clean --all --force-pkgs-dirs --yes
+
+#	reinstall ncurses to fix
+#	/bin/bash: /opt/conda/lib/libtinfo.so.6: no version information available (required by /bin/bash)
 
 
 	#	Get the latest code from the repository
@@ -227,7 +231,6 @@ Stage: spython-base
 
 	#sudo singularity build /tmp/lima/AlphaFold.sif /tmp/lima/AlphaFold.def
 
-	
 
 	singularity shell --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif
 

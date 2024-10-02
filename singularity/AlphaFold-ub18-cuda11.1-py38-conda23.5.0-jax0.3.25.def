@@ -2,7 +2,7 @@ Bootstrap: docker
 From: nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
 Stage: spython-base
 
-#	Based on definition file from prehensilecode
+# Based on definition file from prehensilecode
 
 
 
@@ -247,18 +247,10 @@ mock \
 
 	#sudo singularity build /tmp/lima/AlphaFold.sif /tmp/lima/AlphaFold.def
 
+
 	singularity shell --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif
 
 	singularity exec --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif bash
 
-	singularity exec --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif /alphafold/run_alphafold_test.bash
+	singularity exec --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif /app/run_alphafold_test.bash
 
-	singularity exec --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif python3 /alphafold/run_alphafold_test.py
-
-
-	Built from minimally modified version from prehensilecode
-	possibly influenced from catgumag version
-
-
-singularity shell --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold-from_prehensilecode.sif 
-	

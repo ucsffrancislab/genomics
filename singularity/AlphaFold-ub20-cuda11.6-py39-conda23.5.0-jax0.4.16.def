@@ -1,5 +1,5 @@
 Bootstrap: docker
-From: nvidia/cuda:11.1.1-cudnn8-runtime-ubuntu18.04
+From: nvidia/cuda:11.6.1-cudnn8-runtime-ubuntu20.04
 Stage: spython-base
 
 # Based on definition file from prehensilecode
@@ -26,11 +26,12 @@ Stage: spython-base
 	echo "HOME : $HOME"
 
 	#	LD_LIBRARY_PATH starts with a colon. Do 2 colons cause a problem?
-	export PATH="/opt/conda/bin:/usr/local/cuda-11.1/bin:$PATH"
+	export PATH="/opt/conda/bin:/usr/local/cuda/bin:$PATH"
 	#LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
 	export LD_LIBRARY_PATH="/opt/conda/lib${LD_LIBRARY_PATH}"
 	echo $PATH
 	echo $LD_LIBRARY_PATH
+	export PKG_CONFIG_PATH=/opt/conda/lib/pkgconfig
 
 	echo "pushd and popd do not work in here for some reason."
 
@@ -45,7 +46,7 @@ Stage: spython-base
 		&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
 			build-essential \
 			cmake \
-			cuda-command-line-tools-11-1 \
+			cuda-command-line-tools-11-6 \
 			git \
 			hmmer \
 			kalign \
@@ -57,18 +58,6 @@ Stage: spython-base
 
 
 
-	# Compile HHsuite from source.
-	/bin/rm -rf /tmp/hh-suite \
-	&& git config --global http.postBuffer 524288000 \
-	&& git config --global core.compression 0 \
-	&& git clone -q --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
-	&& mkdir /tmp/hh-suite/build \
-	&& cd /tmp/hh-suite/build \
-	&& cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite .. \
-	&& make -j 4 && make install \
-	&& ln -s /opt/hhsuite/bin/* /usr/bin \
-	&& cd / \
-	&& /bin/rm -rf /tmp/hh-suite
 
 	# Install Miniconda package manager.
 	#	https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
@@ -85,21 +74,16 @@ Stage: spython-base
 	# Install conda packages.
 	#conda install -qy conda==4.13.0 \
 	#	Do I really need to reinstall conda?
-	conda install -qy conda==23.5.0 \
+	conda install -qy conda==23.5.0 pip python==3.9 \
 	&& conda install -y -c conda-forge \
-		python==3.9 \
-		cudatoolkit==11.1.1 \
+		ncurses \
+		cudatoolkit==11.6.1 \
 		pdbfixer==1.9 \
-		pip \
 	&& conda clean --all --force-pkgs-dirs --yes
 
+#	reinstall ncurses to fix
+#	/bin/bash: /opt/conda/lib/libtinfo.so.6: no version information available (required by /bin/bash)
 
-	#	Get the latest code from the repository
-	git clone https://github.com/google-deepmind/alphafold /app/alphafold/
-
-
-	wget -q -P /app/alphafold/alphafold/common/ \
-	https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
 
 	# Install pip packages.
 	# N.B. The URL specifies the list of jaxlib releases.
@@ -111,18 +95,71 @@ Stage: spython-base
 		chex==0.0.7 \
 		dm-haiku==0.0.9 \
 		dm-tree==0.1.6 \
+		jax==0.4.16 \
 		immutabledict==2.0.0 \
-		jax==0.3.25 \
 		ml-collections==0.1.0 \
-		numpy==1.21.6 \
+		numpy==1.22.4 \
 		pandas==1.3.4 \
 		scipy==1.7.0 \
 		tensorflow-cpu==2.11.0 \
 		mock \
 	&& pip3 install --upgrade --no-cache-dir \
-		jax==0.4.13 \
-		jaxlib==0.4.13+cuda11.cudnn86 \
+		jax==0.4.16 \
+		jaxlib==0.4.16+cuda11.cudnn86 \
 		-f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
+
+#	worked
+#		absl-py==1.0.0 \
+#		biopython==1.79 \
+#		chex==0.0.7 \
+#		dm-haiku==0.0.9 \
+#		dm-tree==0.1.6 \
+#		jax==0.4.13 \
+#		immutabledict==2.0.0 \
+#		ml-collections==0.1.0 \
+#		'numpy>=1.18.0,<1.23.0' \
+#		pandas==1.3.4 \
+#		scipy==1.7.0 \
+#		tensorflow-cpu==2.11.0 \
+
+#	From worked
+#	chex                         0.0.7
+#	dm-haiku                     0.0.9
+#	dm-tree                      0.1.6
+#	jax                          0.4.13
+#	jaxlib                       0.4.13+cuda11.cudnn86
+#	numpy                        1.22.4
+#	pandas                       1.3.4
+#	scipy                        1.7.0
+#	tensorflow-cpu               2.11.0
+
+
+#	FAILS
+#	chex                         0.1.7
+#	dm-haiku                     0.0.12
+#	dm-tree                      0.1.8
+#	jax                          0.4.13
+#	jaxlib                       0.4.13+cuda11.cudnn86
+#	numpy                        1.24.4
+#	pandas                       2.0.3
+#	scipy                        1.11.1
+#	tensorflow-cpu               2.16.1
+
+#	FAILS
+#	ImportError: cannot import name 'linear_util' from 'jax.extend' (/opt/conda/lib/python3.9/site-packages/jax/extend/__init__.py)
+#		absl-py==1.0.0 \
+#		biopython==1.79 \
+#		'chex>=0.0.7,<=0.1.86' \
+#		'dm-haiku>=0.0.9,<=0.0.12' \
+#		'dm-tree>=0.1.6,<=0.1.8' \
+#		immutabledict==2.0.0 \
+#		jax==0.4.13 \
+#		ml-collections==0.1.0 \
+#		'numpy>=1.18.0,<1.25.0' \
+#		'pandas>=1.3.4,<=2.0.3' \
+#		'scipy>=1.7.0,<=1.11.1' \
+#		'tensorflow-cpu>=2.11.0,<=2.16.1' \
 
 #cuda11/jaxlib-0.4.13+cuda11.cudnn86-cp38-cp38-manylinux2014_x86_64.whl
 
@@ -130,6 +167,27 @@ Stage: spython-base
 	# Apply OpenMM patch.
 	#cd /opt/conda/lib/python3.8/site-packages
 	#patch -p0 < /app/alphafold/docker/openmm.patch
+
+	# Compile HHsuite from source.
+	/bin/rm -rf /tmp/hh-suite \
+	&& git config --global http.postBuffer 524288000 \
+	&& git config --global core.compression 0 \
+	&& git clone -q --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
+	&& mkdir /tmp/hh-suite/build \
+	&& cd /tmp/hh-suite/build \
+	&& cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite .. \
+	&& make -j 4 && make install \
+	&& ln -s /opt/hhsuite/bin/* /usr/bin \
+	&& cd / \
+	&& /bin/rm -rf /tmp/hh-suite
+
+
+	#	Get the latest code from the repository
+	git clone https://github.com/google-deepmind/alphafold /app/alphafold/
+
+	wget -q -P /app/alphafold/alphafold/common/ \
+	https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
+
 
 	# Add SETUID bit to the ldconfig binary so that non-root users can run it.
 	chmod u+s /sbin/ldconfig.real
@@ -174,8 +232,9 @@ Stage: spython-base
 	#PATH="/opt/conda/bin:$PATH"
 	#LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
 
-	export PATH="/opt/conda/bin:/usr/local/cuda-11.1/bin:$PATH"
+	export PATH="/opt/conda/bin:/usr/local/cuda/bin:$PATH"
 	export LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
+	export PKG_CONFIG_PATH=/opt/conda/lib/pkgconfig
 
 %runscript
 	echo "Define actions for the container to be executed with the run command or"
@@ -227,7 +286,6 @@ Stage: spython-base
 
 	#sudo singularity build /tmp/lima/AlphaFold.sif /tmp/lima/AlphaFold.def
 
-	
 
 	singularity shell --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif
 

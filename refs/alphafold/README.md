@@ -248,3 +248,8 @@ sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-n
 
 
 
+
+
+Need to use CUDA 11. CUDA 12 just hasn't worked
+
+
