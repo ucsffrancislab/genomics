@@ -253,3 +253,9 @@ sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-n
 Need to use CUDA 11. CUDA 12 just hasn't worked
 
 
+/opt/conda/bin/conda -V
+
+doesn't usually return the same version as the one that was initially installed.
+
+
+
