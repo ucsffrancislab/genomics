@@ -363,37 +363,54 @@ done
 
 
 ##	20240917
+#
+#
+#```
+#
+#head public_epitope_annotations.clean.csv 
+#id,species,public_epitope
+#395,Enterovirus B,FSVRMLKDTPFIEQSNELQGDVKEAVENAMGRVADTIRSGPTNSEAIPALTAVETG
+#758,Human adenovirus D,KQVAPGLGVQTVDIQIPTDMDVDKKPSTSIEVQTDPWLPASTATVSTSTAATATEP
+#843,Rhinovirus B,PEHQLASHTQGNVSVKYKYTHPGEQGIDLDSVAETGGASHDPVYSMNGTLIGNLLI
+#1181,Human adenovirus E,MGDDHPEPPTPFETPSLHDLYDLEVDVPEDDPNEKAVNDLFSDAALLAAEEASSPS
+#1198,Human adenovirus E,PPLDKRGDKRPRPDAEETLLTHTDEPPPYEEAVKLGLPTTRPIAPLATGVLKPESS
+#1250,Hepatitis B virus,QHFRKLLLLDEEAGPLEEELPRLADEGLNRRVAEDLNLGNLNVSIPWTHKVGNFTG
+#1334,Alphapapillomavirus 10,QKPTPEKEKQDPYKDMSFWEVNLKEKFSSELDQFPLGR
+#2206,Tanapox virus,KFFKKKNKPVCIELKKIINTNKTLTLNSEDWTDMGSCEIYANFRSSKREKSFKLKD
+#2250,Tanapox virus,NKKDVSYSPLNKNIVIERKNKPKGMLNIDSSSGIYANSKENVAITPSSSNVNVFKE
+#
+#
+#```
+#
+#```
+#head /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
+#
+#python3 ./mega_merge.py /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
+#
+#
+#python3 ./mega_merge.py -o SE1.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz out/S2.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
+#
+#python3 ./mega_merge.py -o SE2.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S5.q40.count.csv.gz out/S6.q40.count.csv.gz All.count.Zscores.SE2.csv All.count.Zscores.SE2.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
+#
+#python3 ./mega_merge.py -o SE3.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S9.q40.count.csv.gz out/S10.q40.count.csv.gz All.count.Zscores.SE3.csv All.count.Zscores.SE3.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
+#
+#```
+#
+#Create list of novel peptides
 
+
+
+##	20241002
 
 ```
 
-head public_epitope_annotations.clean.csv 
-id,species,public_epitope
-395,Enterovirus B,FSVRMLKDTPFIEQSNELQGDVKEAVENAMGRVADTIRSGPTNSEAIPALTAVETG
-758,Human adenovirus D,KQVAPGLGVQTVDIQIPTDMDVDKKPSTSIEVQTDPWLPASTATVSTSTAATATEP
-843,Rhinovirus B,PEHQLASHTQGNVSVKYKYTHPGEQGIDLDSVAETGGASHDPVYSMNGTLIGNLLI
-1181,Human adenovirus E,MGDDHPEPPTPFETPSLHDLYDLEVDVPEDDPNEKAVNDLFSDAALLAAEEASSPS
-1198,Human adenovirus E,PPLDKRGDKRPRPDAEETLLTHTDEPPPYEEAVKLGLPTTRPIAPLATGVLKPESS
-1250,Hepatitis B virus,QHFRKLLLLDEEAGPLEEELPRLADEGLNRRVAEDLNLGNLNVSIPWTHKVGNFTG
-1334,Alphapapillomavirus 10,QKPTPEKEKQDPYKDMSFWEVNLKEKFSSELDQFPLGR
-2206,Tanapox virus,KFFKKKNKPVCIELKKIINTNKTLTLNSEDWTDMGSCEIYANFRSSKREKSFKLKD
-2250,Tanapox virus,NKKDVSYSPLNKNIVIERKNKPKGMLNIDSSSGIYANSKENVAITPSSSNVNVFKE
-
+for f in processed_separately_by_condition/?.count.Zscores.csv ; do
+awk 'BEGIN{FS=OFS=","}{print $4,$1,$2,$3}' ${f} > tmp
+head -1 tmp > ${f%.csv}.reordered.join_sorted.csv
+tail -n +2 tmp | sort -t, -k1,1 >> ${f%.csv}.reordered.join_sorted.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.join_sorted.csv ${f%.csv}.reordered.join_sorted.csv > ${f%.csv}.species_peptides.Zscores.csv 
+done
 
 ```
 
-```
-head /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
 
-python3 ./mega_merge.py /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
-
-
-python3 ./mega_merge.py -o SE1.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S1.q40.count.csv.gz out/S2.q40.count.csv.gz All.count.Zscores.SE1.csv All.count.Zscores.SE1.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
-
-python3 ./mega_merge.py -o SE2.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S5.q40.count.csv.gz out/S6.q40.count.csv.gz All.count.Zscores.SE2.csv All.count.Zscores.SE2.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
-
-python3 ./mega_merge.py -o SE3.merged.data.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.select.csv out/S9.q40.count.csv.gz out/S10.q40.count.csv.gz All.count.Zscores.SE3.csv All.count.Zscores.SE3.csv.7.peptides.txt /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.clean.csv
-
-```
-
-Create list of novel peptides
