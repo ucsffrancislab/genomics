@@ -1,0 +1,295 @@
+Bootstrap: docker
+From: nvidia/cuda:11.6.1-cudnn8-runtime-ubuntu20.04
+Stage: spython-base
+
+# Based on definition file from prehensilecode
+
+
+
+%pre
+	echo "This is a scriptlet that will be executed on the host, as root before"
+	echo "the container has been bootstrapped. This section is not commonly used."
+
+%setup
+	echo "This is a scriptlet that will be executed on the host, as root, after"
+	echo "the container has been bootstrapped. To install things into the container"
+	echo "reference the file system location with $SINGULARITY_ROOTFS."
+
+%files
+
+	pi_calc.bash
+
+%post
+
+	echo "Running %post"
+
+	echo "HOME : $HOME"
+
+	#	LD_LIBRARY_PATH starts with a colon. Do 2 colons cause a problem?
+	export PATH="/opt/conda/bin:/usr/local/cuda/bin:$PATH"
+	#LD_LIBRARY_PATH="/opt/conda/lib:${LD_LIBRARY_PATH}"
+	export LD_LIBRARY_PATH="/opt/conda/lib${LD_LIBRARY_PATH}"
+	echo $PATH
+	echo $LD_LIBRARY_PATH
+	export PKG_CONFIG_PATH=/opt/conda/lib/pkgconfig
+
+	echo "pushd and popd do not work in here for some reason."
+
+	#       https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+	export TZ=America/Phoenix
+	ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+	export DEBIAN_FRONTEND=noninteractive
+
+
+	apt-get update \
+		&& DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+			build-essential \
+			cmake \
+			cuda-command-line-tools-11-6 \
+			git \
+			hmmer \
+			kalign \
+			tzdata \
+			wget \
+		&& rm -rf /var/lib/apt/lists/* \
+		&& apt-get autoremove -y \
+		&& apt-get clean
+
+
+
+
+	# Install Miniconda package manager.
+	#	https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+	#	&& bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/conda \
+	#	&& rm /tmp/Miniconda3-latest-Linux-x86_64.sh
+	#	Use the version that prehensilecode used
+	#	https://repo.anaconda.com/miniconda/
+
+	wget -q -P /tmp https://repo.anaconda.com/miniconda/Miniconda3-py39_23.5.0-3-Linux-x86_64.sh \
+	&& bash /tmp/Miniconda3-py39_23.5.0-3-Linux-x86_64.sh -b -p /opt/conda \
+	&& rm /tmp/Miniconda3-py39_23.5.0-3-Linux-x86_64.sh
+
+
+	# Install conda packages.
+	#conda install -qy conda==4.13.0 \
+	#	Do I really need to reinstall conda?
+	conda install -qy conda==23.5.0 pip python==3.9 \
+	&& conda install -y -c conda-forge \
+		ncurses \
+		cudatoolkit==11.6.1 \
+		pdbfixer==1.9 \
+	&& conda clean --all --force-pkgs-dirs --yes
+
+#	reinstall ncurses to fix
+#	/bin/bash: /opt/conda/lib/libtinfo.so.6: no version information available (required by /bin/bash)
+
+
+	# Install pip packages.
+	# N.B. The URL specifies the list of jaxlib releases.
+	pip3 install --upgrade pip  --no-cache-dir \
+	&& pip3 install --no-cache-dir \
+		openmm \
+		absl-py==1.0.0 \
+		biopython==1.79 \
+		chex==0.0.7 \
+		dm-haiku==0.0.9 \
+		dm-tree==0.1.6 \
+		jax==0.4.16 \
+		immutabledict==2.0.0 \
+		ml-collections==0.1.0 \
+		numpy==1.22.4 \
+		pandas==1.3.4 \
+		scipy==1.7.0 \
+		tensorflow-cpu==2.11.0 \
+		mock \
+	&& pip3 install --upgrade --no-cache-dir \
+		jax==0.4.16 \
+		jaxlib==0.4.16+cuda11.cudnn86 \
+		-f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+
+
+#	worked
+#		absl-py==1.0.0 \
+#		biopython==1.79 \
+#		chex==0.0.7 \
+#		dm-haiku==0.0.9 \
+#		dm-tree==0.1.6 \
+#		jax==0.4.13 \
+#		immutabledict==2.0.0 \
+#		ml-collections==0.1.0 \
+#		'numpy>=1.18.0,<1.23.0' \
+#		pandas==1.3.4 \
+#		scipy==1.7.0 \
+#		tensorflow-cpu==2.11.0 \
+
+#	From worked
+#	chex                         0.0.7
+#	dm-haiku                     0.0.9
+#	dm-tree                      0.1.6
+#	jax                          0.4.13
+#	jaxlib                       0.4.13+cuda11.cudnn86
+#	numpy                        1.22.4
+#	pandas                       1.3.4
+#	scipy                        1.7.0
+#	tensorflow-cpu               2.11.0
+
+
+#	FAILS
+#	chex                         0.1.7
+#	dm-haiku                     0.0.12
+#	dm-tree                      0.1.8
+#	jax                          0.4.13
+#	jaxlib                       0.4.13+cuda11.cudnn86
+#	numpy                        1.24.4
+#	pandas                       2.0.3
+#	scipy                        1.11.1
+#	tensorflow-cpu               2.16.1
+
+#	FAILS
+#	ImportError: cannot import name 'linear_util' from 'jax.extend' (/opt/conda/lib/python3.9/site-packages/jax/extend/__init__.py)
+#		absl-py==1.0.0 \
+#		biopython==1.79 \
+#		'chex>=0.0.7,<=0.1.86' \
+#		'dm-haiku>=0.0.9,<=0.0.12' \
+#		'dm-tree>=0.1.6,<=0.1.8' \
+#		immutabledict==2.0.0 \
+#		jax==0.4.13 \
+#		ml-collections==0.1.0 \
+#		'numpy>=1.18.0,<1.25.0' \
+#		'pandas>=1.3.4,<=2.0.3' \
+#		'scipy>=1.7.0,<=1.11.1' \
+#		'tensorflow-cpu>=2.11.0,<=2.16.1' \
+
+#cuda11/jaxlib-0.4.13+cuda11.cudnn86-cp38-cp38-manylinux2014_x86_64.whl
+
+	#	This is from an old alphafold repo. It appears to already have been implemented to the code.
+	# Apply OpenMM patch.
+	#cd /opt/conda/lib/python3.8/site-packages
+	#patch -p0 < /app/alphafold/docker/openmm.patch
+
+	# Compile HHsuite from source.
+	/bin/rm -rf /tmp/hh-suite \
+	&& git config --global http.postBuffer 524288000 \
+	&& git config --global core.compression 0 \
+	&& git clone -q --branch v3.3.0 https://github.com/soedinglab/hh-suite.git /tmp/hh-suite \
+	&& mkdir /tmp/hh-suite/build \
+	&& cd /tmp/hh-suite/build \
+	&& cmake -DCMAKE_INSTALL_PREFIX=/opt/hhsuite .. \
+	&& make -j 4 && make install \
+	&& ln -s /opt/hhsuite/bin/* /usr/bin \
+	&& cd / \
+	&& /bin/rm -rf /tmp/hh-suite
+
+
+	#	Get the latest code from the repository
+	git clone https://github.com/google-deepmind/alphafold /app/alphafold/
+
+	wget -q -P /app/alphafold/alphafold/common/ \
+	https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
+
+
+	# Add SETUID bit to the ldconfig binary so that non-root users can run it.
+	chmod u+s /sbin/ldconfig.real
+
+	### SETUID bit does not matter: Apptainer does not allow suid commands
+	### Workaround below is to use /mnt/out/ld.so.cache for the ld cache file
+
+
+
+
+	# write a shell script to wrap them up.
+	echo '#!/bin/bash\npython3 /app/alphafold/run_alphafold.py "$@"' > /app/run_alphafold.sh \
+	&& chmod +x /app/run_alphafold.sh
+
+	echo '#!/bin/bash\ncd /app/alphafold/\n python3 run_alphafold_test.py "$@"' > /app/run_alphafold_test.sh \
+	&& chmod +x /app/run_alphafold_test.sh
+
+
+
+
+%labels
+	# HELLO MOTO
+	# KEY VALUE
+
+	AUTHOR George.Wendt@ucsf.edu
+
+	#	singularity run-help AlphaFold.sif 
+
+
+%environment
+	#LUKE=goodguy
+	#VADER=badguy
+	#HAN=someguy
+	#export HAN VADER LUKE
+
+	#	data is inserted in image at end of build time and sourced at runtime
+
+	#	VARIABLE=MEATBALLVALUE
+
+	#	export VARIABLE
+
+	#PATH="/opt/conda/bin:$PATH"
+	#LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
+
+	export PATH="/opt/conda/bin:/usr/local/cuda/bin:$PATH"
+	export LD_LIBRARY_PATH="/opt/conda/lib:$LD_LIBRARY_PATH"
+	export PKG_CONFIG_PATH=/opt/conda/lib/pkgconfig
+
+%runscript
+	echo "Define actions for the container to be executed with the run command or"
+	echo "when container is executed."
+
+
+#%runscript
+#	cd /app/alphafold
+#	ldconfig -C /mnt/output/ld.so.cache
+#	exec python /app/alphafold/run_alphafold.py "$@"
+#	# %startscript
+#	# cd /app/alphafold
+#	# exec python /app/alphafold/run_alphafold.py "$@"
+
+
+
+%startscript
+	echo "Define actions for container to perform when started as an instance."
+
+
+%test
+	echo "Define any test commands that should be executed after container has been"
+	echo "built. This scriptlet will be executed from within the running container"
+	echo "as the root user. Pay attention to the exit/return value of this scriptlet"
+	echo "as any non-zero exit code will be assumed as failure."
+	exit 0
+
+
+
+
+# this happens between post and labels, but I keep it last for ease of reading
+%help
+	This is a text file to be displayed with the run-help command.
+
+	singularity run-help AlphaFold.sif
+
+
+	#singularity remote login --tokenfile ~/sylabs-token 
+	#singularity build --remote AlphaFold-remote-test.sif AlphaFold-remote.def
+	#INFO:    User not listed in /etc/subuid, trying root-mapped namespace
+	#Error: --remote is no longer supported, try building locally without it
+
+	singularity build AlphaFold.sif AlphaFold.def
+
+	-- or --
+
+	# sudo is required when building local from source
+	#sudo singularity build AlphaFold.sif AlphaFold.def 2>&1 | tee AlphaFold.out
+
+	#sudo singularity build /tmp/lima/AlphaFold.sif /tmp/lima/AlphaFold.def
+
+
+	singularity shell --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif
+
+	singularity exec --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif bash
+
+	singularity exec --nv --writable-tmpfs --bind /francislab,/scratch AlphaFold.sif /app/run_alphafold_test.bash
+
