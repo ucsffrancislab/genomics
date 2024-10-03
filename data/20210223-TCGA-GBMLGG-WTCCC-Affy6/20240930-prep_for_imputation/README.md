@@ -149,3 +149,119 @@ Ancestry Estimation
 
 
 
+##	20241003
+
+
+```
+
+Input Validation
+22 valid VCF file(s) found.
+Samples: 6716
+Chromosomes: 1 10 11 12 13 14 15 16 17 18 19 2 20 21 22 3 4 5 6 7 8 9
+SNPs: 653048
+Chunks: 153
+Datatype: unphased
+Build: hg19
+Reference Panel: 1000g-phase-3-v5 (hg19)
+Population: off
+Phasing: eagle
+Mode: imputation
+
+
+Quality Control
+Skip allele frequency check.
+
+Calculating QC Statistics
+
+Statistics:
+Alternative allele frequency > 0.5 sites: 177,854
+Reference Overlap: 99.73 %
+Match: 651,273
+Allele switch: 0
+Strand flip: 0
+Strand flip and allele switch: 0
+A/T, C/G genotypes: 0
+Filtered sites:
+Filter flag set: 0
+Invalid alleles: 0
+Multiallelic sites: 0
+Duplicated sites: 0
+NonSNP sites: 0
+Monomorphic sites: 0
+Allele mismatch: 2
+SNPs call rate < 90%: 86,150
+
+Excluded sites in total: 86,152
+Remaining sites in total: 565,123
+See snps-excluded.txt for details
+Typed only sites: 1,773
+See typed-only.txt for details
+Warning: 3 Chunk(s) excluded: at least one sample has a call rate < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 150
+
+Quality Control Report
+
+
+Phasing and Imputation
+Phasing with Eagle (150/150)
+
+Imputation (150/153)
+
+
+Ancestry Estimation
+Prepare Data (1/1)
+
+Prepare Data (135/135)
+
+Estimate Ancestry
+
+Visualize Ancestry
+
+
+Polygenic Scores
+Trait Category: all
+Number of Scores: 0
+
+Calculate Polygenic Scores (150/150)
+
+Analyze Polygenic Scores
+
+Merge Polygenic Scores
+
+Create Ploygenic Score Report
+
+Data have been exported successfully. We have sent a notification email to jakewendt@gmail.com
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+Accidentally processed under the NAME of the wrong dataset
+
+
+`20201116-TCGA-GBMLGG-SNV-Affy6 2`
+
+
+
+```
+
+mkdir pgs; cd pgs
+curl -sL https://imputationserver.sph.umich.edu/get/lKibPsVHrnqcbXppfgwMWr5WgZw0zUZbIkP6mas7 | bash
+
+box_upload.bash statistics/* *
+
+```
+
+
+
+
