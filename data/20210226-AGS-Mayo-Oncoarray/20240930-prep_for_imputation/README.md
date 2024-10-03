@@ -242,5 +242,6 @@ Data have been exported successfully. We have sent a notification email to jakew
 mkdir pgs ; cd pgs
 curl -sL https://imputationserver.sph.umich.edu/get/XAh0GIVKGQ5TtuEy3d1bXuCvLVs8Rw71yV4gM2nY | bash
 
+box_upload.bash statistics/* *
 
 ```
