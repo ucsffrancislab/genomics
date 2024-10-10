@@ -154,6 +154,8 @@ shinyApp(ui, server)
 #library(rsconnect)
 #rsconnect::deployApp(".",account="jakewendt",appName="blast_heatmap")
 
+#	R -e "library(rsconnect);rsconnect::deployApp('.',account='jakewendt',appName='blast_heatmap',forceUpdate = TRUE)"
+
 #	Run locally
 #	R -e "library(shiny);runApp(launch.browser = TRUE)"
 

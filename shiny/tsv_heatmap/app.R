@@ -32,6 +32,10 @@ ui <- fluidPage(
 			# Input: Checkbox if file has header ----
 			checkboxInput("header", "Header", TRUE),
 
+			checkboxInput("cluster_rows", "Cluster Rows", TRUE),
+
+			checkboxInput("cluster_cols", "Cluster Cols", TRUE),
+
 			# Input: Select separator ----
 			radioButtons("sep", "Separator",
 				choices = c(Comma = ",",
@@ -149,7 +153,9 @@ server <- function(input, output, session) {
 			fontsize=16,
 			fontsize_row=10,
 			fontsize_col=10,
-			scale=input$scale
+			scale=input$scale,
+			cluster_rows=input$cluster_rows, 
+			cluster_cols=input$cluster_cols
 		)
 
 	})	#	output$plot <- renderPlot({
@@ -186,6 +192,8 @@ shinyApp(ui, server)
 #	Publish
 #library(rsconnect)
 #rsconnect::deployApp(".",account="jakewendt",appName="tsv_heatmap")
+
+#	R -e "library(rsconnect);rsconnect::deployApp('.',account='jakewendt',appName='tsv_heatmap',forceUpdate = TRUE)"
 
 #	Run locally
 #	R -e "library(shiny);runApp(launch.browser = TRUE)"

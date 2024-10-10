@@ -762,6 +762,8 @@ shinyApp(ui, server)
 #library(rsconnect)
 #rsconnect::deployApp(".",account="jakewendt",appName="REdiscoverTE_EdgeR")
 
+#	R -e "library(rsconnect);rsconnect::deployApp('.',account='jakewendt',appName='REdiscoverTE_EdgeR',forceUpdate = TRUE)"
+
 #	Run locally
 #	R -e "library(shiny);runApp(launch.browser = TRUE)"
 
