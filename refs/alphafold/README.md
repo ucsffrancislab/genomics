@@ -259,3 +259,12 @@ doesn't usually return the same version as the one that was initially installed.
 
 
 
+
+Can't use 
+* Cuda 12
+* jax > 0.4.13
+* python 
+
+
+
+

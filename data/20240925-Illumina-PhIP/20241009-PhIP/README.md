@@ -1,5 +1,13 @@
 
-#	20240925-Illumina-PhIP/20240925c-PhIP
+#	20240925-Illumina-PhIP/20241009-PhIP
+
+
+
+REDO but drop half of the reads using 
+```
+samtools view --subsample 0.5
+```
+
 
 
 ONLY PRIMARY READS
@@ -7,6 +15,21 @@ ONLY WITH START NEAR 1
 ONLY QUALITY > 40?
 NOT idxstats
 
+
+
+
+```
+mkdir logs
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  ${PWD}/phip_seq_process.bash
+```
+
+
+
+
+---
 
 Most of this could be fully scripted. Next time.
 
@@ -19,7 +42,7 @@ for bam in ../20240925b-bowtie2/out/*bam ; do
   SAMPLE_ID=$( basename ${bam} .VIR3_clean.1-160.bam )
   echo $bam
   echo $SAMPLE_ID
-  samtools view -F SECONDARY,SUPPLEMENTARY -q 40 ${bam} | awk '( $4 < 10 ){print $3}' | sort -k1n | uniq -c | awk '{print $2","$1}' | sed -e "1 i id,${SAMPLE_ID}" | gzip > out/${SAMPLE_ID}.q40.count.csv.gz
+  samtools view --subsample 0.5 -F SECONDARY,SUPPLEMENTARY -q 40 ${bam} | awk '( $4 < 10 ){print $3}' | sort -k1n | uniq -c | awk '{print $2","$1}' | sed -e "1 i id,${SAMPLE_ID}" | gzip > out/${SAMPLE_ID}.q40.count.csv.gz
   chmod 440 out/${SAMPLE_ID}.q40.count.csv.gz
 done
 
@@ -35,25 +58,33 @@ In this case, the dataset is 4 separate comparisono so do it separately
 
 ```
 
-#mkdir out/input
-#
-#for sample in $( awk -F, '($2=="PBS"){print $1}' /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv ) ; do
-# mv out/${sample}.q40.count.csv.gz out/input
-#done
+mkdir -p processed_separately
+mv out processed_separately/
+
+mkdir -p processed_all_together
+cp -r processed_separately/out processed_all_together/
+
+mkdir -p processed_all_together/out/input
+
+
+
+for sample in $( awk -F, '($2=="PBS"){print $1}' /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv ) ; do
+  mv processed_all_together/out/${sample}.q40.count.csv.gz processed_all_together/out/input
+done
 
 
 for condition in 1 2 3 4 ; do
 samples=$( awk -F, -v condition=${condition} '( $6 == condition ){print $1}' /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv )
-mkdir out/${condition}
+mkdir processed_separately/out/${condition}
 for sample in $samples ; do
 echo $condition $sample
-mv out/${sample}.q40.count.csv.gz out/${condition}/
+mv processed_separately/out/${sample}.q40.count.csv.gz processed_separately/out/${condition}/
 done
 samples=$( awk -F, -v condition=${condition} '( $2 == "PBS" && $6 == condition ){print $1}' /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv )
-mkdir out/${condition}/input
+mkdir processed_separately/out/${condition}/input
 for sample in $samples ; do
 echo $condition $sample
-mv out/${condition}/${sample}.q40.count.csv.gz out/${condition}/input/
+mv processed_separately/out/${condition}/${sample}.q40.count.csv.gz processed_separately/out/${condition}/input/
 done ; done
 
 ```
@@ -65,18 +96,19 @@ Then sum them with `sum_counts_files.py`
 ```
 
 
-#sum_counts_files.py -o out/input/All.count.csv out/input/*.q40.count.csv.gz
-#sed -i '1s/sum/input/' out/input/All.count.csv
-#gzip out/input/All.count.csv
+sum_counts_files.py -o processed_all_together/out/input/All.count.csv processed_all_together/out/input/*.q40.count.csv.gz
+sed -i '1s/sum/input/' processed_all_together/out/input/All.count.csv
+gzip processed_all_together/out/input/All.count.csv
+chmod -w processed_all_together/out/input/All.count.csv.gz
 
 
 for condition in 1 2 3 4 ; do
-sum_counts_files.py -o out/${condition}/input/All.count.csv out/${condition}/input/*.q40.count.csv.gz
-sed -i '1s/sum/input/' out/${condition}/input/All.count.csv
-gzip out/${condition}/input/All.count.csv
+sum_counts_files.py -o processed_separately/out/${condition}/input/All.count.csv processed_separately/out/${condition}/input/*.q40.count.csv.gz
+sed -i '1s/sum/input/' processed_separately/out/${condition}/input/All.count.csv
+gzip processed_separately/out/${condition}/input/All.count.csv
 done
 
-chmod -w out/?/input/All.count.csv.gz
+chmod -w processed_separately/out/?/input/All.count.csv.gz
 
 ```
 
@@ -85,13 +117,13 @@ Create count matrices to feed to Z-score
 
 ```
 
-#merge_all_combined_counts_files.py --int -o All.count.csv out/*.q40.count.csv.gz out/input/All.count.csv.gz
-#chmod 400 All.count.csv
+merge_all_combined_counts_files.py --int -o processed_all_together/All.count.csv processed_all_together/out/*.q40.count.csv.gz processed_all_together/out/input/All.count.csv.gz
+chmod 400 processed_all_together/All.count.csv
 
 for condition in 1 2 3 4 ; do
-merge_all_combined_counts_files.py --int -o ${condition}.count.csv \
-  out/${condition}/*.q40.count.csv.gz out/${condition}/input/All.count.csv.gz
-chmod 400 ${condition}.count.csv
+merge_all_combined_counts_files.py --int -o processed_separately/${condition}.count.csv \
+  processed_separately/out/${condition}/*.q40.count.csv.gz processed_separately/out/${condition}/input/All.count.csv.gz
+chmod 400 processed_separately/${condition}.count.csv
 done
 
 ```
@@ -115,11 +147,12 @@ Create Zscores
 #  --output=${PWD}/logs/Zscore.$( date "+%Y%m%d%H%M%S%N" ).out.log \
 #  --wrap "module load r; elledge_Zscore_analysis.R ${PWD}/All.count.csv"
 
-#module load r; elledge_Zscore_analysis.R ${PWD}/All.count.csv
+module load r
+elledge_Zscore_analysis.R processed_all_together/All.count.csv
 
 module load r
 for condition in 1 2 3 4 ; do
-elledge_Zscore_analysis.R ${condition}.count.csv
+elledge_Zscore_analysis.R processed_separately/${condition}.count.csv
 done
 
 ```
@@ -130,17 +163,17 @@ Zscores with public epitopes
 
 ```
 
-#awk 'BEGIN{FS=OFS=","}{print $13,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12}' All.count.Zscores.csv > tmp
-#head -1 tmp > All.count.Zscores.reordered.join_sorted.csv
-#tail -n +2 tmp | sort -t, -k1,1 >> All.count.Zscores.reordered.join_sorted.csv
-#join --header -t, /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.join_sorted.csv All.count.Zscores.reordered.join_sorted.csv > All.public_epitope_annotations.Zscores.csv 
+awk 'BEGIN{FS=OFS=","}{print $13,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12}' processed_all_together/All.count.Zscores.csv > tmp
+head -1 tmp > processed_all_together/All.count.Zscores.reordered.join_sorted.csv
+tail -n +2 tmp | sort -t, -k1,1 >> processed_all_together/All.count.Zscores.reordered.join_sorted.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.join_sorted.csv processed_all_together/All.count.Zscores.reordered.join_sorted.csv > processed_all_together/All.public_epitope_annotations.Zscores.csv 
 
 
 for condition in 1 2 3 4 ; do
-awk 'BEGIN{FS=OFS=","}{print $4,$1,$2,$3}' ${condition}.count.Zscores.csv > tmp
-head -1 tmp > ${condition}.count.Zscores.reordered.join_sorted.csv
-tail -n +2 tmp | sort -t, -k1,1 >> ${condition}.count.Zscores.reordered.join_sorted.csv
-join --header -t, /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.join_sorted.csv ${condition}.count.Zscores.reordered.join_sorted.csv > ${condition}.public_epitope_annotations.Zscores.csv 
+awk 'BEGIN{FS=OFS=","}{print $4,$1,$2,$3}' processed_separately/${condition}.count.Zscores.csv > tmp
+head -1 tmp > processed_separately/${condition}.count.Zscores.reordered.join_sorted.csv
+tail -n +2 tmp | sort -t, -k1,1 >> processed_separately/${condition}.count.Zscores.reordered.join_sorted.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.join_sorted.csv processed_separately/${condition}.count.Zscores.reordered.join_sorted.csv > processed_separately/${condition}.public_epitope_annotations.Zscores.csv 
 done
 
 ```
@@ -176,31 +209,31 @@ Determine actual hits by zscore threshold in both replicates
 
 ```
 
-#for condition in 1 2 3 4 ; do
-#all_samples=$( awk -F, -v condition=${condition} '($2=="SE" && $6==condition){print $1}' \
-#  /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv | paste -sd' ' )
-#booleanize_Zscore_replicates.py --sample S${condition} --matrix All.count.Zscores.csv \
-#  --output ${condition}.count.Zscores.1-2-3-hits.csv $all_samples
-#booleanize_Zscore_replicates.py --sample S${condition} --matrix All.count.Zscores.csv \
-#  --output ${condition}.count.Zscores.1-2-hits.csv $( echo $all_samples | cut -d' ' -f1,2 )
-#booleanize_Zscore_replicates.py --sample S${condition} --matrix All.count.Zscores.csv \
-#  --output ${condition}.count.Zscores.1-3-hits.csv $( echo $all_samples | cut -d' ' -f1,3 )
-#booleanize_Zscore_replicates.py --sample S${condition} --matrix All.count.Zscores.csv \
-#  --output ${condition}.count.Zscores.2-3-hits.csv $( echo $all_samples | cut -d' ' -f2,3 )
-#done
+for condition in 1 2 3 4 ; do
+all_samples=$( awk -F, -v condition=${condition} '($2=="SE" && $6==condition){print $1}' \
+  /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv | paste -sd' ' )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_all_together/All.count.Zscores.csv \
+  --output processed_all_together/${condition}.count.Zscores.1-2-3-hits.csv $all_samples
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_all_together/All.count.Zscores.csv \
+  --output processed_all_together/${condition}.count.Zscores.1-2-hits.csv $( echo $all_samples | cut -d' ' -f1,2 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_all_together/All.count.Zscores.csv \
+  --output processed_all_together/${condition}.count.Zscores.1-3-hits.csv $( echo $all_samples | cut -d' ' -f1,3 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_all_together/All.count.Zscores.csv \
+  --output processed_all_together/${condition}.count.Zscores.2-3-hits.csv $( echo $all_samples | cut -d' ' -f2,3 )
+done
 
 
 for condition in 1 2 3 4 ; do
 all_samples=$( awk -F, -v condition=${condition} '($2=="SE" && $6==condition){print $1}' \
   /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv | paste -sd' ' )
-booleanize_Zscore_replicates.py --sample S${condition} --matrix ${condition}.count.Zscores.csv \
-  --output ${condition}.count.Zscores.1-2-3-hits.csv $all_samples
-booleanize_Zscore_replicates.py --sample S${condition} --matrix ${condition}.count.Zscores.csv \
-  --output ${condition}.count.Zscores.1-2-hits.csv $( echo $all_samples | cut -d' ' -f1,2 )
-booleanize_Zscore_replicates.py --sample S${condition} --matrix ${condition}.count.Zscores.csv \
-  --output ${condition}.count.Zscores.1-3-hits.csv $( echo $all_samples | cut -d' ' -f1,3 )
-booleanize_Zscore_replicates.py --sample S${condition} --matrix ${condition}.count.Zscores.csv \
-  --output ${condition}.count.Zscores.2-3-hits.csv $( echo $all_samples | cut -d' ' -f2,3 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_separately/${condition}.count.Zscores.csv \
+  --output processed_separately/${condition}.count.Zscores.1-2-3-hits.csv $all_samples
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_separately/${condition}.count.Zscores.csv \
+  --output processed_separately/${condition}.count.Zscores.1-2-hits.csv $( echo $all_samples | cut -d' ' -f1,2 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_separately/${condition}.count.Zscores.csv \
+  --output processed_separately/${condition}.count.Zscores.1-3-hits.csv $( echo $all_samples | cut -d' ' -f1,3 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix processed_separately/${condition}.count.Zscores.csv \
+  --output processed_separately/${condition}.count.Zscores.2-3-hits.csv $( echo $all_samples | cut -d' ' -f2,3 )
 done
 
 #chmod -w All.count.Zscores.csv
