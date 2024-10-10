@@ -390,3 +390,233 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS
 ```
 
 
+
+
+
+##	20241008
+
+Create a cleaner reference
+
+All peptides (many repeated)
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21}' | wc -l
+128257
+```
+
+Unique, (include 1 copy of each repeat)
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21}' | sort | uniq | wc -l
+111638
+```
+
+Only those not repeated
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21}' | sort | uniq -u | wc -l
+104567
+```
+
+1 copy of each repeat
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21}' | sort | uniq -d | wc -l
+7071
+```
+
+All copies of all repeats
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21}' | sort | uniq -D | wc -l
+23690
+```
+
+
+
+Actual duplicates
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21}' | sort | uniq -d > VIR3_clean.duplicates.txt
+sed -i '1iduplicated_peptide' VIR3_clean.duplicates.txt
+```
+
+
+Unique peptides with id
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21,$17}' | sort -t, -k1,1 -k2n,2 | uniq  | wc -l
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $21,$17}' | sort -t, -k1,1 -k2n,2 | uniq  > VIR3_clean.peptides_with_ids.csv
+sed -i '1ipeptide,id' VIR3_clean.peptides_with_ids.csv
+```
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{gsub(/,/," ",$10);print $21,$17,$12,$10}' \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  | sort -t, -k1,1 -k2n,2 > tmp
+  
+sed -i '1ipeptide,id,Species,protein,source,start' tmp
+
+```
+
+```
+join --header -t, VIR3_clean.duplicates.txt tmp > VIR3_clean.duplicates.tmp
+
+```
+
+
+Duplicated peptides with different ids
+
+```
+
+join --header -t, VIR3_clean.duplicates.txt VIR3_clean.peptides_with_ids.csv | tail -n +2 | cut -d, -f1 | uniq -c | sort -nr | head
+     12 MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI
+     10 MGGWSSKPRQGMGTNLSVPNPLGFFPDHQLDPAFGANSNNPDWDFNPNKDHWPEAN
+      8 MGQNLSTSNPLGFFPDHQLDPAFRANTANPDWDFNPNKDTWPDANKVGAGAFGLGF
+      8 MGGWSSKPRKGMGTNLSVPNPLGFFPDHQLDPAFKANSENPDWDLNPHKDNWPDAN
+      8 MASYPCHQHASAFDQAARSRGHSNRRTALRPRRQQEATEVRLEQKMPTLLRVYIDG
+      8 LRPRRQQEATEVRLEQKMPTLLRVYIDGPHGMGKTTTTQLLVALGSRDDIVYVPEP
+      7 SHPIILGFRKIPMGVGLSPFLLAQFTSAICSVVRRAFPHCLAFSYMDDVVLGAKSV
+      7 PHGMGKTTTTQLLVALGSRDDIVYVPEPMTYWQVLGASETIANIYTTQHRLDQGEI
+      7 ARFYPNLTKYLPLDKGIKPYYPEHAVNHYFKTRHYLHTLWKAGILYKRETTRSASF
+      6 TTPPHSPTTPPPEPPSKSSPDSLAPSTLRSLRKRRLSSPQGPSTLNPICQSPPVSP
+
+grep MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI VIR3_clean.duplicates.tmp 
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10645,Hepatitis B virus,Precore/core protein (Fragment)
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10647,Hepatitis B virus,Precore/core protein (Fragment)
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10649,Hepatitis B virus,Precore/core protein (Fragment)
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10662,Hepatitis B virus,Precore/core protein (Fragment)
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10666,Hepatitis B virus,Precore/core protein (Fragment)
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,11653,Hepatitis B virus,Precore/core protein (Fragment)
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,3604,Hepatitis B virus,Precore/core protein
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,5060,Hepatitis B virus,Precore/core protein
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,67528,Hepatitis B virus,Precore/core protein
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,6987,Hepatitis B virus,Truncated precore/core protein
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,71218,Hepatitis B virus,HBeAg/HBcAg
+MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,74459,Hepatitis B virus,Truncated precore/core protein
+
+```
+
+
+
+```
+join --header -t, VIR3_clean.duplicates.txt VIR3_clean.peptides_with_ids.csv | tail -n +2 | cut -d, -f1 | uniq -c | sort -nr | head
+
+join --header -t, VIR3_clean.duplicates.txt VIR3_clean.peptides_with_ids.csv | tail -n +2 | cut -d, -f1 | uniq -c | sort -k1nr,1 | awk '($1>1){print $2}' | sort > tmp
+
+join --header -t, tmp VIR3_clean.duplicates.tmp | head
+
+
+```
+
+
+
+
+
+
+OLIGO ANALYSIS
+
+```
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $18}' | sort | uniq -u | wc -l
+111834
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $18}' | sort | uniq -d | wc -l
+3919
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $18}' | sort | uniq -D | wc -l
+16423
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$18,$21}' | sort | uniq -D | wc -l
+16423
+
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $18}' | sort | uniq -d > VIR3_clean.duplicated_oligos.txt
+sed -i '1ioligo' VIR3_clean.duplicated_oligos.txt
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $18,$17}' | sort -t, -k1,1 -k2n,2 | uniq > VIR3_clean.oligos_with_ids.csv
+sed -i '1ioligo,id' VIR3_clean.oligos_with_ids.csv
+
+join --header -t, VIR3_clean.duplicated_oligos.txt VIR3_clean.oligos_with_ids.csv
+
+join --header -t, VIR3_clean.duplicated_oligos.txt VIR3_clean.oligos_with_ids.csv | tail -n +2 | cut -d, -f1 | uniq -c | awk '$1>1'
+
+#	NOTHING! Meaning the duplicated oligos have a duplicated id as well.
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17}' | sort | uniq -d > VIR3_clean.duplicated_ids.txt
+sed -i '1iids' VIR3_clean.duplicated_ids.txt
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$18}' | sort -t, -k1,1 -k2,2 | uniq > VIR3_clean.ids_with_oligos.csv
+sed -i '1iid,oligo' VIR3_clean.ids_with_oligos.csv
+
+join --header -t, VIR3_clean.duplicated_ids.txt VIR3_clean.ids_with_oligos.csv | tail -n +2 | cut -d, -f1 | uniq -c | awk '$1>1'
+
+#	again nothin saying the duplicated ids have the same duplicated oligo
+```
+
+
+
+
+
+
+
+##	Creating alternate reference
+
+ehh
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{print $17,$18,$21,$12}' \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  | sort -t, -k1,1 | uniq > VIR3_clean.join_sorted.csv
+sed -i '1iid,oligo,peptide,species' VIR3_clean.join_sorted.csv
+
+```
+
+
+
+cat test_ids* | tr -d "^^" | sort -n | sed 's/^/^/' > demo_test_ids
+
+
+
+
+
+
+##	Add column to virus score matrix
+
+
+```
+awk 'BEGIN{FS=OFS=","}(NR==FNR){seen[$1]++}
+(NR>FNR){if(FNR==1){$4="public" }else{ (seen[$1]>0)?$4="True":$4="False" } print
+}' public_epitope_annotations.join_sorted.csv VIR3_clean.virus_score.join_sorted.csv
+> VIR3_clean.virus_score.join_sorted.with_public.csv 
+```
+
+
+
+
+
+
+
+##	20241009
+
+
+```
+mkdir human_herpes
+awk -F, '($2~/^Human herpes/){print ">"$1" "$2"\n"$3 > "human_herpes/"$1".faa"}' VIR3_clean.virus_score.csv
+
+```
+
+
+
+
+```
+alphafold_array_wrapper.bash *.faa
+```
+
+
