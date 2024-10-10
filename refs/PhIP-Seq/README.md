@@ -613,10 +613,31 @@ awk -F, '($2~/^Human herpes/){print ">"$1" "$2"\n"$3 > "human_herpes/"$1".faa"}'
 ```
 
 
-
-
 ```
 alphafold_array_wrapper.bash *.faa
 ```
+
+
+The TM-score range is 0 to 1, with higher values indicating a more accurate match between two protein structures: 
+
+1: A perfect match between the two structures 
+
+0.5 or higher: The predicted model and the native structure have the same fold topology 
+
+0.17 or lower: No structural similarity between the predicted model and the native structure 
+
+Below 0.5: The predicted structure is likely wrong 
+
+TM-align is a protein structure alignment algorithm that reports two TM-scores, one normalized by the length of the first structure and the other by the length of the second structure.
+
+
+```
+
+sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="usalign" --output="${PWD}/$( date "+%Y%m%d%H%M%S%N" ).out" --time=2880 --nodes=1 --ntasks-per-node=4 --ntasks=4 --mem=30G /francislab/data1/refs/PhIP-Seq/usalign.bash
+
+sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name="usalign_aggregate" --output="${PWD}/$( date "+%Y%m%d%H%M%S%N" ).out" --time=2880 --nodes=1 --ntasks-per-node=4 --ntasks=4 --mem=30G /francislab/data1/refs/PhIP-Seq/usalign_aggregate.bash
+
+```
+
 
 
