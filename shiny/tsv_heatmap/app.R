@@ -141,8 +141,8 @@ server <- function(input, output, session) {
 
 		df=df()
 
-		maximum	<- if(is.null(input$maximum) || input$maximum=="" ) max(df) else strtoi(input$maximum)
-		minimum <- if(is.null(input$minimum) || input$minimum=="" ) min(df) else strtoi(input$minimum)
+		maximum	<- if(is.null(input$maximum) || input$maximum=="" ) max(df) else as.double(input$maximum)
+		minimum <- if(is.null(input$minimum) || input$minimum=="" ) min(df) else as.double(input$minimum)
 
 		tmpdf = df[ 
 			apply(df, 1, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ),
