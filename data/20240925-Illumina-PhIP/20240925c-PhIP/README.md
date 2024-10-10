@@ -414,3 +414,62 @@ done
 ```
 
 
+
+
+##	20241008
+
+
+```
+cp processed_all_together/All.count.csv test_merging_tiles.count.csv
+for i in $( seq 1 9 ) ; do
+echo -n ${i}000000, >> test_merging_tiles.count.csv
+grep -f /francislab/data1/refs/PhIP-Seq/test_ids${i} processed_all_together/All.count.csv | datamash -t, sum 2 sum 3 sum 4 sum 5 sum 6 sum 7 sum 8 sum 9 sum 10 sum 11 sum 12 sum 13 sum 14 | tail -n 1 >> test_merging_tiles.count.csv
+done
+
+elledge_Zscore_analysis.R test_merging_tiles.count.csv  
+
+```
+
+```
+
+for condition in 1 2 3 4 ; do
+all_samples=$( awk -F, -v condition=${condition} '($2=="SE" && $6==condition){print $1}' \
+  /francislab/data1/raw/20240925-Illumina-PhIP/manifest.csv | paste -sd' ' )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix test_merging_tiles.count.Zscores.csv \
+  --output ${condition}.count.Zscores.1-2-3-hits.csv $all_samples
+booleanize_Zscore_replicates.py --sample S${condition} --matrix test_merging_tiles.count.Zscores.csv \
+  --output ${condition}.count.Zscores.1-2-hits.csv $( echo $all_samples | cut -d' ' -f1,2 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix test_merging_tiles.count.Zscores.csv \
+  --output ${condition}.count.Zscores.1-3-hits.csv $( echo $all_samples | cut -d' ' -f1,3 )
+booleanize_Zscore_replicates.py --sample S${condition} --matrix test_merging_tiles.count.Zscores.csv \
+  --output ${condition}.count.Zscores.2-3-hits.csv $( echo $all_samples | cut -d' ' -f2,3 )
+done
+```
+
+
+
+```
+head -1 test_merging_tiles.count.csv > test_merging_tiles.count.input.csv
+grep -f /francislab/data1/refs/PhIP-Seq/test_ids2 test_merging_tiles.count.csv >> test_merging_tiles.count.input.csv 
+grep 2000000 test_merging_tiles.count.csv >> test_merging_tiles.count.input.csv 
+
+```
+
+```
+head -1 test_merging_tiles.count.Zscores.csv > test_merging_tiles.count.output.csv
+grep -f /francislab/data1/refs/PhIP-Seq/test_ids2 *Zscores.csv >> test_merging_tiles.count.output.csv 
+grep 2000000 *Zscores.csv >> test_merging_tiles.count.output.csv 
+```
+
+
+```
+
+awk 'BEGIN{FS=OFS=","}{if(NR>1){for(i=1;i<=12;i++){ $i = sprintf("%0.2f",$i); }}; print $13,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$15 }' test_merging_tiles.count.output.csv > test_merging_tiles.count.output.trim.csv
+
+``
+
+
+
+
+
+
