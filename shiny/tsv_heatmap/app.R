@@ -45,8 +45,13 @@ ui <- fluidPage(
 
 			selectInput('scale', 'pHeatmap Scale', c('none','row','column')),
 
-			textInput("maximum","Maximum"),
-			textInput("minimum","Minimum"),
+#			apply(df, 1, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ),
+#			apply(df, 2, function(x) ( max(x) > minimum ) && ( min(x) < maximum ) ) ]
+
+			textInput("maximum","Maximum (minimum of a row or column must be less than)"),
+
+			textInput("minimum","Minimum (maximum of a row or column must be more than)"),
+
 			#uiOutput("slider_maximum"),
 			#uiOutput("slider_minimum"),
 			#verbatimTextOutput("breaks")
