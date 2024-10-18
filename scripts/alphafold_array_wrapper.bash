@@ -16,7 +16,7 @@ function usage(){
 	echo
 	echo "Usage:"
 	echo
-	echo $0 path/*1.fastq.gz
+	echo $0 path/*.faa
 	echo
 	exit
 }
@@ -38,6 +38,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		case $1 in
 			--array_file)
 				shift; array_file=$1; shift;;
+			-e|--extension)
+				shift; extension=$1; shift;;
 			*)
 				echo "Unknown param :${1}:"; usage ;;
 		esac
@@ -67,7 +69,8 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 		exit
 	fi
 
-	#base=$( basename $line .bam )
+	#base=$( basename ${line} ${extension} )
+
 	#bam=${line}
 
 	#echo
@@ -81,66 +84,50 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 
 	set -x
 
-#	#f=${bam%.bam}.read_count.txt
-#	f=${line}.read_count.txt
-#	if [ -f $f ] && [ ! -w $f ] ; then
-#		echo "Write-protected $f exists. Skipping."
-#	else
-#		echo "Creating $f"
-#		#samtools view $* -c -F2304 ${bam} > ${f}
-#
-#		if [ "${line: -4}" == "q.gz" ] ; then
-#			command="zcat ${line} | paste - - - - "
-#		elif [ "${line: -4}" == "fqgz" ] ; then
-#			command="zcat ${line} | paste - - - - "
-#		elif [ "${line: -1}" == "q" ] ; then
-#			command="cat ${line} | paste - - - - "
-#		elif [ "${line: -4}" == "a.gz" ] ; then
-#			command="zcat ${line} | paste - - "
-#		elif [ "${line: -1}" == "a" ] ; then
-#			command="cat ${line} | paste - - "
-#		else
-#			command="cat ${line} "
-#		fi
-#		command="${command} | wc -l"
-#		eval $command > ${f}
 
 
-#mkdir ${line%.faa}
+
+	#	/francislab/data2/refs/PhIP-Seq/human_herpes/1226.faa
+	#	/francislab/data2/refs/PhIP-Seq/human_herpes/1226/ranked_0.pdb
+
+	f=${line%${extension}}/ranked_0.pdb
+	if [ -f $f ] && [ ! -w $f ] ; then
+		echo "Write-protected $f exists. Skipping."
+	else
+		echo "Creating $f"
+
+		#	All that time trying to get GPU working, too limited access
+		#	WITH 
+		#	singularity exec --nv --writable-tmpfs \
+		#  --use_gpu_relax \
 
 
-#	All that time trying to get GPU working, too limited access
-#	WITH 
-#	singularity exec --nv --writable-tmpfs \
-#  --use_gpu_relax \
-
-
-#	WITHOUT GPU
-singularity exec --writable-tmpfs \
-  --bind /francislab,/scratch \
-	/francislab/data1/refs/singularity/AlphaFold.sif \
-  /app/run_alphafold.sh \
-  --use_gpu_relax=False \
-  --bfd_database_path=/francislab/data1/refs/alphafold/databases/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \
-  --uniref30_database_path=/francislab/data1/refs/alphafold/databases/uniref30/UniRef30_2021_03 \
-  --pdb70_database_path=/francislab/data1/refs/alphafold/databases/pdb70/pdb70 \
-  --uniref90_database_path=/francislab/data1/refs/alphafold/databases/uniref90/uniref90.fasta \
-  --mgnify_database_path=/francislab/data1/refs/alphafold/databases/mgnify/mgy_clusters_2022_05.fa \
-  --template_mmcif_dir=/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/ \
-  --obsolete_pdbs_path=/francislab/data1/refs/alphafold/databases/pdb_mmcif/obsolete.dat \
-  --data_dir=/francislab/data1/refs/alphafold/databases/ \
-  --max_template_date=3000-01-01 \
-  --model_preset=monomer \
-  --fasta_paths=${line} \
-  --output_dir=$( dirname ${line} )
+		#	WITHOUT GPU
+		singularity exec --writable-tmpfs \
+  		--bind /francislab,/scratch \
+			/francislab/data1/refs/singularity/AlphaFold.sif \
+  		/app/run_alphafold.sh \
+  		--use_gpu_relax=False \
+  		--bfd_database_path=/francislab/data1/refs/alphafold/databases/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \
+  		--uniref30_database_path=/francislab/data1/refs/alphafold/databases/uniref30/UniRef30_2021_03 \
+  		--pdb70_database_path=/francislab/data1/refs/alphafold/databases/pdb70/pdb70 \
+  		--uniref90_database_path=/francislab/data1/refs/alphafold/databases/uniref90/uniref90.fasta \
+  		--mgnify_database_path=/francislab/data1/refs/alphafold/databases/mgnify/mgy_clusters_2022_05.fa \
+  		--template_mmcif_dir=/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/ \
+  		--obsolete_pdbs_path=/francislab/data1/refs/alphafold/databases/pdb_mmcif/obsolete.dat \
+  		--data_dir=/francislab/data1/refs/alphafold/databases/ \
+  		--max_template_date=3000-01-01 \
+  		--model_preset=monomer \
+  		--fasta_paths=${line} \
+  		--output_dir=$( dirname ${line} )
 
 #  --output_dir=${line%.faa}
 
 
 #  --max_template_date=2020-05-14 \
 
-#		chmod a-w $f
-#	fi
+		chmod a-w $f
+	fi
 
 
 
@@ -157,13 +144,19 @@ else
 	
 	threads=4
 	array=""
+	time="1-0"
 
 	while [ $# -gt 0 ] ; do
 		case $1 in
 			--array)
 				shift; array=$1; shift;;
+			--time)
+				shift; time=$1; shift;;
 			-@|--threads)
 				shift; threads=$1; shift;;
+			#-o|--out|--outdir|-e|--extension|-s|--strand|--arguments)
+			-e|--extension)
+				array_options="${array_options} $1 $2"; shift; shift;;
 			-h|--help)
 				usage;;
 			*)
@@ -206,7 +199,7 @@ else
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
 			--parsable --job-name="$(basename $0)" \
-			--time=1-0 --nodes=1 --ntasks=${threads} --mem=${mem} \
+			--time=${time} --nodes=1 --ntasks=${threads} --mem=${mem} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) ${array_options} )
 	
