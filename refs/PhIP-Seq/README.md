@@ -641,3 +641,170 @@ sbatch --export=NONE --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-n
 
 
 
+
+
+
+
+##	20241011
+
+
+
+
+```
+
+for f in *.usalign.log ; do
+d=${f%-*}
+e=${f#*-}
+mkdir -p ${d}
+echo mv ${f} ${d}/${e}
+mv ${f} ${d}/${e}
+done > 20241011.first_move.log &
+
+```
+
+```
+
+204_4-332_3.usalign.log
+204_4
+332_3.usalign.log
+
+
+204_4/332_3.usalign.log
+
+```
+
+```
+for f in *_?/*_?.usalign.log ; do
+d=$(dirname ${f})
+bd=${d}
+d1=${d%_?}
+e=${f##*/}
+d2=${e%_*}
+mkdir -p ${d1}/${d2}
+echo mv ${f} ${d1}/${d2}/${bd}-${e}
+mv ${f} ${d1}/${d2}/${bd}-${e}
+done > 20241012.second_move.log &
+
+```
+
+
+```
+
+1227/4351/1227_0-4351_0.usalign.log
+
+```
+
+
+##	20241012
+
+While, 2 threads is find, 15GB is not enough.
+
+Trying 3 threads
+
+```
+
+alphafold_array_wrapper.bash --threads 4 human_herpes/??.faa human_herpes/???.faa human_herpes/????.faa
+
+```
+
+
+Some fail with ...
+
+```
+[gwendt@c4-dev3 /francislab/data1/refs/PhIP-Seq]$ tail logs/alphafold_array_wrapper.bash.20241012081547537386005-155380_288.out.log
+    feature_dict = data_pipeline.process(
+  File "/app/alphafold/alphafold/data/pipeline.py", line 223, in process
+    templates_result = self.template_featurizer.get_templates(
+  File "/app/alphafold/alphafold/data/templates.py", line 894, in get_templates
+    result = _process_single_hit(
+  File "/app/alphafold/alphafold/data/templates.py", line 738, in _process_single_hit
+    cif_string = _read_file(cif_path)
+  File "/app/alphafold/alphafold/data/templates.py", line 682, in _read_file
+    with open(path, 'r') as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/5cvx.cif'
+```
+
+
+Some people claim that this is due the the max template date being too new.
+
+Others clain that the pdb_mmcif needs updated?
+
+Gonna let them all run.
+
+
+
+5CVX
+Structure of DNA-binding protein HU from micoplasma Spiroplasma melliferum
+DOI: 10.2210/pdb5CVX/pdb
+Deposited: 2015-07-27 Released: 2015-08-19 
+Deposition Author(s): Boyko, K.M., Gorbacheva, M.A., Rakitina, T.V., Korgenevsky, D.A., Kamashev, D.E., Vanyushkina, A.A., Lipkin, A.V., Popov, V.O.
+Entry 5CVX was removed from the distribution of released PDB entries (status Obsolete) on 2016-06-22.
+It has been replaced (superseded) by 5L8Z.
+
+
+Confused.
+
+
+
+aws s3 ls --no-sign-request s3://pdbsnapshots/20240101/pub/pdb/
+
+Another resolution is to get a snapshot of the mmcifs and the seqres database from something like https://registry.opendata.aws/pdb-3d-structural-biology-data/ - note that the seqres database has to be older than or the same age as the mmcif download. (see README)
+
+
+
+
+
+Hi thanks for raising this. Have you updated the pdb_seqres file more recently than the PDB mmcif files? This error is likely to happen when they are out of sync. In the future we can add a more informative error message.
+
+
+5CVX is in the obsolete.dat file. Shouldn't be looking for it?
+
+
+```
+
+grep FileNotFoundError logs/alphafold_array_wrapper.bash.*.out.log
+
+logs/alphafold_array_wrapper.bash.20241012100943398198461-155803_1406.out.log:FileNotFoundError: [Errno 2] No such file or directory: '/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/6sng.cif'
+logs/alphafold_array_wrapper.bash.20241012100943398198461-155803_1422.out.log:FileNotFoundError: [Errno 2] No such file or directory: '/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/6sng.cif'
+logs/alphafold_array_wrapper.bash.20241012100943398198461-155803_288.out.log:FileNotFoundError: [Errno 2] No such file or directory: '/francislab/data1/refs/alphafold/databases/pdb_mmcif/mmcif_files/5cvx.cif'
+
+```
+
+
+
+
+
+##	20241014
+
+
+
+```
+mkdir testDB.links
+cd testDB.links
+for f in ../human_herpes/*/ranked_?.pdb; do
+ext=${f#*/ranked_}
+b=$( basename $( dirname $f ) )
+ln -s $f ${b}_${ext}
+done
+
+~/.local/foldseek/bin/foldseek createdb testDB.links/ testDB
+~/.local/foldseek/bin/foldseek createindex testDB tmp
+
+~/.local/foldseek/bin/foldseek easy-search ../alphafold/SPELLARDPYGPAVDIWSAGIVLFEMATGQ-prehensile_ranked_0.pdb testDB aln.m8 tmpFolder
+
+~/.local/foldseek/bin/foldseek easy-search human_herpes/100/ranked_0.pdb testDB aln.m8 tmpFolder
+
+
+```
+
+
+##	20241016
+
+
+```
+
+alphafold_array_wrapper.bash --threads 4 human_herpes/1????.faa 
+
+```
+
+
