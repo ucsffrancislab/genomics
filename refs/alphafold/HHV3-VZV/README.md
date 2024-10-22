@@ -55,3 +55,40 @@ Try to create the db from all of the fragments and then align the full standard.
 
 
 
+```
+
+for f in ../NP_040188-?/ranked_?.pdb ; do echo $f ; d=$( basename $( dirname $f )); b=${f%%.pdb};b=${b##*/ranked_}; echo ${d}-${b}.pdb; ln -s $f ${d}-${b}.pdb ; done
+
+~/.local/foldseek/bin/foldseek createdb NP_040188*pdb NP_040188_parts
+
+for f in ../??_??????/ranked_?.pdb ; do echo $f ; d=$( basename $( dirname $f )); b=${f%%.pdb};b=${b##*/ranked_}; echo ${d}-${b}.pdb; ln -s $f ${d}-${b}.pdb ; done
+
+~/.local/foldseek/bin/foldseek createdb *pdb VZV
+
+```
+
+
+```
+
+mkdir links
+cd links
+for f in ../??_??????/ranked_?.pdb ; do echo $f ; d=$( basename $( dirname $f )); b=${f%%.pdb};b=${b##*/ranked_}; echo ${d}-${b}.pdb; ln -s $f ${d}-${b}.pdb ; done
+cd ..
+
+~/.local/foldseek/bin/foldseek easy-search /francislab/data1/refs/alphafold/HHV3-VZV/links/*.pdb /francislab/data1/refs/alphafold/TCONS/TCONS aln.html tmpFolder --format-mode 3
+
+~/.local/foldseek/bin/foldseek easy-search /francislab/data1/refs/alphafold/HHV3-VZV/links/*.pdb /francislab/data1/refs/alphafold/TCONS/TCONS aln.exhaustive.html tmpFolder --exhaustive-search 1 --format-mode 3
+```
+
+
+##	20241022
+
+```
+
+~/.local/foldseek/bin/foldseek easy-search /francislab/data1/refs/alphafold/HHV3-VZV/links/*.pdb /francislab/data1/refs/alphafold/TCONS/TCONS VZVinTCONS.html tmpFolder --format-mode 3 -e 0.01
+echo "<script>function hide_blanks() { var tabs = document.querySelectorAll('div.v-tab'); var emptyTabs = Array.from(tabs).filter(div => div.textContent.includes('(0)')); for (let i = 0; i < emptyTabs.length; i++) { var tmp = emptyTabs[i].style.display = 'None'; }; } window.onload=hide_blanks; </script>" >> VZVinTCONS.html
+
+```
+
+
+
