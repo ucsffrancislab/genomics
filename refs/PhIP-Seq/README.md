@@ -808,3 +808,54 @@ alphafold_array_wrapper.bash --threads 4 human_herpes/1????.faa
 ```
 
 
+
+
+##	20241021
+
+The aggregation takes a while so to avoid redoing, gonna try to populate a database.
+
+```
+/francislab/data1/refs/PhIP-Seq/human_herpes/10000/ranked_0.pdb:A	/francislab/data1/refs/PhIP-Seq/human_herpes/10000/ranked_0.pdb:1.0000	1.0000	0.00	1.000	1.000	1.000	56	56	56
+
+```
+
+
+```
+#	chain is always A
+#chain=b[2];
+
+sqlite3 human_herpes_usalign.sqlite_db 'CREATE TABLE usalign ( structure1 TEXT NOT NULL, structure2 TEXT NOT NULL, ave_TM_score REAL NOT NULL); CREATE UNIQUE INDEX IF NOT EXISTS pairings ON usalign(structure1, structure2);'
+
+head human_herpes_usalign.tsv | awk 'BEGIN{FS=OFS="\t"}{
+split($1,a,"/");
+tile1=a[length(a)-1];
+split(a[length(a)],b,":");
+split(a[length(a)],c,".");
+split(c[1],d,"_");
+rank1=d[2];
+split($2,a,"/");
+tile2=a[length(a)-1];
+split(a[length(a)],b,":");
+split(a[length(a)],c,".");
+split(c[1],d,"_");
+rank2=d[2];
+print(tile1"-"rank1,tile2"-"rank2,($3+$4)/2)
+}' | sqlite3 human_herpes_usalign.sqlite_db -separator $'\t' ".import /dev/stdin usalign"
+
+```
+
+
+
+
+
+```
+
+sqlite3 -cmd ".output stdout" human_herpes_usalign.sqlite_db "SELECT ave_TM_score FROM usalign WHERE structure1 = '10000-0' AND structure2 = '10001-2'";
+
+sqlite3 -cmd ".output stdout" human_herpes_usalign.sqlite_db "SELECT ave_TM_score FROM usalign WHERE structure1 = '10000-0' AND structure2 = '10001-9'";
+
+```
+
+
+
+
