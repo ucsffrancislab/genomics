@@ -209,7 +209,7 @@ cat test.csv | sed 's/""/\x0\x0/g'  | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]*\")"}{fo
 There should be just 115753 uniqued on just ids.
 
 ```
-zgrep -c "^>" VIR3_clean.uniq.fna.gz 
+zgrep -c "^>" VIR3_clean.uniq.fna.gz
 115753
 
 ```
@@ -232,7 +232,7 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS
 This will still result in many "duplicates" as some sequence ids have different protein names.
 
 ```
-grep "^87073," VIR3_clean.circos_framework.uniq.csv 
+grep "^87073," VIR3_clean.circos_framework.uniq.csv
 
 87073,"Polyprotein, ",Encephalomyocarditis virus
 87073,Genome polyprotein [Cleaved into: Protein VP0 (VP4-VP2); Protein VP4 (P1A) (Rho) (Virion protein 4); Protein VP2 (Beta) (P1B) (Virion protein 2); Protein VP3 (Gamma) (P1C) (Virion protein 3); Protein VP1 (Alpha) (P1D) (Virion protein 1)] (Fragment),Encephalomyocarditis virus
@@ -280,7 +280,7 @@ import difflib
 peptide=              "ZZZZSEQUENCEZZZZZZZZZZZZZZZZZ"
 already_found_peptide="AAAAAAAAAAAAAAAAASEQUENCEAAAA"
 matcher = difflib.SequenceMatcher(None, peptide,already_found_peptide)
-match = matcher.find_longest_match(0, len(peptide), 0, len(already_found_peptide))         
+match = matcher.find_longest_match(0, len(peptide), 0, len(already_found_peptide))
 match.size
 8
 
@@ -392,6 +392,21 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS
 
 
 
+##	20241001
+
+
+```
+
+./novel_peptides.py public_epitope_annotations.join_sorted.csv
+
+
+box_upload.bash public_epitope_annotations.join_sorted.csv.shared_epitopes.csv
+
+```
+
+
+
+
 
 ##	20241008
 
@@ -454,7 +469,7 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS
   -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
   -e 's/New York virus (NYV)/New York virus/g' \
   | sort -t, -k1,1 -k2n,2 > tmp
-  
+
 sed -i '1ipeptide,id,Species,protein,source,start' tmp
 
 ```
@@ -481,7 +496,7 @@ join --header -t, VIR3_clean.duplicates.txt VIR3_clean.peptides_with_ids.csv | t
       7 ARFYPNLTKYLPLDKGIKPYYPEHAVNHYFKTRHYLHTLWKAGILYKRETTRSASF
       6 TTPPHSPTTPPPEPPSKSSPDSLAPSTLRSLRKRRLSSPQGPSTLNPICQSPPVSP
 
-grep MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI VIR3_clean.duplicates.tmp 
+grep MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI VIR3_clean.duplicates.tmp
 MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10645,Hepatitis B virus,Precore/core protein (Fragment)
 MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10647,Hepatitis B virus,Precore/core protein (Fragment)
 MQLFHLCLIISCSCPTVQASKLCLGWLWGMDIDPYKEFGASVELLSFLPSDFFPSI,10649,Hepatitis B virus,Precore/core protein (Fragment)
@@ -594,7 +609,7 @@ cat test_ids* | tr -d "^^" | sort -n | sed 's/^/^/' > demo_test_ids
 awk 'BEGIN{FS=OFS=","}(NR==FNR){seen[$1]++}
 (NR>FNR){if(FNR==1){$4="public" }else{ (seen[$1]>0)?$4="True":$4="False" } print
 }' public_epitope_annotations.join_sorted.csv VIR3_clean.virus_score.join_sorted.csv
-> VIR3_clean.virus_score.join_sorted.with_public.csv 
+> VIR3_clean.virus_score.join_sorted.with_public.csv
 ```
 
 
@@ -618,15 +633,15 @@ alphafold_array_wrapper.bash *.faa
 ```
 
 
-The TM-score range is 0 to 1, with higher values indicating a more accurate match between two protein structures: 
+The TM-score range is 0 to 1, with higher values indicating a more accurate match between two protein structures:
 
-1: A perfect match between the two structures 
+1: A perfect match between the two structures
 
-0.5 or higher: The predicted model and the native structure have the same fold topology 
+0.5 or higher: The predicted model and the native structure have the same fold topology
 
-0.17 or lower: No structural similarity between the predicted model and the native structure 
+0.17 or lower: No structural similarity between the predicted model and the native structure
 
-Below 0.5: The predicted structure is likely wrong 
+Below 0.5: The predicted structure is likely wrong
 
 TM-align is a protein structure alignment algorithm that reports two TM-scores, one normalized by the length of the first structure and the other by the length of the second structure.
 
@@ -736,7 +751,7 @@ Gonna let them all run.
 5CVX
 Structure of DNA-binding protein HU from micoplasma Spiroplasma melliferum
 DOI: 10.2210/pdb5CVX/pdb
-Deposited: 2015-07-27 Released: 2015-08-19 
+Deposited: 2015-07-27 Released: 2015-08-19
 Deposition Author(s): Boyko, K.M., Gorbacheva, M.A., Rakitina, T.V., Korgenevsky, D.A., Kamashev, D.E., Vanyushkina, A.A., Lipkin, A.V., Popov, V.O.
 Entry 5CVX was removed from the distribution of released PDB entries (status Obsolete) on 2016-06-22.
 It has been replaced (superseded) by 5L8Z.
@@ -803,7 +818,7 @@ done
 
 ```
 
-alphafold_array_wrapper.bash --threads 4 human_herpes/1????.faa 
+alphafold_array_wrapper.bash --threads 4 human_herpes/1????.faa
 
 ```
 
@@ -858,4 +873,32 @@ sqlite3 -cmd ".output stdout" human_herpes_usalign.sqlite_db "SELECT ave_TM_scor
 
 
 
+
+
+##	20241023
+
+
+```
+ll human_herpes/??.faa human_herpes/???.faa human_herpes/????.faa | wc -l
+1630
+
+ll human_herpes/??/ranked_0.pdb human_herpes/???/ranked_0.pdb human_herpes/????/ranked_0.pdb | wc -l
+1627
+
+
+alphafold_array_wrapper.bash --threads 4 human_herpes/??.faa human_herpes/???.faa human_herpes/????.faa
+
+alphafold_array_wrapper.bash --threads 4 human_herpes/1????.faa
+
+alphafold_array_wrapper.bash --threads 4 human_herpes/2????.faa
+
+```
+
+
+
+Problem tiles:
+* 3413 (_288.)
+* 9445 (_1406.)
+* 9461 (_1422.)
+* 15071 (_843.)
 
