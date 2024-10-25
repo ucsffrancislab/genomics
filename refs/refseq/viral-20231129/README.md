@@ -222,3 +222,15 @@ grep "Error: no such column" virus_taxonomy_tree_translation_table.20231129.2023
 
 
 
+##	20241024
+
+
+
+```
+module load blast
+
+zcat viral.protein.faa.gz | sed '/^>/s/\(^.\{1,51\}\).*/\1/' | makeblastdb -input_type fasta -dbtype prot -title viral.protein -parse_seqids -out viral.protein
+
+
+
+```
