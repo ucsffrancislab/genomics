@@ -15,26 +15,19 @@
 
 
 
----
 
+When aligning multiple pdbs to a  reference, they are listed across the top of the HTML page.
+
+They are sorted in no particular order.
+
+They also include all pdbs, regardless of whether there are any alignments.
+
+This javascript will hide the "(0)" tabs.
 
 
 ```
-mkdir testDB.links
-cd testDB.links
-for f in ../human_herpes/*/ranked_?.pdb; do
-ext=${f#*/ranked_}
-b=$( basename $( dirname $f ) )
-ln -s $f ${b}_${ext}
-done
 
-~/.local/foldseek/bin/foldseek createdb testDB.links/ testDB
-~/.local/foldseek/bin/foldseek createindex testDB tmp
-
-~/.local/foldseek/bin/foldseek easy-search ../alphafold/SPELLARDPYGPAVDIWSAGIVLFEMATGQ-prehensile_ranked_0.pdb testDB aln.m8 tmpFolder
-
-~/.local/foldseek/bin/foldseek easy-search human_herpes/100/ranked_0.pdb testDB aln.m8 tmpFolder
-
+<script>function hide_blanks() { var tabs = document.querySelectorAll('div.v-tab'); var emptyTabs = Array.from(tabs).filter(div => div.textContent.includes('(0)')); for (let i = 0; i < emptyTabs.length; i++) { var tmp = emptyTabs[i].style.display = 'None'; }; } window.onload=hide_blanks; </script>
 
 ```
 
