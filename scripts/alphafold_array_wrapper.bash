@@ -194,10 +194,12 @@ else
 
 
 
+#	Probably CPU instruction sets. n10 has AMD Opteron(TM) Processor 6238.
 
 #			--time=1-0 --nodes=1 --ntasks-per-node=1 --ntasks=1 --mem=20G --gres=gpu:1 --partition=common \
 
 		array_id=$( sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
+--exclude=c4-n10 \
 			--parsable --job-name="$(basename $0)" \
 			--time=${time} --nodes=1 --ntasks=${threads} --mem=${mem} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
