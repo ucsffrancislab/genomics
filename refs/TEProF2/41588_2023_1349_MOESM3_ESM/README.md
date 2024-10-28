@@ -22,7 +22,28 @@ rename .fa .faa S10/*fa
 chmod -w S10/*.faa
 
 
-alphafold_array_wrapper.bash --threads 8 S10/Modified-TCONS_00000820-9.faa
+alphafold_array_wrapper.bash --time 14-0 --threads 16 S10/Modified-TCONS_00000820-9.faa
+
+```
+
+
+
+##	20241028
+
+```
+
+mkdir -p links
+
+for f in S10/*-TCONS_00000820-9/ranked_?.pdb ; do
+b=$( basename $( dirname $f ) )
+i=$( basename $f .pdb )
+i=${i#ranked_}
+ln -s ../$f links/${b}_${i}.pdb
+done
+
+~/.local/foldseek/bin/foldseek createdb links/Original-TCONS_00000820-9_*.pdb Original-TCONS_00000820-9
+
+~/.local/foldseek/bin/foldseek easy-search links/Modified-TCONS_00000820-9_?.pdb Original-TCONS_00000820-9 --format-mode 3 TCONS_00000820-9.html tmp
 
 ```
 
