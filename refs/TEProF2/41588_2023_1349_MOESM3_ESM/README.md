@@ -52,3 +52,10 @@ done
 
 
 
+```
+~/.local/netMHCpan-4.1/netMHCpan /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa > Modified-TCONS_00000820-9.netMHCpan.txt
+
+~/.local/netMHCIIpan-4.3/netMHCIIpan -f /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa > Modified-TCONS_00000820-9.netMHCIIpan.txt
+
+```
+
