@@ -53,9 +53,33 @@ done
 
 
 ```
-~/.local/netMHCpan-4.1/netMHCpan /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa > Modified-TCONS_00000820-9.netMHCpan.txt
+~/.local/netMHCpan-4.1/netMHCpan S10/Modified-TCONS_00000820-9.faa > Modified-TCONS_00000820-9.netMHCpan.txt
 
-~/.local/netMHCIIpan-4.3/netMHCIIpan -f /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa > Modified-TCONS_00000820-9.netMHCIIpan.txt
+~/.local/netMHCIIpan-4.3/netMHCIIpan -f S10/Modified-TCONS_00000820-9.faa > Modified-TCONS_00000820-9.netMHCIIpan.txt
+
+~/.local/netMHCpan-4.1/netMHCpan S10/Original-TCONS_00000820-9.faa > Original-TCONS_00000820-9.netMHCpan.txt
+
+~/.local/netMHCIIpan-4.3/netMHCIIpan -f S10/Original-TCONS_00000820-9.faa > Original-TCONS_00000820-9.netMHCIIpan.txt
+
+~/.local/netMHCpan-4.1/netMHCpan /francislab/data1/refs/alphafold/HHV3-VZV/NP_040188.faa > NP_040188.netMHCpan.txt
+
+~/.local/netMHCIIpan-4.3/netMHCIIpan -f /francislab/data1/refs/alphafold/HHV3-VZV/NP_040188.faa > NP_040188.netMHCIIpan.txt
 
 ```
+
+
+
+
+
+##	20241029
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/MHC.bash
+
+```
+
 
