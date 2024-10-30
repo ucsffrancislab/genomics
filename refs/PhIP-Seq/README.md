@@ -902,3 +902,21 @@ Problem tiles:
 * 9461 (_1422.)
 * 15071 (_843.)
 
+
+
+##	20241030
+
+
+```
+awk -F, '($2~/^Human herpes/){print ">"$1" "$2"\n"$3 >> "human_herpes.faa"}' VIR3_clean.virus_score.csv
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+/francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/MHC.bash /francislab/data1/refs/PhIP-Seq/human_herpes.faa
+
+```
+
+
+
+
