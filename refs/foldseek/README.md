@@ -57,3 +57,12 @@ rename bfvd BFVD bfvd*
 
 
 
+##	20241029
+
+
+```
+sed 's/,//g' BFVD_taxID_rank_scientificname_lineage.tsv | sed 's/\t/,/g' > BFVD_taxID_rank_scientificname_lineage.csv
+sort -t, -k1,1 BFVD_taxID_rank_scientificname_lineage.csv > BFVD_taxID_rank_scientificname_lineage.join_sorted.csv
+sed -i '1iBFVD,taxID,rank,scientificname,lineage' BFVD_taxID_rank_scientificname_lineage.join_sorted.csv
+
+```

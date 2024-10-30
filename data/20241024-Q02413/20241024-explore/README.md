@@ -178,3 +178,20 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 
 
 
+
+
+
+##	20241029
+
+
+```
+sed 's/\t/,/g' aln.BFVD.tsv > aln.BFVD.csv
+awk 'BEGIN{FS=OFS=","}{x=$2;$2=$1;$1=x;print}' aln.BFVD.csv > aln.BFVD.swapped.csv
+head -1 aln.BFVD.swapped.csv > aln.BFVD.swapped.join_sorted.csv
+tail -n +2 aln.BFVD.swapped.csv | sort -t, -k1,1 >> aln.BFVD.swapped.join_sorted.csv
+join --header -t, /francislab/data1/refs/foldseek/BFVD_taxID_rank_scientificname_lineage.join_sorted.csv aln.BFVD.swapped.join_sorted.csv > aln.BFVD.BFVD_taxID_rank_scientificname_lineage.csv
+
+sed 's/,/\t/g' aln.BFVD.BFVD_taxID_rank_scientificname_lineage.csv > aln.BFVD.BFVD_taxID_rank_scientificname_lineage.tsv
+
+
+
