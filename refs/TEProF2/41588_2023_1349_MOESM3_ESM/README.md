@@ -77,13 +77,21 @@ done
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 --job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
---output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).%j.out.log \
 ${PWD}/MHC.bash /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 --job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
---output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).%j.out.log \
 ${PWD}/MHC.bash /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Original-TCONS_00000820-9.faa
+
+
+awk -F, '(NR>2){gsub("TCONS_","",$1);print ">"$1"-"$3"-"$4;print $5}' S14.csv > S14.faa
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).%j.out.log \
+${PWD}/MHC.bash ${PWD}/S14.faa 
 
 ```
 
