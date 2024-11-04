@@ -76,23 +76,49 @@ done
 ```
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
---job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
---output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).%j.out.log \
-${PWD}/MHC.bash /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa
+--job-name=AGS2ModifiedMHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/AGS2ModifiedMHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/MHC.bash -l1 9,10,11,12 -f /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Modified-TCONS_00000820-9.faa
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
---job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
---output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).%j.out.log \
-${PWD}/MHC.bash /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Original-TCONS_00000820-9.faa
+--job-name=AGS2OriginalMHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/AGS2OriginalMHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/MHC.bash -l1 9,10,11,12 -f /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10/Original-TCONS_00000820-9.faa
 
 
 awk -F, '(NR>2){gsub("TCONS_","",$1);print ">"$1"-"$3"-"$4;print $5}' S14.csv > S14.faa
 
+
+
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
---job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
---output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).%j.out.log \
-${PWD}/MHC.bash ${PWD}/S14.faa 
+--job-name=AGSS14MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/S14MHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/MHC.bash -l1 9 -l2 9 -f ${PWD}/S14.faa 
+
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=AGS2NP_MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/AGS2NP_MHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+${PWD}/MHC.bash -l1 9,10,11,12 -f ${PWD}/NP_040188.faa 
 
 ```
+
+
+
+##	20241104
+
+
+Create separate S14 9mer fasta files for folding.
+
+```
+awk -F, '(NR>2){gsub("TCONS_","",$1);cmd="mkdir -p S14/"$1; cmd | getline; close(cmd); print ">"$1"-"$3"-"$4 > "S14/"$1"/"$1"-"$3"-"$4".faa";print $5 >> "S14/"$1"/"$1"-"$3"-"$4".faa"; close("S14/"$1"/"$1"-"$3"-"$4".faa")}' S14.csv
+
+alphafold_array_wrapper.bash --time 14-0 --extension .faa $PWD/S14/00000???/00000*faa
+
+```
+
+
 
 
