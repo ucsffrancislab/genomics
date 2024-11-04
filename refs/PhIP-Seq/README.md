@@ -911,12 +911,30 @@ Problem tiles:
 awk -F, '($2~/^Human herpes/){print ">"$1" "$2"\n"$3 >> "human_herpes.faa"}' VIR3_clean.virus_score.csv
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
---job-name=MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
---output=${PWD}/MHC.$( date "+%Y%m%d%H%M%S%N" ).out.log \
-/francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/MHC.bash /francislab/data1/refs/PhIP-Seq/human_herpes.faa
+--job-name=HerpesMHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/HerpesMHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+/francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/MHC.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa
 
+
+awk -F, '($2~/^Human herpes/){print $1}' VIR3_clean.virus_score.csv | sort > human_herpes.tile_numbers.txt
 ```
 
 
+##	20241101
+
+
+Somehow use AGS41970_HLA.tsv as a reference to compare
+
+
+
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=AGSHerpesMHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/HerpesMHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+/francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/MHC.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa
+
+```
 
 
