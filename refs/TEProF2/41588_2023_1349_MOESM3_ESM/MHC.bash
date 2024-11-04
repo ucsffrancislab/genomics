@@ -130,16 +130,16 @@ echo "MHC Class I"
 ##for allele in $( cat /c4/home/gwendt/.local/netMHCpan-4.1/data/MHC_pseudo.humanfirsts.allele_names ) ; do
 ##for allele in $( cat /c4/home/gwendt/.local/netMHCpan-4.1/data/MHC_pseudo.dat.ABC ) ; do
 
-#for allele in $( cat /francislab/data2/refs/netMHCpan/AGS_select ) ; do
-#
-#	echo ${allele}
-#
-#	~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} \
-#		-l ${l1} -a ${allele} \
-#		| grep " <= SB" \
-#		>> ${dir}/${base}.netMHCpan.AGS2.txt
-#
-#done
+for allele in $( cat /francislab/data2/refs/netMHCpan/AGS_select ) ; do
+
+	echo ${allele}
+
+	~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} \
+		-l ${l1} -a ${allele} \
+		| grep " <= SB" \
+		>> ${dir}/${base}.netMHCpan.AGS2.txt
+
+done
 
 echo
 echo "MHC Class II"
