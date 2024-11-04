@@ -85,7 +85,7 @@ cd ..
 
 ```
 
-~/.local/foldseek/bin/foldseek easy-search /francislab/data1/refs/alphafold/HHV3-VZV/links/*.pdb /francislab/data1/refs/alphafold/TCONS/TCONS VZVinTCONS.html tmpFolder --format-mode 3 -e 0.01
+~/.local/foldseek/bin/foldseek easy-search /francislab/data1/refs/alphafold/HHV3-VZV/links/*.pdb /francislab/data1/refs/alphafold/TCONS/TCONS VZVinTCONS.html tmpFolder --format-mode 3 -e 0.00001
 echo "<script>function hide_blanks() { var tabs = document.querySelectorAll('div.v-tab'); var emptyTabs = Array.from(tabs).filter(div => div.textContent.includes('(0)')); for (let i = 0; i < emptyTabs.length; i++) { var tmp = emptyTabs[i].style.display = 'None'; }; } window.onload=hide_blanks; </script>" >> VZVinTCONS.html
 
 ```
