@@ -30,3 +30,28 @@ chmod -w AGS_ABC.exists
 ln -s AGS_ABC.exists AGS_select
 ```
 
+
+
+```
+join AGS_select MHC_pseudo.join_sorted.dat | wc -l
+join AGS_select MHC_pseudo.join_sorted.dat | awk '{if(!seen[$2]){seen[$2]=1;print}}' | wc -l
+join AGS_select MHC_pseudo.join_sorted.dat | awk '{if(!seen[$2]){seen[$2]=1;print}}' | cut -d' ' -f1 > AGS_select.firsts
+chmod -w AGS_select.firsts
+```
+
+
+```
+wc -l MHC_pseudo.join_sorted.dat AGS_ABC AGS_select AGS_select.firsts
+```
+
+
+```
+ 13010 MHC_pseudo.join_sorted.dat
+   246 AGS_ABC
+   178 AGS_select
+   171 AGS_select.firsts
+ 13605 total
+```
+
+
+

@@ -91,14 +91,28 @@ join AGS_DQABChains pseudosequence.2023.all.X.join_sorted.dat | cut -d' ' -f1 > 
 chmod -w *exists
 
 
-cat *exists > AGS_select
+cat *exists | sort > AGS_select
 chmod -w AGS_select
 
 ```
 
+```
+wc -l pseudosequence.2023.all.X.join_sorted.dat AGS_select
+join AGS_select pseudosequence.2023.all.X.join_sorted.dat | wc -l
+join AGS_select pseudosequence.2023.all.X.join_sorted.dat | awk '{if(!seen[$2]){seen[$2]=1;print}}' | wc -l
+join AGS_select pseudosequence.2023.all.X.join_sorted.dat | awk '{if(!seen[$2]){seen[$2]=1;print}}' | cut -d' ' -f1 > AGS_select.firsts
+chmod -w AGS_select.firsts
+```
 
+```
+wc -l pseudosequence.2023.all.X.join_sorted.dat AGS_select AGS_select.firsts
+```
 
-
-
+```
+ 11048 pseudosequence.2023.all.X.join_sorted.dat
+   433 AGS_select
+   319 AGS_select.firsts
+ 11800 total
+```
 
 
