@@ -28,7 +28,6 @@ args = parser.parse_args()
 
 
 
-
 #---------------------------------------------------------------------------------------------------------------------------
 # Pos         MHC        Peptide      Core Of Gp Gl Ip Il        Icore        Identity  Score_EL %Rank_EL BindLevel
 #---------------------------------------------------------------------------------------------------------------------------
@@ -75,8 +74,18 @@ print(df.shape)
 #df=df.pivot(index=['Tile','Icore'], columns='MHC', values='%Rank_EL')
 df=df.pivot(index=['Tile','Peptide'], columns='MHC', values='%Rank_EL')
 print(df.head())
+
 print(df.shape)
 
 df.to_csv( args.input[0].rsplit('.',1)[0]+".csv",index_label=['Tile','Peptide'])
 
+#Tile,Peptide,HLA-A*0101,HLA-A*0102,HLA-A*0103,HLA-A*0201,HLA-A*0202,HLA-A*0203,HLA-A*0205,HLA-A*0206,HLA-A*0207,HLA-A*0211,HLA-A*0216
+#100,RNDQTHDESY,,0.187,,,,,,,,,
+#10000,ALHLDSLNLI,,,,,,0.403,,,,,0.42
+#10000,ATVPLPHVTY,0.206,0.121,0.18,,,,,,,,
+#10000,ITADKIIATV,,,,,,0.407,0.215,0.305,,,
+#10000,TVPLPHVTYI,,,,,,,,,0.465,,
+#10001,ATVPLPHVTY,0.206,0.121,0.18,,,,,,,,
+#10001,TVPLPHVTYI,,,,,,,,,0.465,,
+#10002,PLCDSVIMSY,0.243,,0.299,,,,,,,,
 

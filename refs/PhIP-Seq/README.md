@@ -916,7 +916,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/MHC.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa
 
 
-awk -F, '($2~/^Human herpes/){print $1}' VIR3_clean.virus_score.csv | sort > human_herpes.tile_numbers.txt
+awk -F, '($2~/^Human herpes/){print $1}' VIR3_clean.virus_score.csv | sort | sed '1iTile' > human_herpes.tile_numbers.txt
 ```
 
 
@@ -936,5 +936,32 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/MHC.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa
 
 ```
+
+
+
+
+##	20241105
+
+```
+./netMHCpan_analysis.py -i MHC/human_herpes.netMHCpan.AGS.txt 
+
+join --header -a1 -t, human_herpes.tile_numbers.txt MHC/human_herpes.netMHCpan.AGS.csv > tmp.csv
+
+python3 -c "import pandas as pd; pd.read_csv('tmp.csv',sep=',').to_csv('MHC/human_herpes.netMHCpan.AGS.alltiles.csv',index=False)"
+
+join --header -a1 -t, human_herpes.tile_numbers.txt /francislab/data1/working/20240925-Illumina-PhIP/20240925c-PhIP/merged_hits.csv > tmp.csv
+
+python3 -c "import pandas as pd; pd.read_csv('tmp.csv',sep=',').to_csv('PhIPseq_merged_hits.alltiles.csv',index=False)"
+
+join --header -t, MHC/human_herpes.netMHCpan.AGS.alltiles.csv PhIPseq_merged_hits.alltiles.csv > PhIPseq_merged_hits.herpes.NetMHC.alltiles.csv
+```
+
+
+
+
+
+
+
+
 
 
