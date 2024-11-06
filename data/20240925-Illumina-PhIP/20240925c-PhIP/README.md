@@ -472,4 +472,69 @@ awk 'BEGIN{FS=OFS=","}{if(NR>1){for(i=1;i<=12;i++){ $i = sprintf("%0.2f",$i); }}
 
 
 
+##	20241105
+
+```
+mkdir links
+
+for f in processed_all_together/*hits.csv ; do 
+echo $f
+b=$( basename $f -hits.csv )
+b=${b/.count.Zscores./_}_all
+echo $b
+ln -s ../${f} links/${b}.csv
+done
+
+for f in processed_separately_by_condition/*hits.csv ; do 
+echo $f
+b=$( basename $f -hits.csv )
+b=${b/.count.Zscores./_}_sep
+echo $b
+ln -s ../${f} links/${b}.csv
+done
+
+./merge.py -o tmp.csv links/*csv
+head -1 tmp.csv > merged_hits.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> merged_hits.csv
+
+```
+
+
+
+
+
+```
+HLA_A_0101	1
+HLA_A_0201	1
+
+HLA_B_0801	1
+HLA_B_4001	1
+
+HLA_C_0304	1
+HLA_C_0701	1
+
+HLA_DRB1_0301	1
+HLA_DRB1_0401	1
+
+HLA_DQA1_0301	1
+HLA_DQA1_0501	1
+HLA_DQB1_0201	1
+HLA_DQB1_0302	1
+
+HLA_DPA1_0103	2
+HLA_DPB1_0401	2
+```
+
+```
+HLA_DQA10301-DQB10201	1
+HLA_DQA10501-DQB10201	1
+HLA_DQA10301-DQB10302	1
+HLA_DQA10501-DQB10302	1
+
+HLA_DPA10103-DPB10401	2
+```
+
+
+
+
 
