@@ -122,9 +122,11 @@ server <- function(input, output, session) {
 
 
 		row.names(df)=df[[colnames(df)[1]]]
-
 		df[[colnames(df)[1]]]=NULL
 
+		print("BEGIN replacing NAs")
+		df[is.na(df)] <- 0
+		print("DONE replacing NAs")
 
 		#	The following is to detect when the file changes
 
@@ -135,18 +137,19 @@ server <- function(input, output, session) {
 		}
 
 		#	https://shiny.posit.co/r/reference/shiny/0.14/updatetextinput
+		print("BEGIN Scoring")
+		updateTextInput(session, "max_median", label = paste0("Maximum Median (",max(apply(df, 1, median)),")"))
+		updateTextInput(session, "min_median", label = paste0("Minimum Median (",min(apply(df, 1, median)),")"))
 
-    updateTextInput(session, "max_median", label = paste0("Maximum Median (",max(apply(df, 1, median)),")"))
-    updateTextInput(session, "min_median", label = paste0("Minimum Median (",min(apply(df, 1, median)),")"))
+		updateTextInput(session, "max_sd", label = paste0("Maximum Stddev (",max(apply(df, 1, sd)),")"))
+		updateTextInput(session, "min_sd", label = paste0("Minimum Stddev (",min(apply(df, 1, sd)),")"))
 
-    updateTextInput(session, "max_sd", label = paste0("Maximum Stddev (",max(apply(df, 1, sd)),")"))
-    updateTextInput(session, "min_sd", label = paste0("Minimum Stddev (",min(apply(df, 1, sd)),")"))
+		updateTextInput(session, "max_var", label = paste0("Maximum Variance (",max(apply(df, 1, var)),")"))
+		updateTextInput(session, "min_var", label = paste0("Minimum Variance (",min(apply(df, 1, var)),")"))
 
-    updateTextInput(session, "max_var", label = paste0("Maximum Variance (",max(apply(df, 1, var)),")"))
-    updateTextInput(session, "min_var", label = paste0("Minimum Variance (",min(apply(df, 1, var)),")"))
-
-    updateTextInput(session, "max_cv", label = paste0("Maximum CV (",max(apply(df, 1, cv)),")"))
-    updateTextInput(session, "min_cv", label = paste0("Minimum CV (",min(apply(df, 1, cv)),")"))
+		updateTextInput(session, "max_cv", label = paste0("Maximum CV (",max(apply(df, 1, cv)),")"))
+		updateTextInput(session, "min_cv", label = paste0("Minimum CV (",min(apply(df, 1, cv)),")"))
+		print("DONE Scoring")
 
 
 #		if( input$file1$datapath != filedatapath ){
