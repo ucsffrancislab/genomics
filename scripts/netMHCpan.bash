@@ -33,12 +33,17 @@ l=10
 #l1=10
 #l2=15
 
+status="Waiting"
+start_allele=""
+
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-f)
 			shift; fasta=$1; shift;;
 		-l)
 			shift; l=$1; shift;;
+		--start_allele)
+			shift; start_allele=$1; shift;;
 #		-lI|-l1)
 #			shift; l1=$1; shift;;
 #		-lII|-l2)
@@ -134,14 +139,37 @@ base=$( basename ${fasta} .faa )
 ##for allele in $( cat /c4/home/gwendt/.local/netMHCpan-4.1/data/MHC_pseudo.humanfirsts.allele_names ) ; do
 ##for allele in $( cat /c4/home/gwendt/.local/netMHCpan-4.1/data/MHC_pseudo.dat.ABC ) ; do
 
+
 for allele in $( cat /francislab/data2/refs/netMHCpan/AGS_select ) ; do
 
 	echo ${allele}
 
-	~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} \
-		-l ${l} -a ${allele} \
-		| grep " <= SB" \
-		>> ${dir}/${base}.netMHCpan.AGS2.txt
+	if [ "${status}" == "Running" ] || [ -z "${start_allele}" ] || [ "${start_allele}" == "${allele}" ] ; then
+		status="Running"
+		echo "Running"
+		~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} \
+			-l ${l} -a ${allele} \
+			| grep " <= SB" \
+			>> ${dir}/${base}.netMHCpan.AGS.txt
+	else
+		echo "Waiting"
+	fi
+
+
+
+#	exists=$( awk -v allele=${allele} '($2==allele){print;exit}' ${dir}/${base}.netMHCpan.AGS.txt | wc -l )
+#
+##	the allele in the output file isn't the same as the allele given!!!!!
+#
+#	if [ $exists == 0 ] ; then
+#		echo "Running"
+#		~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} \
+#			-l ${l} -a ${allele} \
+#			| grep " <= SB" \
+#			>> ${dir}/${base}.netMHCpan.AGS.txt
+#	else
+#		echo "Exists. Skipping."
+#	fi
 
 done
 

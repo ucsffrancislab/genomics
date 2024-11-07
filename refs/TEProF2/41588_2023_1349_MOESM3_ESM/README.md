@@ -93,7 +93,7 @@ awk -F, '(NR>2){gsub("TCONS_","",$1);print ">"$1"-"$3"-"$4;print $5}' S14.csv > 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 --job-name=AGSS14MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
 --output=${PWD}/S14MHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
-${PWD}/MHC.bash -l1 9 -l2 9 -f ${PWD}/S14.faa 
+${PWD}/MHC.bash -l1 9 -l2 9 -f ${PWD}/S14.faa
 
 
 
@@ -101,7 +101,7 @@ ${PWD}/MHC.bash -l1 9 -l2 9 -f ${PWD}/S14.faa
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 --job-name=AGS2NP_MHC --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
 --output=${PWD}/AGS2NP_MHC.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
-${PWD}/MHC.bash -l1 9,10,11,12 -f ${PWD}/NP_040188.faa 
+${PWD}/MHC.bash -l1 9,10,11,12 -f ${PWD}/NP_040188.faa
 
 ```
 
@@ -119,6 +119,24 @@ alphafold_array_wrapper.bash --time 14-0 --extension .faa $PWD/S14/00000???/0000
 
 ```
 
+
+
+
+##	20241107
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=S14MHCAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/S14MHCAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCpan.bash -l 9 --start_allele HLA-A3112 -f ${PWD}/S14.faa
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=S14MHCIIAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/S14MHCIIAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCIIpan.bash -l 9 -f ${PWD}/S14.faa
+
+```
 
 
 

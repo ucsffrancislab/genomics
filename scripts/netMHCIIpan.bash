@@ -33,12 +33,17 @@ set -u	#	Error on usage of unset variables
 
 l=15
 
+status="Waiting"
+start_allele=""
+
 while [ $# -gt 0 ] ; do
 	case $1 in
 		-f)
 			shift; fasta=$1; shift;;
 		-l)
 			shift; l=$1; shift;;
+		--start_allele)
+			shift; start_allele=$1; shift;;
 #		-lI|-l1)
 #			shift; l1=$1; shift;;
 #		-lII|-l2)
@@ -210,11 +215,31 @@ for allele in $( cat /francislab/data2/refs/netMHCIIpan/AGS_select ) ; do
 
 	#	MHC II really needs a longer length (~13) before it starts returning strong binding
 
-	~/.local/netMHCIIpan-4.3/netMHCIIpan -f ${fasta} \
-		-length ${l} -a ${allele} \
-		| grep " <= SB" \
-		>> ${dir}/${base}.netMHCIIpan.AGS.txt
+	if [ "${status}" == "Running" ] || [ -z "${start_allele}" ] || [ "${start_allele}" == "${allele}" ] ; then
+		status="Running"
+		echo "Running"
+		~/.local/netMHCIIpan-4.3/netMHCIIpan -f ${fasta} \
+			-length ${l} -a ${allele} \
+			| grep " <= SB" \
+			>> ${dir}/${base}.netMHCIIpan.AGS.txt
+	else
+		echo "Waiting"
+	fi
 
+#	the allele in the output file isn't the same as the allele given!!!!!
+
+#	exists=$( awk -v allele=${allele} '($2==allele){print;exit}' ${dir}/${base}.netMHCIIpan.AGS.txt | wc -l )
+#
+#	if [ $exists == 0 ] ; then
+#		echo "Running"
+#		~/.local/netMHCIIpan-4.3/netMHCIIpan -f ${fasta} \
+#			-length ${l} -a ${allele} \
+#			| grep " <= SB" \
+#			>> ${dir}/${base}.netMHCIIpan.AGS.txt
+#	else
+#		echo "Exists. Skipping."
+#	fi
+	
 done
 
 

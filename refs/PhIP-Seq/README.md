@@ -943,7 +943,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 ##	20241105
 
 ```
-./netMHCpan_analysis.py -i MHC/human_herpes.netMHCpan.AGS.txt 
+./netMHCpan_analysis.py -i MHC/human_herpes.netMHCpan.AGS.txt
 
 join --header -a1 -t, human_herpes.tile_numbers.txt MHC/human_herpes.netMHCpan.AGS.csv > tmp.csv
 
@@ -959,6 +959,19 @@ join --header -t, MHC/human_herpes.netMHCpan.AGS.alltiles.csv PhIPseq_merged_hit
 
 
 
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=HerpesMHCAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/HerpesMHCAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCpan.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa --start_allele HLA-A3001
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=HerpesMHCIIAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/HerpesMHCIIAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCIIpan.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa
+
+```
 
 
 
