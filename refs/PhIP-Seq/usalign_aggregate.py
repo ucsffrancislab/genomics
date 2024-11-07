@@ -42,6 +42,12 @@ df=pd.read_csv("/francislab/data1/refs/PhIP-Seq/human_herpes_usalign.tsv", sep="
 names=["PDBchain1","PDBchain2","TM1","TM2","RMSD","ID1","ID2","IDali","L1","L2","Lali"]
 )
 
+
+
+df=df[df['PDBchain1'].str.contains('ranked_0.pdb') & df['PDBchain2'].str.contains('ranked_0.pdb')]
+
+
+
 print(df.head())
 
 df['PDBchain1']=df['PDBchain1'].apply(lambda x: 

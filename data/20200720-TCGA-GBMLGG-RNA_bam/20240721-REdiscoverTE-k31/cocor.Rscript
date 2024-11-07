@@ -1,0 +1,152 @@
+#!/usr/bin/env Rscript
+
+
+
+
+library("optparse")
+ 
+option_list = list(
+	make_option(c("--tcga"), type="character", default=NULL, 
+		help="TCGA correlation matrix tsv name", metavar="character"),
+	make_option(c("--gtex"), type="character", default=NULL, 
+		help="GTEx correlation matrix tsv name", metavar="character"),
+	make_option(c("--shared_genes"), type="character", default=NULL, 
+		help="shared gene file name", metavar="character"),
+	make_option(c("--shared_res"), type="character", default=NULL, 
+		help="shared RE file name", metavar="character"),
+	make_option(c("--output"), type="character", default="cocor.tsv", 
+		help="output file name", metavar="character")
+); 
+ 
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+
+if (is.null(opt$tcga)){
+	print_help(opt_parser)
+	stop("tcga required.\n", call.=FALSE)
+}
+
+if (is.null(opt$gtex)){
+	print_help(opt_parser)
+	stop("gtex required.\n", call.=FALSE)
+}
+
+
+
+
+#	Don't use data.table. It gets wonky.
+
+
+require('data.table')
+TCGA=fread(opt$tcga, na.strings=getOption("datatable.na.strings",""))
+TCGA=as.data.frame(TCGA)
+rownames(TCGA)=TCGA[[colnames(TCGA)[1]]]
+TCGA[[colnames(TCGA)[1]]]=NULL
+
+GTEx=fread(opt$gtex, na.strings=getOption("datatable.na.strings",""))
+GTEx=as.data.frame(GTEx)
+rownames(GTEx)=GTEx[[colnames(GTEx)[1]]]
+GTEx[[colnames(GTEx)[1]]]=NULL
+
+
+#	Need to select only those shared rows and columns
+
+
+if (is.null(opt$shared_genes)){
+	shared_genes=as.character(rownames(TCGA))
+}else{
+	shared_genes=as.character(fread(opt$shared_genes,header=F)$V1)
+}
+shared_genes[0:5]
+
+if (is.null(opt$shared_res)){
+	shared_res=as.character(colnames(TCGA))
+}else{
+	shared_res=as.character(fread(opt$shared_res,header=F)$V1)
+}
+shared_res[0:5]
+
+
+
+#	sometimes there aren't this many columns
+
+#TCGA[0:5,0:5]
+TCGAShared=TCGA[which(row.names(TCGA) %in% shared_genes), shared_res]
+dim(TCGA)
+dim(TCGAShared)
+
+#GTEx[0:5,0:5]
+GTExShared=GTEx[which(row.names(GTEx) %in% shared_genes), shared_res]
+dim(GTEx)
+dim(GTExShared)
+
+
+
+#	May want to redo TCGA with UNIQUE subjects
+#	May want to redo TCGA with GBM OR LGG
+#	May want to redo GTEx with different tissue
+
+#	For now, comparing ALL TCGA TUMORs to ONLY GTEx CEREBELLUM
+
+
+
+
+#	idh wild type gbm from Eduardo's list
+
+
+#	wc -l /francislab/data1/working/20200720-TCGA-GBMLGG-RNA_bam/20200808-REdiscoverTE/REdiscoverTE_rollup_noquestion/tumor_ids 
+#	846 tumor_ids
+
+#	ll GBMWTFirstTumors/*R1.fastq.gz | wc -l
+#	155
+
+
+#	wc -l /francislab/data1/working/20201006-GTEx/20201117-REdiscoverTE/REdiscoverTE_rollup.noquestion/Cerebellum
+#	231 /francislab/data1/working/20201006-GTEx/20201117-REdiscoverTE/REdiscoverTE_rollup.noquestion/Cerebellum
+#	WRONG - That's the total amount, not what I have
+
+#	ll Cerebellum/*R1.fastq.gz | wc -l
+#	37
+
+
+
+
+library('cocor')
+
+#GTEx_count=37
+#	dropped "SRR627429","SRR627451","SRR627462"
+GTEx_count=34
+TCGA_count=155
+
+#print(paste(gene,re,GTExShared[gene,re], TCGAShared[gene,re]))
+
+out<-data.frame()
+#for( gene in shared_genes[1:100] ){
+for( gene in shared_genes ){
+	print(paste0("GENE ",gene))
+	#for( re in shared_res[1:100] ){
+	for( re in shared_res ){
+		print(paste0("  RE ",re))
+		if( is.na(GTExShared[gene,re]) || is.na(TCGAShared[gene,re]) ){
+			out[gene,re] = NA
+		} else {
+			print( class(GTExShared[gene,re] ) ) # character????
+			print( class(TCGAShared[gene,re] ) )
+			print( paste0( "    GTExShared[gene,re] ", GTExShared[gene,re] ) )
+			print( paste0( "    TCGAShared[gene,re] ", TCGAShared[gene,re] ) )
+			out[gene,re] = cocor.indep.groups( as.numeric(GTExShared[gene,re]), as.numeric(TCGAShared[gene,re]), GTEx_count, TCGA_count, 
+				alternative = "two.sided", test = "fisher1925", alpha = 0.05, null.value = 0, return.htest = TRUE)$fisher1925$p.value
+		}
+	}
+}
+
+#write.table(out,file="cocor.csv", quote=F,sep=",",row.names=TRUE,col.name=NA)	#,row.names=F)
+
+write.table(out,file=opt$output, quote=F,sep="\t",row.names=TRUE,col.name=NA)
+
+
+
+
+
+
