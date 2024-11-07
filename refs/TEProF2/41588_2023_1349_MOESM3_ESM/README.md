@@ -112,6 +112,10 @@ ${PWD}/MHC.bash -l1 9,10,11,12 -f ${PWD}/NP_040188.faa
 
 Create separate S14 9mer fasta files for folding.
 
+
+NOT ALL 9-mer sequences are 9 mer????
+Some names are duplicated!!
+
 ```
 awk -F, '(NR>2){gsub("TCONS_","",$1);cmd="mkdir -p S14/"$1; cmd | getline; close(cmd); print ">"$1"-"$3"-"$4 > "S14/"$1"/"$1"-"$3"-"$4".faa";print $5 >> "S14/"$1"/"$1"-"$3"-"$4".faa"; close("S14/"$1"/"$1"-"$3"-"$4".faa")}' S14.csv
 
@@ -138,5 +142,19 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 
 ```
 
+
+
+
+NOT ALL 9-mer sequences are 9 mer????
+Some names are duplicated!!
+
+```
+
+awk -F, '(NR>2 && length($5)>=9){gsub("TCONS_","",$1);$2=substr($2,1,1);print ">"$1$2$3"-"$4;print $5}' S14.csv > S14b.faa
+
+
+awk -F, '(NR>2){gsub("TCONS_","",$1);cmd="mkdir -p S14b/"$1; cmd | getline; close(cmd);$2=substr($2,1,1); print ">"$1$2$3"-"$4 > "S14b/"$1"/"$1$2$3"-"$4".faa";print $5 >> "S14b/"$1"/"$1$2$3"-"$4".faa"; close("S14b/"$1"/"$1$2$3"-"$4".faa")}' S14.csv
+
+```
 
 
