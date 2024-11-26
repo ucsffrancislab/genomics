@@ -892,6 +892,7 @@ alphafold_array_wrapper.bash --threads 4 human_herpes/1????.faa
 
 alphafold_array_wrapper.bash --threads 4 human_herpes/2????.faa
 
+
 ```
 
 
@@ -901,6 +902,8 @@ Problem tiles:
 * 9445 (_1406.)
 * 9461 (_1422.)
 * 15071 (_843.)
+
+
 
 
 
@@ -976,5 +979,80 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 
 
 
+
+##	20241119
+
+```
+grep "^++ dirname" $( grep -L "^Runtime" logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_*.out.log )
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1563.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26002.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1564.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26003.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1565.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26004.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1566.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26005.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1567.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26006.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1568.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26007.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1569.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26008.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1647.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26086.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_1882.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26321.faa
+logs/alphafold_array_wrapper.bash.20241024071903713622467-171567_2178.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26617.faa
+
+```
+
+
+```
+alphafold_array_wrapper.bash --threads 4 --array 1563-1569,1647,1882,2178 human_herpes/2????.faa
+```
+
+
+
+```
+grep "^++ dirname" $( grep -L "^Runtime" logs/alphafold_array_wrapper.bash.20241119143814025440901-240864_*.out.log )
+logs/alphafold_array_wrapper.bash.20241119143814025440901-240864_1647.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26086.faa
+logs/alphafold_array_wrapper.bash.20241119143814025440901-240864_1882.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26321.faa
+logs/alphafold_array_wrapper.bash.20241119143814025440901-240864_2178.out.log:++ dirname /francislab/data2/refs/PhIP-Seq/human_herpes/26617.faa
+```
+
+
+```
+alphafold_array_wrapper.bash --threads 4 human_herpes/3????.faa
+```
+
+
+
+
+
+
+
+  21         DRB1_0101      LRVTFHRVKPTLVGH    4   FHRVKPTLV     1.000        0 52_Human_herpes      0.918567     0.41        NA   <= SB
+  22         DRB1_0101      RVTFHRVKPTLVGHV    3   FHRVKPTLV     1.000        0 52_Human_herpes      0.929287     0.35        NA   <= SB
+  23         DRB1_0101      VTFHRVKPTLVGHVG    2   FHRVKPTLV     1.000        0 52_Human_herpes      0.652326     1.61        NA   <= WB
+
+
+
+
+##	20241125
+
+
+```
+zgrep "^>" /francislab/data1/refs/PhIP-Seq/VIR3_clean.uniq.fna.gz | tr -d "^\>" | sort > /francislab/data1/refs/PhIP-Seq/VIR3_clean.uniq.sequences.join_sorted
+sed -i '1iid' /francislab/data1/refs/PhIP-Seq/VIR3_clean.uniq.sequences.join_sorted
+
+```
+
+
+##	20241126
+
+netMHCIIpan requires sequences be gte 9 
+
+Any sequence shorter will cause the whole thing to fail.
+
+There is 1 in human_herpes.faa
+```
+< >96177 Human herpesvirus 1
+< MKTNPL
+```
+
+```
+awk -F, '($2~/^Human herpes/ && length($3)>=9 ){print ">"$1" "$2"\n"$3 >> "human_herpes.gte9.faa"}' VIR3_clean.virus_score.csv
+```
 
 
