@@ -158,3 +158,62 @@ awk -F, '(NR>2){gsub("TCONS_","",$1);cmd="mkdir -p S14b/"$1; cmd | getline; clos
 ```
 
 
+
+
+
+##	20241121
+
+
+```
+ll S14/00000???/*faa | wc -l
+
+ll S14/00000???/*/*ranked_0.pdb | wc -l
+
+grep "^++ dirname" $( grep -L "^Runtime" logs/alphafold_array_wrapper.bash.*-188304_*.out.log )
+
+
+
+alphafold_array_wrapper.bash --time 14-0 --extension .faa $PWD/S14/0000[1-9]???/*faa
+
+```
+
+
+
+
+
+
+```
+grep -vs "^>" S14.faa | sort | uniq > S14.9mers.sorted.uniq
+
+tail -n +3 S10.csv | awk 'BEGIN{FS=OFS=","}($13!="None"){ print ">Modified-"$1"-"$10 >> "S10-Modified.faa"; print $13 >> "S10-Modified.faa"; print ">Original-"$1"-"$10 >> "S10-Original.faa"; print $14 >> "S10-Original.faa"; }'
+
+sed -i -e 's/\*//g' -e 's/ //g' S10-Original.faa
+
+for k in 8 9 10 11 12 13 14 15 ; do
+for k in 5 20 25 ; do
+~/github/raw-lab/mercat2/bin/mercat2.py -k ${k} -c 1 -i S10-Original.faa -o S10-Original.mercat.${k}
+~/github/raw-lab/mercat2/bin/mercat2.py -k ${k} -c 1 -i S10-Modified.faa -o S10-Modified.mercat.${k}
+done
+
+```
+
+A lot of errors in processing, but it's not clear if they have any impact on the kmer counting as they are after that.
+
+Just noticed that the original sequences contain some spaces. Why? Is removing OK?
+
+```
+wc -l S14.9mers.sorted.uniq S10-*.mercat.*/combined_protein.tsv
+   56981 S14.9mers.sorted.uniq
+  702766 S10-Modified.mercat.12/combined_protein.tsv
+  705467 S10-Modified.mercat.9/combined_protein.tsv
+ 1124864 S10-Original.mercat.12/combined_protein.tsv
+ 1124681 S10-Original.mercat.9/combined_protein.tsv
+ 3714759 total
+```
+
+
+I would expect that increasing k would increase the number of kmers.
+
+I don't think that we are using these kmer results.
+
+
