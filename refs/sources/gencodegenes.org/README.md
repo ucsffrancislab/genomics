@@ -133,4 +133,18 @@ mv *plus* *minus* OUTPUT_sorted.gtf release_43/TEProF2/
 
 
 
+##	20241126 - Release 47 (GRCh38.p14)
+
+
+
+```
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/GRCh38.p14.genome.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/GRCh38.primary_assembly.genome.fa.gz
+wget https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_47/gencode.v47.pc_translations.fa.gz
+
+```
+
+
+
+
 
