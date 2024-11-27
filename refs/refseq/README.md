@@ -344,3 +344,14 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=Split \
 Cleaning took over 2 days. And Splitting took 4 so far
 
 
+
+
+##	20241126
+
+
+```
+
+rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral-20241126/
+
+
+```
