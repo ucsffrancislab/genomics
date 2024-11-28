@@ -120,6 +120,23 @@ done
 echo
 
 
+echo -n "Q40 Aligned Read Count"
+for s in ${samples} ; do
+	c=$(cat ${bowdir}/${s}.VIR3_clean.1-160.bam.q40.aligned_count.txt 2> /dev/null)
+	echo -n ",${c}"
+done
+echo
+
+echo -n "Q40 Aligned % Read Count"
+for s in ${samples} ; do
+	n=$(cat ${bowdir}/${s}.VIR3_clean.1-160.bam.q40.aligned_count.txt 2> /dev/null)
+	d=$(cat ${cutdir}/${s}.fastq.gz.read_count.txt 2> /dev/null)
+	c=$( echo "scale=2; 100 * ${n} / ${d}" | bc -l 2> /dev/null)
+	echo -n ",${c}"
+done
+echo
+
+
 
 
 echo -n "Unique Aligned Tile Count"
