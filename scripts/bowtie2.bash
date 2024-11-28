@@ -80,6 +80,12 @@ else
 		samtools view -c -F 3844 ${f} > ${f}.aligned_count.txt
 		chmod a-w ${f}.aligned_count.txt
 
+		samtools view -c -F 3844 -q40 ${f} > ${f}.q40.aligned_count.txt
+		chmod a-w ${f}.q40.aligned_count.txt
+
+		samtools view -c -F 3844 -q20 ${f} > ${f}.q20.aligned_count.txt
+		chmod a-w ${f}.q20.aligned_count.txt
+
 		#	-f = IS
 		#	0x4	4	UNMAP
 		samtools view -c -f 4    ${f} > ${f}.unaligned_count.txt
