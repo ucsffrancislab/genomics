@@ -26,7 +26,7 @@ zcat /francislab/data1/refs/refseq/viral-20241126/viral.1.protein.faa.gz | sed -
 
 
 ```
-for word_size in 06 07 08 09 10 11 12 ; do
+for word_size in 07 08 09 10 11 12 ; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 --job-name=HHHG${word_size} --time=14-0 --nodes=1 --ntasks=4 --mem=30GB --output=${PWD}/HHHG${word_size}.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log --wrap="blastn -db GRCh38.p14.genome -out HumanHerpesHomologyGenome.ws${word_size}.tsv -word_size ${word_size} -outfmt 6 -query human_herpes_genomes.fna"
 done
 
