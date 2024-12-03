@@ -314,6 +314,16 @@ match.size
 21 - peptide
 ```
 
+
+```
+
+      1 source
+   8606 IEDB
+ 108603 Vir2
+  11048 Vir3
+
+```
+
     columns = ['id', 'Species', 'Organism', 'Entry', 'peptide']
 
 ```
@@ -1053,6 +1063,56 @@ There is 1 in human_herpes.faa
 
 ```
 awk -F, '($2~/^Human herpes/ && length($3)>=9 ){print ">"$1" "$2"\n"$3 >> "human_herpes.gte9.faa"}' VIR3_clean.virus_score.csv
+```
+
+
+
+
+##	20241127
+
+17 - id,
+18 - oligo,
+
+can't remember what i was doing here!!!!
+
+
+select only VIR3? Nope. only 11,000!
+```
+1 source
+8606 IEDB
+108603 Vir2
+11048 Vir3
+```
+
+```
+12 - Species,
+13 - Subcellular location,
+14 - Version (entry),
+15 - Version (sequence),
+16 - end,
+17 - id,
+18 - oligo,
+19 - source,
+```
+
+
+```
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($17==89962){print $17,$12,$19}' 
+89962,Chikungunya virus,Vir2
+89962,O'nyong-nyong virus,Vir2
+89962,O'nyong-nyong virus,Vir2
+```
+
+
+```
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$19}' | sort | uniq | wc -l
+115755
+```
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$19}' | sort | uniq | sort -t, -k1,1 > VIR3_clean.id_species_source.uniq.csv
+sed -i '1iid,species,source' VIR3_clean.id_species_source.uniq.csv
+chmod a-w VIR3_clean.id_species_source.uniq.csv
 ```
 
 
