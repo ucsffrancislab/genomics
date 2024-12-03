@@ -39,3 +39,23 @@ tail -n +2 tmp | sort -t, -k2n,2 >> TileCounts.csv
 ```
 
 
+
+
+##	20241202
+
+
+```
+head -1 TileCounts.csv > TileCounts.join_sorted.csv 
+tail -n +2 TileCounts.csv | sort -t, -k1,1 >> TileCounts.join_sorted.csv 
+
+join --header -t, TileCounts.join_sorted.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.join_sorted.with_public.csv > tmp
+head -1 tmp > TileCounts.join_sorted.species.csv
+tail -n +2 tmp | sort -t, -k1n,1 >> TileCounts.join_sorted.species.csv
+
+```
+
+Removed 1 of the 89962. "O'nyong-nyong virus"
+
+
+
+
