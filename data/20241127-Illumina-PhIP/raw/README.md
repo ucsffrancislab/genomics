@@ -278,3 +278,39 @@ Avera reformatted a little, replacing ‘.’ And spaces With underscores.
 
 
 
+##	20241203
+
+
+```
+for f in fastq/S*fastq.gz ; do
+echo $f
+for i in $( zcat $f | sed -n '1~4p' | cut -d' ' -f2 | cut -d: -f4 | sort | uniq ) ; do
+echo $i
+grep $i manifest.tsv
+done ; done > index_checking.txt 
+```
+
+
+```
+for f in fastq/S*fastq.gz ; do
+echo $f
+s=$( basename $f .fastq.gz )
+awk -F"\t" -v s=$s '( $1 == s )' manifest.tsv
+while read count i ; do
+echo $i $count
+awk -F"\t" -v i=$i '( $3 == i )' manifest.tsv
+done < <( zcat $f | sed -n '1~4p' | cut -d' ' -f2 | cut -d: -f4 | sort | uniq -c )
+done > index_checking.2.txt 
+```
+
+
+##	demultiplex the fastq
+
+```
+mkdir indices
+zcat fastq/*fastq.gz | paste - - - - | awk -F"\t" '{split($1,a,":"); print $1 >> "indices/"a[10]".fastq"; print $2 >> "indices/"a[10]".fastq"; print $3 >> "indices/"a[10]".fastq"; print $4 >> "indices/"a[10]".fastq"}'
+
+
+```
+
+
