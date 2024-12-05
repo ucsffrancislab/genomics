@@ -145,12 +145,27 @@ head -1 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sed -e '1s/\(,
 tail -q -n +2 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sort -t, -k1,1 >> merging/${i}.All.count.Zscores.reordered.join_sorted.csv
 done
 
-./merge_batches.py --int -o tmp.csv merging/*.All.count.Zscores.reordered.join_sorted.csv
-cat tmp.csv | datamash transpose -t, | head -1 > tmp2.csv
-cat tmp.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+./merge_batches.py -o tmp1.csv merging/*.All.count.Zscores.reordered.join_sorted.csv
 
-join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv > Zscores.csv
-join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash transpose -t, > Zscores.t.csv
+
+cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+
+echo -n "x," > tmp5.csv
+head -1 tmp4.csv >> tmp5.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+
+cat tmp5.csv | datamash transpose -t, > tmp6.csv
+
+echo -n "y," > Zscores.csv
+head -1 tmp6.csv >> Zscores.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) <( tail -n +2 tmp6.csv ) >> Zscores.csv
+cat Zscores.csv | datamash transpose -t, > Zscores.t.csv
 
 box_upload.bash Zscores*csv
 ```
