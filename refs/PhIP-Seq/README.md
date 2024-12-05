@@ -1104,6 +1104,7 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($17==89
 ```
 
 
+
 ```
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$19}' | sort | uniq | wc -l
 115755
@@ -1112,7 +1113,13 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $
 ```
 zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$19}' | sort | uniq | sort -t, -k1,1 > VIR3_clean.id_species_source.uniq.csv
 sed -i '1iid,species,source' VIR3_clean.id_species_source.uniq.csv
+sed -i '/89962,O/d' VIR3_clean.id_species_source.uniq.csv
 chmod a-w VIR3_clean.id_species_source.uniq.csv
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12}' | sort | uniq | sort -t, -k1,1 > VIR3_clean.id_species.uniq.csv
+sed -i '1iid,species' VIR3_clean.id_species.uniq.csv
+sed -i '/89962,O/d' VIR3_clean.id_species.uniq.csv
+chmod a-w VIR3_clean.id_species.uniq.csv
 ```
 
 
