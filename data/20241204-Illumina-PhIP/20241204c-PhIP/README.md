@@ -95,23 +95,23 @@ box_upload.bash out.gbm?/All* out.gbm?/m*
 
 
 ```
-mkdir merging
+mkdir out.gbm
 
 for i in 1 2 3 4 ; do
 echo $i
 echo out.gbm${i}/merged.seropositive.csv
-head -1 out.gbm${i}/merged.seropositive.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > merging/${i}.merged.seropositive.csv
-sed -e '1s/\(,[^,]*\)/\1'${i}'/g' out.gbm${i}/merged.seropositive.csv >> merging/${i}.merged.seropositive.csv
+head -1 out.gbm${i}/merged.seropositive.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > out.gbm/${i}.merged.seropositive.csv
+sed -e '1s/\(,[^,]*\)/\1'${i}'/g' out.gbm${i}/merged.seropositive.csv >> out.gbm/${i}.merged.seropositive.csv
 done
 
-./merge_batches.py --int -o tmp.csv merging/*.merged.seropositive.csv
+./merge_batches.py --int -o tmp.csv out.gbm/*.merged.seropositive.csv
 cat tmp.csv | datamash transpose -t, | head -1 > tmp2.csv
 cat tmp.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
 
-join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv > seropositive.csv
-join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash transpose -t, > seropositive.t.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv > out.gbm/seropositive.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash transpose -t, > out.gbm/seropositive.t.csv
 
-box_upload.bash seropositive*csv
+box_upload.bash out.gbm/seropositive*csv
 ```
 
 seropositive is the virus score if greater than threshold
@@ -122,30 +122,19 @@ seropositive is the virus score if greater than threshold
 ##	20241205
 
 
-head out.gbm1/All.count.Zscores.reordered.join_sorted.csv | cut -c1-80
-
-id,14431-01dup,14431-01,14471-01dup,14471-01,14566-01dup,14566-01,14627-01dup,14
-10,-0.233462745877358,-0.224821641105051,-0.27853623966324,-0.289140603346513,-0
-100,0.0247620530719089,-0.221414554978616,-0.338121960601749,-0.365598035061799,
-1000,-0.141472987181561,,-0.08086901385478,-0.0695070842896433,-0.24334765008192
-10000,34.6024345740261,-0.17006048027559,-0.185936172283737,-0.19126377708827,-0
-10001,-0.174151440310927,-0.0413738594212227,-0.13124434193584,-0.12433779986168
-
-
-
 
 ```
-mkdir merging
+mkdir out.gbm
 
 for i in 1 2 3 4 ; do
 echo $i
 echo out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv
-head -1 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' > merging/${i}.All.count.Zscores.reordered.join_sorted.csv
-head -1 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sed -e '1s/\(,[^,]*\)/\1_'${i}'/g' >> merging/${i}.All.count.Zscores.reordered.join_sorted.csv
-tail -q -n +2 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sort -t, -k1,1 >> merging/${i}.All.count.Zscores.reordered.join_sorted.csv
+head -1 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' > out.gbm/${i}.All.count.Zscores.reordered.join_sorted.csv
+head -1 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sed -e '1s/\(,[^,]*\)/\1_'${i}'/g' >> out.gbm/${i}.All.count.Zscores.reordered.join_sorted.csv
+tail -q -n +2 out.gbm${i}/All.count.Zscores.reordered.join_sorted.csv | sort -t, -k1,1 >> out.gbm/${i}.All.count.Zscores.reordered.join_sorted.csv
 done
 
-./merge_batches.py -o tmp1.csv merging/*.All.count.Zscores.reordered.join_sorted.csv
+./merge_batches.py -o tmp1.csv out.gbm/*.All.count.Zscores.reordered.join_sorted.csv
 
 
 cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
@@ -162,16 +151,44 @@ join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv
 
 cat tmp5.csv | datamash transpose -t, > tmp6.csv
 
-echo -n "y," > Zscores.csv
-head -1 tmp6.csv >> Zscores.csv
-join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) <( tail -n +2 tmp6.csv ) >> Zscores.csv
-cat Zscores.csv | datamash transpose -t, > Zscores.t.csv
+echo -n "y," > out.gbm/Zscores.csv
+head -1 tmp6.csv >> out.gbm/Zscores.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) <( tail -n +2 tmp6.csv ) >> out.gbm/Zscores.csv
+cat Zscores.csv | datamash transpose -t, > out.gbm/Zscores.t.csv
 
-box_upload.bash Zscores*csv
+box_upload.bash out.gbm/Zscores*csv
 ```
 
 
 
 
 
+
+
+
+
+
+##	QC run
+
+All blanks, commercial serum and PLibs
+
+
+```
+awk 'BEGIN{FS=OFS=","}(/^(Blank|CSE|PLib)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full\ covariates_Vir3\ phip-seq_GBM\ p1\ MENPEN\ p13_12-4-24hmh\(Sheet1\).csv | sort -t, -k1,2 > manifest.qc.csv
+
+sed -i '1isubject,sample,bampath,type' manifest.qc.csv
+sed -i 's/commercial serum control/serum/' manifest.qc.csv 
+sed -i 's/phage library (blank)/serum/' manifest.qc.csv 
+sed -i 's/PBS blank/input/' manifest.qc.csv 
+chmod -w manifest.qc.csv
+
+
+mkdir logs
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.qc.csv --output ${PWD}/out.qc
+
+box_upload.bash out.qc/All* out.qc/m*
+```
 
