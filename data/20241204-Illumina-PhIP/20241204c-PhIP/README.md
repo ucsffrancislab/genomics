@@ -177,8 +177,8 @@ All blanks, commercial serum and PLibs
 awk 'BEGIN{FS=OFS=","}(/^(Blank|CSE|PLib)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full\ covariates_Vir3\ phip-seq_GBM\ p1\ MENPEN\ p13_12-4-24hmh\(Sheet1\).csv | sort -t, -k1,2 > manifest.qc.csv
 
 sed -i '1isubject,sample,bampath,type' manifest.qc.csv
-sed -i 's/commercial serum control/serum/' manifest.qc.csv 
-sed -i 's/phage library (blank)/serum/' manifest.qc.csv 
+#sed -i 's/commercial serum control/serum/' manifest.qc.csv 
+#sed -i 's/phage library (blank)/serum/' manifest.qc.csv 
 sed -i 's/PBS blank/input/' manifest.qc.csv 
 chmod -w manifest.qc.csv
 
@@ -191,4 +191,42 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 
 box_upload.bash out.qc/All* out.qc/m*
 ```
+
+
+
+```
+for i in 1 2 3 4 ; do
+echo $i
+echo out.gbm${i}/merged.public_epitopes_BEFORE.csv
+head -1 out.gbm${i}/merged.public_epitopes_BEFORE.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > out.gbm/${i}.merged.public_epitopes_BEFORE.csv
+sed -e '1s/\(,[^,]*\)/\1_'${i}'/g' out.gbm${i}/merged.public_epitopes_BEFORE.csv >> out.gbm/${i}.merged.public_epitopes_BEFORE.csv
+done
+
+./merge_batches.py --de_nan --int -o tmp.csv out.gbm/*.merged.public_epitopes_BEFORE.csv
+
+cat tmp.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv > out.gbm/public_epitopes_BEFORE.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash transpose -t, > out.gbm/public_epitopes_BEFORE.t.csv
+
+for i in 1 2 3 4 ; do
+echo $i
+echo out.gbm${i}/merged.public_epitopes_AFTER.csv
+head -1 out.gbm${i}/merged.public_epitopes_AFTER.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > out.gbm/${i}.merged.public_epitopes_AFTER.csv
+sed -e '1s/\(,[^,]*\)/\1_'${i}'/g' out.gbm${i}/merged.public_epitopes_AFTER.csv >> out.gbm/${i}.merged.public_epitopes_AFTER.csv
+done
+
+./merge_batches.py --de_nan --int -o tmp.csv out.gbm/*.merged.public_epitopes_AFTER.csv
+
+cat tmp.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv > out.gbm/public_epitopes_AFTER.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash transpose -t, > out.gbm/public_epitopes_AFTER.t.csv
+
+box_upload.bash out.gbm/public_epitopes_*
+```
+
+
 
