@@ -7,7 +7,7 @@ date
 
 set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
-set -o pipefail
+#set -o pipefail	#	can break things
 #if [ -n "$( declare -F module )" ] ; then
 #	echo "Loading required modules"
 #	#module load CBI htslib samtools bowtie2
