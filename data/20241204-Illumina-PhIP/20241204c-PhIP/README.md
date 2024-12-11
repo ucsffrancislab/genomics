@@ -154,7 +154,7 @@ cat tmp5.csv | datamash transpose -t, > tmp6.csv
 echo -n "y," > out.gbm/Zscores.csv
 head -1 tmp6.csv >> out.gbm/Zscores.csv
 join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) <( tail -n +2 tmp6.csv ) >> out.gbm/Zscores.csv
-cat Zscores.csv | datamash transpose -t, > out.gbm/Zscores.t.csv
+cat out.gbm/Zscores.csv | datamash transpose -t, > out.gbm/Zscores.t.csv
 
 box_upload.bash out.gbm/Zscores*csv
 ```
@@ -228,5 +228,91 @@ join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash
 box_upload.bash out.gbm/public_epitopes_*
 ```
 
+
+
+
+
+
+
+##	20241210
+
+
+testing my Zscore script
+
+```
+for i in 1 2 3 4 ; do
+zscoring.py --input out.gbm${i}/All.count.csv --output out.gbm${i}/All.count.Zscores.TEST.csv 
+done
+```
+
+
+
+#head -1 out.gbm${i}/All.count.Zscores.TEST.csv | sed -e 's/\(,[^,]*\)/\1_'${i}'/g' > out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv
+```
+for i in $( seq 1 4 ) ; do
+echo $i
+head -1 out.gbm${i}/All.count.Zscores.TEST.csv > out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv
+tail -n +2 out.gbm${i}/All.count.Zscores.TEST.csv | sort -t, -k1,1 >> out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv
+done
+```
+
+#cat tmp.merged.csv | datamash -t, transpose > tmp
+#head -1 tmp > merged.Zscores.TEST.csv
+#tail -n +2 tmp | sort -t, -k1,1 >> merged.Zscores.TEST.csv
+#
+#cat merged.Zscores.TEST.csv | datamash -t, transpose > merged.Zscores.t.TEST.csv
+
+
+
+```
+mkdir out.gbm
+
+for i in 1 2 3 4 ; do
+echo $i
+echo out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv
+head -1 out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' > out.gbm/${i}.All.count.Zscores.TEST.reordered.join_sorted.csv
+head -1 out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv | sed -e '1s/\(,[^,]*\)/\1_'${i}'/g' >> out.gbm/${i}.All.count.Zscores.TEST.reordered.join_sorted.csv
+tail -q -n +2 out.gbm${i}/All.count.Zscores.TEST.reordered.join_sorted.csv | sort -t, -k1,1 >> out.gbm/${i}.All.count.Zscores.TEST.reordered.join_sorted.csv
+done
+
+./merge_batches.py -o tmp1.csv out.gbm/*.All.count.Zscores.TEST.reordered.join_sorted.csv
+
+
+cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+
+echo -n "x," > tmp5.csv
+head -1 tmp4.csv >> tmp5.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+
+cat tmp5.csv | datamash transpose -t, > tmp6.csv
+
+echo -n "y," > out.gbm/Zscores.TEST.csv
+head -1 tmp6.csv >> out.gbm/Zscores.TEST.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) <( tail -n +2 tmp6.csv ) >> out.gbm/Zscores.TEST.csv
+cat out.gbm/Zscores.TEST.csv | datamash transpose -t, > out.gbm/Zscores.t.TEST.csv
+
+box_upload.bash out.gbm/Zscores*TEST.csv
+```
+
+
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.gbm.csv --output ${PWD}/out.gbm.test
+```
+
+```
+box_upload.bash out.gbm.test/All* out.gbm.test/m*
+```
 
 
