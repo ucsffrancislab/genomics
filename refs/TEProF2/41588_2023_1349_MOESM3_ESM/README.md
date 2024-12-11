@@ -217,3 +217,30 @@ I would expect that increasing k would increase the number of kmers.
 I don't think that we are using these kmer results.
 
 
+
+
+##	20241211
+
+
+netMHCIIpan fails if ANY read is less than 9 bp
+
+```
+
+awk -F, '(NR>2 && length($5)>=9){gsub("TCONS_","",$1);$2=substr($2,1,1);print ">"$1$2$3"-"$4;print $5}' S14.csv > S14.uniq.gte9.faa
+
+```
+
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=S14MHCIIAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/S14MHCIIAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCIIpan.bash -l 9 -f ${PWD}/S14.uniq.gte9.faa
+
+```
+
+
+
+
+
