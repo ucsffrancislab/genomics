@@ -5,16 +5,16 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
-#set -e	#	exit if any command fails
+set -e	#	exit if any command fails
 set -u	#	Error on usage of unset variables
-#set -o pipefail
+set -o pipefail
 #if [ -n "$( declare -F module )" ] ; then
 #	echo "Loading required modules"
 #	#module load CBI htslib samtools bowtie2
 #fi
-#set -x	#	print expanded command before executing it
+set -x	#	print expanded command before executing it
 
-#echo $*
+echo $*
 
 
 #	BE CAREFUL! grep will return a fail code if none found. ERRRRR!
