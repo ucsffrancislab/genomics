@@ -316,3 +316,128 @@ box_upload.bash out.gbm.test/All* out.gbm.test/m*
 ```
 
 
+
+##	20241211
+
+Updated zscoring binning
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.gbm.csv --output ${PWD}/out.gbm.test2
+```
+
+
+
+
+
+
+Annotate GBM seropositives
+
+```
+dir=out.gbm.test2
+head -1 ${dir}/merged.seropositive.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > tmp1.csv
+sed -e '1s/\(,[^,]*\)/\1'${i}'/g' ${dir}/merged.seropositive.csv >> tmp1.csv
+cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv > ${dir}/seropositive.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) tmp2.csv | datamash transpose -t, > ${dir}/seropositive.t.csv
+box_upload.bash ${dir}/seropositive*csv
+```
+
+
+
+Annotate GBM Zscores
+
+```
+dir=out.gbm.test2
+head -1 ${dir}/All.count.Zscores.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' > tmp1.csv
+head -1 ${dir}/All.count.Zscores.csv >> tmp1.csv
+tail -q -n +2 ${dir}/All.count.Zscores.csv | sort -t, -k1,1 >> tmp1.csv
+cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+echo -n "x," > tmp5.csv
+head -1 tmp4.csv >> tmp5.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+cat tmp5.csv | datamash transpose -t, > tmp6.csv
+echo -n "y," > ${dir}/Zscores.csv
+head -1 tmp6.csv >> ${dir}/Zscores.csv
+join --header -t, <( cut -d, -f1,4 manifest.gbm.csv | uniq ) <( tail -n +2 tmp6.csv ) >> ${dir}/Zscores.csv
+cat ${dir}/Zscores.csv | datamash transpose -t, > ${dir}/Zscores.t.csv
+box_upload.bash ${dir}/Zscores*csv
+```
+
+
+
+Lets go a head and run your z-score’s for the Meningioma and pemphigus data.
+
+```
+24 meningioma serum
+16 PBS blank
+60 pemphigus serum
+```
+
+
+```
+#awk 'BEGIN{FS=OFS=","}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,2 > manifest.menpem.csv
+
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,2 > manifest.menpem.csv
+
+sed -i '1isubject,sample,bampath,type' manifest.menpem.csv
+sed -i 's/PBS blank/input/' manifest.menpem.csv
+chmod -w manifest.menpem.csv
+```
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.menpem.csv --output ${PWD}/out.menpem.test2
+```
+
+
+
+
+
+Annotate MenPem seropositives
+
+```
+dir=out.menpem.test2
+head -1 ${dir}/merged.seropositive.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > tmp1.csv
+sed -e '1s/\(,[^,]*\)/\1'${i}'/g' ${dir}/merged.seropositive.csv >> tmp1.csv
+cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+join --header -t, <( cut -d, -f1,4 manifest.menpem.csv | uniq ) tmp2.csv > ${dir}/seropositive.csv
+join --header -t, <( cut -d, -f1,4 manifest.menpem.csv | uniq ) tmp2.csv | datamash transpose -t, > ${dir}/seropositive.t.csv
+box_upload.bash ${dir}/seropositive*csv
+```
+
+
+
+Annotate menpem Zscores
+
+```
+dir=out.menpem.test2
+head -1 ${dir}/All.count.Zscores.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' > tmp1.csv
+head -1 ${dir}/All.count.Zscores.csv >> tmp1.csv
+tail -q -n +2 ${dir}/All.count.Zscores.csv | sort -t, -k1,1 >> tmp1.csv
+cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+echo -n "x," > tmp5.csv
+head -1 tmp4.csv >> tmp5.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+cat tmp5.csv | datamash transpose -t, > tmp6.csv
+echo -n "y," > ${dir}/Zscores.csv
+head -1 tmp6.csv >> ${dir}/Zscores.csv
+join --header -t, <( cut -d, -f1,4 manifest.menpem.csv | uniq ) <( tail -n +2 tmp6.csv ) >> ${dir}/Zscores.csv
+cat ${dir}/Zscores.csv | datamash transpose -t, > ${dir}/Zscores.t.csv
+box_upload.bash ${dir}/Zscores*csv
+```
+
