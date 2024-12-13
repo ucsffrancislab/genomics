@@ -383,9 +383,9 @@ Lets go a head and run your z-score’s for the Meningioma and pemphigus data.
 
 
 ```
-#awk 'BEGIN{FS=OFS=","}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,2 > manifest.menpem.csv
+#awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,1 > manifest.menpem.csv
 
-awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,1 > manifest.menpem.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && ($5~/(meningioma|pemphigus|PBS blank)/)){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject); print subject,$2,"/francislab/data1/working/20241203-Illumina-PhIP/20241203d-bowtie2/out/"$1".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,1 > manifest.menpem.csv
 
 sed -i '1isubject,sample,bampath,type' manifest.menpem.csv
 sed -i 's/PBS blank/input/' manifest.menpem.csv
