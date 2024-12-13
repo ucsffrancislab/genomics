@@ -4,7 +4,7 @@
 
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR>1 && ( $5 ~ /glioma/ || $5 ~ /blank/ )){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject); print subject,$2,"/francislab/data1/working/20241203-Illumina-PhIP/20241203d-bowtie2/out/"$1".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241203-Illumina-PhIP/L1\ Sample\ groups\ with\ caco_12-4-24hmh\(in\).csv | sort -t, -k1,2 > manifest.gbm.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && ( $5 ~ /glioma/ || $5 ~ /blank/ )){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject); print subject,$2,"/francislab/data1/working/20241203-Illumina-PhIP/20241203d-bowtie2/out/"$1".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241203-Illumina-PhIP/L1\ Sample\ groups\ with\ caco_12-4-24hmh\(in\).csv | sort -t, -k1,1 > manifest.gbm.csv
 
 sed -i '1isubject,sample,bampath,type' manifest.gbm.csv
 sed -i 's/pbs blank/input/' manifest.gbm.csv 
@@ -385,7 +385,7 @@ Lets go a head and run your z-score’s for the Meningioma and pemphigus data.
 ```
 #awk 'BEGIN{FS=OFS=","}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,2 > manifest.menpem.csv
 
-awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,2 > manifest.menpem.csv
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($5~/(meningioma|pemphigus|PBS blank)/){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"$22".VIR3_clean.1-84.bam",$5}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariates_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-4-24hmh.csv | sort -t, -k1,1 > manifest.menpem.csv
 
 sed -i '1isubject,sample,bampath,type' manifest.menpem.csv
 sed -i 's/PBS blank/input/' manifest.menpem.csv
@@ -403,6 +403,11 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 
 
 
+```
+dir=out.menpem.test2
+box_upload.bash ${dir}/All* ${dir}/m*
+```
+
 Annotate MenPem seropositives
 
 ```
@@ -410,7 +415,7 @@ dir=out.menpem.test2
 head -1 ${dir}/merged.seropositive.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > tmp1.csv
 sed -e '1s/\(,[^,]*\)/\1'${i}'/g' ${dir}/merged.seropositive.csv >> tmp1.csv
 cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
-cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,1 >> tmp2.csv
 join --header -t, <( cut -d, -f1,4 manifest.menpem.csv | uniq ) tmp2.csv > ${dir}/seropositive.csv
 join --header -t, <( cut -d, -f1,4 manifest.menpem.csv | uniq ) tmp2.csv | datamash transpose -t, > ${dir}/seropositive.t.csv
 box_upload.bash ${dir}/seropositive*csv
@@ -426,7 +431,7 @@ head -1 ${dir}/All.count.Zscores.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' >
 head -1 ${dir}/All.count.Zscores.csv >> tmp1.csv
 tail -q -n +2 ${dir}/All.count.Zscores.csv | sort -t, -k1,1 >> tmp1.csv
 cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
-cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,2 >> tmp2.csv
+cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,1 >> tmp2.csv
 cat tmp2.csv | datamash transpose -t, > tmp3.csv
 head -2 tmp3.csv > tmp4.csv
 tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
