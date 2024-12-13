@@ -5,7 +5,7 @@ hostname
 echo "Slurm job id:${SLURM_JOBID}:"
 date
 
-set -e	#	exit if any command fails
+#set -e	#	exit if any command fails	#	this can break things
 set -u	#	Error on usage of unset variables
 #set -o pipefail	#	can break things
 #if [ -n "$( declare -F module )" ] ; then
