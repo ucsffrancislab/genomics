@@ -41,6 +41,20 @@ dim(r)
 ```
 
 
+
+```{r}
+ggplot( r[r$Plate==1,], aes(Well.X, Well.Y, fill=Raw.Read.Count)) + 
+  scale_fill_gradientn(colors=c('black','blue','white'),limits=c(3000,3500000)) +
+  geom_tile() + ggtitle("Plate 1")
+```
+
+```{r}
+ggplot( r[r$Plate==13,], aes(Well.X, Well.Y, fill=Raw.Read.Count)) + 
+  scale_fill_gradientn(colors=c('black','blue','white'),limits=c(3000,3500000)) +
+  geom_tile() + ggtitle("Plate 13")
+```
+
+
 ```{r}
 ggplot( r[r$Plate==1,], aes(Well.X, Well.Y, fill= Q40.Unique.Aligned.Tile.Count)) + 
   scale_fill_gradientn(colors=c('black','blue','white'),limits=c(1000,95000)) +
@@ -83,15 +97,5 @@ ggplot(r, aes(x=Age, y=Q40.Unique.Aligned.Tile.Count)) +
 ggplot(r, aes(x=Age, y=Q40.Unique.Aligned.Tile.Count, shape=Type, color=Group)) +
   geom_point()
 ```
-
-
-```{r "Boxplot3", fig.align="center", fig.width = 10, fig.height = 6}
-#r[is.na(r)] <- 0
-#ggplot(aes(x = Age, y = Q40.Unique.Aligned.Tile.Count), data = r) + 
-#geom_boxplot(aes(fill=Age)) +
-#theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))
-```
-
-
 
 
