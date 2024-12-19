@@ -508,39 +508,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 ```
 
 
-box_upload.bash ${dir}/All* ${dir}/m*
-```
-for s in menpem gbm ; do
-dir=out.${s}.test4
-head -1 ${dir}/merged.seropositive.csv | sed -e '1s/\(,[^,]*\)_./\1/g' -e '1s/^id/subject/' > tmp1.csv
-sed -e '1s/\(,[^,]*\)/\1'${i}'/g' ${dir}/merged.seropositive.csv >> tmp1.csv
-cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
-cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,1 >> tmp2.csv
-join --header -t, <( cut -d, -f1,4 manifest.${s}.csv | uniq ) tmp2.csv > ${dir}/seropositive.csv
-join --header -t, <( cut -d, -f1,4 manifest.${s}.csv | uniq ) tmp2.csv | datamash transpose -t, > ${dir}/seropositive.t.csv
-box_upload.bash ${dir}/seropositive*csv
-head -1 ${dir}/All.count.Zscores.csv | sed -e '1s/dup//g' -e '1s/^id/subject/' > tmp1.csv
-head -1 ${dir}/All.count.Zscores.csv >> tmp1.csv
-tail -q -n +2 ${dir}/All.count.Zscores.csv | sort -t, -k1,1 >> tmp1.csv
-cat tmp1.csv | datamash transpose -t, | head -1 > tmp2.csv
-cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,1 >> tmp2.csv
-cat tmp2.csv | datamash transpose -t, > tmp3.csv
-head -2 tmp3.csv > tmp4.csv
-tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
-echo -n "x," > tmp5.csv
-head -1 tmp4.csv >> tmp5.csv
-join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
-cat tmp5.csv | datamash transpose -t, > tmp6.csv
-echo -n "y," > ${dir}/Zscores.csv
-head -1 tmp6.csv >> ${dir}/Zscores.csv
-join --header -t, <( cut -d, -f1,4 manifest.${s}.csv | uniq ) <( tail -n +2 tmp6.csv ) >> ${dir}/Zscores.csv
-cat ${dir}/Zscores.csv | datamash transpose -t, > ${dir}/Zscores.t.csv
-box_upload.bash ${dir}/Zscores*csv
-done
-```
-
-
-
 modify merge_batches.py first to only have 1 header line.
 
 ```
@@ -569,7 +536,7 @@ cat tmp1.csv | datamash transpose -t, | tail -n +2 | sort -t, -k1,1 >> tmp2.csv
 cat tmp2.csv | datamash transpose -t, > tmp3.csv
 head -2 tmp3.csv > tmp4.csv
 tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
-join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv tmp4.csv > tmp5.csv
+join --header -t, <( cut -d, -f1,2 /francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.join_sorted.csv ) tmp4.csv > tmp5.csv
 cat tmp5.csv | datamash transpose -t, > tmp6.csv
 echo -n "y,z," > ${dir}/Zscores.minimums.filtered.csv
 head -1 tmp6.csv >> ${dir}/Zscores.minimums.filtered.csv
@@ -579,5 +546,82 @@ box_upload.bash ${dir}/Zscores.minimums.filtered*csv
 done
 ```
 
+
+
+##	20241218 - Z score 3.5 -> 10
+
+
+Increase the Z score threshold from 3.5 to 10.
+
+
+```
+mkdir out.menpem.test5
+mkdir out.gbm.test5
+cp -r out.menpem.test4/counts/ out.menpem.test5/
+cp -r out.gbm.test4/counts/ out.gbm.test5/
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.gbm.csv --threshold 10 --output ${PWD}/out.gbm.test5
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.menpem.csv --threshold 10 --output ${PWD}/out.menpem.test5
+```
+
+
+
+```
+for s in menpem gbm ; do
+phip_seq_aggregate.bash manifest.${s}.csv out.${s}.test5
+done
+```
+
+```
+for s in menpem gbm ; do
+dir=out.${s}.test5
+box_upload.bash ${dir}/Zscores*csv ${dir}/seropositive*csv ${dir}/All* ${dir}/m* ${dir}/Zscores.minimums.filtered*csv 
+done
+```
+
+
+
+##	20241218 B - Z-scoring drop the 1's during zscoring
+
+
+
+```
+mkdir out.menpem.test6
+mkdir out.gbm.test6
+cp -r out.menpem.test4/counts/ out.menpem.test6/
+cp -r out.gbm.test4/counts/ out.gbm.test6/
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.gbm.csv --threshold 10 --output ${PWD}/out.gbm.test6
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.menpem.csv --threshold 10 --output ${PWD}/out.menpem.test6
+```
+
+```
+for s in menpem gbm ; do
+phip_seq_aggregate.bash manifest.${s}.csv out.${s}.test6
+done
+```
+
+```
+for s in menpem gbm ; do
+dir=out.${s}.test6
+box_upload.bash ${dir}/Zscores*csv ${dir}/seropositive*csv ${dir}/All* ${dir}/m* ${dir}/Zscores.minimums.filtered*csv 
+done
+```
 
 
