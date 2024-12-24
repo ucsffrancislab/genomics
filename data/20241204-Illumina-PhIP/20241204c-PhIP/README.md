@@ -625,3 +625,52 @@ done
 ```
 
 
+```
+join -t, --header All4Plibs.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.join_sorted.csv | cut -d, -f2 | tail -n +2 | sort | uniq -c | sed -e 's/^\s*//' -e 's/ /,/' -e '1icount,species' > All4Plibs.species_counts.csv
+
+box_upload.bash All4Plibs.species_counts.csv
+```
+
+
+
+##	20241220 - Geno script testing
+
+
+
+```
+
+Case_Control_Z_Script.R --manifest manifest.gbm.csv --working_dir out.gbm.test6 --groups_to_compare case,control
+
+Count_Viral_Tile_Hit_Fraction.R --manifest manifest.gbm.csv  --working_dir out.gbm.test6
+
+Case_Control_Seropositivity_Frac.R --manifest manifest.gbm.csv  --working_dir out.gbm.test6 --groups_to_compare case,control
+
+Seropositivity_Comparison.R --manifest manifest.gbm.csv  --working_dir out.gbm.test6 --groups_to_compare case,control
+
+By_virus_plotter.R --manifest manifest.gbm.csv --working_dir out.gbm.test6 --virus "Human adenovirus E" --groups_to_compare case,control
+
+```
+
+
+
+
+
+```
+
+Case_Control_Z_Script.R --manifest manifest.menpem.csv --working_dir out.menpem.test6 --groups_to_compare "PF Patient","Endemic Control","Non Endemic Control"
+
+Count_Viral_Tile_Hit_Fraction.R --manifest manifest.menpem.csv  --working_dir out.menpem.test6
+
+Case_Control_Seropositivity_Frac.R --manifest manifest.menpem.csv  --working_dir out.menpem.test6 --groups_to_compare "PF Patient","Endemic Control","Non Endemic Control"
+
+Seropositivity_Comparison.R --manifest manifest.menpem.csv  --working_dir out.menpem.test6 --groups_to_compare "PF Patient","Endemic Control","Non Endemic Control"
+
+By_virus_plotter.R --manifest manifest.menpem.csv --working_dir out.menpem.test6 --virus "Human adenovirus E" --groups_to_compare "PF Patient","Endemic Control","Non Endemic Control"
+
+
+```
+
+
+
+
+
