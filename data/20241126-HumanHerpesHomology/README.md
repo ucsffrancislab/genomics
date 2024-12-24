@@ -194,7 +194,21 @@ samtools index ${txt%.txt}.bam
 done
 ```
 
+Not really useful. So small compared to reference.
 
+Perhaps the reverse? Align the human genome to the virus genome? Sounds bad, but let's try anyway.
+
+
+makeblastdb -title NC_032111 -out NC_032111 -dbtype nucl -parse_seqids -in /francislab/data1/refs/refseq/viral-20220923/viral.genomic/NC_032111.1_BeAn_58058_virus__complete_genome.fa
+
+```
+module load blast
+for word_size in 50; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 --job-name=32111_${word_size} --time=14-0 --nodes=1 --ntasks=4 --mem=30GB --output=${PWD}/NC_032111_${word_size}.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log --wrap="blastn -db NC_032111 -out Human-in-NC_032111.ws${word_size}.txt -word_size ${word_size} -query /francislab/data1/refs/sources/gencodegenes.org/release_47/GRCh38.p14.genome.fa"
+done
+```
+
+BAM not really helpful here either.
 
 
 
