@@ -1135,4 +1135,49 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 
 ```
 
+##	20241219
+
+
+```
+awk 'BEGIN{OFS=","}{print $2,$11}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.pivot.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.pivot.counts.csv
+\rm tmp.csv
+
+awk -F, '(NR==1){print}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]+=1}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.pivot.csv | datamash transpose -t, | sort -t, -k2nr,2 | head
+
+awk -F, '(NR==1){print}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]+=1}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.netMHCpan.AGS.pivot.csv | datamash transpose -t, | sort -t, -k2nr,2 | tail
+
+```
+
+Don't know why I didn't finish this before
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=HerpesMHCAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/HerpesMHCAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCpan.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.faa --start_allele HLA-C0726
+
+```
+
+
+
+
+
+
+```
+awk 'BEGIN{OFS=","}{print $2,$8}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.counts.csv
+\rm tmp.csv
+
+awk -F, '(NR==1){print}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]+=1}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.csv | datamash transpose -t, | sort -t, -k2nr,2 | head
+
+awk -F, '(NR==1){print}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]+=1}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.csv | datamash transpose -t, | sort -t, -k2nr,2 | tail
+
+```
 
