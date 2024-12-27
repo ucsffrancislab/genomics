@@ -80,11 +80,11 @@ else
 		samtools view -c -F 3844 ${f} > ${f}.aligned_count.txt
 		chmod a-w ${f}.aligned_count.txt
 
-		samtools view -c -F 3844 -q40 ${f} > ${f}.q40.aligned_count.txt
-		chmod a-w ${f}.q40.aligned_count.txt
+		samtools view -c -F 3844 -q40 ${f} > ${f}.aligned_count.q40.txt
+		chmod a-w ${f}.aligned_count.q40.txt
 
-		samtools view -c -F 3844 -q20 ${f} > ${f}.q20.aligned_count.txt
-		chmod a-w ${f}.q20.aligned_count.txt
+		samtools view -c -F 3844 -q20 ${f} > ${f}.aligned_count.q20.txt
+		chmod a-w ${f}.aligned_count.q20.txt
 
 		#	-f = IS
 		#	0x4	4	UNMAP
@@ -93,9 +93,19 @@ else
 
 		samtools view -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.txt.gz
 		chmod a-w ${f}.aligned_sequences.txt.gz
-
 		zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.txt
 		chmod a-w ${f}.aligned_sequence_counts.txt
+
+		samtools view -q40 -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.q40.txt.gz
+		chmod a-w ${f}.aligned_sequences.q40.txt.gz
+		zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.q40.txt
+		chmod a-w ${f}.aligned_sequence_counts.q40.txt
+
+		samtools view -q20 -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.q20.txt.gz
+		chmod a-w ${f}.aligned_sequences.q20.txt.gz
+		zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.q20.txt
+		chmod a-w ${f}.aligned_sequence_counts.q20.txt
+
 	fi
 
 fi
