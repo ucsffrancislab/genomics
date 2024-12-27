@@ -1,0 +1,103 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+rmarkdown::render(newfname, output_dir = dirname('tile_counts.html'), output_file = 'tile_counts.html' )
+
+q("no")
+
+
+
+
+---
+title: "Test boxplots"
+author: "Jake W"
+date: "2024-12-12"
+output: html_document
+---
+
+
+
+
+```{r "Setup"}
+#knitr::opts_chunk$set(out.height='1500px',out.width='1000px', dpi=300)
+library(ggplot2)
+```
+
+```{r "Read data"}
+#r=read.csv( '/Users/jake/Downloads/report5.t.csv', sep=",", header=TRUE )
+#	NEED THE FULL PATH SINCE THIS IS RUN IN /scratch
+r=read.csv( '/francislab/data1/working/20241224-Illumina-PhIP/20241224b-bowtie2/report.t.csv', sep=",", header=TRUE )
+
+rownames(r)=r[[colnames(r)[1]]]
+r[[colnames(r)[1]]]=NULL
+r[0:9,0:9]
+```
+
+```{r "Dim"}
+dim(r)
+```
+
+
+
+```{r}
+ggplot( r[r$Plate==2,], aes(Well.X, Well.Y, fill=Raw.Read.Count)) + 
+  scale_fill_gradientn(colors=c('black','blue','white'),limits=c(1200000,2800000)) +
+  geom_tile() + ggtitle("Plate 2")
+```
+
+```{r}
+ggplot( r[r$Plate==14,], aes(Well.X, Well.Y, fill=Raw.Read.Count)) + 
+  scale_fill_gradientn(colors=c('black','blue','white'),limits=c(1200000,2800000)) +
+  geom_tile() + ggtitle("Plate 14")
+```
+
+
+```{r}
+ggplot( r[r$Plate==2,], aes(Well.X, Well.Y, fill= Q40.Unique.Aligned.Tile.Count)) + 
+  scale_fill_gradientn(colors=c('black','blue','white'),limits=c(10000,102000)) +
+  geom_tile() + ggtitle("Plate 2")
+```
+
+
+```{r}
+ggplot( r[r$Plate==14,], aes(Well.X, Well.Y, fill= Q40.Unique.Aligned.Tile.Count)) + 
+  scale_fill_gradientn(colors=c('black','blue','white'),limits=c(10000,102000)) +
+  geom_tile() + ggtitle("Plate 14")
+
+```
+
+
+```{r "Boxplot1", fig.align="center", fig.width = 10, fig.height = 6}
+ggplot(aes(x = Type, y = Q40.Unique.Aligned.Tile.Count), data = r) + 
+geom_boxplot(aes(fill=Type)) +
+theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))
+```
+
+
+```{r "Boxplot2", fig.align="center", fig.width = 10, fig.height = 6}
+r$Factor1Factor2 <- interaction(r$Type, r$Group) 
+
+ggplot(aes(x = Factor1Factor2, y = Q40.Unique.Aligned.Tile.Count), data = r) + 
+geom_boxplot(aes(fill=Factor1Factor2)) +
+theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1))
+```
+
+
+```{r "Plot1", fig.align="center", fig.width = 10, fig.height = 6}
+
+ggplot(r, aes(x=Age, y=Q40.Unique.Aligned.Tile.Count)) + 
+    geom_point()
+```
+
+
+```{r "Plot2", fig.align="center", fig.width = 10, fig.height = 6}
+ggplot(r, aes(x=Age, y=Q40.Unique.Aligned.Tile.Count, shape=Type, color=Group)) +
+  geom_point()
+```
+
+
