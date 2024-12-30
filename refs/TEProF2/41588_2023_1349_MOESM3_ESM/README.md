@@ -243,4 +243,24 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 
 
 
+##	20241230
+
+```
+ll /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM//S14/0000????/*faa | wc -l
+4113
+ll -tr /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S14/*/*-*-*/ranked_0.pdb | wc -l
+4113
+```
+
+
+```
+find /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S14/????????/ -name \*.faa | wc -l
+64190
+```
+
+Stopping this fiasco. Gonna take the better part of a year and for what exactly.
+
+
+
+
 
