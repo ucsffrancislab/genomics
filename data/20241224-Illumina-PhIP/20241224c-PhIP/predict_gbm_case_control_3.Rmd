@@ -1,0 +1,233 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+noext=fs::path_ext_remove(fname)
+rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+q("no")
+
+
+
+
+---
+title: "predict_gbm_case_control"
+author: "Jake W"
+date: "2024-12-27"
+output: html_document
+---
+
+
+ALL PATHS MUST BE ABSOLUTE AS IT IS RUN IN /scratch/
+
+
+
+
+```{r setup, include=FALSE}
+
+library(reticulate)
+use_python("/usr/bin/python3")
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+```
+
+
+```{python}
+#df = pd.read_csv('/francislab/data1/working/20241224-Illumina-PhIP/20241224c-PhIP/gbm.csv',index_col=0)
+df = pd.read_csv('/francislab/data1/working/20241224-Illumina-PhIP/20241224c-PhIP/bothgbm.csv',index_col=0)
+
+df.fillna(0, inplace=True)
+df.replace( np.inf,  9999999, inplace=True)
+df.replace(-np.inf, -9999999, inplace=True)
+
+df.shape
+#	(84, 106663)
+```
+
+```{python}
+x = df.drop(columns=["group"])
+x.head()
+```
+
+```{python}
+y = df["group"]
+y.head()
+```
+
+```{python}
+print(y)
+```
+
+```{python}
+df['group'].value_counts()
+```
+
+```{python}
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+```
+
+
+```{python}
+#sc = StandardScaler()
+#x = sc.fit_transform(x)
+#x[:2]
+```
+
+
+
+```{python}
+#	apparently y NEEDS to be an integer
+le = LabelEncoder()
+y = le.fit_transform(y)
+y[:5]
+```
+
+
+```{python}
+le.classes_
+```
+
+
+```{python}
+from tensorflow import keras
+```
+
+
+```{python}
+y = keras.utils.to_categorical(y, num_classes=2)
+print(y[:5])
+```
+
+```{python}
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.25)
+```
+
+```{python}
+x_train.shape
+```
+
+```{python}
+y_train.shape
+```
+
+```{python}
+x_test.shape
+```
+
+```{python}
+y_test.shape
+```
+
+
+```{python}
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+```
+
+
+
+```{python}
+#import tensorflow as tf
+#model = tf.keras.models.Sequential()
+#
+##model.add(tf.keras.layers.Dense(256, input_shape=x_train.shape, activation='sigmoid'))
+##/usr/local/lib/python3.10/dist-packages/keras/src/layers/core/dense.py:87: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+#
+#model.add(tf.keras.layers.Dense(1024, activation='sigmoid'))
+#model.add(tf.keras.layers.Dense(512, activation='sigmoid'))
+#model.add(tf.keras.layers.Dense(256, activation='sigmoid'))
+#model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+
+
+
+model = Sequential()
+#model.add(Dense(units=1024, activation='sigmoid'))
+#model.add(Dropout(0.1))
+model.add(Dense(units=512, activation='sigmoid'))
+model.add(Dropout(0.1))
+model.add(Dense(units=256, activation='sigmoid'))
+model.add(Dropout(0.1))
+model.add(Dense(units=32, activation='sigmoid'))
+model.add(Dropout(0.1))
+model.add(Dense(units=2, activation='softmax'))
+
+```
+
+
+
+```{python}
+#model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+model.summary()
+```
+
+```{python}
+model.fit(x_train, y_train, epochs=50, verbose=2)
+```
+
+
+```{python}
+prediction = model.predict(x_test)
+prediction[:10]
+```
+
+
+```{python}
+prediction = np.argmax(prediction, axis=-1)
+prediction[:10]
+```
+
+
+
+```{python}
+y_test[:5]
+```
+
+```{python}
+actual = np.argmax(y_test, axis=-1)
+actual[:10]
+```
+
+
+```{python}
+from sklearn.metrics import accuracy_score, confusion_matrix
+
+```
+
+
+```{python}
+ac_score = accuracy_score(actual, prediction)
+ac_score
+```
+
+
+
+```{python}
+c_matrix = confusion_matrix(actual, prediction)
+c_matrix
+```
+
+
+
+```{python}
+import seaborn as sns
+```
+
+
+```{python}
+label = ['Case','Control']
+ax = sns.heatmap(c_matrix, annot=True, fmt='d', cmap='Greens', xticklabels=label, yticklabels=label)
+ax.set_title('Confusion Matrix for GBM Case/Control Zscores Dataset')
+ax.set_xlabel('prediction', fontsize=14)
+ax.set_ylabel('actual', fontsize=14)
+```
+
+

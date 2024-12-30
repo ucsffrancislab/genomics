@@ -674,3 +674,20 @@ By_virus_plotter.R --manifest manifest.menpem.csv --working_dir out.menpem.test6
 
 
 
+
+
+
+Prep for tensorflow
+
+```
+cut -d, -f2,6 manifest.gbm.csv | grep -E "case|control" | sort -t, -k1,1 > gbm_case_control.csv
+sed -i '1isample,group' gbm_case_control.csv
+
+cat out.gbm.test6/All.count.Zscores.csv | datamash transpose -t, > tmp1.csv
+head -1 tmp1.csv > tmp2.csv
+tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+
+join -t, --header gbm_case_control.csv tmp2.csv > gbm.csv
+```
+
+
