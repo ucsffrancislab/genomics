@@ -129,7 +129,9 @@ for allele in $( cat /francislab/data2/refs/netMHCIIpan/AGS_select ) ; do
 
 done
 
+chmod -w ${dir}/${base}.netMHCIIpan.AGS.txt
 
+echo "Done"
 
 #	This script will silently fail if ANY sequence in the fasta file is < 9bp.
 
