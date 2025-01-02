@@ -691,3 +691,76 @@ join -t, --header gbm_case_control.csv tmp2.csv > gbm.csv
 ```
 
 
+
+
+
+
+
+
+
+##	20250102
+
+
+
+```
+mkdir out.menpem.test7
+mkdir out.gbm.test7
+cp -r out.menpem.test6/counts/ out.menpem.test7/
+cp -r out.gbm.test6/counts/ out.gbm.test7/
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.gbm.csv --threshold 10 --output ${PWD}/out.gbm.test7
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.menpem.csv --threshold 10 --output ${PWD}/out.menpem.test7
+```
+
+
+```
+for s in menpem gbm ; do
+phip_seq_aggregate.bash manifest.${s}.csv out.${s}.test7
+done
+```
+
+```
+for s in menpem gbm ; do
+dir=out.${s}.test7
+box_upload.bash ${dir}/Zscores*csv ${dir}/seropositive*csv ${dir}/All* ${dir}/m* ${dir}/Zscores.minimums.filtered*csv 
+done
+```
+
+
+
+
+```
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --manifest manifest.gbm.csv  --working_dir out.gbm.test7 > commands
+echo module load r\; Case_Control_Z_Script.R --manifest manifest.gbm.csv --working_dir out.gbm.test7 --groups_to_compare case,control >> commands
+echo module load r\; Case_Control_Seropositivity_Frac.R --manifest manifest.gbm.csv  --working_dir out.gbm.test7 -a case -b control >> commands
+echo module load r\; Seropositivity_Comparison.R --manifest manifest.gbm.csv  --working_dir out.gbm.test7 -a case -b control >> commands
+while read virus ; do
+echo module load r\; By_virus_plotter.R --manifest manifest.gbm.csv --working_dir out.gbm.test7 --virus \"${virus}\" --groups_to_compare case,control
+done < <( tail -n +2 out.gbm.test7/merged.seropositive.csv | cut -d, -f1 ) >> commands
+
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --manifest manifest.menpem.csv  --working_dir out.menpem.test7 >> commands
+for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+echo module load r\; Case_Control_Z_Script.R --manifest manifest.menpem.csv --working_dir out.menpem.test7 ${groups}
+echo module load r\; Case_Control_Seropositivity_Frac.R --manifest manifest.menpem.csv  --working_dir out.menpem.test7 ${groups}
+echo module load r\; Seropositivity_Comparison.R --manifest manifest.menpem.csv  --working_dir out.menpem.test7 ${groups}
+done >> commands
+
+while read virus ; do 
+echo module load r\; By_virus_plotter.R --manifest manifest.menpem.csv --working_dir out.menpem.test7 --virus "${virus}" --groups_to_compare "PF Patient","Endemic Control","Non Endemic Control"
+done < <( tail -n +2 out.menpem.test7/merged.seropositive.csv | cut -d, -f1 ) >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G 
+```
+
+
+
+
+
