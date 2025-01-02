@@ -94,23 +94,19 @@ box_upload.bash ${dir}/Zscores*csv ${dir}/seropositive*csv ${dir}/All* ${dir}/m*
 
 
 
-```
-module load r
-
-Case_Control_Z_Script.R --manifest manifest.gbm.csv --working_dir out.gbm --groups_to_compare case,control
-
-Count_Viral_Tile_Hit_Fraction.R --manifest manifest.gbm.csv  --working_dir out.gbm
-
-Case_Control_Seropositivity_Frac.R --manifest manifest.gbm.csv  --working_dir out.gbm --groups_to_compare case,control
-
-Seropositivity_Comparison.R --manifest manifest.gbm.csv  --working_dir out.gbm --groups_to_compare case,control
-
-while read virus ; do 
-echo $virus
-By_virus_plotter.R --manifest manifest.gbm.csv --working_dir out.gbm --virus "${virus}" --groups_to_compare case,control
-done < <( tail -n +2 out.gbm/merged.seropositive.csv | cut -d, -f1 )
 
 ```
+echo module load r\; Case_Control_Z_Script.R --manifest manifest.gbm.csv --working_dir out.gbm --groups_to_compare case,control > commands.gbm
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --manifest manifest.gbm.csv  --working_dir out.gbm >> commands.gbm
+echo module load r\; Case_Control_Seropositivity_Frac.R --manifest manifest.gbm.csv  --working_dir out.gbm --groups_to_compare case,control >> commands.gbm
+echo module load r\; Seropositivity_Comparison.R --manifest manifest.gbm.csv  --working_dir out.gbm --groups_to_compare case,control >> commands.gbm
+while read virus ; do
+echo module load r \; By_virus_plotter.R --manifest manifest.gbm.csv --working_dir out.gbm --virus \"${virus}\" --groups_to_compare case,control
+done < <( tail -n +2 out.gbm/merged.seropositive.csv | cut -d, -f1 ) >> commands.gbm
+
+commands_array_wrapper.bash --array_file commands.gbm --time 4-0 --threads 4 --mem 30G 
+```
+
 
 
 
@@ -118,8 +114,6 @@ done < <( tail -n +2 out.gbm/merged.seropositive.csv | cut -d, -f1 )
 dir=out.gbm
 box_upload.bash ${dir}/Tile_Comparison* ${dir}/Viral_* ${dir}/Seropositivity* ${dir}/Manhattan_plots*
 ```
-
-
 
 
 
