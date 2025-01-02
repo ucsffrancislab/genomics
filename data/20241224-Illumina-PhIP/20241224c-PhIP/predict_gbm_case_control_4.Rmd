@@ -1,0 +1,139 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+noext=fs::path_ext_remove(fname)
+rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+q("no")
+
+
+
+
+---
+title: "predict_gbm_case_control"
+author: "Jake W"
+date: "2024-12-27"
+output: html_document
+---
+
+
+ALL PATHS MUST BE ABSOLUTE AS IT IS RUN IN /scratch/
+
+
+import numpy as np
+
+from tensorflow import keras
+
+import seaborn as sns
+
+
+```{r setup, include=FALSE}
+
+library(reticulate)
+use_python("/usr/bin/python3")
+```
+
+```{python}
+import pandas as pd
+```
+
+
+```{python}
+#dataset = pd.read_csv('/francislab/data1/working/20241224-Illumina-PhIP/20241224c-PhIP/gbm.csv',index_col=0)
+
+dataset = pd.read_csv(
+	'/francislab/data1/working/20241224-Illumina-PhIP/20241224c-PhIP/out.gbm/Zscores.minimums.filtered.csv',
+	index_col=0,header=[0,1])
+dataset.columns = dataset.columns.droplevel(1)
+dataset = dataset[dataset['z']=='glioma serum']
+dataset = dataset.drop(columns=["z"])
+dataset = dataset.rename(columns={'id':'group'})
+
+print(dataset.shape)
+#	(84, 106663)
+```
+
+```{python}
+x = dataset.drop(columns=["group"])
+x.head()
+```
+
+```{python}
+y = dataset["group"]
+y.head()
+```
+
+```{python}
+#	apparently y needs to be an integer
+from sklearn.preprocessing import StandardScaler, LabelEncoder
+le = LabelEncoder()
+y = le.fit_transform(y)
+y[:5]
+```
+
+```{python}
+le.classes_
+```
+
+
+```{python}
+from sklearn.model_selection import train_test_split
+
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+```
+
+```{python}
+x_train.shape
+```
+
+```{python}
+y_train.shape
+```
+
+```{python}
+x_test.shape
+```
+
+```{python}
+y_test.shape
+```
+
+
+
+```{python}
+import tensorflow as tf
+model = tf.keras.models.Sequential()
+
+#model.add(tf.keras.layers.Dense(256, input_shape=x_train.shape, activation='sigmoid'))
+#/usr/local/lib/python3.10/dist-packages/keras/src/layers/core/dense.py:87: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+
+model.add(tf.keras.layers.Dense(1024, activation='sigmoid'))
+model.add(tf.keras.layers.Dense(512, activation='sigmoid'))
+model.add(tf.keras.layers.Dense(256, activation='sigmoid'))
+model.add(tf.keras.layers.Dense(1, activation='sigmoid'))
+```
+
+
+```{python}
+model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+```
+
+```{python}
+model.fit(x_train, y_train, epochs=20, verbose=2)
+```
+
+```{python}
+model.evaluate(x_test, y_test)
+```
+
+```{python}
+y_test
+```
+
+```{python}
+model.predict(x_test)
+```
+
