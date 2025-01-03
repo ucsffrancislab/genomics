@@ -1,3 +1,5 @@
+.RData
+.Rhistory
 Makefile
 .ipynb_checkpoints/
 requested_sequences.csv
