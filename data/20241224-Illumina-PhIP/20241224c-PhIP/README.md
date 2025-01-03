@@ -222,3 +222,38 @@ box_upload.bash ${dir}/Zscores*csv ${dir}/seropositive*csv ${dir}/All* ${dir}/m*
 ```
 
 
+
+
+
+
+
+##	20250102
+
+
+Testing new scripts from Geno
+
+```
+ln -s ../manifest.gbm.csv out.gbm/
+ln -s ../manifest.menpem.csv out.menpem/
+
+ln -s ../manifest.gbm.csv /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7/
+ln -s ../manifest.menpem.csv /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7/
+
+```
+
+
+```
+\rm commands.test
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -a case -b control -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.test
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -a case -b control -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.test
+for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R ${groups} -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.test
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R ${groups} -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.test
+done
+
+commands_array_wrapper.bash --array_file commands.test --time 4-0 --threads 4 --mem 30G 
+```
+
+
+
