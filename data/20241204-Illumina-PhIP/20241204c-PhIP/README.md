@@ -721,6 +721,34 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 ```
 
 
+
+
+
+
+```
+mkdir out.all
+merge_all_combined_counts_files.py --int --de_nan --out out.all/Plibs.csv out.*.test7/counts/PLib* 
+
+head out.all/Plibs.csv
+wc -l out.all/Plibs.csv 
+grep -vs ",0" out.all/Plibs.csv | head
+
+
+echo "id" > out.all/All4Plibs.csv
+grep -vs ",0" out.all/Plibs.csv | tail -n +2 | cut -d, -f1 | sort >> out.all/All4Plibs.csv
+
+#join -t, --header out.all/All4Plibs.csv out.all/All.count.Zscores.csv | wc -l
+#68955 up from ...53061
+
+join -t, --header out.all/All4Plibs.csv /francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.join_sorted.csv | cut -d, -f2 | tail -n +2 | sort | uniq -c | sed -e 's/^\s*//' -e 's/ /,/' -e '1icount,species' > out.all/All4Plibs.species_counts.csv
+```
+
+
+
+
+
+
+
 ```
 for s in menpem gbm ; do
 phip_seq_aggregate.bash manifest.${s}.csv out.${s}.test7
@@ -762,5 +790,8 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 3
 
 
 
+```
+box_upload.bash out.*.test7/*pdf
+```
 
 
