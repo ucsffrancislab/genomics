@@ -767,7 +767,7 @@ done
 
 ```
 echo module load r\; Count_Viral_Tile_Hit_Fraction.R --manifest manifest.gbm.csv  --working_dir out.gbm.test7 > commands
-echo module load r\; Case_Control_Z_Script.R --manifest manifest.gbm.csv --working_dir out.gbm.test7 --groups_to_compare case,control >> commands
+echo module load r\; Case_Control_Z_Script.R --manifest manifest.gbm.csv --working_dir out.gbm.test7 -a case -b control >> commands
 echo module load r\; Case_Control_Seropositivity_Frac.R --manifest manifest.gbm.csv  --working_dir out.gbm.test7 -a case -b control >> commands
 echo module load r\; Seropositivity_Comparison.R --manifest manifest.gbm.csv  --working_dir out.gbm.test7 -a case -b control >> commands
 while read virus ; do
@@ -775,6 +775,7 @@ echo module load r\; By_virus_plotter.R --manifest manifest.gbm.csv --working_di
 done < <( tail -n +2 out.gbm.test7/merged.seropositive.csv | cut -d, -f1 ) >> commands
 
 echo module load r\; Count_Viral_Tile_Hit_Fraction.R --manifest manifest.menpem.csv  --working_dir out.menpem.test7 >> commands
+
 for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
 echo module load r\; Case_Control_Z_Script.R --manifest manifest.menpem.csv --working_dir out.menpem.test7 ${groups}
 echo module load r\; Case_Control_Seropositivity_Frac.R --manifest manifest.menpem.csv  --working_dir out.menpem.test7 ${groups}
@@ -782,7 +783,7 @@ echo module load r\; Seropositivity_Comparison.R --manifest manifest.menpem.csv 
 done >> commands
 
 while read virus ; do 
-echo module load r\; By_virus_plotter.R --manifest manifest.menpem.csv --working_dir out.menpem.test7 --virus "${virus}" --groups_to_compare "PF Patient","Endemic Control","Non Endemic Control"
+echo module load r\; By_virus_plotter.R --manifest manifest.menpem.csv --working_dir out.menpem.test7 --virus \"${virus}\" --groups_to_compare \"PF Patient\",\"Endemic Control\",\"Non Endemic Control\"
 done < <( tail -n +2 out.menpem.test7/merged.seropositive.csv | cut -d, -f1 ) >> commands
 
 commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G 
