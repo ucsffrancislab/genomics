@@ -243,16 +243,131 @@ ln -s ../manifest.menpem.csv /francislab/data1/working/20241204-Illumina-PhIP/20
 
 
 ```
-\rm commands.test
+\rm commands.multiplate
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -a case -b control -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.test
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -a case -b control -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.test
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -a case -b control -o ${PWD}/MultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.multiplate
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -a case -b control -o ${PWD}/MultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.multiplate
 for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R ${groups} -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.test
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R ${groups} -o ${PWD}/platetestoutput -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.test
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R ${groups} -o ${PWD}/MultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.multiplate
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R ${groups} -o ${PWD}/MultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.multiplate
 done
 
-commands_array_wrapper.bash --array_file commands.test --time 4-0 --threads 4 --mem 30G 
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 10 -a case -b control -o ${PWD}/MultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.test7,${PWD}/out.gbm >> commands.multiplate
+for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 10 ${groups} -o ${PWD}/MultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.test7,${PWD}/out.menpem >> commands.multiplate
+done
+
+commands_array_wrapper.bash --array_file commands.multiplate --time 4-0 --threads 4 --mem 30G 
+```
+
+
+
+
+
+
+
+
+
+
+
+##	20250103
+
+Reprocess with zscore thresholds of 3.5 and 10.
+
+
+
+```
+mkdir out.gbm.multiz
+mkdir out.menpem.multiz
+
+ln -s ../out.gbm/counts out.gbm.multiz/
+ln -s ../manifest.gbm.csv out.gbm.multiz/
+ln -s ../out.menpem/counts out.menpem.multiz/
+ln -s ../manifest.menpem.csv out.menpem.multiz/
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.gbm.csv --thresholds 3.5,10 --output ${PWD}/out.gbm.multiz
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --manifest ${PWD}/manifest.menpem.csv --thresholds 3.5,10 --output ${PWD}/out.menpem.multiz
+
+
+for s in menpem gbm ; do
+phip_seq_aggregate.bash manifest.${s}.csv out.${s}.multiz
+done
+
+box_upload.bash out.*.multiz/Zscores*csv out.*.multiz/seropositive*csv out.*.multiz/All* out.*.multiz/m*
+
+```
+
+
+
+
+
+```
+\rm commands
+for z in 3.5 10 ; do
+ echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest manifest.gbm.csv  --working_dir out.gbm.multiz -a case -b control
+ echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest manifest.gbm.csv --working_dir out.gbm.multiz -a case -b control
+ echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest manifest.gbm.csv  --working_dir out.gbm.multiz -a case -b control
+done >> commands
+while read virus ; do
+ echo module load r\; By_virus_plotter.R --manifest manifest.gbm.csv --working_dir out.gbm.multiz --virus \"${virus}\" --groups_to_compare case,control
+done < <( tail -q -n +2 out.gbm.multiz/merged.*.seropositive.csv | cut -d, -f1 | sort | uniq ) >> commands
+
+
+
+for z in 3.5 10 ; do
+ for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+  echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest manifest.menpem.csv --working_dir out.menpem.multiz ${groups}
+  echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest manifest.menpem.csv  --working_dir out.menpem.multiz ${groups}
+  echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest manifest.menpem.csv  --working_dir out.menpem.multiz ${groups}
+ done
+done >> commands
+
+while read virus ; do
+ echo module load r\; By_virus_plotter.R --manifest manifest.menpem.csv --working_dir out.menpem.multiz --virus \"${virus}\" --groups_to_compare \"PF Patient\",\"Endemic Control\",\"Non Endemic Control\"
+done < <( tail -q -n +2 out.menpem.multiz/merged.*.seropositive.csv | cut -d, -f1 | sort | uniq ) >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+
+
+
+box_upload.bash out.*.multiz/Tile_Comparison* out.*.multiz/Viral_* out.*.multiz/Seropositivity* out.*.multiz/Manhattan_plots*
+
+```
+
+
+
+
+
+
+
+```
+\rm commands.multiz.multiplate
+
+for z in 3.5 10 ; do
+
+ echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control -o ${PWD}/MultiZMultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.multiz,${PWD}/out.gbm.multiz
+
+ echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/MultiZMultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.gbm.multiz,${PWD}/out.gbm.multiz
+
+ for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+  echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} ${groups} -o ${PWD}/MultiZMultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.multiz,${PWD}/out.menpem.multiz
+  echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} ${groups} -o ${PWD}/MultiZMultiPlate -p /francislab/data1/working/20241204-Illumina-PhIP/20241204c-PhIP/out.menpem.multiz,${PWD}/out.menpem.multiz
+ done
+
+done >> commands.multiz.multiplate
+
+commands_array_wrapper.bash --array_file commands.multiz.multiplate --time 4-0 --threads 4 --mem 30G 
+
+box_upload.bash MultiZMultiPlate/*
 ```
 
 
