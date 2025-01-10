@@ -1,0 +1,18 @@
+# RUN METAL ON ALL SUBTYPES
+
+# Make sure to start with case 
+
+FILE=script_HLA2metal.txt
+#FILE=script_snp2HLA_survival_metal.txt
+
+subsets=("case" "idhwt_gwas" "idhmut_gwas")
+for subset in ${subsets[@]};
+
+do
+echo $subset
+sed -i "s/SUBSETNAME/${subset}/g" $FILE
+./generic-metal/metal $FILE
+sed -i "s/${subset}/SUBSETNAME/g" $FILE
+done
+
+

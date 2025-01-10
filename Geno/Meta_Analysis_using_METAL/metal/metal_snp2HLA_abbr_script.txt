@@ -1,0 +1,15 @@
+# RUN METAL ON ALL SUBTYPES
+
+# Make sure to start with case 
+
+FILE=script_HLA2metal.txt
+#FILE=script_snp2HLA_survival_metal.txt
+
+./generic-metal/metal $FILE
+
+sed -i 's/case_/idhwt_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhwt_gwas_/case_/g' $FILE
+

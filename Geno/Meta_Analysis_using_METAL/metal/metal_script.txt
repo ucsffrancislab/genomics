@@ -1,0 +1,49 @@
+# RUN METAL ON ALL SUBTYPES
+
+# Make sure to start with case 
+
+#FILE=script_metal_PRS_survival.txt
+FILE=script_metal_sexspec_PRS.txt
+
+./generic-metal/metal $FILE
+
+sed -i 's/case_/idhmut_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhmut_gwas_/idhmut_1p19qnoncodel_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhmut_1p19qnoncodel_gwas_/trippos_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/trippos_gwas_/idhmut_1p19qcodel_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhmut_1p19qcodel_gwas_/idhwt_1p19qnoncodel_TERTmut_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhwt_1p19qnoncodel_TERTmut_gwas_/idhwt_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhwt_gwas_/idhmut_only_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/idhmut_only_gwas_/tripneg_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/tripneg_gwas_/idhwt_1p19qnoncodel_gwas_/g' $FILE
+
+./generic-metal/metal $FILE
+
+# Tidy up back to case
+
+sed -i 's/idhwt_1p19qnoncodel_gwas_/case_/g' $FILE
+

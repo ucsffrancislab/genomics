@@ -1,0 +1,14 @@
+# RUN METAL ON ALL SUBTYPES
+
+cd /home/gguerra/Pharma_TMZ_glioma/Data
+subsets=$(echo AGS_Onco*GG_IDH*_TMZavail_cases.txt | sed 's/.txt//g'| sed 's/AGS_Onco_//g')
+cd /home/gguerra/Programs/metal
+FILE=script_Pharma_survival_metal_spa.txt
+
+for subset in ${subsets[@]};
+do
+echo $subset
+sed -i "s/_SUBSETNAME/_${subset}/g" $FILE
+./generic-metal/metal $FILE
+sed -i "s/_${subset}/_SUBSETNAME/g" $FILE
+done

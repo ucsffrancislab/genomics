@@ -1,0 +1,43 @@
+
+# this is a script to run METAL meta-analysis software. Two gwass against PSA were conducted on GERA and UKB cohorts and will be used in this analysis.
+
+# define meta-analysis scheme to use effect-sizes (beta) and standard error
+SCHEME STDERR
+
+# define separation format of input files
+SEPARATOR TAB 
+
+# enable genomic correction (adjusts test stats to account for small amounts of population stratification or unaccounted for relatedness)
+GENOMICCONTROL OFF
+
+# enable tracking of allele frequencies across all files
+AVERAGEFREQ OFF
+MINMAXFREQ OFF
+
+# describe and process first input file
+MARKER ID
+ALLELE A2 A1
+EFFECT BETA
+STDERR SE
+PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210323-PRS/MR/case_for_survival_meta.txt 
+
+## describe and process second input file
+#MARKER ID
+#ALLELE A2 A1
+#EFFECT BETA
+#STDERR SE
+#PROCESS /francislab/data1/working/20210302-AGS-illumina/20210323-PRS/MR/case_for_survival_meta.txt 
+
+# describe and process third input file (TCGA)
+MARKER ID
+ALLELE A2 A1
+EFFECT BETA
+STDERR SE
+PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210323-PRS/MR/case_for_survival_meta.txt
+
+# run analysis
+OUTFILE /home/gguerra/Glioma_viral_risk/Meta_analysis/MR_PRS_for_survival_meta_case_ .tbl
+ANALYZE HETEROGENEITY
+
+QUIT
+

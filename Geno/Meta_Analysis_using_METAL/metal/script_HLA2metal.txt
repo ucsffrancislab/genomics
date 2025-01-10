@@ -1,0 +1,36 @@
+# this is a script to run METAL meta-analysis software. Three snp2HLA gwases against glioma subtypes  were conducted on AGS_illumina and AGS_mayo and TCGA_WTCCC cohorts and will be used in this analysis.
+# define meta-analysis scheme to use effect-sizes (beta) and standard error
+SCHEME STDERR
+# define separation format of input files
+SEPARATOR TAB 
+# enable genomic correction (adjusts test stats to account for small amounts of population stratification or unaccounted for relatedness)
+GENOMICCONTROL OFF
+# enable tracking of allele frequencies across all files
+AVERAGEFREQ ON
+MINMAXFREQ ON
+# describe and process first input file
+MARKER ID
+ALLELE A1 A2
+EFFECT BETA
+STDERR SE
+FREQLABEL A1_FREQ
+PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210305-snp2hla/results/20240313.SUBSETNAME_for_risk_meta.txt
+# describe and process second input file
+MARKER ID
+ALLELE A1 A2
+EFFECT BETA
+STDERR SE
+FREQLABEL A1_FREQ
+PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210305-snp2hla/results/20240313.SUBSETNAME_for_risk_meta.txt
+# describe and process the third input file 
+MARKER ID
+ALLELE A1 A2
+EFFECT BETA
+STDERR SE
+FREQLABEL A1_FREQ
+PROCESS /francislab/data1/working/20210302-AGS-illumina/20210305-snp2hla/results/20240313.SUBSETNAME_for_risk_meta.txt
+# run analysis
+OUTFILE /home/gguerra/Glioma_viral_risk/Meta_analysis/snp2HLA_glioma_risk_META_20240313_SUBSETNAME_ .tbl
+ANALYZE HETEROGENEITY
+QUIT
+

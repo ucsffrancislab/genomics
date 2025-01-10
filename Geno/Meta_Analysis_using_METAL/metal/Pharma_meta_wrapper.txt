@@ -1,0 +1,18 @@
+# RUN METAL ON ALL SUBTYPES
+
+# Make sure to start with glioma
+
+FILE=script_Pharma_risk_metal.txt
+
+./generic-metal/metal $FILE
+
+sed -i 's/_glioma_/_idhwt_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/_idhwt_/_idhmut_/g' $FILE
+
+./generic-metal/metal $FILE
+
+sed -i 's/_idhmut_/_glioma_/g' $FILE
+
