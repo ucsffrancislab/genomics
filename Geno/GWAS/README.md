@@ -13,6 +13,27 @@ These files are generally just reformatted versions (with basic QC) of the `*pre
 
 The scripts you would need are in (for example) `/francislab/data1/working/20210302-AGS-illumina/20210310-scripts/GWAS` , there exists identical repositiories for each of the 3 datasets. They have their slight nuances (primarily different covariates available) and so I have maintained different, but nearly identical scripts. Locally they are in the Script_Repository folder on Box. 
 
+
+
+
+/francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210315-scripts/GWAS/
+20210315-GWAS-glioma-script.sh
+20210316-subtype-GWAS-glioma-script.sh
+20210318-subtype-GWAS_glioma_script.sh
+
+/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210310-scripts/GWAS/
+20210312-GWAS-glioma-script.sh
+20210316-GWAS-glioma-script.sh
+20210318-GWAS-glioma-script.sh
+
+/francislab/data1/working/20210302-AGS-illumina/20210310-scripts/GWAS
+20210310-GWAS-glioma-script.sh
+20210316-GWAS-glioma-script.sh
+20210318-GWAS-glioma-script.sh
+
+
+
+
 The GWAS scripts take in a few files:
 1. a pointer to the plink files (`--pfile $FILEPREFIX`)
 
