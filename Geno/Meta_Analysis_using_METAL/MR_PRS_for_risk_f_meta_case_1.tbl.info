@@ -1,0 +1,20 @@
+# This file contains a short description of the columns in the
+# meta-analysis summary file, named '/c4/home/gwendt/github/ucsffrancislab/genomics/Geno/Meta_Analysis_using_METAL/MR_PRS_for_risk_f_meta_case_1.tbl'
+
+# Marker    - this is the marker name
+# Allele1   - the first allele for this marker in the first file where it occurs
+# Allele2   - the second allele for this marker in the first file where it occurs
+# Effect    - overall estimated effect size for allele1
+# StdErr    - overall standard error for effect size estimate
+# P-value   - meta-analysis p-value
+# Direction - summary of effect direction for each study, with one '+' or '-' per study
+# HetISq    - I^2 statistic which measures heterogeneity on scale of 0-100%
+# HetChiSq  - chi-squared statistic in simple test of heterogeneity
+# df        - degrees of freedom for heterogeneity statistic
+# HetPVal   - P-value for heterogeneity statistic
+
+# Input for this meta-analysis was stored in the files:
+# --> Input File 1 : /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210323-PRS/MR/case_for_risk_f_meta.txt
+# --> Input File 2 : /francislab/data1/working/20210302-AGS-illumina/20210323-PRS/MR/case_for_risk_f_meta.txt
+# --> Input File 3 : /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210323-PRS/MR/case_for_risk_f_meta.txt
+

@@ -23,3 +23,12 @@ Using just P-values look at: `script_Pharma_survival_metal_spa_all3.txt`
 
 I've built wrapper files which loop through all subtypes and call this script, see `Pharma_surv_meta_wrapper_spa_all3.txt` as an example. 
 
+
+
+
+
+```
+metal/generic-metal/metal script_metal_sexspec_PRS.txt
+```
+
+
