@@ -61,13 +61,12 @@ plink2 \
 	--covar iid-only $scratchpath/AGS_illumina_covariates.txt \
 	--covar-name Age,sex,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10 \
 	--covar-variance-standardize \
-	--glm firth-fallback hide-covar cols=chrom,pos,ref,alt1,a1freq,firth,test,nobs,beta,orbeta,se,ci,tz,p,err \--maf 0.01 \
+	--glm firth-fallback hide-covar cols=chrom,pos,ref,alt1,a1freq,firth,test,nobs,beta,orbeta,se,ci,tz,p,err \
+	--maf 0.01 \
 	--memory 15000 \
 	--threads 8 \
 	--out $scratchpath/chr$chr.$outdate
 
-#	this seems wrong. the \--maf 0.01 - checking
-#	--glm firth-fallback hide-covar cols=chrom,pos,ref,alt1,a1freq,firth,test,nobs,beta,orbeta,se,ci,tz,p,err \--maf 0.01 \
 
 echo ""
 echo "plink jobs completed, moving results"
