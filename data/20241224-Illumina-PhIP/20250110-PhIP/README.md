@@ -185,3 +185,30 @@ box_upload.bash MultiZMultiPlate/*
 
 
 
+Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R 
+
+
+
+
+```
+\rm commands.multiz.multiplate2
+
+#plates=$( ls -d ${PWD}/out.plate* | paste -sd, )
+plates=$( ls -d ${PWD}/out.plate* | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 10 ; do
+
+ echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/MultiZMultiPlate -p ${plates}
+
+ for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+  echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} ${groups} -o ${PWD}/MultiZMultiPlate -p ${plates}
+ done
+
+done >> commands.multiz.multiplate2
+
+commands_array_wrapper.bash --array_file commands.multiz.multiplate2 --time 4-0 --threads 4 --mem 30G 
+
+#box_upload.bash MultiZMultiPlate/*
+```
+
+
+
