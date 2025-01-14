@@ -1,0 +1,2714 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+parser$add_argument("-o", "--output_dir", type="character", default="./Results",
+	help="output dir [default=%(default)s]", metavar="directory")
+parser$add_argument("--AGSfile", type="character", default=NULL, required=TRUE,
+	help="AGSfile", metavar="csv_file")
+parser$add_argument("--IgEfile", type="character", default=NULL, required=TRUE,
+	help="IgEfile", metavar="csv_file")
+parser$add_argument("--survfile", type="character", default=NULL, required=TRUE,
+	help="survfile", metavar="csv_file")
+parser$add_argument("--AGSagefile", type="character", default=NULL, required=TRUE,
+	help="AGSagefile", metavar="csv_file")
+parser$add_argument("--hla_loc", type="character", default="/francislab/data1/users/gguerra",
+	help="hla_loc [default=%(default)s]", metavar="directory")
+
+#	./IgG_IgE_analysis.Rmd --output_dir ${PWD}/Results  
+#	--AGSfile    /francislab/data1/users/gguerra/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv  
+#	--IgEfile    /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv  
+#	--survfile   /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv  
+#	--AGSagefile /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv
+#	--hla_loc    /francislab/data1/users/gguerra/
+
+#	--ags_i370_Pcfile /francislab/data1/users/gguerra/AGS_i370/20230812_AGS_i370_covariates.txt
+#	--hla_i370_id     /francislab/data1/users/gguerra/AGS_i370/chr6-t1dgc-matched.filtered.100.fam
+#	--hla_i370_allele /francislab/data1/users/gguerra/AGS_i370/chr6-t1dgc-matched.filtered.100.HLA.phased
+#	--ags_onco_Pcfile /francislab/data1/users/gguerra/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt
+#	--hla_onco_id     /francislab/data1/users/gguerra/AGS_Mayo/chr6-t1dgc-matched.filtered.100.fam
+#	--hla_onco_allele /francislab/data1/users/gguerra/AGS_Mayo/chr6-t1dgc-matched.filtered.100.HLA.phased
+
+
+opt <- parser$parse_args()
+#opt_parser = OptionParser(option_list=option_list);
+#opt = parse_args(opt_parser, positional_arguments=TRUE);	# <--- why positional arguments? Needed here?
+ 
+owd=opt$output_dir
+AGSfile=opt$AGSfile
+IgEfile=opt$IgEfile
+survfile=opt$survfile
+AGSagefile=opt$AGSagefile
+
+
+noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+rmarkdown::render(newfname, output_dir = owd, output_file = paste0(noext,'.html') )
+
+print(opt)
+
+q("no")
+
+
+
+
+
+---
+title: "IgE and IgG in Glioma"
+author: "Geno Guerra"
+date: "2024-10-24"
+output: html_document
+---
+
+
+
+```{r command line}
+opt
+```
+
+
+
+```{r setup, include=FALSE, echo =FALSE}
+# Process and merge datasets
+library(stats)
+
+library(knitr)
+library(survminer)
+library(survival)
+library(DT)
+library(metafor)
+library(RColorBrewer)
+library(dplyr)
+library(reshape2)
+library(interactionR)
+library(AF)
+library(ggplot2)
+library(ggpubr)
+library(rstatix)
+library(cobalt)
+library("MatchIt")
+library(quickmatch)
+library("WeightIt")
+library("osqp")
+library("marginaleffects")
+library(randomForest)
+library(corrplot)
+
+
+knitr::opts_chunk$set(echo = TRUE)
+
+# Read in the file 
+AGSData=read.csv(AGSfile, header = TRUE, sep =",")
+IgEData=read.csv(IgEfile, header=TRUE, sep =",")
+survData=read.csv(survfile, header=TRUE, sep = ",")
+ageData=read.csv(AGSagefile, header = TRUE, sep = ",")
+
+
+# Update Survival -- not all are updated, surv file is much shorter than the AGSData file
+for(i in c(1:nrow(AGSData))){
+	agsid =AGSData$AGSID[i]
+	if(agsid %in% survData$AGSID){
+		s = survData$survdays[which(survData$AGSID==agsid)]
+		v = survData$vstatus[which(survData$AGSID==agsid)]
+		AGSData$survdays[i] = s
+		AGSData$vstatus[i] = v
+	}
+	if(agsid %in% ageData$AGSID){
+		new_age = ageData$age[which(ageData$AGSID == agsid)]
+		AGSData$age[i] = new_age
+	}
+}
+
+IgEData= IgEData[match(as.character(AGSData$AGSID), as.character(IgEData$AGSID) ), ] # I NEVER MATCH THIS UP 
+
+for(i in c(1:nrow(AGSData))){
+	agsid = AGSData$AGSID[i]
+	loc = which(IgEData$AGSID==agsid)
+	if(length(loc) > 0){
+		AGSData$allige[i]= IgEData$allige[loc]
+		AGSData$igenum[i]= IgEData$igenum[loc]
+		AGSData$respige[i]= IgEData$respige[loc]
+		AGSData$respnum[i]= IgEData$respnum[loc]
+		AGSData$foodige[i]= IgEData$foodige[loc]
+		AGSData$foodnum[i]= IgEData$foodnum[loc]
+	}
+}
+
+AGSData$white= ifelse(AGSData$race=='W', 1, 0)
+AGSData$agen=as.numeric(AGSData$age)
+
+AGSData$chemo[which(AGSData$chemo ==9)] =NA
+AGSData$chemo[which(AGSData$temodar==1)]= 1
+
+#Filter out the >89 year olds
+if(length(which(is.na(AGSData$agen)))>0){
+	AGSData= AGSData[-which(is.na(AGSData$agen)),]
+}
+
+# Recode vstatus
+#AGSData$vstatus = ifelse(AGSData$vstatus=="D", 1, 0)
+AGSData$vstatus[which(is.na(AGSData$vstatus) )] = 0 
+
+# Recode survdays to surv months 
+month_length = 30.437
+AGSData$survmonths = AGSData$survdays/month_length
+
+AGSData$monthsdx1 = AGSData$daysdx1/month_length
+AGSData$monthsdx1[which(AGSData$monthsdx1 <0)]=0
+# JUST TO CHECK IF BLOOD DRAW TIME ALTERS THE RESULTS, redefine survmonths to by survmonths 
+#AGSData$survmonths = AGSData$survmonths - AGSData$monthsdx1
+
+
+
+
+
+# Get series number from the series column 
+
+seriesn= function(a){
+	seriesnum= strsplit(as.character(a), split= "")[[1]][1]
+	return(seriesnum)
+}
+
+AGSData$seriesn = sapply(AGSData$series, seriesn)
+
+AGSData$idhmut[which(AGSData$idhmut ==9)] = NA
+AGSData$tert[which(AGSData$tert %in% c(8,9))] = NA
+#AGSData$tert = NA
+
+# Make quartiles of the VZV2 measurement only for seropositives, determine the distribution in the controls only. 
+vzvvec=AGSData$VZV2[which(AGSData$case==0 & AGSData$XVZV2==1)]
+vzvquarts=quantile(vzvvec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
+
+
+
+
+# function to assign the quartiles to the seropositives 
+
+vzvqfun = function(sp, sr){
+	quart = NA
+	if(is.na(sp) | sp ==0 |is.na(sr)){
+		quart = NA
+	}else{
+		if(sp ==1){
+			if(sr < vzvquarts[2]){ quart = 1}
+			if( sr>=vzvquarts[2] & sr<vzvquarts[3]){quart = 2}
+			if( sr>=vzvquarts[3] & sr<vzvquarts[4]){quart = 3}
+			if( sr>=vzvquarts[4]){quart = 4}
+		} 
+	}
+	return(quart)
+}
+
+
+
+
+
+
+
+
+AGSData$VZVq= NA
+AGSData$VZVq[which(AGSData$seriesn==1)]= as.factor(mapply(vzvqfun, AGSData$XVZV2[which(AGSData$seriesn==1)], AGSData$VZV2[which(AGSData$seriesn==1)]))
+AGSData$VZVq[which(AGSData$seriesn==2)]= as.factor(mapply(vzvqfun, AGSData$XVZV2[which(AGSData$seriesn==2)], AGSData$VZV2[which(AGSData$seriesn==2)]))
+AGSData$VZVq[which(AGSData$seriesn==3)]= as.factor(mapply(vzvqfun, AGSData$XVZV2[which(AGSData$seriesn==3)], AGSData$VZV2[which(AGSData$seriesn==3)]))
+AGSData$VZVq[which(AGSData$seriesn==4)]= as.factor(mapply(vzvqfun, AGSData$XVZV2[which(AGSData$seriesn==4)], AGSData$VZV2[which(AGSData$seriesn==4)]))
+
+AGSData$VZVhigh = NA
+AGSData$VZVhigh[which(AGSData$VZVq %in% c(1,2,3))] = 0
+AGSData$VZVhigh[which(AGSData$VZVq==4)] = 1
+
+AGSData$VZVlow = NA
+AGSData$VZVlow[which(AGSData$VZVq %in% c(2,3,4))] = 1
+AGSData$VZVlow[which(AGSData$VZVq==1)] = 0
+
+AGSData$VZVloworno = NA
+AGSData$VZVloworno[which(AGSData$VZVq ==1)] = 1
+AGSData$VZVloworno[which(AGSData$XVZV2==0)] = 0
+
+AGSData$VZVlowandno = NA
+AGSData$VZVlowandno[which(AGSData$VZVq %in% c(2,3,4))] = 1
+AGSData$VZVlowandno[which(AGSData$XVZV2==0 | AGSData$VZVq==1)] = 0
+
+# AGSData$VZVQ1v4 = NA
+# AGSData$VZVQ1v4[which(AGSData$VZVq==4)] = 1
+# AGSData$VZVQ1v4[which(AGSData$VZVq==1)] = 0
+# 
+# AGSData$VZVQ1v3 = NA
+# AGSData$VZVQ1v3[which(AGSData$VZVq==3)] = 1
+# AGSData$VZVQ1v3[which(AGSData$VZVq==1)] = 0
+# 
+# 
+# 
+# AGSData$VZVQ1v2 = NA
+# AGSData$VZVQ1v2[which(AGSData$VZVq==2)] = 1
+# AGSData$VZVQ1v2[which(AGSData$VZVq==1)] = 0
+# 
+# AGSData$VZVQ2v3 = NA
+# AGSData$VZVQ2v3[which(AGSData$VZVq==3)] = 1
+# AGSData$VZVQ2v3[which(AGSData$VZVq==2)] = 0
+# 
+# AGSData$VZVQ2v4 = NA
+# AGSData$VZVQ2v4[which(AGSData$VZVq==4)] = 1
+# AGSData$VZVQ2v4[which(AGSData$VZVq==2)] = 0
+# 
+# AGSData$VZVQ3v4 = NA
+# AGSData$VZVQ3v4[which(AGSData$VZVq==4)] = 1
+# AGSData$VZVQ3v4[which(AGSData$VZVq==3)] = 0
+
+
+AGSData$VZVqn = AGSData$VZVq
+AGSData$VZVqn[which(AGSData$XVZV2==0 & AGSData$seriesn %in% c(2,3,4))] = 0
+
+
+AGSData$VZV13PANEL[which(is.na(AGSData$VZV13PANEL) & AGSData$VZV2>=0)] =0 
+AGSData$VZV_NAPPA[which(AGSData$VZV13PANEL==0)] = 0
+AGSData$VZV_NAPPA[which(AGSData$VZV13PANEL==1 & is.na(AGSData$VZV_NAPPA))] = 0
+AGSData$temodar[which(is.na(AGSData$temodar))]=0
+
+AGSData  = AGSData[-which(AGSData$dexatbd==2),]
+
+AGSData$XVZV2[which(AGSData$XVZV2==2)]=NA
+AGSData$XVZV2[which(AGSData$XVZV2==8)]=NA
+
+# Recode RespIge and FoodIge to be 0 1 variables, not 1 2
+AGSData$respige[which(AGSData$respige==1)] = 0
+AGSData$respige[which(AGSData$respige==2)] = 1
+
+AGSData$foodige[which(AGSData$foodige==1)] = 0
+AGSData$foodige[which(AGSData$foodige==2)] = 1
+
+
+
+
+
+# Recode Total Ige to be binary. 
+AGSData$totige12v3 = NA
+for(i in c(1:nrow(AGSData))){
+	if(is.na(AGSData$allige[i])== FALSE){
+  
+		if(AGSData$allige[i] %in% c(1,2)){
+			AGSData$totige12v3[i]= 0
+		}
+		if(AGSData$allige[i] == 3){
+			AGSData$totige12v3[i]= 1
+		}
+	}
+}
+
+AGSData$totige1v23 = NA
+
+for(i in c(1:nrow(AGSData))){
+	if(is.na(AGSData$allige[i])== FALSE){
+		if(AGSData$allige[i] ==1){
+			AGSData$totige1v23[i]= 0
+		}
+		if(AGSData$allige[i] %in% c(2,3)){
+			AGSData$totige1v23[i]= 1
+		}
+	}
+}
+
+
+
+
+
+
+
+
+# Quartiles for the IgE variables 
+
+# Total IgE
+alligevec=AGSData$igenum[which(AGSData$case==0 & is.na(AGSData$igenum)==FALSE & AGSData$igenum >2)]
+# The limit of detection is at 2, put that as its own group
+quarts=quantile(alligevec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
+quarts[1]= 2.001
+totigequarts=quarts
+# function to assign the quartiles to the seropositives 
+
+qfun = function(sr){
+	myquarts=quarts
+	quart = NA
+	if(is.na(sr)){
+		quart = NA
+	}else{
+		if(sr  < myquarts[1]){quart = 0}
+		if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
+		if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
+		if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
+		if( sr>=myquarts[4]){quart = 4}
+	}
+	return(quart)
+}
+
+
+
+AGSData$totigeq= NA
+AGSData$totigeq = factor(AGSData$totigeq, levels = c(0:4))
+AGSData$totigeq[which(is.na(AGSData$igenum)==FALSE)]= as.factor(mapply(qfun, AGSData$igenum[which(is.na(AGSData$igenum)==FALSE)]))
+
+xtabs(~totigeq+ allige+ case, AGSData)
+
+AGSData$totige50 = NA
+AGSData$totige50[which(AGSData$totigeq %in% c(0))]= 0
+
+AGSData$totige50[which(AGSData$totigeq %in% c(1,2))]= 1
+AGSData$totige50[which(AGSData$totigeq %in% c(3,4))]=2
+AGSData$totige50 = factor(AGSData$totige50, levels = c(0:2))
+
+AGSData$totige75 = NA
+AGSData$totige75[which(AGSData$totigeq %in% c(0))]= 0
+AGSData$totige75[which(AGSData$totigeq %in% c(1,2,3))]= 1
+AGSData$totige75[which(AGSData$totigeq %in% c(4))]= 2
+AGSData$totige75 = factor(AGSData$totige75, levels = c(0:2))
+
+# Respiratory IgE
+respigevec=AGSData$respnum[which(AGSData$case==0 & is.na(AGSData$respnum)==FALSE & AGSData$respnum >0.03)]
+quarts=quantile(respigevec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
+quarts[1]= 0.0301
+respquarts=quarts
+respqfun = function(sr){
+	myquarts = respquarts
+	quart = NA
+	if(is.na(sr)){
+		quart = NA
+	}else{
+		if(sr  <myquarts[1]){quart = 0}
+		if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
+		if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
+		if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
+		if( sr>=myquarts[4]){quart = 4}
+	}
+	return(quart)
+}
+
+
+
+
+AGSData$respigeq= NA
+AGSData$respigeq = factor(AGSData$respigeq, levels = c(0:4))
+AGSData$respigeq[which(is.na(AGSData$respnum)==FALSE)]= as.factor(mapply(respqfun, AGSData$respnum[which(is.na(AGSData$respnum)==FALSE)]))
+
+xtabs(~respigeq+ respige+ case, AGSData)
+
+AGSData$respige50 = NA
+AGSData$respige50[which(AGSData$respigeq %in% c(0))]= 0
+AGSData$respige50[which(AGSData$respigeq %in% c(1,2))]= 1
+AGSData$respige50[which(AGSData$respigeq %in% c(3,4))]= 2
+AGSData$respige50 = factor(AGSData$respige50, levels = c(0:2))
+
+AGSData$respige75 = NA
+AGSData$respige75[which(AGSData$respigeq %in% c(0))]= 0
+AGSData$respige75[which(AGSData$respigeq %in% c(1,2,3))]= 1
+AGSData$respige75[which(AGSData$respigeq %in% c(4))]= 2
+AGSData$respige75 = factor(AGSData$respige75, levels = c(0:2))
+
+# Food IgE
+foodigevec=AGSData$foodnum[which(AGSData$case==0 & is.na(AGSData$foodnum)==FALSE & AGSData$foodnum>0.03)]
+quarts=quantile(foodigevec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
+quarts[1]= 0.0301
+foodquarts = quarts
+foodqfun = function( sr){
+	myquarts = foodquarts
+	quart = NA
+	if(is.na(sr)){
+		quart = NA
+	}else{
+		if(sr < myquarts[1]){quart = 0}
+		if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
+		if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
+		if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
+		if( sr>=myquarts[4]){quart = 4}
+	}
+	return(quart)
+}
+
+
+#nico
+# Nico's first typing on the computer 20240612
+
+AGSData$foodigeq= NA
+AGSData$foodigeq = factor(AGSData$foodigeq, levels = c(0:4))
+AGSData$foodigeq[which(is.na(AGSData$foodnum)==FALSE)]= as.factor(mapply(foodqfun, AGSData$foodnum[which(is.na(AGSData$foodnum)==FALSE)]))
+
+xtabs(~foodigeq+ foodige + case, AGSData)
+
+AGSData$foodige50 = NA
+AGSData$foodige50[which(AGSData$foodigeq %in% c(0))]= 0
+AGSData$foodige50[which(AGSData$foodigeq %in% c(1,2))]= 1
+AGSData$foodige50[which(AGSData$foodigeq %in% c(3,4))]= 2
+AGSData$foodige50 = factor(AGSData$foodige50, levels = c(0:2))
+
+AGSData$foodige75 = NA
+AGSData$foodige75[which(AGSData$foodigeq %in% c(0))]= 0
+AGSData$foodige75[which(AGSData$foodigeq %in% c(1,2,3))]= 1
+AGSData$foodige75[which(AGSData$foodigeq %in% c(4))]= 2
+AGSData$foodige75 = factor(AGSData$foodige75, levels = c(0:2))
+
+AGSData$VZVorRespHigh = NA
+
+for(i in c(1:nrow(AGSData))){
+	if(is.na(AGSData$respige[i])== FALSE & is.na(AGSData$VZVlowandno[i])== FALSE){
+		if( AGSData$respige[i]==1 | AGSData$VZVlowandno[i]==1){
+			AGSData$VZVorRespHigh[i] = 1
+		}
+		if( AGSData$respige[i]==0 & AGSData$VZVlowandno[i]==0){
+			AGSData$VZVorRespHigh[i] = 0
+		}
+	}
+}
+
+
+AGSData$ngrade[which(is.na(AGSData$ngrade) & AGSData$case==1)] = NA
+
+AGSData$ngrade = factor(as.character(AGSData$ngrade), order= TRUE, levels = c( "2","3", "4"))
+
+# recode controls with na dexatbd to be 0
+AGSData$dexatbd[which(is.na(AGSData$dexatbd) & AGSData$case==0)] = 0 
+
+CIfun =function(mean, se){
+	lower = round(exp(mean - 1.96 * se), digits = 2)
+	upper = round(exp(mean+ 1.96 * se), digits =2)
+	return(paste(lower,"-",upper, sep = ""))
+}
+
+AGSData$vstatus = factor(AGSData$vstatus)
+  
+AGSData$diag = NA
+dx_groups = data.frame(cbind(c(1:17),c( "gbm",
+	"anap astro",
+	"astro gr 2",
+	"anap oligo",
+	"oligo",
+	"anap oligoastro",
+	"oligoastro",
+	"anap ependymoma",
+	"ependymoma",
+	"jpa",
+	"medullo",
+	"other",
+	"mixed",
+	"ganglio",
+	"oligo NOS",
+	"ependy NOS",
+	"astro NOS")))
+colnames(dx_groups) = c("dxcode", "diag")
+
+for( i in c(1:nrow(AGSData))){
+	if(is.na(AGSData$dxcode[i])== FALSE){
+		AGSData$diag[i] = dx_groups$diag[which(as.integer(dx_groups$dxcode) == as.integer(AGSData$dxcode[i]) )]
+	}
+}
+
+AGSData$whogroups = NA
+whog = data.frame(cbind(c(1:5, 9), c("IDH Mut Oligo", "IDH Mut Astro", "IDH Mut Astro", "IDH WT GBM", "IDH WT GBM", NA)))
+colnames(whog) = c("who", "whoname")
+
+for( i in c(1:nrow(AGSData))){
+	if(is.na(AGSData$who2016[i])== FALSE){
+		AGSData$whogroups[i] = whog$whoname[which(as.integer(whog$who) == as.integer(AGSData$who2016[i]) )]
+	}
+}
+
+
+# HLA Type integration 
+
+# Location of HLA types (for AGS Mayo and AGS i370)
+####hla_loc = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20240313-HLA-risk_survival/HLA_data/"
+hla_loc = opt$hla_loc
+
+# Convert presence absence to 0 1 and 2s. 
+hla_collapse = function(hla_pair){
+	value = 0
+	if("P" %in% hla_pair){
+		value = 1
+		if(!("A"%in% hla_pair)){
+			value = 2
+		}
+	}
+	return(value)
+}
+
+
+
+# Start with AGS i370
+
+AGSData$array = NA
+
+hla_i370_id = read.csv(paste(hla_loc, "/AGS_i370/chr6-t1dgc-matched.filtered.100.fam", sep = ""), header = FALSE, sep = "")[,2]
+hla_i370_allele = read.csv(paste(hla_loc, "/AGS_i370/chr6-t1dgc-matched.filtered.100.HLA.phased", sep = ""), header = FALSE, sep = " ")
+
+hla_i370_anames = hla_i370_allele[,2]
+for( allele in c(1:length(hla_i370_anames))){
+	AGSData[[hla_i370_anames[allele]]] = NA
+}
+hla_locs = which(colnames(AGSData) %in% hla_i370_anames)
+for(i in c(1:length(AGSData$AGSID))){
+	loc = grep(AGSData$AGSID[i], hla_i370_id)
+	if(length(loc >0)){
+		# print(AGSData$AGSID[i])
+		AGSData$array[i] ="i370"
+		hla_ind =hla_i370_allele[, c(loc*2+1, loc*2+2)]
+		hla_vals = apply(hla_ind,1, hla_collapse)
+		AGSData[i,hla_locs] = hla_vals
+	}
+}
+#	
+# AGS_Mayo 
+hla_onco_id = read.csv(paste(hla_loc, "/AGS_Mayo/chr6-t1dgc-matched.filtered.100.fam", sep = ""), header = FALSE, sep = "")[,2]
+hla_onco_allele = read.csv(paste(hla_loc, "/AGS_Mayo/chr6-t1dgc-matched.filtered.100.HLA.phased", sep = ""), header = FALSE, sep = " ")
+
+hla_onco_anames = hla_onco_allele[,2]
+
+# Assert they are the same hla alleles 
+if(length(which((hla_onco_anames == hla_i370_anames)== FALSE))){
+	print("STOP: HLA allele types don't align between the datasets!!")
+}
+
+hla_locs = which(colnames(AGSData) %in% hla_onco_anames)
+for(i in c(1:length(AGSData$AGSID))){
+	loc = grep(AGSData$AGSID[i], hla_onco_id)
+	if(length(loc >0)){
+		# print(AGSData$AGSID[i])
+		AGSData$array[i] ="oncoarray"
+
+		hla_ind =hla_onco_allele[, c(loc*2+1, loc*2+2)]
+		hla_vals = apply(hla_ind,1, hla_collapse)
+		AGSData[i,hla_locs] = hla_vals
+	}
+}
+
+# Done with HLA -- coded as 0 1 2 based on absent/present phased types. 
+
+# Process in the Principal Components 
+AGSData[paste("PC", c(1:10), sep = "")] = NA
+pccols = which(colnames(AGSData) %in% paste("PC", c(1:10), sep = ""))
+#wd = "/Users/gguerra/Library/CloudStorage/Box-Box/Polygenic_Risk_Scores/MR_PRS_viral_results_transplanted"
+
+# Read in the AGS i370 PCs and assign them 
+##ags_i370_Pcfile = read.csv(paste(wd, "/AGS_illumina/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
+ags_i370_Pcfile = read.csv(paste(hla_loc, "/AGS_i370/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
+
+i370_ID = AGSData$AGSID[which(AGSData$array == "i370")]
+pccols_pcfile = which(colnames(ags_i370_Pcfile) %in% paste("PC", c(1:10), sep = ""))
+for( id in i370_ID){
+	loc1 = grep(id, ags_i370_Pcfile$IID)
+	if(length(loc1)<1){
+		print(id)
+		next
+	}
+	loc2 = which(AGSData$AGSID==id)
+	AGSData[loc2, pccols] = ags_i370_Pcfile[loc1, pccols_pcfile]
+}
+
+# Read in the AGS Onco PCs and assign them 
+##ags_onco_Pcfile = read.csv(paste(wd, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
+ags_onco_Pcfile = read.csv(paste(hla_loc, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
+
+onco_ID = AGSData$AGSID[which(AGSData$array == "oncoarray")]
+pccols_pcfile = which(colnames(ags_onco_Pcfile) %in% paste("PC", c(1:10), sep = ""))
+for( id in onco_ID){
+	loc1 = grep(id, ags_onco_Pcfile$IID)
+	if(length(loc1)<1){
+		print(id)
+		next
+	}
+	loc2 = which(AGSData$AGSID==id)
+	AGSData[loc2, pccols] = ags_onco_Pcfile[loc1, pccols_pcfile]
+}
+
+
+# Optionally, write out the resulting covariate file. 
+#write.table(AGSData, "/Users/gguerra/Library/CloudStorage/Box-Box/20241126-Geno-Scripts-Data-Notes/AGS_Ig_Data/Cleaned_Covariates_with_HLA.tsv", quote = FALSE, row.names=FALSE, col.names= TRUE, sep = "\t")
+
+  
+```
+
+
+
+
+# Research Questions {.tabset .tabset-fade .tabset-pills} 
+
+## Intro thoughts 
+In this analysis, we aim to uncover if there exists overlap in the association of IgE and IgG on glioma risk and survival. Specifically, are they actually one in the same? Or do they have some sort of multiplicative effect. Or are they completely independent? 
+
+Do HLA alleles or germline mutations alter these effects? We already know the VZV one, what about with IgE? Does the VZV SNP do anything to that association? 
+
+We observed protective effects of elevated VZV (Qs 2-4) and positive Resp IgE test. 
+
+
+## Possible methods 
+For IgE, we required the use of Propensity Scores to ensure balance in the covariates, we likely need to continue to use that. We can use regular models when we estimate PAF. 
+
+Question, can we model interactions and those things using the propensity score methods? Will this take some clever modeling? 
+
+First thing would be to look at Risk and Survival interaction between Resp IgE and VZV (or total IgE). 
+
+If we establish differences, look at HLA types different between the groups. Sample sizes may get small when we overlap genotype information. 
+
+
+# Exploratory work {.tabset .tabset-fade .tabset-pills} 
+
+## Risk Percents by group
+
+```{r risk plotter thing, echo = FALSE}
+
+# Get percents for all 4 for each group 
+myvals = data.frame(mat.or.vec(20, 3))
+colnames(myvals) = c("Percent", "Ig", "Group")
+# Controls 
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= AGSData
+df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2),]
+myfun = paste("~", var1, "+", var2, sep = "")
+labels = c("resp - , VZV -", "resp +, VZV -", "resp -, VZV +", "resp +, VZV +")
+counter = 1
+# Controls
+myxt = xtabs(as.formula(myfun), df1[which(df1$case==0),])
+mysum = sum(myxt)
+myxt/mysum *100
+percents =  c(myxt/mysum *100)
+myvals$Percent[c(counter:(counter+3))] =percents
+myvals$Ig[c(counter:(counter+3))] =labels
+myvals$Group[c(counter:(counter+3))] ="Control"
+counter = counter+4
+
+# IDH WT
+myxt = xtabs(as.formula(myfun), df1[which(df1$idhmut==0),])
+mysum = sum(myxt)
+myxt/mysum *100
+percents =  c(myxt/mysum *100)
+myvals$Percent[c(counter:(counter+3))] =percents
+myvals$Ig[c(counter:(counter+3))] =labels
+myvals$Group[c(counter:(counter+3))] ="IDH WT"
+counter = counter+4
+
+  # IDH Mut
+myxt = xtabs(as.formula(myfun), df1[which(df1$idhmut==1),])
+mysum = sum(myxt)
+myxt/mysum *100
+percents =  c(myxt/mysum *100)
+myvals$Percent[c(counter:(counter+3))] =percents
+myvals$Ig[c(counter:(counter+3))] =labels
+myvals$Group[c(counter:(counter+3))] ="IDH Mut"
+counter = counter+4
+
+  # IDH Mut 1p19q noncodel
+myxt = xtabs(as.formula(myfun), df1[which(df1$idhmut==1 & df1$pqimpute==0),])
+mysum = sum(myxt)
+myxt/mysum *100
+percents =  c(myxt/mysum *100)
+myvals$Percent[c(counter:(counter+3))] =percents
+myvals$Ig[c(counter:(counter+3))] =labels
+myvals$Group[c(counter:(counter+3))] ="IDH Mut pq noncodel"
+counter = counter+4  
+  
+  # IDH Mut 1p19q codel
+myxt = xtabs(as.formula(myfun), df1[which(df1$idhmut==1 & df1$pqimpute==1),])
+mysum = sum(myxt)
+myxt/mysum *100
+percents =  c(myxt/mysum *100)
+myvals$Percent[c(counter:(counter+3))] =percents
+myvals$Ig[c(counter:(counter+3))] =labels
+myvals$Group[c(counter:(counter+3))] ="IDH Mut pq codel"
+counter = counter+4
+
+# Make the plot
+myvals$Group= factor(myvals$Group, levels = c("Control", "IDH WT", "IDH Mut", "IDH Mut pq noncodel", "IDH Mut pq codel"))
+  
+ggplot(aes(x = Group, y = Percent, fill = Ig), data= myvals) +
+	# Implement a grouped bar chart
+	geom_bar(position = "stack", stat = "identity", color="black")+
+	scale_fill_brewer(palette="Dark2") + 
+	ggtitle("Percent of individuals with given Ig patterns by group: Stacked")
+  
+ggplot(aes(x = Ig, y = Percent, fill = Group), data= myvals) +
+	# Implement a grouped bar chart
+	geom_bar(position = "dodge", stat = "identity", color="black")+
+	scale_fill_brewer(palette="Dark2") + 
+	ggtitle("Percent of individuals with given Ig patterns by group: By Ig Type")
+  
+```
+
+
+## Xtabs on risk {.tabset .tabset-fade .tabset-pills} 
+
+
+```{r xtab fun, echo = FALSE}
+
+xtab_fun = function(df,var1,l1, var2, l2){
+	df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2),]
+
+	myfun = paste("~", var1, "+", var2, sep = "")
+	cat("Cases:\n")
+	myxt = xtabs(as.formula(myfun), df1[which(df1$case==1),])
+	mysum = sum(myxt)
+	print(mysum)
+	cat(" Raw Numbers\n")
+
+	print(myxt)
+	cat(" Percent\n")
+
+	print(myxt/mysum *100)
+
+	cat("Controls:\n")
+	myxt = xtabs(as.formula(myfun), df1[which(df1$case==0),])
+	mysum = sum(myxt)
+	print(mysum)
+	cat(" Raw Numbers\n")
+
+	print(myxt)
+	cat(" Percent\n")
+
+	print(myxt/mysum *100)  
+}
+
+
+```
+
+This section looks at the basic numbers of people with VZ and resp elevated between cases and controls. 
+
+### IDH wildtype {.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which(AGSData$idhmut==0 | AGSData$case==0),]
+group="IDH_WT"
+```
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+xt = xtab_fun(df, var1, l1, var2, l2) 
+```
+
+### IDH mutant {.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which(AGSData$idhmut==1 | AGSData$case==0),]
+group="IDH_MT"
+```
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+xt = xtab_fun(df, var1, l1, var2, l2) 
+```
+
+### IDH mutant 1p19q codel{.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which((AGSData$idhmut==1 & AGSData$pqimpute==1) | AGSData$case==0),]
+group="IDH_MT_1p19qcodel"
+```
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+xt = xtab_fun(df, var1, l1, var2, l2) 
+```
+
+### IDH mutant 1p19q non-codel{.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which((AGSData$idhmut==1 & AGSData$pqimpute==0) | AGSData$case==0),]
+group="IDH_MT_1p19qnoncodel"
+```
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+xt = xtab_fun(df, var1, l1, var2, l2) 
+```
+
+
+## VZV associated Alleles from Kachuri & Francis 2020
+```{r, echo = FALSE}
+library(UpSetR)
+myvar = "VZVorRespHigh"
+samps = "all_samples"
+mydat = AGSData[-which(is.na(AGSData$HLA_A_01)),]
+#alleles_of_interest = c("HLA_DRB1_0301", "HLA_B_0801",  "HLA_C_0701", "HLA_A_0101")
+alleles_of_interest = c("HLA_DRB1_0301","HLA_DQB1_0201" ,"HLA_B_0801", "HLA_DRB3_0101", "HLA_C_0701", "HLA_A_0101","HLA_DQA1_0501", "HLA_DRB5_0101", "HLA_DQB1_0602", "HLA_DRB1_1501", "HLA_A_0201", "HLA_DQA1_0102")
+allele_weights = c(0.236,0.236, 0.238,0.197, 0.194, 0.181,0.153, -0.135, -0.133, -0.132, -0.103, -0.099)
+
+# Removing non-indept after conditioning 
+alleles_of_interest = c("HLA_DRB1_0301" ,"HLA_B_0801",  "HLA_C_0701", "HLA_A_0101", "HLA_DRB5_0101", "HLA_DQB1_0602", "HLA_DRB1_1501", "HLA_A_0201", "HLA_DQA1_0102")
+allele_weights = c(0.236, 0.238, 0.194, 0.181, -0.135, -0.133, -0.132, -0.103, -0.099)
+
+
+alleles_in_file = alleles_of_interest[which(alleles_of_interest %in% colnames(AGSData))]
+alleles_file_weights = allele_weights[which(alleles_of_interest %in% colnames(AGSData))]
+print(alleles_in_file)
+
+# Create a predicted VZV sero score 
+mydat$HLA_VZV_score = NA
+
+for(i in c(1:nrow(mydat))){
+	score = 0
+	for(j in c(1:length(alleles_in_file))){
+		dose = mydat[i, alleles_in_file[j]]
+		if( allele_weights[j] < 0){
+			dose = abs(dose-2)
+		}
+		dw = dose * abs(allele_weights[j])
+		score = score + dw
+	}
+	mydat$HLA_VZV_score[i] = score
+}
+
+
+
+# Convert them to binary presence/absence 
+for(a in alleles_in_file){
+	loc = which(colnames(mydat) == a)
+	mydat[which(mydat[,loc] %in% c(1,2)), loc] = 1
+}
+
+# Upset plots of these HLA types
+
+# All 
+upset(mydat[,alleles_in_file], )
+
+# VZV elevated
+upset(mydat[which(mydat$VZVlowandno ==1),alleles_in_file], keep.order = TRUE)
+
+# VZV low 
+upset(mydat[which(mydat$VZVlowandno ==0),alleles_in_file], keep.order = TRUE)
+
+# Glioma cases
+upset(mydat[which(mydat$case ==1),alleles_in_file], keep.order = TRUE, empty.intersections = TRUE )
+
+# IDH wt cases
+upset(mydat[which(mydat$idhmut ==0),alleles_in_file], keep.order=TRUE, empty.intersections = TRUE, nintersects = NA )
+
+# Controls
+upset(mydat[which(mydat$case ==0),alleles_in_file], keep.order = TRUE, empty.intersections = TRUE)
+
+
+
+# Have any
+
+mydat$HLA_multi = NA
+mydat$HLA_sum = NA
+
+
+for(i in c(1:nrow(mydat))){
+	mydat$HLA_sum[i] = sum(mydat[i,alleles_in_file])
+	if(sum(mydat[i,alleles_in_file])> 0){
+		mydat$HLA_multi[i] = 1
+	}else{
+		mydat$HLA_multi[i] = 0
+	}
+}
+
+mydat$HLA_VZV_score_high = ifelse(mydat$HLA_VZV_score >1.2,1,0)
+mydat$HLA_VZV_score_low = ifelse(mydat$HLA_VZV_score <=0.67,1,0)
+
+
+a=cor(mydat[,alleles_in_file])
+cor_plot(a)
+```
+
+## Exploring the HLA VZV score distribution 
+
+
+```{r, echo = FALSE}
+
+###	hist(plot_dat$HLA_VZV_score, breaks = 15)
+
+plot_dat = mydat[-which(is.na(mydat$VZVlowandno)),]
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) + geom_boxplot(mapping = aes(x=as.factor(VZVqn), y=HLA_VZV_score))
+
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) + geom_boxplot(mapping = aes(x=as.factor(VZVlowandno), y=HLA_VZV_score))
+
+
+# histogram 
+
+# vs VZV low and no
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(VZVlowandno)), color="#e9ecef", alpha=0.6, position = 'identity') +
+	scale_fill_manual(values=c("#69b3a2", "#404080"))
+
+# by reactivity bin 
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(VZVqn)), color="#e9ecef", alpha=0.5, position = 'identity') +
+	scale_fill_manual(values=c("burlywood3","cadetblue","darkgoldenrod1","darkseagreen", "darksalmon"))
+
+# by case
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(case)), color="#e9ecef", alpha=0.6, position = 'identity') +
+	scale_fill_manual(values=c("green4", "red3"))
+
+# By IDH WT case
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$idhmut==0 | plot_dat$case==0)),]) +
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(case)), color="#e9ecef", alpha=0.6, position = 'identity') +
+	scale_fill_manual(values=c("green4", "red3"))
+
+plot_dat$diag = NA
+plot_dat$diag = ifelse(plot_dat$case==0, "Control", NA)
+for(i in c(1:nrow(plot_dat))){
+	if(is.na(plot_dat$idhmut[i])== FALSE){
+		if(plot_dat$idhmut[i]==1){
+			plot_dat$diag[i]="IDH Mut"
+		}
+		if(plot_dat$idhmut[i]==0){
+			plot_dat$diag[i] = "IDH WT"
+		}
+	}
+}
+
+# By subtype
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$idhmut %in% c(0,1) | plot_dat$case==0)),]) +
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(diag)), color="#e9ecef", alpha=0.6, position = 'identity') +
+	scale_fill_manual(values=c("yellow4", "red3", "slateblue"))
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Pairwise Survival Plots  {.tabset .tabset-fade .tabset-pills}
+```{r pair surv plotter, echo = FALSE}
+
+pair_plotter = function(df, var1,l1, var2, l2){
+  
+	#df1 = df[complete.cases(df[, which(colnames(df) %in% c("vstatus", "survmonths", var1, var2))]),c("vstatus", "survmonths", var1, var2)]
+  
+	df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2),]
+  
+  
+	# Covariates to include 
+	mycovs = c(var1, var2, "vstatus", "survmonths", "agen")
+    
+	possible_covariates = c("sex", "white", "dexatbd", "chemo", "rad", "surg", "idhmut","pqimpute", "ngrade", "seriesn", "tert")
+	# for(p in possible_covariates){
+	#   nlevels = length(summary(na.omit(as.factor(df1[,p]))))
+	# if(nlevels >1){
+	#   mycovs = c(mycovs, p)
+	# 
+	# }  
+	#   
+	# }
+       
+	decdf_temp = df1[complete.cases(df1[, which(colnames(df1) %in% unique(c(mycovs, possible_covariates) ))]),which(colnames(df1) %in% unique(c(mycovs, possible_covariates) ))]
+    
+	for(p in possible_covariates){
+		if(p %in% c(var1, var2)){next}
+		nlevels = length(summary(na.omit(as.factor(df1[,p]))))
+		if(nlevels >1){
+			if(nlevels %in% c(2,3)){
+				if(min(summary(as.factor(na.omit(decdf_temp[,p])))) <5 ){
+					print(paste("Should skip ", p, sep = ""))
+					next
+				}
+			}
+			mycovs = c(mycovs, p)
+		}  
+	}
+       
+	mycovs = unique(mycovs)
+	df1 = df1[complete.cases(df1[, which(colnames(df1) %in% mycovs)]),]
+ 
+	df1$x = NA
+	df1$x = factor(paste(var1,"=", df1[,var1], ":", var2,"=", df1[,var2], sep = ""))
+	df1$vstatus = as.integer(df1$vstatus)
+	df1$survmonths = as.numeric(df1$survmonths)
+  
+	fun1 = "Surv(survmonths, vstatus)~x"
+	survf = survfit(as.formula(fun1), data=df1)
+	cat("Median months survival (95% CI): ")
+	print(survf)
+  
+	title = paste("Survival grouped by ", var1, " and ", var2  , sep ="")
+
+	a= ggsurvplot(surv_fit(as.formula(fun1), data = df1), xlab = "Time (in months)", pval= FALSE, conf.int=FALSE, title = title, font.main = 10, risk.table=TRUE,surv.median.line = "hv", xlim= c(0,50), break.x.by =10, legend.labs = levels(df1$x), legend = "none", risk.table.height = 0.33)
+	print(a)
+  
+	return(survf)
+}
+
+
+```
+
+### IDH wildtype {.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which(AGSData$idhmut==0),]
+group="IDH_WT"
+```
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+survf = pair_plotter(df, var1, l1, var2, l2); lab = paste(group,"_",var1, "_", var2, sep = "") 
+```
+
+#### HLA score and VZV
+```{r, echo = FALSE}
+var1 = "HLA_VZV_score_high"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df = mydat[which(mydat$idhmut==0),]
+group="IDH_WT"
+
+survf = pair_plotter(df, var1, l1, var2, l2); lab = paste(group,"_",var1, "_", var2, sep = "") 
+```
+
+### IDH mutant {.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which(AGSData$idhmut==1),]
+group="IDH_MT"
+```
+
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+survf = pair_plotter(df, var1, l1, var2, l2); lab = paste(group,"_",var1, "_", var2, sep = "") 
+```
+
+### IDH mutant 1p19q codel {.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which(AGSData$idhmut==1 & AGSData$pqimpute==1),]
+group="IDH_Mut_1p19q_codel"
+```
+
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+survf = pair_plotter(df, var1, l1, var2, l2); lab = paste(group,"_",var1, "_", var2, sep = "") 
+```
+
+### IDH mutant 1p19q noncodel {.tabset .tabset-fade .tabset-pills} 
+```{r, echo = FALSE}
+df = AGSData[which(AGSData$idhmut==1 & AGSData$pqimpute==0),]
+group="IDH_Mut_1p19q_noncodel"
+```
+
+#### Respiratory IgE and VZV (low v high)
+0 or Q1 vs Q2-4
+```{r, echo = FALSE}
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+
+survf = pair_plotter(df, var1, l1, var2, l2); lab = paste(group,"_",var1, "_", var2, sep = "") 
+```
+
+
+
+
+# Risk Analysis  {.tabset .tabset-fade .tabset-pills}
+
+
+```{r risk function, echo = FALSE}
+
+risk_series = sort(unique(AGSData$seriesn))
+
+risk_interaction = function(ds, varname1, varname2, varofint, typeofint, ageofint, serieslist, datat){
+	dataset1= ds
+	decdf= dataset1
+	decdf$case= as.integer(decdf$case)
+	decdf$agen = as.numeric(decdf$agen) # to numeric
+	decdf$white = as.integer(decdf$white)
+	decdf$seriesn = (as.character(decdf$seriesn))
+    
+	if(datat == "f"){
+		decdf[,varname1] = as.integer(as.character(decdf[,varname1]))
+		decdf[,varname2] = as.integer(as.character(decdf[,varname2]))
+	}
+	decdf= data.frame(decdf)
+  
+	variables = c("case", varname1, varname2, "agen")
+	# Covariates to include 
+	extra_covariates = "+agen"
+	possible_covariates = c("white", "seriesn", "sex")
+	for(p in possible_covariates){
+		nlevels = length(summary(as.factor(dataset1[,p])))
+		if(nlevels >1){
+
+			extra_covariates= paste( extra_covariates, "+ ", p, sep = "")
+			variables = c(variables, p)
+  
+		}  
+      
+	}
+	decdf= decdf[complete.cases(variables),variables]
+	decdf= na.omit(decdf)
+    
+	logitmodel=paste("case ~ ", varname1, "*", varname2,extra_covariates, sep = "")
+	print(logitmodel)
+      
+	logit_fun = glm(logitmodel, data = decdf, family=binomial(link="logit"))
+  
+	res = summary(logit_fun)
+    
+	print(res)
+    
+	#Unconditional analysis 
+	logit_0 = paste("case ~ ", varname1,extra_covariates, sep = "")
+	logit_fun_uc = glm(logit_0, data =decdf , family=binomial(link="logit"))
+  
+	resuc = summary(logit_fun_uc)
+	rescuc =resuc$coefficients
+	print(paste("Effect of ", varname1, " unconditional on ", varname2, sep = ""))
+	print(rescuc[varname1,])
+    
+	# Conditional analysis 
+	logit_0 = paste("case ~ ", varname1,extra_covariates, sep = "")
+	decdf0 = decdf[which(decdf[,varname2] ==0),]
+	logit_fun_0 = glm(logit_0, data =decdf0 , family=binomial(link="logit"))
+  
+	res0 = summary(logit_fun_0)
+	resc0 =res0$coefficients
+	print(paste("Effect of ", varname1, " conditional on ", varname2, " = 0", sep = ""))
+	print(resc0[varname1,])
+    
+	decdf1 = decdf[which(decdf[,varname2] ==1),]
+
+	logit_fun_1 = glm(logit_0, data = decdf1, family=binomial(link="logit"))
+
+	res1 = summary(logit_fun_1)
+	resc1 =res1$coefficients
+	print(paste("Effect of ", varname1, " conditional on ", varname2, " = 1", sep = ""))
+	print(resc1[varname1,])
+    
+	# Effect Modification section, requires recoding of the exposure variable, so be careful it may error out. Make sure sex is varname2.
+	a = interactionR(logit_fun, exposure_names = c(varname2, varname1), em = TRUE, recode = TRUE)
+	print(a$dframe)
+      
+}
+
+
+
+```
+
+## Resp IgE and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint="Resp IgE and VZV"
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= AGSData
+df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% risk_series),]
+datat="f"
+ageofint =""
+```
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which(df1$case==0 | df1$idhmut==0),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+#risk_interaction(datasetr, var2, var1, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+#### With any genetic array available
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( (df1$case==0 | df1$idhmut==0) & df1$HLA_A_01 %in% c(0,1,2)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+#risk_interaction(datasetr, var2, var1, varofint, typeofint, ageofint, risk_series, datat)
+
+
+```
+
+#### HLA_DQA1_05 Present
+
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( (df1$case==0 | df1$idhmut==0) & df1$HLA_DQA1_05 %in% c(1,2)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+```
+
+#### HLA_DQA1_05 Absent
+
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( (df1$case==0 | df1$idhmut==0) & df1$HLA_DQA1_05 %in% c(0)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+```
+
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$case==0 | df1$idhmut==1),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==1)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==0)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+## Total IgE and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint="Total IgE and VZV"
+var1 = "totige1v23"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= AGSData
+df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% risk_series),]
+datat="f"
+ageofint =""
+```
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which(df1$case==0 | df1$idhmut==0),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$case==0 | df1$idhmut==1),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==1)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==0)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+
+
+
+## VZV HLA alleles P/A and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint="VZV alleles and VZV"
+var1 = "HLA_multi"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= mydat
+df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% risk_series),]
+datat="f"
+ageofint =""
+```
+
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which(df1$case==0 | df1$idhmut==0),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+#risk_interaction(datasetr, var2, var1, varofint, typeofint, ageofint, risk_series, datat)
+
+
+```
+
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$case==0 | df1$idhmut==1),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==1)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==0)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+## VZV HLA score high v low and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint="VZV HLA score and VZV"
+var1 = "HLA_VZV_score_high"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= mydat
+df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% risk_series),]
+datat="f"
+ageofint =""
+```
+
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which(df1$case==0 | df1$idhmut==0),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+risk_interaction(datasetr, var2, var1, varofint, typeofint, ageofint, risk_series, datat)
+
+
+```
+
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$case==0 | df1$idhmut==1),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==1)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==0)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+## VZV HLA score low v normal and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint="low VZV HLA score and VZV"
+var1 = "HLA_VZV_score_low"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= mydat
+df1= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% risk_series),]
+datat="f"
+ageofint =""
+```
+
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which(df1$case==0 | df1$idhmut==0),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+
+#risk_interaction(datasetr, var2, var1, varofint, typeofint, ageofint, risk_series, datat)
+
+
+```
+
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$case==0 | df1$idhmut==1),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==1)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which(df1$case==0 | (df1$idhmut==1 & df1$pqimpute==0)),]
+risk_interaction(datasetr, var1, var2, varofint, typeofint, ageofint, risk_series, datat)
+```
+
+
+
+
+# Propensity Score Risk Analysis {.tabset .tabset-fade .tabset-pills}
+
+```{r big risk function, echo = FALSE}
+
+prop_risk = function(datatype, ds, varname, varofint, typeofint, ageofint, serieslist, extra_covariates){
+
+	title = paste(varname, ": " ,typeofint, " ", ageofint, sep = "")
+	estimand = "ATT"
+  
+	dataset1= ds
+	decdf= data.frame(dataset1)
+	decdf$sex = as.factor(decdf$sex) # jsut convert to factor 
+	decdf$agen = as.numeric(decdf$agen) # to numeric
+	decdf$white = factor(decdf$white)
+	decdf$seriesn = factor(decdf$seriesn)
+	decdf$seriesn = droplevels(factor(decdf$seriesn))
+	decdf$case= as.integer(decdf$case)
+	decdf[,varname] = as.integer(as.character(decdf[,varname]))
+     
+	# Variables for the propensity score
+	prop_vars = c("agen", "white")
+	if( length(summary(na.omit(as.factor(decdf$sex)))) > 1){
+		prop_vars = c(prop_vars, "sex")
+	}
+  
+	white_check =  xtabs(paste("~white+",varname, sep = ""), decdf)
+	if(min(white_check) ==0 | nlevels(decdf$white)==1){
+		print("White removed as a balancing covariate.")
+		prop_vars = prop_vars[-which(prop_vars =="white")]
+		isnt.white = which(decdf$white==0)
+		if(length(isnt.white >0)){
+			decdf = decdf[-isnt.white,]
+		}
+	}
+  
+	extra_covariates = "seriesn"
+	mycovs = c("case",varname, prop_vars, extra_covariates)
+	decdf = decdf[complete.cases(decdf[, which(colnames(decdf) %in% mycovs)]),which(colnames(decdf) %in% mycovs)]
+    
+	print("Number of Case/Control")
+	print(summary(as.factor(decdf$case)))
+    
+	print(paste("Crosstabs with ", varname, sep = ""))
+	print(xtabs(paste("~case+", varname, sep = ""), data = decdf))
+    
+	myform = paste(varname, "~", paste(prop_vars, collapse = "+"), sep = "")
+	riskform = paste("case ~", varname, "*(", paste(prop_vars, collapse = "+"), ")", "+", extra_covariates, sep = "" )
+    
+	print("Regression Model Formula:")
+	print(riskform)
+  
+	PSM_results = (mat.or.vec(0,6))
+
+	# Matching 1 ---------------------
+	method ="NN 1:1 matching"
+	m1= matchit(as.formula(myform), data = decdf, estimand = estimand)
+
+	#m1
+
+	a= bal.tab(m1, stats = c("m", "ks"), binary = "std")
+	ss= a$Observations[3,]
+	a
+
+	#love.plot(m1, stats = c("m", "ks"), binary = "std", drop.distance = TRUE, abs = TRUE)
+
+	if("weights" %in% colnames(decdf)){
+		decdf = decdf[, -which(colnames(decdf)=="weights")]
+	}
+	md = match.data(m1)
+	fit <- glm(as.formula(riskform), data = md, weights = weights, family=quasibinomial(link="logit"))
+
+	t = try( avg_comparisons(fit,
+		variables = varname,
+		wts = "weights",
+		vcov = ~subclass,
+		comparison = "lnratioavg",
+		transform = "exp"))
+
+	if("try-error" %in% class(t)){
+		rr = NA
+		p = NA
+		ci = NA
+	}else{
+		b = avg_comparisons(fit,
+			variables = varname,
+			wts = "weights",
+			vcov = ~subclass,
+			comparison = "lnratioavg",
+			transform = "exp")
+
+		rr= b$estimate
+		p = b$p.value
+		ci = paste(round(b$conf.low, digits = 3), "-", round(b$conf.high, digits = 3), sep= "")
+	}
+
+	PSM_results =rbind(PSM_results, c(method, ss, rr,ci, p))
+ 
+
+
+	# Matching 2
+
+	method ="Matching with 0.2 SD Caliper"
+
+	m2 <- matchit(as.formula(myform), data = decdf,
+		link = "linear.logit", caliper = .2, estimand = estimand)
+
+	a= bal.tab(m2, stats = c("m", "ks"), binary = "std")
+	ss= a$Observations[3,]
+
+	a
+
+	#love.plot(m2, stats = c("m", "ks"), binary = "std",       drop.distance = TRUE, abs = TRUE)
+
+	if("weights" %in% colnames(decdf)){
+		decdf = decdf[, -which(colnames(decdf)=="weights")]
+	}
+	md = match.data(m2)
+	fit <- glm(as.formula(riskform), data = md, weights = weights, family=quasibinomial(link="logit"))
+
+	t= try(avg_comparisons(fit,
+		variables = varname,
+		wts = "weights",
+		vcov = ~subclass,
+		comparison = "lnratioavg",
+		transform = "exp"))
+
+	if("try-error" %in% class(t)){
+  
+		rr = NA
+		p = NA
+		ci = NA
+	}else{
+		b= avg_comparisons(fit,
+			variables = varname,
+			wts = "weights",
+			vcov = ~subclass,
+			comparison = "lnratioavg",
+			transform = "exp")
+
+		rr= b$estimate
+		p = b$p.value
+		ci = paste(round(b$conf.low, digits = 3), "-", round(b$conf.high, digits = 3), sep= "")
+	}
+
+	PSM_results =rbind(PSM_results, c(method, ss, rr,ci, p))
+
+
+
+	# Matching 3
+
+	method = "Generalized Full Matching"
+	m3 <- matchit(as.formula(myform), data = decdf,
+		method = "quick", estimand = estimand)
+
+
+	a= bal.tab(m3, stats = c("m", "ks"), binary = "std")
+
+	ss= a$Observations[3,]
+
+	a
+	#love.plot(m3, stats = c("m", "ks"), binary = "std",  drop.distance = TRUE, abs = TRUE)
+
+	if("weights" %in% colnames(decdf)){
+		decdf = decdf[, -which(colnames(decdf)=="weights")]
+	}
+
+	md = match.data(m3)
+	fit <-  glm(as.formula(riskform), data = md, weights = weights, family=quasibinomial(link="logit"))
+
+	t = try(avg_comparisons(fit,
+		variables = varname,
+		wts = "weights",
+		vcov = ~subclass,
+		comparison = "lnratioavg",
+		transform = "exp"))
+	if("try-error" %in% class(t)){
+  
+		rr = NA
+		p = NA
+		ci = NA
+	}else{
+		b= avg_comparisons(fit,
+			variables = varname,
+			wts = "weights",
+			vcov = ~subclass,
+			comparison = "lnratioavg",
+			transform = "exp")
+
+
+		rr= b$estimate
+		p = b$p.value
+		ci = paste(round(b$conf.low, digits = 3), "-", round(b$conf.high, digits = 3), sep= "")
+	}
+
+	PSM_results =rbind(PSM_results, c(method, ss, rr,ci, p))
+
+ 
+
+	# Weighting 1
+
+	method = "Inverse Probability Weighting"
+	w1 <- weightit(as.formula(myform), data = decdf,
+		estimand = estimand)
+
+
+	a= bal.tab(w1, stats = c("m", "ks"), binary = "std")
+
+	ss= a$Observations[2,]
+
+
+	a
+	#love.plot(w1, stats = c("m", "ks"), binary = "std", drop.distance = TRUE, abs = TRUE)
+
+	decdf$weights = w1$weights
+
+	fit <- glm(as.formula(riskform), data = decdf, weights = weights, family=quasibinomial(link="logit"))
+
+	t= try(avg_comparisons(fit,
+		variables =varname,
+		wts = "weights",
+		vcov = TRUE,
+		comparison = "lnratioavg",
+		transform = "exp"))
+
+	if("try-error" %in% class(t)){
+  
+		rr = NA
+		p = NA
+		ci = NA
+	}else{
+		b= avg_comparisons(fit,
+			variables =varname,
+			wts = "weights",
+			vcov = TRUE,
+			comparison = "lnratioavg",
+			transform = "exp")
+
+		rr= b$estimate
+		p = b$p.value
+		ci = paste(round(b$conf.low, digits = 3), "-", round(b$conf.high, digits = 3), sep= "")
+	}
+	PSM_results =rbind(PSM_results, c(method, ss, rr,ci, p))
+
+
+
+	# Weighting 2
+
+	method = "Entropy Balancing"
+	w2 <- weightit(as.formula(myform), data = decdf,
+		estimand = estimand, method = "entropy")
+
+
+
+	a= bal.tab(w2, stats = c("m", "ks"), binary = "std")
+
+	ss= a$Observations[2,]
+
+	a
+
+	#bal.tab(w2, binary = "std", int = TRUE,  poly = 4, thresholds = c(m = .05),disp.bal.tab = FALSE)
+
+	#love.plot(w2, stats = c("m", "ks"), binary = "std",drop.distance = TRUE, abs = TRUE)
+
+	decdf$weights = w2$weights
+
+	fit <- glm(as.formula(riskform), data = decdf, weights = weights, family=quasibinomial(link="logit"))
+
+
+	t= try(avg_comparisons(fit,
+		variables =varname,
+		wts = "weights",
+		vcov = TRUE,
+		comparison = "lnratioavg",
+		transform = "exp"))
+
+	if("try-error" %in% class(t)){
+  
+		rr = NA
+		p = NA
+		ci = NA
+	}else{
+		b= avg_comparisons(fit,
+			variables =varname,
+			wts = "weights",
+			vcov = TRUE,
+			comparison = "lnratioavg",
+			transform = "exp")
+
+		rr= b$estimate
+		p = b$p.value
+		ci = paste(round(b$conf.low, digits = 3), "-", round(b$conf.high, digits = 3), sep= "")
+	}
+	PSM_results =rbind(PSM_results, c(method, ss, rr,ci, p))
+
+
+	# Print final results 
+
+	PSM_results = data.frame(PSM_results)
+	colnames(PSM_results) = c("Method", "Untreated (ESS)", "Treated (ESS)", "Risk Ratio", "95% CI", "P-value")
+
+	kable(PSM_results, caption = title )
+
+}
+
+```
+
+
+
+
+
+
+
+
+```{r, echo = FALSE}
+varofint="Resp IgE or VZV elevated"
+var1 = "VZVorRespHigh"
+l1= c(0,1)
+df= AGSData
+df1= df[which(df[,var1] %in% l1 & df$seriesn %in% risk_series),]
+datat="f"
+ageofint =""
+```
+## IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which(df1$case==0 | df1$idhmut==0),]
+prop_risk(datat,datasetr,var1 ,varofint, typeofint, ageofint, risk_series, extras )
+
+
+```
+
+# Survival Analysis {.tabset .tabset-fade .tabset-pills}
+```{r Survival interaction FUNCTION, echo = FALSE}
+survival_series = sort(unique(AGSData$seriesn))
+
+# Data should come in with all missing and bad values of varname removed. 
+surv_int_function = function(datatype, ds, varname1, varname2, varofint, typeofint, ageofint, serieslist, extra_covariates){
+
+	tryCatch( {
+		cat("\nResults without controlling for/stratifying by series\n")
+		dataset1= ds
+		decdf= data.frame(dataset1[which(is.na(dataset1$survmonths)==FALSE),])
+		#recode sex to be 0 female 1 male
+		#decdf$sex[which(decdf$sex=="F")] = 0
+		#decdf$sex[which(decdf$sex=="M")] = 1
+		decdf$sex = as.factor(decdf$sex) # jsut convert to factor 
+
+		decdf$vstatus = as.numeric(as.character(decdf$vstatus)) # convert to int
+		decdf$survmonths = as.numeric(decdf$survmonths) # convert to numeric
+		decdf$agen = as.numeric(decdf$agen) # to numeric
+		decdf$white = as.factor(decdf$white)
+		decdf$dexatbd = as.factor(decdf$dexatbd)
+		decdf$temodar = as.factor(decdf$temodar)
+		decdf$chemo = as.factor(decdf$chemo)
+		decdf$rad = as.factor(decdf$rad)
+		decdf$surg = factor(decdf$surg)# !!!!
+		decdf$seriesn = droplevels(factor(decdf$seriesn))
+		decdf$ngrade = as.factor(decdf$ngrade)
+		decdf$idhmut=as.factor(decdf$idhmut)
+		decdf$pqimpute= as.factor(decdf$pqimpute)
+		if(datatype == "F"){
+			decdf[,varname1] = as.integer(as.character(decdf[,varname1])) # as.factor
+			decdf[,varname2] = as.integer(as.character(decdf[,varname2]))
+		}
+		if(datatype =="C"){
+			print("Error: Don't have this implemented for continuous variables yet. ")
+			decdf[,varname1] = scale(as.numeric(as.character(decdf[,varname1])))
+		}
+    
+		paste("We have to recode the variable to be protective, interactionR can't do it for surv models")
+		rc = paste(varname1,"_rc", sep = "")
+		decdf[[rc]]= NA
+		decdf[[rc]][which(decdf[[varname1]]==1)] = 0
+		decdf[[rc]][which(decdf[[varname1]]==0)] = 1
+		# decdf[[rc]]= as.integer(decdf[[rc]]) # as.factor
+        
+		rc1 = paste(varname2,"_rc", sep = "")
+		decdf[[rc1]]= NA
+		decdf[[rc1]][which(decdf[[varname2]]==1)] = 0
+		decdf[[rc1]][which(decdf[[varname2]]==0)] = 1
+ 
+		#decdf$ngrade= factor(decdf$ngrade)
+		decdf= data.frame(decdf)
+		decdf$age2 = decdf$agen+decdf$agen^2
+		# Covariates to include 
+		# Covariates to include 
+		extra_covariates = "+ agen"
+		mycovs = c(rc,rc1, varname1, varname2, "vstatus", "survmonths", "agen")
+    
+		possible_covariates = c("sex", "white", "dexatbd", "chemo", "rad", "surg", "idhmut","pqimpute", "ngrade", "seriesn", "tert")
+		#     possible_covariates = c("sex", "white", "dexatbd", "chemo", "rad", "surg", "seriesn")
+
+		decdf = decdf[complete.cases(decdf[, which(colnames(decdf) %in% mycovs)]),which(colnames(decdf) %in% unique(c(mycovs, possible_covariates) ))]
+		decdf_temp = decdf[complete.cases(decdf[, which(colnames(decdf) %in% unique(c(mycovs, possible_covariates) ))]),which(colnames(decdf) %in% unique(c(mycovs, possible_covariates) ))]
+    
+		for(p in possible_covariates){
+			if(p %in% c(varname1, varname2)){next}
+			nlevels = length(summary(na.omit(as.factor(decdf[,p]))))
+			if(nlevels >1){
+				if(nlevels %in% c(2,3)){
+					if(min(summary(as.factor(na.omit(decdf_temp[,p])))) <5 ){
+						print(paste("Should skip ", p, sep = ""))
+						next
+					}
+				}
+      
+				mycovs = c(mycovs, p)
+				# if(p == "ngrade"){
+				#   p = "strata(ngrade)"
+				# }
+				if(p =="seriesn"){
+					p = "strata(seriesn)"
+				}
+				extra_covariates= paste(extra_covariates, "+ ", p, sep = "")
+      
+			}  
+      
+		}
+		decdf = decdf[complete.cases(decdf[, which(colnames(decdf) %in% mycovs)]),which(colnames(decdf) %in% mycovs)]
+
+		coxmodel=paste("Surv(survmonths, vstatus) ~ ", varname1, "*", varname2, " ", extra_covariates, sep = "")
+		print(coxmodel)
+  
+		cox= coxph(formula = as.formula(coxmodel), data = decdf )
+
+		# Do a cox model
+		res = summary(cox)
+		pval =  coef(res)[1,5]
+		beta = coef(res)[1,1] 
+		beta2 = coef(res)[2,1] 
+		se = coef(res)[1,3] 
+		print(res)
+      
+		print(paste("Unconditional survival effect of ", varname1, sep = ""))
+		coxmodeluc=paste("Surv(survmonths, vstatus) ~ ", varname1 , " ", extra_covariates, sep = "")
+		coxuc= coxph(formula = as.formula(coxmodeluc), data = decdf )
+		resuc = summary(coxuc)
+		print(resuc$coefficients[1,])
+      
+     
+		varname1a=varname1
+		if(beta <0){
+			# print("Variable1 is protective, run again with recoded.")
+    
+			# varname1 = rc
+		}
+		if(beta2 <0){
+			# print("Variable2 is protective, run again with recoded.")
+    
+			# varname2 = rc1
+		}
+		decdf[,rc] = as.integer(as.character(decdf[,rc]))
+		decdf[,rc1] = as.integer(as.character(decdf[,rc1]))
+
+		#  xtabs(~respige + respige_rc, decdf)
+		#      
+		#          coxmodel=paste("Surv(survmonths, vstatus) ~ ", varname1, "*", varname2, " ", extra_covariates, sep = "")
+		#  print(coxmodel)
+		#  
+		# cox= coxph(formula = as.formula(coxmodel), data = decdf)
+		# 
+		#      # Do a cox model
+		#      res = summary(cox)
+		#      pval =  coef(res)[1,5]
+		#      beta = coef(res)[1,1] 
+		#      se = coef(res)[1,3] 
+		#      print(coef(res)[1,])
+		#      cat(paste("\n95% CI: ",round(exp(beta), digits=2), " (",  CIfun(beta, se), ")\n", sep = ""))
+		#  
+		#      print(res)
+		#  }
+      
+      
+		# Effect Modification section, requires recoding of the exposure variable, so be careful it may error out
+		a = interactionR(cox, exposure_names = c(varname2, varname1), em = TRUE)
+		print(a$dframe)
+
+      
+		#      
+		#      # Atrributable Fraction section 
+		#      varname1=varname1a # Avoid the recoding section
+		#       decdf[[varname1]]=as.character(decdf[[varname1]])
+		#      decdf[[varname2]] = as.character(decdf[[varname2]])
+		#      decdf$sex[which(decdf$sex=="F")]=0
+		#      decdf$sex[which(decdf$sex=="M")]=1
+		#      decdf[[varname1]]=as.numeric(decdf[[varname1]])
+		#      decdf[[varname2]] = as.numeric(decdf[[varname2]])
+		#      decdf=data.frame(decdf)
+		#       coxmodel=paste("Surv(survmonths, vstatus) ~ ",varname1, "+", varname2,"+", varname1, "*", varname2," ", extra_covariates, sep = "")
+		#  print(coxmodel)
+		#  
+		# cox= coxph(formula = as.formula(coxmodel), data = decdf, ties="breslow" )
+		#      cat("\n\nAttributable Fraction Section\n\n")
+		#  times =seq(1,100, by=1)
+		#      AF = AFcoxph(cox,data=decdf, exposure=varname1, times = times )
+		#      #summary(AF)
+		#      plot(AF, CI=TRUE)
+		#     # return(AF)
+		#      
+	} ,
+		#if an error occurs, tell me the error
+		error=function(e) {
+		message('An Error Occurred')
+		print(e)
+	})
+
+}
+```
+
+
+## Resp IgE and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+
+```{r, echo = FALSE}
+varofint="Respiratory IgE and VZV low v high"
+var1 = "respige"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= AGSData
+df0= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% survival_series),]
+datat="f"
+ageofint =""
+df1= df0[which(df0$seriesn %in% survival_series & df0$case ==1),]
+dtype="F"
+extras = ""
+```
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( df1$idhmut==0),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+
+```
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$idhmut==1),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which((df1$idhmut==1 & df1$pqimpute==1)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which( (df1$idhmut==1 & df1$pqimpute==0)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+## VZV alleles and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+
+```{r, echo = FALSE}
+varofint="VZV alleles and VZV low v high"
+var1 = "HLA_multi"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= mydat
+df0= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% survival_series),]
+datat="f"
+ageofint =""
+df1= df0[which(df0$seriesn %in% survival_series & df0$case ==1),]
+dtype="F"
+extras = ""
+```
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( df1$idhmut==0),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+
+
+surv_int_function(dtype,datasetr,var2, var1,varofint, typeofint, ageofint, survival_series, extras )
+
+```
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$idhmut==1),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which((df1$idhmut==1 & df1$pqimpute==1)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which( (df1$idhmut==1 & df1$pqimpute==0)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+
+## VZV HLA score and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint="VZV HLA score and VZV low v high"
+var1 = "HLA_VZV_score_high"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= mydat
+df0= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% survival_series),]
+datat="f"
+ageofint =""
+df1= df0[which(df0$seriesn %in% survival_series & df0$case ==1),]
+dtype="F"
+extras = ""
+```
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( df1$idhmut==0),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+
+
+surv_int_function(dtype,datasetr,var2, var1,varofint, typeofint, ageofint, survival_series, extras )
+
+```
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$idhmut==1),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which((df1$idhmut==1 & df1$pqimpute==1)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which( (df1$idhmut==1 & df1$pqimpute==0)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+## low VZV HLA score and VZV low v high {.tabset .tabset-fade .tabset-pills}
+
+```{r, echo = FALSE}
+varofint=" low VZV HLA score and VZV low v high"
+var1 = "HLA_VZV_score_low"
+l1= c(0,1)
+var2 = "VZVlowandno"
+l2= c(0,1)
+df= mydat
+df0= df[which(df[,var1] %in% l1 & df[,var2] %in% l2 & df$seriesn %in% survival_series),]
+datat="f"
+ageofint =""
+df1= df0[which(df0$seriesn %in% survival_series & df0$case ==1),]
+dtype="F"
+extras = ""
+```
+
+### IDH WT 
+```{r, echo = FALSE}
+typeofint="IDH wildtype"
+datasetr= df1[which( df1$idhmut==0),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+
+
+#surv_int_function(dtype,datasetr,var2, var1,varofint, typeofint, ageofint, survival_series, extras )
+
+```
+
+### IDH Mut 
+```{r, echo = FALSE}
+typeofint="IDH mutant"
+datasetr= df1[which(df1$idhmut==1),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q codel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q codel"
+datasetr= df1[which((df1$idhmut==1 & df1$pqimpute==1)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+### IDH Mut 1p19q noncodel 
+```{r, echo = FALSE}
+typeofint="IDH mutant 1p19q noncodel"
+datasetr= df1[which( (df1$idhmut==1 & df1$pqimpute==0)),]
+surv_int_function(dtype,datasetr,var1, var2,varofint, typeofint, ageofint, survival_series, extras )
+```
+
+
+# HLA Analysis {.tabset .tabset-fade .tabset-pills}
+
+## Understanding the contents of the HLA allele data {.tabset .tabset-fade .tabset-pills}
+
+This section aims to clarify the available HLA data. 
+
+```{r hla field level, echo = FALSE}
+
+hla_field = function(hla_type){
+	field = "one"
+	a = strsplit(hla_type,split = "_")[[1]]
+	if(as.numeric(a[3])> 100){
+		field = "two"
+	}
+	return(field)
+}
+hla_fields =sapply(hla_i370_anames, hla_field)
+
+```
+
+
+```{r visuals HLA, echo = FALSE}
+df= AGSData
+group_var ="VZVorRespHigh"
+group_var = "VZVlowandno"
+my_res ="one"
+have_sero = which(df[[group_var]] %in% c(0,1))
+have_hla = which(is.na(df[["HLA_A_01"]]) == FALSE)
+have_PC = which(is.na(df$PC1)==FALSE)
+have_all = intersect(have_sero, intersect(have_hla, have_PC))
+df1 = df[have_all,]
+important_vars = c(group_var, "sex", "agen", "white")
+important_vars_1 = c(important_vars, names(hla_fields)[which(hla_fields ==my_res)])
+df2= df1[,important_vars_1]
+  
+# Convert all of the HLA alleles to present/absent
+to_remove = c()
+for(hla_type in names(hla_fields)[which(hla_fields ==my_res)]){
+	hla_loc = which(colnames(df2) == hla_type)
+	is_present = which(df2[,hla_loc] %in% c(1,2))
+	if(length(is_present) >0){ #TODO only correct if there are present alleles, otherwise Skip it!
+		df2[is_present, hla_loc] = 1
+  
+		if(length(is_present) == nrow(df2)){
+			to_remove = c(to_remove, hla_loc)
+		}
+	}else{
+		to_remove = c(to_remove, hla_loc)
+	}
+    
+}
+  
+df2[,group_var] = as.factor(df2[,group_var])
+  
+if(length(to_remove)>0){
+	df3 = df2[,-to_remove]
+}else{
+	df3=df2
+}
+
+```
+
+## Single Allele Association Analysis {.tabset .tabset-fade .tabset-pills}
+
+This section looks at differences in specific HLA alleles between those with no reactivity to VZV/resp ige, and those with reactivity to any. 
+
+```{r plotter, echo = FALSE}
+
+ab_hla_analyzer = function(group_var, hla_type, df){
+  
+	have_sero = which(df[[group_var]] %in% c(0,1))
+  
+	have_hla = which(is.na(df[[hla_type]]) == FALSE)
+  
+	have_PC = which(is.na(df$PC1)==FALSE)
+  
+	have_all = intersect(have_sero, intersect(have_hla, have_PC))
+  
+	df1 = df[have_all,]
+  
+	# Recode the HLA allele to be present absent binary
+	hla_loc = which(colnames(df1) == hla_type)
+	is_present = which(df1[,hla_loc] %in% c(1,2))
+	if(length(is_present) >0){ #TODO only correct if there are present alleles, otherwise Skip it!
+		df1[is_present, hla_loc] = 1
+	}
+	# Ensure the variables of interest are present (age, sex, anything else?)
+	model_vars = c(group_var, "sex", "agen", hla_type, "array", paste("PC", c(1:10), sep = ""))
+  
+	df2 = df1[complete.cases(df1[,model_vars]),]
+  
+	# Run the logistic model for each subtype. 
+	myform = paste(group_var, "~", hla_type, "+agen +sex ", paste(paste("+PC", c(1:10), sep = ""), collapse = " "), sep = " ")
+	# Meta-analyze 
+	df_i370 = df2[which(df2$array == "i370"),]
+	df_onco = df2[which(df2$array == "oncoarray"),]
+  
+	meta_results = data.frame(mat.or.vec(2,3))
+	colnames(meta_results)= c("series", "beta", "se")
+  
+	# i370
+	if(length(which(df_i370[,hla_loc]==1)) ==0 | length(which(df_i370[,hla_loc]==0)) ==0 ){
+		beta = 1.2
+		se= 120.3
+	}else{
+		logit_fun = glm(myform, data = df_i370, family=binomial(link="logit"))
+		go= summary(logit_fun)
+		beta = go$coefficients[2,1]
+		se = go$coefficients[2,2]
+	}
+    
+	meta_results[1,] = c("i370", as.numeric(beta), as.numeric(se))
+
+	# Oncoarray
+	if(length(which(df_onco[,hla_loc]==1)) ==0 | length(which(df_onco[,hla_loc]==0)) ==0 ){
+		beta = 1.2
+		se= 120.3
+	}else{
+		logit_fun = glm(myform, data = df_onco, family=binomial(link="logit"))
+		go= summary(logit_fun)
+		beta = go$coefficients[2,1]
+		se = go$coefficients[2,2]
+	}
+	meta_results[2,] = c("Oncoarray", as.numeric(beta), as.numeric(se))  
+  
+	# Meta analyze
+	meta_results$beta = as.numeric(meta_results$beta)
+	meta_results$se = as.numeric(meta_results$se)
+  
+	to_remove = which(abs(meta_results$se/meta_results$beta)>50)
+  
+	if(length(to_remove) > 0){
+		meta_results = meta_results[-to_remove,]
+	}
+	if(nrow(meta_results) <1){
+		mbeta = NA
+		lci = NA
+		uci = NA
+		mpval = NA
+    
+	}else{
+		ma_model_1 <- rma.uni(yi= beta,sei=se, data = meta_results, method = "FE")
+		mbeta = ma_model_1$beta[1]
+		lci = ma_model_1$ci.lb
+		uci = ma_model_1$ci.ub
+		mpval = ma_model_1$pval
+	}
+	# Report results (HLA allele, sample sizes, effect size, p value )
+  
+	# Get sample sizes for HLA allele by var of int. 
+	xform = paste("~", group_var, "+", hla_type, sep= "")
+	ns = c(xtabs(xform, data=df2))
+	# order is group var 0, HLA 0 HLA 1, group var 1 HLA 0 HLA 1
+	myns = ns[c(1,3,2,4)]
+  
+	result = c(hla_type, myns, mbeta, lci, uci, mpval)
+  
+	return(result)
+  
+}
+
+```
+
+
+```{r forest plotter, echo = FALSE}
+fp = function(dat){
+	dat$color = "grey40"
+	dat$color[which(dat$pvalue<0.05)] = "navy"
+	dat$HLA_allele = factor(dat$HLA_allele, levels = dat$HLA_allele)
+	dat$beta = exp(as.numeric(dat$beta))
+	dat$lci = exp(as.numeric(dat$lci))
+	dat$uci = exp(as.numeric(dat$uci))
+	plot1 <- ggplot(dat, aes(y =HLA_allele, x = beta, color = color)) +
+		geom_point(shape = 18, size = 3) +  
+		geom_errorbarh(aes(xmin = lci, xmax = uci), height = 0.05) +
+		geom_vline(xintercept = 1, color = "gray80", linetype = "dashed", cex = 1, alpha = 0.5) +
+		xlab("Odds Ratio (95% CI)") + 
+		ylab(" ") + 
+		scale_color_manual(values = c("#4e8ca5", "#ff6d6d")) +
+		theme_bw() +
+		theme(panel.border = element_blank(),
+		panel.background = element_blank(),
+		panel.grid.major = element_blank(), 
+		panel.grid.minor = element_blank(), 
+		axis.line = element_line(colour = "black"),
+		axis.text.y = element_text(size = 12, colour = "black"),
+		axis.text.x.bottom = element_text(size = 12, colour = "black"),
+		axis.title.x = element_text(size = 12, colour = "black"))
+
+	return(plot1)
+}
+```
+
+
+### VZV or Respiratory High using all samples
+
+```{r, echo = FALSE}
+
+myvar = "VZVorRespHigh"
+samps = "all_samples"
+mydat = AGSData
+
+results = data.frame(mat.or.vec(length(hla_i370_anames), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in hla_i370_anames){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+write.table(results, paste(owd, "/", myvar, "_", samps, "_HLA_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+
+```
+
+MOVED THIS FROM BELOW
+
+
+## Multi Allele Poking Around 
+
+
+
+```{r data set up, echo = FALSE}
+set.seed(222)
+df= AGSData
+group_var ="VZVorRespHigh"
+#group_var = "VZVlowandno"
+my_res ="one"
+have_sero = which(df[[group_var]] %in% c(0,1))
+have_hla = which(is.na(df[["HLA_A_01"]]) == FALSE)
+have_PC = which(is.na(df$PC1)==FALSE)
+have_all = intersect(have_sero, intersect(have_hla, have_PC))
+df1 = df[have_all,]
+important_vars = c(group_var, "sex", "agen", "white")
+important_vars_1 = c(important_vars, names(hla_fields)[which(hla_fields ==my_res)])
+df2= df1[,important_vars_1]
+df2$sex =as.numeric( ifelse(df2$sex=="M", 1, 0))
+# Convert all of the HLA alleles to present/absent
+to_remove = c()
+for(hla_type in names(hla_fields)[which(hla_fields ==my_res)]){
+	hla_loc = which(colnames(df2) == hla_type)
+	is_present = which(df2[,hla_loc] %in% c(1,2))
+	if(length(is_present) >0){ #TODO only correct if there are present alleles, otherwise Skip it!
+		df2[is_present, hla_loc] = 1
+  
+		if(length(is_present) == nrow(df2)){
+			to_remove = c(to_remove, hla_loc)
+		}
+	}else{
+		to_remove = c(to_remove, hla_loc)
+	}
+    
+}
+  
+df2[,group_var] = as.factor(df2[,group_var])
+  
+if(length(to_remove)>0){
+	df3 = df2[,-to_remove]
+}else{
+	df3=df2
+}
+  
+# Drop any HLA alleles that are too rare, like < 5 percent? 
+my_p = sapply(df3[,-c(1:4)], sum)/nrow(df3)*100
+to_drop = names(my_p)[which(my_p < 5)]
+  
+if(length(to_drop)>0){
+	df4 = df3[,-which(colnames(df3) %in% to_drop)]
+}else{
+	df4=df3
+}
+short_one_field = colnames(df4)[-c(1:4)]
+  
+ind <- sample(2, nrow(df4), replace = TRUE, prob = c(0.7, 0.3))
+  
+train <- df4[ind==1,]
+test <- df4[ind==2,]
+
+```
+
+
+
+TODO - what is short_one_field
+
+
+```{r, echo = FALSE}
+# Using only the HLA one field resolution alleles with good support. 
+myvar = "VZVorRespHigh"
+samps = "all_samples"
+mydat = AGSData
+
+results = data.frame(mat.or.vec(length(short_one_field), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in short_one_field){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results1 = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+write.table(results1, paste(owd, "/", myvar, "_", samps, "_HLA_one_field_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+fp(results)
+
+```
+
+
+
+### VZV or Respiratory High using controls only
+
+```{r, echo = FALSE}
+
+myvar = "VZVorRespHigh"
+samps = "controls"
+mydat = AGSData[which(AGSData$case==0),]
+
+results = data.frame(mat.or.vec(length(hla_i370_anames), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in hla_i370_anames){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+
+write.table(results, paste(owd, "/", myvar, "_", samps, "_HLA_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+
+```
+
+### VZV or Respiratory High using cases only
+
+```{r, echo = FALSE}
+
+myvar = "VZVorRespHigh"
+samps = "cases"
+mydat = AGSData[which(AGSData$case==1),]
+
+results = data.frame(mat.or.vec(length(hla_i370_anames), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in hla_i370_anames){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+
+write.table(results, paste(owd, "/", myvar, "_", samps, "_HLA_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+
+
+```
+
+### VZV low/no vs high using all samples
+
+```{r, echo = FALSE}
+
+myvar = "VZVlowandno"
+samps = "all_samples"
+mydat = AGSData
+
+results = data.frame(mat.or.vec(length(hla_i370_anames), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in hla_i370_anames){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+write.table(results, paste(owd, "/", myvar, "_", samps, "_HLA_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+
+```
+
+```{r, echo = FALSE}
+# Using only the HLA one field resolution alleles with good support. 
+myvar = "VZVlowandno"
+samps = "all_samples"
+mydat = AGSData
+
+results = data.frame(mat.or.vec(length(short_one_field), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in short_one_field){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+write.table(results, paste(owd, "/", myvar, "_", samps, "_HLA_one_field_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+
+```
+
+
+### Case status using all samples
+
+```{r, echo = FALSE}
+
+myvar = "case"
+samps = "all_samples"
+mydat = AGSData
+
+results = data.frame(mat.or.vec(length(hla_i370_anames), 9))
+colnames(results) = c("HLA_allele", paste(myvar, "0_HLA_absent", sep =""), paste(myvar, "0_HLA_present", sep =""), paste(myvar, "1_HLA_absent", sep =""), paste(myvar, "1_HLA_present", sep =""), "beta", "lci", "uci", "pvalue")
+counter =1
+for(hla in hla_i370_anames){
+	results[counter,] = ab_hla_analyzer(group_var = myvar, hla_type = hla, df = mydat)
+	counter = counter +1
+}
+results = results[order(results$pvalue, na.last = TRUE, decreasing = FALSE),]
+
+write.table(results, paste(owd, "/", myvar, "_", samps, "_HLA_associations.tsv", sep = ""), row.names= FALSE, col.names = TRUE, quote= FALSE, sep= "\t" )
+
+
+```
+
+
+## Poking Around with the results to find common types
+
+### VZV aassociated HLA types 
+
+
+
+## Multi Allele Poking Around 
+
+MOVED THIS CODE ABOVE	
+
+```{r data set up duplicate, echo = FALSE}
+#	set.seed(222)
+#	df= AGSData
+#	group_var ="VZVorRespHigh"
+#	#group_var = "VZVlowandno"
+#	my_res ="one"
+#	  have_sero = which(df[[group_var]] %in% c(0,1))
+#	  have_hla = which(is.na(df[["HLA_A_01"]]) == FALSE)
+#	  have_PC = which(is.na(df$PC1)==FALSE)
+#	  have_all = intersect(have_sero, intersect(have_hla, have_PC))
+#	  df1 = df[have_all,]
+#	  important_vars = c(group_var, "sex", "agen", "white")
+#	  important_vars_1 = c(important_vars, names(hla_fields)[which(hla_fields ==my_res)])
+#	  df2= df1[,important_vars_1]
+#	  df2$sex =as.numeric( ifelse(df2$sex=="M", 1, 0))
+#	  # Convert all of the HLA alleles to present/absent
+#	  to_remove = c()
+#	  for(hla_type in names(hla_fields)[which(hla_fields ==my_res)]){
+#	    hla_loc = which(colnames(df2) == hla_type)
+#	  is_present = which(df2[,hla_loc] %in% c(1,2))
+#	  if(length(is_present) >0){ #TODO only correct if there are present alleles, otherwise Skip it!
+#	  df2[is_present, hla_loc] = 1
+#	  
+#	  if(length(is_present) == nrow(df2)){
+#	    to_remove = c(to_remove, hla_loc)
+#	  }
+#	  }else{
+#	    to_remove = c(to_remove, hla_loc)
+#	  }
+#	    
+#	  }
+#	  
+#	  df2[,group_var] = as.factor(df2[,group_var])
+#	  
+#	  if(length(to_remove)>0){
+#	    df3 = df2[,-to_remove]
+#	  }else{
+#	    df3=df2
+#	  }
+#	  
+#	  # Drop any HLA alleles that are too rare, like < 5 percent? 
+#	  my_p = sapply(df3[,-c(1:4)], sum)/nrow(df3)*100
+#	  to_drop = names(my_p)[which(my_p < 5)]
+#	  
+#	   if(length(to_drop)>0){
+#	    df4 = df3[,-which(colnames(df3) %in% to_drop)]
+#	  }else{
+#	    df4=df3
+#	  }
+#	  short_one_field = colnames(df4)[-c(1:4)]
+#	  
+#	  ind <- sample(2, nrow(df4), replace = TRUE, prob = c(0.7, 0.3))
+#	  
+#	  train <- df4[ind==1,]
+#	  test <- df4[ind==2,]
+#	
+```
+
+```{r plotter by group, echo = FALSE}
+
+
+
+
+```
+
+```{r correlation plots, echo= FALSE}
+
+mycor =cor(df4[-c(1:4)], method = "spearman")
+mycorplot = corrplot(mycor, order = 'AOE')
+```
+
+
+
+```{r rf, echo = FALSE}
+rf <- randomForest(as.formula(paste(group_var, "~.", sep ="")), data=train, proximity=TRUE)
+  
+print(rf)
+  
+
+```
+
+
