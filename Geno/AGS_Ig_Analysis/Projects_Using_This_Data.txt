@@ -1,0 +1,25 @@
+The AGS Ig data has been used in multiple of our projects, this file points you to each of them, and what the goals or each project were/are on Box. The included covariate file in this folder was generated using the 20241024_IgE_IgG_AGS/IgG_IgE_analysis.Rmd file in Francis Lab Share. 
+
+1. 20211112-Viral-Glioma-SES-study
+
+This is the folder which contains all work of our 2023 Neuro-Oncology papers exploring reactivity to 4 common viruses and glioma risk/survival. Specifically "Antibodies to varicella-zoster virus and three other herpesviruses and survival in adults with glioma" and "Inherited polymorphisms in the Human Leukocyte Antigen Region modify the association between varicella-zoster virus antibody reactivity and glioma prognosis". 
+
+The Scripts folder has .Rmd files which reproduce all of this analysis (and the accompanying .html files) as well as more exploratory analysis on the effects of SNPs on the viral-glioma associations. 
+
+2. 20231017-AGS_IgE_Study
+
+This folder contains all of the work of our 2024 JNCI paper "Association of immunoglobulin E levels with glioma risk and survival". 
+
+The Scripts folder has .Rmd files which reproduce all analyses, including interaction analysis, PAF analyses, propensity score matching, and many plotting scripts included. 
+
+3. 20241024_IgE_IgG_AGS
+
+This is a newer folder which aimed to do two things. 
+
+First, two evaluate the possible interactive effect of VZV IgG levels and allergy IgE levels. The Scripts folder has an IgG_IgE_analysis.Rmd file which contains full data set up, some plots, and interaction analysis for risk and survival. 
+
+Second, I began the exploration of an HLA score and its mediating effects on VZV reactivity and glioma risk. The HLA types and their weights used in the score are pulled from Linda and Steve's UK Biobanks paper (described in the Notes/IgE_IgG_Observations.pptx file in more detail). 
+
+The observation to take away from this is that the HLA-predicted high reactivity to VZV seems to confer elevated glioma risk. And conditional on high VZV reactors, it removes any risk benefits. This has the conclusion that HIGH VZV reactors with LOW VZV HLA scores have the MOST glioma risk reduction. 
+
+More work should be done to validate if this score is properly done, I would consult with Linda Kachuri going forward. My concern is that some HLA alleles may be correlated, and the score is not a proper PRS. I utilized all HLA alleles that were significant after conditioning on the top allele, which removed about 3-4 associated alleles. This is all described in the Kachuri/Francis paper, I did no analysis to eliminate alleles myself, simply used the reported p-values and weights. 
