@@ -21,34 +21,34 @@ Manually drop Blank03_2 sample
 awk 'BEGIN{FS=OFS=","}(NR>1 && $21=="1"){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject);s=$4;sub(/IDX/,"",s);s=int(s);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"s".VIR3_clean.1-84.bam",$5,$6,$7,$9,$10,$21}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariatesv2_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-6-24hmh.csv | sort -t, -k1,1 > manifest.plate1.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.plate1.csv
-sed -i 's/PBS blank/input/i' manifest.plate1.csv 
-sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv 
-sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv 
-sed -i '/Blank03_2/d' manifest.plate1.csv 
+sed -i 's/PBS blank/input/i' manifest.plate1.csv
+sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv
+sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv
+sed -i '/Blank03_2/d' manifest.plate1.csv
 chmod -w manifest.plate1.csv
 
 awk 'BEGIN{FS=OFS=","}(NR>1 && $21=="13"){subject=$2;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject);s=$4;sub(/IDX/,"",s);s=int(s);print subject,$2,"/francislab/data1/working/20241204-Illumina-PhIP/20241204b-bowtie2/out/S"s".VIR3_clean.1-84.bam",$5,$6,$7,$9,$10,$21}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariatesv2_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-6-24hmh.csv | sort -t, -k1,1 > manifest.plate13.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.plate13.csv
-sed -i 's/PBS blank/input/i' manifest.plate13.csv 
-sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv 
-sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv 
+sed -i 's/PBS blank/input/i' manifest.plate13.csv
+sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv
+sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv
 chmod -w manifest.plate13.csv
 
 awk 'BEGIN{FS=OFS=","}(NR>1 && $23=="2"){subject=$3;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject);print subject,$3,"/francislab/data1/working/20241224-Illumina-PhIP/20241224b-bowtie2/out/"$1".VIR3_clean.1-84.bam",$7,$8,$9,$11,$12,$23}' /francislab/data1/raw/20241224-Illumina-PhIP/L2_full_covariates_Vir3_phip-seq_GBM_p2_MENPEN_p14_12-29-24hmh_L2_Covar.csv | sort -t, -k1,1 > manifest.plate2.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.plate2.csv
 sed -i 's/PBS blank/input/i' manifest.plate2.csv
-sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv 
-sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv 
+sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv
+sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv
 chmod -w manifest.plate2.csv
 
 awk 'BEGIN{FS=OFS=","}(NR>1 && $23=="14"){subject=$3;sub(/_1$/,"",subject);sub(/_2$/,"",subject);sub(/dup$/,"",subject);print subject,$3,"/francislab/data1/working/20241224-Illumina-PhIP/20241224b-bowtie2/out/"$1".VIR3_clean.1-84.bam",$7,$8,$9,$11,$12,$23}' /francislab/data1/raw/20241224-Illumina-PhIP/L2_full_covariates_Vir3_phip-seq_GBM_p2_MENPEN_p14_12-29-24hmh_L2_Covar.csv | sort -t, -k1,1 > manifest.plate14.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.plate14.csv
 sed -i 's/PBS blank/input/i' manifest.plate14.csv
-sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv 
-sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv 
+sed -i 's/VIR phage Library/Phage Lib/i' manifest.plate1.csv
+sed -i 's/phage library \(blank\)/Phage Lib/i' manifest.plate1.csv
 chmod -w manifest.plate14.csv
 
 ```
@@ -88,10 +88,10 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 
 ```
 mkdir out.all
-merge_all_combined_counts_files.py --int --de_nan --out out.all/Plibs.csv out.*/counts/PLib* 
+merge_all_combined_counts_files.py --int --de_nan --out out.all/Plibs.csv out.*/counts/PLib*
 
 head out.all/Plibs.csv
-wc -l out.all/Plibs.csv 
+wc -l out.all/Plibs.csv
 grep -vs ",0" out.all/Plibs.csv | head
 
 
@@ -150,7 +150,7 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 3
 
 
 
-box_upload.bash out.plate*/Tile_Comparison* out.plate*/Viral_* out.plate*/Seropositivity* 
+box_upload.bash out.plate*/Tile_Comparison* out.plate*/Viral_* out.plate*/Seropositivity*
 
 ```
 
@@ -177,7 +177,7 @@ for z in 3.5 10 ; do
 
 done >> commands.multiz.multiplate
 
-commands_array_wrapper.bash --array_file commands.multiz.multiplate --time 4-0 --threads 4 --mem 30G 
+commands_array_wrapper.bash --array_file commands.multiz.multiplate --time 4-0 --threads 4 --mem 30G
 
 box_upload.bash MultiZMultiPlate/*
 ```
@@ -185,7 +185,7 @@ box_upload.bash MultiZMultiPlate/*
 
 
 
-Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R 
+Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R
 
 
 
@@ -205,10 +205,178 @@ for z in 3.5 10 ; do
 
 done >> commands.multiz.multiplate2
 
-commands_array_wrapper.bash --array_file commands.multiz.multiplate2 --time 4-0 --threads 4 --mem 30G 
+commands_array_wrapper.bash --array_file commands.multiz.multiplate2 --time 4-0 --threads 4 --mem 30G
 
 #box_upload.bash MultiZMultiPlate/*
 ```
+
+
+
+##	20250114
+
+
+```
+tail -n +2 out.all/Plibs.csv | cut -d, -f1 | sort > out.all/Plibs.id.csv
+sed -i '1iid' out.all/Plibs.id.csv
+
+for plate in 1 2 13 14 ; do
+  head -2 out.plate${plate}/Zscores.t.csv > out.plate${plate}/Zscores.select.t.csv
+  join --header -t, out.all/Plibs.id.csv <( tail -n +3 out.plate${plate}/Zscores.t.csv ) >> out.plate${plate}/Zscores.select.t.csv
+  cat out.plate${plate}/Zscores.select.t.csv | datamash transpose -t, > out.plate${plate}/Zscores.select.csv
+done
+
+```
+
+
+```
+\rm commands.test
+
+for plate in 1 2 13 14 ; do
+for z in 3.5 10 ; do
+ echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest manifest.plate${plate}.csv  --zfilename out.plate${plate}/Zscores.select.csv -a case -b control --output_dir out.plate${plate}.test
+
+ for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+  echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest manifest.plate${plate}.csv  --zfilename out.plate${plate}/Zscores.select.csv ${groups} --output_dir out.plate${plate}.test
+ done
+done
+done >> commands.test
+
+commands_array_wrapper.bash --array_file commands.test --time 4-0 --threads 4 --mem 30G
+
+```
+
+
+
+```
+for plate in 1 2 13 14 ; do
+  cp manifest.plate${plate}.csv out.plate${plate}.test/
+done
+```
+
+
+```
+\rm commands.multiz.multiplate.test
+
+plates=$( ls -d ${PWD}/out.plate* | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 10 ; do
+
+ echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/MultiZMultiPlate.test -p ${plates}
+
+ for groups in '-a "PF Patient" -b "Endemic Control"' '-a "PF Patient" -b "Non Endemic Control"' '-a "Endemic Control" -b "Non Endemic Control"' ; do
+  echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} ${groups} -o ${PWD}/MultiZMultiPlate.test -p ${plates}
+ done
+
+done >> commands.multiz.multiplate.test
+
+commands_array_wrapper.bash --array_file commands.multiz.multiplate.test --time 4-0 --threads 4 --mem 30G
+
+box_upload.bash MultiZMultiPlate.test/*
+```
+
+
+
+
+
+
+
+##	20250115
+
+
+Modify the 3 pemphigus groups into 2 different group comparisons
+
+Endemic ( PF Patient + Endemic Control ) vs Non Endemic ( Non Endemic Controls )
+
+Case ( PF Patient ) vs Control ( Endemic Controls + Non Endemic Controls )
+
+
+manifest.plate13.csv manifest.plate14.csv
+
+
+```
+sed -e "s/,PF Patient,/,Endemic,/" -e "s/,Endemic Control,/,Endemic,/" -e "s/,Non Endemic Control,/,NonEndemic,/" manifest.plate13.csv  > manifest.plate13.endemic.csv
+sed -e "s/,PF Patient,/,Endemic,/" -e "s/,Endemic Control,/,Endemic,/" -e "s/,Non Endemic Control,/,NonEndemic,/" manifest.plate14.csv  > manifest.plate14.endemic.csv
+
+sed -e "s/,PF Patient,/,PFCase,/" -e "s/,Endemic Control,/,PFControl,/" -e "s/,Non Endemic Control,/,PFControl,/" manifest.plate13.csv > manifest.plate13.pfcase.csv
+sed -e "s/,PF Patient,/,PFCase,/" -e "s/,Endemic Control,/,PFControl,/" -e "s/,Non Endemic Control,/,PFControl,/" manifest.plate14.csv > manifest.plate14.pfcase.csv
+```
+
+
+```
+for plate in 13 14 ; do
+mkdir out.plate${plate}.endemic/
+cp manifest.plate${plate}.endemic.csv out.plate${plate}.endemic/
+cp out.plate${plate}/Zscores.select.csv out.plate${plate}.endemic/
+mkdir out.plate${plate}.pfcase/
+cp manifest.plate${plate}.pfcase.csv out.plate${plate}.pfcase/
+cp out.plate${plate}/Zscores.select.csv out.plate${plate}.pfcase/
+done
+```
+
+#cp out.plate${plate}/seropositive.*.csv out.plate${plate}.endemic/
+#cp out.plate${plate}/seropositive.*.csv out.plate${plate}.pfcase/
+
+
+```
+for plate in 13 14 ; do
+for z in 3.5 10 ; do
+for s in endemic pfcase ; do
+merge_results.py --int -o out.plate${plate}.${s}/merged.${z}.virus_scores.csv \
+  out.plate${plate}/*.${z}.hits.virus_scores.csv
+merge_results.py --int -o out.plate${plate}.${s}/merged.${z}.seropositive.csv \
+  out.plate${plate}/*.${z}.hits.found_public_epitopes.*_scoring.seropositive.csv
+phip_seq_aggregate.bash manifest.plate${plate}.${s}.csv out.plate${plate}.${s}
+done ; done ; done
+```
+
+
+```
+\rm commands
+for plate in 13 14 ; do
+for z in 3.5 10 ; do
+
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest manifest.plate${plate}.pfcase.csv  --output_dir out.plate${plate}.pfcase -a PFCase -b PFControl --zfilename out.plate${plate}/Zscores.select.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest manifest.plate${plate}.pfcase.csv --output_dir out.plate${plate}.pfcase -a PFCase -b PFControl --zfilename out.plate${plate}/Zscores.select.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest manifest.plate${plate}.pfcase.csv  --output_dir out.plate${plate}.pfcase -a PFCase -b PFControl --sfilename out.plate${plate}/seropositive.${z}.csv
+
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest manifest.plate${plate}.endemic.csv  --output_dir out.plate${plate}.endemic -a Endemic -b NonEndemic --zfilename out.plate${plate}/Zscores.select.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest manifest.plate${plate}.endemic.csv --output_dir out.plate${plate}.endemic -a Endemic -b NonEndemic --zfilename out.plate${plate}/Zscores.select.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest manifest.plate${plate}.endemic.csv  --output_dir out.plate${plate}.endemic -a Endemic -b NonEndemic --sfilename out.plate${plate}/seropositive.${z}.csv
+
+done ; done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+```
+\rm commands
+for z in 3.5 10 ; do
+
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a Endemic -b NonEndemic -o ${PWD}/MultiZMultiPlate.endemic -p out.plate13.endemic -p out.plate14.endemic
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a Endemic -b NonEndemic -o ${PWD}/MultiZMultiPlate.endemic -p out.plate13.endemic -p out.plate14.endemic --zfile_basename Zscores.select.csv
+
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a Endemic -b NonEndemic -o ${PWD}/MultiZMultiPlate.endemic -p out.plate13.endemic -p out.plate14.endemic --sfile_basename seropositive.${z}.csv
+
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a PFCase -b PFControl -o ${PWD}/MultiZMultiPlate.pfcase -p out.plate13.pfcase -p out.plate14.pfcase
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a PFCase -b PFControl -o ${PWD}/MultiZMultiPlate.pfcase -p out.plate13.pfcase -p out.plate14.pfcase --zfile_basename Zscores.select.csv
+
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a PFCase -b PFControl -o ${PWD}/MultiZMultiPlate.pfcase -p out.plate13.pfcase -p out.plate14.pfcase --sfile_basename seropositive.${z}.csv
+
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+
+
+```
+
+box_upload.bash out.plate*{pfcase,endemic}/{Tile,Viral,Sero,virus,manifest}*
+
+```
+
 
 
 
