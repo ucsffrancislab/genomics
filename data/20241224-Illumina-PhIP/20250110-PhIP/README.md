@@ -225,6 +225,11 @@ for plate in 1 2 13 14 ; do
   cat out.plate${plate}/Zscores.select.t.csv | datamash transpose -t, > out.plate${plate}/Zscores.select.csv
 done
 
+for plate in 1 2 13 14 ; do
+  head -2 out.plate${plate}/Zscores.minimums.t.csv > out.plate${plate}/Zscores.select.minimums.t.csv
+  join --header -t, out.all/Plibs.id.csv <( tail -n +3 out.plate${plate}/Zscores.minimums.t.csv ) >> out.plate${plate}/Zscores.select.minimums.t.csv
+  cat out.plate${plate}/Zscores.select.minimums.t.csv | datamash transpose -t, > out.plate${plate}/Zscores.select.minimums.csv
+done
 ```
 
 
@@ -306,9 +311,11 @@ for plate in 13 14 ; do
 mkdir out.plate${plate}.endemic/
 cp manifest.plate${plate}.endemic.csv out.plate${plate}.endemic/
 cp out.plate${plate}/Zscores.select.csv out.plate${plate}.endemic/
+cp out.plate${plate}/Zscores.select.minimums.csv out.plate${plate}.endemic/
 mkdir out.plate${plate}.pfcase/
 cp manifest.plate${plate}.pfcase.csv out.plate${plate}.pfcase/
 cp out.plate${plate}/Zscores.select.csv out.plate${plate}.pfcase/
+cp out.plate${plate}/Zscores.select.minimums.csv out.plate${plate}.pfcase/
 done
 ```
 
@@ -380,3 +387,24 @@ box_upload.bash out.plate*{pfcase,endemic}/{Tile,Viral,Sero,virus,manifest}*
 
 
 
+
+
+```
+./virus_scores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.pfcase -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.pfcase -o virus_scores.pfcase
+./virus_scores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.endemic -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.endemic -o virus_scores.endemic
+box_upload.bash virus_scores.*.html
+
+
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.pfcase -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.pfcase -o Zscores.HHV1.pfcase -s "Human herpesvirus 1"
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.pfcase -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.pfcase -o Zscores.HHV2.pfcase -s "Human herpesvirus 2"
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.pfcase -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.pfcase -o Zscores.HHV6A.pfcase -s "Human herpesvirus 6A"
+box_upload.bash Zscores.*.pfcase.html
+
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.endemic -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.endemic -o Zscores.HHV1.endemic -s "Human herpesvirus 1"
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.endemic -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.endemic -o Zscores.HHV2.endemic -s "Human herpesvirus 2"
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.endemic -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.endemic -o Zscores.HHV6A.endemic -s "Human herpesvirus 6A"
+box_upload.bash Zscores.*.endemic.html
+
+
+
+```
