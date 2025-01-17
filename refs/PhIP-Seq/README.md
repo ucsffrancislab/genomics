@@ -1210,4 +1210,16 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 ```
 
 
+##	20250116
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
+--job-name=HerpesMHCIIAGS --time=14-0 --nodes=1 --ntasks=4 --mem=30GB \
+--output=${PWD}/HerpesMHCIIAGS.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+~/.local/bin/netMHCIIpan.bash -f /francislab/data1/refs/PhIP-Seq/human_herpes.gte9.faa --start_allele HLA-DPA10202-DPB10601
+
+```
+
+
 
