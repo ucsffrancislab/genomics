@@ -310,17 +310,15 @@ sed -e "s/,PF Patient,/,PFCase,/" -e "s/,Endemic Control,/,PFControl,/" -e "s/,N
 for plate in 13 14 ; do
 mkdir out.plate${plate}.endemic/
 cp manifest.plate${plate}.endemic.csv out.plate${plate}.endemic/
-cp out.plate${plate}/Zscores.select.csv out.plate${plate}.endemic/
-cp out.plate${plate}/Zscores.select.minimums.csv out.plate${plate}.endemic/
+sed -e "s/,PF Patient,/,Endemic,/" -e "s/,Endemic Control,/,Endemic,/" -e "s/,Non Endemic Control,/,NonEndemic,/" out.plate${plate}/Zscores.select.csv > out.plate${plate}.endemic/Zscores.select.csv
+sed -e "s/,PF Patient,/,Endemic,/" -e "s/,Endemic Control,/,Endemic,/" -e "s/,Non Endemic Control,/,NonEndemic,/" out.plate${plate}/Zscores.select.minimums.csv > out.plate${plate}.endemic/Zscores.select.minimums.csv
 mkdir out.plate${plate}.pfcase/
 cp manifest.plate${plate}.pfcase.csv out.plate${plate}.pfcase/
-cp out.plate${plate}/Zscores.select.csv out.plate${plate}.pfcase/
-cp out.plate${plate}/Zscores.select.minimums.csv out.plate${plate}.pfcase/
+sed -e "s/,PF Patient,/,PFCase,/" -e "s/,Endemic Control,/,PFControl,/" -e "s/,Non Endemic Control,/,PFControl,/" out.plate${plate}/Zscores.select.csv > out.plate${plate}.pfcase/Zscores.select.csv
+sed -e "s/,PF Patient,/,PFCase,/" -e "s/,Endemic Control,/,PFControl,/" -e "s/,Non Endemic Control,/,PFControl,/" out.plate${plate}/Zscores.select.minimums.csv > out.plate${plate}.pfcase/Zscores.select.minimums.csv
 done
 ```
 
-#cp out.plate${plate}/seropositive.*.csv out.plate${plate}.endemic/
-#cp out.plate${plate}/seropositive.*.csv out.plate${plate}.pfcase/
 
 
 ```
@@ -390,8 +388,8 @@ box_upload.bash out.plate*{pfcase,endemic}/{Tile,Viral,Sero,virus,manifest}*
 
 
 ```
-./virus_scores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.pfcase -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.pfcase -o virus_scores.pfcase
-./virus_scores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.endemic -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.endemic -o virus_scores.endemic
+./virus_scores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.pfcase -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.pfcase -o ${PWD}/virus_scores.pfcase
+./virus_scores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13.endemic -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14.endemic -o ${PWD}/virus_scores.endemic
 box_upload.bash virus_scores.*.html
 
 
@@ -408,3 +406,46 @@ box_upload.bash Zscores.*.endemic.html
 
 
 ```
+
+
+
+##	20250117
+
+```
+for plate in 13 14 ; do
+for z in 3.5 10 ; do
+
+Seropositivity_Comparison.R -a Endemic -b NonEndemic --manifest manifest.plate${plate}.endemic.csv --sfilename out.plate${plate}.endemic/virus_scores.${z}.csv --zscore ${z} --output_dir testing 
+b=$( basename testing/Seropositivity_Prop_test_results-*csv .csv )
+echo $b
+mv testing/${b}.csv out.plate${plate}.endemic/${b}-virus_score.csv
+
+Seropositivity_Comparison.R -a PFCase -b PFControl --manifest manifest.plate${plate}.pfcase.csv --sfilename out.plate${plate}.pfcase/virus_scores.${z}.csv --zscore ${z} --output_dir testing 
+b=$( basename testing/Seropositivity_Prop_test_results-*csv .csv )
+echo $b
+mv testing/${b}.csv out.plate${plate}.pfcase/${b}-virus_score.csv
+
+done ; done
+
+
+```
+
+
+
+```
+\rm commands
+for z in 3.5 10 ; do
+
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a Endemic -b NonEndemic -o ${PWD}/MultiZMultiPlate.endemic -p out.plate13.endemic -p out.plate14.endemic --sfile_basename virus_scores.${z}.csv
+
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a PFCase -b PFControl -o ${PWD}/MultiZMultiPlate.pfcase -p out.plate13.pfcase -p out.plate14.pfcase --sfile_basename virus_scores.${z}.csv
+
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+
+
+

@@ -22,7 +22,8 @@ opt <- parser$parse_args()
 
 #noext=fs::path_ext_remove(fname)
 #rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
-rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
 
 q("no")
 
@@ -88,6 +89,10 @@ df.iloc[1:10,1:10]
 import seaborn as sns
 
 group = df.pop("group")
+group
+```
+
+```{python}
 df.shape
 ```
 
@@ -98,17 +103,56 @@ df.shape
 
 ```{python}
 lut = dict(zip(group.unique(), "rbg"))
-col_colors = group.map(lut)
+lut
 ```
 
 ```{python}
-plot = sns.clustermap(df.T,
+col_colors = group.map(lut)
+col_colors
+```
+
+
+```{python}
+# Create a legend
+legend_labels = group.unique()
+legend_labels
+```
+
+```{python}
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette(n_colors=len(legend_labels))]
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette("rbg",n_colors=len(legend_labels))]
+legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in "rbg"]
+legend_handles
+```
+
+
+```{python clustermap}
+g = sns.clustermap(df.T,
 	cmap="viridis_r",
 	norm=plt.matplotlib.colors.LogNorm(),
-	figsize=(20, 20),
+	figsize=(20, 25),
 	col_colors=col_colors,
-	col_cluster=False)
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+# Get the colorbar axes
+colorbar_ax = g.ax_col_colors.axes
+colorbar_ax.legend(legend_handles, legend_labels, ncols=3, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+
+
+plt.subplots_adjust(top=0.99,bottom=0.1)	#, left=0.15) #	ORDER MATTERS
+
+#plt.title(r.opt['species'], fontsize=20)
+
+#g.fig.suptitle(r.opt['species'])
+cbar_ax = g.ax_cbar
+cbar_ax.set_position([0.20, 0.02, 0.65, 0.02]) # [left, bottom, width, height]
+
 plt.show()
 ```
+
 
 
