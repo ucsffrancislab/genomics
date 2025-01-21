@@ -448,4 +448,22 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 3
 
 
 
+##	20250120
+
+
+```
+for plate in 1 2 13 14 ; do
+  phip_seq_aggregate.bash manifest.plate${plate}.csv out.plate${plate}
+  box_upload.bash out.plate${plate}/Zscores*csv out.plate${plate}/seropositive*csv out.plate${plate}/All* out.plate${plate}/m*
+done
+```
+
+```
+
+./virus_scores.Rmd -o ${PWD}/virus_scores.pemphigus \
+  -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13 \
+  -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14 
+
+```
+
 
