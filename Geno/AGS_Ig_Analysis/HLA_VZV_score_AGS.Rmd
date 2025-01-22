@@ -1,3 +1,67 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+parser$add_argument("-o", "--output_dir", type="character", default="./Results",
+	help="output dir [default=%(default)s]", metavar="directory")
+parser$add_argument("--AGSfile", type="character", default=NULL, required=TRUE,
+	help="AGSfile", metavar="csv_file")
+parser$add_argument("--IgEfile", type="character", default=NULL, required=TRUE,
+	help="IgEfile", metavar="csv_file")
+parser$add_argument("--survfile", type="character", default=NULL, required=TRUE,
+	help="survfile", metavar="csv_file")
+parser$add_argument("--AGSagefile", type="character", default=NULL, required=TRUE,
+	help="AGSagefile", metavar="csv_file")
+parser$add_argument("--hla_loc", type="character", default="/francislab/data1/users/gguerra",
+	help="hla_loc [default=%(default)s]", metavar="directory")
+
+#	./IgG_IgE_analysis.Rmd --output_dir ${PWD}/Results  
+#	--AGSfile    /francislab/data1/users/gguerra/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv  
+#	--IgEfile    /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv  
+#	--survfile   /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv  
+#	--AGSagefile /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv
+#	--hla_loc    /francislab/data1/users/gguerra/
+
+#	--ags_i370_Pcfile /francislab/data1/users/gguerra/AGS_i370/20230812_AGS_i370_covariates.txt
+#	--hla_i370_id     /francislab/data1/users/gguerra/AGS_i370/chr6-t1dgc-matched.filtered.100.fam
+#	--hla_i370_allele /francislab/data1/users/gguerra/AGS_i370/chr6-t1dgc-matched.filtered.100.HLA.phased
+#	--ags_onco_Pcfile /francislab/data1/users/gguerra/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt
+#	--hla_onco_id     /francislab/data1/users/gguerra/AGS_Mayo/chr6-t1dgc-matched.filtered.100.fam
+#	--hla_onco_allele /francislab/data1/users/gguerra/AGS_Mayo/chr6-t1dgc-matched.filtered.100.HLA.phased
+
+
+opt <- parser$parse_args()
+#opt_parser = OptionParser(option_list=option_list);
+#opt = parse_args(opt_parser, positional_arguments=TRUE);	# <--- why positional arguments? Needed here?
+ 
+owd=opt$output_dir
+AGSfile=opt$AGSfile
+IgEfile=opt$IgEfile
+survfile=opt$survfile
+AGSagefile=opt$AGSagefile
+
+
+noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+rmarkdown::render(newfname, output_dir = owd, output_file = paste0(noext,'.html') )
+
+print(opt)
+
+q("no")
+
+
+
+
 ---
 title: "VZV_HLA_score"
 author: "Geno Guerra"
@@ -5,7 +69,7 @@ date: "2024-11-18"
 output: html_document
 ---
 
-```{r setup, include=FALSE, echo =FALSE}
+```{r libraries, include=FALSE, echo =FALSE}
 # Process and merge datasets
 library(stats)
 
@@ -30,22 +94,38 @@ library("osqp")
 library("marginaleffects")
 library(randomForest)
 library(corrplot)
+```
 
+
+
+```{r read_csv 1, include=FALSE, echo =FALSE}
 # Out working directory
-owd = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20241024_IgE_IgG_AGS/Results"
-
+###owd = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20241024_IgE_IgG_AGS/Results"
 
 knitr::opts_chunk$set(echo = TRUE)
-AGSfile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv"
-IgEfile= "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv"
-survfile="/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv"
-AGSagefile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv"
+####AGSfile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv"
+####IgEfile= "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv"
+####survfile="/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv"
+####AGSagefile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv"
 
 # Read in the file 
 AGSData=read.csv(AGSfile, header = TRUE, sep =",")
+```
+
+```{r read_csv 2, include=FALSE, echo =FALSE}
 IgEData=read.csv(IgEfile, header=TRUE, sep =",")
+```
+
+```{r read_csv 3, include=FALSE, echo =FALSE}
 survData=read.csv(survfile, header=TRUE, sep = ",")
+```
+
+```{r read_csv 4, include=FALSE, echo =FALSE}
 ageData=read.csv(AGSagefile, header = TRUE, sep = ",")
+```
+
+
+```{r setup, include=FALSE, echo =FALSE}
 # Update Survival -- not all are updated, surv file is much shorter than the AGSData file
 for(i in c(1:nrow(AGSData))){
   agsid =AGSData$AGSID[i]
@@ -462,7 +542,8 @@ for( i in c(1:nrow(AGSData))){
 # HLA Type integration 
 
 # Location of HLA types (for AGS Mayo and AGS i370)
-hla_loc = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20240313-HLA-risk_survival/HLA_data/"
+####hla_loc = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20240313-HLA-risk_survival/HLA_data/"
+hla_loc = opt$hla_loc
 
 # Convert presence absence to 0 1 and 2s. 
 hla_collapse = function(hla_pair){
@@ -530,10 +611,11 @@ for(i in c(1:length(AGSData$AGSID))){
 # Process in the Principal Components 
 AGSData[paste("PC", c(1:10), sep = "")] = NA
 pccols = which(colnames(AGSData) %in% paste("PC", c(1:10), sep = ""))
-wd = "/Users/gguerra/Library/CloudStorage/Box-Box/Polygenic_Risk_Scores/MR_PRS_viral_results_transplanted"
+###wd = "/Users/gguerra/Library/CloudStorage/Box-Box/Polygenic_Risk_Scores/MR_PRS_viral_results_transplanted"
 
 # Read in the AGS i370 PCs and assign them 
-ags_i370_Pcfile = read.csv(paste(wd, "/AGS_illumina/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
+###ags_i370_Pcfile = read.csv(paste(wd, "/AGS_illumina/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
+ags_i370_Pcfile = read.csv(paste(hla_loc, "/AGS_illumina/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
 
 i370_ID = AGSData$AGSID[which(AGSData$array == "i370")]
 pccols_pcfile = which(colnames(ags_i370_Pcfile) %in% paste("PC", c(1:10), sep = ""))
@@ -549,7 +631,8 @@ for( id in i370_ID){
 }
 
 # Read in the AGS Onco PCs and assign them 
-ags_onco_Pcfile = read.csv(paste(wd, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
+####ags_onco_Pcfile = read.csv(paste(wd, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
+ags_onco_Pcfile = read.csv(paste(hla_loc, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
 
 onco_ID = AGSData$AGSID[which(AGSData$array == "oncoarray")]
 pccols_pcfile = which(colnames(ags_onco_Pcfile) %in% paste("PC", c(1:10), sep = ""))
@@ -640,9 +723,11 @@ cor_plot(a)
 # Exploring the HLA VZV score distribution 
 ```{r, echo = FALSE}
 
-hist(plot_dat$HLA_VZV_score, breaks = 15)
 
 plot_dat = mydat[-which(is.na(mydat$VZVlowandno)),]
+
+hist(plot_dat$HLA_VZV_score, breaks = 15)
+
 ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) + geom_boxplot(mapping = aes(x=as.factor(VZVqn), y=HLA_VZV_score))
 
 ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) + geom_boxplot(mapping = aes(x=as.factor(VZVlowandno), y=HLA_VZV_score))
