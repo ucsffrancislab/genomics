@@ -467,3 +467,30 @@ done
 ```
 
 
+
+##	20250122
+
+
+
+
+```
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13 -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14 -o Zscores.HHV1 -s "Human herpesvirus 1"
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13 -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14 -o Zscores.HHV2 -s "Human herpesvirus 2"
+./Zscores.Rmd -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate13 -d /francislab/data1/working/20241224-Illumina-PhIP/20250110-PhIP/out.plate14 -o Zscores.HHV6A -s "Human herpesvirus 6A"
+box_upload.bash Zscores.HHV{?,??}.html
+```
+
+
+```
+./PeptideComparison.Rmd -i ${PWD}/MultiZMultiPlate.pfcase/20250116-Multiplate_Peptide_Comparison-PFCase-PFControl-Prop_test_results-10.csv -o Multiplate_Peptide_Comparison
+
+
+for csv in MultiZMultiPlate*/*Multiplate_Peptide_Comparison*-10.csv ; do
+b=$( basename $csv .csv )
+./PeptideComparison.Rmd -i ${PWD}/${csv} -o ${b}
+done
+box_upload.bash *-Multiplate_Peptide_Comparison*html
+
+```
+
+
