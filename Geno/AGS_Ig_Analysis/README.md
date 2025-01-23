@@ -36,3 +36,13 @@ BiocManager::install(c("AF","cobalt","corrplot","dplyr","DT","ggplot2","ggpubr",
 
 ```
 
+
+```
+./HLA_VZV_score_AGS.Rmd --output_dir ${PWD}/Results2 \
+ --AGSfile /francislab/data1/users/gguerra/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv \
+ --IgEfile /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv \
+ --survfile /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv \
+ --AGSagefile /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv
+
+```
+
