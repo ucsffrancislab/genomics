@@ -25,10 +25,10 @@ parser$add_argument("--AGSagefile", type="character", default=NULL, required=TRU
 parser$add_argument("--hla_loc", type="character", default="/francislab/data1/users/gguerra",
 	help="hla_loc [default=%(default)s]", metavar="directory")
 
-#	./IgG_IgE_analysis.Rmd --output_dir ${PWD}/Results  
-#	--AGSfile    /francislab/data1/users/gguerra/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv  
-#	--IgEfile    /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv  
-#	--survfile   /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv  
+#	./IgG_IgE_analysis.Rmd --output_dir ${PWD}/Results
+#	--AGSfile    /francislab/data1/users/gguerra/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv
+#	--IgEfile    /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv
+#	--survfile   /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv
 #	--AGSagefile /francislab/data1/users/gguerra/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv
 #	--hla_loc    /francislab/data1/users/gguerra/
 
@@ -43,7 +43,7 @@ parser$add_argument("--hla_loc", type="character", default="/francislab/data1/us
 opt <- parser$parse_args()
 #opt_parser = OptionParser(option_list=option_list);
 #opt = parse_args(opt_parser, positional_arguments=TRUE);	# <--- why positional arguments? Needed here?
- 
+
 owd=opt$output_dir
 AGSfile=opt$AGSfile
 IgEfile=opt$IgEfile
@@ -99,16 +99,9 @@ library(corrplot)
 
 
 ```{r read_csv 1, include=FALSE, echo =FALSE}
-# Out working directory
-###owd = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20241024_IgE_IgG_AGS/Results"
-
 knitr::opts_chunk$set(echo = TRUE)
-####AGSfile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20211112-Viral-Glioma-SES-study/Data/AGS_Covariates_Updated_2022-11-03.csv"
-####IgEfile= "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_IgE_measurements_2023-10-06.csv"
-####survfile="/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_survival_update_2023-05-18.csv"
-####AGSagefile = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20200527_Adult_Glioma_Study/Summary_stats/AGS_age_update_2024-05-31.csv"
 
-# Read in the file 
+# Read in the file
 AGSData=read.csv(AGSfile, header = TRUE, sep =",")
 ```
 
@@ -128,43 +121,32 @@ ageData=read.csv(AGSagefile, header = TRUE, sep = ",")
 ```{r setup, include=FALSE, echo =FALSE}
 # Update Survival -- not all are updated, surv file is much shorter than the AGSData file
 for(i in c(1:nrow(AGSData))){
-  agsid =AGSData$AGSID[i]
-  if(agsid %in% survData$AGSID){
-  s = survData$survdays[which(survData$AGSID==agsid)]
-  v = survData$vstatus[which(survData$AGSID==agsid)]
-  AGSData$survdays[i] = s
-  AGSData$vstatus[i] = v
-  }
-  if(agsid %in% ageData$AGSID){
-    new_age = ageData$age[which(ageData$AGSID == agsid)]
-    AGSData$age[i] = new_age
-    
-  }
-  
-  }
+	agsid =AGSData$AGSID[i]
+	if(agsid %in% survData$AGSID){
+		s = survData$survdays[which(survData$AGSID==agsid)]
+		v = survData$vstatus[which(survData$AGSID==agsid)]
+		AGSData$survdays[i] = s
+		AGSData$vstatus[i] = v
+	}
+	if(agsid %in% ageData$AGSID){
+		new_age = ageData$age[which(ageData$AGSID == agsid)]
+		AGSData$age[i] = new_age
+	}
+}
 
-IgEData= IgEData[match(as.character(AGSData$AGSID), as.character(IgEData$AGSID) ), ] # I NEVER MATCH THIS UP 
+IgEData= IgEData[match(as.character(AGSData$AGSID), as.character(IgEData$AGSID) ), ] # I NEVER MATCH THIS UP
 
 for(i in c(1:nrow(AGSData))){
-  agsid = AGSData$AGSID[i]
-  loc = which(IgEData$AGSID==agsid)
-  if(length(loc) > 0){
-    
-    AGSData$allige[i]= IgEData$allige[loc]
-    AGSData$igenum[i]= IgEData$igenum[loc]
-    AGSData$respige[i]= IgEData$respige[loc]
-    AGSData$respnum[i]= IgEData$respnum[loc]
-    AGSData$foodige[i]= IgEData$foodige[loc]
-    AGSData$foodnum[i]= IgEData$foodnum[loc]
-
-
-
-
-
-    
-  }
-  
-  
+	agsid = AGSData$AGSID[i]
+	loc = which(IgEData$AGSID==agsid)
+	if(length(loc) > 0){
+		AGSData$allige[i]= IgEData$allige[loc]
+		AGSData$igenum[i]= IgEData$igenum[loc]
+		AGSData$respige[i]= IgEData$respige[loc]
+		AGSData$respnum[i]= IgEData$respnum[loc]
+		AGSData$foodige[i]= IgEData$foodige[loc]
+		AGSData$foodnum[i]= IgEData$foodnum[loc]
+	}
 }
 
 
@@ -175,26 +157,26 @@ AGSData$chemo[which(AGSData$chemo ==9)] =NA
 AGSData$chemo[which(AGSData$temodar==1)]= 1
 #Filter out the >89 year olds
 if(length(which(is.na(AGSData$agen)))>0){
-AGSData= AGSData[-which(is.na(AGSData$agen)),]
+	AGSData= AGSData[-which(is.na(AGSData$agen)),]
 }
 # Recode vstatus
 #AGSData$vstatus = ifelse(AGSData$vstatus=="D", 1, 0)
-AGSData$vstatus[which(is.na(AGSData$vstatus) )] = 0 
+AGSData$vstatus[which(is.na(AGSData$vstatus) )] = 0
 
-# Recode survdays to surv months 
+# Recode survdays to surv months
 month_length = 30.437
 AGSData$survmonths = AGSData$survdays/month_length
 
 AGSData$monthsdx1 = AGSData$daysdx1/month_length
 AGSData$monthsdx1[which(AGSData$monthsdx1 <0)]=0
-# JUST TO CHECK IF BLOOD DRAW TIME ALTERS THE RESULTS, redefine survmonths to by survmonths 
+# JUST TO CHECK IF BLOOD DRAW TIME ALTERS THE RESULTS, redefine survmonths to by survmonths
 #AGSData$survmonths = AGSData$survmonths - AGSData$monthsdx1
 
-# Get series number from the series column 
+# Get series number from the series column
 
 seriesn= function(a){
-  seriesnum= strsplit(as.character(a), split= "")[[1]][1]
-  return(seriesnum)
+	seriesnum= strsplit(as.character(a), split= "")[[1]][1]
+	return(seriesnum)
 }
 
 AGSData$seriesn = sapply(AGSData$series, seriesn)
@@ -204,25 +186,25 @@ AGSData$tert[which(AGSData$tert %in% c(8,9))] = NA
 #AGSData$tert = NA
 
 
-# Make quartiles of the VZV2 measurement only for seropositives, determine the distribution in the controls only. 
+# Make quartiles of the VZV2 measurement only for seropositives, determine the distribution in the controls only.
 vzvvec=AGSData$VZV2[which(AGSData$case==0 & AGSData$XVZV2==1)]
 vzvquarts=quantile(vzvvec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
 
-# function to assign the quartiles to the seropositives 
+# function to assign the quartiles to the seropositives
 
 vzvqfun = function(sp, sr){
-  quart = NA
-  if(is.na(sp) | sp ==0 |is.na(sr)){
-    quart = NA
-  }else{
-   if(sp ==1){
-     if(sr < vzvquarts[2]){ quart = 1}
-     if( sr>=vzvquarts[2] & sr<vzvquarts[3]){quart = 2}
-     if( sr>=vzvquarts[3] & sr<vzvquarts[4]){quart = 3}
-     if( sr>=vzvquarts[4]){quart = 4}
-   } 
-  }
-  return(quart)
+	quart = NA
+	if(is.na(sp) | sp ==0 |is.na(sr)){
+		quart = NA
+	}else{
+		if(sp ==1){
+			if(sr < vzvquarts[2]){ quart = 1}
+			if( sr>=vzvquarts[2] & sr<vzvquarts[3]){quart = 2}
+			if( sr>=vzvquarts[3] & sr<vzvquarts[4]){quart = 3}
+			if( sr>=vzvquarts[4]){quart = 4}
+		}
+	}
+	return(quart)
 }
 
 
@@ -280,7 +262,7 @@ AGSData$VZVqn = AGSData$VZVq
 AGSData$VZVqn[which(AGSData$XVZV2==0 & AGSData$seriesn %in% c(2,3,4))] = 0
 
 
-AGSData$VZV13PANEL[which(is.na(AGSData$VZV13PANEL) & AGSData$VZV2>=0)] =0 
+AGSData$VZV13PANEL[which(is.na(AGSData$VZV13PANEL) & AGSData$VZV2>=0)] =0
 AGSData$VZV_NAPPA[which(AGSData$VZV13PANEL==0)] = 0
 AGSData$VZV_NAPPA[which(AGSData$VZV13PANEL==1 & is.na(AGSData$VZV_NAPPA))] = 0
 AGSData$temodar[which(is.na(AGSData$temodar))]=0
@@ -298,34 +280,33 @@ AGSData$foodige[which(AGSData$foodige==1)] = 0
 AGSData$foodige[which(AGSData$foodige==2)] = 1
 
 
-# Recode Total Ige to be binary. 
+# Recode Total Ige to be binary.
 AGSData$totige12v3 = NA
 for(i in c(1:nrow(AGSData))){
-  if(is.na(AGSData$allige[i])== FALSE){
-  
-  if(AGSData$allige[i] %in% c(1,2)){
-    AGSData$totige12v3[i]= 0
-  }
-    if(AGSData$allige[i] == 3){
-    AGSData$totige12v3[i]= 1
-  }
-  }
+	if(is.na(AGSData$allige[i])== FALSE){
+		if(AGSData$allige[i] %in% c(1,2)){
+			AGSData$totige12v3[i]= 0
+		}
+		if(AGSData$allige[i] == 3){
+			AGSData$totige12v3[i]= 1
+		}
+	}
 }
 
 AGSData$totige1v23 = NA
 
 for(i in c(1:nrow(AGSData))){
-   if(is.na(AGSData$allige[i])== FALSE){
-  if(AGSData$allige[i] ==1){
-    AGSData$totige1v23[i]= 0
-  }
-    if(AGSData$allige[i] %in% c(2,3)){
-    AGSData$totige1v23[i]= 1
-  }
-   }
+	if(is.na(AGSData$allige[i])== FALSE){
+		if(AGSData$allige[i] ==1){
+			AGSData$totige1v23[i]= 0
+		}
+		if(AGSData$allige[i] %in% c(2,3)){
+			AGSData$totige1v23[i]= 1
+		}
+	}
 }
 
-# Quartiles for the IgE variables 
+# Quartiles for the IgE variables
 
 # Total IgE
 alligevec=AGSData$igenum[which(AGSData$case==0 & is.na(AGSData$igenum)==FALSE & AGSData$igenum >2)]
@@ -333,22 +314,21 @@ alligevec=AGSData$igenum[which(AGSData$case==0 & is.na(AGSData$igenum)==FALSE & 
 quarts=quantile(alligevec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
 quarts[1]= 2.001
 totigequarts=quarts
-# function to assign the quartiles to the seropositives 
+# function to assign the quartiles to the seropositives
 
 qfun = function(sr){
-  myquarts=quarts
-  quart = NA
-  if(is.na(sr)){
-    quart = NA
-  }else{
-    if(sr  < myquarts[1]){quart = 0}
-     if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
-     if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
-     if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
-     if( sr>=myquarts[4]){quart = 4}
-   
-  }
-  return(quart)
+	myquarts=quarts
+	quart = NA
+	if(is.na(sr)){
+		quart = NA
+	}else{
+		if(sr  < myquarts[1]){quart = 0}
+		if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
+		if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
+		if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
+		if( sr>=myquarts[4]){quart = 4}
+	}
+	return(quart)
 }
 
 
@@ -378,20 +358,18 @@ quarts=quantile(respigevec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
 quarts[1]= 0.0301
 respquarts=quarts
 respqfun = function(sr){
-  myquarts = respquarts
-  quart = NA
-  if(is.na(sr)){
-    quart = NA
-  }else{
-   
-     if(sr  <myquarts[1]){quart = 0}
-     if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
-     if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
-     if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
-     if( sr>=myquarts[4]){quart = 4}
-  
-  }
-  return(quart)
+	myquarts = respquarts
+	quart = NA
+	if(is.na(sr)){
+		quart = NA
+	}else{
+		if(sr  <myquarts[1]){quart = 0}
+		if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
+		if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
+		if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
+		if( sr>=myquarts[4]){quart = 4}
+	}
+	return(quart)
 }
 
 
@@ -421,20 +399,20 @@ quarts=quantile(foodigevec, probs=c(0,0.25, 0.5, 0.75,1), na.rm = TRUE)
 quarts[1]= 0.0301
 foodquarts = quarts
 foodqfun = function( sr){
-  myquarts = foodquarts
-  quart = NA
-  if(is.na(sr)){
-    quart = NA
-  }else{
-   
-     if(sr < myquarts[1]){quart = 0}
-     if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
-     if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
-     if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
-     if( sr>=myquarts[4]){quart = 4}
-  
-  }
-  return(quart)
+	myquarts = foodquarts
+	quart = NA
+	if(is.na(sr)){
+		quart = NA
+	}else{
+
+		if(sr < myquarts[1]){quart = 0}
+		if(sr>=myquarts[1] & sr<myquarts[2]){ quart = 1}
+		if( sr>=myquarts[2] & sr<myquarts[3]){quart = 2}
+		if( sr>=myquarts[3] & sr<myquarts[4]){quart = 3}
+		if( sr>=myquarts[4]){quart = 4}
+
+	}
+	return(quart)
 }
 
 
@@ -463,23 +441,14 @@ AGSData$foodige75 = factor(AGSData$foodige75, levels = c(0:2))
 AGSData$VZVorRespHigh = NA
 
 for(i in c(1:nrow(AGSData))){
-     if(is.na(AGSData$respige[i])== FALSE & is.na(AGSData$VZVlowandno[i])== FALSE){
-        
-       if( AGSData$respige[i]==1 | AGSData$VZVlowandno[i]==1){
-         AGSData$VZVorRespHigh[i] = 1
-       }
-      
-      if( AGSData$respige[i]==0 & AGSData$VZVlowandno[i]==0){
-         AGSData$VZVorRespHigh[i] = 0
-       }
-       
-       
-       
-     }
-  
-  
-  
-  
+	if(is.na(AGSData$respige[i])== FALSE & is.na(AGSData$VZVlowandno[i])== FALSE){
+		if( AGSData$respige[i]==1 | AGSData$VZVlowandno[i]==1){
+			AGSData$VZVorRespHigh[i] = 1
+		}
+		if( AGSData$respige[i]==0 & AGSData$VZVlowandno[i]==0){
+			AGSData$VZVorRespHigh[i] = 0
+		}
+	}
 }
 
 
@@ -488,44 +457,44 @@ AGSData$ngrade[which(is.na(AGSData$ngrade) & AGSData$case==1)] = NA
 AGSData$ngrade = factor(as.character(AGSData$ngrade), order= TRUE, levels = c( "2","3", "4"))
 
 # recode controls with na dexatbd to be 0
-AGSData$dexatbd[which(is.na(AGSData$dexatbd) & AGSData$case==0)] = 0 
+AGSData$dexatbd[which(is.na(AGSData$dexatbd) & AGSData$case==0)] = 0
 
 
-  CIfun =function(mean, se){
-  lower = round(exp(mean - 1.96 * se), digits = 2)
-  upper = round(exp(mean+ 1.96 * se), digits =2)
-  return(paste(lower,"-",upper, sep = ""))
-  }
+CIfun =function(mean, se){
+	lower = round(exp(mean - 1.96 * se), digits = 2)
+	upper = round(exp(mean+ 1.96 * se), digits =2)
+	return(paste(lower,"-",upper, sep = ""))
+}
 
-  
 
-  AGSData$vstatus = factor(AGSData$vstatus)
-  
-  
+
+AGSData$vstatus = factor(AGSData$vstatus)
+
+
 AGSData$diag = NA
 dx_groups = data.frame(cbind(c(1:17),c( "gbm",
-"anap astro",
-"astro gr 2",
-"anap oligo",
-"oligo",
-"anap oligoastro",
-"oligoastro",
-"anap ependymoma",
-"ependymoma",
-"jpa",
-"medullo",
-"other",
-"mixed",
-"ganglio",
-"oligo NOS",
-"ependy NOS",
-"astro NOS")))
-colnames(dx_groups) = c("dxcode", "diag")
+	"anap astro",
+	"astro gr 2",
+	"anap oligo",
+	"oligo",
+	"anap oligoastro",
+	"oligoastro",
+	"anap ependymoma",
+	"ependymoma",
+	"jpa",
+	"medullo",
+	"other",
+	"mixed",
+	"ganglio",
+	"oligo NOS",
+	"ependy NOS",
+	"astro NOS")))
+	colnames(dx_groups) = c("dxcode", "diag")
 
 for( i in c(1:nrow(AGSData))){
-  if(is.na(AGSData$dxcode[i])== FALSE){
-  AGSData$diag[i] = dx_groups$diag[which(as.integer(dx_groups$dxcode) == as.integer(AGSData$dxcode[i]) )]
-}
+	if(is.na(AGSData$dxcode[i])== FALSE){
+		AGSData$diag[i] = dx_groups$diag[which(as.integer(dx_groups$dxcode) == as.integer(AGSData$dxcode[i]) )]
+	}
 }
 
 AGSData$whogroups = NA
@@ -533,30 +502,28 @@ whog = data.frame(cbind(c(1:5, 9), c("IDH Mut Oligo", "IDH Mut Astro", "IDH Mut 
 colnames(whog) = c("who", "whoname")
 
 for( i in c(1:nrow(AGSData))){
-  if(is.na(AGSData$who2016[i])== FALSE){
-  AGSData$whogroups[i] = whog$whoname[which(as.integer(whog$who) == as.integer(AGSData$who2016[i]) )]
-}
+	if(is.na(AGSData$who2016[i])== FALSE){
+		AGSData$whogroups[i] = whog$whoname[which(as.integer(whog$who) == as.integer(AGSData$who2016[i]) )]
+	}
 }
 
 
-# HLA Type integration 
+# HLA Type integration
 
 # Location of HLA types (for AGS Mayo and AGS i370)
 ####hla_loc = "/Users/gguerra/Library/CloudStorage/Box-Box/Francis _Lab_Share/20240313-HLA-risk_survival/HLA_data/"
 hla_loc = opt$hla_loc
 
-# Convert presence absence to 0 1 and 2s. 
+# Convert presence absence to 0 1 and 2s.
 hla_collapse = function(hla_pair){
-  value = 0
-  if("P" %in% hla_pair){
-    value = 1
-    
-    if(!("A"%in% hla_pair)){
-      value = 2
-    }
-  }
-  return(value)
-  
+	value = 0
+	if("P" %in% hla_pair){
+		value = 1
+		if(!("A"%in% hla_pair)){
+			value = 2
+		}
+	}
+	return(value)
 }
 
 # Start with AGS i370
@@ -568,85 +535,83 @@ hla_i370_allele = read.csv(paste(hla_loc, "/AGS_i370/chr6-t1dgc-matched.filtered
 
 hla_i370_anames = hla_i370_allele[,2]
 for( allele in c(1:length(hla_i370_anames))){
-  AGSData[[hla_i370_anames[allele]]] = NA
+	AGSData[[hla_i370_anames[allele]]] = NA
 }
 hla_locs = which(colnames(AGSData) %in% hla_i370_anames)
 for(i in c(1:length(AGSData$AGSID))){
-  loc = grep(AGSData$AGSID[i], hla_i370_id)
-  if(length(loc >0)){
-   # print(AGSData$AGSID[i])
-    AGSData$array[i] ="i370"
-    hla_ind =hla_i370_allele[, c(loc*2+1, loc*2+2)]
-    hla_vals = apply(hla_ind,1, hla_collapse)
-    AGSData[i,hla_locs] = hla_vals
-  }
+	loc = grep(AGSData$AGSID[i], hla_i370_id)
+	if(length(loc >0)){
+		# print(AGSData$AGSID[i])
+		AGSData$array[i] ="i370"
+		hla_ind =hla_i370_allele[, c(loc*2+1, loc*2+2)]
+		hla_vals = apply(hla_ind,1, hla_collapse)
+		AGSData[i,hla_locs] = hla_vals
+	}
 }
 
-# AGS_Mayo 
+# AGS_Mayo
 hla_onco_id = read.csv(paste(hla_loc, "/AGS_Mayo/chr6-t1dgc-matched.filtered.100.fam", sep = ""), header = FALSE, sep = "")[,2]
 hla_onco_allele = read.csv(paste(hla_loc, "/AGS_Mayo/chr6-t1dgc-matched.filtered.100.HLA.phased", sep = ""), header = FALSE, sep = " ")
 
 hla_onco_anames = hla_onco_allele[,2]
 
-# Assert they are the same hla alleles 
+# Assert they are the same hla alleles
 if(length(which((hla_onco_anames == hla_i370_anames)== FALSE))){
-  print("STOP: HLA allele types don't align between the datasets!!")
+	print("STOP: HLA allele types don't align between the datasets!!")
 }
 
 hla_locs = which(colnames(AGSData) %in% hla_onco_anames)
 for(i in c(1:length(AGSData$AGSID))){
-  loc = grep(AGSData$AGSID[i], hla_onco_id)
-  if(length(loc >0)){
-   # print(AGSData$AGSID[i])
-    AGSData$array[i] ="oncoarray"
+	loc = grep(AGSData$AGSID[i], hla_onco_id)
+	if(length(loc >0)){
+		# print(AGSData$AGSID[i])
+		AGSData$array[i] ="oncoarray"
 
-    hla_ind =hla_onco_allele[, c(loc*2+1, loc*2+2)]
-    hla_vals = apply(hla_ind,1, hla_collapse)
-    AGSData[i,hla_locs] = hla_vals
-  }
+		hla_ind =hla_onco_allele[, c(loc*2+1, loc*2+2)]
+		hla_vals = apply(hla_ind,1, hla_collapse)
+		AGSData[i,hla_locs] = hla_vals
+	}
 }
 
-# Done with HLA -- coded as 0 1 2 based on absent/present phased types. 
+# Done with HLA -- coded as 0 1 2 based on absent/present phased types.
 
-# Process in the Principal Components 
+# Process in the Principal Components
 AGSData[paste("PC", c(1:10), sep = "")] = NA
 pccols = which(colnames(AGSData) %in% paste("PC", c(1:10), sep = ""))
 ###wd = "/Users/gguerra/Library/CloudStorage/Box-Box/Polygenic_Risk_Scores/MR_PRS_viral_results_transplanted"
 
-# Read in the AGS i370 PCs and assign them 
+# Read in the AGS i370 PCs and assign them
 ###ags_i370_Pcfile = read.csv(paste(wd, "/AGS_illumina/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
 ags_i370_Pcfile = read.csv(paste(hla_loc, "/AGS_illumina/20230812_AGS_i370_covariates.txt", sep = ""), header = TRUE, sep = "")
 
 i370_ID = AGSData$AGSID[which(AGSData$array == "i370")]
 pccols_pcfile = which(colnames(ags_i370_Pcfile) %in% paste("PC", c(1:10), sep = ""))
 for( id in i370_ID){
-  loc1 = grep(id, ags_i370_Pcfile$IID)
-  if(length(loc1)<1){
-    print(id)
-    next
-  }
-  loc2 = which(AGSData$AGSID==id)
-  AGSData[loc2, pccols] = ags_i370_Pcfile[loc1, pccols_pcfile]
-  
+	loc1 = grep(id, ags_i370_Pcfile$IID)
+	if(length(loc1)<1){
+		print(id)
+		next
+	}
+	loc2 = which(AGSData$AGSID==id)
+	AGSData[loc2, pccols] = ags_i370_Pcfile[loc1, pccols_pcfile]
 }
 
-# Read in the AGS Onco PCs and assign them 
+# Read in the AGS Onco PCs and assign them
 ####ags_onco_Pcfile = read.csv(paste(wd, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
 ags_onco_Pcfile = read.csv(paste(hla_loc, "/AGS_Mayo/20240510_AGS_Mayo_Oncoarray_covariates.txt", sep = ""), header = TRUE, sep = "")
 
 onco_ID = AGSData$AGSID[which(AGSData$array == "oncoarray")]
 pccols_pcfile = which(colnames(ags_onco_Pcfile) %in% paste("PC", c(1:10), sep = ""))
 for( id in onco_ID){
-  loc1 = grep(id, ags_onco_Pcfile$IID)
-  if(length(loc1)<1){
-    print(id)
-    next
-  }
-  loc2 = which(AGSData$AGSID==id)
-  AGSData[loc2, pccols] = ags_onco_Pcfile[loc1, pccols_pcfile]
-  
+	loc1 = grep(id, ags_onco_Pcfile$IID)
+	if(length(loc1)<1){
+		print(id)
+		next
+	}
+	loc2 = which(AGSData$AGSID==id)
+	AGSData[loc2, pccols] = ags_onco_Pcfile[loc1, pccols_pcfile]
 }
-  
+
 ```
 
 
@@ -659,7 +624,7 @@ mydat = AGSData[-which(is.na(AGSData$HLA_A_01)),]
 #alleles_of_interest = c("HLA_DRB1_0301","HLA_DQB1_0201" ,"HLA_B_0801", "HLA_DRB3_0101", "HLA_C_0701", "HLA_A_0101","HLA_DQA1_0501", "HLA_DRB5_0101", "HLA_DQB1_0602", "HLA_DRB1_1501", "HLA_A_0201", "HLA_DQA1_0102")
 #allele_weights = c(0.236,0.236, 0.238,0.197, 0.194, 0.181,0.153, -0.135, -0.133, -0.132, -0.103, -0.099)
 
-# Removing non-indept after conditioning 
+# Removing non-indept after conditioning
 alleles_of_interest = c("HLA_DRB1_0301" ,"HLA_B_0801",  "HLA_C_0701", "HLA_A_0101", "HLA_DRB5_0101", "HLA_DQB1_0602", "HLA_DRB1_1501", "HLA_A_0201", "HLA_DQA1_0102")
 allele_weights = c(0.236, 0.238, 0.194, 0.181, -0.135, -0.133, -0.132, -0.103, -0.099)
 
@@ -668,45 +633,40 @@ alleles_in_file = alleles_of_interest[which(alleles_of_interest %in% colnames(AG
 alleles_file_weights = allele_weights[which(alleles_of_interest %in% colnames(AGSData))]
 print(alleles_in_file)
 
-# Create a predicted VZV sero score 
+# Create a predicted VZV sero score
 mydat$HLA_VZV_score = NA
 
 for(i in c(1:nrow(mydat))){
-  score = 0
-  for(j in c(1:length(alleles_in_file))){
-    dose = mydat[i, alleles_in_file[j]]
-    if( allele_weights[j] < 0){
-      dose = abs(dose-2)
-    }
-    dw = dose * abs(allele_weights[j])
-    score = score + dw
-    
-  }
-  mydat$HLA_VZV_score[i] = score
-
+	score = 0
+	for(j in c(1:length(alleles_in_file))){
+		dose = mydat[i, alleles_in_file[j]]
+		if( allele_weights[j] < 0){
+			dose = abs(dose-2)
+		}
+		dw = dose * abs(allele_weights[j])
+		score = score + dw
+	}
+	mydat$HLA_VZV_score[i] = score
 }
 
 
 
-# Convert them to binary presence/absence 
+# Convert them to binary presence/absence
 for(a in alleles_in_file){
-  loc = which(colnames(mydat) == a)
-    mydat[which(mydat[,loc] %in% c(1,2)), loc] = 1
-    
-  
-  
+	loc = which(colnames(mydat) == a)
+	mydat[which(mydat[,loc] %in% c(1,2)), loc] = 1
 }
 
-# Normalize the HLA VZV score 
+# Normalize the HLA VZV score
 mydat$HLA_VZV_score_norm = NA
 for(array in unique(mydat$array)){
-  mymean = mean(mydat$HLA_VZV_score[which(mydat$array ==array)])
-  mysd = sd(mydat$HLA_VZV_score[which(mydat$array ==array)])
+	mymean = mean(mydat$HLA_VZV_score[which(mydat$array ==array)])
+	mysd = sd(mydat$HLA_VZV_score[which(mydat$array ==array)])
 
-for(i in which(mydat$array==array)){
-  mydat$HLA_VZV_score_norm[i] = (mydat$HLA_VZV_score[i]- mymean)/mysd
-}
-  
+	for(i in which(mydat$array==array)){
+		mydat$HLA_VZV_score_norm[i] = (mydat$HLA_VZV_score[i]- mymean)/mysd
+	}
+
 }
 
 
@@ -720,7 +680,7 @@ cor_plot(a)
 
 
 
-# Exploring the HLA VZV score distribution 
+# Exploring the HLA VZV score distribution
 ```{r, echo = FALSE}
 
 
@@ -733,61 +693,57 @@ ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) + geom_b
 ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) + geom_boxplot(mapping = aes(x=as.factor(VZVlowandno), y=HLA_VZV_score))
 
 
-# histogram 
+# histogram
 
 # vs VZV low and no
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(VZVlowandno)), color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("#69b3a2", "#404080"))
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(VZVlowandno)), color="#e9ecef", alpha=0.6, position = 'identity')
+	scale_fill_manual(values=c("#69b3a2", "#404080"))
 
-# by reactivity bin 
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(VZVqn)), color="#e9ecef", alpha=0.5, position = 'identity') +
-    scale_fill_manual(values=c("burlywood3","cadetblue","darkgoldenrod1","darkseagreen", "darksalmon"))
+# by reactivity bin
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(VZVqn)), color="#e9ecef", alpha=0.5, position = 'identity')
+	scale_fill_manual(values=c("burlywood3","cadetblue","darkgoldenrod1","darkseagreen", "darksalmon"))
 
 
 # by array
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(array)), color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("lightpink", "lightblue"))
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(array)), color="#e9ecef", alpha=0.6, position = 'identity')
+	scale_fill_manual(values=c("lightpink", "lightblue"))
 
 # Cases only by array
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & plot_dat$idhmut==0),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(array)), color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("lightpink", "lightblue"))
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & plot_dat$idhmut==0),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(array)), color="#e9ecef", alpha=0.6, position = 'identity')
+	scale_fill_manual(values=c("lightpink", "lightblue"))
 
 
 # by case
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(case)), color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("green4", "red3"))
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5")),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(case)), color="#e9ecef", alpha=0.6, position = 'identity')
+	scale_fill_manual(values=c("green4", "red3"))
 
 # By IDH WT case
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$idhmut==0 | plot_dat$case==0)),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(case)), color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("green4", "red3"))
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$idhmut==0 | plot_dat$case==0)),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(case)), color="#e9ecef", alpha=0.6, position = 'identity')
+	scale_fill_manual(values=c("green4", "red3"))
 
 plot_dat$diag = NA
 plot_dat$diag = ifelse(plot_dat$case==0, "Control", NA)
 for(i in c(1:nrow(plot_dat))){
-  
-    if(is.na(plot_dat$idhmut[i])== FALSE){
-    if(plot_dat$idhmut[i]==1){
-      plot_dat$diag[i]="IDH Mut"
-    }
-    if(plot_dat$idhmut[i]==0){
-      plot_dat$diag[i] = "IDH WT"
-    }
-    }
-  
+	if(is.na(plot_dat$idhmut[i])== FALSE){
+		if(plot_dat$idhmut[i]==1){
+			plot_dat$diag[i]="IDH Mut"
+		}
+		if(plot_dat$idhmut[i]==0){
+			plot_dat$diag[i] = "IDH WT"
+		}
+	}
 }
 
 # By subtype
-ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$idhmut %in% c(0,1) | plot_dat$case==0) & plot_dat$array=="i370"),]) +
-    geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(diag)), color="#e9ecef", alpha=0.6, position = 'identity') +
-    scale_fill_manual(values=c("yellow4", "red3", "slateblue"))
-
-
+ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$idhmut %in% c(0,1) | plot_dat$case==0) & plot_dat$array=="i370"),])
+	geom_density(mapping = aes(x=HLA_VZV_score, fill=as.factor(diag)), color="#e9ecef", alpha=0.6, position = 'identity')
+	scale_fill_manual(values=c("yellow4", "red3", "slateblue"))
 
 ```
 
@@ -795,65 +751,66 @@ ggplot(data=plot_dat[which(plot_dat$seriesn %in% c("2","3","4","5") & (plot_dat$
 # Risk (Continuous)
 
 ```{r RISK META FUNCTION, echo = FALSE}
-# Data should come in with all missing and bad values of varname removed. 
+# Data should come in with all missing and bad values of varname removed.
 arrays = c("i370", "oncoarray")
 risk_meta_function = function(ds, varname, varofint, typeofint, ageofint, arrays,datat){
 
-  meta_results = data.frame(mat.or.vec(length(arrays),3))
-  colnames(meta_results)= c("array", "beta", "se")
+	meta_results = data.frame(mat.or.vec(length(arrays),3))
+	colnames(meta_results)= c("array", "beta", "se")
 
-  if(datat=="c"){
-    ds[varname] = scale(ds[varname], center=TRUE, scale=TRUE)
-  }
-  for(s in c(1:length(arrays))){
-    dataset1= ds[which(ds$array==arrays[s]),]
-    
-    if(length(which(dataset1$case==1)) ==0 | length(which(dataset1$case==0)) ==0){
-      beta = 1.2
-      se= 120.3
-    }else{
-    
-          # Covariates to include 
-    extra_covariates = "+ agen"
-    possible_covariates = c("sex", paste("PC", c(1:10), sep =""))
-    for(p in possible_covariates){
-      nlevels = length(summary(as.factor(dataset1[,p])))
-    if(nlevels >1){
+	if(datat=="c"){
+		ds[varname] = scale(ds[varname], center=TRUE, scale=TRUE)
+	}
+	for(s in c(1:length(arrays))){
+		dataset1= ds[which(ds$array==arrays[s]),]
 
-      extra_covariates= paste(extra_covariates, "+ ", p, sep = "")
-    }  
-      
-    }
-        logitmodel=paste("case ~ ", varname,extra_covariates, sep = "")
-  print(logitmodel)
-      
-  
-    logit_fun = glm(logitmodel, data = dataset1, family=binomial(link="logit"))
-    go= summary(logit_fun)
-    print(go)
-    beta = go$coefficients[2,1]
-    se = go$coefficients[2,2]
-    }
-    meta_results[s,] = c(arrays[s], as.numeric(beta), as.numeric(se))
-  }
+		if(length(which(dataset1$case==1)) ==0 | length(which(dataset1$case==0)) ==0){
+			beta = 1.2
+			se= 120.3
+		}else{
 
-  meta_results$beta = as.numeric(meta_results$beta)
-  meta_results$se = as.numeric(meta_results$se)
+			# Covariates to include
+			extra_covariates = "+ agen"
+			possible_covariates = c("sex", paste("PC", c(1:10), sep =""))
+			for(p in possible_covariates){
+				nlevels = length(summary(as.factor(dataset1[,p])))
+				if(nlevels >1){
 
-  # If any series didnt converge or has essentially infinite SE, remove
-  to_remove = which(abs(meta_results$se/meta_results$beta)>50)
-  
-  if(length(to_remove) > 0){
-    meta_results = meta_results[-to_remove,]
-  }
-  
-  ma_model_1 <- rma.uni(yi= beta,sei=se, data = meta_results, method = "FE")
-  pval = round(ma_model_1[[5]], digits = 4)
-  print(paste("Meta P-value = ",ma_model_1[[5]], sep = "" ))
-  hetlab=paste("FE Model (Q = ",(formatC(ma_model_1$QE, digits=2, format="f")), ", p = ", (formatC(ma_model_1$QEp, digits=2, format="f")), ")", sep = "")
-    forest(ma_model_1, slab = meta_results$array, showweights = TRUE,main= paste("\n",varofint, " risk: ", typeofint,": ", ageofint, "\nP-value = ", pval, sep = "") , header = TRUE , cex.axis = 1, cex=1,mlab=hetlab , digits=3, transf=exp, refline = 1, xlim = c(-7,7))
-  if(datat!="c"){
-}
+					extra_covariates= paste(extra_covariates, "+ ", p, sep = "")
+				}
+
+			}
+			logitmodel=paste("case ~ ", varname,extra_covariates, sep = "")
+			print(logitmodel)
+
+
+			logit_fun = glm(logitmodel, data = dataset1, family=binomial(link="logit"))
+			go= summary(logit_fun)
+			print(go)
+			beta = go$coefficients[2,1]
+			se = go$coefficients[2,2]
+		}
+		meta_results[s,] = c(arrays[s], as.numeric(beta), as.numeric(se))
+	}
+
+	meta_results$beta = as.numeric(meta_results$beta)
+	meta_results$se = as.numeric(meta_results$se)
+
+	# If any series didnt converge or has essentially infinite SE, remove
+	to_remove = which(abs(meta_results$se/meta_results$beta)>50)
+
+	if(length(to_remove) > 0){
+		meta_results = meta_results[-to_remove,]
+	}
+
+	ma_model_1 <- rma.uni(yi= beta,sei=se, data = meta_results, method = "FE")
+	pval = round(ma_model_1[[5]], digits = 4)
+	print(paste("Meta P-value = ",ma_model_1[[5]], sep = "" ))
+	hetlab=paste("FE Model (Q = ",(formatC(ma_model_1$QE, digits=2, format="f")), ", p = ", (formatC(ma_model_1$QEp, digits=2, format="f")), ")", sep = "")
+	forest(ma_model_1, slab = meta_results$array, showweights = TRUE,main= paste("\n",varofint, " risk: ", typeofint,": ", ageofint, "\nP-value = ", pval, sep = "") , header = TRUE , cex.axis = 1, cex=1,mlab=hetlab , digits=3, transf=exp, refline = 1, xlim = c(-7,7))
+	if(datat!="c"){
+		#	???
+	}
 }
 ```
 
