@@ -1,0 +1,219 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-i", "--input", type="character", 
+	help="ninput file", metavar="file base")
+parser$add_argument("-o", "--output", type="character", default="ZscoreViolin",
+	help="output file base [default=%(default)s]", metavar="file base")
+opt <- parser$parse_args()
+
+#noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
+
+q("no")
+
+---
+title: "Executable Rmarkdown script"
+author: "JW"
+date: "2025-01-10"
+output: 
+	html_document:
+		fig_width: 12
+		fig_height: 8
+---
+
+
+
+
+```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r args}
+args
+```
+
+```{r optargs}
+opt
+```
+
+```{r read input}
+df=read.csv(opt$input, header=TRUE, sep =",")
+#MultiZMultiPlate.pfcase/20250116-Multiplate_Peptide_Comparison-PFCase-PFControl-Prop_test_results-10.csv
+head(df)
+```
+
+```{r, include=FALSE}
+##   peptide             species freq_PFCase freq_PFControl      beta        se
+## 1   32246 Human herpesvirus 5        0.45          0.050  2.891506 0.9274420
+## 2   32245 Human herpesvirus 5        0.50          0.100  2.132621 0.6958962
+## 3   62011 Human herpesvirus 5        0.45          0.075  2.414380 0.8030581
+## 4   35149 Human herpesvirus 5        0.35          0.050  3.078803 1.0373128
+## 5   16896  Human adenovirus E        0.50          0.150  1.825031 0.6579988
+## 6   16586        Rhinovirus B        0.05          0.500 -3.016851 1.0909665
+##          pval
+## 1 0.001822547
+## 2 0.002179847
+## 3 0.002642897
+## 4 0.002996896
+## 5 0.005543834
+## 6 0.005687029
+```
+
+
+```{r libraries}
+library(conflicted)  
+
+# Loading relevant libraries 
+conflict_prefer("filter", "dplyr")
+conflict_prefer("lag", "dplyr")
+
+library(tidyverse) # includes ggplot2, for data visualisation. dplyr, for data manipulation.
+library(RColorBrewer) # for a colourful plot
+library(ggrepel) # for nice annotations
+```
+
+```{r plot 10}
+
+df<-df %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
+
+ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_point(aes(fill=sig,size=sig),shape=21) +
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
+	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+
+```
+
+```{r plot 11 prep}
+df<-df %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
+df<-df %>% mutate(shape=ifelse( species == "Human herpesvirus 1",24,
+	ifelse( species == "Human herpesvirus 2", 23,
+	ifelse( species =="Human herpesvirus 6A", 22, 21))))
+head(df)
+```
+
+```{r plot 11}
+ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_point(aes(fill=sig,size=sig,shape=shape)) + scale_shape_identity() +
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt"))) #+
+```
+
+
+
+```{r plot 12 prep}
+df = df[complete.cases(df),]	#	drop any row with NA
+
+#df<-df %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
+#
+#df<-df %>% mutate(shape=ifelse( species == "Human herpesvirus 1",'HHV1',
+#	ifelse( species == "Human herpesvirus 2", 'HHV2',
+#	ifelse( species =="Human herpesvirus 6A", 'HHV6A', 'Other'))))
+
+head(df)
+```
+
+
+https://stackoverflow.com/questions/74205581/show-the-volcano-plot-points-with-colour-above-the-others-in-background-with-ggp
+
+```{r plot 13 prep}
+df <- df %>% 
+	mutate(group = ifelse(str_detect(species, "Human herpesvirus 1"), "HHv1",
+		ifelse(str_detect(species, "Human herpesvirus 2"), "HHv2",
+			ifelse(str_detect(species, "Human herpesvirus 5"), "HHv5",
+				ifelse(str_detect(species, "Human herpesvirus 6A"), "HHv6A",
+					ifelse(str_detect(species, "Human adenovirus D"), "HAvD",
+						ifelse(str_detect(species, "Human adenovirus E"), "HAvE", "Other")
+					)
+				)   
+			)   
+		)
+	))  
+
+head(df)
+```
+
+```{r plot 13}
+ggplot(df, aes(y = -log10(pval), x = beta, col = group)) + 
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	geom_point(data = filter(df, group == "Other"), alpha = .1) +
+	geom_point(data = filter(df, !group == "Other")) +
+	theme_classic()
+```
+
+
+
+```{r plot 14}
+ggplot(df, aes(y = -log10(pval), x = beta, col = group)) + 
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	geom_point(data = filter(df, group == "Other"), alpha = .1,size=2) +
+	geom_point(data = filter(df, !group == "Other"), size=4) +
+	scale_color_brewer(palette="Set1") +
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt"))) #+
+
+#scale_color_brewer(palette="Dark2") +
+#scale_color_brewer(palette="spectral") +
+```
+
+
+
+
+
+
+https://erikaduan.github.io/posts/2021-01-02-volcano-plots-with-ggplot2/
+
+...
+
+
+
+
+
+
+
