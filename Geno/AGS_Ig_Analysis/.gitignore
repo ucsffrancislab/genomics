@@ -1,5 +1,6 @@
 Results/
+Results2/
 Cleaned_Covariates_with_HLA.tsv
-#	HLA_VZV_score_AGS.Rmd
+HLA_VZV_score_AGS.Rmd
 executable_rmarkdown.Rmd
 executable_rmarkdown.html
