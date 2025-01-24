@@ -137,6 +137,36 @@ ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 
 
 
+
+```{r plot 11b}
+#ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
+ggplot(df, aes(x = beta, y = -log10(pval))) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_point(aes(fill=sig,size=sig,shape=shape)) + scale_shape_identity() +
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt"))) #+
+```
+
+
+
+
+
+
+
+
+
+
+
+
 ```{r plot 12 prep}
 df = df[complete.cases(df),]	#	drop any row with NA
 
@@ -205,7 +235,6 @@ ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 
 
 ```{r plot 15}
-#ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 ggplot(df, aes(y = -log10(pval), x = beta)) +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
@@ -220,26 +249,90 @@ ggplot(df, aes(y = -log10(pval), x = beta)) +
 		legend.title = element_text(size=14, color="black",lineheight = 1),
 		legend.text = element_text(size=13, color="black",lineheight = 1.2),
 		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
-		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt"))) #+
-
-#	geom_point(aes(fill=sig,size=sig),shape=21) +
-#scale_color_brewer(palette="Dark2") +
-#scale_color_brewer(palette="spectral") +
-#	geom_point(data = filter(df, pval <= 0.05), col='gray') +
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
 ```
 
 
 
+How to put a black border around a colored dot?????? RRRRRRRRR
+
+Double drawing the point works but seems excessive.
+
+Tried setting the color to black and then assigning fill which only did a lack dot.
 
 
+```{r plot 16}
+#ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
+ggplot(df, aes(y = -log10(pval), x = beta)) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	geom_point(data = filter(df, group == "Other"), alpha = .1, size=2) +
+	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4.5, col='black') +
+	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4, aes(col=group)) +
+	geom_point(data = filter(df, !group == "Other" & pval >0.05), size=2) +
+	scale_color_brewer(palette="Set1") +
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+```
+
+
+Hard set columns in dataset for plot?
+
+```{r plot 17 prep}
+df <- df %>% mutate(alpha = ifelse(group == "Other",.1,1))
+
+df <- df %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
+
+head(df,20)
+```
+
+```{r plot 17}
+ggplot(df, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	geom_point() +
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	scale_color_brewer(palette="Set1") +
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+```
+
+Ehh. The legend auto created would need manually modified as it contains too much info.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Other decent references ...
+
+https://www.rdocumentation.org/packages/ggplot2/versions/3.5.0/topics/geom_point
+
+https://ggplot2.tidyverse.org/reference/geom_point.html
 
 https://erikaduan.github.io/posts/2021-01-02-volcano-plots-with-ggplot2/
 
 ...
-
-
-
-
-
-
 
