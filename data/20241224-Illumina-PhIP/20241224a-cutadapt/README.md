@@ -1,5 +1,5 @@
 
-#	20241224-Illumina-PhIP/202412w4a-cutadapt
+#	20241224-Illumina-PhIP/20241224a-cutadapt
 
 
 ```
