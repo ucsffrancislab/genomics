@@ -1223,3 +1223,187 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 \
 
 
 
+##	20240124
+
+Really should've just done this as array jobs. Seriously, what was I thinking.
+
+Roughly 400+ HLA types. This'd've been done a month ago.
+
+And given that nearly all tiles are have strong binding, this seems all pointless.
+
+
+
+What was the question?
+
+Determine HLA type through tile counts?
+
+
+```
+
+awk 'BEGIN{OFS=","}{print $2,$8}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.pivot.counts.csv
+\rm tmp.csv
+```
+
+
+-rw-r----- 1 gwendt francislab   2185854 Dec 23 07:36 human_herpes.gte9.netMHCIIpan.AGS.pivot.csv
+
+-rw-r----- 1 gwendt francislab    134475 Jan 24 13:57 human_herpes.gte9.netMHCIIpan.AGS.pivot.counts.csv
+
+
+
+
+```
+\rm commands
+dir=${PWD}/MHC_array
+mkdir -p ${dir}
+fasta=/francislab/data1/refs/PhIP-Seq/human_herpes.gte9.faa
+base=$( basename ${fasta} .faa )
+for l in 10 ; do
+for allele in $( cat /francislab/data2/refs/netMHCpan/AGS_select ) ; do
+f=${dir}/${base}.netMHCpan.${allele}.${l}.txt
+echo "if [ ! -f ${f} ] ; then ~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} -l ${l} -a ${allele} | grep ' <= SB' > ${f}; fi"
+done
+for allele in $( cat /francislab/data2/refs/netMHCIIpan/AGS_select ) ; do
+f=${dir}/${base}.netMHCIIpan.${allele}.${l}.txt
+echo "if [ ! -f ${f} ] ; then ~/.local/netMHCIIpan-4.3/netMHCIIpan -f ${fasta} -length ${l} -a ${allele} | grep ' <= SB' > ${f}; fi"
+done ; done >> commands
+commands_array_wrapper.bash --array_file commands --time 2-0 --threads 2 --mem 15G 
+```
+
+
+##	20250127
+
+Many of the netMHCIIpan results were empty. Failure or just nothing there? Rerunning.
+
+
+```
+\rm commands
+dir=${PWD}/MHC_array
+mkdir -p ${dir}
+fasta=/francislab/data1/refs/PhIP-Seq/human_herpes.gte9.faa
+base=$( basename ${fasta} .faa )
+for l in 10 ; do
+for allele in $( cat /francislab/data2/refs/netMHCIIpan/AGS_select ) ; do
+f=${dir}/${base}.netMHCIIpan.${allele}.${l}.txt
+echo "if [ ! -f ${f} ] ; then ~/.local/netMHCIIpan-4.3/netMHCIIpan -f ${fasta} -length ${l} -a ${allele} > ${f}.all ; grep ' <= SB' ${f}.all > ${f}; fi"
+done ; done >> commands
+commands_array_wrapper.bash --array_file commands --time 2-0 --threads 2 --mem 15G 
+```
+
+
+
+
+```
+awk 'BEGIN{OFS=","}{print $2,$11}' /francislab/data1/refs/PhIP-Seq/MHC_array/human_herpes.gte9.netMHCpan.HLA-*.10.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.sums.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.sums.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]++}}END{l="count";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.counts.csv
+\rm tmp.csv
+```
+
+
+```
+
+awk 'BEGIN{OFS=","}{print $2,$8}' /francislab/data1/refs/PhIP-Seq/MHC_array/human_herpes.gte9.netMHCIIpan.HLA-*.10.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.sums.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.sums.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){split($i,a,"_");l=l","a[1]}print l}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]++}}END{l="count";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCIIpan.AGS.separate.pivot.counts.csv
+\rm tmp.csv
+```
+
+
+
+
+That was only herpes. Let's do them all.
+
+```
+awk -F, '( length($3)>=9 ){print ">"$1" "$2"\n"$3 }' VIR3_clean.virus_score.csv > VIR3_clean.virus_score.gte9.faa
+```
+
+You can request 1 thread/cpu, but it always gives me 2 anyway? No idea why.
+
+Looks like this file takes about 17 hours.
+
+```
+\rm commands.all
+dir=${PWD}/MHC_array
+mkdir -p ${dir}
+fasta=/francislab/data1/refs/PhIP-Seq/VIR3_clean.virus_score.gte9.faa
+base=$( basename ${fasta} .faa )
+for l in 10 ; do
+for allele in $( cat /francislab/data2/refs/netMHCpan/AGS_select ) ; do
+f=${dir}/${base}.netMHCpan.${allele}.${l}.txt
+echo "if [ ! -f ${f} ] ; then ~/.local/netMHCpan-4.1/netMHCpan -f ${fasta} -l ${l} -a ${allele} | grep ' <= SB' > ${f}; chmod -w ${f}; fi"
+done ; done >> commands.all
+commands_array_wrapper.bash --array_file commands.all --time 5-0 --threads 1 --mem 7G 
+```
+
+
+
+
+
+
+
+
+
+
+
+
+```
+awk 'BEGIN{OFS=","}(NF==15){split($11,a,"_");print $2,a[1]}' /francislab/data1/refs/PhIP-Seq/MHC_array/human_herpes.gte9.netMHCpan.HLA-*.10.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv
+cat /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.t.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){l=l","$i}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.sums.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.sums.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){l=l","$i}print l}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]++}}END{l="count";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.counts.csv
+\rm tmp.csv
+```
+
+
+
+
+```
+awk 'BEGIN{OFS=","}(NF==15){split($11,a,"_");print $2,a[1]}' /francislab/data1/refs/PhIP-Seq/MHC_array/VIR3_clean.virus_score.gte9.netMHCpan.HLA-*.10.txt | datamash -t, -s crosstab 1,2 | sed 's"N/A""g' > /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.csv
+cat /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.t.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){l=l","$i}print l}(NR>1){for(i=2;i<=NF;i++){s[i]+=$i}}END{l="sum";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.sums.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.sums.csv
+
+awk -F, '(NR==1){l=$1;for(i=2;i<=NF;i++){l=l","$i}print l}(NR>1){for(i=2;i<=NF;i++){if($i>0)s[i]++}}END{l="count";for(i=2;i<=NF;i++){l=l","s[i]}print l}' /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.csv | datamash transpose -t, > tmp.csv
+head -1 tmp.csv > /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.counts.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> /francislab/data1/refs/PhIP-Seq/MHC/VIR3_clean.gte9.netMHCpan.AGS.separate.pivot.counts.csv
+\rm tmp.csv
+```
+
+
+
+
+
+We know the HLA types of some of the cases and controls.
+Do they correspond to the tiles that get hits and the netMHCpan results?
+
+
+
+
+
+
+
