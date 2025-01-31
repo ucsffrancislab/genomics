@@ -1,0 +1,159 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+#parser$add_argument("-g", "--groups_to_compare", type="character", required=TRUE,action="append",
+#        help="group to compare (use multiple times for each)", metavar="group")
+#parser$add_argument("-v", "--virus", type="character", default=NULL, required=TRUE,
+#        help="virus name", metavar="virus species")
+#parser$add_argument("-m", "--manifest", type="character", default=NULL,required=TRUE,
+#        help="manifest file name", metavar="manifest")
+#parser$add_argument("-w", "--working_dir", type="character", default="./",
+#        help="working dir [default=%(default)s]", metavar="directory")
+#
+#parser$add_argument("-o", "--output_dir", type="character", default="./",
+#        help="output dir [default=%(default)s]", metavar="directory")
+#
+#parser$add_argument("--AGSfile", type="character", default=NULL, required=TRUE,
+#        help="AGSfile", metavar="csv_file")
+#parser$add_argument("--IgEfile", type="character", default=NULL, required=TRUE,
+#        help="IgEfile", metavar="csv_file")
+#parser$add_argument("--survfile", type="character", default=NULL, required=TRUE,
+#        help="survfile", metavar="csv_file")
+#parser$add_argument("--AGSagefile", type="character", default=NULL, required=TRUE,
+#        help="AGSagefile", metavar="csv_file")
+
+parser$add_argument("--covariates", type="character", 
+	default="~/github/ucsffrancislab/genomics/Geno/AGS_Ig_Analysis/Cleaned_Covariates_with_HLA.tsv",
+	help="covariates file", metavar="tsv_file")
+
+opt <- parser$parse_args()
+
+
+
+noext=fs::path_ext_remove(fname)
+rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+
+q("no")
+
+
+
+
+
+---
+title: "Executable Rmarkdown script"
+author: "JW"
+date: "2025-01-10"
+output: html_document
+---
+
+
+
+```{r args}
+args
+```
+
+```{r optargs}
+opt
+```
+
+
+```{r Read data}
+cov=read.csv( opt$covariates, header = TRUE, sep = "\t")
+cov[0:9,0:9]
+```
+
+```{r dim}
+dim(cov)
+```
+
+```{r uniq case values}
+case_values=unique(cov$case)
+case_values
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+table(cov$case)
+```
+
+```{r}
+table(cov$HLA_A_0101)
+```
+
+```{r}
+table(cov$HLA_A_0101/length(cov$HLA_A_0101))
+```
+
+```{r}
+library(reshape2)
+```
+
+```{r}
+hla_counts <- apply( cov[,grepl("HLA_", colnames(cov))] , 2 , table, useNA = "always") 
+hla_counts = dcast(melt(hla_counts), L1~Var1)
+rownames(hla_counts) = hla_counts$L1
+hla_counts[[colnames(hla_counts)[1]]]=NULL
+head(hla_counts)
+write.csv(hla_counts, paste0(opt$covariates,".hla_counts.csv"),quote=F)	#, row.names=F)
+```
+
+```{r}
+freq = function(x){	#,output){
+	sum = sum(x,na.rm = TRUE)
+	return( x/sum )
+}
+```
+
+```{r}
+freq_table <- t( apply(hla_counts,1,freq ) )
+head(freq_table)
+write.csv(freq_table, paste0(opt$covariates,".hla_freqs.csv"),quote=F)	#, row.names=F)
+```
+
+```{r}
+cases <- subset(cov, case == 1)
+case_hla_counts <- apply( cases[,grepl("HLA_", colnames(cases))] , 2 , table, useNA = "always") 
+case_hla_counts = dcast(melt(case_hla_counts), L1~Var1)
+rownames(case_hla_counts) = case_hla_counts$L1
+case_hla_counts[[colnames(case_hla_counts)[1]]]=NULL
+head(case_hla_counts)
+write.csv(case_hla_counts, paste0(opt$covariates,".case_hla_counts.csv"),quote=F)	#, row.names=F)
+```
+
+```{r}
+freq_table <- t( apply(case_hla_counts,1,freq ))
+head(freq_table)
+write.csv(freq_table, paste0(opt$covariates,".case_hla_freqs.csv"),quote=F)	#, row.names=F)
+```
+
+```{r}
+controls <- subset(cov, case == 0)
+control_hla_counts <- apply( controls[,grepl("HLA_", colnames(controls))] , 2 , table, useNA = "always") 
+control_hla_counts = dcast(melt(control_hla_counts), L1~Var1)
+rownames(control_hla_counts) = control_hla_counts$L1
+control_hla_counts[[colnames(control_hla_counts)[1]]]=NULL
+head(control_hla_counts)
+write.csv(control_hla_counts, paste0(opt$covariates,".control_hla_counts.csv"),quote=F)	#	, row.names=F)
+```
+
+```{r}
+freq_table <- t(apply(control_hla_counts,1,freq ))
+head(freq_table)
+write.csv(freq_table, paste0(opt$covariates,".control_hla_freqs.csv"),quote=F)	#, row.names=F)
+```
+
+
