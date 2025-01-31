@@ -1411,3 +1411,10 @@ Do they correspond to the tiles that get hits and the netMHCpan results?
 zcat VIR3_clean.csv.gz | head -1 > VIR3_clean.20250130.select_ids.csv
 zcat VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"; arr[56449]=1; arr[26829]=1; arr[25956]=1; arr[25888]=1; arr[32102]=1; arr[20891]=1; arr[30609]=1; }( $17 in arr )' >> VIR3_clean.20250130.select_ids.csv
 ```
+
+```
+head -1 MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.t.csv > tile_number.hla_type.netMHCpan.l-10.SB.counts.csv
+grep -f ids MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.t.csv >> tile_number.hla_type.netMHCpan.l-10.SB.counts.csv
+
+
+```
