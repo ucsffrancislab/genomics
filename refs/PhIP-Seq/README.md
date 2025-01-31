@@ -1405,5 +1405,9 @@ Do they correspond to the tiles that get hits and the netMHCpan results?
 
 
 
+##	20250130
 
-
+```
+zcat VIR3_clean.csv.gz | head -1 > VIR3_clean.20250130.select_ids.csv
+zcat VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"; arr[56449]=1; arr[26829]=1; arr[25956]=1; arr[25888]=1; arr[32102]=1; arr[20891]=1; arr[30609]=1; }( $17 in arr )' >> VIR3_clean.20250130.select_ids.csv
+```
