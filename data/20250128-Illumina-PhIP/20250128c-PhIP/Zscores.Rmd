@@ -1,0 +1,223 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-d", "--dir", type="character", required=TRUE, action="append",
+        help="dir to compare (use multiple times for each)", metavar="group")
+parser$add_argument("-o", "--output", type="character", default="Zscores",
+        help="output file base [default=%(default)s]", metavar="file base")
+parser$add_argument("-s", "--species", type="character", default="Human herpesvirus 6A",
+        help="species [default=%(default)s]", metavar="file base")
+
+opt <- parser$parse_args()
+
+#noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
+
+q("no")
+
+---
+title: "Executable Rmarkdown script"
+author: "JW"
+date: "2025-01-10"
+output: html_document
+---
+
+
+
+```{r args}
+args
+```
+
+```{r optargs}
+opt
+```
+
+```{python python opt args}
+r.opt
+```
+
+```{r setup, include=FALSE}
+library(reticulate)
+use_python("/usr/bin/python3")
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+```{python read csvs}
+plates=[]
+for p in r.opt['dir']:
+	plate = pd.read_csv(p+"/Zscores.select.minimums.csv", header=[0,1], index_col=[0,1,2])
+	plates.append(plate)
+```
+
+```{python concat csvs}
+df = pd.concat(plates)
+df.shape
+```
+
+```{python head1}
+df.replace( np.inf,  99999, inplace=True)
+df.replace(-np.inf, -99999, inplace=True)
+df.head()
+```
+
+
+```{python}
+#df = df[df['type']=='pemphigus serum']
+#df.drop(columns=['subject','type'],inplace=True)
+
+
+#df=df.loc[(slice(None),'pemphigus serum',slice(None))]
+df=df.loc[(slice(None),'glioma serum',slice(None))]
+
+
+
+#df=df.droplevel(0)
+
+#df.loc[df.index.get_level_values('A') == 'foo']
+
+#	HHV1, HHV-2 and HHV-6A
+#df = df.loc[:,pd.IndexSlice[:,['Human herpesvirus 1','Human herpesvirus 2','Human herpesvirus 6A']]]
+
+df = df.loc[:,pd.IndexSlice[:,r.opt['species']]]
+
+df.columns=df.columns.droplevel(1)
+df = df.sort_index()
+#df = df.reset_index().set_index(['id','group']).sort_index().reset_index().set_index('id')
+
+df=df.reset_index().set_index('level_0')
+df.index.rename('subject',inplace=True)
+df.fillna(0,inplace=True)
+```
+
+```{python head2}
+df.head()
+```
+
+```{python}
+
+df = df.sort_values(by='level_1')
+
+
+
+df.drop(columns='level_1').max().max()
+#df.max().max()
+#np.float64(68.0)
+```
+
+
+
+```{python}
+import seaborn as sns
+
+#group = df.pop("group")
+group = df.pop("level_1")
+group.rename("group",inplace=True)
+df.shape
+```
+
+```{python}
+#df=df.loc[:,df.columns[df.max()>10]]
+df.shape
+```
+
+
+```{python}
+#df=df.loc[:,df.columns[df.mean()>10]]
+df.shape
+```
+
+```{python}
+df=df.loc[:, df.columns[(df > 10).sum() >= 5] ]
+df.shape
+```
+
+```{python head3}
+df.head()
+```
+
+
+```{python}
+lut = dict(zip(group.unique(), "rbg"))
+lut
+```
+
+```{python}
+col_colors = group.map(lut)
+col_colors
+```
+
+Shift positive so minimum is 1, then log rescale
+
+```{python scale}
+#LY = log10(Y + 1 - min(Y)); /* translate, then transform */
+sf = np.log10(df + 1 - float(df.min().min()))
+sf.head()
+```
+
+```{python}
+# Create a legend
+legend_labels = group.unique()
+legend_labels
+```
+
+```{python}
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette(n_colors=len(legend_labels))]
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette("rbg",n_colors=len(legend_labels))]
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in "rbg"]
+
+legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in "rb"]
+legend_handles
+```
+
+norm=plt.matplotlib.colors.LogNorm(),
+
+
+```{python clustermap}
+g = sns.clustermap(sf.T,
+	cmap="viridis_r",
+	figsize=(20, 30),
+	dendrogram_ratio=(0.1,0.05),
+	col_colors=col_colors,
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+
+# Get the colorbar axes
+colorbar_ax = g.ax_col_colors.axes
+colorbar_ax.legend(legend_handles, legend_labels, ncols=3, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+
+
+plt.subplots_adjust(top=0.99,bottom=0.1)	#, left=0.15) #	ORDER MATTERS
+
+plt.title(r.opt['species'], fontsize=20)
+
+g.fig.suptitle(r.opt['species'])
+cbar_ax = g.ax_cbar
+cbar_ax.set_position([0.20, 0.02, 0.65, 0.02]) # [left, bottom, width, height]
+
+plt.show()
+```
+
+
