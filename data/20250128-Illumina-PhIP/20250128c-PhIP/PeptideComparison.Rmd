@@ -13,8 +13,20 @@ args=commandArgs()
 scriptname=sub("--file=", "", args[grepl("--file=", args)])
 parser <- ArgumentParser(description=scriptname)
 
+
+
+
+#	multiplate is nice
+#	add species options? complicated
+#MultiZMultiPlate.pfcase/20250116-Multiplate_Peptide_Comparison-PFCase-PFControl-Prop_test_results-10.csv
+
+#	Need to make hard edits here
+
+
+
+
 parser$add_argument("-i", "--input", type="character",
-	help="ninput file", metavar="file base")
+	help="input file", metavar="file base")
 parser$add_argument("-o", "--output", type="character", default="ZscoreViolin",
 	help="output file base [default=%(default)s]", metavar="file base")
 opt <- parser$parse_args()
@@ -315,6 +327,41 @@ Ehh. The legend auto created would need manually modified as it contains too muc
 
 
 
+
+
+
+
+
+
+
+```{r plot 18 prep}
+
+df <- df %>%
+	mutate(group = ifelse(str_detect(species, "Human herpesvirus 3"), "HHv3", "Other"))
+
+df <- df %>% mutate(alpha = ifelse(group == "Other",.1,1))
+
+df <- df %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
+
+head(df)
+```
+
+
+```{r plot 18}
+ggplot(df, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	geom_point() +
+	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	scale_color_brewer(palette="Set1") +
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+```
 
 
 
