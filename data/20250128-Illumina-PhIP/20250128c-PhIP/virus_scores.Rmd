@@ -1,0 +1,439 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-d", "--dir", type="character", required=TRUE, action="append",
+        help="dir to compare (use multiple times for each)", metavar="group")
+parser$add_argument("-o", "--output", type="character", default="virus_scores",
+        help="output base [default=%(default)s]", metavar="file base")
+
+opt <- parser$parse_args()
+
+#noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
+
+q("no")
+
+---
+title: "Executable Rmarkdown script"
+author: "JW"
+date: "2025-01-10"
+output: html_document
+---
+
+
+
+```{r args}
+args
+```
+
+```{r optargs}
+opt
+```
+
+```{r setup, include=FALSE}
+library(reticulate)
+use_python("/usr/bin/python3")
+```
+
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+```
+
+```{python read csvs}
+plates=[]
+for p in r.opt['dir']:
+	plate = pd.read_csv(p+"/virus_scores.10.csv", index_col=0)
+	plates.append(plate)
+```
+
+```{python concat csvs}
+df = pd.concat(plates)
+df.shape
+```
+
+```{python}
+df.head()
+```
+
+```{python select pemphigus}
+#df = df[df['type']=='pemphigus serum']
+df = df[df['type']=='glioma serum']
+```
+
+```{python drop}
+df.drop(columns=['id','type'],inplace=True)
+```
+
+```{python reset}
+df = df.reset_index().set_index(['subject','group']).sort_index().reset_index().set_index('subject')
+```
+
+```{python fillna}
+df.fillna(0,inplace=True)
+```
+
+```{python}
+df.drop(columns='group').max().max()
+#np.float64(68.0)
+```
+
+```{python}
+#df["Orf virus"]["C661MAA"]
+df.iloc[1:10,1:10]
+```
+
+```{python}
+import seaborn as sns
+
+group = df.pop("group")
+group
+```
+
+```{python}
+df.shape
+```
+
+
+
+
+```{python select viruses}
+df1=df.loc[:,[
+"Human herpesvirus 1",
+"Human herpesvirus 2",
+"Human herpesvirus 3",
+"Human herpesvirus 6A",
+"Human adenovirus D",
+"Human adenovirus E"
+]]
+
+df1.shape
+```
+
+```{python}
+df1.head()
+```
+
+```{python max gt 10}
+df2=df.loc[:,df.columns[df.max()>10]]
+df2.shape
+```
+
+```{python}
+df2.head()
+```
+
+
+
+
+
+
+```{python}
+lut = dict(zip(group.unique(), "rbg"))
+lut
+```
+
+```{python}
+col_colors = group.map(lut)
+col_colors
+```
+
+
+```{python}
+# Create a legend
+legend_labels = group.unique()
+legend_labels
+```
+
+```{python}
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette(n_colors=len(legend_labels))]
+#legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette("rbg",n_colors=len(legend_labels))]
+legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in "rbg"]
+legend_handles
+```
+
+
+
+```{python clustermap}
+
+#	figsizetuple of (width, height), optional
+#	figsize=(10, 10),	#	default
+#	figsize=(20, 20),
+#		figsize=(20, 25), # <-- previous
+#	dendrogram_ratio=(0.3, 0.3)	#	default
+
+
+g = sns.clustermap(df1.T,
+	dendrogram_ratio=(0.1, 0.1),
+	figsize=(20, 8),
+	cmap="viridis_r",
+	norm=plt.matplotlib.colors.LogNorm(),
+	col_colors=col_colors,
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+# Get the colorbar axes
+g.ax_col_colors.axes.legend(legend_handles, 
+	legend_labels, 
+	ncols=3, 
+	loc="lower center", 
+	bbox_to_anchor=(0.5, 1.0), 
+	fontsize=20)
+
+#	fontsize=27)
+
+#g.ax_heatmap.tick_params(axis='both', width=20)
+
+
+
+g.ax_heatmap.set_yticklabels(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize=14)
+#g.ax_heatmap.set_xlabel("X Label", labelpad=50)
+#g.ax_heatmap.set_ylabel("Y Label", labelpad=50)
+
+
+plt.subplots_adjust(top=0.9,bottom=0.2,left=0.00,right=0.85) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=0.9,bottom=0.2)	#, left=0.15) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=1.10,bottom=0.1)	# <-- previous
+
+#plt.title(r.opt['species'], fontsize=20)
+#g.fig.suptitle(r.opt['species'])
+#	g.ax_heatmap.set_title('lalal',fontsize=24)	# works, but is behind the group label bar. Would need to move it up
+
+
+#	Color bar heatmap legend
+#g.ax_cbar.set_position([0.20, 0.04, 0.65, 0.02]) # [left, bottom, width, height]
+g.ax_cbar.set_position([0.10, 0.04, 0.75, 0.02]) # [left, bottom, width, height]
+
+#g.ax_cbar.set_position([0.20, 0.02, 0.65, 0.02])	#	<-- previous
+
+#	Title at the top
+g.fig.suptitle("PhIP-Seq Virus Scores", fontsize=36)
+
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+```{python clustermap2}
+
+#	figsizetuple of (width, height), optional
+#	figsize=(10, 10),	#	default
+#	figsize=(20, 20),
+#		figsize=(20, 25), # <-- previous
+#	dendrogram_ratio=(0.3, 0.3)	#	default
+
+
+g = sns.clustermap(df1.T,
+	dendrogram_ratio=(0.1, 0.1),
+	figsize=(20, 8),
+	cmap="viridis_r",
+	col_colors=col_colors,
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+# Get the colorbar axes
+g.ax_col_colors.axes.legend(legend_handles, 
+	legend_labels, 
+	ncols=3, 
+	loc="lower center", 
+	bbox_to_anchor=(0.5, 1.0), 
+	fontsize=20)
+
+#	fontsize=27)
+
+#g.ax_heatmap.tick_params(axis='both', width=20)
+
+
+
+g.ax_heatmap.set_yticklabels(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize=14)
+#g.ax_heatmap.set_xlabel("X Label", labelpad=50)
+#g.ax_heatmap.set_ylabel("Y Label", labelpad=50)
+
+
+plt.subplots_adjust(top=0.9,bottom=0.2,left=0.00,right=0.85) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=0.9,bottom=0.2)	#, left=0.15) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=1.10,bottom=0.1)	# <-- previous
+
+#plt.title(r.opt['species'], fontsize=20)
+#g.fig.suptitle(r.opt['species'])
+#	g.ax_heatmap.set_title('lalal',fontsize=24)	# works, but is behind the group label bar. Would need to move it up
+
+
+#	Color bar heatmap legend
+#g.ax_cbar.set_position([0.20, 0.04, 0.65, 0.02]) # [left, bottom, width, height]
+g.ax_cbar.set_position([0.10, 0.04, 0.75, 0.02]) # [left, bottom, width, height]
+
+#g.ax_cbar.set_position([0.20, 0.02, 0.65, 0.02])	#	<-- previous
+
+#	Title at the top
+g.fig.suptitle("PhIP-Seq Virus Scores", fontsize=36)
+
+plt.show()
+```
+
+
+
+
+
+
+
+
+
+
+
+```{python clustermap3}
+
+#	figsizetuple of (width, height), optional
+#	figsize=(10, 10),	#	default
+#	figsize=(20, 20),
+#		figsize=(20, 25), # <-- previous
+#	dendrogram_ratio=(0.3, 0.3)	#	default
+
+
+g = sns.clustermap(df2.T,
+	dendrogram_ratio=(0.1, 0.1),
+	figsize=(20, 15),
+	cmap="viridis_r",
+	norm=plt.matplotlib.colors.LogNorm(),
+	col_colors=col_colors,
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+# Get the colorbar axes
+g.ax_col_colors.axes.legend(legend_handles, 
+	legend_labels, 
+	ncols=3, 
+	loc="lower center", 
+	bbox_to_anchor=(0.5, 1.0), 
+	fontsize=20)
+
+#	fontsize=27)
+
+#g.ax_heatmap.tick_params(axis='both', width=20)
+
+
+
+g.ax_heatmap.set_yticklabels(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize=14)
+#g.ax_heatmap.set_xlabel("X Label", labelpad=50)
+#g.ax_heatmap.set_ylabel("Y Label", labelpad=50)
+
+
+plt.subplots_adjust(top=0.9,bottom=0.2,left=0.00,right=0.85) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=0.9,bottom=0.2)	#, left=0.15) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=1.10,bottom=0.1)	# <-- previous
+
+#plt.title(r.opt['species'], fontsize=20)
+#g.fig.suptitle(r.opt['species'])
+#	g.ax_heatmap.set_title('lalal',fontsize=24)	# works, but is behind the group label bar. Would need to move it up
+
+
+#	Color bar heatmap legend
+#g.ax_cbar.set_position([0.20, 0.04, 0.65, 0.02]) # [left, bottom, width, height]
+g.ax_cbar.set_position([0.10, 0.04, 0.75, 0.02]) # [left, bottom, width, height]
+
+#g.ax_cbar.set_position([0.20, 0.02, 0.65, 0.02])	#	<-- previous
+
+#	Title at the top
+g.fig.suptitle("PhIP-Seq Virus Scores", fontsize=36)
+
+plt.show()
+```
+
+
+
+
+
+
+
+```{python clustermap4}
+
+#	figsizetuple of (width, height), optional
+#	figsize=(10, 10),	#	default
+#	figsize=(20, 20),
+#		figsize=(20, 25), # <-- previous
+#	dendrogram_ratio=(0.3, 0.3)	#	default
+
+
+g = sns.clustermap(df2.T,
+	dendrogram_ratio=(0.1, 0.1),
+	figsize=(20, 15),
+	cmap="viridis_r",
+	col_colors=col_colors,
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+# Get the colorbar axes
+g.ax_col_colors.axes.legend(legend_handles, 
+	legend_labels, 
+	ncols=3, 
+	loc="lower center", 
+	bbox_to_anchor=(0.5, 1.0), 
+	fontsize=20)
+
+#	fontsize=27)
+
+#g.ax_heatmap.tick_params(axis='both', width=20)
+
+
+
+g.ax_heatmap.set_yticklabels(g.ax_heatmap.get_yticklabels(), rotation=0, fontsize=14)
+#g.ax_heatmap.set_xlabel("X Label", labelpad=50)
+#g.ax_heatmap.set_ylabel("Y Label", labelpad=50)
+
+
+plt.subplots_adjust(top=0.9,bottom=0.2,left=0.00,right=0.85) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=0.9,bottom=0.2)	#, left=0.15) #	ORDER MATTERS. This needs to be beofre the set_position
+#plt.subplots_adjust(top=1.10,bottom=0.1)	# <-- previous
+
+#plt.title(r.opt['species'], fontsize=20)
+#g.fig.suptitle(r.opt['species'])
+#	g.ax_heatmap.set_title('lalal',fontsize=24)	# works, but is behind the group label bar. Would need to move it up
+
+
+#	Color bar heatmap legend
+#g.ax_cbar.set_position([0.20, 0.04, 0.65, 0.02]) # [left, bottom, width, height]
+g.ax_cbar.set_position([0.10, 0.04, 0.75, 0.02]) # [left, bottom, width, height]
+
+#g.ax_cbar.set_position([0.20, 0.02, 0.65, 0.02])	#	<-- previous
+
+#	Title at the top
+g.fig.suptitle("PhIP-Seq Virus Scores", fontsize=36)
+
+plt.show()
+```
+
+
+
