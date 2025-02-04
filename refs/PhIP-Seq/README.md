@@ -1416,5 +1416,53 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"; arr[56449]=1; a
 head -1 MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.t.csv > tile_number.hla_type.netMHCpan.l-10.SB.counts.csv
 grep -f ids MHC/human_herpes.gte9.netMHCpan.AGS.separate.pivot.t.csv >> tile_number.hla_type.netMHCpan.l-10.SB.counts.csv
 
+```
+
+
+
+
+##	20250203
 
 ```
+/francislab/data1/working/20241126-HumanHerpesHomology/GRCh38.p14.genome 
+/francislab/data1/working/20241126-HumanHerpesHomology/gencode.v47 
+/francislab/data1/working/20241126-HumanHerpesHomology/human.protein
+makeblastdb -title S10 -out S10 -dbtype prot -parse_seqids -in /francislab/data1/refs/TEProf2/S10.faa 
+
+
+tail -n +3 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10.csv | sort -t, -k1,1 -k10n,10 | awk 'BEGIN{FS=OFS=","}{if($13!="None")print ">Modi-"$1"-"$10;print $13;if($14!="None")print ">Orig-"$1"-"$10;print $14}' > S10.all.faa
+
+makeblastdb -title S10.all -out S10.all -dbtype prot -parse_seqids -in S10.all.faa 
+```
+
+Limits
+*	tblastn - word_size 2-7
+*	blastn - word_size 
+*	blastp - word_size
+*	blastx - word_size
+
+```
+for ws in 2 3 4 5 6 7 ; do
+echo "module load blast ; tblastn -query 56449.faa -db nt -out 56449-nt.tblastn.${ws}.tsv -outfmt \"6 std ssciname scomname\" -word_size ${ws}"
+echo "module load blast ; tblastn -query 56449.faa -db /francislab/data1/working/20241126-HumanHerpesHomology/GRCh38.p14.genome -out 56449-GRCh38.tblastn.${ws}.tsv -outfmt \"6 std ssciname scomname\" -word_size ${ws}"
+echo "module load blast ; blastp -query 56449.faa -db /francislab/data1/working/20241126-HumanHerpesHomology/gencode.v47 -out 56449-gencodev47.blastp.${ws}.tsv -outfmt \"6 std ssciname scomname\" -word_size ${ws}"
+echo "module load blast ; blastp -query 56449.faa -db /francislab/data1/working/20241126-HumanHerpesHomology/human.protein -out 56449-humanprotein.blastp.${ws}.tsv -outfmt \"6 std ssciname scomname\" -word_size ${ws}"
+echo "module load blast ; blastp -query 56449.faa -db S10 -out 56449-S10.blastp.${ws}.tsv -outfmt \"6 std ssciname scomname\" -word_size ${ws}"
+echo "module load blast ; blastp -query 56449.faa -db S10.all -out 56449-S10.all.blastp.${ws}.tsv -outfmt \"6 std ssciname scomname\" -word_size ${ws}"
+done > commands
+commands_array_wrapper.bash --array_file commands --time 5-0 --threads 2 --mem 15G 
+```
+
+
+
+```
+for f in 56449-*.tsv ; do
+sed -i '1iqaccver\tsaccver\tpident\tlength\tmismatch\tgapopen\tqstart\tqend\tsstart\tsend\tevalue\tbitscore\tssciname\tscomname' ${f}
+done
+```
+
+
+
+
+
+
