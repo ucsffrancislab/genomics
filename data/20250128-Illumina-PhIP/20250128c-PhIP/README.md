@@ -317,16 +317,59 @@ commands_array_wrapper.bash --array_file commands.multiz.multiplate --time 4-0 -
 
 
 
+##	20250203
+
+
+```
+for m in /francislab/data1/working/{20241224-Illumina-PhIP/20250110-PhIP,20250128-Illumina-PhIP/20250128c-PhIP}/out.plate[1234]/manifest* ; do
+d=$( dirname ${m} )
+echo module load r\; By_virus_plotter.R --manifest ${m} --virus \"Human herpesvirus 3\" --groups_to_compare case,control \
+--output_dir ${d} \
+--zfilename ${d}/Zscores.csv \
+--public_eps_filename ${d}/All.public_epitope_annotations.Zscores.csv
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G 
+
+```
 
 
 
 
+```
 
+./virus_scores.Rmd \
+  -d ${PWD}/out.plate1 \
+  -d ${PWD}/out.plate2 \
+  -d ${PWD}/out.plate3 \
+  -o ${PWD}/virus_scores3.gbm
 
+./virus_scores.Rmd \
+  -d ${PWD}/out.plate1 \
+  -d ${PWD}/out.plate2 \
+  -d ${PWD}/out.plate3 \
+  -d ${PWD}/out.plate4 \
+  -o ${PWD}/virus_scores4.gbm
 
+./Zscores.Rmd -s "Human herpesvirus 3" \
+  -d ${PWD}/out.plate1 \
+  -d ${PWD}/out.plate2 \
+  -d ${PWD}/out.plate3 \
+  -o Zscores3.gbm.HHV3
 
+./Zscores.Rmd -s "Human herpesvirus 3" \
+  -d ${PWD}/out.plate1 \
+  -d ${PWD}/out.plate2 \
+  -d ${PWD}/out.plate3 \
+  -d ${PWD}/out.plate4 \
+  -o Zscores4.gbm.HHV3
 
+./PeptideComparison.Rmd \
+  -i ${PWD}/3plates/20250130-Multiplate_Peptide_Comparison-case-control-Prop_test_results-10.csv \
+  -o Multiplate_Peptide_Comparison3
 
+./PeptideComparison.Rmd \
+  -i ${PWD}/6plates/20250130-Multiplate_Peptide_Comparison-case-control-Prop_test_results-10.csv \
+  -o Multiplate_Peptide_Comparison4
 
-
-
+```
