@@ -984,3 +984,11 @@ box_upload.bash S1.all.combined.merged.csv S1.all2.merged.csv S1.all2.S2.merged.
 ```
 
 
+##	20250203
+
+
+```
+tail -n +3 /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10.csv | sort -t, -k1,1 -k10n,10 | awk 'BEGIN{FS=OFS=","}{print ">Modi-"$1"-"$10;print $13;print ">Orig-"$1"-"$10;print $14}' > S10.all.faa
+
+```
+
