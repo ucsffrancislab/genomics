@@ -4,9 +4,9 @@
 ##	All
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20250128-Illumina-PhIP/20250128b-bowtie2/out/S"s".VIR3_clean.1-84.bam",$7,$8,$9,$11,$12}' /francislab/data1/raw/20250128-Illumina-PhIP/L3_full_covariates_Vir3_phip-seq_GBM_p3_and_p4_1-28-25hmh.csv > manifest.all.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20250128-Illumina-PhIP/20250128b-bowtie2/out/S"s".VIR3_clean.1-84.bam",$7,$8,$9,$11,$12,$23}' /francislab/data1/raw/20250128-Illumina-PhIP/L3_full_covariates_Vir3_phip-seq_GBM_p3_and_p4_1-28-25hmh.csv > manifest.all.csv
 
-sed -i '1isubject,sample,bampath,type,study,group,age,sex' manifest.all.csv
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.all.csv
 sed -i 's/,PBS blank,/,input,/' manifest.all.csv
 chmod -w manifest.all.csv
 
@@ -28,10 +28,10 @@ chmod -w manifest.all.csv
 
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20250128-Illumina-PhIP/20250128b-bowtie2/out/S"s".VIR3_clean.1-84.bam",$7,$8,$9,$11,$12 > "manifest.plate"$23".csv" }' /francislab/data1/raw/20250128-Illumina-PhIP/L3_full_covariates_Vir3_phip-seq_GBM_p3_and_p4_1-28-25hmh.csv 
+awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20250128-Illumina-PhIP/20250128b-bowtie2/out/S"s".VIR3_clean.1-84.bam",$7,$8,$9,$11,$12,$23 > "manifest.plate"$23".csv" }' /francislab/data1/raw/20250128-Illumina-PhIP/L3_full_covariates_Vir3_phip-seq_GBM_p3_and_p4_1-28-25hmh.csv 
 
 for manifest in manifest.plate*.csv ; do
-sed -i '1isubject,sample,bampath,type,study,group,age,sex' ${manifest}
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' ${manifest}
 sed -i 's/,PBS blank,/,input,/' ${manifest}
 chmod -w ${manifest}
 done
@@ -373,3 +373,91 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 3
   -o Multiplate_Peptide_Comparison4
 
 ```
+
+
+
+##	20250205
+
+
+
+```
+mkdir out.all.test
+tail -q -n +2 out.plate{?,??}/manifest.plate*.csv > out.all.test/tmp1.csv
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' out.all.test/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$4,$5,$6,$7,$8,$9}' out.all.test/tmp1.csv > out.all.test/tmp2.csv
+head -1 out.all.test/tmp2.csv > out.all.test/manifest.csv
+tail -n +2 out.all.test/tmp2.csv | sort -t, -k1,1 >> out.all.test/manifest.csv
+sed -i -e 's/VIR phage Library/Phage Lib/' -e 's/phage library (blank)/Phage Lib/' out.all.test/manifest.csv
+chmod -w out.all.test/manifest.csv
+\rm out.all.test/tmp?.csv
+```
+
+
+
+```
+dir=out.all.test
+Q=40
+merge_all_combined_counts_files.py --de_nan --int -o ${dir}/tmp1.csv \
+  out.plate{?,??}/counts/*.q${Q}.count.csv.gz out.plate{?,??}/counts/input/*.q${Q}.count.csv.gz 
+
+cd $dir
+
+awk -F, '{print NF}' tmp1.csv | uniq
+#576
+
+wc -l tmp1.csv 
+#113826 tmp1.csv
+
+head -1 tmp1.csv > tmp2.csv
+tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+head -1 tmp3.csv > tmp4.csv
+tail -n +2 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+
+join --header -t, manifest.csv tmp4.csv > tmp5.csv
+
+cat tmp5.csv | datamash transpose -t, > tmp6.csv
+
+head -7 tmp6.csv > tmp7.csv
+sed -i 's/^/,,,,,,/' tmp7.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250205.HHV3.for_joining.csv <( tail -n +8 tmp6.csv ) >> tmp7.csv
+
+awk -F, '{print NF}' tmp7.csv | uniq
+#582
+
+wc -l tmp7.csv 
+#1655 tmp7.csv
+
+wc -l /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250205.HHV3.for_joining.csv 
+#1654 /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250205.HHV3.for_joining.csv
+
+head -8 tmp7.csv > tmp8.csv
+tail -n +9 tmp7.csv | sort -t, -k2,2 -k3,3 -k4n,4 -k5n,5 -k6n,6 >> tmp8.csv
+
+wc -l tmp8.csv 
+#1655 tmp8.csv
+
+awk -F, '{print NF}' tmp8.csv | uniq
+#582
+
+head -12 tmp8.csv | cut -c1-110
+#,,,,,,sample,024JCM,024JCMdup,043MPL,043MPLdup,074KBP,074KBPdup,101VKC,101VKCdup,1301,1301dup,1302,1302dup,130
+#,,,,,,subject,024JCM,024JCM,043MPL,043MPL,074KBP,074KBP,101VKC,101VKC,1301,1301,1302,1302,1303,1303,1304,1304,
+#,,,,,,type,pemphigus serum,pemphigus serum,pemphigus serum,pemphigus serum,pemphigus serum,pemphigus serum,pem
+#,,,,,,study,PEMS,PEMS,PEMS,PEMS,PEMS,PEMS,PEMS,PEMS,MENS,MENS,MENS,MENS,MENS,MENS,MENS,MENS,MENS,MENS,MENS,MEN
+#,,,,,,group,Non Endemic Control,Non Endemic Control,Non Endemic Control,Non Endemic Control,Non Endemic Contro
+#,,,,,,age,62,62,61,61,44,44,46,46,33,33,67,67,61,61,60,60,54,54,72,72,50,50,65,65,51,51,39,39,46,46,39,39,50,5
+#,,,,,,sex,M,M,F,F,F,F,F,F,F,F,M,M,M,M,M,M,F,F,M,M,M,M,F,F,F,F,F,F,M,M,F,F,M,M,M,M,M,M,F,F,M,M,M,M,F,F,F,F,F,F,
+#id,Species,Protein names,Version (entry),Version (sequence),start,end,14,14,13,13,14,14,13,13,13,13,13,13,13,1
+#25844,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,1,56,2,0,1,0,11,7,0,27,3,2,1,3,0,0,0,3,0,4,0
+#25848,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,113,168,0,0,2,0,0,0,0,0,1,4,3,8,1,0,1,1,0,18
+#25849,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,141,196,0,28,93,8,0,4,0,0,13,2,43,1,25,5,19,
+#25850,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,169,224,0,0,3,14,2,2,3,6,5,8,5,21,3,2,0,14,0
+```
+
+
+
+
+
+
