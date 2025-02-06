@@ -1465,4 +1465,52 @@ done
 
 
 
+##	20250205
+
+
+```
+1,
+2 - Aclstr50,
+3 - Bclstr50,
+4 - Entry,
+5 - Gene names,
+6 - Gene ontology (GO),
+7 - Gene ontology IDs,
+8 - Genus,
+9 - Organism,
+10 - Protein names,
+11 - Sequence,
+12 - Species,
+13 - Subcellular location,
+14 - Version (entry),
+15 - Version (sequence),
+16 - end,
+17 - id,
+18 - oligo,
+19 - source,
+20 - start,
+21 - peptide
+```
+
+```
+zcat VIR3_clean.csv.gz | awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}{gsub(",","",$10);print $17,$12,$10,$14,$15,$20,$16}' > VIR3_clean.20250205.csv
+```
+
+
+Be aware that this has the unmoderated names
+
+```
+head -1 VIR3_clean.20250205.csv > VIR3_clean.20250205.HHV3.csv
+tail -n +2 VIR3_clean.20250205.csv | grep "Human herpesvirus 3" | sort -t, -k2,2 -k3,3 -k4n,4 -k6n,6 >> VIR3_clean.20250205.HHV3.csv
+
+head -1 VIR3_clean.20250205.csv > VIR3_clean.20250205.HHV3.for_joining.csv
+tail -n +2 VIR3_clean.20250205.csv | grep "Human herpesvirus 3" | sort -t, -k1,1 >> VIR3_clean.20250205.HHV3.for_joining.csv
+
+sed -i -e 's/Capsid scaffolding protein (Capsid protein P40) (Protease precursor) (pPR) (Virion structural gene 33 protein) \[Cleaved into: Assemblin (EC 3.4.21.97) (Capsid protein VP24) (Protease); Assembly protein (Capsid protein VP22A)\]/Capsid protein P40/g' VIR3_clean.20250205.HHV3.for_joining.csv
+
+sed -i -e 's/Tripartite terminase subunit UL15 homolog (DNA-packaging protein 45) (Terminase large subunit) \[Cleaved into: Gene 42 protein\]/Tripartite terminase subunit UL15 homolog/g' VIR3_clean.20250205.HHV3.for_joining.csv
+
+
+
+```
 
