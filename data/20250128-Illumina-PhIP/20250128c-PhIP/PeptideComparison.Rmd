@@ -14,34 +14,20 @@ scriptname=sub("--file=", "", args[grepl("--file=", args)])
 parser <- ArgumentParser(description=scriptname)
 
 
-
-
-#	multiplate is nice
-#	add species options? complicated
-#MultiZMultiPlate.pfcase/20250116-Multiplate_Peptide_Comparison-PFCase-PFControl-Prop_test_results-10.csv
-
-#	Need to make hard edits here
-
-
-
-
 parser$add_argument("-i", "--input", type="character",
 	help="input file", metavar="file base")
 parser$add_argument("-o", "--output", type="character", default="ZscoreViolin",
 	help="output file base [default=%(default)s]", metavar="file base")
 opt <- parser$parse_args()
 
-#noext=fs::path_ext_remove(fname)
-#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
-#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
 rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
 
 q("no")
 
 ---
-title: "Executable Rmarkdown script"
+title: "Peptide Comparison Volcano Plots"
 author: "JW"
-date: "2025-01-10"
+date: "2025-02-20"
 output:
   html_document:
     fig_width: 12
@@ -66,9 +52,11 @@ opt
 ```
 
 ```{r read input}
-df=read.csv(opt$input, header=TRUE, sep =",")
-#MultiZMultiPlate.pfcase/20250116-Multiplate_Peptide_Comparison-PFCase-PFControl-Prop_test_results-10.csv
-head(df)
+library(data.table) 
+
+rawdf <- data.frame(data.table::fread(opt$input, sep = ",", header=TRUE))
+
+head(rawdf)
 ```
 
 ```{r, include=FALSE}
@@ -102,28 +90,29 @@ library(ggrepel) # for nice annotations
 ```
 
 ```{r plot 10}
-
-df<-df %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
+df<-rawdf %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
 
 ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_point(aes(fill=sig,size=sig),shape=21) +
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
-	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
-	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
+	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("p-value")) +
+	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("p-value")) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),
 		legend.title = element_text(size=14, color="black",lineheight = 1),
 		legend.text = element_text(size=13, color="black",lineheight = 1.2),
 		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
 		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
-
 ```
 
+
+
+
 ```{r plot 11 prep}
-df<-df %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
+df<-rawdf %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
 df<-df %>% mutate(shape=ifelse( species == "Human herpesvirus 1",24,
 	ifelse( species == "Human herpesvirus 2", 23,
 	ifelse( species =="Human herpesvirus 6A", 22, 21))))
@@ -135,10 +124,10 @@ ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_point(aes(fill=sig,size=sig,shape=shape)) + scale_shape_identity() +
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
-	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("p-value")) +
+	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("p-value")) +
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),
 		legend.title = element_text(size=14, color="black",lineheight = 1),
@@ -151,15 +140,14 @@ ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 
 
 ```{r plot 11b}
-#ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 ggplot(df, aes(x = beta, y = -log10(pval))) +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_point(aes(fill=sig,size=sig,shape=shape)) + scale_shape_identity() +
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
-	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("Interaction p-value")) +
+	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("p-value")) +
+	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("p-value")) +
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),
 		legend.title = element_text(size=14, color="black",lineheight = 1),
@@ -181,12 +169,6 @@ ggplot(df, aes(x = beta, y = -log10(pval))) +
 
 ```{r plot 12 prep}
 df = df[complete.cases(df),]	#	drop any row with NA
-
-#df<-df %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
-#
-#df<-df %>% mutate(shape=ifelse( species == "Human herpesvirus 1",'HHV1',
-#	ifelse( species == "Human herpesvirus 2", 'HHV2',
-#	ifelse( species =="Human herpesvirus 6A", 'HHV6A', 'Other'))))
 
 head(df)
 ```
@@ -213,10 +195,11 @@ head(df)
 
 ```{r plot 13}
 ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
+	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1) +
 	geom_point(data = filter(df, !group == "Other")) +
 	theme_classic()
@@ -226,10 +209,11 @@ ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 
 ```{r plot 14}
 ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
+	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1,size=2) +
 	geom_point(data = filter(df, !group == "Other"), size=4) +
 	scale_color_brewer(palette="Set1") +
@@ -248,10 +232,11 @@ ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 
 ```{r plot 15}
 ggplot(df, aes(y = -log10(pval), x = beta)) +
+	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1, size=2) +
 	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4, aes(col=group)) +
 	geom_point(data = filter(df, !group == "Other" & pval >0.05), size=2) +
@@ -274,12 +259,12 @@ Tried setting the color to black and then assigning fill which only did a lack d
 
 
 ```{r plot 16}
-#ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 ggplot(df, aes(y = -log10(pval), x = beta)) +
+	ggtitle("Select Herpesviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1, size=2) +
 	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4.5, col='black') +
 	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4, aes(col=group)) +
@@ -306,11 +291,12 @@ head(df,20)
 
 ```{r plot 17}
 ggplot(df, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	geom_point() +
 	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	scale_color_brewer(palette="Set1") +
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),
@@ -326,41 +312,134 @@ Ehh. The legend auto created would need manually modified as it contains too muc
 
 
 
+```{r define volcano plot}
+volcano_plot = function(title,abbrev){
+	localdf = rawdf[complete.cases(rawdf),]	#	drop any row with NA
+	localdf <- localdf %>%
+		mutate(group = ifelse(str_detect(species, title), abbrev, "Other"))
+	localdf <- localdf %>% mutate(alpha = ifelse(group == "Other",.1,1))
+	localdf <- localdf %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
+	localdf <- localdf %>%
+		mutate(label = ifelse(species == title & pval <=0.05, as.character(peptide), ""))
+	print(head(localdf))
+	print(localdf[localdf$label==as.character(localdf$peptide),])
+	
+#		geom_text_repel(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
+#		geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
+#		geom_text(aes(label=as.character(label)), hjust=0.5, position=position_jitter(width=0.2,height=0.2))+
+
+#	ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha, label=label)) +
+#  geom_label_repel() +
+	ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+		ggtitle(title) +
+		geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+		geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+		geom_point() +
+		geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
+		coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+		labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+		scale_color_brewer(palette="Set1") +
+		theme_bw() +
+		theme(panel.grid.minor = element_blank(),
+			legend.title = element_text(size=14, color="black",lineheight = 1),
+			legend.text = element_text(size=13, color="black",lineheight = 1.2),
+			axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+			axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+
+#p <- ggplot(mtcars, aes(wt, mpg, label = rownames(mtcars)))
+#  geom_text(vjust = 0, nudge_y = 0.5)
+#  ggplot(nba, aes(x= MIN, y= PTS, colour="green", label=Name))+
+#  geom_point() +
+#  geom_text(aes(label=ifelse(PTS>24,as.character(Name),'')),hjust=0,vjust=0)
 
 
-
-
-
-
-
-
-```{r plot 18 prep}
-
-df <- df %>%
-	mutate(group = ifelse(str_detect(species, "Human herpesvirus 3"), "HHv3", "Other"))
-
-df <- df %>% mutate(alpha = ifelse(group == "Other",.1,1))
-
-df <- df %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
-
-head(df)
+}
 ```
 
 
-```{r plot 18}
-ggplot(df, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
-	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
-	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	geom_point() +
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
-	labs(x="Interaction z-score", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
-	scale_color_brewer(palette="Set1") +
-	theme_bw() +
-	theme(panel.grid.minor = element_blank(),
-		legend.title = element_text(size=14, color="black",lineheight = 1),
-		legend.text = element_text(size=13, color="black",lineheight = 1.2),
-		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
-		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+
+
+```{r HAVD}
+volcano_plot("Human adenovirus D","HAVD")
+```
+
+```{r HAVE}
+volcano_plot("Human adenovirus E","HAVE")
+```
+
+
+```{r HHV1}
+volcano_plot("Human herpesvirus 1","HHV1")
+```
+
+```{r HHV2}
+volcano_plot("Human herpesvirus 2","HHV2")
+```
+
+```{r HHV3}
+volcano_plot("Human herpesvirus 3","HHV3")
+```
+
+```{r HHV4}
+volcano_plot("Human herpesvirus 4","HHV4")
+```
+
+```{r HHV5}
+volcano_plot("Human herpesvirus 5","HHV5")
+```
+
+```{r HHV6A}
+volcano_plot("Human herpesvirus 6A","HHV6A")
+```
+
+```{r HHV6B}
+volcano_plot("Human herpesvirus 6B","HHV6B")
+```
+
+```{r HHV7}
+volcano_plot("Human herpesvirus 7","HHV7")
+```
+
+```{r HHV8}
+volcano_plot("Human herpesvirus 8","HHV8")
+```
+
+
+
+```{r HRSV}
+volcano_plot("Human respiratory syncytial virus","HRSV")
+```
+
+```{r FluA}
+volcano_plot("Influenza A virus","FluA")
+```
+
+```{r FluB}
+volcano_plot("Influenza B virus","FluB")
+```
+
+```{r FluC}
+volcano_plot("Influenza C virus","FluC")
+```
+
+```{r HepA}
+volcano_plot("Hepatitis A virus","HepA")
+```
+
+```{r HepB}
+volcano_plot("Hepatitis B virus","HepB")
+```
+
+```{r HepC}
+volcano_plot("Hepatitis C virus","HepC")
+```
+
+```{r HIV1}
+volcano_plot("Human immunodeficiency virus 1","HIV1")
+```
+
+```{r HIV2}
+volcano_plot("Human immunodeficiency virus 2","HIV2")
 ```
 
 
