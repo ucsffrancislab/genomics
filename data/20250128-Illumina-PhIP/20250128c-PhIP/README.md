@@ -454,10 +454,334 @@ head -12 tmp8.csv | cut -c1-110
 #25848,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,113,168,0,0,2,0,0,0,0,0,1,4,3,8,1,0,1,1,0,18
 #25849,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,141,196,0,28,93,8,0,4,0,0,13,2,43,1,25,5,19,
 #25850,Human herpesvirus 3,Alkaline nuclease (EC 3.1.-.-),47.0,1.0,169,224,0,0,3,14,2,2,3,6,5,8,5,21,3,2,0,14,0
+
+mv tmp8.csv HHV3.csv
+
+
+head -7 tmp6.csv > tmp7.csv
+sed -i 's/^/,,,,,,/' tmp7.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250207.for_joining.csv <( tail -n +8 tmp6.csv ) >> tmp7.csv
+
+awk -F, '{print NF}' tmp7.csv | uniq
+#582
+
+wc -l tmp7.csv 
+#126324 tmp7.csv
+
+wc -l /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250207.for_joining.csv 
+#128258 /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250207.for_joining.csv
+
+#	lose almost 2000
+
+head -8 tmp7.csv > ALL.csv
+tail -n +9 tmp7.csv | sort -t, -k2,2 -k3,3 -k4n,4 -k5n,5 -k6n,6 >> ALL.csv
+```
+
+
+
+##	20250211
+
+```
+dir=out.all.test
+cd $dir
+./merge_zscores.py -o tmp1.csv ../out.plate{?,??}/All.count.Zscores.csv
+
+head -1 tmp1.csv > tmp2.csv
+tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+
+head -1 tmp3.csv > tmp4.csv
+tail -n +2 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+
+join --header -t, manifest.csv tmp4.csv > tmp5.csv
+
+cat tmp5.csv | datamash transpose -t, > zscores.csv
+```
+
+
+##	20250212
+
+```
+./heatmap.Rmd -i /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/ALL.csv -o ALL
+
+./heatmap.Rmd -i /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/cpm_blank_subtracted.csv -o cpm_blank_subtracted
+
+./heatmap.Rmd -i /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/cpm_blank_subtracted.csv -o glioma_cpm_blank_subtracted
+```
+
+
+##	20250214
+
+
+Create a Zscores file from multiple plates to run in the multiplate script rather than rewrite the multiplate script
+
+Then create a CPM file to use the same way.
+
+Just needs index with sample and column rows with id and species and a manifest file.
+The metadata comes from the manifest file and not the data file.
+
+```
+head -1 zscores.csv > tmp1.csv
+tail -n +9 zscores.csv >> tmp1.csv
+
+cut -d, -f1,2 /francislab/data1/refs/PhIP-Seq/VIR3_clean.20250207.for_joining.csv > tmp2.csv
+join --header -t, tmp2.csv tmp1.csv > tmp3.csv
+
+join --header -t, ../out.3plates/Plibs.id.csv tmp3.csv > tmp4.csv
+
+cat tmp4.csv | datamash transpose -t, > tmp5.csv
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=test1 --time=1-0 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/$( date "+%Y%m%d%H%M%S%N" ).out.log --wrap="module load r; Multi_Plate_Case_Control_Peptide_Regression.R -z 11 -a case -b control --zfile_basename tmp5.csv -o ${PWD} -p ${PWD}"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=test2 --time=1-0 --nodes=1 --ntasks=8 --mem=60G --output=${PWD}/$( date "+%Y%m%d%H%M%S%N" ).out.log --wrap="module load r; Multi_Plate_Case_Control_Peptide_Regression.R -z 10 -a case -b control --zfile_basename Zscores.select6.csv -o ${PWD} -p $( ls -d /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.plate{?,??} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )"
+```
+
+
+##	20250218
+
+
+Testing replacement of `read.csv` with `data.frame(data.table::fread`
+
+
+```
+\rm commands
+
+plates=$( ls -d /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select3.csv -o ${PWD}/MultiPlateTesting -p ${plates}
+done >> commands
+
+plates=$( ls -d /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.plate{?,??} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select6.csv -o ${PWD}/MultiPlateTesting -p ${plates}
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+```
+./PeptideComparison.Rmd \
+  -i ${PWD}/MultiPlateTesting/20250218-Multiplate_Peptide_Comparison-Zscores.select3-case-control-Prop_test_results-10.csv \
+  -o ${PWD}/MultiPlateTesting/Multiplate_Peptide_Comparison-Zscores.select3
+
+./PeptideComparison.Rmd \
+  -i ${PWD}/MultiPlateTesting/20250218-Multiplate_Peptide_Comparison-Zscores.select6-case-control-Prop_test_results-10.csv \
+  -o ${PWD}/MultiPlateTesting/Multiplate_Peptide_Comparison-Zscores.select4
+```
+
+
+```
+for manifest in out.plate{?,??}/manifest.plate*.csv ; do
+  echo phip_seq_aggregate.bash ${manifest} $( dirname ${manifest} )
+  phip_seq_aggregate.bash ${manifest} $( dirname ${manifest} )
+  box_upload.bash $( dirname ${manifest} )/Counts*csv
+done
+```
+
+
+```
+\rm commands
+
+plates=$( ls -d /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 10 50 100 200 300 400 500 ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/MultiPlateTesting3 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select3.csv -o ${PWD}/MultiPlateTesting3 -p ${plates}
+done >> commands
+
+plates=$( ls -d /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.plate{?,??} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 10 50 100 200 300 400 500 ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/MultiPlateTesting4 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select6.csv -o ${PWD}/MultiPlateTesting4 -p ${plates}
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+```
+for f in ${PWD}/MultiPlateTesting?/*-Multiplate_Peptide_Comparison-*csv ; do
+./PeptideComparison.Rmd -i ${f} -o ${f%.csv}
+done
 ```
 
 
 
 
 
+
+##	20250219
+
+
+“Select” the tiles used in the Counts files.
+Correct the label name so they match the input file
+
+One small tweak- next time you run the HTMLs, could you please fix the axis lables? they still say “interaction” and z-score, just helps to make sure I know what im looking at!
+
+Could you please run the peptide comparison analysis (GBM case/control) on the blank subtracted data? I’d like to compare to the z-score results. I guess we could try the “viral hit fraction” also, right?
+
+Try to run all of Geno’s scripts on the adjusted counts rather than the Zscores
+By_virus_plotter -> Manhattan Plots - SKIP
+Case_Control_Z_Script -> Tile_Comparison
+Count_Viral_Tile_Hit_Fraction -> Viral_Frac_Hits_Z, Viral_Sero_test_results
+Seropositivity_Comparison -> Seropositivity_Prop_test_results - SKIP
+Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression -> Multiplate_VirFrac_Seropositivity_Comparison_Z
+Multi_Plate_Case_Control_Peptide_Regression -> Multiplate_Peptide_Comparison
+PeptideComparison -> Multiplate_Peptide_Comparison.html
+Multi_Plate_Case_Control_VirScan_Seropositivity_Regression -> Multiplate_VirScan_Seropositivity_Comparison - SKIP
+
+
+
+
+Create SELECT counts
+```
+#mkdir out.3plates
+#merge_all_combined_counts_files.py --int --de_nan --out out.3plates/Plibs.csv /francislab/data1/working/{20241224-Illumina-PhIP/20250110-PhIP,20250128-Illumina-PhIP/20250128c-PhIP}/out.plate[123]/counts/PLib*
+#tail -n +2 out.3plates/Plibs.csv | cut -d, -f1 | sort > out.3plates/Plibs.id.csv
+#sed -i '1iid' out.3plates/Plibs.id.csv
+
+for manifest in out.plate[123]/manifest.plate*.csv ; do
+  dir=$( dirname ${manifest} )
+  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
+  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
+  join --header -t, out.3plates/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
+  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select3.csv
+  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select3.csv
+done
+
+
+#mkdir out.6plates
+#merge_all_combined_counts_files.py --int --de_nan --out out.6plates/Plibs.csv /francislab/data1/working/{20241224-Illumina-PhIP/20250110-PhIP,20250128-Illumina-PhIP/20250128c-PhIP}/out.plate{?,??}/counts/PLib*
+#tail -n +2 out.6plates/Plibs.csv | cut -d, -f1 | sort > out.6plates/Plibs.id.csv
+#sed -i '1iid' out.6plates/Plibs.id.csv
+
+for manifest in out.plate{?,??}/manifest.plate*.csv ; do
+  dir=$( dirname ${manifest} )
+  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
+  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
+  join --header -t, out.6plates/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
+  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select6.csv
+  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select6.csv
+done
+```
+
+
+```
+\rm commands
+for manifest in out.plate{?,??}/manifest.plate*.csv ; do
+dir=$( dirname ${manifest} )
+odir=$( dirname ${manifest} )_test ; mkdir -p ${odir}
+for z in 3.5 5 10 15 20 30 40 50; do
+for base in Zscores.select3.csv Zscores.select6.csv Counts.normalized.subtracted.trim.select3.csv Counts.normalized.subtracted.trim.select6.csv ; do
+ echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest}  --output_dir ${odir} -a case -b control --zfilename ${dir}/${base}
+ echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${odir} -a case -b control --zfilename ${dir}/${base}
+done ; done ; done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+A lot of failures because of non-existant files.
+
+```
+box_upload.bash out.plate*_test/{Tile_Comparison,Viral}*
+```
+
+
+```
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/MultiPlateTesting3 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select3.csv -o ${PWD}/MultiPlateTesting3 -p ${plates}
+done >> commands
+
+plates=$( ls -d ${PWD}/out.plate{?,??} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select6.csv -o ${PWD}/MultiPlateTesting4 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select6.csv -o ${PWD}/MultiPlateTesting4 -p ${plates}
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+
+```
+for f in ${PWD}/MultiPlateTesting?/20250219-Multiplate_Peptide_Comparison-*csv ; do
+./PeptideComparison.Rmd -i ${f} -o ${f%.csv}
+done
+```
+
+
+##	20250220
+
+
+```
+mkdir out.4plates
+merge_all_combined_counts_files.py --int --de_nan --out out.4plates/Plibs.csv ${PWD}/out.plate[1234]/counts/PLib*
+tail -n +2 out.4plates/Plibs.csv | cut -d, -f1 | sort > out.4plates/Plibs.id.csv
+sed -i '1iid' out.4plates/Plibs.id.csv
+
+for manifest in out.plate[1234]/manifest.plate*.csv ; do
+  dir=$( dirname ${manifest} )
+
+  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
+  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
+  join --header -t, out.4plates/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
+  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select4.csv
+  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select4.csv
+
+  head -2 ${dir}/Zscores.t.csv > ${dir}/Zscores.select4.t.csv
+  join --header -t, out.4plates/Plibs.id.csv <( tail -n +3 ${dir}/Zscores.t.csv ) >> ${dir}/Zscores.select4.t.csv
+  cat ${dir}/Zscores.select4.t.csv | datamash transpose -t, > ${dir}/Zscores.select4.csv
+  box_upload.bash ${dir}/Zscores.select4{.t,}.csv
+done
+```
+
+
+
+```
+\rm commands
+mkdir 20250220
+for z in 3.5 5 10 15 20 30 40 50; do
+for base in Zscores.select4.csv Counts.normalized.subtracted.trim.select4.csv Zscores.select3.csv Zscores.select6.csv Counts.normalized.subtracted.trim.select3.csv Counts.normalized.subtracted.trim.select6.csv ; do
+for f in $( ls -1 out.plate?/${base} 2> /dev/null ) ; do
+dir=$( dirname ${f} )
+manifest=$( ls ${dir}/manifest.plate*.csv )
+odir=20250220/${dir} ; mkdir -p ${odir}
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest}  --output_dir ${odir} -a case -b control --zfilename ${dir}/${base}
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${odir} -a case -b control --zfilename ${dir}/${base}
+done ; done ; done >> commands2
+
+commands_array_wrapper.bash --array_file commands2 --time 4-0 --threads 2 --mem 15G
+```
+
+
+
+```
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250220/MultiPlate3 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select3.csv -o ${PWD}/20250220/MultiPlate3 -p ${plates}
+done >> commands
+
+plates=$( ls -d ${PWD}/out.plate[1234] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select4.csv -o ${PWD}/20250220/MultiPlate4 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select4.csv -o ${PWD}/20250220/MultiPlate4 -p ${plates}
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+
+```
+for f in ${PWD}/20250220/MultiPlate?/*-Multiplate_Peptide_Comparison-*csv ; do
+./PeptideComparison.Rmd -i ${f} -o ${f%.csv}
+done
+```
 
