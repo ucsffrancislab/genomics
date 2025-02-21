@@ -15,6 +15,8 @@ parser <- ArgumentParser(description=scriptname)
 
 #parser$add_argument("-d", "--dir", type="character", required=TRUE, action="append",
 #        help="dir to compare (use multiple times for each)", metavar="group")
+parser$add_argument("-i", "--input", type="character", default="HHV3.csv",
+        help="input file [default=%(default)s]", metavar="file name")
 parser$add_argument("-o", "--output", type="character", default="heatmap",
         help="output file base [default=%(default)s]", metavar="file base")
 #parser$add_argument("-s", "--species", type="character", default="Human herpesvirus 6A",
@@ -63,11 +65,26 @@ from matplotlib.pyplot import gcf
 ```
 
 ```{python read csv}
-df = pd.read_csv("/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/tmp8.csv",
+#df = pd.read_csv("/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/tmp8.csv",
+#df = pd.read_csv("/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/HHV3.csv",
+df = pd.read_csv(r.opt['input'],
 	header=[0,1,2,3,4,5,6,7],
 	index_col=[0,1,2,3,4,5,6])
-df=df.droplevel([1,3,4,6])	#	tile details like versions, species, end
+
+df.columns = df.columns.set_names(["sample","subject","type","study","group","age","sex","plate"])
+df.index = df.index.set_names(["id","species","protein","entry version","sequence version","start","end"])
+
+#df=df.droplevel([1,3,4,6])	#	tile details like versions, species, end
+df=df.droplevel([0,3,4,5,6])	#	tile details like id, versions, start, end (really just interested in the protein here)
 df.shape
+```
+
+```{python}
+df.columns.names
+```
+
+```{python}
+df.index.names
 ```
 
 ```{python head1}
@@ -94,12 +111,13 @@ df=df.rename(columns=replace_unnameds)	#, inplace=True)
 
 
 ```{python}
-df=df.sort_index(axis=1,level=[2,3,4,1,0])
+df=df.sort_index(axis=1,level=[7,2,3,4,1,0])
+#df=df.sort_index(axis=1,level=[0,1,2,3,4,7])
 ```
 
 Only Glioma
 ```{python only glioma}
-#df=df.loc[:, (slice(None),slice(None),'glioma serum', slice(None),slice(None),slice(None),slice(None))]
+df=df.loc[:, (slice(None),slice(None),'glioma serum', slice(None),slice(None),slice(None),slice(None))]
 df.shape
 ```
 
@@ -195,10 +213,12 @@ Color palette can be longer, or shorter, than needed.
 Extra will be ignored. Missing will be unassigned.
 ```{python}
 #row_lut = dict(zip(row_labels.unique(), sns.color_palette("bright", len(row_labels.unique()))))
+#row_lut = dict(zip(row_labels.unique(), 'rbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbg'))
 
-row_lut = dict(zip(row_labels.unique(), 'rbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbg'))
+row_lut = dict(zip(row_labels.unique(), 'rby'*(len(row_labels.unique())//3+1)
+))
 
-row_lut
+#row_lut
 ```
 
 
@@ -219,6 +239,7 @@ row_colors
 col_labels2=df.columns.get_level_values(2).to_series( index=df.columns, name='type')
 col_labels3=df.columns.get_level_values(3).to_series( index=df.columns, name='study')
 col_labels4=df.columns.get_level_values(4).to_series( index=df.columns, name='group')
+col_labels7=df.columns.get_level_values(7).to_series( index=df.columns, name='plate')
 ```
 
 ```{python}
@@ -239,12 +260,14 @@ Guessing these need sorted? or Perhaps wraps around.
 col_lut2 = dict(zip(col_labels2.unique(), sns.color_palette("bright", len(col_labels2.unique()))))
 col_lut3 = dict(zip(col_labels3.unique(), sns.color_palette("bright", len(col_labels3.unique()))))
 col_lut4 = dict(zip(col_labels4.unique(), sns.color_palette("bright", len(col_labels4.unique()))))
+col_lut7 = dict(zip(col_labels7.unique(), sns.color_palette("bright", len(col_labels7.unique()))))
 ```
 
 ```{python col colors}
 col_colors2=col_labels2.map(col_lut2)
 col_colors3=col_labels3.map(col_lut3)
 col_colors4=col_labels4.map(col_lut4)
+col_colors7=col_labels7.map(col_lut7)
 ```
 
 ```{python}
@@ -272,11 +295,11 @@ legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palett
 
 ```{python clustermap}
 g = sns.clustermap(df,
-	col_colors=pd.concat([ col_colors2, col_colors3, col_colors4],axis=1),
+	col_colors=pd.concat([ col_colors2, col_colors3, col_colors4, col_colors7],axis=1),
 	row_colors=pd.concat([row_colors],axis=1),
 	norm=plt.matplotlib.colors.LogNorm(),
 	cmap="viridis_r",
-	figsize=(20, 40),
+	figsize=(20, 60),
 	dendrogram_ratio=(0.01,0.01),
 	colors_ratio=(0.01,0.01),
 	row_cluster=False,
@@ -285,6 +308,10 @@ g = sns.clustermap(df,
 		'orientation': 'horizontal',
 		'location': 'bottom'}
 	)
+
+#g.tight_layout()
+#plt.tight_layout()
+
 
 g.ax_heatmap.set_xlabel("")
 g.ax_heatmap.set_ylabel("")
@@ -310,14 +337,19 @@ plt.gca().add_artist( plt.legend(
 	[ g.ax_row_dendrogram.bar(0, 0, color=col_lut4[label], label=label, linewidth=0) for label in col_labels4.unique() ],
 	col_labels4.unique(), loc="upper center", ncols=9, bbox_to_anchor=(.42, .954), bbox_transform=gcf().transFigure) )
 
+plt.gca().add_artist( plt.legend(
+	[ g.ax_row_dendrogram.bar(0, 0, color=col_lut7[label], label=label, linewidth=0) for label in col_labels7.unique() ],
+	col_labels7.unique(), loc="upper center", ncols=9, bbox_to_anchor=(.42, .948), bbox_transform=gcf().transFigure) )
+
 
 #	ORDER MATTERS
-plt.subplots_adjust(top=0.95,bottom=0.15, left=0.01, right=0.8)
+plt.subplots_adjust(top=0.94,bottom=0.15, left=0.01, right=0.8)
 
 #plt.title("Human Herpesvirus 3", fontsize=24)	#	 on the bottom above color bar
-g.fig.suptitle("Human Herpesvirus 3", fontsize=32, x=0.42)	#	on the top above plot
+#g.fig.suptitle("Human Herpesvirus 3", fontsize=32, x=0.42)	#	on the top above plot
+g.fig.suptitle("All Viruses", fontsize=32, x=0.42)	#	on the top above plot
 
-g.ax_cbar.set_position([0.05, 0.02, 0.71, 0.02]) # [left, bottom, width, height]
+g.ax_cbar.set_position([0.05, 0.02, 0.71, 0.01]) # [left, bottom, width, height]
 
 plt.show()
 ```
