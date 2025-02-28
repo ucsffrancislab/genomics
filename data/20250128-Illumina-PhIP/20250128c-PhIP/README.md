@@ -785,3 +785,149 @@ for f in ${PWD}/20250220/MultiPlate?/*-Multiplate_Peptide_Comparison-*csv ; do
 done
 ```
 
+
+```
+for dir in ${PWD}/out.plate[1234] ; do
+cp ${dir}/manifest*csv 20250220/$( basename ${dir} )/
+done
+```
+
+
+
+```
+\rm commands
+plates=$( ls -d ${PWD}/20250220/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250220/MultiPlate3 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select3.csv -o ${PWD}/20250220/MultiPlate3 -p ${plates}
+done >> commands
+plates=$( ls -d ${PWD}/20250220/out.plate[1234] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select4.csv -o ${PWD}/20250220/MultiPlate4 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select4.csv -o ${PWD}/20250220/MultiPlate4 -p ${plates}
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+
+##	20250225
+
+
+Testing Multi_Plate_Case_Control_Peptide_Regression.R using continuous counts
+
+
+```
+module load r
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250225/MultiPlate3 -p ${plates} --counts > ${PWD}/20250225/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.runlog.txt &
+
+plates=$( ls -d ${PWD}/out.plate[1234] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select4.csv -o ${PWD}/20250225/MultiPlate4 -p ${plates} --counts > ${PWD}/20250225/MultiPlate4/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select4-case-control-Prop_test_results-Z-0.runlog.txt &
+
+```
+
+
+
+```
+for f in ${PWD}/20250225/MultiPlate?/Multiplate_Peptide_Comparison-*csv ; do
+./PeptideComparison.Rmd -i ${f} -o ${f%.x.csv}
+done
+```
+
+##	20250226
+
+
+```
+for manifest in out.plate{?,??}/manifest.plate*.csv ; do
+  echo phip_seq_aggregate.bash ${manifest} $( dirname ${manifest} )
+  phip_seq_aggregate.bash ${manifest} $( dirname ${manifest} )
+  box_upload.bash $( dirname ${manifest} )/Counts*csv
+done
+```
+
+```
+for manifest in out.plate[123]/manifest.plate*.csv ; do
+  dir=$( dirname ${manifest} )
+  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
+  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
+  join --header -t, out.3plates/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
+  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select3.csv
+  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select3.csv
+done
+
+for manifest in out.plate[1234]/manifest.plate*.csv ; do
+  dir=$( dirname ${manifest} )
+  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
+  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
+  join --header -t, out.4plates/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
+  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select4.csv
+  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select4.csv
+done
+```
+
+
+
+```
+module load r
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+mkdir -p 20250226/MultiPlate3
+Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250226/MultiPlate3 -p ${plates} --counts > ${PWD}/20250226/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.runlog.txt &
+
+
+mkdir -p 20250226/MultiPlate4
+plates=$( ls -d ${PWD}/out.plate[1234] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select4.csv -o ${PWD}/20250226/MultiPlate4 -p ${plates} --counts > ${PWD}/20250226/MultiPlate4/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select4-case-control-Prop_test_results-Z-0.runlog.txt &
+
+```
+
+
+
+
+
+
+##	20250227
+
+
+join the counts files ...
+
+```
+merge_matrices.py --axis index --de_nan --de_neg \
+  --out ${PWD}/20250226/Counts.normalized.subtracted.trim.csv \
+  ${PWD}/out.plate[1234]/Counts.normalized.subtracted.trim.csv
+```
+
+Drop species name and add case/control status ...
+
+```
+head -1 ${PWD}/20250226/Counts.normalized.subtracted.trim.csv > ${PWD}/20250226/tmp1.csv
+tail -n +3 ${PWD}/20250226/Counts.normalized.subtracted.trim.csv >> ${PWD}/20250226/tmp1.csv
+
+awk 'BEGIN{FS=OFS=","}{print $1,$2,$5,$8}' ${PWD}/out.all.test/manifest.csv > ${PWD}/20250226/tmp2.csv
+
+join --header -t, -1 1 -2 3 ${PWD}/20250226/tmp2.csv ${PWD}/20250226/tmp1.csv > ${PWD}/20250226/tmp3.csv
+
+cut -d, -f1-4,6- ${PWD}/20250226/tmp3.csv > ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.csv
+
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('20250226/Counts.normalized.subtracted.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('20250226/Counts.normalized.subtracted.trim.plus.mins.csv')\""
+
+
+#sample,subject,group,plate,type,1,10,100,1000,10000,10001,10002,10003,10004,10005,10006,1000
+#1403401,1403401,case,3,glioma serum,0.0,0.0,0.0,0.0,7.161216099036505,0.0,3.772326887658032,
+#1403401dup,1403401,case,3,glioma serum,0.0,0.0,4.849224673631015,0.0,0.0,0.0,3.6040627444987
+```
+
+
+
+
+then ...
+
+```
+for f in ${PWD}/20250226/MultiPlate?/Multiplate_Peptide_Comparison-*csv ; do
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module load r; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
+done
+```
+
+
