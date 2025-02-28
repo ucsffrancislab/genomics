@@ -1516,8 +1516,14 @@ Be aware that this has the unmoderated names
 head -1 VIR3_clean.20250205.csv > VIR3_clean.20250205.HHV3.for_joining.csv
 tail -n +2 VIR3_clean.20250205.csv | grep "Human herpesvirus 3" | sort -t, -k1,1 >> VIR3_clean.20250205.HHV3.for_joining.csv
 
+head -1 VIR3_clean.20250205.csv > VIR3_clean.20250205.HHV3.for_joining.uniq.csv
+tail -n +2 VIR3_clean.20250205.csv | grep "Human herpesvirus 3" | sort -t, -k1,1  | uniq >> VIR3_clean.20250205.HHV3.for_joining.uniq.csv
+
 head -1 VIR3_clean.20250205.csv > VIR3_clean.20250207.for_joining.csv
 tail -n +2 VIR3_clean.20250205.csv | sort -t, -k1,1 >> VIR3_clean.20250207.for_joining.csv
+
+head -1 VIR3_clean.20250205.csv > VIR3_clean.20250207.for_joining.uniq.csv
+tail -n +2 VIR3_clean.20250205.csv | sort -t, -k1,1 | uniq >> VIR3_clean.20250207.for_joining.uniq.csv
 
 
 ```
