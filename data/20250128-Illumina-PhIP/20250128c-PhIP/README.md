@@ -931,3 +931,17 @@ done
 ```
 
 
+
+
+##	20250228
+
+
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 --job-name=predict --time=14-0 --nodes=1 --ntasks=64 --mem=490GB --output=${PWD}/predict.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log ./predict.bash
+
+```
+
+
+
