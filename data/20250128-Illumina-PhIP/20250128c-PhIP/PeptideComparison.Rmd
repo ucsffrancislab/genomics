@@ -98,7 +98,7 @@ ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_point(aes(fill=sig,size=sig),shape=21) +
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
+	coord_cartesian(ylim = c(0, 5), xlim = c(-0.5, 0.5)) + # since some genes can have minuslog10padj of inf, we set these limits
 	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("p-value")) +
 	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("p-value")) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
@@ -128,7 +128,7 @@ ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("p-value")) +
 	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("p-value")) +
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
+	coord_cartesian(ylim = c(0, 5), xlim = c(-0.5, 0.5)) + # since some genes can have minuslog10padj of inf, we set these limits
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),
@@ -148,7 +148,7 @@ ggplot(df, aes(x = beta, y = -log10(pval))) +
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	scale_fill_manual(values=c("#AAAAAA","#2ED0FE"),label=c("<0.05",">0.05"),name=c("p-value")) +
 	scale_size_manual(values=c(2.5,4.5), label=c("<0.05",">0.05"),name=c("p-value")) +
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) + # since some genes can have minuslog10padj of inf, we set these limits
+	coord_cartesian(ylim = c(0, 5), xlim = c(-0.5, 0.5)) + # since some genes can have minuslog10padj of inf, we set these limits
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")")))+
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),
@@ -200,7 +200,7 @@ ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	coord_cartesian(ylim = c(0, 5), xlim = c(-0.5, 0.5)) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1) +
 	geom_point(data = filter(df, !group == "Other")) +
@@ -214,7 +214,7 @@ ggplot(df, aes(y = -log10(pval), x = beta, col = group)) +
 	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	coord_cartesian(ylim = c(0, 5), xlim = c(-0.5, 0.5)) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1,size=2) +
 	geom_point(data = filter(df, !group == "Other"), size=4) +
@@ -237,7 +237,7 @@ ggplot(df, aes(y = -log10(pval), x = beta)) +
 	ggtitle("Select Herpes & Adenoviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1, size=2) +
 	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4, aes(col=group)) +
@@ -265,7 +265,7 @@ ggplot(df, aes(y = -log10(pval), x = beta)) +
 	ggtitle("Select Herpesviruses") +
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	geom_point(data = filter(df, group == "Other"), alpha = .1, size=2) +
 	geom_point(data = filter(df, !group == "Other" & pval<=0.05), size=4.5, col='black') +
@@ -297,7 +297,7 @@ ggplot(df, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha))
 	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	geom_point() +
-	coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	scale_color_brewer(palette="Set1") +
 	theme_bw() +
@@ -338,7 +338,7 @@ volcano_plot = function(title,abbrev){
 		geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 		geom_point() +
 		geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-		coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+		coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 		labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 		scale_color_brewer(palette="Set1") +
 		theme_bw() +
@@ -472,7 +472,7 @@ volcano_plot_solo = function(title,abbrev){
 		geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 		geom_point() +
 		geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-		coord_cartesian(ylim = c(0, 3), xlim = c(-5, 5)) +
+		coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 		labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 		scale_color_brewer(palette="Set1") +
 		theme_bw() +
@@ -513,7 +513,7 @@ ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=al
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	geom_point() +
 	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-2.5, 2.5)) +
+	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	scale_color_brewer(palette="Set1") +
 	theme_bw() +
@@ -531,7 +531,7 @@ ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=al
 #	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 #	geom_point() +
 #	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-#	coord_cartesian(ylim = c(0, 3), xlim = c(-2.5, 2.5)) +
+#	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 #	labs(x="beta", y="pval") +
 #	scale_color_brewer(palette="Set1") +
 #	theme_bw() +
@@ -549,7 +549,7 @@ ggplot(localdf, aes(y = -log10(pval), x = exp(beta)-1, col = group, size=size, a
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	geom_point() +
 	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-	coord_cartesian(ylim = c(0, 3), xlim = c(-2.5, 2.5)) +
+	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
 	labs(x="exp(beta)-1", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	scale_color_brewer(palette="Set1") +
 	theme_bw() +
