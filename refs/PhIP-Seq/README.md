@@ -1528,3 +1528,26 @@ tail -n +2 VIR3_clean.20250205.csv | sort -t, -k1,1 | uniq >> VIR3_clean.2025020
 
 ```
 
+
+##	20250304
+
+```
+zcat VIR3_clean.csv.gz \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  -e 's/Capsid scaffolding protein (Capsid protein P40) (Protease precursor) (pPR) (Virion structural gene 33 protein) \[Cleaved into: Assemblin (EC 3.4.21.97) (Capsid protein VP24) (Protease); Assembly protein (Capsid protein VP22A)\]/Capsid protein P40/g' \
+  -e 's/Tripartite terminase subunit UL15 homolog (DNA-packaging protein 45) (Terminase large subunit) \[Cleaved into: Gene 42 protein\]/Tripartite terminase subunit UL15 homolog/g' \
+  | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12}' | sort | uniq | sort -t, -k1,1 > VIR3_clean.id_species.uniq.csv
+sed -i '1iid,species' VIR3_clean.id_species.uniq.csv
+sed -i '/89962,O/d' VIR3_clean.id_species.uniq.csv
+chmod a-w VIR3_clean.id_species.uniq.csv
+```
+
+
+
+
