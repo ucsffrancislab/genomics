@@ -543,14 +543,14 @@ ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=al
 ```
 
 ```{r}
-ggplot(localdf, aes(y = -log10(pval), x = exp(beta)-1, col = group, size=size, alpha=alpha)) +
+ggplot(localdf, aes(y = -log10(pval), x = exp(beta), col = group, size=size, alpha=alpha)) +
 	ggtitle(title) +
-	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_vline(xintercept=1, linewidth = 0.5,col="gray60",linetype=2)+
 	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
 	geom_point() +
 	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
-	labs(x="exp(beta)-1", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	coord_cartesian(ylim = c(0, 4), xlim = c( 0.5, 1.5)) +
+	labs(x="exp(beta)", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
 	scale_color_brewer(palette="Set1") +
 	theme_bw() +
 	theme(panel.grid.minor = element_blank(),

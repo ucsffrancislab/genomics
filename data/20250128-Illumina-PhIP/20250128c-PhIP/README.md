@@ -938,10 +938,90 @@ done
 
 
 ```
-
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 --job-name=predict --time=14-0 --nodes=1 --ntasks=64 --mem=490GB --output=${PWD}/predict.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log ./predict.bash
+```
+
+
+##	20250303
 
 ```
+cat 20250226/Counts.normalized.subtracted.trim.plus.mins.csv | datamash transpose -t, > tmp1.csv
+head -3 tmp1.csv > tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species.uniq.csv <( tail -n +4 tmp1.csv ) >> tmp2.csv
+sed -i '1s/^/subject,/' tmp2.csv
+sed -i '2s/^/group,/' tmp2.csv
+sed -i '3s/^/plate,/' tmp2.csv
+sed -i '4s/^id,/type,/' tmp2.csv
+cat tmp2.csv | datamash transpose -t, > 20250226/Counts.normalized.subtracted.trim.plus.mins.x.csv
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --exclude=c4-n10 --job-name=predict --time=14-0 --nodes=1 --ntasks=64 --mem=490GB --output=${PWD}/predict.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log ./predict.bash
+```
+
+
+
+```
+module load r
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+mkdir -p 20250304/MultiPlate3
+Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250304/MultiPlate3 -p ${plates} --counts > ${PWD}/20250304/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.runlog.txt &
+
+
+mkdir -p 20250304/MultiPlate4
+plates=$( ls -d ${PWD}/out.plate[1234] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select4.csv -o ${PWD}/20250304/MultiPlate4 -p ${plates} --counts > ${PWD}/20250304/MultiPlate4/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select4-case-control-Prop_test_results-Z-0.runlog.txt &
+
+```
+
+
+
+
+```
+for f in ${PWD}/20250304/MultiPlate?/Multiplate_Peptide_Comparison-*csv ; do
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
+done
+```
+
+
+
+import numpy as np
+import pandas as pd
+
+df=pd.read_csv('20250226/Counts.normalized.subtracted.trim.plus.mins.x.csv',sep=',',index_col=[0,1,2,3],header=[0,1],low_memory=False)
+df[df <= 0] = 0.001
+df = df.apply(np.log)
+
+
+##	20250310
+
+
+```
+cat 20250226/Counts.normalized.subtracted.trim.plus.mins.csv | datamash transpose -t, > tmp1.csv
+head -3 tmp1.csv > tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.csv <( tail -n +4 tmp1.csv ) >> tmp2.csv
+sed -i '1s/^/subject,subject,/' tmp2.csv
+sed -i '2s/^/group,group,/' tmp2.csv
+sed -i '3s/^/plate,plate,/' tmp2.csv
+sed -i '4s/^id,/type,/' tmp2.csv
+cat tmp2.csv | datamash transpose -t, > 20250226/Counts.normalized.subtracted.trim.plus.mins.xy.csv
+```
+
+
+
+```
+
+./predict5.bash > commands
+commands_array_wrapper.bash --array_file commands --time 30 --threads 2 --mem 15G
+
+```
+
+```
+
+grep --no-filename "^Accuracy3 " logs/commands_array_wrapper.bash.*-534983_*| sort -k3n,3 | tail
+
+
+```
+
 
 
 
