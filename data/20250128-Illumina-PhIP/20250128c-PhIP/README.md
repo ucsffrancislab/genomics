@@ -977,7 +977,7 @@ Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_ba
 
 
 ```
-for f in ${PWD}/20250304/MultiPlate?/Multiplate_Peptide_Comparison-*csv ; do
+for f in ${PWD}/20250304/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0.csv ; do
 sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
 done
 ```
@@ -1024,4 +1024,36 @@ grep --no-filename "^Accuracy3 " logs/commands_array_wrapper.bash.*-534983_*| so
 
 
 
+```
+
+head -1 HHV8-ORF73.csv | datamash transpose -t, | tail -n +4 > HHV8-ORF73.ids.txt
+sed -i '1iid' HHV8-ORF73.ids.txt 
+
+head -1 20250304/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.csv > tmp1.csv
+tail -n +3 20250304/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.csv | sort -t, -k1,1 >> tmp1.csv
+join --header -t, HHV8-ORF73.ids.txt tmp1.csv > tmp2.csv
+
+sort -t, -k7n,7 tmp2.csv > 20250304/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.HHV8-ORF73.csv
+
+```
+
+
+
+
+
+##	20250311
+
+```
+module load r
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+mkdir -p 20250311/MultiPlate3
+sbatch --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.extra.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250311/MultiPlate3 -p ${plates} --counts" --output=${PWD}/20250311/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0.runlog.txt
+```
+
+```
+for f in ${PWD}/20250311/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0.csv ; do
+sbatch --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
+done
+```
 

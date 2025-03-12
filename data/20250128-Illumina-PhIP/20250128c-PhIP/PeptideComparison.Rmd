@@ -610,6 +610,77 @@ if ( exists('counts') ) {
 
 
 
+```{r HHV8 ORF73}
+#volcano_plot_solo("Human herpesvirus 3","HHV3")
+
+title="Human herpesvirus 8"
+abbrev="HHV8"
+
+localdf = rawdf[complete.cases(rawdf),]	#	drop any row with NA
+
+localdf <- localdf %>%
+	mutate(group = ifelse(str_detect(species, title), abbrev, "Other"))
+localdf <- localdf %>% mutate(alpha = ifelse(group == "Other",.1,1))
+localdf <- localdf %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
+localdf <- localdf %>%
+	mutate(label = ifelse(species == title & pval <=0.05, as.character(peptide), ""))
+
+
+ids <- data.frame(data.table::fread('/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/HHV8-ORF73.ids.txt', sep = ",", header=TRUE))
+
+localdf = localdf[localdf$species==title,]
+localdf = localdf[localdf$peptide %in% ids$id,]
+
+
+
+print(head(localdf))
+print(localdf[localdf$label==as.character(localdf$peptide),])
+```
+
+
+```{r}
+ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+	ggtitle(title) +
+	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
+	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
+	geom_point() +
+	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
+	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
+	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
+	scale_color_brewer(palette="Set1") +
+	theme_bw() +
+	theme(panel.grid.minor = element_blank(),
+		legend.title = element_text(size=14, color="black",lineheight = 1),
+		legend.text = element_text(size=13, color="black",lineheight = 1.2),
+		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
+		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+```
+
+
+
+Violin plots of the counts.
+
+```{r HHV8 ORF73 violin plots}
+if ( exists('counts') ) {
+	counts$plate <- as.factor(counts$plate)
+
+	for( peptide in localdf[localdf$pval <= 0.05,'peptide'] ){
+		print(peptide)
+		tmp=counts[,c('group',paste0('X',peptide),'plate')]
+		colnames(tmp)=c('group','peptide','plate')
+		print(head(tmp))
+		print(ggplot(tmp, aes(x=group, y=peptide, fill=plate)) + geom_violin())
+		print(ggplot(tmp, aes(x=group, y=peptide, fill=group)) + geom_violin())
+	}
+}
+```
+
+
+
+
+
+
+
 
 
 

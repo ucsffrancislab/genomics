@@ -13,7 +13,7 @@ for i in 1 ; do
 
 for batch_size in 200 ; do
 
-for n in 32 64 128; do
+for n in 64 128; do
 
 for activation in relu sigmoid ; do
 
