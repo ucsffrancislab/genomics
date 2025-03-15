@@ -1,0 +1,19 @@
+<style type="text/css">
+.jp-Cell-outputCollapser{
+	display: block;
+	background-color: red;
+}
+</style>
+<script>
+const collapsers = document.querySelectorAll('.jp-Cell-outputCollapser');
+collapsers.forEach(element => {
+	element.parentElement.style['maxHeight']='100px';
+	element.addEventListener('click', function(event) {
+		if(element.parentElement.style['maxHeight']==''){
+			element.parentElement.style['maxHeight']='100px'
+		}else{
+			element.parentElement.style['maxHeight']=''
+		}
+	});
+});
+</script>
