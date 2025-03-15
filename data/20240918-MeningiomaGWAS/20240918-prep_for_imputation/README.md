@@ -487,3 +487,23 @@ curl -sL https://imputationserver.sph.umich.edu/get/5yGtUUVw7kZGliSzs27T8A7mh6YN
 ```
 
 
+
+
+
+
+##	20250311
+
+
+Got an excel spreadsheet which may include ids so checking for something to compare to.
+
+
+```
+ln -s /francislab/data1/raw/20240918-MeningiomaGWAS/MENCasesandControls.csv 
+
+zgrep -m1 "^#CHROM" prep/MENINGIOMA_GWAS_SHARED-updated-chr1.vcf.gz | datamash transpose | sort > vcf_ids.txt
+
+```
+
+
+
+
