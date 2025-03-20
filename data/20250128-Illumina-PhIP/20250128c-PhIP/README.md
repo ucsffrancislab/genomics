@@ -1057,3 +1057,63 @@ sbatch --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module lo
 done
 ```
 
+
+
+
+##	20250318
+
+
+Rerun stratifying for sex
+
+
+
+```
+mkdir -p 20250318/MultiPlate3
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptide --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250318/MultiPlate3 -p ${plates} --counts" --output=${PWD}/20250318/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0-sex-.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptideM --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250318/MultiPlate3 -p ${plates} --counts --sex M" --output=${PWD}/20250318/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0-sex-M.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptideF --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.csv -o ${PWD}/20250318/MultiPlate3 -p ${plates} --counts --sex F" --output=${PWD}/20250318/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3-case-control-Prop_test_results-Z-0-sex-F.runlog.txt
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=seropos --wrap="module load r; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/20250318/MultiPlate3 -p ${plates}" --output=${PWD}/20250318/MultiPlate3/Multiplate_VirScan_Seropositivity_Comparison-case-control-seropositive.10-test_results-Z-10-sex-.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=seroposM --wrap="module load r; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/20250318/MultiPlate3 -p ${plates} --sex M" --output=${PWD}/20250318/MultiPlate3/Multiplate_VirScan_Seropositivity_Comparison-case-control-seropositive.10-test_results-Z-10-sex-M.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=seroposF --wrap="module load r; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/20250318/MultiPlate3 -p ${plates} --sex F" --output=${PWD}/20250318/MultiPlate3/Multiplate_VirScan_Seropositivity_Comparison-case-control-seropositive.10-test_results-Z-10-sex-F.runlog.txt
+
+
+
+```
+
+```
+for f in ${PWD}/20250318/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0-sex*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=pepcomp --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
+done
+```
+
+
+##	20250319
+
+```
+mkdir ${PWD}/20250319
+#	--index_col subject \
+#	--index_col type \
+#	--index_col sample \
+merge_matrices.py --axis columns --de_nan --de_neg --header_rows 9 \
+	--index_col id --index_col species \
+  --out ${PWD}/20250319/Counts.normalized.subtracted.csv \
+  ${PWD}/out.plate[1234]/Counts.normalized.subtracted.csv
+```
+
+
+Add protein name, gene name, sequence, peptide
+
+
+
+
+
+
