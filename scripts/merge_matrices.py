@@ -11,10 +11,22 @@ import argparse
 # initiate the parser
 parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
 
+#	Don't use "nargs=1". It makes it an array.
+
 parser.add_argument('files', nargs='*', help='files help')
 parser.add_argument('-V','--version', action='version', version='%(prog)s 1.1')
-parser.add_argument('-o', '--output', nargs=1, type=str, default=['merged.csv.gz'],
+#parser.add_argument('-o', '--output', nargs=1, type=str, default=['merged.csv.gz'],
+parser.add_argument('-o', '--output', type=str, default='merged.csv.gz',
 	help='output csv filename to %(prog)s (default: %(default)s)')
+
+#parser.add_argument('--header_rows', nargs=1, type=int, default=[2],
+parser.add_argument('--header_rows', type=int, default=[2],
+	help='number of header rows to %(prog)s (default: %(default)s)')
+#parser.add_argument('--index_cols', nargs=1, type=int, default=3,
+#	help='number of index cols to %(prog)s (default: %(default)s)')
+
+parser.add_argument('--index_col', type=str, action='append', required=True,
+	help='index column names to be output to %(prog)s (default: %(default)s)')
 
 #	store_true means "int=False unless --int passed, then int=True" (store_false is the inverse)
 parser.add_argument('--int', action='store_true',
@@ -32,8 +44,10 @@ parser.add_argument( "--axis",
 
 # read arguments from the command line
 args = parser.parse_args()
+print(args)
 
-output=args.output[0]
+#output=args.output[0]
+output=args.output
 print( "Using output name: ", output )
 
 data_frames = []
@@ -50,8 +64,10 @@ for filename in args.files:
 		d = pd.read_csv(filename,
 			skipinitialspace=True,
 			sep=",", low_memory=False,
-			header=[0,1],
-			index_col=[0,1,2])
+			header=list(range(args.header_rows)),
+			index_col=list(range(len(args.index_col))))
+#			header=[0,1],
+#			index_col=[0,1,2])
 
 		print(d.head())
 
@@ -86,7 +102,20 @@ if len(data_frames) > 0:
 		df[df < 0] = 0
 
 	df = df.sort_index().reset_index()
-	df.rename(level=0,columns={"level_0": "subject","level_1":"type", "level_2":"sample"},inplace=True)
+#	df.rename(level=0,columns={"level_0": "subject","level_1":"type", "level_2":"sample"},inplace=True)
+
+	for i in range(len(args.index_col)):
+		print(i," : ",args.index_col[i])
+		#	1  :  species
+		print(df.columns[i])
+		#	('level_1', '', '', '', '', '', '', '', '')
+		df.rename(level=0,columns={ df.columns[i][0]: args.index_col[i] }, inplace = True)
+		print(df.columns[i])
+		#('species', '', '', '', '', '', '', '', '')
+
+
+
+	print(df.shape)
 
 	print("Writing CSV: "+output)
 	df.to_csv(output,index=False)
