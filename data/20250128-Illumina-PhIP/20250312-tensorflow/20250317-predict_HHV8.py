@@ -195,7 +195,7 @@ model.fit(
 )
 
 
-utils.plot_model(model, to_file='HHV8.png', show_shapes=True)
+#utils.plot_model(model, to_file='HHV8.png', show_shapes=True)
 
 
 ##	Model Summary

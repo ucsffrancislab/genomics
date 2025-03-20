@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-##	Tensorflow Prediction of Case/Control with HHV3
+##	Tensorflow Prediction of Case/Control with HHV8
 #
 
 n=128
@@ -13,8 +13,8 @@ early_stop=0
 groups=['case','control']
 plates=[1,2,3]
 
-species=["Human herpesvirus 3"]
-proteins=[]	#["ORF 73","Orf73","ORF73","Protein ORF73"]
+species=["Human papillomavirus type me180"]
+proteins=[]	#	["ORF 73","Orf73","ORF73","Protein ORF73"]
 files=["/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/20250226/Counts.normalized.subtracted.trim.plus.mins.xy.csv"]
 
 
@@ -35,6 +35,7 @@ from keras.models import Model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
 from IPython.display import display, HTML
+
 
 
 datasets = []
@@ -194,7 +195,7 @@ model.fit(
 )
 
 
-#utils.plot_model(model, to_file='HHV3.png', show_shapes=True)
+#utils.plot_model(model, to_file='HHV8.png', show_shapes=True)
 
 
 ##	Model Summary
@@ -218,6 +219,7 @@ print("Test accuracy score",accuracy_score(y_test, (model.predict([X_test[k].val
 
 score=accuracy_score(y_test, (model.predict([X_test[k].values for k, t in dtypes]) > 0.5).flatten())
 HTML('<h1>Testing Score {}</h1><br/>'.format(score))
+
 
 ## Explain predictions
 

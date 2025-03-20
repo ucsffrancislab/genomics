@@ -194,7 +194,7 @@ model.fit(
 )
 
 
-utils.plot_model(model, to_file='HHV3_ORF66.png', show_shapes=True)
+#utils.plot_model(model, to_file='HHV3_ORF66.png', show_shapes=True)
 
 
 ##	Model Summary
