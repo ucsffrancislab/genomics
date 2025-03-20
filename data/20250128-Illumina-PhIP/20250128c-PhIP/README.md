@@ -1114,6 +1114,3 @@ Add protein name, gene name, sequence, peptide
 
 
 
-
-
-
