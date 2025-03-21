@@ -1572,5 +1572,90 @@ chmod a-w VIR3_clean.id_species_protein.uniq.csv
 ```
 
 
+##	20250319
+
+
+```
+zcat VIR3_clean.csv.gz \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  -e 's/Capsid scaffolding protein (Capsid protein P40) (Protease precursor) (pPR) (Virion structural gene 33 protein) \[Cleaved into: Assemblin (EC 3.4.21.97) (Capsid protein VP24) (Protease); Assembly protein (Capsid protein VP22A)\]/Capsid protein P40/g' \
+  -e 's/Tripartite terminase subunit UL15 homolog (DNA-packaging protein 45) (Terminase large subunit) \[Cleaved into: Gene 42 protein\]/Tripartite terminase subunit UL15 homolog/g' \
+  | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{gsub(/,/,"",$5);gsub(/,/,"",$10);print $17,$12,$10,$5,$11,$21}' | sort -t, -k1,1 | uniq > VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv
+sed -i '1iid,species,protein,gene,sequence,peptide' VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv
+sed -i '/89962,O/d' VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv
+chmod a-w VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv
+```
+
+
+
+```
+cut -d, -f1-6 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | uniq | wc -l
+cut -d, -f1-5 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | uniq | wc -l
+cut -d, -f1-4 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | uniq | wc -l
+cut -d, -f1-3 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | uniq | wc -l
+cut -d, -f1-2 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | uniq | wc -l
+cut -d, -f1 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | uniq | wc -l
+```
+
+
+
+Need create a list of id, species, protein and gene names, but must select one so is UNIQUE
+
+
+
+```
+zcat VIR3_clean.csv.gz \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  -e 's/Capsid scaffolding protein (Capsid protein P40) (Protease precursor) (pPR) (Virion structural gene 33 protein) \[Cleaved into: Assemblin (EC 3.4.21.97) (Capsid protein VP24) (Protease); Assembly protein (Capsid protein VP22A)\]/Capsid protein P40/g' \
+  -e 's/Tripartite terminase subunit UL15 homolog (DNA-packaging protein 45) (Terminase large subunit) \[Cleaved into: Gene 42 protein\]/Tripartite terminase subunit UL15 homolog/g' \
+  | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{gsub(/,/,"",$5);gsub(/,/,"",$10);print $17,$12,$10,$5}' | sort -t, -k1,1 | uniq > VIR3_clean.id_species_protein_gene.uniq.csv
+sed -i '1iid,species,protein,gene' VIR3_clean.id_species_protein_gene.uniq.csv
+sed -i '/89962,O/d' VIR3_clean.id_species_protein_gene.uniq.csv
+chmod a-w VIR3_clean.id_species_protein_gene.uniq.csv
+```
+
+
+
+In Python, when using groupby() for string aggregation, several methods beyond min, max, sum, first, and last are available. These methods provide diverse functionalities for data analysis and manipulation: 
+count(): Counts the number of non-null values in each group.
+mean(): Computes the average value of each group.
+median(): Calculates the middle value in each group.
+std(): Determines the standard deviation within each group.
+var(): Computes the variance within each group.
+size(): Returns the number of elements in each group, including null values.
+describe(): Generates descriptive statistics for each group, including count, mean, std, min, max, and quartiles.
+idxmin(): Returns the index of the minimum value in each group.
+idxmax(): Returns the index of the maximum value in each group.
+prod(): Calculates the product of values within each group.
+sem(): Computes the standard error of the mean for each group.
+Custom functions (using agg() or apply()): Enables the application of user-defined functions for more complex aggregations.
+
+```
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('VIR3_clean.id_species_protein.uniq.csv',header=[0],index_col=[0,1]).groupby(['id','species']).first().to_csv('VIR3_clean.id_species_protein.uniq.first_protein.csv')\""
+```
+
+
+```
+head -1 VIR3_clean.id_species_protein.uniq.first_protein.csv > VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv
+tail -n +2 VIR3_clean.id_species_protein.uniq.first_protein.csv | sort -t, -k1,1 >> VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv
+chmod -w VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv
+```
+
+
+
+
+
 
 
