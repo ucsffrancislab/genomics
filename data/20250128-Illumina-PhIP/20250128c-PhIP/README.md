@@ -1112,5 +1112,116 @@ merge_matrices.py --axis columns --de_nan --de_neg --header_rows 9 \
 
 Add protein name, gene name, sequence, peptide
 
+Just protein and gene name to aid in selection?
 
+Gotta be unique so need to create a moderated list.
+
+
+```
+head -9 20250319/Counts.normalized.subtracted.csv > 20250319/tmp1.csv
+tail -n +10 20250319/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> 20250319/tmp1.csv
+
+head -8 20250319/tmp1.csv > 20250319/tmp2.csv
+sed -i 's/^/,,/' 20250319/tmp2.csv
+
+join --header -t, /francislab/data2/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv <( tail -n +9 20250319/tmp1.csv ) >> 20250319/tmp2.csv
+
+cut -d, -f1,3- 20250319/tmp2.csv > 20250319/Counts.normalized.subtracted.protein.csv
+
+python3 -c "import pandas as pd; pd.read_csv('20250319/Counts.normalized.subtracted.protein.csv',header=list(range(9)),index_col=[0,1,2]).droplevel(0,axis='index').groupby(level=[0,1]).sum().to_csv('20250319/Counts.normalized.subtracted.protein.sum.csv')"
+
+```
+
+
+Prep for use in Multi_Plate_Case_Control_Peptide_Regression.R
+
+```
+head -2 20250319/Counts.normalized.subtracted.protein.sum.csv | tail -n 1  > 20250319/tmp1.csv
+head -4 20250319/Counts.normalized.subtracted.protein.sum.csv | tail -n 1 >> 20250319/tmp1.csv
+head -1 20250319/Counts.normalized.subtracted.protein.sum.csv             >> 20250319/tmp1.csv
+tail -n +10 20250319/Counts.normalized.subtracted.protein.sum.csv         >> 20250319/tmp1.csv
+
+cat 20250319/tmp1.csv | datamash transpose -t, > 20250319/tmp2.csv
+sed -i '1s/^,,/x,y,id/' 20250319/tmp2.csv
+sed -i '2s/^,,/subject,type,species/' 20250319/tmp2.csv
+```
+
+While that works, it needs to all be done PER PLATE!
+
+
+```
+for plate in out.plate* ; do
+echo $plate
+head -9 ${plate}/Counts.normalized.subtracted.csv > ${plate}/tmp1.csv
+tail -n +10 ${plate}/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> ${plate}/tmp1.csv
+
+head -8 ${plate}/tmp1.csv > ${plate}/tmp2.csv
+sed -i 's/^/,,/' ${plate}/tmp2.csv
+
+join --header -t, /francislab/data2/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv <( tail -n +9 ${plate}/tmp1.csv ) >> ${plate}/tmp2.csv
+
+cut -d, -f1,3- ${plate}/tmp2.csv > ${plate}/Counts.normalized.subtracted.protein.csv
+
+python3 -c "import pandas as pd; pd.read_csv('${plate}/Counts.normalized.subtracted.protein.csv',header=list(range(9)),index_col=[0,1,2]).droplevel(0,axis='index').groupby(level=[0,1]).sum().to_csv('${plate}/Counts.normalized.subtracted.protein.sum.csv')"
+
+head -2 ${plate}/Counts.normalized.subtracted.protein.sum.csv | tail -n 1  > ${plate}/tmp1.csv
+head -4 ${plate}/Counts.normalized.subtracted.protein.sum.csv | tail -n 1 >> ${plate}/tmp1.csv
+head -1 ${plate}/Counts.normalized.subtracted.protein.sum.csv             >> ${plate}/tmp1.csv
+tail -n +10 ${plate}/Counts.normalized.subtracted.protein.sum.csv         >> ${plate}/tmp1.csv
+
+cat ${plate}/tmp1.csv | datamash transpose -t, > ${plate}/tmp2.csv
+sed -i '1s/^,,/y,x,id/' ${plate}/tmp2.csv
+sed -i '2s/^,,/subject,type,species/' ${plate}/tmp2.csv
+
+mv ${plate}/tmp2.csv ${plate}/Counts.normalized.subtracted.protein.sum.trim.csv
+
+done
+```
+
+No filtering on tile ids. Would've had to have done that first before the grouping.
+ 
+
+
+
+
+
+```
+mkdir -p 20250319/MultiPlate3
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptide --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.protein.sum.trim.csv -o ${PWD}/20250319/MultiPlate3 -p ${plates} --counts" --output=${PWD}/20250319/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.protein.sum.trim-case-control-Prop_test_results-Z-0-sex-.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptideM --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.protein.sum.trim.csv -o ${PWD}/20250319/MultiPlate3 -p ${plates} --counts --sex M" --output=${PWD}/20250319/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.protein.sum.trim-case-control-Prop_test_results-Z-0-sex-M.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptideF --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.protein.sum.trim.csv -o ${PWD}/20250319/MultiPlate3 -p ${plates} --counts --sex F" --output=${PWD}/20250319/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.protein.sum.trim-case-control-Prop_test_results-Z-0-sex-F.runlog.txt
+
+```
+
+ -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
+
+```
+for f in ${PWD}/20250319/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0-sex*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=pepcomp --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv}"
+done
+```
+
+
+
+Prep a new reference for tensorflow meddling to possibly take age and sex into account
+
+```
+cat 20250319/Counts.normalized.subtracted.protein.csv | datamash transpose -t, | cut -d, -f1,2,4,6- > 20250319/Counts.normalized.subtracted.protein.select.t.csv
+
+python3 -c "import pandas as pd; pd.read_csv('20250319/Counts.normalized.subtracted.protein.select.t.csv', header=[0,1,2],index_col=[0,1,2,3,4,5,6],low_memory=False).groupby(level=[1,2,3,4,5,6],dropna=False).min().to_csv('20250319/tmp1.csv')"
+
+head -1 20250319/tmp1.csv > 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+head -3 20250319/tmp1.csv | tail -n 1 >> 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+head -2 20250319/tmp1.csv | tail -n 1 >> 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+tail -n +4 20250319/tmp1.csv >> 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+
+sed -i '1s/,,,,,,/subject,type,group,age,sex,plate,/' 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+sed -i '2s/species,,,,,,/subject,type,group,age,sex,species,/' 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+sed -i '3s/id,,,,,,/subject,type,group,age,sex,protein,/' 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
+```
 
