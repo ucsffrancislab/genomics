@@ -179,3 +179,33 @@ done
 ```
 
 
+
+
+
+##	20250320
+
+
+```
+f=20250320-predict
+s='Human herpesvirus 8'
+i=0
+for p in "ORF 73" "Orf73" "ORF73" "Protein ORF73" ; do
+i=$[i+1]
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${i}.${p// /_}.${s// /_} --output=${PWD}/${f}.${s// /_}.${p// /_}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${p// /_}.$i"
+done
+
+p=UL9
+s="Human herpesvirus 5"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${p// /_}.${s// /_} --output=${PWD}/${f}.${s// /_}.${p// /_}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${p// /_}"
+
+p="Serine/threonine-protein kinase US3 homolog (Protein kinase ORF66) (EC 2.7.11.1)"
+s="Human herpesvirus 3"
+safe_p=${p//[^a-zA-Z0-9_]/}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${safe_p}.${s// /_} --output=${PWD}/${f}.${s// /_}.${safe_p}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${safe_p}"
+
+
+
+s='Human herpesvirus 8'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.AllORF73"
+
+```
