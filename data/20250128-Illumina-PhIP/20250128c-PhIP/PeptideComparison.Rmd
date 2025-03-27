@@ -123,7 +123,6 @@ ggplot(df, aes(x = beta, y = -log10(pval),size=sig,fill=sig)) +
 
 
 
-
 ```{r plot 11 prep}
 df<-rawdf %>% mutate(sig=ifelse(pval<0.05,"yes","no"))
 df<-df %>% mutate(shape=ifelse( species == "Human herpesvirus 1",24,
@@ -449,7 +448,6 @@ volcano_plot("Human herpesvirus 7","HHV7")
 volcano_plot("Human herpesvirus 8","HHV8")
 ```
 
-
 ---
 
 
@@ -481,21 +479,31 @@ volcano_plot("Influenza C virus","FluC")
 volcano_plot("Hepatitis A virus","HepA")
 ```
 
+---
+
 ```{r HepB}
 volcano_plot("Hepatitis B virus","HepB")
 ```
+
+---
 
 ```{r HepC}
 volcano_plot("Hepatitis C virus","HepC")
 ```
 
+---
+
 ```{r HIV1}
 volcano_plot("Human immunodeficiency virus 1","HIV1")
 ```
 
+---
+
 ```{r HIV2}
 volcano_plot("Human immunodeficiency virus 2","HIV2")
 ```
+
+---
 
 
 
@@ -525,7 +533,7 @@ volcano_plot_solo = function(speci,abbrev,ids,title){
 
 	localdf <- localdf %>%
 		mutate(group = ifelse(str_detect(species, speci), abbrev, "Other"))
-	localdf <- localdf %>% mutate(alpha = ifelse(group == "Other",.1,1))
+	#localdf <- localdf %>% mutate(alpha = ifelse(group == "Other",.1,1))
 	localdf <- localdf %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
 	localdf <- localdf %>%
 		mutate(label = ifelse(species == speci & pval <=0.05, as.character(peptide), ""))
@@ -542,7 +550,8 @@ volcano_plot_solo = function(speci,abbrev,ids,title){
 	
 	#ggplot(localdf, aes(y = -log10(pval), x = exp(beta), col = group, size=size, alpha=alpha)) +
 	#ggplot(localdf, aes(y = pval, x = beta, col = group, size=size, alpha=alpha)) +
-	print(ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+	#print(ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
+	print(ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size)) +
 		ggtitle(title) +
 		geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
 		geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
@@ -583,212 +592,49 @@ volcano_plot_solo = function(speci,abbrev,ids,title){
 
 ```
 
-#```{r HHV3 solo}
-##volcano_plot_solo("Human herpesvirus 3","HHV3")
-#
-#title="Human herpesvirus 3"
-#abbrev="HHV3"
-#
-#localdf = rawdf[complete.cases(rawdf),]	#	drop any row with NA
-#
-#localdf <- localdf %>%
-#	mutate(group = ifelse(str_detect(species, title), abbrev, "Other"))
-#localdf <- localdf %>% mutate(alpha = ifelse(group == "Other",.1,1))
-#localdf <- localdf %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
-#localdf <- localdf %>%
-#	mutate(label = ifelse(species == title & pval <=0.05, as.character(peptide), ""))
-#
-#localdf = localdf[localdf$species==title,]
-#
-##print(head(localdf))
-##print(localdf[localdf$label==as.character(localdf$peptide),])
-#print(localdf[localdf$label==as.character(localdf$peptide) & localdf$pval <= 0.01,])
-#```
-#
-#```{r}
-#ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
-#	ggtitle(title) +
-#	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
-#	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-#	geom_point() +
-#	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-#	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
-#	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
-#	scale_color_brewer(palette="Set1") +
-#	theme_bw() +
-#	theme(panel.grid.minor = element_blank(),
-#		legend.title = element_text(size=14, color="black",lineheight = 1),
-#		legend.text = element_text(size=13, color="black",lineheight = 1.2),
-#		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
-#		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
-#```
-#
-#```{r}
-##ggplot(localdf, aes(y = pval, x = beta, col = group, size=size, alpha=alpha)) +
-##	ggtitle(title) +
-##	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
-##	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-##	geom_point() +
-##	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-##	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
-##	labs(x="beta", y="pval") +
-##	scale_color_brewer(palette="Set1") +
-##	theme_bw() +
-##	theme(panel.grid.minor = element_blank(),
-##		legend.title = element_text(size=14, color="black",lineheight = 1),
-##		legend.text = element_text(size=13, color="black",lineheight = 1.2),
-##		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
-##		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
-#```
-#
-#```{r}
-#ggplot(localdf, aes(y = -log10(pval), x = exp(beta), col = group, size=size, alpha=alpha)) +
-#	ggtitle(title) +
-#	geom_vline(xintercept=1, linewidth = 0.5,col="gray60",linetype=2)+
-#	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-#	geom_point() +
-#	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-#	coord_cartesian(ylim = c(0, 4), xlim = c( 0.5, 1.5)) +
-#	labs(x="exp(beta)", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
-#	scale_color_brewer(palette="Set1") +
-#	theme_bw() +
-#	theme(panel.grid.minor = element_blank(),
-#		legend.title = element_text(size=14, color="black",lineheight = 1),
-#		legend.text = element_text(size=13, color="black",lineheight = 1.2),
-#		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
-#		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
-#```
-
-
-
-#```{r extract counts}
-##if ( exists('counts') ) {
-##	min_counts <- data.frame()
-##	for( subject in unique(counts$subject) ){
-##		new_row <- data.frame(t(apply(counts[counts$subject==subject,], 2, min)))
-##		min_counts <- rbind(min_counts, new_row)
-##	}
-##	min_counts <- min_counts[ , !(names(min_counts) %in% c('sample'))]
-##	#	leaving subject, group, plate
-##
-##	counts <- counts[ , !(names(counts) %in% c('subject'))]
-##}
-#```
-#
-#Violin plots of the counts.
-#
-#```{r violin plots}
-#if ( exists('counts') ) {
-#	counts$plate <- as.factor(counts$plate)
-#
-#	for( peptide in localdf[localdf$pval <= 0.001,'peptide'] ){
-#		print(peptide)
-#		tmp=counts[,c('group',paste0('X',peptide),'plate')]
-#		colnames(tmp)=c('group','peptide','plate')
-#		print(head(tmp))
-#		print(ggplot(tmp, aes(x=group, y=peptide, fill=plate)) + geom_violin())
-#		print(ggplot(tmp, aes(x=group, y=peptide, fill=group)) + geom_violin())
-#	}
-#}
-#```
-#
-#
-#
-#
-#```{r HHV8 ORF73}
-##volcano_plot_solo("Human herpesvirus 3","HHV3")
-#
-#title="Human herpesvirus 8"	# ORF 73"
-#abbrev="HHV8"
-#
-#localdf = rawdf[complete.cases(rawdf),]	#	drop any row with NA
-#
-#localdf <- localdf %>%
-#	mutate(group = ifelse(str_detect(species, title), abbrev, "Other"))
-#localdf <- localdf %>% mutate(alpha = ifelse(group == "Other",.1,1))
-#localdf <- localdf %>% mutate( size = ifelse(!group == "Other" & pval <=0.05,4,2))
-#localdf <- localdf %>%
-#	mutate(label = ifelse(species == title & pval <=0.05, as.character(peptide), ""))
-#
-#
-#ids <- data.frame(data.table::fread('/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/HHV8-ORF73.ids.txt', sep = ",", header=TRUE))
-#
-#localdf = localdf[localdf$species==title,]
-#localdf = localdf[localdf$peptide %in% ids$id,]
-#
-#
-#
-##print(head(localdf))
-##print(localdf[localdf$label==as.character(localdf$peptide),])
-#print(localdf[localdf$label==as.character(localdf$peptide) & localdf$pval <= 0.01,])
-#```
-#
-#
-#```{r}
-#ggplot(localdf, aes(y = -log10(pval), x = beta, col = group, size=size, alpha=alpha)) +
-#	ggtitle(title) +
-#	geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)+
-#	geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
-#	geom_point() +
-#	geom_text(aes(label=as.character(label)), hjust=0.5, nudge_y = 0.1)+
-#	coord_cartesian(ylim = c(0, 4), xlim = c(-0.5, 0.5)) +
-#	labs(x="beta", y=expression(paste("-log"[10]*"(",italic("P"),")"))) +
-#	scale_color_brewer(palette="Set1") +
-#	theme_bw() +
-#	theme(panel.grid.minor = element_blank(),
-#		legend.title = element_text(size=14, color="black",lineheight = 1),
-#		legend.text = element_text(size=13, color="black",lineheight = 1.2),
-#		axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
-#		axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
-#```
-#
-#
-#
-#Violin plots of the counts.
-#
-#```{r HHV8 ORF73 violin plots}
-#if ( exists('counts') ) {
-#	counts$plate <- as.factor(counts$plate)
-#
-#	for( peptide in localdf[localdf$pval <= 0.001,'peptide'] ){
-#		print(peptide)
-#		tmp=counts[,c('group',paste0('X',peptide),'plate')]
-#		colnames(tmp)=c('group','peptide','plate')
-#		print(head(tmp))
-#		print(ggplot(tmp, aes(x=group, y=peptide, fill=plate)) + geom_violin())
-#		print(ggplot(tmp, aes(x=group, y=peptide, fill=group)) + geom_violin())
-#	}
-#}
-#```
-
+---
 
 ```{r}
 volcano_plot_solo("Human herpesvirus 3","HHV3")
 ```
 
+---
+
 ```{r}
 volcano_plot_solo("Human herpesvirus 5","HHV5")
 ```
 
-```{r}
-volcano_plot_solo("Human herpesvirus 8","HHV8")
-```
+---
 
 ```{r}
 volcano_plot_solo("Human herpesvirus 8","HHV8")
 ```
+
+---
+
+```{r}
+volcano_plot_solo("Human herpesvirus 8","HHV8")
+```
+
+---
 
 ```{r}
 volcano_plot_solo("Human herpesvirus 8","HHV8", c(18165:18202, 18196:18202, 65026:65066, 72382:72416, 75487:75520, 78049:78088) ,"Human herpesvirus 8 - ORF 73")
 ```
 
+---
+
 ```{r}
 volcano_plot_solo("Alphapapillomavirus 9","APV9")
 ```
 
+---
+
 ```{r}
 volcano_plot_solo("Human adenovirus E","HAVE")
 ```
+
+---
 
 
 

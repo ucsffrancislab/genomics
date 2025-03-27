@@ -1225,3 +1225,38 @@ sed -i '2s/species,,,,,,/subject,type,group,age,sex,species,/' 20250319/Counts.n
 sed -i '3s/id,,,,,,/subject,type,group,age,sex,protein,/' 20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv
 ```
 
+##	20250326
+
+
+Run with JUST public epitopes
+
+```
+for d in ${PWD}/out.plate[123] ; do
+echo $d
+cat ${d}/Counts.normalized.subtracted.trim.select3.csv | datamash transpose -t, > ${d}/tmp1.csv
+head -2 ${d}/tmp1.csv > ${d}/tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/public_epitope_annotations.ids.join_sorted.txt <( tail -n +3 ${d}/tmp1.csv) >> ${d}/tmp2.csv
+cat ${d}/tmp2.csv | datamash transpose -t, > ${d}/Counts.normalized.subtracted.trim.select3.public.csv
+done
+```
+
+
+```
+mkdir -p 20250326/MultiPlate3
+
+plates=$( ls -d ${PWD}/out.plate[123] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptide --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.public.csv -o ${PWD}/20250326/MultiPlate3 -p ${plates} --counts" --output=${PWD}/20250326/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3.public-case-control-Prop_test_results-Z-0-sex-.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptideM --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.public.csv -o ${PWD}/20250326/MultiPlate3 -p ${plates} --counts --sex M" --output=${PWD}/20250326/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3.public-case-control-Prop_test_results-Z-0-sex-M.runlog.txt
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=peptideF --wrap="module load r ; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select3.public.csv -o ${PWD}/20250326/MultiPlate3 -p ${plates} --counts --sex F" --output=${PWD}/20250326/MultiPlate3/Multiplate_Peptide_Comparison-Counts.normalized.subtracted.trim.select3.public-case-control-Prop_test_results-Z-0-sex-F.runlog.txt
+
+```
+
+
+```
+for f in ${PWD}/20250326/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0-sex*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=pepcomp --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv}"
+done
+```
