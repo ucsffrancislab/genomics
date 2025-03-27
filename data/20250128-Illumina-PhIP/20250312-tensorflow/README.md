@@ -205,7 +205,116 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1
 
 
 
+f=20250320-predict
 s='Human herpesvirus 8'
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.AllORF73"
 
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73b.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73b.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; ${PWD}/${f}.py"
+
+
+f=20250321-predict_sklearn
+s='Human herpesvirus 8'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; ${PWD}/${f}.py"
+
 ```
+
+
+The option --ExecutePreprocessor.timeout=-1 disables the cell execution timeout whose default value is 30 seconds.
+
+
+sklearn models were never better than 56%
+
+
+##	20250324
+
+
+```
+f=20250320-predict
+
+p=UL9
+s="Human herpesvirus 5"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${p// /_}.${s// /_} --output=${PWD}/${f}.${s// /_}.${p// /_}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${p// /_}"
+
+p="Serine/threonine-protein kinase US3 homolog (Protein kinase ORF66) (EC 2.7.11.1)"
+s="Human herpesvirus 3"
+safe_p=${p//[^a-zA-Z0-9_]/}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${safe_p}.${s// /_} --output=${PWD}/${f}.${s// /_}.${safe_p}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${safe_p}"
+
+s='Human herpesvirus 8'
+i=0
+for p in "ORF 73" "Orf73" "ORF73" "Protein ORF73" ; do
+i=$[i+1]
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${i}.${p// /_}.${s// /_} --output=${PWD}/${f}.${s// /_}.${p// /_}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${p// /_}.$i"
+done
+
+s='Human herpesvirus 8'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.AllORF73"
+
+s='Alphapapillomavirus 9'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${s// /_} --output=${PWD}/${f}.${s// /_}.jupyter.out --wrap="export SPECIES='${s}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}"
+
+s='Human papillomavirus type me180'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${s// /_} --output=${PWD}/${f}.${s// /_}.jupyter.out --wrap="export SPECIES='${s}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}"
+
+
+
+s='Human immunodeficiency virus 1'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${s// /_} --output=${PWD}/${f}.${s// /_}.jupyter.out --wrap="export SPECIES='${s}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}"
+
+s='Human immunodeficiency virus 2'
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${s// /_} --output=${PWD}/${f}.${s// /_}.jupyter.out --wrap="export SPECIES='${s}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}"
+
+
+
+nbclient.exceptions.DeadKernelError: Kernel died
+
+Rerunning HHV5 with 120G to test. Died again.
+
+f=20250320-predict
+s="Human herpesvirus 5"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${s// /_} --output=${PWD}/${f}.${s// /_}.jupyter.out --wrap="export SPECIES='${s}'; ${PWD}/${f}.py"
+
+s="Human herpesvirus 6A" failed as well
+s="Human herpesvirus 7" failed as well
+Think this is due to too many nodes in the NN
+
+
+
+
+
+python3 -m pip install --upgrade --user pip numpy numba tensorflow-cpu shap==0.47.0 pandas jupyter jupytext matplotlib
+
+
+##	20250326
+
+
+```
+f=20250320-predict
+
+s='Alphapapillomavirus 9'
+for p in "E1 (Fragment)" "Major capsid protein L1" "Minor capsid protein L2" "Replication protein E1 (EC 3.6.4.12) (ATP-dependent helicase E1)" ; do
+safe_p=${p//[^a-zA-Z0-9_]/}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${safe_p}.${s// /_} --output=${PWD}/${f}.${s// /_}.${safe_p}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${safe_p}"
+done
+
+s='Human herpesvirus 3'
+for p in "Deneddylase (EC 3.4.19.12) (EC 3.4.22.-) (Ubiquitin thioesterase)" "Putative uncharacterized protein" "Tegument protein" ; do
+safe_p=${p//[^a-zA-Z0-9_]/}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${safe_p}.${s// /_} --output=${PWD}/${f}.${s// /_}.${safe_p}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${safe_p}"
+done
+
+s='Human herpesvirus 5'
+for p in "Deneddylase (EC 3.4.19.12) (EC 3.4.22.-) (Tegument protein VP1-2) (Tegument protein VP1/2)" "Envelope glycoprotein O" "Glycoprotein B (Fragment)" "Large structural phosphoprotein (150 kDa matrix phosphoprotein) (150 kDa phosphoprotein) (pp150) (Basic phosphoprotein) (BPP) (Phosphoprotein UL32) (Tegument protein UL32)" "Membrane protein RL12" "Protein UL150" ; do
+safe_p=${p//[^a-zA-Z0-9_]/}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${safe_p}.${s// /_} --output=${PWD}/${f}.${s// /_}.${safe_p}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${safe_p}"
+done
+
+
+Failed with dead kernel in about 60 seconds. Retry. Others succeeding
+-rw-r----- 1 gwendt francislab     4970 Mar 26 16:33 20250320-predict.Human_Herpesvirus_3.Putativeuncharacterizedprotein.jupyter.out
+-rw-r----- 1 gwendt francislab     4970 Mar 26 16:33 20250320-predict.Human_Herpesvirus_5.GlycoproteinBFragment.jupyter.out
+-rw-r----- 1 gwendt francislab     4970 Mar 26 16:34 20250320-predict.Human_Herpesvirus_5.Largestructuralphosphoprotein150kDamatrixphosphoprotein150kDaphosphoproteinpp150BasicphosphoproteinBPPPhosphoproteinUL32TegumentproteinUL32.jupyter.out
+-rw-r----- 1 gwendt francislab     4970 Mar 26 16:34 20250320-predict.Human_Herpesvirus_5.MembraneproteinRL12.jupyter.out
+-rw-r----- 1 gwendt francislab     4970 Mar 26 16:34 20250320-predict.Human_Herpesvirus_5.ProteinUL150.jupyter.out
+
+

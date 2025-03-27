@@ -3,47 +3,26 @@
 ##	Tensorflow Prediction of Case/Control
 #
 
+from IPython.display import display, HTML
+
+HTML('<style type="text/css">.jp-Cell-outputCollapser{ display: block; background-color: red; max-height: 100px } </style>')
+
+
 # include standard modules
 import os
 import re
-
-#	import argparse
-#	
-#	# initiate the parser
-#	#parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
-#	parser = argparse.ArgumentParser(prog='notebook')
-#	#parser.add_argument('files', nargs='*', help='files help')
-#	#parser.add_argument('-V','--version', action='version', version='%(prog)s 1.0')
-#	
-#	parser.add_argument('-s', '--species', type=str, action='append', default=[],
-#		help='Limit to species to %(prog)s (default: %(default)s)')
-#	parser.add_argument('--proteins', type=str, action='append', default=[],
-#		help='Limit proteins to %(prog)s (default: %(default)s)')
-#	
-#	# read arguments from the command line
-#	args = parser.parse_args()
-#	
-#	print(args)
 
 #n=128
 activation='sigmoid'
 batch_size=250
 epochs=1000
 test_size=0.25
-random_state=42
+random_state=15
 early_stop=0
 groups=['case','control']
 plates=[1,2,3]
 
-#species=["Human papillomavirus type me180"]
-#proteins=[]	#	["ORF 73","Orf73","ORF73","Protein ORF73"]
-#files=["/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/20250226/Counts.normalized.subtracted.trim.plus.mins.xy.csv"]
 files=["/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv"]
-
-#	this new file contains sex and age. it may also have removed some tile duplication.
-
-#species=args.species
-#proteins=args.proteins
 
 species=os.getenv('SPECIES','')
 species
@@ -51,7 +30,6 @@ species
 proteins=os.getenv('PROTEINS','')
 proteins
 
-#modelname=re.sub(' ','_',"model."+species+"."+proteins)
 modelname=re.sub(r'[^a-zA-Z0-9]','_',"model."+species+"."+proteins)
 modelname
 
@@ -82,7 +60,6 @@ from keras.layers import (
 from keras.models import Model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, confusion_matrix
-from IPython.display import display, HTML
 le = LabelEncoder()
 
 
@@ -141,21 +118,12 @@ df.iloc[:5,:7]
 #	int8 later does some sort of Embedding. Not entirely sure what that's gonna do.
 #	int is just int64
 
-df['plate'] = df['plate'].astype('int')
-
-
 #df['age'] = df['age'].astype('int')
 df = df.drop(columns=['age'])
 
 
-#df['sex'].replace('M', 1, inplace=True)
-#df['sex'].replace('F', 0, inplace=True)
-#df['sex'].replace(['M', 1], ['F', 0], inplace=True)
-#For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.
-#df['sex'].replace({'M': 1, 'F': 0}, inplace=True)
-#df['sex'] = df['sex'].astype('int8')
-
 df['sex'] = le.fit_transform(df['sex']).astype('int')
+#df = df.drop(columns=['sex'])
 
 
 print(df.iloc[:5,:7])
@@ -170,9 +138,10 @@ df.iloc[:5,:7]
 
 ##	Filter plates
 
+df['plate'] = df['plate'].astype('int')
 df = df[ df['plate'].isin(plates) ]
-##	df = df.drop(columns=['plate'])		#	<------------- I think that I should leave plate here, but maybe later
-##	print("Drop the plate column?")
+#print("Drop the plate column?")
+#df = df.drop(columns=['plate'])		#	<------------- I think that I should leave plate here, but maybe later
 df.iloc[:5,:7]
 
 
@@ -239,11 +208,11 @@ for k, dtype in dtypes:
         e = input_els[-1]
     encoded_els.append(e)
 
-input_els
+input_els[:5]
 
 len(input_els)
 
-encoded_els
+encoded_els[:5]
 
 len(encoded_els)
 
@@ -252,7 +221,11 @@ encoded_els
 
 #layer1 = Dropout(0.1)(Dense(int(n/2), activation=activation)(Dropout(0.1)(Dense(n, activation=activation)(encoded_els))))
 #layer1 = Dropout(0.1)(Dense(int(len(x_columns)/4), activation=activation)(Dropout(0.1)(Dense(int(len(x_columns)/2), activation=activation)(encoded_els))))
-layer1 = Dropout(0.1)(Dense(int(len(x_columns)/2), activation=activation)(encoded_els))
+#layer1 = Dropout(0.1)(Dense(int(len(x_columns)/2), activation=activation)(encoded_els))
+#layer1 = Dropout(0.2)(Dense(int(len(x_columns)/2), activation=activation)(Dropout(0.2)(Dense(len(x_columns), activation=activation)(encoded_els))))
+#	Need to put a max on these. Somehow they trigger memory or time issues that cause the kernel to crash
+#	x_columns 3979 is too much, 1410 is ok.
+layer1 = Dropout(0.2)( Dense(min(int(len(x_columns)/8),150), activation=activation)( Dropout(0.2)( Dense(min(int(len(x_columns)/4),300), activation=activation)(encoded_els))))
 layer1
 
 out = Dense(1)(layer1)
@@ -289,7 +262,7 @@ model.fit(
 	batch_size=512,
 	shuffle=True,
 	validation_data=([X_test[k].values for k, t in dtypes], y_test),
-	callbacks=[MyThresholdCallback(threshold=0.9)]
+	callbacks=[MyThresholdCallback(threshold=0.78)]
 )
 
 
@@ -318,7 +291,7 @@ print("Test accuracy score",accuracy_score(y_test, (model.predict([X_test[k].val
 score=accuracy_score(y_test, (model.predict([X_test[k].values for k, t in dtypes]) > 0.5).flatten())
 HTML('<h1>Testing Score {}</h1><br/>'.format(score))
 
-quit()
+
 
 ## Explain predictions
 
@@ -333,35 +306,6 @@ shap.initjs()
 def f(X):
     return model.predict([X[:, i] for i in range(X.shape[1])]).flatten()
 
-#### Explain a single prediction
-#
-##Here we use a selection of 50 samples from the dataset to represent "typical" feature values, and then use 500 perterbation samples to estimate the SHAP values for a given prediction. Note that this requires 500 * 50 evaluations of the model.
-#
-#
-#explainer = shap.KernelExplainer(f, X.iloc[:50, :])
-#explainer
-#
-##shap_values = explainer.shap_values(X.iloc[299, :], nsamples=500)
-#shap_values = explainer.shap_values(X.iloc[99, :], nsamples=500)
-#
-#shap_values
-#
-##shap.force_plot(explainer.expected_value, shap_values, X_display.iloc[299, :])
-#shap.force_plot(explainer.expected_value, shap_values, X.iloc[99, :])
-#
-#
-#### Explain many predictions
-#
-##Here we repeat the above explanation process for 50 individuals. Since we are using a sampling based approximation each explanation can take a couple seconds depending on your machine setup.
-#
-##shap_values50 = explainer.shap_values(X.iloc[280:330, :], nsamples=500)
-#shap_values50 = explainer.shap_values(X.iloc[40:90, :], nsamples=500)
-#
-#shap_values50
-#
-##shap.force_plot(explainer.expected_value, shap_values50, X_display.iloc[40:90, :])
-#shap.force_plot(explainer.expected_value, shap_values50, X.iloc[40:90, :])
-
 
 ###	Explain all predictions
 
@@ -369,6 +313,7 @@ def f(X):
 explainer = shap.KernelExplainer(f, shap.sample(X,30,random_state=42))	#	try using just 30 samples at first for speed
 
 
+%%capture captured_explanation
 explanation = explainer(X)
 
 
@@ -390,17 +335,14 @@ shap.plots.violin(explanation)
 shap.plots.force(explanation)
 
 
-for i in range(0,len(X)):
-	print(i)
-	display(shap.force_plot(explanation[i]))
-
-
-for i in range(0,len(X)):
-	print(i)
-	shap.plots.waterfall(explanation[i])
-
-
-HTML('<style type="text/css">.jp-Cell-outputCollapser{ display: block; background-color: red; } </style>')
+#	for i in range(0,len(X)):
+#		print(i)
+#		display(shap.force_plot(explanation[i]))
+#	
+#	
+#	for i in range(0,len(X)):
+#		print(i)
+#		shap.plots.waterfall(explanation[i])
 
 
 HTML("<script>const collapsers = document.querySelectorAll('.jp-Cell-outputCollapser'); collapsers.forEach(element => { element.parentElement.style['maxHeight']='100px'; element.addEventListener('click', function(event) { if(element.parentElement.style['maxHeight']==''){ element.parentElement.style['maxHeight']='100px' }else{ element.parentElement.style['maxHeight']='' } }); }); </script>")
