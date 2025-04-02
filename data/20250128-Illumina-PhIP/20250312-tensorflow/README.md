@@ -308,13 +308,41 @@ for p in "Deneddylase (EC 3.4.19.12) (EC 3.4.22.-) (Tegument protein VP1-2) (Teg
 safe_p=${p//[^a-zA-Z0-9_]/}
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${safe_p}.${s// /_} --output=${PWD}/${f}.${s// /_}.${safe_p}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.${safe_p}"
 done
+```
 
 
-Failed with dead kernel in about 60 seconds. Retry. Others succeeding
--rw-r----- 1 gwendt francislab     4970 Mar 26 16:33 20250320-predict.Human_Herpesvirus_3.Putativeuncharacterizedprotein.jupyter.out
--rw-r----- 1 gwendt francislab     4970 Mar 26 16:33 20250320-predict.Human_Herpesvirus_5.GlycoproteinBFragment.jupyter.out
--rw-r----- 1 gwendt francislab     4970 Mar 26 16:34 20250320-predict.Human_Herpesvirus_5.Largestructuralphosphoprotein150kDamatrixphosphoprotein150kDaphosphoproteinpp150BasicphosphoproteinBPPPhosphoproteinUL32TegumentproteinUL32.jupyter.out
--rw-r----- 1 gwendt francislab     4970 Mar 26 16:34 20250320-predict.Human_Herpesvirus_5.MembraneproteinRL12.jupyter.out
--rw-r----- 1 gwendt francislab     4970 Mar 26 16:34 20250320-predict.Human_Herpesvirus_5.ProteinUL150.jupyter.out
+##	20250327
+
+
+```
+f=20250327-predict
+s="Human herpesvirus 8"
+p="ORF 73"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=${p// /_}.${s// /_} --output=${PWD}/${f}.${s// /_}.${p// /_}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='${p}'; ${PWD}/${f}.py"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; ${PWD}/${f}.py"
+
+for i in 1 2 3 4 5 ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${i}.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.${i}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.AllORF73.${i}"
+done
+```
+
+
+
+
+```
+
+./20250327-predict.bash > commands
+commands_array_wrapper.bash --array_file commands --time 1-0 --threads 2 --mem 15G 
+
+grep -h "^All stat" logs/commands_array_wrapper.bash.20250327154602232232053-575649_*.out.log | sort -k3n,3
+```
+
+
+```
+for i in 1 2 3 4 5 ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 10-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=AllORF73.${i}.${s// /_} --output=${PWD}/${f}.${s// /_}.AllORF73.${i}.jupyter.out --wrap="export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD} --output ${f}.${s// /_}.AllORF73.${i}"
+done
+```
 
 

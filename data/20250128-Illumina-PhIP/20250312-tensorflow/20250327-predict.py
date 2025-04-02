@@ -3,21 +3,48 @@
 ##	Tensorflow Prediction of Case/Control
 #
 
-from IPython.display import display, HTML
+#	from IPython import get_ipython
+#	get_ipython().__class__.__name__
+#	'NoneType' in terminal
+#	'ZMQInteractiveShell' in browser
+#	'ZMQInteractiveShell' in nbconvert
+running_as_notebook=False
+from IPython import get_ipython
+if get_ipython().__class__.__name__ == 'ZMQInteractiveShell':
+	running_as_notebook=True
+running_as_notebook
 
-HTML('<style type="text/css">.jp-Cell-outputCollapser{ display: block; background-color: red; max-height: 100px } </style>')
-
+if running_as_notebook:
+	from IPython.display import display, HTML
+	display(HTML('<style type="text/css">.jp-Cell-outputCollapser{ display: block; background-color: red};.jp-Cell-outputWrapper{max-height: 100px } </style>'))
+else:
+	print("This appears to be running as a script. Some code will not be run.")
 
 # include standard modules
 import os
 import re
 
+
 #n=128
-activation='sigmoid'
-batch_size=250
-epochs=1000								#	early stopping didn't work so this is too long
-test_size=0.25
-random_state=15
+
+activation=os.getenv('ACTIVATION','sigmoid')
+print('ACTIVATION:',activation)
+
+#batch_size=64	#250
+epochs=250								#	early stopping didn't work so 1000 is too long
+
+test_size=float(os.getenv('TEST_SIZE',0.25))
+print('TEST_SIZE:',test_size)
+
+random_state=int(os.getenv('RANDOM_STATE',15))
+print('RANDOM_STATE:',random_state)
+
+out_dir=os.getenv('OUT_DIR','/tmp')
+print('OUT_DIR:',out_dir)
+
+loop_number=int(os.getenv('LOOP_NUMBER',0))
+print('LOOP_NUMBER:',loop_number)
+
 early_stop=0
 groups=['case','control']
 plates=[1,2,3]
@@ -25,13 +52,16 @@ plates=[1,2,3]
 files=["/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv"]
 
 species=os.getenv('SPECIES','')
-species
+print('SPECIES:',species)
 
 proteins=os.getenv('PROTEINS','')
-proteins
+print('PROTEINS:',proteins)
+
+outfile=out_dir+'/'+re.sub(r'[^a-zA-Z0-9]','_',species+"."+proteins)+'-A:'+activation+'-TS:'+str(test_size)+'-RS:'+str(random_state)+'-LN:'+str(loop_number)+'.csv'
+print(outfile)
 
 modelname=re.sub(r'[^a-zA-Z0-9]','_',"model."+species+"."+proteins)
-modelname
+print('MODEL NAME:',modelname)
 
 if( species == '' ):
 	species=[]
@@ -44,8 +74,8 @@ else:
 	proteins=proteins.split(',')
 
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from keras import utils
 from keras import callbacks
@@ -82,7 +112,7 @@ for file in files:
 
 df = pd.concat(datasets)
 del datasets
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 ##	Filter only in given species
@@ -92,7 +122,7 @@ if ( len(species)>0 ):
 	#df = df.loc[:, df.columns.get_level_values(1).isin(['subject','group','plate','species']+species)]
 	df = df.loc[:, df.columns.get_level_values(1).isin(['subject','type','group','age','sex','species']+species)]
 df = df.droplevel([1],axis=1)
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 ##	Filter only in given proteins
@@ -102,7 +132,7 @@ if ( len(proteins)>0 ):
 	#df = df.loc[:, df.columns.get_level_values(1).isin(['subject','group','plate','protein']+proteins)]
 	df = df.loc[:, df.columns.get_level_values(1).isin(['subject','type','group','age','sex','protein']+proteins)]
 df = df.droplevel([1],axis=1)
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 #	subject,type,group,age,sex,plate
@@ -111,7 +141,7 @@ df.iloc[:5,:7]
 
 num_classes = len(groups)
 df = df[ df['group'].isin(groups) ]
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 #	why int8? Why not just int?
@@ -126,14 +156,14 @@ df['sex'] = le.fit_transform(df['sex']).astype('int')
 #df = df.drop(columns=['sex'])
 
 
-print(df.iloc[:5,:7])
+print(df.iloc[:5,:10])
 
 print(df.dtypes)
 
 ##	Drop the type column
 
 df = df.drop(columns=['type'])
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 ##	Filter plates
@@ -142,13 +172,13 @@ df['plate'] = df['plate'].astype('int')
 df = df[ df['plate'].isin(plates) ]
 #print("Drop the plate column?")
 #df = df.drop(columns=['plate'])		#	<------------- I think that I should leave plate here, but maybe later
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 ##	Drop the subject column
 
 df = df.drop(columns=['subject'])
-df.iloc[:5,:7]
+df.iloc[:5,:10]
 
 
 #	we now have the tile ids, plate, plus age and sex
@@ -157,7 +187,7 @@ df.iloc[:5,:7]
 ##	Create X by dropping the group column
 
 X = df.drop(columns=['group'])
-print(X.iloc[:5,:7])
+print(X.iloc[:5,:10])
 
 
 print("X.shape")
@@ -219,13 +249,18 @@ len(encoded_els)
 encoded_els = concatenate(encoded_els)
 encoded_els
 
+#max_nodes=min(int(len(x_columns)/2),500)
+max_nodes=min(len(x_columns),500)
+print("Max recommended nodes:",max_nodes)
+
+
 #layer1 = Dropout(0.1)(Dense(int(n/2), activation=activation)(Dropout(0.1)(Dense(n, activation=activation)(encoded_els))))
 #layer1 = Dropout(0.1)(Dense(int(len(x_columns)/4), activation=activation)(Dropout(0.1)(Dense(int(len(x_columns)/2), activation=activation)(encoded_els))))
 #layer1 = Dropout(0.1)(Dense(int(len(x_columns)/2), activation=activation)(encoded_els))
 #layer1 = Dropout(0.2)(Dense(int(len(x_columns)/2), activation=activation)(Dropout(0.2)(Dense(len(x_columns), activation=activation)(encoded_els))))
 #	Need to put a max on these. Somehow they trigger memory or time issues that cause the kernel to crash
 #	x_columns 3979 is too much, 1410 is ok.
-layer1 = Dropout(0.2)( Dense(min(int(len(x_columns)/8),150), activation=activation)( Dropout(0.2)( Dense(min(int(len(x_columns)/4),300), activation=activation)(encoded_els))))
+layer1 = Dropout(0.2)( Dense(int(max_nodes/2), activation=activation)( Dropout(0.2)( Dense(max_nodes, activation=activation)(encoded_els))))
 layer1
 
 out = Dense(1)(layer1)
@@ -255,14 +290,21 @@ class MyThresholdCallback(callbacks.Callback):
 #model.fit(X_train, y_train, epochs=args.epochs[0], callbacks=[my_callbacks[early_stop]], verbose=2, batch_size=batch_size)
 #model.fit(X_train, y_train, epochs=epochs, verbose=2, batch_size=batch_size)
 
+print("And max epochs?")
+
+
+#	all one run or multiple batches?
+batch_size=int(len(X)/2+0.5)
+print("Using batch size",batch_size)
+
 model.fit(
 	[X_train[k].values for k, t in dtypes],
 	y_train,
 	epochs=epochs,
-	batch_size=512,
+	batch_size=batch_size,
 	shuffle=True,
 	validation_data=([X_test[k].values for k, t in dtypes], y_test),
-	callbacks=[MyThresholdCallback(threshold=0.78)]
+	callbacks=[MyThresholdCallback(threshold=0.75)]
 )
 
 
@@ -275,21 +317,59 @@ model.summary()
 
 print("Y train",y_train)
 
-print("Predicted y train",(model.predict([X_train[k].values for k, t in dtypes]) > 0.5).flatten())
+y_train_pred = (model.predict([X_train[k].values for k, t in dtypes]) > 0.5).flatten()
+print("Predicted y train",y_train_pred)
 
-print("Train accuracy score",accuracy_score(y_train, (model.predict([X_train[k].values for k, t in dtypes]) > 0.5).flatten())) 
+train_score=accuracy_score(y_train, y_train_pred)
+print("Train accuracy score",train_score)
 
-score=accuracy_score(y_train, (model.predict([X_train[k].values for k, t in dtypes]) > 0.5).flatten())
-HTML('<h1>Training Score {}</h1><br/>'.format(score))
+if running_as_notebook:
+	display(HTML('<h1>Training Score {}</h1><br/>'.format(train_score)))
+
+result = confusion_matrix(y_train, y_train_pred)
+print("Confusion Matrix:")
+print(result)
 
 print("Y test",y_test)
 
-print("Predicted y test",(model.predict([X_test[k].values for k, t in dtypes]) > 0.5).flatten())
+y_test_pred = (model.predict([X_test[k].values for k, t in dtypes]) > 0.5).flatten()
+print("Predicted y test",y_test_pred)
 
-print("Test accuracy score",accuracy_score(y_test, (model.predict([X_test[k].values for k, t in dtypes]) > 0.5).flatten())) 
+test_score=accuracy_score(y_test, y_test_pred)
+print("Test accuracy score",test_score)
 
-score=accuracy_score(y_test, (model.predict([X_test[k].values for k, t in dtypes]) > 0.5).flatten())
-HTML('<h1>Testing Score {}</h1><br/>'.format(score))
+if running_as_notebook:
+	display(HTML('<h1>Testing Score {}</h1><br/>'.format(test_score)))
+
+result = confusion_matrix(y_test, y_test_pred)
+print("Confusion Matrix:")
+print(result)
+
+print("Y all",y)
+
+y_pred = (model.predict([X[k].values for k, t in dtypes]) > 0.5).flatten()
+print("Predicted y",y_pred)
+
+all_score=accuracy_score(y, y_pred)
+print("All accuracy score",all_score)
+
+if running_as_notebook:
+	display(HTML('<h1>All Y Score {}</h1><br/>'.format(all_score)))
+
+result = confusion_matrix(y, y_pred)
+print("Confusion Matrix:")
+print(result)
+
+
+print("All stats",all_score,test_score,train_score,"random state",random_state,"test size",test_size,"activation",activation)
+
+
+
+
+
+#	I could add a check here for accuracy. Not really interested in important features for failed models
+
+
 
 
 
@@ -297,8 +377,9 @@ HTML('<h1>Testing Score {}</h1><br/>'.format(score))
 
 import shap
 
-# print the JS visualization code to the notebook
-shap.initjs()
+if running_as_notebook:
+	# print the JS visualization code to the notebook
+	display(shap.initjs())
 
 
 #Here we take the Keras model trained above and explain why it makes different predictions for different individuals. SHAP expects model functions to take a 2D numpy array as input, so we define a wrapper function around the original Keras predict function.
@@ -310,29 +391,74 @@ def f(X):
 ###	Explain all predictions
 
 
-explainer = shap.KernelExplainer(f, shap.sample(X,30,random_state=42))	#	try using just 30 samples at first for speed
+#if running_as_notebook:
+#	#explainer = shap.KernelExplainer(f, shap.sample(X,30,random_state=42))	#	try using just 30 samples at first for speed
+#	explainer = shap.KernelExplainer(f, X)
+explainer = shap.KernelExplainer(f, X)
 
 
-%%capture captured_explanation
+#%%capture captured_explanation
+#	CANNOT have a comment after a capture line
+#	not sure if this is needed when this is in a condition
+#	This is a syntax error outside of notebook
+#	%%capture must be the first line of the cell in Jupyter in order for it to be recognized correctly.
+#	Add apparently, it can be commented out and still work. Or jupytext uncommented it for me.
+#if running_as_notebook:
+#	explanation = explainer(X)
 explanation = explainer(X)
 
 
-shap.summary_plot( explanation, plot_type="bar")
+#	could do something like this to universally shut this up
+#	it produces many lines that are ~400,000 chars long filled with ^H backspaces for its progressbar
+#import os, sys
+#sys.stdout, sys.stderr = open(os.devnull, 'w'), open(os.devnull, 'w')
+#explanation = explainer(X)
+#sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
 
 
-shap.plots.beeswarm(explanation,max_display=20)
+if running_as_notebook:
+	display(explanation.shape)
 
 
-shap.plots.bar(explanation,max_display=20)
+if running_as_notebook:
+	display(explanation[1])
 
 
-shap.plots.heatmap(explanation,max_display=20)
+##	Extract shap values and sort by absolute overall impact (values from summary plot)
+
+df = pd.DataFrame(index=X.columns,
+		data={'value':[round(num, 3) for num in np.abs(explanation.values).mean(axis=0)]}
+		).sort_values(by='value', ascending=False, key=abs)
+if running_as_notebook:
+	display(df)
+else:
+	print(df)
+	#df.to_csv(out_dir+'/'+re.sub(r'[^a-zA-Z0-9]','_',"model."+species+"."+proteins)+'-A:'+activation+'-TS:'+str(test_size)+'-RS:'+str(random_state)+'-LN:'+str(loop_number)+'.csv',sep=',')
+	df.to_csv(outfile, sep=',')
 
 
-shap.plots.violin(explanation)
+if running_as_notebook:
+	shap.summary_plot( explanation, plot_type="bar")
 
 
-shap.plots.force(explanation)
+if running_as_notebook:
+	shap.plots.beeswarm(explanation,max_display=20)
+
+
+if running_as_notebook:
+	shap.plots.bar(explanation,max_display=20)
+
+
+if running_as_notebook:
+	shap.plots.heatmap(explanation,max_display=20)
+
+
+if running_as_notebook:
+	shap.plots.violin(explanation)
+
+
+if running_as_notebook:
+	shap.plots.force(explanation)
 
 
 #	for i in range(0,len(X)):
@@ -345,5 +471,6 @@ shap.plots.force(explanation)
 #		shap.plots.waterfall(explanation[i])
 
 
-HTML("<script>const collapsers = document.querySelectorAll('.jp-Cell-outputCollapser'); collapsers.forEach(element => { element.parentElement.style['maxHeight']='100px'; element.addEventListener('click', function(event) { if(element.parentElement.style['maxHeight']==''){ element.parentElement.style['maxHeight']='100px' }else{ element.parentElement.style['maxHeight']='' } }); }); </script>")
+if running_as_notebook:
+	display(HTML("<script>const collapsers = document.querySelectorAll('.jp-Cell-outputCollapser'); collapsers.forEach(element => { element.parentElement.style['maxHeight']='100px'; element.addEventListener('click', function(event) { if(element.parentElement.style['maxHeight']==''){ element.parentElement.style['maxHeight']='100px' }else{ element.parentElement.style['maxHeight']='' } }); }); </script>"))
 
