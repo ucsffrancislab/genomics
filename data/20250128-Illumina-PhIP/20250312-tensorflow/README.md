@@ -346,3 +346,41 @@ done
 ```
 
 
+
+
+##	20250402
+
+After having modified the processing script to output the "feature importances" as per SHAP only if the prediction of ALL samples is greater than 85%. I included the scores in the csv filename (Train, Test, All) so could filter this further if desired.
+
+
+Select the top of the top 3 tiles from all csv files.
+```
+head -q -n 4 20250328/*.csv | grep -vs value | cut -d, -f1 | sort | uniq -c | sort -k1n,1 | awk '($1>=10){print "^"$2","}' > TopHHV8ORF73.ids
+```
+
+Extract the actual peptide sequences from those.
+```
+grep -f TopHHV8ORF73.ids /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | cut -d, -f1,6
+```
+
+
+```
+
+grep "^18189," /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all/All.count.Zscores.minimums.csv | datamash transpose -t, | tail -n +2 | datamash min 1 q1 1 median 1 q3 1 max 1
+
+cat /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/20250319/Counts.normalized.subtracted.protein.select.t.mins.reorder.csv | datamash transpose -t, | grep "^18189," | datamash transpose -t, | tail -n +4  | datamash min 1 q1 1 median 1 q3 1 max 1
+
+``` 
+
+
+
+```
+head -q -n 4 20250402/*.csv | grep -vs value | cut -d, -f1 | sort | uniq -c | sort -k1n,1 | awk '($1>=10){print "^"$2","}' > TopHHV8ORF73.ids
+```
+
+Extract the actual peptide sequences from those.
+```
+grep -f TopHHV8ORF73.ids /francislab/data1/refs/PhIP-Seq/VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | cut -d, -f1,6
+```
+
+

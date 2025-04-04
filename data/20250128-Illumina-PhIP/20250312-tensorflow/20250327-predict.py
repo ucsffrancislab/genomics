@@ -31,7 +31,8 @@ activation=os.getenv('ACTIVATION','sigmoid')
 print('ACTIVATION:',activation)
 
 #batch_size=64	#250
-epochs=250								#	early stopping didn't work so 1000 is too long
+#epochs=250								#	early stopping didn't work so 1000 is too long
+epochs=200
 
 test_size=float(os.getenv('TEST_SIZE',0.25))
 print('TEST_SIZE:',test_size)
@@ -57,7 +58,10 @@ print('SPECIES:',species)
 proteins=os.getenv('PROTEINS','')
 print('PROTEINS:',proteins)
 
-outfile=out_dir+'/'+re.sub(r'[^a-zA-Z0-9]','_',species+"."+proteins)+'-A:'+activation+'-TS:'+str(test_size)+'-RS:'+str(random_state)+'-LN:'+str(loop_number)+'.csv'
+ids=os.getenv('IDS','')
+print('IDS:',ids)
+
+outfile=out_dir+'/'+re.sub(r'[^a-zA-Z0-9]','_',species+"."+proteins)+'-A:'+activation+'-TS:'+str(test_size)+'-RS:'+str(random_state)+'-LN:'+str(loop_number)
 print(outfile)
 
 modelname=re.sub(r'[^a-zA-Z0-9]','_',"model."+species+"."+proteins)
@@ -72,6 +76,11 @@ if( proteins == '' ):
 	proteins=[]
 else:
 	proteins=proteins.split(',')
+
+if( ids == '' ):
+	ids=[]
+else:
+	ids=ids.split(',')
 
 
 import numpy as np
@@ -119,7 +128,6 @@ df.iloc[:5,:10]
 
 if ( len(species)>0 ):
 	print(species)
-	#df = df.loc[:, df.columns.get_level_values(1).isin(['subject','group','plate','species']+species)]
 	df = df.loc[:, df.columns.get_level_values(1).isin(['subject','type','group','age','sex','species']+species)]
 df = df.droplevel([1],axis=1)
 df.iloc[:5,:10]
@@ -129,10 +137,21 @@ df.iloc[:5,:10]
 
 if ( len(proteins)>0 ):
 	print(proteins)
-	#df = df.loc[:, df.columns.get_level_values(1).isin(['subject','group','plate','protein']+proteins)]
 	df = df.loc[:, df.columns.get_level_values(1).isin(['subject','type','group','age','sex','protein']+proteins)]
 df = df.droplevel([1],axis=1)
 df.iloc[:5,:10]
+
+
+##	Filter only in given ids
+
+if ( len(ids)>0 ):
+	print(ids)
+	#df = df.loc[:, df.columns.get_level_values(1).isin(['subject','type','group','age','sex','plate']+ids)]
+	df = df.loc[:, df.columns.isin(['subject','type','group','age','sex','plate']+ids)]
+#df = df.droplevel([1],axis=1)
+df.iloc[:5,:10]
+
+
 
 
 #	subject,type,group,age,sex,plate
@@ -361,15 +380,13 @@ print("Confusion Matrix:")
 print(result)
 
 
-print("All stats",all_score,test_score,train_score,"random state",random_state,"test size",test_size,"activation",activation)
+print("All stats",train_score,test_score,all_score,"random state",random_state,"test size",test_size,"activation",activation)
 
 
-
+outfile=outfile+'-'+str(round(train_score, 3))+'-'+str(round(test_score, 3))+'-'+str(round(all_score, 3))+'.csv'
 
 
 #	I could add a check here for accuracy. Not really interested in important features for failed models
-
-
 
 
 
@@ -377,7 +394,7 @@ print("All stats",all_score,test_score,train_score,"random state",random_state,"
 
 import shap
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	# print the JS visualization code to the notebook
 	display(shap.initjs())
 
@@ -394,7 +411,8 @@ def f(X):
 #if running_as_notebook:
 #	#explainer = shap.KernelExplainer(f, shap.sample(X,30,random_state=42))	#	try using just 30 samples at first for speed
 #	explainer = shap.KernelExplainer(f, X)
-explainer = shap.KernelExplainer(f, X)
+if test_score>=0.75:
+	explainer = shap.KernelExplainer(f, X)
 
 
 #%%capture captured_explanation
@@ -405,7 +423,8 @@ explainer = shap.KernelExplainer(f, X)
 #	Add apparently, it can be commented out and still work. Or jupytext uncommented it for me.
 #if running_as_notebook:
 #	explanation = explainer(X)
-explanation = explainer(X)
+if test_score>=0.75:
+	explanation = explainer(X)
 
 
 #	could do something like this to universally shut this up
@@ -416,48 +435,48 @@ explanation = explainer(X)
 #sys.stdout, sys.stderr = sys.__stdout__, sys.__stderr__
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	display(explanation.shape)
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	display(explanation[1])
 
 
 ##	Extract shap values and sort by absolute overall impact (values from summary plot)
 
-df = pd.DataFrame(index=X.columns,
-		data={'value':[round(num, 3) for num in np.abs(explanation.values).mean(axis=0)]}
-		).sort_values(by='value', ascending=False, key=abs)
-if running_as_notebook:
-	display(df)
-else:
-	print(df)
-	#df.to_csv(out_dir+'/'+re.sub(r'[^a-zA-Z0-9]','_',"model."+species+"."+proteins)+'-A:'+activation+'-TS:'+str(test_size)+'-RS:'+str(random_state)+'-LN:'+str(loop_number)+'.csv',sep=',')
-	df.to_csv(outfile, sep=',')
+if test_score>=0.75:
+	df = pd.DataFrame(index=X.columns,
+			data={'value':[round(num, 3) for num in np.abs(explanation.values).mean(axis=0)]}
+			).sort_values(by='value', ascending=False, key=abs)
+	if running_as_notebook:
+		display(df)
+	else:
+		print(df)
+		df.to_csv(outfile, sep=',')
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	shap.summary_plot( explanation, plot_type="bar")
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	shap.plots.beeswarm(explanation,max_display=20)
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	shap.plots.bar(explanation,max_display=20)
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	shap.plots.heatmap(explanation,max_display=20)
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	shap.plots.violin(explanation)
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	shap.plots.force(explanation)
 
 
@@ -471,6 +490,6 @@ if running_as_notebook:
 #		shap.plots.waterfall(explanation[i])
 
 
-if running_as_notebook:
+if test_score>=0.75 and running_as_notebook:
 	display(HTML("<script>const collapsers = document.querySelectorAll('.jp-Cell-outputCollapser'); collapsers.forEach(element => { element.parentElement.style['maxHeight']='100px'; element.addEventListener('click', function(event) { if(element.parentElement.style['maxHeight']==''){ element.parentElement.style['maxHeight']='100px' }else{ element.parentElement.style['maxHeight']='' } }); }); </script>"))
 
