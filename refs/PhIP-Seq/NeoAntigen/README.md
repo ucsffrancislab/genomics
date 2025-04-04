@@ -98,6 +98,29 @@ AGGAATTCCGCTGCGTGCTGCCGCTGCGCCGGCGTCTCGCGCCTGGAGACGCCATC
 AGGAATTCCGCTGCGTGCGGCCGCACCGGCTTCTCGTTAGGCCTGGAGACGCCATC
 ```
 
+Moved all to 20250401/
+
+
+##	20250403
+
+
+
+```
+tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">"$0; print $0}' > peptides.faa
+```
+
+Run phip_seq_create_tiles at length 12.  There will be no overlap as they are simply too short.
+```
+phip_seq_create_tiles.bash -t 12 -o 0 -i peptides.faa
+```
+
+It generates a number of files, but the number of reads for each length is ...
+```
+grep -c "^>" oligos-ref-12-0.fasta
+oligos-ref-12-0.fasta:2700
+```
+
+
 
 
 
