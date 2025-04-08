@@ -70,12 +70,16 @@ which will display the first 10 lines of the file
 
 The Height.gwas.txt.gz file contains the following columns:
 
+```
 CHR	BP	SNP	A1	A2	N	SE	P	OR	INFO	MAF
 1	756604	rs3131962	A	G	388028	0.00301666	0.483171	0.997886915712657	0.890557941364774	0.369389592764921
 1	768448	rs12562034	A	G	388028	0.00329472	0.834808	1.00068731609353	0.895893511351165	0.336845754096289
 1	779322	rs4040617	G	A	388028	0.00303344	0.42897	0.997603556067569	0.897508290615237	0.377368010940814
+```
+
 The column headers correspond to the following:
 
+```
 CHR: The chromosome in which the SNP resides
 BP: Chromosomal co-ordinate of the SNP
 SNP: SNP ID, usually in the form of rs-ID
@@ -87,6 +91,7 @@ P: The P-value of association between the SNP genotypes and the base phenotype
 OR: The effect size estimate of the SNP, if the outcome is binary/case-control. If the outcome is continuous or treated as continuous then this will usually be BETA
 INFO: The imputation information score
 MAF: The minor allele frequency (MAF) of the SNP
+```
 
 ##	QC checklist: Base data
 
@@ -146,7 +151,7 @@ Prints any line with MAF above 0.01 (\$11 because the eleventh column of the fil
 
 Prints any line with INFO above 0.8 (\$10 because the tenth column of the file contains the INFO information)
 
-Compresses and writes the results to Height.gz
+Compresses and writes the results to `Height.gz`
 
 ### Mismatching SNPs
 
@@ -167,11 +172,16 @@ gzip - > Height.nodup.gz
 
 The above command does the following:
 
-Decompresses and reads the Height.gz file
+Decompresses and reads the `Height.gz` file
+
 Count number of time SNP ID was observed, assuming the third column contian the SNP ID (`seen[$3]++`). If this is the first time seeing this SNP ID, print it.
-Compresses and writes the results to Height.nodup.gz
+
+Compresses and writes the results to `Height.nodup.gz`
+
 How many duplicated SNPs are there?
+
 There are a total of 2 duplicated SNPs
+
 
 ### Ambiguous SNPs
 
@@ -194,6 +204,7 @@ awk '!( ($4=="A" && $5=="T") || \
 ```
 
 How many non-ambiguous SNPs were there?
+
 There are 499,617 non-ambiguous SNPs
 
 
@@ -211,7 +222,7 @@ Since the target data were simulated there are no overlapping samples between th
 
 Closely related individuals within and between the base and the target data may lead to overfitted results, limiting the generalizability of the results (see the relevant sections of the paper). Relatedness within the target data is tested in the Target Data section.
 
-The Height.QC.gz base data are now ready for using in downstream analyses.
+The `Height.QC.gz` base data are now ready for using in downstream analyses.
 
 
 
@@ -223,8 +234,10 @@ The Height.QC.gz base data are now ready for using in downstream analyses.
 
 Target data consist of individual-level genotype-phenotype data, usually generated within your lab/department/collaboration. For this tutorial, we have simulated some genotype-phenotype data using the 1000 Genomes Project European samples. You can download the data here
 
-Manually download EUR.zip from 
+Manually download `EUR.zip` from 
+
 https://drive.google.com/file/d/1uhJR_3sn7RA8U5iYQbcmTp6vFdQiF4F2/view
+
 and then unzip
 
 
@@ -244,12 +257,14 @@ We recommend that users only perform PRS analyses on target data of at least 100
 Usually we do not need to download and transfer the target data file because it is typically generated locally. However, the file should contain an md5sum code in case we send the data file to collaborators who may want to confirm that the file has not changed during the transfer.
 
 What is the md5sum code for each of the target files?
+```
 File	md5sum
 EUR.bed	98bcef133f683b1272d3ea5f97742e0e
 EUR.bim	6b286002904880055a9c94e01522f059
 EUR.cov	85ed18288c708e095385418517e9c3bd
 EUR.fam	e7b856f0c7bcaffc8405926d08386e97
 EUR.height	dd445ce969a81cded20da5c88b82d4df
+```
 
 ### Genome build
 
@@ -283,17 +298,22 @@ Parameter	Value	Description
 bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
 maf	0.01	Removes all SNPs with minor allele frequency less than 0.01. Genotyping errors typically have a larger influence on SNPs with low MAF. Studies with large sample sizes could apply a lower MAF threshold
 hwe	1e-6	Removes SNPs with low P-value from the Hardy-Weinberg Equilibrium Fisher's exact or chi-squared test. SNPs with significant P-values from the HWE test are more likely affected by genotyping error or the effects of natural selection. Filtering should be performed on the control samples to avoid filtering SNPs that are causal (under selection in cases). When phenotype information is included, plink will automatically perform the filtering in the controls.
+```
 geno	0.01	Excludes SNPs that are missing in a high fraction of subjects. A two-stage filtering process is usually performed (see Marees et al).
 mind	0.01	Excludes individuals who have a high rate of genotype missingness, since this may indicate problems in the DNA sample or processing. (see Marees et al for more details).
 make-just-fam	-	Informs plink to only generate the QC'ed sample name to avoid generating the .bed file.
 write-snplist	-	Informs plink to only generate the QC'ed SNP list to avoid generating the .bed file.
 out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
+```
 
 How many SNPs and samples were filtered?
+```
 14 samples were removed due to a high rate of genotype missingness
 5,353 SNP were removed due to missing genotype data
 944 SNPs were removed due to being out of Hardy-Weinberg Equilibrium
 5,061 SNPs were removed due to low minor allele frequency
+```
+
 Note
 
 Normally, we can generate a new genotype file using the new sample list. However, this will use up a lot of storage space. Using plink's --extract, --exclude, --keep, --remove, --make-just-fam and --write-snplist functions, we can work solely on the list of samples and SNPs without duplicating the genotype file, reducing the storage space usage.
@@ -320,12 +340,15 @@ plink \
 
 Each of the parameters corresponds to the following
 
+```
 Parameter	Value	Description
 bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
 keep	EUR.QC.fam	Informs plink that we only want to use samples in EUR.QC.fam in the analysis
 extract	EUR.QC.snplist	Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
 indep-pairwise	200 50 0.25	Informs plink that we wish to perform pruning with a window size of 200 variants, sliding across the genome with step size of 50 variants at a time, and filter out any SNPs with LD `r 2` higher than 0.25
 out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
+```
+
 This will generate two files 1) EUR.QC.prune.in and 2) EUR.QC.prune.out. All SNPs within EUR.QC.prune.in have a pairwise 
 `r 2 < 0.25`.
 
@@ -577,10 +600,10 @@ In this section of the tutorial you will use four different software programs to
 
 The programs are
 
-PLINK
-PRSice-2
-LDPred-2
-lassosum
+* PLINK
+* PRSice-2
+* LDPred-2
+* lassosum
 
 
 #	Background
@@ -591,6 +614,7 @@ On this page, you will compute PRS using the popular genetic analyses tool plink
 
 In the previous sections, we have generated the following files:
 
+```
 File Name	Description
 Height.QC.gz	The post-QCed summary statistic
 EUR.QC.bed	The genotype file after performing some basic filtering
@@ -598,6 +622,7 @@ EUR.QC.bim	This file contains the SNPs that passed the basic filtering
 EUR.QC.fam	This file contains the samples that passed the basic filtering
 EUR.height	This file contains the phenotype of the samples
 EUR.cov	This file contains the covariates of the samples
+```
 
 ##	Update Effect Size
 
@@ -632,6 +657,7 @@ plink \
 
 Each of the new parameters corresponds to the following
 
+```
 Parameter	Value	Description
 clump-p1	1	P-value threshold for a SNP to be included as an index SNP. 1 is selected such that all SNPs are include for clumping
 clump-r2	0.1	SNPs having ` r 2` higher than 0.1 with the index SNPs will be removed
@@ -639,6 +665,8 @@ clump-kb	250	SNPs within 250k of the index SNP are considered for clumping
 clump	Height.QC.Transformed	Base data (summary statistic) file containing the P-value information
 clump-snp-field	SNP	Specifies that the column SNP contains the SNP IDs
 clump-field	P	Specifies that the column P contains the P-value information
+```
+
 A more detailed description of the clumping process can be found here
 
 Note
@@ -712,11 +740,15 @@ plink \
 
 
 The meaning of the new parameters are as follows:
+```
 Paramter	Value	Description
 score	Height.QC.Transformed 3 4 12 header	We read from the Height.QC.Transformed file, assuming that the 3st column is the SNP ID; 4th column is the effective allele information; the 12th column is the effect size estimate; and that the file contains a header
 q-score-range	range_list SNP.pvalue	We want to calculate PRS based on the thresholds defined in range_list, where the threshold values (P-values) were stored in SNP.pvalue
+```
+
 The above command and range_list will generate 7 files:
 
+```
 EUR.0.5.profile
 EUR.0.4.profile
 EUR.0.3.profile
@@ -724,6 +756,8 @@ EUR.0.2.profile
 EUR.0.1.profile
 EUR.0.05.profile
 EUR.0.001.profile
+```
+
 Note
 
 The default formula for PRS calculation in PLINK is:
@@ -770,7 +804,7 @@ Important
 
 If the base and target samples are collected from different worldwide populations then the results from the PRS analysis may be biased (see Section 3.4 of our paper).
 
-##Finding the "best-fit" PRS
+##	Finding the "best-fit" PRS
 
 The P-value threshold that provides the "best-fit" PRS under the C+T method is usually unknown. To approximate the "best-fit" PRS, we can perform a regression between PRS calculated at a range of P-value thresholds and then select the PRS that explains the highest phenotypic variance (please see Section 4.6 of our paper on overfitting issues). This can be achieved using R as follows:
 
@@ -839,6 +873,7 @@ In this tutorial, you will only need PRSice.R and PRSice_XXX where XXX is the op
 
 This analysis assumes that you have the following files (or you can download it from here):
 
+```
 File Name	Description
 Height.QC.gz	The post QC base data file. While PRSice-2 can automatically apply most filtering on the base file, it cannot remove duplicated SNPs
 EUR.QC.bed	This file contains the genotype data that passed the QC steps
@@ -847,10 +882,11 @@ EUR.QC.fam	This file contains the samples that passed the QC steps
 EUR.height	This file contains the phenotype data of the samples
 EUR.cov	This file contains the covariates of the samples
 EUR.eigenvec	This file contains the principal components (PCs) of the samples
+```
+
 Running PRS analysis
+
 To run PRSice-2 we need a single covariate file, and therefore our covariate file and PCs file should be combined. This can be done with R as follows:
-
-
 
 ```{r PRS_EUR_cov}
 library(data.table)
@@ -860,7 +896,6 @@ colnames(pcs) <- c("FID","IID", paste0("PC",1:6))
 cov <- merge(covariate, pcs)
 fwrite(cov,"EUR.covariate", sep="\t")
 ```
-
 
 which generates EUR.covariate.
 
@@ -894,6 +929,7 @@ Rscript PRSice.R \
 
 The meaning of the parameters are as follow:
 
+```
 Paramter	Value	Description
 prsice	PRSice_xxx	Informs PRSice.R that the location of the PRSice binary
 base	Height.QC.gz	Informs PRSice that the name of the GWAS summary statistic
@@ -906,12 +942,16 @@ base-info	INFO:0.8	Filter out SNPs with INFO < 0.8 in the GWAS summary statistic
 stat	OR	Column name of the column containing the effect size
 or	-	Inform PRSice that the effect size is an Odd Ratio
 out	EUR	Informs PRSice that all output should have a prefix of EUR
+```
+
 This will automatically perform "high-resolution scoring" and generate the "best-fit" PRS (in EUR.best), with associated plots of the results. Users should read Section 4.6 of our paper to learn more about issues relating to overfitting in PRS analyses.
 
 Which P-value threshold generates the "best-fit" PRS?
+
 0.3
 
 How much phenotypic variation does the "best-fit" PRS explain?
+
 0.161237
 
 
@@ -946,6 +986,7 @@ You can install LDpred and its dependencies in R with the following command:
 
 We assume that you have the following files (or you can download it from here):
 
+```
 File Name	Description
 Height.QC.gz	The post-QCed summary statistic
 EUR.QC.bed	The genotype file after performing some basic filtering
@@ -954,6 +995,8 @@ EUR.QC.fam	This file contains the samples that passed the basic filtering
 EUR.height	This file contains the phenotype of the samples
 EUR.cov	This file contains the covariates of the samples
 EUR.eigenvec	This file contains the PCs of the samples
+```
+
 Warning
 
 While we do provide a rough guide on how to perform LDpred on bed files separated into individual chromosomes, this script is untested and extra caution is required
@@ -988,8 +1031,6 @@ pheno <- merge(phenotype, covariate) %>%
 ##	2. Obtain HapMap3 SNPs
 
 LDpred2 authors recommend restricting the analysis to only the HapMap3 SNPs
-
-
 
 This likes to timeout or only partially download so trying to make it only run once.
 Pain in the butt. Trying to download manually.
@@ -1160,11 +1201,13 @@ inf.model <- lm(reg.formula, dat=reg.dat) %>%
 ```
 
 How much phenotypic variation does the PRS from each model explain?
+
 Infinitesimal = 0.0248696
 
 Grid Model = 0.001746926
 
 Auto Model = 0.1751478
+
 
 
 Where is this value?
@@ -1202,6 +1245,7 @@ You can install lassosum and its dependencies in R with the following command:
 
 Again, we assume that we have the following files (or you can download it from here):
 
+```
 File Name	Description
 Height.QC.gz	The post-QCed summary statistic
 EUR.QC.bed	The genotype file after performing some basic filtering
@@ -1210,6 +1254,7 @@ EUR.QC.fam	This file contains the samples that passed the basic filtering
 EUR.height	This file contains the phenotype of the samples
 EUR.cov	This file contains the covariates of the samples
 EUR.eigenvec	This file contains the PCs of the samples
+```
 
 ##	Running PRS analysis
 
@@ -1281,6 +1326,7 @@ r2 <- max(target.res$validation.table$value)^2
 
 
 How much phenotypic variation does the "best-fit" PRS explain?
+
 0.2474679
 
 
