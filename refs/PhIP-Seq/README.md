@@ -1655,6 +1655,7 @@ chmod -w VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv
 
 
 
+```
 for peptide in $( cut -d, -f6 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | tail -n +2 | sort | uniq -c | awk '($1>1){print $2}' ) ; do
 c=$( cut -d, -f1,2,6 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | awk -F, -v peptide=${peptide} '($3==peptide){print $2}' | sort | uniq | wc -l )
 if [ $c -gt 1 ]; then
@@ -1662,5 +1663,16 @@ echo $peptide
 cut -d, -f1,2,6 VIR3_clean.id_species_protein_gene_sequence_peptide.uniq.csv | awk -F, -v peptide=${peptide} '($3==peptide){print $2}' | sort | uniq -c
 fi
 done
+```
+
+```
+sed \
+ -e 's/Human herpesvirus 8,Protein ORF73/Human herpesvirus 8,ORF73/' \
+ -e 's/Human herpesvirus 8,Orf73/Human herpesvirus 8,ORF73/' \
+ -e 's/Human herpesvirus 8,ORF 73/Human herpesvirus 8,ORF73/' \
+ VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv \
+ > VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.ORF73.csv
+```
+
 
 
