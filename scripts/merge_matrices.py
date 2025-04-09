@@ -101,19 +101,31 @@ if len(data_frames) > 0:
 		print("Replacing all negatives with 0")
 		df[df < 0] = 0
 
+	#	dropping the index makes it cleaner to write to csv
 	df = df.sort_index().reset_index()
 #	df.rename(level=0,columns={"level_0": "subject","level_1":"type", "level_2":"sample"},inplace=True)
 
+#	#	when not unique (all are blank) this doesn't work)
+#	for i in range(len(args.index_col)):
+#		print(i," : ",args.index_col[i])
+#		#	1  :  species
+#		print(df.columns[i])
+#		#	('level_1', '', '', '', '', '', '', '', '')
+#		for level in list(range(df.columns.nlevels)):
+#			print("setting level ",level,":",args.index_col[i])
+#			print("Renaming",df.columns[i][level],"to",args.index_col[i])
+#			df.rename(level=level,columns={ df.columns[i][level]: args.index_col[i] }, inplace = True)
+#		print(df.columns[i])
+#		#('species', '', '', '', '', '', '', '', '')
+
+#	for i in range(len(args.index_col)):
+#		df.columns[i]=(args.index_col[i],)*df.columns.nlevels
+
+
+	cols=df.columns.to_list()
 	for i in range(len(args.index_col)):
-		print(i," : ",args.index_col[i])
-		#	1  :  species
-		print(df.columns[i])
-		#	('level_1', '', '', '', '', '', '', '', '')
-		df.rename(level=0,columns={ df.columns[i][0]: args.index_col[i] }, inplace = True)
-		print(df.columns[i])
-		#('species', '', '', '', '', '', '', '', '')
-
-
+		cols[i]=(args.index_col[i],)*df.columns.nlevels
+	df.columns = pd.MultiIndex.from_tuples(cols)
 
 	print(df.shape)
 
