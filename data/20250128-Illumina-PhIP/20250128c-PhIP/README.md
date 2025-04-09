@@ -1260,3 +1260,263 @@ for f in ${PWD}/20250326/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0-sex*.csv
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=2 --mem=30G --export=None --job-name=pepcomp --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv}"
 done
 ```
+
+
+
+
+
+
+##  20250404
+
+JUST THE 3 "GOOD" PLATES
+
+Select only species and protein
+Select only subject, type, group, age, sex, and plate
+
+```
+for plate in out.plate* ; do
+echo $plate
+head -9 ${plate}/Counts.normalized.subtracted.csv > ${plate}/tmp1.csv
+tail -n +10 ${plate}/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> ${plate}/tmp1.csv
+
+#  Select only tile ids found in any of the blanks
+head -8 ${plate}/tmp1.csv > ${plate}/tmp2.csv
+join --header -t, out.3plates/Plibs.id.csv <( tail -n +9 ${plate}/tmp1.csv ) >> ${plate}/tmp2.csv
+
+#  Add protein
+head -8 ${plate}/tmp2.csv > ${plate}/tmp3.csv
+sed -i 's/^/,,/' ${plate}/tmp3.csv
+join --header -t, /francislab/data2/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv <( tail -n +9 ${plate}/tmp2.csv ) >> ${plate}/tmp3.csv
+
+#  Drop duplicate species name
+cut -d, -f1,3- ${plate}/tmp3.csv > ${plate}/Counts.normalized.subtracted.select3.protein.csv
+
+#  Adjust negative values to 0, Group by protein and sum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/Counts.normalized.subtracted.select3.protein.csv',header=list(range(9)),index_col=[0,1,2]).clip(lower=0).groupby(level=[1,2]).sum().to_csv('${plate}/Counts.normalized.subtracted.select3.protein.sum.csv')"
+
+#  transpose and drop path and source
+cat ${plate}/Counts.normalized.subtracted.select3.protein.sum.csv | datamash transpose -t, | cut -d, -f1,2,4,6- > ${plate}/tmp5.csv
+sed -i '1s/^,,,,,,id,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+sed -i '2s/^,,,,,,,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+
+#  group by subject and take minimum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/tmp5.csv', header=[0,1],index_col=[0,1,2,3,4,5,6],low_memory=False).groupby(level=[1,2,3,4,5,6]).min().to_csv('${plate}/tmp6.csv')"
+sed -i '1s/^sample,,,,,,/subject,type,group,age,sex,protein,/' ${plate}/tmp6.csv
+sed -i '2s/^sample,,,,,,/subject,type,group,age,sex,species,/' ${plate}/tmp6.csv
+mv ${plate}/tmp6.csv ${plate}/Counts.normalized.subtracted.select3.protein.sum.t.min.csv
+done
+```
+
+```
+mkdir 20250404
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.123.csv \
+  ${PWD}/out.plate[123]/Counts.normalized.subtracted.select3.protein.sum.t.min.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.123.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.123.csv
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.1234.csv \
+  ${PWD}/out.plate[1234]/Counts.normalized.subtracted.select3.protein.sum.t.min.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.1234.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.1234.csv
+```
+
+
+
+
+
+
+
+
+##  20250407
+
+ALL 4 PLATES
+
+Select only species and protein
+Select only subject, type, group, age, sex, and plate
+
+```
+for plate in out.plate* ; do
+echo $plate
+head -9 ${plate}/Counts.normalized.subtracted.csv > ${plate}/tmp1.csv
+tail -n +10 ${plate}/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> ${plate}/tmp1.csv
+
+#  Select only tile ids found in any of the blanks
+head -8 ${plate}/tmp1.csv > ${plate}/tmp2.csv
+join --header -t, out.4plates/Plibs.id.csv <( tail -n +9 ${plate}/tmp1.csv ) >> ${plate}/tmp2.csv
+
+#  Add protein
+head -8 ${plate}/tmp2.csv > ${plate}/tmp3.csv
+sed -i 's/^/,,/' ${plate}/tmp3.csv
+join --header -t, /francislab/data2/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.csv <( tail -n +9 ${plate}/tmp2.csv ) >> ${plate}/tmp3.csv
+
+#  Drop duplicate species name
+cut -d, -f1,3- ${plate}/tmp3.csv > ${plate}/Counts.normalized.subtracted.select4.protein.csv
+
+#  Adjust negative values to 0, Group by protein and sum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/Counts.normalized.subtracted.select4.protein.csv',header=list(range(9)),index_col=[0,1,2]).clip(lower=0).groupby(level=[1,2]).sum().to_csv('${plate}/Counts.normalized.subtracted.select4.protein.sum.csv')"
+
+#  transpose and drop path and source
+cat ${plate}/Counts.normalized.subtracted.select4.protein.sum.csv | datamash transpose -t, | cut -d, -f1,2,4,6- > ${plate}/tmp5.csv
+sed -i '1s/^,,,,,,id,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+sed -i '2s/^,,,,,,,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+
+#  group by subject and take minimum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/tmp5.csv', header=[0,1],index_col=[0,1,2,3,4,5,6],low_memory=False).groupby(level=[1,2,3,4,5,6]).min().to_csv('${plate}/tmp6.csv')"
+sed -i '1s/^sample,,,,,,/subject,type,group,age,sex,protein,/' ${plate}/tmp6.csv
+sed -i '2s/^sample,,,,,,/subject,type,group,age,sex,species,/' ${plate}/tmp6.csv
+mv ${plate}/tmp6.csv ${plate}/Counts.normalized.subtracted.select4.protein.sum.t.min.csv
+done
+```
+
+```
+mkdir 20250404
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.123.csv \
+  ${PWD}/out.plate[123]/Counts.normalized.subtracted.select4.protein.sum.t.min.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.123.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.123.csv
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.1234.csv \
+  ${PWD}/out.plate[1234]/Counts.normalized.subtracted.select4.protein.sum.t.min.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.1234.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.1234.csv
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+THE 3 "GOOD" PLATES
+
+Select only species and protein
+Select only subject, type, group, age, sex, and plate
+
+```
+for plate in out.plate* ; do
+echo $plate
+head -9 ${plate}/Counts.normalized.subtracted.csv > ${plate}/tmp1.csv
+tail -n +10 ${plate}/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> ${plate}/tmp1.csv
+
+#  Select only tile ids found in any of the blanks
+head -8 ${plate}/tmp1.csv > ${plate}/tmp2.csv
+join --header -t, out.3plates/Plibs.id.csv <( tail -n +9 ${plate}/tmp1.csv ) >> ${plate}/tmp2.csv
+
+#  Add protein
+head -8 ${plate}/tmp2.csv > ${plate}/tmp3.csv
+sed -i 's/^/,,/' ${plate}/tmp3.csv
+join --header -t, /francislab/data2/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.ORF73.csv <( tail -n +9 ${plate}/tmp2.csv ) >> ${plate}/tmp3.csv
+
+#  Drop duplicate species name
+cut -d, -f1,3- ${plate}/tmp3.csv > ${plate}/Counts.normalized.subtracted.select3.protein.ORF73.csv
+
+#  Adjust negative values to 0, Group by protein and sum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/Counts.normalized.subtracted.select3.protein.ORF73.csv',header=list(range(9)),index_col=[0,1,2]).clip(lower=0).groupby(level=[1,2]).sum().to_csv('${plate}/Counts.normalized.subtracted.select3.protein.sum.ORF73.csv')"
+
+#  transpose and drop path and source
+cat ${plate}/Counts.normalized.subtracted.select3.protein.sum.ORF73.csv | datamash transpose -t, | cut -d, -f1,2,4,6- > ${plate}/tmp5.csv
+sed -i '1s/^,,,,,,id,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+sed -i '2s/^,,,,,,,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+
+#  group by subject and take minimum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/tmp5.csv', header=[0,1],index_col=[0,1,2,3,4,5,6],low_memory=False).groupby(level=[1,2,3,4,5,6]).min().to_csv('${plate}/tmp6.csv')"
+sed -i '1s/^sample,,,,,,/subject,type,group,age,sex,protein,/' ${plate}/tmp6.csv
+sed -i '2s/^sample,,,,,,/subject,type,group,age,sex,species,/' ${plate}/tmp6.csv
+mv ${plate}/tmp6.csv ${plate}/Counts.normalized.subtracted.select3.protein.sum.t.min.ORF73.csv
+done
+```
+
+```
+mkdir 20250404
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.123.ORF73.csv \
+  ${PWD}/out.plate[123]/Counts.normalized.subtracted.select3.protein.sum.t.min.ORF73.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.123.ORF73.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.123.ORF73.csv
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.1234.ORF73.csv \
+  ${PWD}/out.plate[1234]/Counts.normalized.subtracted.select3.protein.sum.t.min.ORF73.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.1234.ORF73.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select3.protein.sum.t.min.1234.ORF73.csv
+```
+
+
+
+ALL 4 PLATES
+
+Select only species and protein
+Select only subject, type, group, age, sex, and plate
+
+```
+for plate in out.plate* ; do
+echo $plate
+head -9 ${plate}/Counts.normalized.subtracted.csv > ${plate}/tmp1.csv
+tail -n +10 ${plate}/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> ${plate}/tmp1.csv
+
+#  Select only tile ids found in any of the blanks
+head -8 ${plate}/tmp1.csv > ${plate}/tmp2.csv
+join --header -t, out.4plates/Plibs.id.csv <( tail -n +9 ${plate}/tmp1.csv ) >> ${plate}/tmp2.csv
+
+#  Add protein
+head -8 ${plate}/tmp2.csv > ${plate}/tmp3.csv
+sed -i 's/^/,,/' ${plate}/tmp3.csv
+join --header -t, /francislab/data2/refs/PhIP-Seq/VIR3_clean.id_species_protein.uniq.first_protein.join_sorted.ORF73.csv <( tail -n +9 ${plate}/tmp2.csv ) >> ${plate}/tmp3.csv
+
+#  Drop duplicate species name
+cut -d, -f1,3- ${plate}/tmp3.csv > ${plate}/Counts.normalized.subtracted.select4.protein.ORF73.csv
+
+#  Adjust negative values to 0, Group by protein and sum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/Counts.normalized.subtracted.select4.protein.ORF73.csv',header=list(range(9)),index_col=[0,1,2]).clip(lower=0).groupby(level=[1,2]).sum().to_csv('${plate}/Counts.normalized.subtracted.select4.protein.sum.ORF73.csv')"
+
+#  transpose and drop path and source
+cat ${plate}/Counts.normalized.subtracted.select4.protein.sum.ORF73.csv | datamash transpose -t, | cut -d, -f1,2,4,6- > ${plate}/tmp5.csv
+sed -i '1s/^,,,,,,id,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+sed -i '2s/^,,,,,,,/sample,subject,type,group,age,sex,plate,/' ${plate}/tmp5.csv
+
+#  group by subject and take minimum
+python3 -c "import pandas as pd; pd.read_csv('${plate}/tmp5.csv', header=[0,1],index_col=[0,1,2,3,4,5,6],low_memory=False).groupby(level=[1,2,3,4,5,6]).min().to_csv('${plate}/tmp6.csv')"
+sed -i '1s/^sample,,,,,,/subject,type,group,age,sex,protein,/' ${plate}/tmp6.csv
+sed -i '2s/^sample,,,,,,/subject,type,group,age,sex,species,/' ${plate}/tmp6.csv
+mv ${plate}/tmp6.csv ${plate}/Counts.normalized.subtracted.select4.protein.sum.t.min.ORF73.csv
+done
+```
+
+```
+mkdir 20250404
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.123.ORF73.csv \
+  ${PWD}/out.plate[123]/Counts.normalized.subtracted.select4.protein.sum.t.min.ORF73.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.123.ORF73.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.123.ORF73.csv
+merge_matrices.py --axis index --de_nan --de_neg --header_rows 2 \
+  --index_col subject --index_col type --index_col group \
+  --index_col age --index_col sex --index_col species \
+  --out ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.1234.ORF73.csv \
+  ${PWD}/out.plate[1234]/Counts.normalized.subtracted.select4.protein.sum.t.min.ORF73.csv
+sed -i '1s/^subject,type,group,age,sex,species/subject,type,group,age,sex,plate/' ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.1234.ORF73.csv
+chmod 400 ${PWD}/20250404/Counts.normalized.subtracted.select4.protein.sum.t.min.1234.ORF73.csv
+```
+
