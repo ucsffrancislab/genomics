@@ -1,15 +1,14 @@
 #!/usr/bin/env Rscript
 
 args <- commandArgs()
+dname_no_links = R.utils::getAbsolutePath(dirname(sub("--file=", "", args[grepl("--file=", args)])))
 fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
 thisfile <- readLines(fname)
 newfname <- paste0(tempdir(), "/", basename(fname))
 writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
 
-#Sys.setenv("WORKINGDIRNAME"=dirname(fname))
-
 noext=fs::path_ext_remove(fname)
-rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+rmarkdown::render(newfname, output_dir = dname_no_links, output_file = paste0(noext,'.html') )
 
 q("no")
 
@@ -30,7 +29,8 @@ There are a few options in the tutorial. This includes my choices.
 
 
 ```{r defaults, include=FALSE}
-knitr::opts_knit$set(root.dir = dirname(fname))
+#knitr::opts_knit$set(root.dir = dirname(fname))
+knitr::opts_knit$set(root.dir = dname_no_links)
 
 knitr::opts_chunk$set(
 #	error=TRUE, # my new favorite, will let the script run and create html so you could debug
@@ -294,11 +294,11 @@ plink \
 
 Each of the parameters corresponds to the following
 
+```
 Parameter	Value	Description
 bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
 maf	0.01	Removes all SNPs with minor allele frequency less than 0.01. Genotyping errors typically have a larger influence on SNPs with low MAF. Studies with large sample sizes could apply a lower MAF threshold
 hwe	1e-6	Removes SNPs with low P-value from the Hardy-Weinberg Equilibrium Fisher's exact or chi-squared test. SNPs with significant P-values from the HWE test are more likely affected by genotyping error or the effects of natural selection. Filtering should be performed on the control samples to avoid filtering SNPs that are causal (under selection in cases). When phenotype information is included, plink will automatically perform the filtering in the controls.
-```
 geno	0.01	Excludes SNPs that are missing in a high fraction of subjects. A two-stage filtering process is usually performed (see Marees et al).
 mind	0.01	Excludes individuals who have a high rate of genotype missingness, since this may indicate problems in the DNA sample or processing. (see Marees et al for more details).
 make-just-fam	-	Informs plink to only generate the QC'ed sample name to avoid generating the .bed file.
@@ -548,7 +548,9 @@ plink \
     --extract EUR.QC.prune.in \
     --keep EUR.QC.valid \
     --rel-cutoff 0.125 \
-    --out EUR.QC
+    --out EUR.QC > plink.out 2>&1
+
+cat plink.out | tr "\r" "\n" | grep -vs " markers complete."
 ```
 
 
@@ -582,6 +584,7 @@ plink \
 
 Each of the parameters corresponds to the following
 
+```
 Parameter	Value	Description
 bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
 keep	EUR.QC.rel.id	Informs plink that we only want to keep samples in EUR.QC.rel.id
@@ -589,6 +592,7 @@ extract	EUR.QC.snplist	Informs plink that we only want to use SNPs in EUR.QC.snp
 exclude	EUR.mismatch	Informs plink that we wish to remove any SNPs in EUR.mismatch
 a1-allele	EUR.a1	Fix all A1 alleles to those specified in EUR.a1
 out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
+```
 
 
 
@@ -694,9 +698,8 @@ plink provides a convenient function --score and --q-score-range for calculating
 We will need three files:
 
 The base data file: Height.QC.Transformed
+
 A file containing SNP IDs and their corresponding P-values (\$3 because SNP ID is located in the third column; \$8 because the P-value is located in the eighth column)
-
-
 
 ```{bash}
 awk '{print $3,$8}' Height.QC.Transformed > SNP.pvalue
@@ -716,16 +719,15 @@ echo "0.5 0 0.5" >> range_list
 ```
 
 The format of the range_list file should be as follows:
+```
 Name of Threshold	Lower bound	Upper Bound
+```
+
 Note
 
 The threshold boundaries are inclusive. For example, for the 0.05 threshold, we include all SNPs with P-value from 0 to 0.05, including any SNPs with P-value equal to 0.05.
 
 We can then calculate the PRS with the following plink command:
-
-
-
-
 
 ```{bash plink08}
 module load plink
@@ -737,9 +739,8 @@ plink \
     --out EUR
 ```
 
-
-
 The meaning of the new parameters are as follows:
+
 ```
 Paramter	Value	Description
 score	Height.QC.Transformed 3 4 12 header	We read from the Height.QC.Transformed file, assuming that the 3st column is the SNP ID; 4th column is the effective allele information; the 12th column is the effect size estimate; and that the file contains a header
@@ -775,9 +776,6 @@ Population structure is the principal source of confounding in GWAS and is usual
 
 Again, we can calculate the PCs using plink:
 
-
-
-
 ```{bash plink09}
 module load plink
 # First, we need to perform prunning
@@ -785,12 +783,15 @@ plink \
     --bfile EUR.QC \
     --indep-pairwise 200 50 0.25 \
     --out EUR
+
 # Then we calculate the first 6 PCs
 plink \
     --bfile EUR.QC \
     --extract EUR.prune.in \
     --pca 6 \
-    --out EUR
+    --out EUR > plink.out 2>&1
+
+cat plink.out | tr "\r" "\n" | grep -vs " markers complete."
 ```
 
 
@@ -912,6 +913,7 @@ PRSice-2 can then be run to obtain the PRS results as follows:
 \rm EUR.QC.bk
 
 Rscript PRSice.R \
+--all-score \
     --prsice PRSice_linux \
     --base Height.QC.gz \
     --target EUR.QC \
@@ -920,9 +922,11 @@ Rscript PRSice.R \
     --cov EUR.covariate \
     --base-maf MAF:0.01 \
     --base-info INFO:0.8 \
-    --stat OR \
+    --stat OR\
     --or \
-    --out EUR
+    --out EUR > PRSice.R.out 2>&1
+
+cat PRSice.R.out | tr '\r' '\n' | grep -vs '^Processing .*%$' | grep -vs 'Clumping Progress: .*%$'
 ```
 
 
@@ -955,6 +959,20 @@ How much phenotypic variation does the "best-fit" PRS explain?
 0.161237
 
 
+Where do those numbers come from???
+
+```{bash}
+head EUR.prsice
+```
+
+How is the best-fit selected?
+
+Are the notebooks above results the same as mine?
+
+
+```{bash}
+cat EUR.summary
+```
 
 
 #	Background
@@ -1072,9 +1090,16 @@ sumstats <- sumstats[sumstats$rsid%in% info$rsid,]
 ```{r calculate_LD}
 # Get maximum amount of cores
 NCORES <- nb_cores()
+
 # Open a temporary file
 tmp <- tempfile(tmpdir = "tmp-data")
-on.exit(file.remove(paste0(tmp, ".sbk")), add = TRUE)
+#	on.exit(file.remove(paste0(tmp, ".sbk")), add = TRUE)
+#	Seems to try to remove the file as soon as set?
+#	Warning in file.remove(paste0(tmp, ".sbk")): cannot remove file
+#	'tmp-data/file6781112f5d891.sbk', reason 'No such file or directory'
+
+#	files do get created in ./tmp-data/ but they do not get removed?
+
 # Initialize variables for storing the LD score and LD matrix
 corr <- NULL
 ld <- NULL
@@ -1124,6 +1149,9 @@ fam.order <- as.data.table(obj.bigSNP$fam)
 setnames(fam.order,
         c("family.ID", "sample.ID"),
         c("FID", "IID"))
+
+
+#on.exit(file.remove(paste0(tmp, ".sbk")), add = TRUE)
 ```
 
 ##	5. Perform LD score regression
@@ -1137,6 +1165,7 @@ ldsc <- snp_ldsc(   ld,
                     sample_size = df_beta$n_eff,
                     blocks = NULL)
 h2_est <- ldsc[["h2"]]
+print(h2_est)
 ```
 
 ##	6. Calculate the null R2
@@ -1155,10 +1184,15 @@ null.model <- paste("PC", 1:6, sep = "", collapse = "+") %>%
     lm(., data = y) %>%
     summary
 null.r2 <- null.model$r.squared
+print(null.r2)
 ```
 
 ```{r snp_ldpred2}
 beta_inf <- snp_ldpred2_inf(corr, df_beta, h2 = h2_est)
+
+
+#	Don't think that I need it anymore. Why not just delete it?
+on.exit(file.remove(paste0(tmp, ".sbk")), add = TRUE)
 ```
 
 ##	7. Obtain model PRS
@@ -1202,16 +1236,11 @@ inf.model <- lm(reg.formula, dat=reg.dat) %>%
 
 How much phenotypic variation does the PRS from each model explain?
 
-Infinitesimal = 0.0248696
+Infinitesimal = 0.0248696 <- is this approximate? my value, seen here, was 0.0545, if I'm reading it correctly. I don't think that I am.
 
-Grid Model = 0.001746926
+Grid Model = 0.001746926 <- not run here
 
-Auto Model = 0.1751478
-
-
-
-Where is this value?
-
+Auto Model = 0.1751478 <- not run here
 
 
 
@@ -1322,16 +1351,15 @@ out <- lassosum.pipeline(
 target.res <- validate(out, pheno = as.data.frame(target.pheno), covar=as.data.frame(cov))
 # Get the maximum R2
 r2 <- max(target.res$validation.table$value)^2
-```
 
+print(r2)
+```
 
 How much phenotypic variation does the "best-fit" PRS explain?
 
 0.2474679
 
 
-
-Where is that value from?
 
 
 #	Plotting the Results
