@@ -317,3 +317,17 @@ chmod -w manifest.csv
 
 
 
+##	20250410
+
+```
+\rm -f manifest.csv
+
+#awk 'BEGIN{FS=OFS=","}{$4=$4",";print "S"int(substr($4,4)),$0}' L1_full_covariatesv2_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-6-24hmh.csv > manifest.csv
+
+cp L2_full_covariates_Vir3_phip-seq_GBM_p2_MENPEN_p14_12-29-24hmh_L2_Covar.csv manifest.csv
+
+sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
+chmod -w manifest.csv
+```
+
+

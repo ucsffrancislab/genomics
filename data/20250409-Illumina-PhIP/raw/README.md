@@ -297,10 +297,10 @@ sed -i '1isample,s' sample_s_number.csv
 
 
 ```
-dos2unix Combined_table_for_sequencing_library_11-19-2024_Mi.csv
+dos2unix L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv
 ```
 
-edit `Combined_table_for_sequencing_library_11-19-2024_Mi.csv`
+edit `L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv`
 
 remove commas from some field for ease of use later
 
@@ -308,21 +308,15 @@ remove new lines from header fields
 
 
 
-```
-head -1 Combined_table_for_sequencing_library_11-19-2024_Mi.csv > tmp
-tail -n +2 Combined_table_for_sequencing_library_11-19-2024_Mi.csv | sort -t, -k5,5 >> tmp
-
-join -t, --header -1 1 -2 5 sample_s_number.csv tmp | wc -l 
-126
-```
-
-
-This set is plate 2 and 14
+This set is plate 5 and 6
 
 ```
-head -1 Combined_table_for_sequencing_library_11-19-2024_Mi.csv > manifest.csv
-grep "^2," Combined_table_for_sequencing_library_11-19-2024_Mi.csv >> manifest.csv
-grep "^14," Combined_table_for_sequencing_library_11-19-2024_Mi.csv >> manifest.csv
+#head -1 L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv > manifest.csv
+#grep "^2," L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv >> manifest.csv
+#grep "^14," L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv >> manifest.csv
+
+\rm -f manifest.csv
+cp L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv manifest.csv
 sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
 chmod -w manifest.csv
 ```

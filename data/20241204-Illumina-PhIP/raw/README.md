@@ -291,3 +291,14 @@ Password: -------
  
 
 
+##	20250410
+
+```
+\rm -f manifest.csv
+
+awk 'BEGIN{FS=OFS=","}{$4=$4",";print "S"int(substr($4,4)),$0}' L1_full_covariatesv2_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-6-24hmh.csv > manifest.csv
+
+sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
+chmod -w manifest.csv
+```
+

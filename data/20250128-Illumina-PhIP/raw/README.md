@@ -319,4 +319,12 @@ chmod -w manifest.csv
 ```
 
 
+##	20250410
+
+```
+\rm -f manifest.csv
+cp L3_full_covariates_Vir3_phip-seq_GBM_p3_and_p4_1-28-25hmh.csv manifest.csv
+sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
+chmod -w manifest.csv
+```
 
