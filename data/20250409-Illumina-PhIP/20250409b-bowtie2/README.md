@@ -14,23 +14,6 @@ bowtie2_array_wrapper.bash --single --threads 8 --sort --very-sensitive \
 
 
 
-```
-
-for f in *bam ; do
-echo $f
-samtools view -q40 -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.q40.txt.gz
-chmod a-w ${f}.aligned_sequences.q40.txt.gz
-zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.q40.txt
-chmod a-w ${f}.aligned_sequence_counts.q40.txt
-
-samtools view -q20 -F4 ${f} | awk '{print $3}' | gzip > ${f}.aligned_sequences.q20.txt.gz
-chmod a-w ${f}.aligned_sequences.q20.txt.gz
-zcat ${f}.aligned_sequences.txt.gz | sort --parallel=8 | uniq -c | sort -rn > ${f}.aligned_sequence_counts.q20.txt
-chmod a-w ${f}.aligned_sequence_counts.q20.txt
-done
-```
-
-
 
 ```
 
@@ -38,10 +21,22 @@ done
 cat report.csv | datamash transpose -t, > report.t.csv
 box_upload.bash report*csv
 
-./tile_counts.Rmd
-box_upload.bash tile_counts.html 
+
+sort -t, -k2,2 /francislab/data1/raw/20250409-Illumina-PhIP/sample_s_number.csv | grep -vs "Undetermined" | sed '1isample,s' > sample_s_number.csv
+
+head -1 report.t.csv > tmp1.csv
+tail -n +2 report.t.csv | sort -t, -k1,1 >> tmp1.csv
+
+join --header -t, -1 2 -2 1 sample_s_number.csv tmp1.csv > tmp2.csv
+mv tmp2.csv report.t.csv
+cat report.t.csv | datamash transpose -t, > report.csv 
+box_upload.bash report*csv
 
 ```
 
 
+```
+./tile_counts.Rmd
+box_upload.bash tile_counts.html 
 
+```

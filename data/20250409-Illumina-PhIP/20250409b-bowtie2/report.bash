@@ -73,91 +73,91 @@ for s in ${samples} ; do
 done
 echo
 
-echo -n "Subject"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $3}' ${manifest} )
-	v=${v/dup/}
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Name"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $3}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Index"
-for s in ${samples} ; do
-	name=$( awk -F, -v sample=${s} '( $1 == sample ){print $3}' ${manifest} )
-	v=$( awk -F, -v sample=${name} '( $1 == sample ){print $2}' ${sample_index} )
-	echo -n ",${v}"
-done
-echo
-
-#	7 glioma serum
-#	8 AGS
-#	9 control
-#	10 AGS50215
-#	11 68
-#	12 M
-
-echo -n "Type"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $7}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Study"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $8}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Group"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $9}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Age"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $11}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Sex"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $12}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Plate"
-for s in ${samples} ; do
-	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $23}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Well X"
-for s in ${samples} ; do
-	v=$( awk -F"," -v sample=${s} '( $1 == sample ){x=substr($24,1,1); print x}' ${manifest} | tr 'A-H' '1-8' )
-	echo -n ",${v}"
-done
-echo
-
-echo -n "Well Y"
-for s in ${samples} ; do
-	v=$( awk -F"," -v sample=${s} '( $1 == sample ){x=substr($24,2,2); print int(x)}' ${manifest} )
-	echo -n ",${v}"
-done
-echo
+#	echo -n "Subject"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $3}' ${manifest} )
+#		v=${v/dup/}
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Name"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $3}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Index"
+#	for s in ${samples} ; do
+#		name=$( awk -F, -v sample=${s} '( $1 == sample ){print $3}' ${manifest} )
+#		v=$( awk -F, -v sample=${name} '( $1 == sample ){print $2}' ${sample_index} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	#	7 glioma serum
+#	#	8 AGS
+#	#	9 control
+#	#	10 AGS50215
+#	#	11 68
+#	#	12 M
+#	
+#	echo -n "Type"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $7}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Study"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $8}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Group"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $9}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Age"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $11}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Sex"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $12}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Plate"
+#	for s in ${samples} ; do
+#		v=$( awk -F, -v sample=${s} '( $1 == sample ){print $23}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Well X"
+#	for s in ${samples} ; do
+#		v=$( awk -F"," -v sample=${s} '( $1 == sample ){x=substr($24,1,1); print x}' ${manifest} | tr 'A-H' '1-8' )
+#		echo -n ",${v}"
+#	done
+#	echo
+#	
+#	echo -n "Well Y"
+#	for s in ${samples} ; do
+#		v=$( awk -F"," -v sample=${s} '( $1 == sample ){x=substr($24,2,2); print int(x)}' ${manifest} )
+#		echo -n ",${v}"
+#	done
+#	echo
 
 
 echo -n "Raw Read Count"
