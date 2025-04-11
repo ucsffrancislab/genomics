@@ -1676,3 +1676,142 @@ sed \
 
 
 
+##	20250409
+
+
+Does vir3_clean ever include a stop codon?
+
+Does it include the PREFIX?
+
+Does it include the SUFFIX?
+
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $18}' | cut -c1-16 | sort | uniq -c
+  70798 aGGAATTCCGCTGCGT
+  37805 aTGAATTCGGAGCGGT
+   5885  GGAATTCCGCTGCGTA
+   4042  GGAATTCCGCTGCGTC
+   6168  GGAATTCCGCTGCGTG
+   3559  GGAATTCCGCTGCGTT
+
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $18}' | cut -c185- | sort | uniq -c
+  19654 AGGGAAGAGCTCGA
+  37805 CACTGCACTCGAGACa
+  70798 CAGGgaagagctcgaa
+
+```
+
+I get the impression that 19,654 sequences in this CSV don't include the leading "a" or trailing "a". No idea why.
+```
+echo $[5885+4042+6168+3559]
+19654
+```
+
+Let's try again a bit differently.
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1}print substr($18,i,15)}' | sort | uniq -c
+  90452 GGAATTCCGCTGCGT
+  37805 TGAATTCGGAGCGGT
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/a$/){i=2}else{i=1}print toupper(substr($18,length($18)-13-i))}' | sort | uniq -c 
+  37805 CACTGCACTCGAGACA
+  19654 CAGGGAAGAGCTCGA
+  70798 CAGGGAAGAGCTCGAA
+
+```
+
+
+
+
+```
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1}
+print($18);
+print substr($18,i,15);
+print substr($18,15+i,length($18)-30-i);
+print substr($18,length($18)-13-i);
+}' | head -12
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print toupper(substr($18,15+i,length($18)-30-i)); }' | head -12
+```
+
+
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(length($21)<50){print $21;print $18}' | head
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print ">"$21; print toupper(substr($18,15+i,length($18)-30-i)); }' | head -12
+
+```
+
+
+
+
+
+##	20250410
+
+
+Moved all VIR3 data to VirScan-20240508/
+
+Gonna recreate all things as necessary in VirScan-20250410 with more accurate sequence extraction above. I don't think it'll make any difference.
+
+The differences would only be at the beginning by 1 base as the end is trimmed by length.
+
+I'm also gonna convert to upper case. It should have no effect, but some of these sequences are upper and some are lower with no explanation.
+
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,substr($18,15+i,length($18)-30-i); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_oligo.uniq.csv
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,toupper(substr($18,15+i,length($18)-30-i)); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_upper_oligo.uniq.csv
+
+cut -d, -f1 VirScan/VIR3_clean.id_upper_oligo.uniq.csv | uniq -d
+```
+
+No duplicated ids
+
+```
+awk -F, '{print ">"$1;print $2}' VirScan/VIR3_clean.id_upper_oligo.uniq.csv > VirScan/VIR3_clean.id_upper_oligo.uniq.fna
+awk -F, '{print ">"$1;print substr($2,1,80)}' VirScan/VIR3_clean.id_upper_oligo.uniq.csv > VirScan/VIR3_clean.id_upper_oligo.uniq.1-80.fna
+awk -F, '{print ">"$1;print substr($2,1,80)}' VirScan/VIR3_clean.id_oligo.uniq.csv > VirScan/VIR3_clean.id_oligo.uniq.1-80.fna
+bowtie2-build VirScan/VIR3_clean.id_oligo.uniq.1-80.fna VirScan/VIR3_clean.id_oligo.uniq.1-80
+bowtie2-build VirScan/VIR3_clean.id_upper_oligo.uniq.1-80.fna VirScan/VIR3_clean.id_upper_oligo.uniq.1-80
+```
+
+
+```
+zgrep -A 1 "^>10000" VirScan-20240508/VIR3_clean.1-84.fna.gz | head
+>10000
+gggacatctggctttgcagaattgcttcatgcactccaccttgatagtttgaatctgatcccagccattaattgctctaaaatt
+
+grep -A 1 "^>10000" VirScan-20250410/VIR3_clean.id_upper_oligo.uniq.1-80.fna
+>10000
+GGGACATCTGGCTTTGCAGAATTGCTTCATGCACTCCACCTTGATAGTTTGAATCTGATCCCAGCCATTAATTGCTCTAA
+```
+
+1 check shows a surpising increase in alignments? Almost 20%.
+```
+cat out/S100.VIR3_clean.id_upper_oligo.uniq.1-80.bam.aligned_count.q40.txt
+2296990
+
+cat ../20250409b-bowtie2/out/S100.VIR3_clean.1-84.bam.aligned_count.q40.txt
+1879301
+```
+
+Perhaps just higher quality alignments?
+```
+cat out/S100.VIR3_clean.id_upper_oligo.uniq.1-80.bam.aligned_count.txt 
+2411755
+
+cat ../20250409b-bowtie2/out/S100.VIR3_clean.1-84.bam.aligned_count.txt 
+2386948
+```
+
+Upper vs mixed is making no difference in my check. 
+
+All of the differences appear to be in the 108603-128287 which are those oligos without the leading "a" which meant I trimmed off 1 base of the actual sequence. Hard to believe that it made this much of a difference.
+
+
