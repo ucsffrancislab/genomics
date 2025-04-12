@@ -57,3 +57,28 @@ done
 
 
 
+
+
+
+```
+for manifest in manifest.plate*.csv ; do
+  plate=${manifest%.csv}
+  plate=${plate#manifest.plate}
+  echo $plate
+  cp ${manifest} out.plate${plate}/
+  sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+    --job-name=phip_seq_plate${plate} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+    --output=${PWD}/logs/phip_seq.aggregate.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+    /c4/home/gwendt/.local/bin/phip_seq_aggregate.bash ${manifest} out.plate${plate}/
+done
+
+for manifest in manifest.plate*.csv ; do
+  plate=${manifest%.csv}
+  plate=${plate#manifest.plate}
+  echo $plate
+  box_upload.bash out.plate${plate}/Zscores*csv out.plate${plate}/seropositive*csv out.plate${plate}/All* out.plate${plate}/m*
+done
+```
+
+
+
