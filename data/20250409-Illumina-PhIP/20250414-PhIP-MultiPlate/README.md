@@ -82,8 +82,6 @@ done
 
 ```
 
----
-
 
 
 ```
@@ -118,21 +116,34 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 1
 
 
 
+				most Case_Control_Z_Script.R failed due to grep issues ( plate6 )
+
+				many failed (expectedly) due to missing seropositive.ZSCORE.csv files (only have 3.5 and 10)
 
 
 
 
 
 ```
+box_upload.bash out.plate?/{Tile_Comparison,Viral_Ser,Viral_Frac_Hits,Seropositivity}*
+```
 
+
+
+
+```
 \rm commands
 
 plates=$( ls -d ${PWD}/out.plate[12356] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
 for z in 3.5 5 10 15 20 30 40 50; do
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-12356.csv -o ${PWD}/out.12356 -p ${plates}
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select-12356.csv -o ${PWD}/out.12356 -p ${plates}
-echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/out.12356 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/out.12356 -p ${plates}  --zfile_basename Counts.normalized.subtracted.trim.select-12356.csv
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/out.12356 -p ${plates} --zfile_basename Zscores.select-12356.csv
 done >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a case -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.12356 -p ${plates} >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a case -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.12356 -p ${plates} --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a case -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.12356 -p ${plates} --sex F >> commands
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.12356 -p ${plates} >> commands
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.12356 -p ${plates} --sex M >> commands
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.12356 -p ${plates} --sex F >> commands
@@ -141,14 +152,53 @@ plates=$( ls -d ${PWD}/out.plate[123456] 2>/dev/null | paste -sd, | sed 's/,/ -p
 for z in 3.5 5 10 15 20 30 40 50; do
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-123456.csv -o ${PWD}/out.123456 -p ${plates}
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a case -b control --zfile_basename Zscores.select-123456.csv -o ${PWD}/out.123456 -p ${plates}
-echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/out.123456 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/out.123456 -p ${plates} --zfile_basename Counts.normalized.subtracted.trim.select-123456.csv
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a case -b control -o ${PWD}/out.123456 -p ${plates} --zfile_basename Zscores.select-123456.csv
 done >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a case -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.123456 -p ${plates} >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a case -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.123456 -p ${plates} --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a case -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.123456 -p ${plates} --sex F >> commands
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.123456 -p ${plates} >> commands
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.123456 -p ${plates} --sex M >> commands
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a case -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.123456 -p ${plates} --sex F >> commands
 
 commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
 ```
+
+
+Check Rmds and possibly move to core ares
+
+
+```
+box_upload.bash out.{12356,123456}/Multiplate*
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -212,12 +262,6 @@ done
 ./PeptideComparison.Rmd \
   -i ${PWD}/6plates/20250130-Multiplate_Peptide_Comparison-case-control-Prop_test_results-10.csv \
   -o Multiplate_Peptide_Comparison4
-
-
-
-
-
-
 
 
 ```
