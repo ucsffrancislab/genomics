@@ -59,55 +59,79 @@ grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | wc -l
 So it is 000-999, 1000-9999, 10000-99999, etc.
 
 
-
-Create csv
-
+Create a limited html file to look at things
 ```
-text, batch, pdf path, color png path, b&w png path
-IN531	151204010	(1:52-21), 2, pdfs/batch2_spot_plots_human_IgG_01.pdf, out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-000.png, out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-001.png
-IN531	151204010	(1:52-6), 2, pdfs/batch2_spot_plots_human_IgG_01.pdf, out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-002.png, out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-003.png
-IN531	151204010	(1:52-7), 2, pdfs/batch2_spot_plots_human_IgG_01.pdf, out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-004.png, out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-005.png
-
+create_html.bash
 ```
 
 
-
-
-identify -verbose out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-037.png
-
-
 ```
-cat << EOF > test.html
-<html>
-<body>
-<table>
-EOF
-```
-echo "<tr><td>$a</td><td>$b</td><td>$c</td><td><img src='out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-${fi}.png'/></td></tr>"
-
-```
-i=0
-while read a b c d e ; do
-fi=$( printf "%03d" $i )
-png=$( base64 out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-${fi}.png )
-echo "<tr><td>$a</td><td>$b</td><td>$c</td><td>$d</td><td>$e</td><td><img src='data:image/png;base64,${png}' /></td>"
-stats=$( identify -verbose out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-${fi}.png | grep -A 8 "Image statistics:" )
-echo "<td>${stats}</td></tr>"
-i=$[i+2]
-done < <( grep -h -B2 "^(" out/batch2_spot_plots_human_IgG_01.txt |grep -vs "^--" | paste - - - | sed -e 's/[)(]//g' -e 's/[-:]/\t/g' | head -100 ) >> test.html
-
-
-```
-
-```
-cat << EOF >> test.html
-</table>
-</body>
-</html>
-EOF
-```
-
-
-
 grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | sed -e 's/[)(]//g' -e 's/[-:]/\t/g' | head
+```
+
+Looks like 492 subjects each with 1174 datapoints.
+```
+grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq -c
+grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq -c | wc -l
+492
+```
+
+
+
+##	20250414
+
+
+```
+find out/ -name \*png | wc -l
+1155216
+```
+
+
+Some pdfs are multi-page, multi-protein, with multiple Case and Control chunks.
+Sadly, Control is the last item on each line?
+
+widthxheight+left+top
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=crop --wrap="${PWD}/crop.bash"
+```
+
+
+Hmmm? Expecting 1155216
+```
+find out/ -name \*-cropped.png | wc -l
+1195925
+```
+
+
+More pngs than expected. Gonna try to figure out why.
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 3-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=find --wrap="find out/batch?_spot_plots_human_IgG_0?/ -name \*.png" --output=find_all_pngs
+
+
+wc -l find_all_pngs 
+2391850 find_all_pngs
+```
+
+```
+had some strays
+
+find out/batch?_spot_plots_human_IgG_0?/ -name \*16x16+17+19\*.png -exec rm {} \;
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 3-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=find --wrap="find out/batch?_spot_plots_human_IgG_0?/ -name \*.png" --output=find_all_pngs2
+
+
+wc -l find_all_pngs2 
+2310432 find_all_pngs2
+
+cat find_all_pngs2.sorted | paste - - | wc -l
+1155216
+```
+Perfect
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 3-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv.bash"
+```
 
