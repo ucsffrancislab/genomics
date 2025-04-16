@@ -116,9 +116,9 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 1
 
 
 
-				most Case_Control_Z_Script.R failed due to grep issues ( plate6 )
+Plate6 Case_Control_Z_Script.R failed due to grep issues. Quick fixed and reran.
 
-				many failed (expectedly) due to missing seropositive.ZSCORE.csv files (only have 3.5 and 10)
+Many failed (expectedly) due to missing seropositive.ZSCORE.csv files (only have 3.5 and 10)
 
 
 
@@ -166,8 +166,6 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 1
 ```
 
 
-Check Rmds and possibly move to core ares
-
 
 ```
 box_upload.bash out.{12356,123456}/Multiplate*
@@ -181,6 +179,92 @@ box_upload.bash out.{12356,123456}/Multiplate*
 
 
 
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=vs12356 --wrap="module load r pandoc; virus_scores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate5 -d ${PWD}/out.plate6 -o ${PWD}/out.12356/virus_scores"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=vs123456 --wrap="module load r pandoc; virus_scores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate4 -d ${PWD}/out.plate5 -d ${PWD}/out.plate6 -o ${PWD}/out.123456/virus_scores"
+
+```
+
+
+
+
+
+
+
+
+
+
+
+```
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.123456/Counts.normalized.subtracted.trim.csv \
+  ${PWD}/out.plate[123456]/Counts.normalized.subtracted.trim.csv
+
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.12356/Counts.normalized.subtracted.trim.csv \
+  ${PWD}/out.plate[12356]/Counts.normalized.subtracted.trim.csv
+```
+
+
+
+
+
+
+
+```
+tail -q -n +2 out.plate[123456]/manifest.plate*.csv > out.123456/tmp1.csv
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' out.123456/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$4,$5,$6,$7,$8,$9}' out.123456/tmp1.csv > out.123456/tmp2.csv
+head -1 out.123456/tmp2.csv > out.123456/manifest.csv
+tail -n +2 out.123456/tmp2.csv | sort -t, -k1,1 >> out.123456/manifest.csv
+chmod -w out.123456/manifest.csv
+\rm out.123456/tmp?.csv
+
+tail -q -n +2 out.plate[12356]/manifest.plate*.csv > out.12356/tmp1.csv
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' out.12356/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$4,$5,$6,$7,$8,$9}' out.12356/tmp1.csv > out.12356/tmp2.csv
+head -1 out.12356/tmp2.csv > out.12356/manifest.csv
+tail -n +2 out.12356/tmp2.csv | sort -t, -k1,1 >> out.12356/manifest.csv
+chmod -w out.12356/manifest.csv
+\rm out.12356/tmp?.csv
+```
+
+
+Drop species name and add case/control status ...
+
+```
+for dir in out.123456 out.12356 ; do
+head -1 ${PWD}/${dir}/Counts.normalized.subtracted.trim.csv > ${PWD}/${dir}/tmp1.csv
+tail -n +3 ${PWD}/${dir}/Counts.normalized.subtracted.trim.csv >> ${PWD}/${dir}/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $1,$2,$5,$8}' ${PWD}/${dir}/manifest.csv > ${PWD}/${dir}/tmp2.csv
+join --header -t, -1 1 -2 3 ${PWD}/${dir}/tmp2.csv ${PWD}/${dir}/tmp1.csv > ${PWD}/${dir}/tmp3.csv
+cut -d, -f1-4,6- ${PWD}/${dir}/tmp3.csv > ${PWD}/${dir}/Counts.normalized.subtracted.trim.plus.csv
+\rm ${dir}/tmp?.csv
+done
+```
+
+
+```
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.123456/Counts.normalized.subtracted.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.123456/Counts.normalized.subtracted.trim.plus.mins.csv')\""
+
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.12356/Counts.normalized.subtracted.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.12356/Counts.normalized.subtracted.trim.plus.mins.csv')\""
+```
+
+
+
+
+
+
+
+```
+for f in ${PWD}/out.123*/Multiplate_Peptide_Comparison-*-Prop_test_results*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.subtracted.trim.plus.mins.csv"
+done
+
+```
 
 
 
@@ -199,9 +283,25 @@ box_upload.bash out.{12356,123456}/Multiplate*
 
 
 
+This requires Zscores.select.minimums.csv and a virus species
+./Zscores.Rmd -s "Human herpesvirus 3" \
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=Zs12356 --wrap="module load r pandoc; Zscores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate5 -d ${PWD}/out.plate6 -o ${PWD}/out.12356/Zscores"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=Zs123456 --wrap="module load r pandoc; Zscores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate4 -d ${PWD}/out.plate5 -d ${PWD}/out.plate6 -o ${PWD}/out.123456/Zscores"
+
+```
 
 
 
+
+
+
+
+
+join the counts files ...
 
 
 
@@ -210,63 +310,3 @@ box_upload.bash out.{12356,123456}/Multiplate*
 
 
 ./heatmap.Rmd -i /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/cpm_blank_subtracted.csv -o glioma_cpm_blank_subtracted
-```
-
-./PeptideComparison.Rmd \
-  -i ${PWD}/MultiPlateTesting/20250218-Multiplate_Peptide_Comparison-Zscores.select3-case-control-Prop_test_results-10.csv \
-  -o ${PWD}/MultiPlateTesting/Multiplate_Peptide_Comparison-Zscores.select3
-
-./PeptideComparison.Rmd \
-  -i ${PWD}/MultiPlateTesting/20250218-Multiplate_Peptide_Comparison-Zscores.select6-case-control-Prop_test_results-10.csv \
-  -o ${PWD}/MultiPlateTesting/Multiplate_Peptide_Comparison-Zscores.select4
-```
-
-
-```
-for f in ${PWD}/20250220/MultiPlate?/*-Multiplate_Peptide_Comparison-*csv ; do
-./PeptideComparison.Rmd -i ${f} -o ${f%.csv}
-done
-```
-
-
-./virus_scores.Rmd \
-  -d ${PWD}/out.plate1 \
-  -d ${PWD}/out.plate2 \
-  -d ${PWD}/out.plate3 \
-  -o ${PWD}/virus_scores3.gbm
-
-./virus_scores.Rmd \
-  -d ${PWD}/out.plate1 \
-  -d ${PWD}/out.plate2 \
-  -d ${PWD}/out.plate3 \
-  -d ${PWD}/out.plate4 \
-  -o ${PWD}/virus_scores4.gbm
-
-./Zscores.Rmd -s "Human herpesvirus 3" \
-  -d ${PWD}/out.plate1 \
-  -d ${PWD}/out.plate2 \
-  -d ${PWD}/out.plate3 \
-  -o Zscores3.gbm.HHV3
-
-./Zscores.Rmd -s "Human herpesvirus 3" \
-  -d ${PWD}/out.plate1 \
-  -d ${PWD}/out.plate2 \
-  -d ${PWD}/out.plate3 \
-  -d ${PWD}/out.plate4 \
-  -o Zscores4.gbm.HHV3
-
-./PeptideComparison.Rmd \
-  -i ${PWD}/3plates/20250130-Multiplate_Peptide_Comparison-case-control-Prop_test_results-10.csv \
-  -o Multiplate_Peptide_Comparison3
-
-./PeptideComparison.Rmd \
-  -i ${PWD}/6plates/20250130-Multiplate_Peptide_Comparison-case-control-Prop_test_results-10.csv \
-  -o Multiplate_Peptide_Comparison4
-
-
-```
-for f in ${PWD}/20250304/MultiPlate?/Multiplate_Peptide_Comparison-*Z-0.csv ; do
-sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="module load r pandoc; ${PWD}/PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c ${PWD}/20250226/Counts.normalized.subtracted.trim.plus.mins.csv"
-done
-```
-
