@@ -35,7 +35,7 @@ echo $pdf
 b=$( basename ${pdf} .pdf )
 mkdir out/${b}
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=pdftoimages --wrap="pdfimages -png ${pdf} out/${b}/${b}"
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=pdftotext --wrap="pdftotext ${pdf} out/${b}.txt"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=pdftotext --wrap="pdftotext -raw -nopgbrk ${pdf} out/${b}.raw.txt"
 done
 ```
 
@@ -134,4 +134,27 @@ Perfect
 ```
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 3-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv.bash"
 ```
+
+
+
+
+
+##	20250416
+
+
+```
+-nopgbrk gets rid of the Control-L
+
+-raw seems to keep the titles, Cases and Controls in the correct order
+
+pdftotext -raw -nopgbrk pdfs/batch2_spot_plots_human_IgG_02.pdf
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv3 --wrap="${PWD}/create_csv3.bash"
+```
+
+should be 577608 samples
+
 
