@@ -122,12 +122,21 @@ if len(data_frames) > 0:
 #		df.columns[i]=(args.index_col[i],)*df.columns.nlevels
 
 
+#   for i in range(len(args.index_col)):
+#     print(i," : ",args.index_col[i])
+#     print(df.columns[i])
+#     df.rename(level=0,columns={ df.columns[i][0]: args.index_col[i] }, inplace = True)
+#     print(df.columns[i])
+
+
 	cols=df.columns.to_list()
 	for i in range(len(args.index_col)):
 		cols[i]=(args.index_col[i],)*df.columns.nlevels
 	df.columns = pd.MultiIndex.from_tuples(cols)
 
 	print(df.shape)
+
+	print(df.head())
 
 	print("Writing CSV: "+output)
 	df.to_csv(output,index=False)
