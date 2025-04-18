@@ -48,7 +48,7 @@ for txt in out/batch?_spot_plots_human_IgG_0?.raw.txt ; do
 	i=0	#	<- pdfimages image counter
 
 	for case_line in $( grep -n "^Case" "${txt}" | cut -d: -f1 ) ; do
-		protein=$( sed -n -e "$[case_line-1]s/ (.*)//p" "${txt}" | sed 's/ /-/g' )	#	some have spaces
+		protein=$( sed -n -e "$[case_line-1]s/ (.*)//p" "${txt}" | sed 's/ /_/g' )	#	some have spaces
 		control_line=$( tail -n +${case_line} "${txt}" | grep -m 1 -n "^Control" | cut -d: -f1 )
 
 		for sample in $( sed -n "$[case_line+1],$[case_line+control_line-2]p" ${txt} | grep -h -B2 "^(" | grep -vs "^--" | paste - - - | sed -e 's/[)(]//g' -e 's/[-:]/\t/g' -e 's/\t/,/g' ) ; do
