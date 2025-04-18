@@ -1,0 +1,357 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#	argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+#parser$add_argument("-d", "--dir", type="character", required=TRUE, action="append",
+#        help="dir to compare (use multiple times for each)", metavar="group")
+parser$add_argument("-i", "--input", type="character", default="HHV3.csv",
+        help="input file [default=%(default)s]", metavar="file name")
+parser$add_argument("-o", "--output", type="character", default="heatmap",
+        help="output file base [default=%(default)s]", metavar="file base")
+#parser$add_argument("-s", "--species", type="character", default="Human herpesvirus 6A",
+#        help="species [default=%(default)s]", metavar="file base")
+
+opt <- parser$parse_args()
+
+#noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(noext,'.html') )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = paste0(opt$output,'.html') )
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
+
+q("no")
+
+---
+title: "Executable Rmarkdown script"
+author: "JW"
+date: "2025-01-10"
+output: html_document
+---
+
+
+
+```{r args}
+args
+```
+
+```{r optargs}
+opt
+```
+
+```{python python opt args}
+r.opt
+```
+
+```{r setup, include=FALSE}
+library(reticulate)
+use_python("/usr/bin/python3")
+```
+
+```{python}
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import gcf
+```
+
+```{python read csv}
+#df = pd.read_csv("/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/tmp8.csv",
+#df = pd.read_csv("/francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/HHV3.csv",
+df = pd.read_csv(r.opt['input'],
+	header=[0,1,2,3,4,5,6,7],
+	index_col=[0,1,2,3,4,5,6])
+
+df.columns = df.columns.set_names(["sample","subject","type","study","group","age","sex","plate"])
+df.index = df.index.set_names(["id","species","protein","entry version","sequence version","start","end"])
+
+#df=df.droplevel([1,3,4,6])	#	tile details like versions, species, end
+df=df.droplevel([0,3,4,5,6])	#	tile details like id, versions, start, end (really just interested in the protein here)
+df.shape
+```
+
+```{python}
+df.columns.names
+```
+
+```{python}
+df.index.names
+```
+
+```{python head1}
+#df.replace( np.inf,  99999, inplace=True)
+#df.replace(-np.inf, -99999, inplace=True)
+df.head()
+```
+
+
+```{python}
+# Create a function to replace the index values
+def replace_unnameds(value):
+	if value.startswith("Unnamed"):
+		return("None")
+	else:
+		return value
+
+# Replace the index values
+#df.rename(index=replace_index, inplace=True)
+df=df.rename(columns=replace_unnameds)	#, inplace=True)
+
+```
+
+
+
+```{python}
+df=df.sort_index(axis=1,level=[7,2,3,4,1,0])
+#df=df.sort_index(axis=1,level=[0,1,2,3,4,7])
+```
+
+Only Glioma
+```{python only glioma}
+df=df.loc[:, (slice(None),slice(None),'glioma serum', slice(None),slice(None),slice(None),slice(None))]
+df.shape
+```
+
+```{python}
+##df=df.droplevel(0)
+##df.loc[df.index.get_level_values('A') == 'foo']
+##	HHV1, HHV-2 and HHV-6A
+##df = df.loc[:,pd.IndexSlice[:,['Human herpesvirus 1','Human herpesvirus 2','Human herpesvirus 6A']]]
+#
+#df = df.loc[:,pd.IndexSlice[:,r.opt['species']]]
+#
+#df.columns=df.columns.droplevel(1)
+#df = df.sort_index()
+##df = df.reset_index().set_index(['id','group']).sort_index().reset_index().set_index('id')
+#
+#df=df.reset_index().set_index('level_0')
+#df.index.rename('subject',inplace=True)
+#df.fillna(0,inplace=True)
+```
+
+```{python head2}
+df.head()
+```
+
+```{python}
+#
+#df = df.sort_values(by='level_1')
+#
+#
+#
+#df.drop(columns='level_1').max().max()
+##df.max().max()
+##np.float64(68.0)
+```
+
+
+```{python}
+import seaborn as sns
+#sns.set(color_codes=True) #	not sure what this does
+
+##group = df.pop("group")
+#group = df.pop("level_1")
+#group.rename("group",inplace=True)
+#df.shape
+```
+
+```{python}
+#df=df.loc[:,df.columns[df.max()>10]]
+df.shape
+```
+
+
+```{python}
+#df=df.loc[:,df.columns[df.mean()>10]]
+df.shape
+```
+
+```{python}
+#df=df.loc[:, df.columns[(df > 10).sum() >= 5] ]
+df.shape
+```
+
+```{python head3}
+df.head()
+```
+
+Create a colored row label bar.
+
+Start by creating a list of labels from the index.
+
+The index needs to match the index of the dataframe. This could get tricky.
+
+
+```{python}
+row_labels=df.index.get_level_values(1).to_series( index=df.index, name='protein')
+row_labels
+```
+
+```{python}
+len(row_labels.unique())
+```
+82
+
+
+
+Guessing these need sorted? or Perhaps wraps around.
+
+Map a color to each value in the list of labels.
+
+Use "unique" rather than "set" as unique preserves the existing order.
+
+Color palette can be longer, or shorter, than needed.
+Extra will be ignored. Missing will be unassigned.
+```{python}
+#row_lut = dict(zip(row_labels.unique(), sns.color_palette("bright", len(row_labels.unique()))))
+#row_lut = dict(zip(row_labels.unique(), 'rbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbgrbg'))
+
+row_lut = dict(zip(row_labels.unique(), 'rby'*(len(row_labels.unique())//3+1)
+))
+
+#row_lut
+```
+
+
+Map all of the colors in the index to the color in the lookup table. (lut)
+
+```{python}
+#row_colors=pd.DataFrame(row_labels).pop(0).map(row_lut)
+#row_colors=row_labels.to_series().map(row_lut)
+#row_colors=row_colors.rename("protein")
+#row_colors.head()
+
+row_colors=row_labels.map(row_lut)
+row_colors
+```
+
+
+```{python col labels}
+col_labels2=df.columns.get_level_values(2).to_series( index=df.columns, name='type')
+col_labels3=df.columns.get_level_values(3).to_series( index=df.columns, name='study')
+col_labels4=df.columns.get_level_values(4).to_series( index=df.columns, name='group')
+col_labels7=df.columns.get_level_values(7).to_series( index=df.columns, name='plate')
+```
+
+```{python}
+len(col_labels2.unique())
+```
+
+```{python}
+len(col_labels3.unique())
+```
+
+```{python}
+len(col_labels4.unique())
+```
+
+
+Guessing these need sorted? or Perhaps wraps around.
+```{python col lut}
+col_lut2 = dict(zip(col_labels2.unique(), sns.color_palette("bright", len(col_labels2.unique()))))
+col_lut3 = dict(zip(col_labels3.unique(), sns.color_palette("bright", len(col_labels3.unique()))))
+col_lut4 = dict(zip(col_labels4.unique(), sns.color_palette("bright", len(col_labels4.unique()))))
+col_lut7 = dict(zip(col_labels7.unique(), sns.color_palette("bright", len(col_labels7.unique()))))
+```
+
+```{python col colors}
+col_colors2=col_labels2.map(col_lut2)
+col_colors3=col_labels3.map(col_lut3)
+col_colors4=col_labels4.map(col_lut4)
+col_colors7=col_labels7.map(col_lut7)
+```
+
+```{python}
+col_colors2
+```
+
+```{python}
+col_colors3
+```
+
+```{python}
+col_colors4
+```
+
+Create a legend
+```{python}
+legend_labels = col_labels2.unique()
+legend_labels
+```
+
+```{python}
+legend_handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in sns.color_palette("bright", len(legend_labels))]
+```
+
+
+```{python clustermap}
+g = sns.clustermap(df,
+	col_colors=pd.concat([ col_colors2, col_colors3, col_colors4, col_colors7],axis=1),
+	row_colors=pd.concat([row_colors],axis=1),
+	norm=plt.matplotlib.colors.LogNorm(),
+	cmap="viridis_r",
+	figsize=(20, 60),
+	dendrogram_ratio=(0.01,0.01),
+	colors_ratio=(0.01,0.01),
+	row_cluster=False,
+	col_cluster=False,
+	cbar_kws={
+		'orientation': 'horizontal',
+		'location': 'bottom'}
+	)
+
+#g.tight_layout()
+#plt.tight_layout()
+
+
+g.ax_heatmap.set_xlabel("")
+g.ax_heatmap.set_ylabel("")
+
+#g.ax_col_colors.axes.legend(legend_handles, legend_labels, ncols=6, loc="lower center", bbox_to_anchor=(0.5, 1.0))
+
+#In this example, bbox_to_anchor=(1, 0.5) positions the legend's anchor point at the right edge and vertical center of the figure, and bbox_transform=plt.gcf().transFigure ensures that these coordinates are interpreted relative to the figure, not the axes.
+
+#Figure coordinates range from (0, 0) at the bottom-left of the figure to (1, 1) at the top-right, regardless of the axes or data plotted. Display coordinates, on the other hand, are the pixel coordinates on the screen. transFigure is used to position elements relative to the entire figure, such as placing a legend or annotation outside the plot area.
+
+#	This works, but seems really clunky.
+plt.gca().add_artist( plt.legend(
+	[ g.ax_row_dendrogram.bar(0, 0, color=col_lut2[label], label=label, linewidth=0) for label in col_labels2.unique() ],
+	col_labels2.unique(), loc="upper center", ncols=9, bbox_to_anchor=(.42, .966), bbox_transform=gcf().transFigure) )
+
+plt.gca().add_artist( plt.legend(
+	[ g.ax_row_dendrogram.bar(0, 0, color=col_lut3[label], label=label, linewidth=0) for label in col_labels3.unique() ],
+	col_labels3.unique(), loc="upper center", ncols=9, bbox_to_anchor=(.42, .96), bbox_transform=gcf().transFigure) )
+
+#	title='lab3'
+
+plt.gca().add_artist( plt.legend(
+	[ g.ax_row_dendrogram.bar(0, 0, color=col_lut4[label], label=label, linewidth=0) for label in col_labels4.unique() ],
+	col_labels4.unique(), loc="upper center", ncols=9, bbox_to_anchor=(.42, .954), bbox_transform=gcf().transFigure) )
+
+plt.gca().add_artist( plt.legend(
+	[ g.ax_row_dendrogram.bar(0, 0, color=col_lut7[label], label=label, linewidth=0) for label in col_labels7.unique() ],
+	col_labels7.unique(), loc="upper center", ncols=9, bbox_to_anchor=(.42, .948), bbox_transform=gcf().transFigure) )
+
+
+#	ORDER MATTERS
+plt.subplots_adjust(top=0.94,bottom=0.15, left=0.01, right=0.8)
+
+#plt.title("Human Herpesvirus 3", fontsize=24)	#	 on the bottom above color bar
+#g.fig.suptitle("Human Herpesvirus 3", fontsize=32, x=0.42)	#	on the top above plot
+g.fig.suptitle("All Viruses", fontsize=32, x=0.42)	#	on the top above plot
+
+g.ax_cbar.set_position([0.05, 0.02, 0.71, 0.01]) # [left, bottom, width, height]
+
+plt.show()
+```
+
+
