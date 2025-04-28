@@ -124,3 +124,24 @@ oligos-ref-12-0.fasta:2700
 
 
 
+
+
+
+##	20250428
+
+From Fundamental immune–oncogenicity trade-offs define driver mutation fitness
+https://doi.org/10.1038/s41586-022-04696-z
+
+Add these mutations to this collection.
+
+How long? Include original? Center around mutation?
+
+This'll require some manual labor.
+
+
+```
+./extract_sequences_and_mutate.bash > gene_hotspot_mutations.faa
+```
+
+
+
