@@ -1815,3 +1815,41 @@ Upper vs mixed is making no difference in my check.
 All of the differences appear to be in the 108603-128287 which are those oligos without the leading "a" which meant I trimmed off 1 base of the actual sequence. Hard to believe that it made this much of a difference.
 
 
+
+
+
+108603-128287 have an additional base at the beginning.
+```
+sdiff VirScan-20240508/tmp.fna VirScan/VIR3_clean.id_upper_oligo.uniq.1-80.fna  | grep -B1 \| | head
+```
+
+This resulted in minor differences outside this range.
+
+And better quality (from 23 to 42) in this range increasing alignments from ~8,000 to ~400,000 for the sample viewed.
+
+This range includes HHV5
+
+```
+awk -F, '($1>=108603 && $1<=128287){print $2}' VirScan/VIR3_clean.id_species.uniq.csv | sort | uniq -c | grep Human
+      3 Human cosavirus RdRp-1892
+     37 Human herpesvirus 5
+     29 Human torovirus
+     78 Non-human primate Adeno-associated virus
+
+
+awk -F, '($1>=108603 && $1<=128287 && $2=="Human herpesvirus 5"){print $1}' VirScan/VIR3_clean.id_species.uniq.csv | paste -s
+115264	115265	115266	115267	115268	115269	115270	115271	115272	115273	115274	115275	115276	115277	115278	115279	115280	115281	115282	115283	115284	115285	115286	115287	115288	115289	115290	115291	115292	115293	115294	115295	115296	115297	115298	115299	115300
+
+awk -F, '($1>=108603 && $1<=128287 && $2=="Human herpesvirus 5"){print $1}' VirScan/VIR3_clean.id_species.uniq.csv | paste -s
+115264 - 115300
+
+```
+
+
+
+
+
+
+
+
+
