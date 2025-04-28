@@ -129,10 +129,11 @@ if len(data_frames) > 0:
 #     print(df.columns[i])
 
 
-	cols=df.columns.to_list()
-	for i in range(len(args.index_col)):
-		cols[i]=(args.index_col[i],)*df.columns.nlevels
-	df.columns = pd.MultiIndex.from_tuples(cols)
+	if args.header_rows > 1 :
+		cols=df.columns.to_list()
+		for i in range(len(args.index_col)):
+			cols[i]=(args.index_col[i],)*df.columns.nlevels
+		df.columns = pd.MultiIndex.from_tuples(cols)
 
 	print(df.shape)
 
