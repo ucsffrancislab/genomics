@@ -424,10 +424,6 @@ box_upload.bash vzv2.html
 
 
 
-##	20250418
-
-
-I was just told that the Ring data is not really what I should be using.
 
 
 
@@ -435,6 +431,326 @@ I was just told that the Ring data is not really what I should be using.
 
 
 
+convert out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-000-cropped.png -colorspace LAB -format %c histogram:info:- 
+L\* (Lightness):
+Represents the brightness or darkness of the color, ranging from 0 (black) to 100 (white).
+a\* (Red-Green):
+Indicates the color's position along the red-green axis. Negative values represent green, and positive values represent red.
+b\* (Yellow-Blue):
+Indicates the color's position along the yellow-blue axis. Negative values represent blue, and positive values represent yellow.
+
+
+convert out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-000-cropped.png -colorspace LAB -format %c histogram:info:- 
+
+HSI
+Hue (H): 
+Represents the color's angle in a color wheel, ranging from 0 to 360 degrees.
+0 degrees is typically red, 120 degrees is green, and 240 degrees is blue.
+Saturation (S):
+Indicates how much the color is mixed with white. 
+Ranges from 0 to 1, where 0 is a shade of gray and 1 is a pure, saturated color. 
+Intensity (I): 
+Represents the overall brightness or darkness of the color.
+Ranges from 0 to 1, where 0 is black and 1 is white.
+
+
+
+HSB
+Hue (H):
+Represents the pure color or pigment of a color, measured in degrees from 0 to 360. For example, red is typically 0°, green is 120°, and blue is 240°.
+Saturation (S):
+Describes the purity or intensity of the color. It's measured as a percentage from 0% to 100%, with 100% representing a fully saturated, vibrant color and 0% representing a grayscale color.
+Brightness (B):
+Represents the lightness or darkness of the color. It's also measured as a percentage from 0% to 100%, with 0% being black and 100% being white.
+
+
+
+HSL
+Hue: Hue represents the base color, and for Gemini, it's primarily yellow.
+Saturation: Saturation controls the intensity or purity of the color. For Gemini, a high saturation would create a vibrant, lively yellow, while a lower saturation would make it more muted or pastel.
+Lightness: Lightness determines how bright or dark the color is. A high lightness would make the yellow appear lighter, closer to white, while a lower lightness would make it darker, closer to gray.
+
+
+
+
+HSI: uses intensity, which is a measure of the average luminance of a color. A fully saturated color with maximum intensity would correspond to a bright, pure color. 
+HSB: uses brightness, which is a measure of how light or dark a color appears. A fully saturated color with maximum brightness would correspond to a bright, pure color. 
+
+
+```
+convert out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-000-cropped.png -colorspace HSB -format %c histogram:info:- | sort -t, -gr -k 3 | tr : , | tr % , | awk -F, '{for(i=1;i<=$1;i++)print $5}' | head -40 | datamash mean 1 median 1 sstdev 1 skurt 1
+84.5490025	89.8039	11.187015939059	-0.75002670574665
+
+convert out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-016-cropped.png -colorspace HSB -format %c histogram:info:- | sort -t, -gr -k 3 | tr : , | tr % , | awk -F, '{for(i=1;i<=$1;i++)print $5}' | head -50 | datamash mean 1 median 1 sstdev 1 
+71.599996	67.0588	12.851762890906
+```
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv.bash"
+```
+
+
+
+
+HSL not right
+
+HSI Median 40 - good
+
+HSI Median 30 - too small?
+
+
+Sample Name
+Slide Number
+Position on Slide (three numbers)
+
+
+
+
+
+Some sample/protein pairs have multiple entries. How to combine? Max? Median? Mean? Min? Checking sas matrices.
+
+
+
+
+Using existing matrices, try tensorflow
+
+
+```
+#protein,case_or_control,text1,text2,text3,text4,text5,HSImean30,HSImedian30,HSIstdev30,HSImean40,HSImedian40,HSIstdev40,HSImean50,HSImedian50,HSIstdev50,pdf_file,color_png_file,bw_png
+awk 'BEGIN{FS=OFS=","}{print $2,$3,$1,$12}' slurm-611911.out | head
+
+```
+
+
+
+
+
+
+---
+
+##	20250428
+
+
+Find some examples in the SAS matrix. 
+
+Extract all calls for subject / protein pairings and determine how they called.
+
+Median? Average? Minimum? Maximum?
+
+```
+cat SAS_VZV_extraction.sorted.csv | datamash --headers -t, min 2 q1 2 median 2 q3 2 max 2
+min(SAS-value),q1(SAS-value),median(SAS-value),q3(SAS-value),max(SAS-value)
+-0.74978680123143,0.924642144948,1.2664819209876,1.666577887267,47.178710534984
+```
+
+
+```
+head -1 slurm-611911.out
+protein,case_or_control,text1,text2,text3,text4,text5,HSImean30,HSImedian30,HSIstdev30,HSImean40,HSImedian40,HSIstdev40,HSImean50,HSImedian50,HSIstdev50,pdf_file,color_png_file,bw_png
+```
+
+
+```
+cut -d, -f1,3,12 slurm-611911.out | grep VZV-Orf5,IA0152
+VZV-Orf5,IA0152,26.9276
+VZV-Orf5,IA0152,26.9276
+VZV-Orf5,IA0152,22.4842
+VZV-Orf5,IA0152,27.58145
+
+grep IA0152:VZV-Orf5, SAS_VZV_extraction.sorted.csv
+IA0152:VZV-Orf5,0.7724305292220655
+
+
+
+
+
+cut -d, -f1,3,12 slurm-611911.out | grep VZV-Orf14,IR519
+
+We don't have IR519?
+
+grep 47.178710534984 SAS_VZV_extraction.sorted.csv
+IR519:VZV-Orf14 N,47.178710534984305
+
+
+
+
+cut -d, -f1,3,12 slurm-611911.out | grep VZV | datamash -t, min 3 median 3 max 3
+0.784314,36.6018,100
+
+
+cut -d, -f1,3,12 slurm-611911.out | grep VZV- | sort -t, -k3n,3 | head
+VZV-Orf44,IX3205,0.784314
+VZV-Orf44,IX4766,0.784314
+VZV-Orf44,KE5570,0.784314
+VZV-Orf17,IN8034,1.176472
+VZV-Orf44,IA5836,1.56863
+VZV-Orf44,IN532,1.56863
+VZV-Orf44,IW2587,1.56863
+VZV-Orf44,IX3205,1.56863
+VZV-Orf44,IX4049,1.56863
+VZV-Orf44,IX4944,1.56863
+
+
+cut -d, -f1,3,12 slurm-611911.out | grep VZV- | sort -t, -k3n,3 | tail
+VZV-Orf68_C,IX4484,100
+VZV-Orf68_C,UT9259,100
+VZV-Orf68_C,UT9259,100
+VZV-Orf68_F,IY5127,100
+VZV-Orf6,IB1220,100
+VZV-Orf6,IX4484,100
+VZV-Orf6,KC4714,100
+VZV-Orf6,KC64,100
+VZV-Orf6,KD615,100
+VZV-Orf6,UT9259,100
+
+
+
+tail -n +2 SAS_VZV_extraction.sorted.csv | sort -t, -k2n,2 | head
+IA689:VZV-Orf31 M,-0.749786801231425
+IA689:VZV-Orf28,-0.7414971439296014
+IA689:VZV-Orf60,-0.7401158169087845
+IA689:VZV-Orf66,-0.734938262262032
+IA689:VZV-Orf9,-0.727088140118481
+IA689:VZV-Orf51,-0.564506870007174
+IE1188:VZV-Orf39,-0.1820528234627855
+IL398:VZV-Orf43 C,-0.04299573843755575
+IE1188:VZV-Orf36,-0.037043020666071555
+IX4944:VZV-Orf44,-0.025
+
+tail -n +2 SAS_VZV_extraction.sorted.csv | sort -t, -k2n,2 | tail
+IJ4550:VZV-Orf28,10.672760605995775
+IR519:VZV-Orf61,10.77984450980873
+IR519:VZV-Orf12 N,10.917983835254034
+KE3968:VZV-Orf14 N,12.2076831292981
+IZ3333:VZV-Orf14 N,12.7477318337214
+IR5310:VZV-Orf14 N,12.9198160120769
+IB3399:VZV-Orf14 N,13.418
+IL5509:VZV-Orf14 N,18.10729183381575
+IR519:VZV-Orf14,36.08020653687615
+IR519:VZV-Orf14 N,47.178710534984305
+
+```
+
+
+We're missing IR519 and IL5509?
+
+
+492 subjects in PDFs
+```
+tail -n +2 slurm-611911.out | cut -d, -f3 | uniq | sort | uniq | wc -l
+492
+```
+
+658 subjects in the SAS files
+```
+tail -n +2 SAS_VZV_extraction.sorted.csv | cut -d: -f1 | uniq | sort | uniq | wc -l
+658
+
+tail -n +2 ftp.box.com/Ring_stats_updated_2017/new_vzv_ring_2017.csv | cut -d, -f2 | uniq | sort | uniq | wc -l
+660
+
+
+cat ftp.box.com/Signal_stats_updated_2016/signal_vzv_plco.csv | cut -d, -f1,2 > tmp.csv
+head -1 tmp.csv > signal_vzv.idno.batch.csv
+tail -n +2 tmp.csv | sort -k1,1 >> signal_vzv.idno.batch.csv
+
+cat ftp.box.com/Ring_stats_updated_2017/new_vzv_ring_2017.csv | cut -d, -f1,2 > tmp.csv
+head -1 tmp.csv > ring_vzv.idno.barcode.csv
+tail -n +2 tmp.csv | sort -k1,1 >> ring_vzv.idno.barcode.csv
+
+join --header -t, ring_vzv.idno.barcode.csv signal_vzv.idno.batch.csv | sort -t, -k3n,3 | cut -d, -f3 | uniq -c
+     14 
+      1 Batch
+    170 1.0
+    170 2.0
+    168 3.0
+    136 4.0
+```
+
+"Blank" batch is likely Batch 4 or maybe 3.
+
+Missing Batch 1 PDFs.
+
+
+
+```
+cut -d, -f1,3,12 slurm-611911.out | grep "VZV-Orf14_N,IB3399" 
+VZV-Orf14_N,IB3399,64.3137
+VZV-Orf14_N,IB3399,64.3137
+
+grep "IB3399:VZV-Orf14 N" SAS_VZV_extraction.sorted.csv
+IB3399:VZV-Orf14 N,13.418
+```
+
+
+```
+awk -F, '(/^VZV/){print $3":"$1","$12}' slurm-611911.out | sort -k1,1 | sed '1isubject_protein,med40' > VZV_med40.csv
+
+sed 's/ /_/g' SAS_VZV_extraction.sorted.csv > VZV_score.csv
+
+join --header -t, VZV_score.csv VZV_med40.csv | sort -t, -k2n,2 | head
+```
+
+```
+python3 -c "import pandas as pd;df=pd.read_csv('VZV_med40.csv',sep=',',header=[0],low_memory=False).groupby('subject_protein',dropna=False).min().to_csv('VZV_med40.mins.csv')"
+python3 -c "import pandas as pd;df=pd.read_csv('VZV_med40.csv',sep=',',header=[0],low_memory=False).groupby('subject_protein',dropna=False).median().to_csv('VZV_med40.medians.csv')"
+python3 -c "import pandas as pd;df=pd.read_csv('VZV_med40.csv',sep=',',header=[0],low_memory=False).groupby('subject_protein',dropna=False).max().to_csv('VZV_med40.maxes.csv')"
+python3 -c "import pandas as pd;df=pd.read_csv('VZV_med40.csv',sep=',',header=[0],low_memory=False).groupby('subject_protein',dropna=False).std().to_csv('VZV_med40.stds.csv')"
+
+sort -t, -k2nr,2 VZV_med40.stds.csv | head
+IO4021:VZV-Orf31_F,50.05205853154294
+IK9121:VZV-Orf22.2,43.027412279862354
+IO3822:VZV-Orf1_N,42.14907959161149
+IB1220:VZV-Orf38,41.640917303311774
+IB1220:VZV-Orf55,40.99352568979643
+KC4714:VZV-Orf27,40.20803612191535
+IO3786:VZV-Orf12,39.5611748384859
+KC4714:VZV-Orf55,37.896892962946175
+IY5127:VZV-Orf68_F,37.80518121342629
+UT9259:VZV-Orf38,37.80518121342629
+
+grep IO4021:VZV-Orf31_F VZV_med40.*
+VZV_med40.csv:IO4021:VZV-Orf31_F,100
+VZV_med40.csv:IO4021:VZV-Orf31_F,29.2157
+VZV_med40.maxes.csv:IO4021:VZV-Orf31_F,100.0
+VZV_med40.medians.csv:IO4021:VZV-Orf31_F,64.60785
+VZV_med40.mins.csv:IO4021:VZV-Orf31_F,29.2157
+VZV_med40.stds.csv:IO4021:VZV-Orf31_F,50.05205853154294
+
+grep IO4021:VZV-Orf31_F VZV_score.csv 
+IO4021:VZV-Orf31_F,1.498
+
+
+grep IK9121:VZV-Orf22.2 VZV_med40.*
+VZV_med40.csv:IK9121:VZV-Orf22.2,100
+VZV_med40.csv:IK9121:VZV-Orf22.2,39.15005
+VZV_med40.maxes.csv:IK9121:VZV-Orf22.2,100.0
+VZV_med40.medians.csv:IK9121:VZV-Orf22.2,69.575025
+VZV_med40.mins.csv:IK9121:VZV-Orf22.2,39.15005
+VZV_med40.stds.csv:IK9121:VZV-Orf22.2,43.027412279862354
+
+grep IK9121:VZV-Orf22.2 VZV_score.csv 
+IK9121:VZV-Orf22.2,3.177
+
+
+grep IO3786:VZV-Orf12 VZV_med40.csv
+IO3786:VZV-Orf12,39.8688
+IO3786:VZV-Orf12,95.81675
+IO3786:VZV-Orf12_C,33.2021
+IO3786:VZV-Orf12_C,34.7059
+IO3786:VZV-Orf12_N,36.7979
+IO3786:VZV-Orf12_N,38.0392
+
+grep IO3786:VZV-Orf12 VZV_score.csv
+IO3786:VZV-Orf12,2.547
+IO3786:VZV-Orf12_C,1.254
+IO3786:VZV-Orf12_N,1.513
+
+```
+
+Score seems to be based on the minimum.
 
 
 
