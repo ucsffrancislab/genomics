@@ -39,7 +39,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 
 done
 ```
 
-
 ```
 find out/ -name \*png | wc -l
 1155216
@@ -54,6 +53,7 @@ echo $[1155216/2]
 grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | wc -l
 577608
 ```
+
 
 `pdfimages` uses a minimum of 3 digits with leading zeroes. No control.
 So it is 000-999, 1000-9999, 10000-99999, etc.
@@ -132,7 +132,7 @@ Perfect
 
 
 ```
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 3-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv.bash"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 3-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv_batch234.bash"
 ```
 
 
@@ -152,7 +152,7 @@ pdftotext -raw -nopgbrk pdfs/batch2_spot_plots_human_IgG_02.pdf
 
 
 ```
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv3 --wrap="${PWD}/create_csv3.bash"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv3 --wrap="${PWD}/create_csv_batch234.bash"
 ```
 
 should be 577608 samples
@@ -488,7 +488,7 @@ convert out/batch2_spot_plots_human_IgG_01/batch2_spot_plots_human_IgG_01-016-cr
 
 
 ```
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv.bash"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=csv --wrap="${PWD}/create_csv_batch234.bash"
 ```
 
 
@@ -753,6 +753,291 @@ IO3786:VZV-Orf12_N,1.513
 Score seems to be based on the minimum.
 
 
+
+
+
+
+
+---
+
+##	20250428
+
+On 20250428, I added what is thought to be Batch 1 and what I'll call Batch 0.
+
+Re doing the following prep work so the layout and numbers will change.
+
+```
+mv pdfs pdfs1
+mkdir pdfs
+cd pdfs
+for pdf in ../ftp.box.com/Francis\ _Lab_Share/PLCO/PLCO\ NAPPA\ spot\ plots/Batch\ 1\ need\ to\ confirm/spot_plots\ not\ part\ of\ Batch\ 1\ but\ precedes\ batch\ 1/*pdf ; do
+l=$( basename "${pdf}" )
+l=${l// /_}
+l=${l//-/_}
+l=${l//plots_/plots_human_}
+l=${l//Human/human}
+ln -s "$pdf" "batch0_${l}"
+done
+for pdf in ../ftp.box.com/Francis\ _Lab_Share/PLCO/PLCO\ NAPPA\ spot\ plots/Batch\ 1\ need\ to\ confirm/UCSFVZV_Set1_all_human\ IgG_spot_plots/*pdf ; do
+l=$( basename "${pdf}" )
+l=${l// /_}
+l=${l//-/_}
+l=${l//Human/human}
+ln -s "$pdf" "batch1_${l}"
+done
+for pdf in ../ftp.box.com/Francis\ _Lab_Share/PLCO/PLCO\ NAPPA\ spot\ plots/Batch\ 2/UCSFVZV_Set2_all_human-IgG_spot_plots/*pdf ; do
+l=$( basename "${pdf}" )
+l=${l// /_}
+l=${l//-/_}
+l=${l//Human/human}
+ln -s "$pdf" "batch2_${l}"
+done
+for pdf in ../ftp.box.com/Francis\ _Lab_Share/PLCO/PLCO\ NAPPA\ spot\ plots/Batch\ 3/*pdf ; do
+l=$( basename "${pdf}" )
+l=${l// /_}
+l=${l//-/_}
+l=${l//Human/human}
+ln -s "$pdf" "batch3_${l}"
+done
+for pdf in ../ftp.box.com/Francis\ _Lab_Share/PLCO/PLCO\ NAPPA\ spot\ plots/Batch\ 4/UCSFVZV_Set4_all_Human\ IgG_spot_plots/*pdf ; do
+l=$( basename "${pdf}" )
+l=${l// /_}
+l=${l//-/_}
+l=${l//Human/human}
+ln -s "$pdf" "batch4_${l}"
+done
+```
+
+
+```
+mv out out1
+mkdir out
+for pdf in pdfs/*pdf ; do
+echo $pdf
+b=$( basename ${pdf} .pdf )
+mkdir out/${b}
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=pdftoimages --wrap="pdfimages -png ${pdf} out/${b}/${b}"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=pdftotext --wrap="pdftotext -raw -nopgbrk ${pdf} out/${b}.raw.txt"
+done
+```
+
+
+```
+find out/ -name \*png | wc -l
+#	1155216	#	<- first run
+1649400
+
+find out/batch[1234]* -name \*png | wc -l
+1549680
+
+find out/batch0* -name \*png | wc -l
+99720
+
+find out/batch1* -name \*png | wc -l
+394464
+
+find out/batch2* -name \*png | wc -l
+403856
+
+find out/batch3* -name \*png | wc -l
+399160
+
+find out/batch4* -name \*png | wc -l
+352200
+```
+
+```
+echo $[1155216/2]
+577608
+
+echo $[394464/2]
+197232
+
+echo $[403856/2]
+201928
+
+echo $[399160/2]
+199580
+
+echo $[352200/2]
+176100
+```
+
+```
+grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | wc -l
+#577608 <- first run
+1071762	#	different????
+
+grep -h -B2 "^(" out/batch[1234]*txt |grep -vs "^--" | paste - - - | wc -l
+972042
+
+grep -h -B2 "^(" out/batch0*txt |grep -vs "^--" | paste - - - | wc -l
+99720
+
+grep -h -B2 "^(" out/batch1*txt |grep -vs "^--" | paste - - - | wc -l
+394434
+
+grep -h -B2 "^(" out/batch2*txt |grep -vs "^--" | paste - - - | wc -l
+201928
+
+grep -h -B2 "^(" out/batch3*txt |grep -vs "^--" | paste - - - | wc -l
+199580
+
+grep -h -B2 "^(" out/batch4*txt |grep -vs "^--" | paste - - - | wc -l
+176100
+```
+
+The counts aren't meshing up this re-run. Not enough images?
+
+Counted by batch. Batch 1 is a bit off.
+
+Batch 0 is equal??
+
+Batch 0 and 1 have a bit different layout which may be contributing to my "count" difference.
+
+Batch 2, 3 and 4 are laid out
+
+```
+Subject    Subject   
+TileID     TileID
+Position   Position
+-----      -----
+Color      Color
+Image      Image
+-----      -----
+BandW      BandW
+Image      Image
+-----      -----
+```
+
+1 label for both the color signal image and the black and white ring image.
+
+
+Batch 0 and 1 are ...
+
+```
+Subject    Subject   
+TileID     TileID
+Position   Position
+-----      -----
+Color      Color
+Image      Image
+-----      -----
+
+Subject    Subject   
+TileID     TileID
+Position   Position
+-----      -----
+BandW      BandW
+Image      Image
+-----      -----
+```
+
+So there should be the same number of images as labels
+
+Batch 0 ...  99720 == 99720
+
+However Batch 1 ... is off by 40?
+
+```
+find out/batch1* -name \*png | wc -l
+394464
+
+grep -h -B2 "^(" out/batch1*txt |grep -vs "^--" | paste - - - | wc -l
+394434
+```
+
+```
+for f in out/batch1_spot_plots_human_IgG_*.raw.txt ; do echo $f; grep -h -B2 "^(" ${f}|grep -vs "^--" | paste - - - | wc -l ;done
+out/batch1_spot_plots_human_IgG_01.raw.txt
+1986
+
+for f in out/batch1_spot_plots_human_IgG_??/ ; do echo $f ; find $f -name \*png | wc -l ; done
+out/batch1_spot_plots_human_IgG_01/
+2016
+```
+
+The problem appears to be the first pdf. Counts differ 2016 and 1986.
+
+The last line appears cut off.
+
+I appended each subject with "Unknown / (0:0-0)" as the values aren't really important
+
+Batch 0 and 1 are still a different layout than 2, 3 and 4 so will need to parse differently.            TODO TODO TODO
+
+
+Looks like 492 subjects each with 1174 datapoints.
+```
+grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq -c
+grep -h -B2 "^(" out/batch*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq -c | wc -l
+#492	#	<- first run
+750	#	<- includes batch0
+
+grep -h -B2 "^(" out/batch[1234]*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq -c | wc -l
+660	#	<- this is what was in the data files from Joe like ... new_vzv_ring_2017
+```
+
+Batch 0 has only numbers as subject IDs. I understand these to be AGS subjects.
+
+```
+grep -h -B2 "^(" out/batch1*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq | head
+```
+
+
+```
+join --header -t, ring_vzv.idno.barcode.csv signal_vzv.idno.batch.csv | sort -t, -k3n,3 | awk -F, '( $3 == 1.0 )'
+```
+
+Some differences 
+```
+sdiff -s -d <( grep -h -B2 "^(" out/batch1*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq ) <( join --header -t, ring_vzv.idno.barcode.csv signal_vzv.idno.batch.csv | sort -t, -k3n,3 | awk -F, '( $3 == 1.0 )' | cut -d, -f2 | sort )
+							      >	IL916
+							      >	IX9435
+sdiff -s -d <( grep -h -B2 "^(" out/batch2*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq ) <( join --header -t, ring_vzv.idno.barcode.csv signal_vzv.idno.batch.csv | sort -t, -k3n,3 | awk -F, '( $3 == 2.0 )' | cut -d, -f2 | sort )
+IL916							      <
+IX9435							      <
+sdiff -s -d <( grep -h -B2 "^(" out/batch3*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq ) <( join --header -t, ring_vzv.idno.barcode.csv signal_vzv.idno.batch.csv | sort -t, -k3n,3 | awk -F, '( $3 == 3.0 )' | cut -d, -f2 | sort )
+IR9374							      <
+KC0989							      <
+sdiff -s -d <( grep -h -B2 "^(" out/batch4*txt |grep -vs "^--" | paste - - - | cut -f1 | sort | uniq ) <( join --header -t, ring_vzv.idno.barcode.csv signal_vzv.idno.batch.csv | sort -t, -k3n,3 | awk -F, '( $3 == 4.0 )' | cut -d, -f2 | sort )
+IN3312							      <
+IP259							      <
+IQ515							      <
+IR5157							      <
+IX2213							      <
+IX5624							      <
+IX9579							      <
+IY5001							      <
+IZ5055							      <
+KC2076							      <
+KC3002							      <
+KE5079							      <
+KE6465							      <
+KE6537							      <
+```
+
+These 2 subjects are labeled as in batch 1 in the SAS file, but are in batch 2 of the pdfs.
+
+Let's combine all these things and see what differs.
+
+```
+tail -q -n +2 ftp.box.com/Signal*/*plco.csv | cut -d, -f1,2 | sort -k1,1 | uniq | sed '1iidno,batch' > signal.idno.batch.csv
+tail -q -n +2 ftp.box.com/Ring*/*2017.csv | cut -d, -f1,2 | sort -k1,1 | uniq | sed '1iidno,barcode' > ring.idno.barcode.csv
+join -a 1 -a 2 --header -t, ring.idno.barcode.csv signal.idno.batch.csv > idno.barcode.batch.csv
+
+echo idno,barcode,sasbatch,pdfbatch > idno_barcode_sasbatch_pdfbatch.csv
+while read idno barcode sas_batch ; do
+pdf_batch=$( awk -v barcode=${barcode} '($0==barcode){split(FILENAME,a,"/");split(a[2],b,"_");print b[1]}' out/batch*txt | uniq )
+echo ${idno},${barcode},${sas_batch%.0},${pdf_batch#batch}
+done < <( cat idno.barcode.batch.csv | tail -n +2 | tr ',' ' ' ) >> idno_barcode_sasbatch_pdfbatch.csv
+```
+
+
+```
+wc -l ring.idno.barcode.csv signal.idno.batch.csv idno.barcode.batch.csv idno_barcode_sasbatch_pdfbatch.csv
+
+awk -F, '( $3 != $4 )' idno_barcode_sasbatch_pdfbatch.csv
+```
 
 
 
