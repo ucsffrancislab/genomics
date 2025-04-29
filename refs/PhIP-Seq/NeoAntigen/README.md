@@ -145,3 +145,37 @@ This'll require some manual labor.
 
 
 
+##	20250429
+
+
+New list of neoantigens from: https://genomebiology.biomedcentral.com/articles/10.1186/s13059-023-03005-9#Sec18
+
+Comprehensive analysis of neoantigens derived from structural variation across whole genomes from 2528 tumors - Genome Biology
+
+neopeptides_shi.csv - too many
+
+13059_2023_3005_MOESM1_ESM-S5.csv
+
+
+```
+tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq > tmp
+tail -n +2 13059_2023_3005_MOESM1_ESM-S5.csv | cut -d, -f3 | sort | uniq >> tmp
+sort tmp | uniq -d
+
+tail -n +2 13059_2023_3005_MOESM1_ESM-S5.csv | cut -d, -f3 | sort | uniq | awk '{ print ">"$0; print $0}' > 13059_2023_3005_MOESM1_ESM-S5.faa
+```
+
+
+
+From REdiscoverTE?
+```
+tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq > tmp
+tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq >> tmp
+sort tmp | uniq -d
+
+tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq | awk '{ print ">"$0; print $0}' > 41467_2019_13035_moesm9_esm.faa
+```
+
+
+
+
