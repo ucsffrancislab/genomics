@@ -1041,3 +1041,11 @@ awk -F, '( $3 != $4 )' idno_barcode_sasbatch_pdfbatch.csv
 
 
 
+```
+wc -l slurm-624563.out 
+1613040 slurm-624563.out
+
+find out/ -name \*-cropped.png | wc -l
+1613040
+```
+
