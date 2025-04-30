@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-for img in $( find out/batch?_spot_plots_human_IgG_0?/ -name \*.png ) ; do
+for img in $( find out/batch?_spot_plots_human_IgG_*/ -name \*.png ) ; do
 
 	#	widthxheight+left+top
 
