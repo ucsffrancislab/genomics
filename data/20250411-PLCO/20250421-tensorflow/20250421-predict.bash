@@ -60,7 +60,7 @@ for random_state in 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 2
 	#echo "export SPECIES='${s}'; export PROTEINS='${p}';  20250327-predict.py"
 	#export SPECIES='${s}'; export PROTEINS='ORF 73,Orf73,ORF73,Protein ORF73'; ${PWD}/${f}.py"
 
-	echo "export ACTIVATION=${activation}; export TEST_SIZE=${test_size}; export RANDOM_STATE=${random_state}; export LOOP_NUMBER=${i}; export OUT_DIR=${PWD}/20250421/; ${PWD}/${f}.py"
+	echo "export ACTIVATION=${activation}; export TEST_SIZE=${test_size}; export RANDOM_STATE=${random_state}; export LOOP_NUMBER=${i}; export OUT_DIR=${PWD}/20250429/; ${PWD}/${f}.py"
 
 
 	#echo "export SPECIES='${s}'; export PROTEINS='${p}'; export ACTIVATION=${activation}; export TEST_SIZE=${test_size}; export RANDOM_STATE=${random_state}; export LOOP_NUMBER=${i}; jupytext --to notebook ${PWD}/${f}.py -o - | jupyter nbconvert --stdin --execute --allow-errors --to html --output-dir ${PWD}/20250402 --output ${f}.${s// /_}.AllORF73.${activation}.${test_size}.${random_state}.${i}"
