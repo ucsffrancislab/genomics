@@ -93,7 +93,7 @@ Sadly, Control is the last item on each line?
 widthxheight+left+top
 
 ```
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=crop --wrap="${PWD}/crop.bash"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=crop ${PWD}/crop.bash
 ```
 
 
@@ -1048,4 +1048,32 @@ wc -l slurm-624563.out
 find out/ -name \*-cropped.png | wc -l
 1613040
 ```
+
+
+
+
+
+##	20250505
+
+```
+cat out/batch1_spot_plots_human_IgG_0*txt | grep -c "^(" 
+394464
+
+echo $[394464/2]
+197232
+
+find out/cropped18/batch1_spot_plots_human_IgG_0* -name \*-cropped.png | wc -l
+394464
+
+wc -l /francislab/data1/working/20250411-PLCO/20250430-create_csvs/batch1.2025*.csv
+   197231 /francislab/data1/working/20250411-PLCO/20250430-create_csvs/batch1.20250430.csv
+   197231 /francislab/data1/working/20250411-PLCO/20250430-create_csvs/batch1.20250501.csv
+   197232 /francislab/data1/working/20250411-PLCO/20250430-create_csvs/batch1.20250502.csv
+```
+
+Hmm?
+
+
+
+
 
