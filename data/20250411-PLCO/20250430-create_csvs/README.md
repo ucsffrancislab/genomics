@@ -98,6 +98,7 @@ for p in VZV HCMV Human ; do
 merge_matrices.py --header_rows 1 --index_col subject --axis index \
   --output batch1234.${p}.med40.${m}.csv \
   batch1.${p}.med40.${m}.csv batch234.${p}.med40.${m}.csv
+sed -i -e 's/VZV_/VZV-/g' -e 's/HCMV_/HCMV-/g' batch1234.${p}.med40.${m}.csv
 done
 done
 ```
@@ -111,16 +112,31 @@ done
 
 
 Some missing subjects
+
+```
 sdiff -sd <( cut -d, -f1 SAS.VZV.matrix.csv ) <( cut -d, -f1 batch1234.VZV.med40.min.csv )
 							      >	IR9374
 							      >	KC0989
 
+sdiff -sd <( cut -d, -f1 SAS.HCMV.matrix.csv ) <( cut -d, -f1 batch1234.HCMV.med40.min.csv )
+							      >	IR9374
+							      >	KC0989
+
+sdiff -sd <( cut -d, -f1 SAS.Human.matrix.csv ) <( cut -d, -f1 batch1234.Human.med40.min.csv )
+							      >	IR9374
+							      >	KC0989
+```
+
+Some proteins not in VZV, HCMV or Human
+```
+diff <( head -1 SAS.VZV.matrix.csv | datamash transpose -t, ) <( head -1 batch1234.VZV.med40.min.csv | datamash transpose -t,)
+
+diff <( head -1 SAS.HCMV.matrix.csv | datamash transpose -t, ) <( head -1 batch1234.HCMV.med40.min.csv | datamash transpose -t,)
 
 diff <( head -1 SAS.Human.matrix.csv | datamash transpose -t, ) <( head -1 batch1234.Human.med40.min.csv | datamash transpose -t,)
 
-Some proteins not in VZV, HCMV or Human
-
 HPV*, L*, pAnt7-cGST, pcite-HA
+```
 
 
 
