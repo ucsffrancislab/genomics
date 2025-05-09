@@ -138,6 +138,8 @@ How long? Include original? Center around mutation?
 
 This'll require some manual labor.
 
+41586_2022_4696_MOESM1_ESM
+
 
 ```
 ./extract_sequences_and_mutate.bash > gene_hotspot_mutations.faa
@@ -174,6 +176,84 @@ tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uni
 sort tmp | uniq -d
 
 tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq | awk '{ print ">"$0; print $0}' > 41467_2019_13035_moesm9_esm.faa
+```
+
+
+
+
+
+
+
+##	20250507
+
+
+
+```
+tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">Darwin-"$0; print $0}' > peptides.faa
+
+./extract_sequences_and_mutate.bash >> peptides.faa
+
+tail -n +2 13059_2023_3005_MOESM1_ESM-S5.csv | cut -d, -f3 | sort | uniq | awk '{ print ">NeoEpitope-"$0; print $0}' >> peptides.faa
+
+tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq | awk '{ print ">REdiscoverTE-"$0; print $0}' >> peptides.faa
+
+
+phip_seq_create_tiles.bash -t 12 -o 0 -i peptides.faa
+```
+
+
+
+```
+wc -l peptides.faa oligos-12-0.fasta 
+  5906 peptides.faa
+  5886 oligos-12-0.fasta
+ 11792 total
+```
+
+
+```
+sdiff -sd <( grep "^>" peptides.faa ) <( grep "^>" oligos-12-0.fasta | cut -d\| -f1 ) 
+>IDH1:127-137:Original					      <
+>KRAS:7-17:Original					      <
+>KRAS:7-17:Original					      <
+>NRAS:56-66:Original					      <
+>NRAS:56-66:Mutation:Q61R				      <
+>NRAS:56-66:Original					      <
+>PTEN:125-135:Original					      <
+>SMAD4:356-366:Original					      <
+>TP53:243-253:Original					      <
+>TP53:268-278:Original					      <
+```
+Most of these are due to the same hotspot having multiple mutations so the original is duplicated and then removed.
+
+
+
+Note that NRAS and HRAS are very similar and these 2 Originals and Q61R mutations are identical
+
+```
+>HRAS:56-66:Original
+LDTAGQEEYSA
+>HRAS:56-66:Mutation:Q61R
+LDTAGREEYSA
+
+>NRAS:56-66:Original
+LDTAGQEEYSA
+>NRAS:56-66:Mutation:Q61R
+LDTAGREEYSA
+
+>NRAS:56-66:Original
+LDTAGQEEYSA
+>NRAS:56-66:Mutation:Q61K
+LDTAGKEEYSA
+```
+
+So those 6 are reduced to just 3
+
+
+The metadata table needs to show ...
+```
+HRAS:56-66:Original = NRAS:56-66:Original
+HRAS:56-66:Mutation:Q61R = NRAS:56-66:Mutation:Q61R
 ```
 
 
