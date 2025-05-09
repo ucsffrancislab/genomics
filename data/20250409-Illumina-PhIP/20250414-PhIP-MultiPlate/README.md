@@ -282,6 +282,22 @@ merge_matrices.py --axis index --de_nan --de_neg \
   --out ${PWD}/out.123456/Counts.normalized.subtracted.trim.csv \
   ${PWD}/out.plate[123456]/Counts.normalized.subtracted.trim.csv
 
+
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.123/Zscores.csv \
+  ${PWD}/out.plate[123]/Zscores.csv
+
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.12356/Zscores.csv \
+  ${PWD}/out.plate[12356]/Zscores.csv
+
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.123456/Zscores.csv \
+  ${PWD}/out.plate[123456]/Zscores.csv
+
 ```
 
 
@@ -423,7 +439,6 @@ box_upload.bash out.{123,12356,123456}/Multiplate*public-case-control*.csv
 for f in ${PWD}/out.123*/Multiplate_Peptide_Comparison-*.public-case-control-Prop_test_results*.csv ; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=60G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.subtracted.trim.plus.mins.csv"
 done
-
 ```
 
 
@@ -478,11 +493,315 @@ merge_matrices.py --axis index --de_nan --de_neg --int \
 
 join --header -t, AGS.csv out.123456/seropositive.10.csv | cut -d, -f1-11,39-47 > out.123456/AGS.seropositive.10.csv
 join --header -t, AGS.csv out.123456/seropositive.3.5.csv | cut -d, -f1-11,39-47 > out.123456/AGS.seropositive.3.5.csv
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	20250507
+
+
+
+Reset....
+
+Meningiomas are on 13 and 14. Controls are on 1-6
+
+Merge all 8 plates (or just 7)
+
+Change Meningioma groups all to "meningioma"
+
+Then run meningioma / control
+
+
+
+
+please run the analysis comparing the meningioma samples to the AGS controls? Same analyses (public virscan seropositivity, and peptides , etc). Please put it in a separate folder.
+
+While we are messing with these, could you please convert the HTML script to exp() the beta and print the Odds Ratio on the x-axis of the volcano plots.
+
+Please do this for the GBM Phip data as well. I have to use these in a talk in a few weeks
+
+
+
 
 
 
 
 ```
+ln -s /francislab/data1/working/20241204-Illumina-PhIP/20250411-PhIP/out.plate13
+ln -s /francislab/data1/working/20241224-Illumina-PhIP/20250411-PhIP/out.plate14
+```
+
+
+
+```
+mkdir out.123561314
+merge_all_combined_counts_files.py --int --de_nan --out out.123561314/Plibs.csv out.plate{1,2,3,5,6,13,14}/counts/PLib*
+
+tail -n +2 out.123561314/Plibs.csv | cut -d, -f1 | sort > out.123561314/Plibs.id.csv
+sed -i '1iid' out.123561314/Plibs.id.csv
+```
+
+
+```
+for i in 1 2 3 5 6 13 14; do
+  dir=out.plate${i}
+	echo $dir
+  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
+  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
+  join --header -t, out.123561314/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
+  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select-123561314.csv
+  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select-123561314.csv
+
+  head -2 ${dir}/Zscores.t.csv > ${dir}/Zscores.select-123561314.t.csv
+  join --header -t, out.123561314/Plibs.id.csv <( tail -n +3 ${dir}/Zscores.t.csv ) >> ${dir}/Zscores.select-123561314.t.csv
+  cat ${dir}/Zscores.select-123561314.t.csv | datamash transpose -t, > ${dir}/Zscores.select-123561314.csv
+  box_upload.bash ${dir}/Zscores.select-123561314.csv
+
+  head -2 ${dir}/Zscores.minimums.t.csv > ${dir}/Zscores.select-123561314.minimums.t.csv
+  join --header -t, out.123561314/Plibs.id.csv <( tail -n +3 ${dir}/Zscores.minimums.t.csv ) >> ${dir}/Zscores.select-123561314.minimums.t.csv
+  cat ${dir}/Zscores.select-123561314.minimums.t.csv | datamash transpose -t, > ${dir}/Zscores.select-123561314.minimums.csv
+  box_upload.bash ${dir}/Zscores.select-123561314.minimums.csv
+done
+```
+
+
+
+
+
+
+Individual plate runs here are not really usable. No plate has Meningioma and Control on them.
+
+```
+#	\rm commands
+#	
+#	for i in 13 14 ; do
+#	dir=out.plate${i}
+#	manifest=${dir}/manifest.plate${i}.csv
+#	odir=${dir}
+#	for z in 3.5 5 10 15 20 30 40 50; do
+#	for base in Zscores.select-1314.csv Counts.normalized.subtracted.trim.select-1314.csv ; do
+#	echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest}  --output_dir ${odir} -a case -b control --sfilename ${dir}/seropositive.${z}.csv
+#	echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest}  --output_dir ${odir} -a case -b control --zfilename ${dir}/${base}
+#	echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${odir} -a case -b control --zfilename ${dir}/${base}
+#	done ; done ; done >> commands
+#	
+#	commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+```
+#	box_upload.bash out.plate1[34]/{Tile_Comparison,Viral_Ser,Viral_Frac_Hits,Seropositivity}*
+```
+
+
+
+
+
+Need to modify manifests
+
+Meningioma isn't Case/Control
+
+```
+cp out.plate13/manifest.plate13.csv out.plate13/original.mani.plate13.csv
+sed -i 's/\(Hypermitotic\|Immune-enriched\|Merlin-intact\)/meningioma/g' out.plate13/manifest.plate13.csv 
+
+cp out.plate14/manifest.plate14.csv out.plate14/original.mani.plate14.csv
+sed -i 's/\(Hypermitotic\|Immune-enriched\|Merlin-intact\)/meningioma/g' out.plate14/manifest.plate14.csv 
+```
+
+
+
+
+```
+\rm commands
+
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,5,6,13,14} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a meningioma -b control --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a meningioma -b control --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --counts --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a meningioma -b control --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --counts --sex F >> commands
+
+for z in 3.5 5 10 15 20 30 40 50; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a meningioma -b control --zfile_basename Zscores.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a meningioma -b control --zfile_basename Zscores.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a meningioma -b control --zfile_basename Zscores.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --sex F
+#echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a meningioma -b control -o ${PWD}/out.123561314 -p ${plates}  --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv
+#echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a meningioma -b control -o ${PWD}/out.123561314 -p ${plates} --zfile_basename Zscores.select-123561314.csv
+done >> commands
+
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a meningioma -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.123561314 -p ${plates} >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a meningioma -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.123561314 -p ${plates} --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 3.5 -a meningioma -b control --sfile_basename seropositive.3.5.csv -o ${PWD}/out.123561314 -p ${plates} --sex F >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a meningioma -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.123561314 -p ${plates} >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a meningioma -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.123561314 -p ${plates} --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z 10 -a meningioma -b control --sfile_basename seropositive.10.csv -o ${PWD}/out.123561314 -p ${plates} --sex F >> commands
+
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+
+16 failures since the individual plates weren't run
+
+Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R Missing Viral_Frac_Hits
+
+
+
+```
+box_upload.bash out.123561314/Multiplate*
+```
+
+
+
+
+
+
+
+
+
+
+
+```
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.123561314/Counts.normalized.subtracted.trim.csv \
+  ${PWD}/out.plate{1,2,3,5,6,13,14}/Counts.normalized.subtracted.trim.csv
+
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.123561314/Zscores.csv \
+  ${PWD}/out.plate{1,2,3,5,6,13,14}/Zscores.csv
+
+```
+
+
+```
+tail -q -n +2 out.plate{1,2,3,5,6,13,14}/manifest.plate*.csv > out.123561314/tmp1.csv
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' out.123561314/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$4,$5,$6,$7,$8,$9}' out.123561314/tmp1.csv > out.123561314/tmp2.csv
+head -1 out.123561314/tmp2.csv > out.123561314/manifest.csv
+tail -n +2 out.123561314/tmp2.csv | sort -t, -k1,1 >> out.123561314/manifest.csv
+chmod -w out.123561314/manifest.csv
+\rm out.123561314/tmp?.csv
+```
+
+
+Drop species name and add case/control status ...
+
+```
+for dir in out.123561314 ; do
+head -1 ${PWD}/${dir}/Counts.normalized.subtracted.trim.csv > ${PWD}/${dir}/tmp1.csv
+tail -n +3 ${PWD}/${dir}/Counts.normalized.subtracted.trim.csv >> ${PWD}/${dir}/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $1,$2,$5,$8}' ${PWD}/${dir}/manifest.csv > ${PWD}/${dir}/tmp2.csv
+join --header -t, -1 1 -2 3 ${PWD}/${dir}/tmp2.csv ${PWD}/${dir}/tmp1.csv > ${PWD}/${dir}/tmp3.csv
+cut -d, -f1-4,6- ${PWD}/${dir}/tmp3.csv > ${PWD}/${dir}/Counts.normalized.subtracted.trim.plus.csv
+\rm ${dir}/tmp?.csv
+done
+```
+
+
+```
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.123561314/Counts.normalized.subtracted.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.123561314/Counts.normalized.subtracted.trim.plus.mins.csv')\""
+```
+
+
+```
+for f in ${PWD}/out.123561314/Multiplate_Peptide_Comparison-*-Prop_test_results*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.subtracted.trim.plus.mins.csv"
+done
+```
+
+```
+box_upload.bash out.123561314/Multiplate_Peptide_Comparison*html
+```
+
+
+
+
+
+
+```
+for f in ${PWD}/out.123*/Multiplate_Peptide_Comparison-*-Prop_test_results*.csv ; do
+echo "module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.subtracted.trim.plus.mins.csv"
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+
+Awful. P-values all almost 1. Will need to investigate where things went bad.
+
+
+
+
+
+
+
+
+
+
+
+
+REDO. THIS RMD IS HARD CODED TO CASE CONTROL. NEED TO ADD OPTIONS?
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=vs123561314 --wrap="module load r pandoc; virus_scores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate4 -d ${PWD}/out.plate5 -d ${PWD}/out.plate13 -d ${PWD}/out.plate14 -o ${PWD}/out.123561314/virus_scores"
+```
+
+```
+box_upload.bash out.123561314/virus_score*
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+out.123456/manifest.csv
+Hey hey- Could you please make a a couple files for me? Basically I want the public epitopes for your “normalized subtracted” version and the Z=10 for the z score.
+Id like them for all the subjects cases and controls (put 1/0 to denote) and age, sex, plate, CMV, EBV, HSV, VZV. Basically just like the attached version, but with all the subjects and case status and for the Z score and the subtracted. Make sense?
+
+head -505 out.123456/manifest.csv
 
 
 
@@ -504,11 +823,8 @@ This requires Zscores.select.minimums.csv and a virus species
 ./Zscores.Rmd -s "Human herpesvirus 3" \
 
 ```
-
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=Zs12356 --wrap="module load r pandoc; Zscores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate5 -d ${PWD}/out.plate6 -o ${PWD}/out.12356/Zscores"
-
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=60G --export=None --job-name=Zs123456 --wrap="module load r pandoc; Zscores.Rmd -d ${PWD}/out.plate1 -d ${PWD}/out.plate2 -d ${PWD}/out.plate3 -d ${PWD}/out.plate4 -d ${PWD}/out.plate5 -d ${PWD}/out.plate6 -o ${PWD}/out.123456/Zscores"
-
 ```
 ./heatmap.Rmd -i /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/cpm_blank_subtracted.csv -o glioma_cpm_blank_subtracted
 
