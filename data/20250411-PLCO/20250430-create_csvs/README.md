@@ -192,7 +192,8 @@ Get background intensity??
 
 
 
-
+cp batch1.csv batch1234.csv 
+tail -n +2 batch234.csv >> batch1234.csv
 
 
 
