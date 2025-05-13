@@ -326,6 +326,19 @@ head -1 out.123456/tmp2.csv > out.123456/manifest.csv
 tail -n +2 out.123456/tmp2.csv | sort -t, -k1,1 >> out.123456/manifest.csv
 chmod -w out.123456/manifest.csv
 \rm out.123456/tmp?.csv
+
+#tail -q -n +2 out.plate{13,14}/manifest.plate*.csv > out.1314/tmp1.csv
+tail -q -n +2 out.plate{13,14}/original.mani.plate*.csv > out.1314/tmp1.csv
+sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' out.1314/tmp1.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$4,$5,$6,$7,$8,$9}' out.1314/tmp1.csv > out.1314/tmp2.csv
+head -1 out.1314/tmp2.csv > out.1314/manifest.csv
+tail -n +2 out.1314/tmp2.csv | sort -t, -k1,1 >> out.1314/manifest.csv
+chmod -w out.1314/manifest.csv
+\rm out.1314/tmp?.csv
+
+
+
+
 ```
 
 
@@ -828,6 +841,54 @@ cut -d, -f1,2,6-10,13-16,19- tmp7.csv > ${PWD}/out.123456/Zscores.glioma.AGS.csv
 box_upload.bash ${PWD}/out.123456/Zscores.glioma.AGS.csv
 
 ```
+
+
+Could you also do the same export of the PEs with basic data (like type of meng) for the the meningioma subjects. (but just the meningioma, not controls)
+
+
+```
+merge_matrices.py --axis columns --de_nan --de_neg   --header_rows 9 --index_col id --index_col species   --out ${PWD}/out.1314/Counts.normalized.subtracted.csv   ${PWD}/out.plate{13,14}/Counts.normalized.subtracted.csv
+
+head -2 ${PWD}/out.1314/Counts.normalized.subtracted.csv > tmp1.csv
+tail -n +4 ${PWD}/out.1314/Counts.normalized.subtracted.csv | head -1 >> tmp1.csv
+tail -n +6 ${PWD}/out.1314/Counts.normalized.subtracted.csv | head -3 >> tmp1.csv
+tail -n +9 ${PWD}/out.1314/Counts.normalized.subtracted.csv | head -1 > tmp2.csv
+tail -n +10 ${PWD}/out.1314/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.ids.join_sorted.txt tmp2.csv >> tmp1.csv
+cat tmp1.csv | datamash transpose -t, > tmp3.csv
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | grep ",meningioma serum," | sort -t, -k1,1 >> tmp4.csv
+mv tmp4.csv ${PWD}/out.1314/Counts.normalized.subtracted.meningioma.csv 
+sed -i '1s/^id,id,id,id,id,id,id,/sample,subject,group,type,age,sex,plate,/' ${PWD}/out.1314/Counts.normalized.subtracted.meningioma.csv
+sed -i '2s/^species,species,species,species,species,species,species,/sample,subject,group,type,age,sex,plate,/' ${PWD}/out.1314/Counts.normalized.subtracted.meningioma.csv
+box_upload.bash ${PWD}/out.1314/Counts.normalized.subtracted.meningioma.csv
+```
+
+
+```
+merge_matrices.py --axis columns --de_nan --de_neg   --header_rows 3 --index_col id --index_col species   --out ${PWD}/out.1314/Zscores.t.csv  ${PWD}/out.plate{13,14}/Zscores.t.csv
+
+head -3 ${PWD}/out.1314/Zscores.t.csv | tail -n 1 > tmp1.csv
+head -2 ${PWD}/out.1314/Zscores.t.csv >> tmp1.csv
+tail -n +4 ${PWD}/out.1314/Zscores.t.csv | sort -t, -k1,1 >> tmp1.csv
+head -2 tmp1.csv > tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.ids.join_sorted.txt <( tail -n +3 tmp1.csv ) >> tmp2.csv
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+l=$( head -n 1 out.1314/manifest.csv )
+echo -n ${l}, > tmp5.csv
+head -1 tmp4.csv | cut -d, -f2- >> tmp5.csv
+join --header -t, out.1314/manifest.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+head -2 tmp5.csv > tmp6.csv
+tail -n +3 tmp5.csv | grep ",meningioma serum," >> tmp6.csv
+cut -d, -f1,2,5-8,10- tmp6.csv > ${PWD}/out.1314/Zscores.meningioma.csv
+box_upload.bash ${PWD}/out.1314/Zscores.meningioma.csv
+
+```
+
+
+
 
 
 
