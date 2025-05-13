@@ -133,7 +133,8 @@ So I'm gonna replace the new one with the original one.
 
 ```{bash}
 mv ${R_INPUT}.fam ${R_INPUT}.sexless.fam
-cp $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam ${R_INPUT}.fam
+#cp $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam ${R_INPUT}.fam
+tail -n +2499 $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam > ${R_INPUT}.fam
 ```
 
 How many samples?
