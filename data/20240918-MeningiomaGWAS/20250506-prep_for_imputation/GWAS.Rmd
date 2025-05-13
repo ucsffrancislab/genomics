@@ -1,0 +1,631 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+dname_no_links = R.utils::getAbsolutePath(dirname(sub("--file=", "", args[grepl("--file=", args)])))
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-i", "--input", type="character", required=TRUE,
+        help="input vcf file", metavar="filename")
+opt <- parser$parse_args()
+
+#	set environment variable for following bash blocks from r variable
+Sys.setenv(R_INPUT = opt$input)
+
+rmarkdown::render(newfname, output_dir = dirname(opt$input), output_file = paste0(basename(opt$input),'.html') )
+
+#noext=fs::path_ext_remove(fname)
+#rmarkdown::render(newfname, output_dir = dname_no_links, output_file = paste0(noext,'.html') )
+
+q("no")
+
+---
+title: "GWAS Test"
+author: "JW"
+date: "2025-05-08"
+output:
+  html_document:
+    fig_width: 12
+    fig_height: 8
+---
+
+
+From https://choishingwan.github.io/PRS-Tutorial/
+
+
+
+```{r defaults, include=FALSE}
+#knitr::opts_knit$set(root.dir = dirname(fname))
+knitr::opts_knit$set(root.dir = dname_no_links)
+
+knitr::opts_chunk$set(
+#	error=TRUE, # my new favorite, will let the script run and create html so you could debug
+	comment = '', # Remove comments from the output
+#	fig.width = 6, # Set default plot width
+#	fig.height = 6, # Set default plot height
+	echo = TRUE # Echo code by default
+)
+```
+
+
+
+
+
+From PRS Tutorial
+
+
+
+#	QC of Target Data
+
+
+### Standard GWAS QC
+
+The target data must be quality controlled to at least the standards implemented in GWAS studies, e.g. removing SNPs with low genotyping rate, low minor allele frequency, out of Hardy-Weinberg Equilibrium, removing individuals with low genotyping rate (see Marees et al).
+
+The following plink commands applies some of these QC metrics to the target data:
+
+
+
+“Poorly imputed SNPs (information measure <0.8), SNPs with a low MAF (<0.005), and SNPs that deviated from HWE (P < 10−5) were excluded.”
+
+https://pmc.ncbi.nlm.nih.gov/articles/PMC6176799/
+
+
+How many SNPs in imputed?
+```{bash}
+zgrep -cvs "^#" ${R_INPUT}.dose.vcf.gz
+```
+
+Drop "poorly imputed SNPs"
+```{bash bcftools}
+module load bcftools
+bcftools filter --threads 4 -i 'INFO/R2 >= 0.8' -Oz -o ${R_INPUT}.vcf.gz ${R_INPUT}.dose.vcf.gz 
+```
+
+How many SNPs survived?
+```{bash}
+zgrep -cvs "^#" ${R_INPUT}.vcf.gz
+```
+
+Some issues later if the same SNP name is replicated so I'm only keeping the uniquely named.
+```{bash identify_unique_snps}
+zgrep -vs "^#" ${R_INPUT}.vcf.gz | cut -f3 | sort | uniq -u > ${R_INPUT}.unique_ids
+```
+
+Drop the "numeric" samples and the FAM samples.
+Keeping just `MEN*`, `Plate*` and `plate*`.
+
+```{bash}
+tail -n +2499 $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam | cut -d' ' -f1,2 > ${R_INPUT}.select_samples
+wc -l ${R_INPUT}.select_samples
+```
+
+
+Select the unique names and convert to bed/bim/fam
+```{bash plink00}
+module load plink
+plink --threads 4 \
+	--keep ${R_INPUT}.select_samples \
+	--vcf ${R_INPUT}.vcf.gz \
+	--make-bed \
+	--extract ${R_INPUT}.unique_ids \
+	--out ${R_INPUT} | grep -vs -- '--vcf:'
+```
+
+How many SNPs now?
+```{bash}
+wc -l ${R_INPUT}.bim
+```
+
+
+Conversion from bed/bim/fam to vcf for imputation loses case/control and sex.
+The original fam file and the one just created appear to be identically except the lost of sex and case/control.
+So I'm gonna replace the new one with the original one.
+
+```{bash}
+mv ${R_INPUT}.fam ${R_INPUT}.sexless.fam
+cp $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam ${R_INPUT}.fam
+```
+
+How many samples?
+```{bash}
+wc -l ${R_INPUT}.fam
+```
+
+Apply some standard filters. The paper used MAF 0.005 and HWE 1e-5 so using that.
+Also have the GENO and MIND filters. Not sure of their value in the paper.
+Write only SNP and SAMPLE lists.
+```{bash plink01}
+module load plink
+##	--maf 0.01 \
+##	--hwe 1e-6 \
+plink --threads 4 \
+	--bfile ${R_INPUT} \
+	--maf 0.005 --hwe 1e-5 \
+	--geno 0.01 \
+	--mind 0.01 \
+	--write-snplist \
+	--make-just-fam \
+	--out ${R_INPUT}.QC
+```
+
+
+How many SNPs survived this culling?
+```{bash}
+wc -l ${R_INPUT}.QC.snplist
+```
+
+How many samples survived this culling?
+```{bash}
+wc -l ${R_INPUT}.QC.fam
+```
+
+```{bash}
+cut -d' ' -f6 ${R_INPUT}.QC.fam | sort | uniq -c
+```
+
+
+
+Each of the parameters corresponds to the following
+
+```
+Parameter	Value	Description
+bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
+maf	0.01	Removes all SNPs with minor allele frequency less than 0.01. Genotyping errors typically have a larger influence on SNPs with low MAF. Studies with large sample sizes could apply a lower MAF threshold
+hwe	1e-6	Removes SNPs with low P-value from the Hardy-Weinberg Equilibrium Fisher's exact or chi-squared test. SNPs with significant P-values from the HWE test are more likely affected by genotyping error or the effects of natural selection. Filtering should be performed on the control samples to avoid filtering SNPs that are causal (under selection in cases). When phenotype information is included, plink will automatically perform the filtering in the controls.
+geno	0.01	Excludes SNPs that are missing in a high fraction of subjects. A two-stage filtering process is usually performed (see Marees et al).
+mind	0.01	Excludes individuals who have a high rate of genotype missingness, since this may indicate problems in the DNA sample or processing. (see Marees et al for more details).
+make-just-fam	-	Informs plink to only generate the QC'ed sample name to avoid generating the .bed file.
+write-snplist	-	Informs plink to only generate the QC'ed SNP list to avoid generating the .bed file.
+out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
+```
+
+Note
+
+Normally, we can generate a new genotype file using the new sample list. However, this will use up a lot of storage space. Using plink's --extract, --exclude, --keep, --remove, --make-just-fam and --write-snplist functions, we can work solely on the list of samples and SNPs without duplicating the genotype file, reducing the storage space usage.
+
+Very high or low heterozygosity rates in individuals could be due to DNA contamination or to high levels of inbreeding. Therefore, samples with extreme heterozygosity are typically removed prior to downstream analyses.
+
+First, we perform pruning to remove highly correlated SNPs:
+
+
+
+This is another plink call from the example. Keep it?
+
+```{bash plink02}
+module load plink
+plink --threads 4 \
+	--bfile ${R_INPUT} \
+	--keep ${R_INPUT}.QC.fam \
+	--extract ${R_INPUT}.QC.snplist \
+	--indep-pairwise 200 50 0.25 \
+	--out ${R_INPUT}.QC
+```
+
+
+Each of the parameters corresponds to the following
+
+```
+Parameter	Value	Description
+bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
+keep	EUR.QC.fam	Informs plink that we only want to use samples in EUR.QC.fam in the analysis
+extract	EUR.QC.snplist	Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
+indep-pairwise	200 50 0.25	Informs plink that we wish to perform pruning with a window size of 200 variants, sliding across the genome with step size of 50 variants at a time, and filter out any SNPs with LD `r 2` higher than 0.25
+out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
+```
+
+This will generate two files 1) EUR.QC.prune.in and 2) EUR.QC.prune.out. All SNPs within EUR.QC.prune.in have a pairwise `r 2 < 0.25`.
+
+Heterozygosity rates can then be computed using plink:
+
+Another example plink command. Keep?
+```{bash plink03}
+module load plink
+plink --threads 4 \
+	--bfile ${R_INPUT} \
+	--extract ${R_INPUT}.QC.prune.in \
+	--keep ${R_INPUT}.QC.fam \
+	--het \
+	--out ${R_INPUT}.QC
+```
+
+This will generate the `.QC.het` file, which contains F coefficient estimates for assessing heterozygosity. We will remove individuals with F coefficients that are more than 3 standard deviation (SD) units from the mean, which can be performed using the following R command (assuming that you have R downloaded, then you can open an R session by typing R in your terminal):
+
+With data.table
+```{r qc_het}
+library(data.table)
+# Read in file
+dat <- fread(paste0(opt$input,".QC.het"))
+# Get samples with F coefficient within 3 SD of the population mean
+valid <- dat[F<=mean(F)+3*sd(F) & F>=mean(F)-3*sd(F)]
+# print FID and IID for valid samples
+fwrite(valid[,c("FID","IID")], paste0(opt$input,".valid.sample"), sep="\t")
+```
+
+
+Initial sample count
+```{bash}
+wc -l ${R_INPUT}.fam
+```
+
+```{bash}
+cut -d' ' -f6 ${R_INPUT}.fam | sort | uniq -c
+```
+
+
+QC sample count
+```{bash}
+wc -l ${R_INPUT}.QC.fam
+```
+
+```{bash}
+cut -d' ' -f6 ${R_INPUT}.QC.fam | sort | uniq -c
+```
+
+How many samples were excluded due to high heterozygosity rate?
+
+NOTE .valid.sample has a header line
+```{bash}
+wc -l ${R_INPUT}.valid.sample
+```
+
+
+
+
+
+### Mismatching SNPs
+
+
+**This is comparing the base data (which we don't have here) and the target data so we're "skipping" this.**
+
+
+
+
+SNPs that have mismatching alleles reported in the base and target data may be resolvable by strand-flipping the alleles to their complementary alleles in e.g. the target data, such as for a SNP with A/C in the base data and G/T in the target. This can be achieved with the following steps:
+
+Note
+
+Most PRS software will perform strand-flipping automatically, thus this step is usually not required.
+
+1. Load the bim file, the summary statistic and the QC SNP list into R
+
+With data.table and magrittr
+
+NO
+```{r mismatchingsnps}
+## magrittr allow us to do piping, which help to reduce the
+## amount of intermediate data types
+#library(data.table)
+#library(magrittr)
+## Read in bim file
+#bim <- fread(paste0(opt$input,".bim")) %>%
+#	# Note: . represents the output from previous step
+#	# The syntax here means, setnames of the data read from
+#	# the bim file, and replace the original column names by
+#	# the new names
+#	setnames(., colnames(.), c("CHR", "SNP", "CM", "BP", "B.A1", "B.A2")) %>%
+#	# And immediately change the alleles to upper cases
+#	.[,c("B.A1","B.A2"):=list(toupper(B.A1), toupper(B.A2))]
+#
+#
+# Read in summary statistic data (require data.table v1.12.0+)
+#height <- fread("Height.QC.gz") %>%
+#    # And immediately change the alleles to upper cases
+#    .[,c("A1","A2"):=list(toupper(A1), toupper(A2))]
+#
+#
+#
+## Read in QCed SNPs
+#qc <- fread(paste0(opt$input,".QC.snplist"), header=F)
+```
+
+2. Identify SNPs that require strand flipping
+
+
+NO
+```{r merge_summary}
+## Merge summary statistic with target
+#info <- merge(bim, height, by=c("SNP", "CHR", "BP")) %>%
+#    # And filter out QCed SNPs
+#    .[SNP %in% qc[,V1]]
+#
+## Function for calculating the complementary allele
+#complement <- function(x){
+#    switch (x,
+#        "A" = "T",
+#        "C" = "G",
+#        "T" = "A",
+#        "G" = "C",
+#        return(NA)
+#    )
+#}
+#
+## Get SNPs that have the same alleles across base and target
+#info.match <- info[A1 == B.A1 & A2 == B.A2, SNP]
+## Identify SNPs that are complementary between base and target
+#com.snps <- info[sapply(B.A1, complement) == A1 &
+#                    sapply(B.A2, complement) == A2, SNP]
+## Now update the bim file
+#bim[SNP %in% com.snps, c("B.A1", "B.A2") :=
+#        list(sapply(B.A1, complement),
+#            sapply(B.A2, complement))]
+```
+
+3. Identify SNPs that require recoding in the target (to ensure the coding allele in the target data is the effective allele in the base summary statistic)
+
+
+NO
+```{r recode_snps}
+## identify SNPs that need recoding
+#recode.snps <- info[B.A1==A2 & B.A2==A1, SNP]
+## Update the bim file
+#bim[SNP %in% recode.snps, c("B.A1", "B.A2") :=
+#        list(B.A2, B.A1)]
+#
+## identify SNPs that need recoding & complement
+#com.recode <- info[sapply(B.A1, complement) == A2 &
+#                    sapply(B.A2, complement) == A1, SNP]
+## Now update the bim file
+#bim[SNP %in% com.recode, c("B.A1", "B.A2") :=
+#        list(sapply(B.A2, complement),
+#            sapply(B.A1, complement))]
+## Write the updated bim file
+#fwrite(bim[,c("SNP", "B.A1")], paste0(opt$input,".a1"), col.names=F, sep="\t")
+```
+
+
+4. Identify SNPs that have different allele in base and target (usually due to difference in genome build or Indel)
+
+NO
+```{r write_mismatches}
+#mismatch <- bim[!(SNP %in% info.match |
+#                    SNP %in% com.snps |
+#                    SNP %in% recode.snps |
+#                    SNP %in% com.recode), SNP]
+#write.table(mismatch, paste0(opt$input,".mismatch"), quote=F, row.names=F, col.names=F)
+```
+
+We can then use the EUR.a1 file to update the A1 alleles
+o
+
+
+
+### Duplicate SNPs
+
+Make sure to remove any duplicate SNPs in your target data (these target data were simulated and so include no duplicated SNPs).
+
+
+**I did this manually at the beginning.**
+
+
+
+### Sex chromosomes
+
+Sometimes sample mislabelling can occur, which may lead to invalid results. One indication of a mislabelled sample is a difference between reported sex and that indicated by the sex chromosomes. While this may be due to a difference in sex and gender identity, it could also reflect mislabeling of samples or misreporting and, thus, individuals in which there is a mismatch between biological and reported sex are typically removed. A sex check can be performed in PLINK, in which individuals are called as females if their X chromosome homozygosity estimate (F statistic) is < 0.2 and as males if the estimate is > 0.8.
+
+Before performing a sex check, pruning should be performed (see here). A sex check can then easily be conducted using plink
+
+
+**We don't have sex chromosomes and I'm doing them by individual chromosome anyway this is irrelevant**
+
+NO
+```{bash plink04}
+#module load plink
+#
+#plink \
+#	--bfile ${R_INPUT} \
+#	--extract ${R_INPUT}.QC.prune.in \
+#	--keep ${R_INPUT}.valid.sample \
+#	--check-sex \
+#	--out ${R_INPUT}.QC
+```
+
+This will generate a file called EUR.QC.sexcheck containing the F-statistics for each individual. Individuals are typically called as being biologically male if the F-statistic is > 0.8 and biologically female if F < 0.2.
+
+
+NO
+```{r EUR_valid_sample}
+#library(data.table)
+# Read in file
+#valid <- fread(paste0(opt$input,".valid.sample"))
+#dat <- fread(paste0(opt$input,".QC.sexcheck"))[FID%in%valid$FID]
+#fwrite(dat[STATUS=="OK",c("FID","IID")], paste0(opt$input,".QC.valid"), sep="\t")
+```
+
+
+
+**I'll just fake it and create a list of all samples as being valid so as not to muck with the following code. May need to adjust.**
+
+```{bash fake_valid_sample}
+cp ${R_INPUT}.valid.sample ${R_INPUT}.QC.valid
+```
+
+
+
+
+### Sample overlap
+
+Since the target data were simulated there are no overlapping samples between the base and target data here (see the relevant section of the paper for discussion of the importance of avoiding sample overlap).
+
+**Anything that I should do here?**
+
+### Relatedness
+
+Closely related individuals in the target data may lead to overfitted results, limiting the generalisability of the results.
+
+Before calculating the relatedness, pruning should be performed (see here). Individuals that have a first or second degree relative in the sample ( `^ π > 0.125`) can be removed with the following command:
+
+
+
+```{bash plink05}
+module load plink
+plink --threads 4 \
+	--bfile ${R_INPUT} \
+	--extract ${R_INPUT}.QC.prune.in \
+	--keep ${R_INPUT}.QC.valid \
+	--rel-cutoff 0.125 \
+	--out ${R_INPUT}.QC > plink.out 2>&1
+
+cat plink.out | tr "\r" "\n" | grep -vs " markers complete."
+```
+Output filtered of WAY TOO MUCH OUTPUT with "markers complete"
+
+
+How many related samples were excluded?
+
+
+**Check this in a future run**
+
+
+
+Note
+
+A greedy algorithm is used to remove closely related individuals in a way that optimizes the size of the sample retained. However, the algorithm is dependent on the random seed used, which can generate different results. Therefore, to reproduce the same result, you will need to specify the same random seed.
+
+PLINK's algorithm for removing related individuals does not account for the phenotype under study. To minimize the removal of cases of a disease, the following algorithm can be used instead: GreedyRelated.
+
+##	Generate final QC'ed target data file
+
+After performing the full analysis, you can generate a QC'ed data set with the following command:
+
+
+
+
+
+
+** No .a1 or mismatch as no "Height" file to compare to so just creating empty files **
+
+
+
+
+Making the final QC bed/bim/fam
+
+```{bash plink06}
+touch ${R_INPUT}.mismatch
+touch ${R_INPUT}.a1
+
+module load plink
+plink --threads 4 \
+	--bfile ${R_INPUT} \
+	--make-bed \
+	--keep ${R_INPUT}.QC.rel.id \
+	--out ${R_INPUT}.QC \
+	--extract ${R_INPUT}.QC.snplist \
+	--exclude ${R_INPUT}.mismatch \
+	--a1-allele ${R_INPUT}.a1
+```
+
+How many SNPs?
+```{bash}
+wc -l ${R_INPUT}.QC.bim
+```
+
+How many samples?
+```{bash}
+wc -l ${R_INPUT}.QC.fam
+```
+
+```{bash}
+cut -d' ' -f6 ${R_INPUT}.QC.fam | sort | uniq -c
+```
+
+
+Each of the parameters corresponds to the following
+
+```
+Parameter	Value	Description
+bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
+keep	EUR.QC.rel.id	Informs plink that we only want to keep samples in EUR.QC.rel.id
+extract	EUR.QC.snplist	Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
+exclude	EUR.mismatch	Informs plink that we wish to remove any SNPs in EUR.mismatch
+a1-allele	EUR.a1	Fix all A1 alleles to those specified in EUR.a1
+out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
+```
+
+
+
+Run a simple GWAS. This may require some refinement, but so far it works.
+```{bash run_actual_gwas}
+module load plink
+plink --threads 4 \
+	--bfile ${R_INPUT}.QC \
+	--logistic \
+	--out ${R_INPUT}.QC.logistic
+```
+
+Head of that table
+```{bash}
+head ${R_INPUT}.QC.logistic.assoc.logistic 
+```
+
+Load that table
+```{r read_final_table}
+db<-read.table(paste0(opt$input,'.QC.logistic.assoc.logistic'),header=1)
+db[1:5,1:5]
+```
+
+Remove any NA data
+```{r remove_na_final_table}
+db<-db[!is.na(db$P),]
+db[1:5,1:5]
+```
+
+Create a manhattan plot
+```{r manhattan_plot}
+library('qqman')
+manhattan(db)
+```
+
+Lowest P values
+
+
+```{bash}
+awk '($9<0.0001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
+```
+
+```{bash}
+awk '($9<0.00001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
+```
+
+```{bash}
+awk '($9<0.000001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
+```
+
+```{bash}
+awk '($9<0.0000001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
+```
+
+
+
+
+
+
+#plink --file your_data_prefix --pheno pheno.txt --covar covar.txt --covar-name covar_name --linear --out your_gwas_output
+#
+#plink --file your_data_prefix --pheno pheno.txt --logistic --covar covar.txt --covar-name covar_name --out your_gwas_output
+#
+# from Geno's script
+#plink2 \
+#	--pfile ${PWD}/imputation/chr22.dose.vcf.gz \
+#	--keep $scratchpath/AGS_illumina_EUR_ids.txt \
+#	--pheno iid-only $scratchpath/AGS_illumina_GWAS.phen \
+#	--pheno-name idhmut_only_gwas,tripneg_gwas,idhwt_1p19qnoncodel_gwas \
+#	--1 \
+#	--covar iid-only $scratchpath/AGS_illumina_covariates.txt \
+#	--covar-name Age,sex,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10 \
+#	--covar-variance-standardize \
+#	--glm firth-fallback hide-covar cols=chrom,pos,ref,alt1,a1freq,firth,test,nobs,beta,orbeta,se,ci,tz,p,err \
+#	--maf 0.01 \
+#	--memory 15000 \
+#	--threads 8 \
+#	--out ${PWD}/testing
+

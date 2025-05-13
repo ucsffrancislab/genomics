@@ -335,7 +335,7 @@ information measure the same as R2?
 ```
 #for i in {1..22}; do
 for i in 20 21 22; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=chr${i} --wrap="module load r pandoc; PRS_Tutorial.Rmd -i ${PWD}/imputed/chr${i}" --out=${PWD}/imputed/chr${i}.Rmd.log
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=chr${i} --wrap="module load r pandoc; GWAS.Rmd -i ${PWD}/imputed/chr${i}" --out=${PWD}/imputed/chr${i}.Rmd.log
 done
 
 ```
