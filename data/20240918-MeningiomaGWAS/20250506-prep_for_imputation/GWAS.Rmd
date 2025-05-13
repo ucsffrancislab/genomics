@@ -80,6 +80,24 @@ The following plink commands applies some of these QC metrics to the target data
 https://pmc.ncbi.nlm.nih.gov/articles/PMC6176799/
 
 
+```{bash cleanup}
+\rm ${R_INPUT}.QC.*
+\rm -f ${R_INPUT}.sexless.fam
+\rm ${R_INPUT}.a1
+\rm ${R_INPUT}.bed
+\rm ${R_INPUT}.bim
+\rm ${R_INPUT}.fam
+\rm ${R_INPUT}.log
+\rm ${R_INPUT}.mismatch
+\rm ${R_INPUT}.nosex
+\rm ${R_INPUT}.select_samples
+\rm ${R_INPUT}.unique_ids
+\rm ${R_INPUT}.valid.sample
+\rm ${R_INPUT}.vcf.gz
+ls -l ${R_INPUT}.*
+```
+
+
 How many SNPs in imputed?
 ```{bash}
 zgrep -cvs "^#" ${R_INPUT}.dose.vcf.gz
@@ -109,6 +127,9 @@ tail -n +2499 $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-upd
 wc -l ${R_INPUT}.select_samples
 ```
 
+```{bash}
+ls -l ${R_INPUT}.*
+```
 
 Select the unique names and convert to bed/bim/fam
 ```{bash plink00}
@@ -120,6 +141,14 @@ plink --threads 4 \
 	--extract ${R_INPUT}.unique_ids \
 	--out ${R_INPUT} | grep -vs -- '--vcf:'
 ```
+
+
+This is producing ...
+Error: Failed to open
+/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation/imputed/chr22.fam.
+Not sure why.
+
+
 
 How many SNPs now?
 ```{bash}
