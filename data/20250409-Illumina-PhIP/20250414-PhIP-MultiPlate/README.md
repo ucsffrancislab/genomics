@@ -772,47 +772,62 @@ box_upload.bash out.123561314/virus_score*
 ```
 
 
+##	20250512
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-out.123456/manifest.csv
 Hey hey- Could you please make a a couple files for me? Basically I want the public epitopes for your “normalized subtracted” version and the Z=10 for the z score.
+
 Id like them for all the subjects cases and controls (put 1/0 to denote) and age, sex, plate, CMV, EBV, HSV, VZV. Basically just like the attached version, but with all the subjects and case status and for the Z score and the subtracted. Make sense?
 
-head -505 out.123456/manifest.csv
+
+```
+merge_matrices.py --axis columns --de_nan --de_neg   --header_rows 9 --index_col id --index_col species   --out ${PWD}/out.123456/Counts.normalized.subtracted.csv   ${PWD}/out.plate{1,2,3,4,5,6}/Counts.normalized.subtracted.csv
+
+head -2 ${PWD}/out.123456/Counts.normalized.subtracted.csv > tmp1.csv
+tail -n +4 ${PWD}/out.123456/Counts.normalized.subtracted.csv | head -1 >> tmp1.csv
+tail -n +6 ${PWD}/out.123456/Counts.normalized.subtracted.csv | head -3 >> tmp1.csv
+tail -n +9 ${PWD}/out.123456/Counts.normalized.subtracted.csv | head -1 > tmp2.csv
+tail -n +10 ${PWD}/out.123456/Counts.normalized.subtracted.csv | sort -t, -k1,1 >> tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.ids.join_sorted.txt tmp2.csv >> tmp1.csv
+cat tmp1.csv | datamash transpose -t, > tmp3.csv
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | grep ",glioma serum," | sort -t, -k1,1 >> tmp4.csv
+l=$( head -n 1 AGS.csv )
+echo -n ${l}, > tmp5.csv
+head -1 tmp4.csv | cut -d, -f2- >> tmp5.csv
+join --header -t, -a 2 -o auto AGS.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+cut -d, -f1,2,6-10,12- tmp5.csv > ${PWD}/out.123456/Counts.normalized.subtracted.glioma.AGS.csv
+sed -i '1s/,id,id,id,id,id,/,subject,group,age,sex,plate,/' ${PWD}/out.123456/Counts.normalized.subtracted.glioma.AGS.csv
+sed -i '2s/,species,species,species,species,species,/,subject,group,age,sex,plate,/' ${PWD}/out.123456/Counts.normalized.subtracted.glioma.AGS.csv
+box_upload.bash ${PWD}/out.123456/Counts.normalized.subtracted.glioma.AGS.csv
+```
 
 
+```
+merge_matrices.py --axis columns --de_nan --de_neg   --header_rows 3 --index_col id --index_col species   --out ${PWD}/out.123456/Zscores.t.csv   ${PWD}/out.plate{1,2,3,4,5,6}/Zscores.t.csv
 
+head -3 ${PWD}/out.123456/Zscores.t.csv | tail -n 1 > tmp1.csv
+head -2 ${PWD}/out.123456/Zscores.t.csv >> tmp1.csv
+tail -n +4 ${PWD}/out.123456/Zscores.t.csv | sort -t, -k1,1 >> tmp1.csv
+head -2 tmp1.csv > tmp2.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.ids.join_sorted.txt <( tail -n +3 tmp1.csv ) >> tmp2.csv
+cat tmp2.csv | datamash transpose -t, > tmp3.csv
+head -2 tmp3.csv > tmp4.csv
+tail -n +3 tmp3.csv | sort -t, -k1,1 >> tmp4.csv
+l=$( head -n 1 out.123456/manifest.csv )
+echo -n ${l}, > tmp5.csv
+head -1 tmp4.csv | cut -d, -f2- >> tmp5.csv
+join --header -t, out.123456/manifest.csv <( tail -n +2 tmp4.csv ) >> tmp5.csv
+head -2 tmp5.csv > tmp6.csv
+tail -n +3 tmp5.csv | grep ",glioma serum," >> tmp6.csv
+l=$( head -n 1 AGS.csv )
+echo -n ${l}, > tmp7.csv
+head -1 tmp6.csv | cut -d, -f2- >> tmp7.csv
+join --header -t, -a 2 -o auto AGS.csv <( tail -n +2 tmp6.csv ) >> tmp7.csv
+cut -d, -f1,2,6-10,13-16,19- tmp7.csv > ${PWD}/out.123456/Zscores.glioma.AGS.csv
+box_upload.bash ${PWD}/out.123456/Zscores.glioma.AGS.csv
 
-
-
-
-
-
-
-
+```
 
 
 
