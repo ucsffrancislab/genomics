@@ -57,10 +57,6 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 
 ```
 
 
-
-
-
-
 ```BASH
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=bgzip --wrap="module load htslib; bgzip ${PWD}/prep/*vcf; chmod a-w ${PWD}/prep/*{bim,bed,fam,vcf.gz}" --out=${PWD}/prep/bgzip.log
 ```
@@ -330,11 +326,11 @@ How to include the above restrictions??
 
 information measure the same as R2?
 
+##INFO=<ID=R2,Number=1,Type=Float,Description="Estimated Imputation Accuracy (R-square)">
 
 
 ```
-#for i in {1..22}; do
-for i in 20 21 22; do
+for i in {1..22}; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=chr${i} --wrap="module load r pandoc; GWAS.Rmd -i ${PWD}/imputed/chr${i}" --out=${PWD}/imputed/chr${i}.Rmd.log
 done
 
@@ -344,6 +340,116 @@ done
 
 
 
+##	20250516
+
+
+
+
+
+
+
+ARE IMPUTED SNPS THE ORIGINAL REFERENCE HG19 OR ARE THEY THE LIFTED OVER REFERENCE HG38????
+
+The returned chromosomes include "chr" so I think they are hg38
+
+And rs4940595 is in a different position, as an example
+
+```
+zgrep rs4940595 prep/MENINGIOMA_GWAS_SHARED-updated-chr18.vcf.gz | cut -c1-90
+18	61379838	rs4940595_r	T	G	.	.	.	GT	0/1	0/0	0/1	0/0	0/0	0/0	0/0	0/1	1/1	0/1	0/0	0/0	0/1	0
+
+zgrep rs4940595 imputed/chr18.info.gz 
+chr18	63712604	rs4940595	G	T	.	.	IMPUTED;AF=0.711337;MAF=0.288663;AVG_CS=0.993549;R2=0.970421
+```
+
+
+
+
+
+Prep these QC'd data for the PRS imputation server
+
+
+This is a bit tricky unless I re-concat the individual chromosomes into 1
+
+```BASH
+mkdir prep_for_PRS
+seq 1 22 | xargs -I _num echo imputed/chr_num.QC > prep_for_PRS/merge_list.txt
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=8 --mem=60G --export=None --job-name=merge --wrap="module load pandoc plink; plink --merge-list ${PWD}/prep_for_PRS/merge_list.txt --make-bed --out ${PWD}/prep_for_PRS/merged; chmod -w ${PWD}/prep_for_PRS/merged.{bed,bim,fam}" --out=${PWD}/prep_for_PRS/merge.log
+```
+
+
+
+Testing
+```
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=merged --wrap="module load r pandoc; GWAS.Rmd -i ${PWD}/prep_for_PRS/merged-updated-chr22.vcf.gz -o ${PWD}/merged/merged-updated-chr22_vcf -f ${PWD}/imputed/chr22.fam" --out=${PWD}/merged/merged-updated-chr22_vcf.Rmd.log
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=merged --wrap="module load r pandoc; GWAS.Rmd -i ${PWD}/prep_for_PRS/merged-updated-chr22 -o ${PWD}/merged/merged-updated-chr22_bbf" --out=${PWD}/merged/merged-updated-chr22_bbf.Rmd.log
+
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=merged --wrap="module load r pandoc; GWAS.Rmd -i ${PWD}/prep_for_PRS/merged -o ${PWD}/merged/merged" --out=${PWD}/merged/merged.Rmd.log
+```
+
+
+
+
+
+##	Create a frequency file
+
+
+```BASH
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=freq --wrap="module load plink; plink --freq --bfile ${PWD}/prep_for_PRS/merged --out ${PWD}/prep_for_PRS/merged;chmod -w ${PWD}/prep_for_PRS/merged.frq" --out=${PWD}/prep_for_PRS/plink.create_frequency_file.log
+```
+
+
+##	Check BIM and split
+
+```BASH
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep_for_PRS/merged.bim --frequency ${PWD}/prep_for_PRS/merged.frq --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" --out=${PWD}/prep_for_PRS/HRC-1000G-check-bim.pl.log
+```
+
+Run the generated script
+
+```BASH
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=run-plink --wrap="module load plink; sh ${PWD}/prep_for_PRS/Run-plink.sh;\rm ${PWD}/prep_for_PRS/TEMP*" --out=${PWD}/prep_for_PRS/Run-plink.sh.log
+```
+
+
+```BASH
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=bgzip --wrap="module load htslib; bgzip ${PWD}/prep_for_PRS/*vcf; chmod a-w ${PWD}/prep_for_PRS/*{bim,bed,fam,vcf.gz}" --out=${PWD}/prep_for_PRS/bgzip.log
+```
+
+That should be good.
+
+
+
+
+
+##	Upload
+
+Copy the files locally.
+```BASH
+mkdir tmp ; cd tmp
+scp c4:/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation/prep_for_PRS/*vcf.gz ./
+```
+
+Then upload to the web app.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---
 
 ```
 plink2 \
