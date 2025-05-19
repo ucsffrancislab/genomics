@@ -1851,5 +1851,15 @@ awk -F, '($1>=108603 && $1<=128287 && $2=="Human herpesvirus 5"){print $1}' VirS
 
 
 
+Which are short an include a STOP codon?
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print ">"$21; print toupper(substr($18,15+i,length($18)-30-i)); }' | head -12
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(length($21)<50){ if($18~/^a/){i=2}else{i=1} print $17,toupper(substr($18,3*length($21)+15+i,3*length($21)+length($18)-30-i)); }' | head
+
+
+```
+
 
 
