@@ -15,13 +15,19 @@ scriptname=sub("--file=", "", args[grepl("--file=", args)])
 parser <- ArgumentParser(description=scriptname)
 
 parser$add_argument("-i", "--input", type="character", required=TRUE,
-        help="input vcf file", metavar="filename")
+        help="input vcf file (inpath/merged.dose.vcf.gz)", metavar="filename")
+parser$add_argument("-o", "--output", type="character", required=TRUE,
+        help="output base filename (outpath/merged)", metavar="filename")
+parser$add_argument("-f", "--fam", type="character", default="",
+        help="FAM file which includes sex and case/control", metavar="filename")
 opt <- parser$parse_args()
 
 #	set environment variable for following bash blocks from r variable
 Sys.setenv(R_INPUT = opt$input)
+Sys.setenv(R_OUTPUT = opt$output)
+Sys.setenv(R_FAM = opt$fam)
 
-rmarkdown::render(newfname, output_dir = dirname(opt$input), output_file = paste0(basename(opt$input),'.html') )
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(basename(opt$output),'.html') )
 
 #noext=fs::path_ext_remove(fname)
 #rmarkdown::render(newfname, output_dir = dname_no_links, output_file = paste0(noext,'.html') )
@@ -31,7 +37,7 @@ q("no")
 ---
 title: "GWAS Test"
 author: "JW"
-date: "2025-05-08"
+date: "2025-05-19"
 output:
   html_document:
     fig_width: 12
@@ -80,80 +86,178 @@ The following plink commands applies some of these QC metrics to the target data
 https://pmc.ncbi.nlm.nih.gov/articles/PMC6176799/
 
 
-```{bash cleanup}
-\rm ${R_INPUT}.QC.*
-\rm -f ${R_INPUT}.sexless.fam
-\rm ${R_INPUT}.a1
-\rm ${R_INPUT}.bed
-\rm ${R_INPUT}.bim
-\rm ${R_INPUT}.fam
-\rm ${R_INPUT}.log
-\rm ${R_INPUT}.mismatch
-\rm ${R_INPUT}.nosex
-\rm ${R_INPUT}.select_samples
-\rm ${R_INPUT}.unique_ids
-\rm ${R_INPUT}.valid.sample
-\rm ${R_INPUT}.vcf.gz
-ls -l ${R_INPUT}.*
+```{bash}
+echo ${R_INPUT}
 ```
+
+```{bash}
+echo ${R_OUTPUT}
+```
+
+```{bash}
+date
+```
+
+
+```{bash cleanup}
+mkdir -p $( dirname ${R_OUTPUT} )
+\rm ${R_OUTPUT}.QC.*
+\rm -f ${R_OUTPUT}.sexless.fam
+\rm ${R_OUTPUT}.a1
+\rm ${R_OUTPUT}.bed
+\rm ${R_OUTPUT}.bim
+\rm ${R_OUTPUT}.fam
+\rm ${R_OUTPUT}.log
+\rm ${R_OUTPUT}.mismatch
+\rm ${R_OUTPUT}.nosex
+\rm ${R_OUTPUT}.select_samples
+\rm ${R_OUTPUT}.unique_ids
+\rm ${R_OUTPUT}.valid.sample
+\rm ${R_OUTPUT}.vcf.gz
+echo "OK"
+```
+
+```{bash list}
+#ls -l ${R_OUTPUT}.*
+ls -l ${R_OUTPUT}.* | sed -e "s'$(dirname ${R_OUTPUT})/''"
+```
+
+
+
+
 
 
 How many SNPs in imputed?
 ```{bash}
-zgrep -cvs "^#" ${R_INPUT}.dose.vcf.gz
+#zgrep -cvs "^#" ${R_INPUT}.dose.vcf.gz
+
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	zgrep -cvs "^#" ${R_INPUT}
+elif [ -f ${R_INPUT}.bim ] ; then
+	wc -l ${R_INPUT}.bim
+fi
 ```
+
+
+
+
+`Variants were excluded if they had a high missing data rate (>5%), if the genotyping call rates differed between the cases and the controls (P < 10−5 using Fisher’s exact test), if they had a minor allele frequency (MAF) <0.01, or if they deviated significantly from Hardy–Weinberg equilibrium (HWE, P < 10–5).`
+
+`SNPs were excluded based on high missing rate (>5%), low MAF (<0.01), or evidence of deviation from HWE (P < 0.05).`
+
+
+`Poorly imputed SNPs (information measure <0.8), SNPs with a low MAF (<0.005), and SNPs that deviated from HWE (P < 10−5) were excluded.`
+
+
+
 
 Drop "poorly imputed SNPs"
 ```{bash bcftools}
-module load bcftools
-bcftools filter --threads 4 -i 'INFO/R2 >= 0.8' -Oz -o ${R_INPUT}.vcf.gz ${R_INPUT}.dose.vcf.gz 
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	if [ $( bcftools view -h prep_for_PRS/merged-updated-chr22.vcf.gz | grep "^##INFO=<ID=R2," | wc -l ) -gt 0 ] ; then
+		module load bcftools
+		bcftools filter --threads 4 -i 'INFO/R2 >= 0.75' -Oz -o ${R_OUTPUT}.vcf.gz ${R_INPUT}
+	else
+		ln -s ${R_INPUT} ${R_OUTPUT}.vcf.gz 
+	fi
+
+
+fi
 ```
 
 How many SNPs survived?
 ```{bash}
-zgrep -cvs "^#" ${R_INPUT}.vcf.gz
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	zgrep -cvs "^#" ${R_OUTPUT}.vcf.gz
+fi
+```
+
+
+Name all of the unnamed SNPs
+```{bash}
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	module load htslib
+	zcat ${R_OUTPUT}.vcf.gz | awk 'BEGIN{FS=OFS="\t"}(/^#/){print;next}{if($3=="."){$3="jake_"$1"_"$2"_"i++}print}' > ${R_OUTPUT}.vcf
+	\rm ${R_OUTPUT}.vcf.gz
+	bgzip ${R_OUTPUT}.vcf
+fi
+```
+
+
+```{bash}
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	zgrep -m 10 -vs "^#" ${R_OUTPUT}.vcf.gz | cut -c1-100
+fi
 ```
 
 Some issues later if the same SNP name is replicated so I'm only keeping the uniquely named.
 ```{bash identify_unique_snps}
-zgrep -vs "^#" ${R_INPUT}.vcf.gz | cut -f3 | sort | uniq -u > ${R_INPUT}.unique_ids
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	zgrep -vs "^#" ${R_OUTPUT}.vcf.gz | cut -f3 | sort | uniq -u > ${R_OUTPUT}.unique_ids
+fi
+```
+
+```{bash}
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	head ${R_OUTPUT}.unique_ids
+fi
 ```
 
 Drop the "numeric" samples and the FAM samples.
 Keeping just `MEN*`, `Plate*` and `plate*`.
 
 ```{bash}
-tail -n +2499 $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam | cut -d' ' -f1,2 > ${R_INPUT}.select_samples
-wc -l ${R_INPUT}.select_samples
+#tail -n +2499 $( dirname $( dirname $R_OUTPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_OUTPUT ).fam | cut -d' ' -f1,2 > ${R_OUTPUT}.select_samples
+#wc -l ${R_OUTPUT}.select_samples
 ```
 
 ```{bash}
-ls -l ${R_INPUT}.*
+#head ${R_OUTPUT}.select_samples
+```
+
+```{bash}
+#ls -l ${R_OUTPUT}.*
+ls -l ${R_OUTPUT}.* | sed -e "s'$(dirname ${R_OUTPUT})/''"
 ```
 
 Select the unique names and convert to bed/bim/fam
+
+(Don't select_samples. Use them all again.)
 ```{bash plink00}
 module load plink
-plink --threads 4 \
-	--keep ${R_INPUT}.select_samples \
-	--vcf ${R_INPUT}.vcf.gz \
-	--make-bed \
-	--extract ${R_INPUT}.unique_ids \
-	--out ${R_INPUT} | grep -vs -- '--vcf:'
+if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
+	#	--keep ${R_OUTPUT}.select_samples \
+	plink --threads 4 \
+		--vcf ${R_OUTPUT}.vcf.gz \
+		--make-bed \
+		--extract ${R_OUTPUT}.unique_ids \
+		--out ${R_OUTPUT} | grep -vs -- '--vcf:'
+else
+	ln -s ${R_INPUT}.bim ${R_OUTPUT}.bim
+	ln -s ${R_INPUT}.bed ${R_OUTPUT}.bed
+	ln -s ${R_INPUT}.fam ${R_OUTPUT}.fam
+fi
 ```
-
-
-This is producing ...
-Error: Failed to open
-/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation/imputed/chr22.fam.
-Not sure why.
-
 
 
 How many SNPs now?
 ```{bash}
-wc -l ${R_INPUT}.bim
+wc -l ${R_OUTPUT}.bim
 ```
+
+```{bash}
+head ${R_OUTPUT}.bim
+```
+
+
+```{bash}
+head ${R_OUTPUT}.fam
+```
+
+
+
+
+
 
 
 Conversion from bed/bim/fam to vcf for imputation loses case/control and sex.
@@ -161,14 +265,36 @@ The original fam file and the one just created appear to be identically except t
 So I'm gonna replace the new one with the original one.
 
 ```{bash}
-mv ${R_INPUT}.fam ${R_INPUT}.sexless.fam
-#cp $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam ${R_INPUT}.fam
-tail -n +2499 $( dirname $( dirname $R_INPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam > ${R_INPUT}.fam
+if [ "${R_INPUT: -6}" == "vcf.gz" -a -n ${R_FAM} ] ; then
+	mv ${R_OUTPUT}.fam ${R_OUTPUT}.sexless.fam
+
+	awk '(NR==FNR){select[$1]++}(NR>FNR && $1 in select)' <( cut -d' ' -f1 ${R_OUTPUT}.sexless.fam ) ${R_FAM} > ${R_OUTPUT}.fam
+
+	#join <( cut -d' ' -f1 ${R_OUTPUT}.sexless.fam | sort ) <( sort -t' ' -k1,1 ${R_FAM} ) > ${R_OUTPUT}.fam
+
+	#cp $( dirname $( dirname $R_OUTPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_INPUT ).fam ${R_OUTPUT}.fam
+	#cp $( dirname $( dirname $R_OUTPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_OUTPUT ).fam ${R_OUTPUT}.fam
+	#tail -n +2499 $( dirname $( dirname $R_OUTPUT ) )/prep/MENINGIOMA_GWAS_SHARED-updated-$( basename $R_OUTPUT ).fam > ${R_OUTPUT}.fam
+fi
 ```
+
+**Does changing the order of a fam file have any impact? I believe it does so DO NOT SORT IT.**
+
+
+
+
+
+
+
+
 
 How many samples?
 ```{bash}
-wc -l ${R_INPUT}.fam
+wc -l ${R_OUTPUT}.fam
+```
+
+```{bash}
+head ${R_OUTPUT}.fam
 ```
 
 Apply some standard filters. The paper used MAF 0.005 and HWE 1e-5 so using that.
@@ -179,45 +305,50 @@ module load plink
 ##	--maf 0.01 \
 ##	--hwe 1e-6 \
 plink --threads 4 \
-	--bfile ${R_INPUT} \
+	--bfile ${R_OUTPUT} \
 	--maf 0.005 --hwe 1e-5 \
 	--geno 0.01 \
 	--mind 0.01 \
 	--write-snplist \
 	--make-just-fam \
-	--out ${R_INPUT}.QC
+	--out ${R_OUTPUT}.QC
 ```
 
 
 How many SNPs survived this culling?
 ```{bash}
-wc -l ${R_INPUT}.QC.snplist
+wc -l ${R_OUTPUT}.QC.snplist
+```
+
+```{bash}
+head ${R_OUTPUT}.QC.snplist
 ```
 
 How many samples survived this culling?
 ```{bash}
-wc -l ${R_INPUT}.QC.fam
+wc -l ${R_OUTPUT}.QC.fam
 ```
 
 ```{bash}
-cut -d' ' -f6 ${R_INPUT}.QC.fam | sort | uniq -c
+cut -d' ' -f6 ${R_OUTPUT}.QC.fam | sort | uniq -c
 ```
 
 
 
 Each of the parameters corresponds to the following
 
-```
-Parameter	Value	Description
-bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
-maf	0.01	Removes all SNPs with minor allele frequency less than 0.01. Genotyping errors typically have a larger influence on SNPs with low MAF. Studies with large sample sizes could apply a lower MAF threshold
-hwe	1e-6	Removes SNPs with low P-value from the Hardy-Weinberg Equilibrium Fisher's exact or chi-squared test. SNPs with significant P-values from the HWE test are more likely affected by genotyping error or the effects of natural selection. Filtering should be performed on the control samples to avoid filtering SNPs that are causal (under selection in cases). When phenotype information is included, plink will automatically perform the filtering in the controls.
-geno	0.01	Excludes SNPs that are missing in a high fraction of subjects. A two-stage filtering process is usually performed (see Marees et al).
-mind	0.01	Excludes individuals who have a high rate of genotype missingness, since this may indicate problems in the DNA sample or processing. (see Marees et al for more details).
-make-just-fam	-	Informs plink to only generate the QC'ed sample name to avoid generating the .bed file.
-write-snplist	-	Informs plink to only generate the QC'ed SNP list to avoid generating the .bed file.
-out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
-```
+
+Parameter | Value | Description
+--- | --- | ---
+bfile | EUR | Informs plink that the input genotype files should have a prefix of EUR
+maf | 0.01 | Removes all SNPs with minor allele frequency less than 0.01. Genotyping errors typically have a larger influence on SNPs with low MAF. Studies with large sample sizes could apply a lower MAF threshold
+hwe | 1e-6 | Removes SNPs with low P-value from the Hardy-Weinberg Equilibrium Fisher's exact or chi-squared test. SNPs with significant P-values from the HWE test are more likely affected by genotyping error or the effects of natural selection. Filtering should be performed on the control samples to avoid filtering SNPs that are causal (under selection in cases). When phenotype information is included, plink will automatically perform the filtering in the controls.
+geno | 0.01 | Excludes SNPs that are missing in a high fraction of subjects. A two-stage filtering process is usually performed (see Marees et al).
+mind | 0.01 | Excludes individuals who have a high rate of genotype missingness, since this may indicate problems in the DNA sample or processing. (see Marees et al for more details).
+make-just-fam | - | Informs plink to only generate the QC'ed sample name to avoid generating the .bed file.
+write-snplist | - | Informs plink to only generate the QC'ed SNP list to avoid generating the .bed file.
+out | EUR.QC | Informs plink that all output should have a prefix of EUR.QC
+
 
 Note
 
@@ -234,24 +365,25 @@ This is another plink call from the example. Keep it?
 ```{bash plink02}
 module load plink
 plink --threads 4 \
-	--bfile ${R_INPUT} \
-	--keep ${R_INPUT}.QC.fam \
-	--extract ${R_INPUT}.QC.snplist \
+	--bfile ${R_OUTPUT} \
+	--keep ${R_OUTPUT}.QC.fam \
+	--extract ${R_OUTPUT}.QC.snplist \
 	--indep-pairwise 200 50 0.25 \
-	--out ${R_INPUT}.QC
+	--out ${R_OUTPUT}.QC
 ```
 
 
 Each of the parameters corresponds to the following
 
-```
-Parameter	Value	Description
-bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
-keep	EUR.QC.fam	Informs plink that we only want to use samples in EUR.QC.fam in the analysis
-extract	EUR.QC.snplist	Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
-indep-pairwise	200 50 0.25	Informs plink that we wish to perform pruning with a window size of 200 variants, sliding across the genome with step size of 50 variants at a time, and filter out any SNPs with LD `r 2` higher than 0.25
-out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
-```
+
+Parameter | Value | Description
+--- | --- | ---
+bfile | EUR | Informs plink that the input genotype files should have a prefix of EUR
+keep | EUR.QC.fam | Informs plink that we only want to use samples in EUR.QC.fam in the analysis
+extract | EUR.QC.snplist | Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
+indep-pairwise | 200 50 0.25 | Informs plink that we wish to perform pruning with a window size of 200 variants, sliding across the genome with step size of 50 variants at a time, and filter out any SNPs with LD `r 2` higher than 0.25
+out | EUR.QC | Informs plink that all output should have a prefix of EUR.QC
+
 
 This will generate two files 1) EUR.QC.prune.in and 2) EUR.QC.prune.out. All SNPs within EUR.QC.prune.in have a pairwise `r 2 < 0.25`.
 
@@ -261,11 +393,11 @@ Another example plink command. Keep?
 ```{bash plink03}
 module load plink
 plink --threads 4 \
-	--bfile ${R_INPUT} \
-	--extract ${R_INPUT}.QC.prune.in \
-	--keep ${R_INPUT}.QC.fam \
+	--bfile ${R_OUTPUT} \
+	--extract ${R_OUTPUT}.QC.prune.in \
+	--keep ${R_OUTPUT}.QC.fam \
 	--het \
-	--out ${R_INPUT}.QC
+	--out ${R_OUTPUT}.QC
 ```
 
 This will generate the `.QC.het` file, which contains F coefficient estimates for assessing heterozygosity. We will remove individuals with F coefficients that are more than 3 standard deviation (SD) units from the mean, which can be performed using the following R command (assuming that you have R downloaded, then you can open an R session by typing R in your terminal):
@@ -274,39 +406,47 @@ With data.table
 ```{r qc_het}
 library(data.table)
 # Read in file
-dat <- fread(paste0(opt$input,".QC.het"))
+dat <- fread(paste0(opt$output,".QC.het"))
 # Get samples with F coefficient within 3 SD of the population mean
 valid <- dat[F<=mean(F)+3*sd(F) & F>=mean(F)-3*sd(F)]
 # print FID and IID for valid samples
-fwrite(valid[,c("FID","IID")], paste0(opt$input,".valid.sample"), sep="\t")
+fwrite(valid[,c("FID","IID")], paste0(opt$output,".valid.sample"), sep="\t")
 ```
 
 
 Initial sample count
 ```{bash}
-wc -l ${R_INPUT}.fam
+wc -l ${R_OUTPUT}.fam
 ```
 
 ```{bash}
-cut -d' ' -f6 ${R_INPUT}.fam | sort | uniq -c
+cut -d' ' -f6 ${R_OUTPUT}.fam | sort | uniq -c
 ```
 
 
 QC sample count
 ```{bash}
-wc -l ${R_INPUT}.QC.fam
+wc -l ${R_OUTPUT}.QC.fam
 ```
 
 ```{bash}
-cut -d' ' -f6 ${R_INPUT}.QC.fam | sort | uniq -c
+cut -d' ' -f6 ${R_OUTPUT}.QC.fam | sort | uniq -c
 ```
 
 How many samples were excluded due to high heterozygosity rate?
 
 NOTE .valid.sample has a header line
 ```{bash}
-wc -l ${R_INPUT}.valid.sample
+wc -l ${R_OUTPUT}.valid.sample
 ```
+
+
+
+```{bash}
+#sdiff -s <( tail -n +2 ${R_OUTPUT}.valid.sample | cut -f1 ) <( cut -d' ' -f1 ${R_OUTPUT}.fam )
+( tail -n +2 ${R_OUTPUT}.valid.sample | cut -f1 && cut -d' ' -f1 ${R_OUTPUT}.fam ) | sort | uniq -u
+```
+
 
 
 
@@ -315,7 +455,7 @@ wc -l ${R_INPUT}.valid.sample
 ### Mismatching SNPs
 
 
-**This is comparing the base data (which we don't have here) and the target data so we're "skipping" this.**
+**This is comparing the base data (which we don't have here) and the target data so we're "skipping" this section.**
 
 
 
@@ -337,7 +477,7 @@ NO
 #library(data.table)
 #library(magrittr)
 ## Read in bim file
-#bim <- fread(paste0(opt$input,".bim")) %>%
+#bim <- fread(paste0(opt$output,".bim")) %>%
 #	# Note: . represents the output from previous step
 #	# The syntax here means, setnames of the data read from
 #	# the bim file, and replace the original column names by
@@ -355,7 +495,7 @@ NO
 #
 #
 ## Read in QCed SNPs
-#qc <- fread(paste0(opt$input,".QC.snplist"), header=F)
+#qc <- fread(paste0(opt$output,".QC.snplist"), header=F)
 ```
 
 2. Identify SNPs that require strand flipping
@@ -409,7 +549,7 @@ NO
 #        list(sapply(B.A2, complement),
 #            sapply(B.A1, complement))]
 ## Write the updated bim file
-#fwrite(bim[,c("SNP", "B.A1")], paste0(opt$input,".a1"), col.names=F, sep="\t")
+#fwrite(bim[,c("SNP", "B.A1")], paste0(opt$output,".a1"), col.names=F, sep="\t")
 ```
 
 
@@ -421,11 +561,10 @@ NO
 #                    SNP %in% com.snps |
 #                    SNP %in% recode.snps |
 #                    SNP %in% com.recode), SNP]
-#write.table(mismatch, paste0(opt$input,".mismatch"), quote=F, row.names=F, col.names=F)
+#write.table(mismatch, paste0(opt$output,".mismatch"), quote=F, row.names=F, col.names=F)
 ```
 
 We can then use the EUR.a1 file to update the A1 alleles
-o
 
 
 
@@ -452,11 +591,11 @@ NO
 #module load plink
 #
 #plink \
-#	--bfile ${R_INPUT} \
-#	--extract ${R_INPUT}.QC.prune.in \
-#	--keep ${R_INPUT}.valid.sample \
+#	--bfile ${R_OUTPUT} \
+#	--extract ${R_OUTPUT}.QC.prune.in \
+#	--keep ${R_OUTPUT}.valid.sample \
 #	--check-sex \
-#	--out ${R_INPUT}.QC
+#	--out ${R_OUTPUT}.QC
 ```
 
 This will generate a file called EUR.QC.sexcheck containing the F-statistics for each individual. Individuals are typically called as being biologically male if the F-statistic is > 0.8 and biologically female if F < 0.2.
@@ -466,9 +605,9 @@ NO
 ```{r EUR_valid_sample}
 #library(data.table)
 # Read in file
-#valid <- fread(paste0(opt$input,".valid.sample"))
-#dat <- fread(paste0(opt$input,".QC.sexcheck"))[FID%in%valid$FID]
-#fwrite(dat[STATUS=="OK",c("FID","IID")], paste0(opt$input,".QC.valid"), sep="\t")
+#valid <- fread(paste0(opt$output,".valid.sample"))
+#dat <- fread(paste0(opt$output,".QC.sexcheck"))[FID%in%valid$FID]
+#fwrite(dat[STATUS=="OK",c("FID","IID")], paste0(opt$output,".QC.valid"), sep="\t")
 ```
 
 
@@ -476,7 +615,7 @@ NO
 **I'll just fake it and create a list of all samples as being valid so as not to muck with the following code. May need to adjust.**
 
 ```{bash fake_valid_sample}
-cp ${R_INPUT}.valid.sample ${R_INPUT}.QC.valid
+cp ${R_OUTPUT}.valid.sample ${R_OUTPUT}.QC.valid
 ```
 
 
@@ -499,11 +638,11 @@ Before calculating the relatedness, pruning should be performed (see here). Indi
 ```{bash plink05}
 module load plink
 plink --threads 4 \
-	--bfile ${R_INPUT} \
-	--extract ${R_INPUT}.QC.prune.in \
-	--keep ${R_INPUT}.QC.valid \
+	--bfile ${R_OUTPUT} \
+	--extract ${R_OUTPUT}.QC.prune.in \
+	--keep ${R_OUTPUT}.QC.valid \
 	--rel-cutoff 0.125 \
-	--out ${R_INPUT}.QC > plink.out 2>&1
+	--out ${R_OUTPUT}.QC > plink.out 2>&1
 
 cat plink.out | tr "\r" "\n" | grep -vs " markers complete."
 ```
@@ -540,46 +679,47 @@ After performing the full analysis, you can generate a QC'ed data set with the f
 Making the final QC bed/bim/fam
 
 ```{bash plink06}
-touch ${R_INPUT}.mismatch
-touch ${R_INPUT}.a1
+touch ${R_OUTPUT}.mismatch
+touch ${R_OUTPUT}.a1
 
 module load plink
 plink --threads 4 \
-	--bfile ${R_INPUT} \
+	--bfile ${R_OUTPUT} \
 	--make-bed \
-	--keep ${R_INPUT}.QC.rel.id \
-	--out ${R_INPUT}.QC \
-	--extract ${R_INPUT}.QC.snplist \
-	--exclude ${R_INPUT}.mismatch \
-	--a1-allele ${R_INPUT}.a1
+	--keep ${R_OUTPUT}.QC.rel.id \
+	--out ${R_OUTPUT}.QC \
+	--extract ${R_OUTPUT}.QC.snplist \
+	--exclude ${R_OUTPUT}.mismatch \
+	--a1-allele ${R_OUTPUT}.a1
 ```
 
 How many SNPs?
 ```{bash}
-wc -l ${R_INPUT}.QC.bim
+wc -l ${R_OUTPUT}.QC.bim
 ```
 
 How many samples?
 ```{bash}
-wc -l ${R_INPUT}.QC.fam
+wc -l ${R_OUTPUT}.QC.fam
 ```
 
 ```{bash}
-cut -d' ' -f6 ${R_INPUT}.QC.fam | sort | uniq -c
+cut -d' ' -f6 ${R_OUTPUT}.QC.fam | sort | uniq -c
 ```
 
 
 Each of the parameters corresponds to the following
 
-```
-Parameter	Value	Description
-bfile	EUR	Informs plink that the input genotype files should have a prefix of EUR
-keep	EUR.QC.rel.id	Informs plink that we only want to keep samples in EUR.QC.rel.id
-extract	EUR.QC.snplist	Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
-exclude	EUR.mismatch	Informs plink that we wish to remove any SNPs in EUR.mismatch
-a1-allele	EUR.a1	Fix all A1 alleles to those specified in EUR.a1
-out	EUR.QC	Informs plink that all output should have a prefix of EUR.QC
-```
+
+Parameter | Value | Description
+--- | --- | ---
+bfile | EUR | Informs plink that the input genotype files should have a prefix of EUR
+keep | EUR.QC.rel.id | Informs plink that we only want to keep samples in EUR.QC.rel.id
+extract | EUR.QC.snplist | Informs plink that we only want to use SNPs in EUR.QC.snplist in the analysis
+exclude | EUR.mismatch | Informs plink that we wish to remove any SNPs in EUR.mismatch
+a1-allele | EUR.a1 | Fix all A1 alleles to those specified in EUR.a1
+out | EUR.QC | Informs plink that all output should have a prefix of EUR.QC
+
 
 
 
@@ -587,19 +727,19 @@ Run a simple GWAS. This may require some refinement, but so far it works.
 ```{bash run_actual_gwas}
 module load plink
 plink --threads 4 \
-	--bfile ${R_INPUT}.QC \
+	--bfile ${R_OUTPUT}.QC \
 	--logistic \
-	--out ${R_INPUT}.QC.logistic
+	--out ${R_OUTPUT}.QC.logistic
 ```
 
 Head of that table
 ```{bash}
-head ${R_INPUT}.QC.logistic.assoc.logistic 
+head ${R_OUTPUT}.QC.logistic.assoc.logistic 
 ```
 
 Load that table
 ```{r read_final_table}
-db<-read.table(paste0(opt$input,'.QC.logistic.assoc.logistic'),header=1)
+db<-read.table(paste0(opt$output,'.QC.logistic.assoc.logistic'),header=1)
 db[1:5,1:5]
 ```
 
@@ -615,28 +755,46 @@ library('qqman')
 manhattan(db)
 ```
 
+
+```{r volcano_plot}
+library('tidyverse')
+db$diffexpressed <- "NO"
+db$diffexpressed[db$OR > 1.0 & db$P < 0.05] <- "UP"
+db$diffexpressed[db$OR < 1.0 & db$P < 0.05] <- "DOWN"
+ggplot(data = db, aes(x = OR, y = -log10(P), col = diffexpressed)) + 
+	ggtitle(basename(opt$output)) +
+	labs( color = 'Legend',
+		x = "Odds Ratio", y = expression("-log"[10]*"p-value")) + 
+	scale_color_manual(
+		values = c("darkred", "grey", "darkblue"),
+		labels = c("Downregulated", "Not significant", "Upregulated")) +
+	geom_point(size=1)
+```
+https://biostatsquid.com/volcano-plots-r-tutorial/
+
+
+
+
+Low P values
+```{bash}
+awk '($9<0.0001)' ${R_OUTPUT}.QC.logistic.assoc.logistic | sort -k9g,9 | head
+```
+
+Lower P values
+```{bash}
+awk '($9<0.00001)' ${R_OUTPUT}.QC.logistic.assoc.logistic | sort -k9g,9 | head
+```
+
 Lowest P values
-
-
 ```{bash}
-awk '($9<0.0001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
+awk '($9<0.000001)' ${R_OUTPUT}.QC.logistic.assoc.logistic | sort -k9g,9 | head
 ```
 
 ```{bash}
-awk '($9<0.00001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
+date
 ```
 
-```{bash}
-awk '($9<0.000001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
-```
-
-```{bash}
-awk '($9<0.0000001)' ${R_INPUT}.QC.logistic.assoc.logistic | sort -k8gr,8 | head
-```
-
-
-
-
+`SNP associations at P < 5 × 10−8 in the meta-analyses are considered genome-wide significant`
 
 
 #plink --file your_data_prefix --pheno pheno.txt --covar covar.txt --covar-name covar_name --linear --out your_gwas_output
