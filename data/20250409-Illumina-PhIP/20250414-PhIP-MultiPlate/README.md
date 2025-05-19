@@ -929,6 +929,12 @@ plates=$( ls -d ${PWD}/out.plate[123456] 2>/dev/null | paste -sd, | sed 's/,/ -p
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.csv -o ${PWD}/out.123456 -p ${plates} --counts >> commands
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.csv -o ${PWD}/out.123456 -p ${plates} --counts --sex M >> commands
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.csv -o ${PWD}/out.123456 -p ${plates} --counts --sex F >> commands
+
+plates=$( ls -d ${PWD}/out.plate[12356] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.csv -o ${PWD}/out.12356 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.csv -o ${PWD}/out.12356 -p ${plates} --counts --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.csv -o ${PWD}/out.12356 -p ${plates} --counts --sex F >> commands
+
 commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
 ```
 
@@ -937,27 +943,30 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 3
 create out.123456/Counts.normalized.normalized.trim.plus.mins.csv
 
 ```
-merge_matrices.py --axis index --de_nan --de_neg \
-  --header_rows 2 --index_col subject --index_col type --index_col species \
-  --out ${PWD}/out.123456/Counts.normalized.normalized.trim.csv \
-  ${PWD}/out.plate[123456]/Counts.normalized.normalized.trim.csv
-
-for dir in out.123456 ; do
-head -1 ${PWD}/${dir}/Counts.normalized.normalized.trim.csv > ${PWD}/${dir}/tmp1.csv
-tail -n +3 ${PWD}/${dir}/Counts.normalized.normalized.trim.csv >> ${PWD}/${dir}/tmp1.csv
-awk 'BEGIN{FS=OFS=","}{print $1,$2,$5,$8}' ${PWD}/${dir}/manifest.csv > ${PWD}/${dir}/tmp2.csv
-join --header -t, -1 1 -2 3 ${PWD}/${dir}/tmp2.csv ${PWD}/${dir}/tmp1.csv > ${PWD}/${dir}/tmp3.csv
-cut -d, -f1-4,6- ${PWD}/${dir}/tmp3.csv > ${PWD}/${dir}/Counts.normalized.normalized.trim.plus.csv
-\rm ${dir}/tmp?.csv
-done
-
-sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.123456/Counts.normalized.normalized.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.123456/Counts.normalized.normalized.trim.plus.mins.csv')\""
-```
-
-```
-for f in ${PWD}/out.123456/Multiplate_Peptide_Comparison-Counts.normalized.normalized.*-Prop_test_results*.csv ; do
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.normalized.trim.plus.mins.csv"
-done
+#merge_matrices.py --axis index --de_nan --de_neg \
+#  --header_rows 2 --index_col subject --index_col type --index_col species \
+#  --out ${PWD}/out.12356/Counts.normalized.normalized.trim.csv \
+#  ${PWD}/out.plate[12356]/Counts.normalized.normalized.trim.csv
+#
+#merge_matrices.py --axis index --de_nan --de_neg \
+#  --header_rows 2 --index_col subject --index_col type --index_col species \
+#  --out ${PWD}/out.123456/Counts.normalized.normalized.trim.csv \
+#  ${PWD}/out.plate[123456]/Counts.normalized.normalized.trim.csv
+#
+#for dir in out.12356 out.123456 ; do
+#head -1 ${PWD}/${dir}/Counts.normalized.normalized.trim.csv > ${PWD}/${dir}/tmp1.csv
+#tail -n +3 ${PWD}/${dir}/Counts.normalized.normalized.trim.csv >> ${PWD}/${dir}/tmp1.csv
+#awk 'BEGIN{FS=OFS=","}{print $1,$2,$5,$8}' ${PWD}/${dir}/manifest.csv > ${PWD}/${dir}/tmp2.csv
+#join --header -t, -1 1 -2 3 ${PWD}/${dir}/tmp2.csv ${PWD}/${dir}/tmp1.csv > ${PWD}/${dir}/tmp3.csv
+#cut -d, -f1-4,6- ${PWD}/${dir}/tmp3.csv > ${PWD}/${dir}/Counts.normalized.normalized.trim.plus.csv
+#\rm ${dir}/tmp?.csv
+#done
+#
+#sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.123456/Counts.normalized.normalized.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.123456/Counts.normalized.normalized.trim.plus.mins.csv')\""
+#
+#for f in ${PWD}/out.123456/Multiplate_Peptide_Comparison-Counts.normalized.normalized.*-Prop_test_results*.csv ; do
+#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.normalized.trim.plus.mins.csv"
+#done
 ```
 
 
@@ -969,10 +978,15 @@ create out.123456/Counts.normalized.normalized.subtracted.trim.plus.mins.csv
 ```
 merge_matrices.py --axis index --de_nan --de_neg \
   --header_rows 2 --index_col subject --index_col type --index_col species \
+  --out ${PWD}/out.12356/Counts.normalized.normalized.subtracted.trim.csv \
+  ${PWD}/out.plate[12356]/Counts.normalized.normalized.subtracted.trim.csv
+
+merge_matrices.py --axis index --de_nan --de_neg \
+  --header_rows 2 --index_col subject --index_col type --index_col species \
   --out ${PWD}/out.123456/Counts.normalized.normalized.subtracted.trim.csv \
   ${PWD}/out.plate[123456]/Counts.normalized.normalized.subtracted.trim.csv
 
-for dir in out.123456 ; do
+for dir in out.12356 out.123456 ; do
 head -1 ${PWD}/${dir}/Counts.normalized.normalized.subtracted.trim.csv > ${PWD}/${dir}/tmp1.csv
 tail -n +3 ${PWD}/${dir}/Counts.normalized.normalized.subtracted.trim.csv >> ${PWD}/${dir}/tmp1.csv
 awk 'BEGIN{FS=OFS=","}{print $1,$2,$5,$8}' ${PWD}/${dir}/manifest.csv > ${PWD}/${dir}/tmp2.csv
@@ -981,14 +995,79 @@ cut -d, -f1-4,6- ${PWD}/${dir}/tmp3.csv > ${PWD}/${dir}/Counts.normalized.normal
 \rm ${dir}/tmp?.csv
 done
 
+sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.12356/Counts.normalized.normalized.subtracted.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.12356/Counts.normalized.normalized.subtracted.trim.plus.mins.csv')\""
+
 sbatch --nodes=1 --ntasks=2 --mem=30G --export=None --wrap="python3 -c \"import pandas as pd; pd.read_csv('out.123456/Counts.normalized.normalized.subtracted.trim.plus.csv', header=[0],index_col=[0,1,2,3,4],low_memory=False).groupby(['subject','group','plate','type'],dropna=False).min().to_csv('out.123456/Counts.normalized.normalized.subtracted.trim.plus.mins.csv')\""
 ```
 
+
 ```
+for f in ${PWD}/out.12356/Multiplate_Peptide_Comparison-Counts.normalized.normalized.subtracted.*-Prop_test_results*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.normalized.subtracted.trim.plus.mins.csv"
+done
+
 for f in ${PWD}/out.123456/Multiplate_Peptide_Comparison-Counts.normalized.normalized.subtracted.*-Prop_test_results*.csv ; do
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.normalized.subtracted.trim.plus.mins.csv"
 done
 ```
+
+
+
+
+##	20250519
+
+
+Run with JUST public epitopes
+
+```
+for counts in ${PWD}/out.plate[123456]/Counts.normalized.normalized.subtracted.trim.csv  ; do
+echo $counts
+d=$( dirname ${counts} )
+cat ${counts} | datamash transpose -t, > ${d}/tmp1.csv
+head -3 ${d}/tmp1.csv > ${d}/tmp2.csv
+tail -n +4 ${d}/tmp1.csv | sort -t, -k1,1 >> ${d}/tmp2.csv
+head -2 ${d}/tmp2.csv > ${d}/tmp3.csv
+join --header -t, /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.ids.join_sorted.txt <( tail -n +3 ${d}/tmp2.csv) >> ${d}/tmp3.csv
+cat ${d}/tmp3.csv | datamash transpose -t, > ${counts%.csv}.public.csv
+done
+```
+
+
+
+```
+\rm commands
+plates=$( ls -d ${PWD}/out.plate[123456] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.public.csv -o ${PWD}/out.123456 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.public.csv -o ${PWD}/out.123456 -p ${plates} --counts --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.public.csv -o ${PWD}/out.123456 -p ${plates} --counts --sex F >> commands
+
+plates=$( ls -d ${PWD}/out.plate[12356] 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.public.csv -o ${PWD}/out.12356 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.public.csv -o ${PWD}/out.12356 -p ${plates} --counts --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a case -b control --zfile_basename Counts.normalized.normalized.subtracted.trim.public.csv -o ${PWD}/out.12356 -p ${plates} --counts --sex F >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+```
+for f in ${PWD}/out.12356/Multiplate_Peptide_Comparison-Counts.normalized.normalized.subtracted.trim.public*-Prop_test_results*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.normalized.subtracted.trim.plus.mins.csv"
+done
+
+for f in ${PWD}/out.123456/Multiplate_Peptide_Comparison-Counts.normalized.normalized.subtracted.trim.public*-Prop_test_results*.csv ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --wrap="module load r pandoc; PeptideComparison.Rmd -i ${f} -o ${f%.csv} -c $(dirname ${f})/Counts.normalized.normalized.subtracted.trim.plus.mins.csv"
+done
+```
+
+
+
+
+
+
 
 
 
