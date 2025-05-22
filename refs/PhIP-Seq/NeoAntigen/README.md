@@ -265,12 +265,12 @@ HRAS:56-66:Mutation:Q61R = NRAS:56-66:Mutation:Q61R
 
 There are some duplicate sequences which are filtered out so as to not create 2, however both should be given "credit" when aligned. Gonna need to figure that out later.
 
-awk -F, '(NR>1 && $13 != "None"){if(!seen[$13]){seen[$13]++;print ">"$1"-"$10"-"$15;print $13}}' s10_glioma_TCONS_subset.csv >> peptides.faa
+#awk -F, '(NR>1 && $13 != "None"){if(!seen[$13]){seen[$13]++;print ">"$1"-"$10"-"$15;print $13}}' s10_glioma_TCONS_subset.csv >> peptides.faa
 #./extract_sequences_and_mutate.bash | paste - - | sort | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' >> peptides.faa
 
 
 ```
-\rm peptides.faa orf* cterm* protein_tiles* oligos* uniq_peptides.faa
+\rm *peptides.faa orf* cterm* protein_tiles* oligos* tmp*csv
 
 tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">Darwin-"$0; print $0}' > peptides.faa
 
@@ -282,7 +282,9 @@ tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uni
 
 ./BRCA_LAML_GBM_LGG_TCONS.bash >> peptides.faa
 
-cat peptides.faa | paste - - | sort | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' > uniq_peptides.faa
+cat peptides.faa | paste - - | sort | awk '{print $1;print $2}' > sorted_peptides.faa
+
+cat sorted_peptides.faa | paste - - | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' > uniq_peptides.faa
 
 grep -c "^>" peptides.faa uniq_peptides.faa
 
@@ -297,7 +299,7 @@ wc -l oligos-56-28.sequences.txt
 grep -vs "^[>0]" *.fasta.clstr 
 
 
-box_upload.bash peptides.faa orf* cterm* protein_tiles* oligos* 
+box_upload.bash *peptides.faa orf* cterm* protein_tiles* oligos* 
 ```
 
 
