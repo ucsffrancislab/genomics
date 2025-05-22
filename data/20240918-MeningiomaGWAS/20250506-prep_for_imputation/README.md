@@ -366,6 +366,8 @@ chr18	63712604	rs4940595	G	T	.	.	IMPUTED;AF=0.711337;MAF=0.288663;AVG_CS=0.99354
 
 
 
+
+
 Prep these QC'd data for the PRS imputation server
 
 
@@ -442,6 +444,151 @@ Then upload to the web app.
 
 
 
+##	20250521
+
+
+This is imputed and QC'd data. Is it still hg19?
+
+Somewhere I've dropped the "chr"?
+
+Comes back as hg38, then the prep scripts convert it back to hg19?
+
+```
+grep rs4940595 prep_for_PRS/merged.bim
+18	rs4940595	0	63712604	G	T
+
+zgrep rs4940595 prep_for_PRS/merged-updated-chr18.vcf.gz | cut -c1-100
+18	61379838	rs4940595	T	G	.	.	.	GT	0/1	0/0	0/1	0/0	0/0	0/0	0/0	0/1	1/1	0/1	0/0	0/0	0/1	0/0	./.	0/0	0
+```
+
+
+Which ref? Try both?
+
+
+https://imputationserver.sph.umich.edu/#!run/imputationserver2-pgs
+
+
+Reference Panel
+* 1000G Phase 1 v3 Shapeit2 (no singletons) (GRCh37/hg19)
+* 1000G Phase 3 (GRCh38/hg38) pBETA]
+* 1000G Phase 3 30x (GRCh38/hg38) [BETA}
+* **1000G Phase 3 v5 (GRCh37/hg19)**    <----- previous run
+* CAAPA African American Panel (GRCh37/hg19)
+* Genome Asia Pilot - GAsP (GRCh37/hg19)
+* **HRC r1.1 2016 (GRCh37/hg19)**
+* HapMap 2 (GRCh37/hg19)
+* Samoan (GRCh37/hg19)
+
+
+Array Build
+* **GRCh37/hg19**
+* GRCh38/hg38
+
+rsq Filter
+* off
+* **0.3**
+* 0.8
+
+PGS Calculation
+
+
+Scores
+* **PGS-Catalog v20240318**
+
+
+Trait Category
+* Biological process (39 scoores)
+* Body measurement (257 scores)
+* Cancer (659 scores)
+* Cardiovascular disease (266 scores)
+* Cardiovascular measurement (142 sccoores)
+* Digestive system disorder (350 scores)
+* Hematological measurement (342 scores)
+* Immune system disorder (203 scores)
+* Inflammatory measurement (46 scores)
+* Lipid or lipoprotein measurement (339 scores)
+* Liver enzyme measurement (28 scores)
+* Metabolic disorder (223 scores)
+* Neurological disorder (239 scores)
+* Other disease (260 scores)
+* Other measurement (1,843 scores)
+* Other trait (190 scores)
+* Sex-specific PGS (18 scores)
+* **All traits (4,489 scores)**
+
+
+
+Ancestry Estimation
+* Disabled
+* **Worldwide (HGDP)**
+
+
+**Submit Job**
+
+
+Wait for files to upload.  This took me about 15 minutes.
+
+
+Wait for it to process.
+
+
+FAILED
+
+
+```
+curl -sL https://imputationserver.sph.umich.edu/get/U9feder5qWdsKPZ3oYH5wOrowRFJVXwTGOHAzEHA | bash
+```
+
+
+
+
+##	20250521
+
+```
+
+./genome_check.bash
+
+
+
+
+grep -m1 rs4940595 prep/MENINGIOMA_GWAS_SHARED.bim
+18	rs4940595_r	0	61379838	G	T
+
+grep -m1 rs4940595 prep/MENINGIOMA_GWAS_SHARED-updated.bim
+18	rs4940595_r	0	61379838	G	T
+
+grep -m1 rs4940595 prep/MENINGIOMA_GWAS_SHARED-updated-chr18.bim
+18	rs4940595_r	0	61379838	G	T
+
+zgrep -m1 rs4940595 prep/MENINGIOMA_GWAS_SHARED-updated-chr18.vcf.gz | cut -c1-50
+18	61379838	rs4940595_r	T	G	.	.	.	GT	0/1	0/0	0/1	0
+
+
+zgrep -m1 rs4940595 imputed/chr18.info.gz | cut -c1-100
+chr18	63712604	rs4940595	G	T	.	.	IMPUTED;AF=0.711337;MAF=0.288663;AVG_CS=0.993549;R2=0.970421
+
+grep -m1 rs4940595 imputed/chr18.QC.bim
+18	rs4940595	0	63712604	G	T
+
+grep -m1 rs4940595 prep_for_PRS/merged.bim
+18	rs4940595	0	63712604	G	T
+
+
+
+grep -m1 rs4940595 prep_for_PRS/merged-updated.bim
+18	rs4940595	0	61379838	G	T
+
+grep -m1 rs4940595 prep_for_PRS/merged-updated-chr18.bim
+18	rs4940595	0	61379838	G	T
+
+zgrep -m1 rs4940595 prep_for_PRS/merged-updated-chr18.vcf.gz | cut -c1-50
+18	61379838	rs4940595	T	G	.	.	.	GT	0/1	0/0	0/1	0/0
+
+rs4940595:
+This rsID has a T as the reference allele and G as the alternative in hg19, causing a stop lost. However, in hg38, the reference is G and the alternative is T, which can cause a stop gained, according to a SEQanswers forum discussion. 
+rs855581:
+Genotypes for this rsID may appear as both homozygous and heterozygous in hg19, while all individuals appear homozygous in hg38, as mentioned in the SEQanswers discussion. 
+```
 
 
 
