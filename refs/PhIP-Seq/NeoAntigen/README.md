@@ -270,39 +270,35 @@ There are some duplicate sequences which are filtered out so as to not create 2,
 
 
 ```
-\rm *peptides.faa orf* cterm* protein_tiles* oligos* tmp*csv
+\rm *proteins.faa orf* cterm* protein_tiles* oligos* tmp*csv
 
-tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">Darwin-"$0; print $0}' > peptides.faa
+tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">Darwin-"$0; print $0}' > proteins.faa
 
-./extract_sequences_and_mutate.bash >> peptides.faa
+./extract_sequences_and_mutate.bash >> proteins.faa
 
-tail -n +2 13059_2023_3005_MOESM1_ESM-S5.csv | cut -d, -f3 | sort | uniq | awk '{print ">NeoEpitope-"$0; print $0}' >> peptides.faa
+tail -n +2 13059_2023_3005_MOESM1_ESM-S5.csv | cut -d, -f3 | sort | uniq | awk '{print ">NeoEpitope-"$0; print $0}' >> proteins.faa
 
-tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq | awk '{print ">REdiscoverTE-"$0; print $0}' >> peptides.faa
+tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq | awk '{print ">REdiscoverTE-"$0; print $0}' >> proteins.faa
 
-./BRCA_LAML_GBM_LGG_TCONS.bash >> peptides.faa
+./BRCA_LAML_GBM_LGG_TCONS.bash >> proteins.faa
 
-cat peptides.faa | paste - - | sort | awk '{print $1;print $2}' > sorted_peptides.faa
+cat proteins.faa | paste - - | sort | awk '{print $1;print $2}' > sorted_proteins.faa
 
-cat sorted_peptides.faa | paste - - | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' > uniq_peptides.faa
+cat sorted_proteins.faa | paste - - | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' > unique_proteins.faa
 
-grep -c "^>" peptides.faa uniq_peptides.faa
+grep -c "^>" proteins.faa unique_proteins.faa
 
+#phip_seq_create_tiles.bash -t 56 -o 28 -i unique_proteins.faa
+#phip_seq_create_tiles.bash -t 38 -o 19 -i unique_proteins.faa
+phip_seq_create_tiles.bash -t 28 -o 14 -i unique_proteins.faa
 
-phip_seq_create_tiles.bash -t 56 -o 28 -i uniq_peptides.faa
+grep -vs "^>" oligos-??-??.fasta > oligos.sequences.txt
+wc -l oligos.sequences.txt
 
-
-grep -vs "^>" oligos-56-28.fasta > oligos-56-28.sequences.txt
-
-wc -l oligos-56-28.sequences.txt
 
 grep -vs "^[>0]" *.fasta.clstr 
 
 
-box_upload.bash *peptides.faa orf* cterm* protein_tiles* oligos* 
+box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
 ```
-
-
-
-
 
