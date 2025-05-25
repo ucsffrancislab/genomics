@@ -27,6 +27,8 @@ Sys.setenv(R_INPUT = opt$input)
 Sys.setenv(R_OUTPUT = opt$output)
 Sys.setenv(R_FAM = opt$fam)
 
+#threads=Sys.getenv('SLURM_NTASKS')
+
 rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(basename(opt$output),'.html') )
 
 #noext=fs::path_ext_remove(fname)
@@ -114,6 +116,7 @@ mkdir -p $( dirname ${R_OUTPUT} )
 \rm ${R_OUTPUT}.unique_ids
 \rm ${R_OUTPUT}.valid.sample
 \rm ${R_OUTPUT}.vcf.gz
+\rm ${R_OUTPUT}.vcf.gz.csi
 echo "OK"
 ```
 
@@ -129,10 +132,14 @@ ls -l ${R_OUTPUT}.* | sed -e "s'$(dirname ${R_OUTPUT})/''"
 
 How many SNPs in imputed?
 ```{bash}
-#zgrep -cvs "^#" ${R_INPUT}.dose.vcf.gz
-
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
-	zgrep -cvs "^#" ${R_INPUT}
+	#	This CAN TAKE WAY TOO LONG
+	#	zgrep -cvs "^#" ${R_INPUT}
+	module load bcftools
+	if [ ! -f ${R_INPUT}.csi ] ; then
+		bcftools index ${R_INPUT}
+	fi
+	bcftools index --nrecords ${R_INPUT}
 elif [ -f ${R_INPUT}.bim ] ; then
 	wc -l ${R_INPUT}.bim
 fi
@@ -156,9 +163,11 @@ Drop "poorly imputed SNPs"
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
 	if [ $( bcftools view -h prep_for_PRS/merged-updated-chr22.vcf.gz | grep "^##INFO=<ID=R2," | wc -l ) -gt 0 ] ; then
 		module load bcftools
-		bcftools filter --threads 4 -i 'INFO/R2 >= 0.75' -Oz -o ${R_OUTPUT}.vcf.gz ${R_INPUT}
+		bcftools filter --threads ${SLURM_NTASKS:-4} -i 'INFO/R2 >= 0.75' -Oz -o ${R_OUTPUT}.vcf.gz ${R_INPUT}
+		bcftools index ${R_OUTPUT}.vcf.gz
 	else
 		ln -s ${R_INPUT} ${R_OUTPUT}.vcf.gz 
+		ln -s ${R_INPUT}.csi ${R_OUTPUT}.vcf.gz.csi
 	fi
 
 
@@ -168,7 +177,9 @@ fi
 How many SNPs survived?
 ```{bash}
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
-	zgrep -cvs "^#" ${R_OUTPUT}.vcf.gz
+	#zgrep -cvs "^#" ${R_OUTPUT}.vcf.gz
+	module load bcftools
+	bcftools index --nrecords ${R_OUTPUT}.vcf.gz
 fi
 ```
 
@@ -178,8 +189,11 @@ Name all of the unnamed SNPs
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
 	module load htslib
 	zcat ${R_OUTPUT}.vcf.gz | awk 'BEGIN{FS=OFS="\t"}(/^#/){print;next}{if($3=="."){$3="jake_"$1"_"$2"_"i++}print}' > ${R_OUTPUT}.vcf
-	\rm ${R_OUTPUT}.vcf.gz
+	mv ${R_OUTPUT}.vcf.gz ${R_OUTPUT}.withdots.vcf.gz
+	mv ${R_OUTPUT}.vcf.gz.csi ${R_OUTPUT}.withdots.vcf.gz.csi
 	bgzip ${R_OUTPUT}.vcf
+	module load bcftools
+	bcftools index ${R_OUTPUT}.vcf.gz
 fi
 ```
 
@@ -227,7 +241,7 @@ Select the unique names and convert to bed/bim/fam
 module load plink
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
 	#	--keep ${R_OUTPUT}.select_samples \
-	plink --threads 4 \
+	plink --threads ${SLURM_NTASKS:-4} \
 		--vcf ${R_OUTPUT}.vcf.gz \
 		--make-bed \
 		--extract ${R_OUTPUT}.unique_ids \
@@ -304,7 +318,7 @@ Write only SNP and SAMPLE lists.
 module load plink
 ##	--maf 0.01 \
 ##	--hwe 1e-6 \
-plink --threads 4 \
+plink --threads ${SLURM_NTASKS:-4} \
 	--bfile ${R_OUTPUT} \
 	--maf 0.005 --hwe 1e-5 \
 	--geno 0.01 \
@@ -364,7 +378,7 @@ This is another plink call from the example. Keep it?
 
 ```{bash plink02}
 module load plink
-plink --threads 4 \
+plink --threads ${SLURM_NTASKS:-4} \
 	--bfile ${R_OUTPUT} \
 	--keep ${R_OUTPUT}.QC.fam \
 	--extract ${R_OUTPUT}.QC.snplist \
@@ -392,7 +406,7 @@ Heterozygosity rates can then be computed using plink:
 Another example plink command. Keep?
 ```{bash plink03}
 module load plink
-plink --threads 4 \
+plink --threads ${SLURM_NTASKS:-4} \
 	--bfile ${R_OUTPUT} \
 	--extract ${R_OUTPUT}.QC.prune.in \
 	--keep ${R_OUTPUT}.QC.fam \
@@ -637,7 +651,7 @@ Before calculating the relatedness, pruning should be performed (see here). Indi
 
 ```{bash plink05}
 module load plink
-plink --threads 4 \
+plink --threads ${SLURM_NTASKS:-4} \
 	--bfile ${R_OUTPUT} \
 	--extract ${R_OUTPUT}.QC.prune.in \
 	--keep ${R_OUTPUT}.QC.valid \
@@ -683,7 +697,7 @@ touch ${R_OUTPUT}.mismatch
 touch ${R_OUTPUT}.a1
 
 module load plink
-plink --threads 4 \
+plink --threads ${SLURM_NTASKS:-4} \
 	--bfile ${R_OUTPUT} \
 	--make-bed \
 	--keep ${R_OUTPUT}.QC.rel.id \
@@ -726,7 +740,7 @@ out | EUR.QC | Informs plink that all output should have a prefix of EUR.QC
 Run a simple GWAS. This may require some refinement, but so far it works.
 ```{bash run_actual_gwas}
 module load plink
-plink --threads 4 \
+plink --threads ${SLURM_NTASKS:-4} \
 	--bfile ${R_OUTPUT}.QC \
 	--logistic \
 	--out ${R_OUTPUT}.QC.logistic
@@ -814,6 +828,6 @@ date
 #	--glm firth-fallback hide-covar cols=chrom,pos,ref,alt1,a1freq,firth,test,nobs,beta,orbeta,se,ci,tz,p,err \
 #	--maf 0.01 \
 #	--memory 15000 \
-#	--threads 8 \
+#	--threads ${SLURM_NTASKS:-4} \
 #	--out ${PWD}/testing
 
