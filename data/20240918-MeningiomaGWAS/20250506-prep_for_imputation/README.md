@@ -405,7 +405,13 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 
 ```
 
 
+
+
+
+
 ##	Check BIM and split
+
+THIS IS SPECIFIC TO HG19
 
 ```BASH
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep_for_PRS/merged.bim --frequency ${PWD}/prep_for_PRS/merged.frq --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" --out=${PWD}/prep_for_PRS/HRC-1000G-check-bim.pl.log
@@ -592,6 +598,78 @@ Genotypes for this rsID may appear as both homozygous and heterozygous in hg19, 
 
 
 
+##	20250522
+
+
+```
+module load plink htslib
+mkdir prep_for_PRS
+
+for bed in imputed/*QC.bed ; do
+bfile=${bed%.bed}
+out=$( basename ${bed} .QC.bed )
+plink --bfile ${bfile} --real-ref-alleles --recode vcf --out prep_for_PRS/${out}
+sed -i 's/^\([[:digit:]]\)/chr\1/' prep_for_PRS/${out}.vcf
+done
+
+bgzip prep_for_PRS/*vcf
+```
+
+
+`If your input data is GRCh37/hg19 please ensure chromosomes are encoded without prefix (e.g. 20).`
+
+So the imputed data is hg38, but does not have chr prefixes. Will it work without them or do I need to add them?
+
+
+
+The provided VCF file is malformed.
+Error: [tabix] the compression of 'chr22.vcf.gz' is not BGZF
+
+
+
+Your upload data contains chromosome '22'. This is not a valid hg38 encoding. Please ensure that your input data is build hg38 and chromosome is encoded as 'chr22'.
+
+
+
+
+
+Running QC by chromosome separately, has caused each to have differing sets of samples/subjects. I suspect that running PRS on the results may go a bit wonky. We shall see..
+
+
+
+
+I think that I need to
+* prep for genotype imputation
+* upload and impute online
+* download hg38 imputation
+* MERGE all chromosomes
+* QC merged data
+* Either 
+  * liftover from hg38 to hg19
+    * - or -
+  * add chr prefix
+* upload and calculate PRS
+
+
+
+Concat
+```
+mkdir -p ${PWD}/imputed_concat
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name=concat --wrap="module load htslib bcftools; bcftools concat --threads 64 -Oz -o ${PWD}/imputed_concat/complete.vcf.gz ${PWD}/imputed/chr?.dose.vcf.gz ${PWD}/imputed/chr??.dose.vcf.gz; chmod -w ${PWD}/imputed_concat/complete.vcf.gz; bcftools index --threads 64 ${PWD}/imputed_concat/complete.vcf.gz" --out=${PWD}/imputed_concat/concat.log 
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name=index --wrap="module load htslib bcftools; bcftools index --threads 64 ${PWD}/imputed_concat/complete.vcf.gz; chmod -x ${PWD}/imputed_concat/complete.vcf.gz.csi" --out=${PWD}/imputed_concat/index.log 
+```
+
+
+Run GWAS QC on this single vcf
+```
+mkdir -p ${PWD}/imputed_QC
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name=GWAS --wrap="module load r pandoc; GWAS.Rmd -i ${PWD}/imputed_concat/complete.vcf.gz -o ${PWD}/imputed_QC/complete -f ${PWD}/prep/MENINGIOMA_GWAS_SHARED.fam" --out=${PWD}/imputed_QC/complete_GWAS.log
+
+```
+
+
+
 
 
 
@@ -620,11 +698,4 @@ Then run a modified plink2 command like that in `Geno/GWAS/GWAS-glioma-script.sh
 Then someone merge the resulting GWAS file (vcf?) with the ginormous `pgs/scores.txt`?
 
 That should create some list of SNPs with a beta and p-value?
-
-
-
-
-
-
-
 
