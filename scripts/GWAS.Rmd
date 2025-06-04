@@ -112,11 +112,12 @@ mkdir -p $( dirname ${R_OUTPUT} )
 \rm ${R_OUTPUT}.log
 \rm ${R_OUTPUT}.mismatch
 \rm ${R_OUTPUT}.nosex
-\rm ${R_OUTPUT}.select_samples
-\rm ${R_OUTPUT}.unique_ids
 \rm ${R_OUTPUT}.valid.sample
-\rm ${R_OUTPUT}.vcf.gz
-\rm ${R_OUTPUT}.vcf.gz.csi
+
+#\rm ${R_OUTPUT}.vcf.gz
+#\rm ${R_OUTPUT}.vcf.gz.csi
+#\rm ${R_OUTPUT}.unique_ids
+#\rm ${R_OUTPUT}.select_samples
 echo "OK"
 ```
 
@@ -159,18 +160,22 @@ fi
 
 
 Drop "poorly imputed SNPs"
+
+This step can take 24 hours for a whole vcf of imputed SNPs. (~100GB)
+
 ```{bash bcftools}
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
-	if [ $( bcftools view -h prep_for_PRS/merged-updated-chr22.vcf.gz | grep "^##INFO=<ID=R2," | wc -l ) -gt 0 ] ; then
+	if [ ! -f ${R_OUTPUT}.vcf.gz ] ; then
 		module load bcftools
-		bcftools filter --threads ${SLURM_NTASKS:-4} -i 'INFO/R2 >= 0.75' -Oz -o ${R_OUTPUT}.vcf.gz ${R_INPUT}
-		bcftools index ${R_OUTPUT}.vcf.gz
-	else
-		ln -s ${R_INPUT} ${R_OUTPUT}.vcf.gz 
-		ln -s ${R_INPUT}.csi ${R_OUTPUT}.vcf.gz.csi
+		#if [ $( bcftools view -h prep_for_PRS/merged-updated-chr22.vcf.gz | grep "^##INFO=<ID=R2," | wc -l ) -gt 0 ] ; then
+		if [ $( bcftools view -h ${R_INPUT} | grep "^##INFO=<ID=R2," | wc -l ) -gt 0 ] ; then
+			bcftools filter --write-index --threads ${SLURM_NTASKS:-4} -i 'INFO/R2 >= 0.75' -Oz -o ${R_OUTPUT}.vcf.gz ${R_INPUT}
+			#bcftools index ${R_OUTPUT}.vcf.gz
+		else
+			ln -s ${R_INPUT} ${R_OUTPUT}.vcf.gz 
+			ln -s ${R_INPUT}.csi ${R_OUTPUT}.vcf.gz.csi
+		fi
 	fi
-
-
 fi
 ```
 
@@ -187,13 +192,15 @@ fi
 Name all of the unnamed SNPs
 ```{bash}
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
-	module load htslib
-	zcat ${R_OUTPUT}.vcf.gz | awk 'BEGIN{FS=OFS="\t"}(/^#/){print;next}{if($3=="."){$3="jake_"$1"_"$2"_"i++}print}' > ${R_OUTPUT}.vcf
-	mv ${R_OUTPUT}.vcf.gz ${R_OUTPUT}.withdots.vcf.gz
-	mv ${R_OUTPUT}.vcf.gz.csi ${R_OUTPUT}.withdots.vcf.gz.csi
-	bgzip ${R_OUTPUT}.vcf
-	module load bcftools
-	bcftools index ${R_OUTPUT}.vcf.gz
+	if [ ! -f ${R_OUTPUT}.withdots.vcf.gz ] ; then
+		module load htslib
+		mv ${R_OUTPUT}.vcf.gz ${R_OUTPUT}.withdots.vcf.gz
+		mv ${R_OUTPUT}.vcf.gz.csi ${R_OUTPUT}.withdots.vcf.gz.csi
+		zcat ${R_OUTPUT}.withdots.vcf.gz | awk 'BEGIN{FS=OFS="\t"}(/^#/){print;next}{if($3=="."){$3="jake_"$1"_"$2"_"i++}print}' | bgzip > ${R_OUTPUT}.vcf.gz
+		#bgzip ${R_OUTPUT}.vcf
+		module load bcftools
+		bcftools index ${R_OUTPUT}.vcf.gz
+	fi
 fi
 ```
 
@@ -207,7 +214,9 @@ fi
 Some issues later if the same SNP name is replicated so I'm only keeping the uniquely named.
 ```{bash identify_unique_snps}
 if [ "${R_INPUT: -6}" == "vcf.gz" ] ; then
-	zgrep -vs "^#" ${R_OUTPUT}.vcf.gz | cut -f3 | sort | uniq -u > ${R_OUTPUT}.unique_ids
+	if [ ! -f ${R_OUTPUT}.unique_ids ] ; then
+		zgrep -vs "^#" ${R_OUTPUT}.vcf.gz | cut -f3 | sort | uniq -u > ${R_OUTPUT}.unique_ids
+	fi
 fi
 ```
 
