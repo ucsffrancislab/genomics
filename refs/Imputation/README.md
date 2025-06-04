@@ -1,5 +1,18 @@
 
-#	Imputation
+#	GWAS / Imputation
+
+
+https://www.chg.ox.ac.uk/~wrayner/tools/
+
+
+https://www.chg.ox.ac.uk/~wrayner/tools/CreateTOPMed.zip
+
+
+
+
+https://legacy.bravo.sph.umich.edu/freeze5/hg38/download
+
+
 
 
 
