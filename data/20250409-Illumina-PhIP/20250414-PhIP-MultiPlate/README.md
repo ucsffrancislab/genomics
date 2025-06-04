@@ -1068,11 +1068,93 @@ done
 
 
 
+##	20250530
+
+
+```
+mkdir out.1234561314
+merge_matrices.py --axis columns --de_nan --de_neg \
+  --header_rows 9 --index_col id --index_col species \
+  --out ${PWD}/out.1234561314/Counts.csv \
+  ${PWD}/out.plate*/Counts.csv
+merge_matrices.py --axis columns --de_nan --de_neg \
+  --header_rows 9 --index_col id --index_col species \
+  --out ${PWD}/out.123561314/Counts.csv \
+  ${PWD}/out.plate1?/Counts.csv ${PWD}/out.plate[12356]/Counts.csv
+```
+
+
+df = pd.read_csv('out.1234561314/Counts.csv', header=list(range(9)),index_col=[0,1],low_memory=False)
+
+```
+python3 
+
+import pandas as pd
+df = pd.read_csv('out.123561314/Counts.csv', header=list(range(9)),index_col=[0,1],low_memory=False)
+df=df.droplevel([1,2,4,5,6,7,8],axis=1)
+df[df < 10] = 0
+df[df >= 10] = 1
+df.columns = pd.MultiIndex.from_tuples([(col[0], col[1] if(col[1]=='input') else 'notblank'  ) for i, col in enumerate(df.columns)])
+df.columns=df.columns.set_names(['sample','group'])
+
+df=df.T.groupby(['group'],dropna=False).sum().T
+df[df['input']==0].sort_values(by='notblank')
 
 
 
+df.columns.get_level_values(1).value_counts()
+id
+glioma serum                504
+pemphigus serum             120
+meningioma serum             48
+commercial serum control     16
+Phage Library                16
+input                        62
+
+notblank 704
+blank 62
 
 
+
+glioma serum                420
+pemphigus serum             120
+meningioma serum             48
+commercial serum control     14
+Phage Library                14
+input                        54
+
+notblank 616
+blank 54
+
+
+10
+
+>>> df[df['input']==0].sort_values(by='notblank').tail(10)
+group                                     input  notblank
+6977   Human respiratory syncytial virus    0.0     263.0
+125114 Streptococcus dysgalactiae           0.0     267.0
+20956  Human herpesvirus 4                  0.0     281.0
+17599  Human respiratory syncytial virus    0.0     284.0
+33024  Human herpesvirus 4                  0.0     303.0
+63941  Enterovirus B                        0.0     307.0
+15935  Cowpox virus                         0.0     340.0
+52913  Human herpesvirus 4                  0.0     355.0
+22261  Human respiratory syncytial virus    0.0     374.0
+7041   Human respiratory syncytial virus    0.0     400.0
+
+
+1
+
+81003  Influenza A virus                                     0.0     195.0
+121343 Cryptomeria japonica (Japanese cedar) (Cupressu...    0.0     197.0
+6385   Hepatitis E virus                                     0.0     197.0
+69594  Parainfluenza virus 5                                 0.0     198.0
+96041  Influenza A virus                                     0.0     200.0
+79421  Hepatitis B virus                                     0.0     207.0
+34208  Human herpesvirus 5                                   0.0     210.0
+71294  Camelpox virus                                        0.0     219.0
+53070  Human herpesvirus 4                                   0.0     226.0
+4340   Chapare virus                                         0.0     228.0
 
 
 
