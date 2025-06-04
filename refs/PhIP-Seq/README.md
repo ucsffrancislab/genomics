@@ -1851,7 +1851,7 @@ awk -F, '($1>=108603 && $1<=128287 && $2=="Human herpesvirus 5"){print $1}' VirS
 
 
 
-Which are short an include a STOP codon?
+Which are short and include a STOP codon?
 
 ```
 zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print ">"$21; print toupper(substr($18,15+i,length($18)-30-i)); }' | head -12
@@ -1861,5 +1861,13 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+
 
 ```
 
+
+
+
+
+
+
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,toupper(substr($18,15+i,length($18)-30-i)); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_upper_oligo.uniq.csv
 
 

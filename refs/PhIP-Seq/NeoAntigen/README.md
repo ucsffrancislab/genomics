@@ -156,6 +156,8 @@ Comprehensive analysis of neoantigens derived from structural variation across w
 
 neopeptides_shi.csv - too many
 
+
+
 13059_2023_3005_MOESM1_ESM-S5.csv
 
 
@@ -269,8 +271,15 @@ There are some duplicate sequences which are filtered out so as to not create 2,
 #./extract_sequences_and_mutate.bash | paste - - | sort | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' >> peptides.faa
 
 
+
 ```
 \rm *proteins.faa orf* cterm* protein_tiles* oligos* tmp*csv
+
+cat << EOF
+
+
+EOF
+
 
 tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">Darwin-"$0; print $0}' > proteins.faa
 
@@ -301,4 +310,137 @@ grep -vs "^[>0]" *.fasta.clstr
 
 box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
 ```
+
+
+
+
+
+
+
+
+
+
+##	20250527
+
+
+
+There are some duplicate sequences which are filtered out so as to not create 2, however both should be given "credit" when aligned. Gonna need to figure that out later.
+
+
+
+
+https://pubmed.ncbi.nlm.nih.gov/38815010/
+
+We identified, from the literature, two nonsomatically mutated immunogenic pep- tides derived from HER2 that have been extensively characterized (20, 32, 33, 42–45). GP2 is a nine–amino acid immunogenic pep- tide derived from the transmembrane domain of HER2 (aa 654 to 662; IISAVVGIL), whereas E75 is a nine–amino acid peptide derived from the extracellular domain (aa 366 to 379; KIFGSLAFL).
+
+Manually add those 2.
+
+
+
+
+https://www.nature.com/articles/s41586-020-1969-6
+
+Pan-cancer analysis of whole genomes
+
+Supplementary Table 1. Sample, demographic and basic mutation data for the 2,583 white-listed donors in the PCAWG data-set
+
+s41586-020-1969-6-SuppTable1.csv
+
+
+New list of neoantigens from: https://genomebiology.biomedcentral.com/articles/10.1186/s13059-023-03005-9
+
+Comprehensive analysis of neoantigens derived from structural variation across whole genomes from 2528 tumors - Genome Biology
+
+neopeptides_shi.csv
+
+
+
+Column K (histology abbrv) - all CNS-*, ICGC_DONOR - select just those samples
+Or just CNS-GBM
+
+
+
+```
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $3,$11}' s41586-020-1969-6-SuppTable1.csv | wc -l
+2584
+
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^CNS-/){print $3,$11}' s41586-020-1969-6-SuppTable1.csv | wc -l
+287
+
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^CNS-/){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-CNS.txt
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11=="CNS-GBM"){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-CNS-GBM.txt
+
+awk -F, '(NR==FNR){ids[$1]++}(NR!=FNR){if(ids[$1])print $2}' s41586-020-1969-6-CNS-GBM.txt neopeptides_shi.csv | sort | uniq | wc -l
+1236
+
+awk -F, '(NR==FNR){ids[$1]++}(NR!=FNR){if(ids[$1])print $2}' s41586-020-1969-6-CNS.txt neopeptides_shi.csv | sort | uniq | wc -l
+1639
+```
+
+
+
+```
+\rm *proteins.faa orf* cterm* protein_tiles* oligos* tmp*csv
+
+cat << EOF > proteins.faa
+>Manual-HER2:654-662
+IISAVVGIL
+>Manual-HER2:366-379
+KIFGSLAFL
+EOF
+
+awk -F, '(NR==FNR){ids[$1]++}(NR!=FNR){if(ids[$1])print $2}' s41586-020-1969-6-CNS-GBM.txt neopeptides_shi.csv | sort | uniq | awk '{print ">NeoPeptidesShi-"$0;print $0}' >> proteins.faa
+tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | awk '{ print ">Darwin-"$0; print $0}' >> proteins.faa
+./extract_sequences_and_mutate.bash >> proteins.faa
+tail -n +2 13059_2023_3005_MOESM1_ESM-S5.csv | cut -d, -f3 | sort | uniq | awk '{print ">NeoEpitope-"$0; print $0}' >> proteins.faa
+tail -n +2 41467_2019_13035_moesm9_esm.csv | head -40 | cut -d, -f1 | sort | uniq | awk '{print ">REdiscoverTE-"$0; print $0}' >> proteins.faa
+./BRCA_LAML_GBM_LGG_TCONS.bash >> proteins.faa
+cat proteins.faa | paste - - | sort | awk '{print $1;print $2}' > sorted_proteins.faa
+cat sorted_proteins.faa | paste - - | uniq | awk '{if(!seen[$2]){seen[$2]++;print $1;print $2}}' > unique_proteins.faa
+
+grep -c "^>" proteins.faa unique_proteins.faa
+
+phip_seq_create_tiles.bash -t 56 -o 28 -i unique_proteins.faa
+#phip_seq_create_tiles.bash -t 38 -o 19 -i unique_proteins.faa
+#phip_seq_create_tiles.bash -t 28 -o 14 -i unique_proteins.faa
+
+grep -vs "^>" oligos-??-??.fasta > oligos.sequences.txt
+wc -l oligos.sequences.txt
+
+#	56 6089 CNS - 5691 - GBM
+#	38 6833 CNS - 6431 - GBM
+#	28 7657 CNS - 7259 - GBM
+
+grep -vs "^[>0]" *.fasta.clstr 
+
+
+box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
+```
+
+
+
+
+
+
+
+
+
+##	20250528
+
+
+
+-Tile across the gene EGFR, there may be multiple splice variants, let’s try to get them all if possible (just to fill up library)
+
+ok, I think thsi is the AA sequence: LEEKKGNYVVTDH
+It results from an in-frame deletion of exons 2–7 in the EGFR gene, which corresponds to a deletion of amino acids 6–273 in the extracellular domain of the wild-type EGFR protein.
+lets also add this IDH1 neoepitope: PIIIGHHAYGDQYH
+
+
+```
+./create.bash
+
+box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
+```
+
+
 

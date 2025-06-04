@@ -177,17 +177,26 @@
 
 
 
+
+
+
+
 #	No Normal, No GTEx, 1+ for GBM or LGG
 #tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | awk -F, '(( $107+$108==0 ) && ( ($26>0) || ($38>0) ) ){print $1}' > tmp1.csv
 #	4253 - 56nt
 #	4897 - 38nt
 #	5610 - 28nt
 
-#	No Normal, No GTEx with Testis, 1+ for GBM or LGG
+
+#	No Normal, No GTEx without Testis, 1+ for GBM or LGG
 tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | awk -F, '(( $107+$109==0 ) && ( ($26>0) || ($38>0) ) ){print $1}' > tmp1.csv
 #	4454 - 56nt
 #	5198 - 38nt
 #	6022 - 28nt   <--- so close
+
+
+
+
 
 
 #	No Normal, No GTEx without Testis, 1+ for BRCA or LAML or 1+ for GBM or LGG
@@ -204,7 +213,7 @@ tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOES
 
 
 #	No Normal, No GTEx, 2+ for BRCA or 1+ for GBM or LGG
-tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | awk -F, '(( $107+$108==0 ) && ( ($14>1) || ($26>0) || ($38>0) ) ){print $1}' > tmp1.csv
+#tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | awk -F, '(( $107+$108==0 ) && ( ($14>1) || ($26>0) || ($38>0) ) ){print $1}' > tmp1.csv
 #	10537 - 28nt
 
 
@@ -239,6 +248,28 @@ join --header -t, SelectTumorOnlyTranscriptIds.txt tmp1.csv > tmp2.csv
 #awk -F, '(NR>1 && $13 != "None"){if(!seen[$13]){seen[$13]++;print ">"$1"-"$10"-"$15;print $13}}' tmp2.csv
 
 awk -F, '(NR>1 && $13 != "None"){print ">"$1"-"$10"-"$15;print $13}' tmp2.csv
+
+#	head -2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S10.csv | tail -n 1 | tr ',' '\n' | awk '{print NR,$1}'
+#
+#	1 Transcript <-- TCONS_
+#	2 Subfam
+#	3 Chr
+#	4 Start
+#	5 End
+#	6 Location
+#	7 Gene
+#	8 Splice
+#	9 Strand
+#	10 Index <-- numeric
+#	11 Frame
+#	12 Frame
+#	13 Protein <--
+#	14 Original
+#	15 Strategy <-- cpc2, kozak
+#	16 
+#	17 
+#	18 
+
 
 
 
