@@ -9,7 +9,7 @@ while [ $# -gt 0 ] ; do
 	echo $1
 
 	#dir=${PWD}
-	dir=$( dirname $( realpath --no-symlinks ${1} ) )
+	dir=$( dirname "$( realpath --no-symlinks "${1}" )" )
 #	dir=${dir#/francislab/data?/refs/}
 	dir=${dir#/francislab/data?/raw/}
 	dir=${dir#/francislab/data?/workin*/}
@@ -17,7 +17,7 @@ while [ $# -gt 0 ] ; do
 	BOX="${BOX_BASE}/${dir}"
 	echo $BOX
 
-	curl  --silent --ftp-create-dirs -netrc -T ${1} "${BOX}/"
+	curl  --silent --ftp-create-dirs -netrc -T "${1}" "${BOX}/"
 	shift
 done
 
