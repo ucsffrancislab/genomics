@@ -669,6 +669,120 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 
 ```
 
 
+That took about 3-4 days.
+
+
+
+
+##	20250528
+
+
+Convert chromosome names to hg38 style
+
+```
+module load plink htslib
+mkdir prep_for_PRS
+
+for chr in {1..22} ; do
+echo $chr
+plink --bfile imputed_QC/complete.QC --real-ref-alleles --recode vcf --chr ${chr} --out prep_for_PRS/chr${chr}
+sed -i 's/^\([[:digit:]]\)/chr\1/' prep_for_PRS/chr${chr}.vcf
+done
+
+bgzip prep_for_PRS/*vcf
+```
+
+
+
+Upload locally
+Then upload to imputation server
+Then wait
+Again
+
+Failed. No Error!!!!!!
+
+
+
+
+
+
+##	20250530
+
+Try lifting over back to hg19.
+
+Getting sick of the inconsistancy
+
+imputation of hg19 require numeric input, produces hg38 numeric
+imputation of hg38 require chr input, produces ???
+liftover requires chr input
+
+```
+  --output-chr <MT code> : Set chromosome coding scheme in output files by
+                           providing the desired human mitochondrial code.
+                           (Options are '26', 'M', 'MT', '0M', 'chr26', 'chrM',
+                           and 'chrMT'.)
+```
+
+
+```
+module load plink htslib gatk
+mkdir prep_for_PRS.hg19
+
+plink -bfile imputed_QC/complete.QC --real-ref-alleles --recode vcf bgz --output-chr chr26 --out prep_for_PRS.hg19/complete.QC
+
+
+
+gatk LiftoverVcf --CHAIN /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz --INPUT prep_for_PRS.hg19/complete.QC.vcf.gz --OUTPUT prep_for_PRS.hg19/complete.QC.hg19.vcf.gz --REJECT prep_for_PRS.hg19/complete.QC.hg19.reject.vcf.gz --REFERENCE_SEQUENCE /francislab/data1/refs/sources/gencodegenes.org/release_48/GRCh37.primary_assembly.genome.fa.gz
+
+gatk LiftoverVcf --CHAIN /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz --INPUT prep_for_PRS.hg19/complete.QC.vcf.gz --OUTPUT prep_for_PRS.hg19/complete.QC.hg19.vcf.gz --REJECT prep_for_PRS.hg19/complete.QC.hg19.reject.vcf.gz --REFERENCE_SEQUENCE /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz
+
+
+
+
+All rejected?
+
+
+
+module load WitteLab liftOver
+
+liftOver prep_for_PRS.hg19/complete.QC.ped /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz prep_for_PRS.hg19/complete.QC prep_for_PRS.hg19/complete.QC.unmapped
+
+All unmapped?
+
+
+trying bcftools +liftover
+
+bcftools +liftover --no-version -o lifttest.hg19.vcf.gz -Oz prep_for_PRS.hg19/complete.QC.vcf.gz -- \
+  -s /francislab/data1/refs/sources/gencodegenes.org/release_48/GRCh38.primary_assembly.genome.fa.gz \
+  -f /francislab/data1/refs/sources/gencodegenes.org/release_48/GRCh37.primary_assembly.genome.fa.gz \
+  -c /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz
+
+bcftools +liftover --no-version -o lifttest.hg19.vcf.gz -Oz prep_for_PRS.hg19/complete.QC.vcf.gz -- \
+  -s /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz \
+  -f /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz \
+  -c /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz
+
+
+Nothing works. Lots of warning about differing lengths. 
+Failure on first different reference allele
+
+
+
+
+for chr in {1..22} ; do
+echo $chr
+plink --vcf prep_for_PRS.hg19/complete.QC.hg19.vcf --real-ref-alleles --recode vcf --output-chr 26 --chr ${chr} --out prep_for_PRS.hg19/chr${chr}
+done
+
+
+
+
+```
+
+
+
+
+
 
 
 
