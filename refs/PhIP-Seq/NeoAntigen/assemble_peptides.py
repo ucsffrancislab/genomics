@@ -46,7 +46,7 @@ with fileinput.input() as f_input:
 						break
 					elif ( existing in line ):
 						print("marking",existing,"for removal",file=sys.stderr)
-						to_remove.append(existing)  
+						to_remove.append(existing)
 						break
 
 					ab=assemble(line,existing,30)
@@ -57,7 +57,7 @@ with fileinput.input() as f_input:
 					if (len(ab) >= len(ba) and len(ab) > 30 ):
 						print("ab is longer",file=sys.stderr)
 						print("marking",existing,"for removal",file=sys.stderr)
-						to_remove.append(existing)  
+						to_remove.append(existing)
 						print("marking",ab,"for appending",file=sys.stderr)
 						to_append.append(ab)
 						found=True
@@ -66,7 +66,7 @@ with fileinput.input() as f_input:
 					elif (len(ba) >= len(ab) and len(ba) > 30):
 						print("ba is longer",file=sys.stderr)
 						print("marking",existing,"for removal",file=sys.stderr)
-						to_remove.append(existing)  
+						to_remove.append(existing)
 						print("marking",ba,"for appending",file=sys.stderr)
 						to_append.append(ba)
 						found=True
@@ -88,7 +88,7 @@ with fileinput.input() as f_input:
 					print("removing",peptide,file=sys.stderr)
 					peptides.remove(peptide)
 				to_remove=[]
-					
+
 #				for existing in peptides:
 #					print("existing:",existing)
 #

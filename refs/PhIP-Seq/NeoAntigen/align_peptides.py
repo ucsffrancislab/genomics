@@ -20,7 +20,7 @@ parser.add_argument('-r', '--references_filename', type=str, required=True,
 args = parser.parse_args()
 
 
-file=open(args.references_filename, 'r') 
+file=open(args.references_filename, 'r')
 references = [line.strip() for line in file]
 
 print("@HD\tVN:1.0\tSO:unsorted")

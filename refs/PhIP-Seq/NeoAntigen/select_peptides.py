@@ -39,7 +39,7 @@ with fileinput.input() as f_input:
 						print("Checking if",existing,"is in",line)
 						if existing in line:
 							print(existing,"is in",line,". Swapping.")
-							to_remove.append(existing)  
+							to_remove.append(existing)
 						else:
 							print("Nope")
 
@@ -48,7 +48,7 @@ with fileinput.input() as f_input:
 
 				for peptide in to_remove:
 					peptides.remove(peptide)
-					
+
 with open("selected_peptides_full.txt", "w") as file:
     for peptide in sorted(peptides):
         file.write(str(peptide) + "\n")

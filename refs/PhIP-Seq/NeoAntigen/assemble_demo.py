@@ -36,7 +36,7 @@ print(assemble('appleapple', 'appleappleapple'))	#	also returns appleappleapple
 
 
 
-#	Starts at the beginning so should get the longest match	
+#	Starts at the beginning so should get the longest match
 print(assemble('abcdede', 'dedefghi')) # Returns "abcdedefghi"
 
 #	range(start, stop, step)	#	apparently stop is exclusive

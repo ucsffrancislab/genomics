@@ -11,12 +11,12 @@ Then prep phip seq tiles
 ```
 tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq | head
 
-cat sequences.txt  | assemble_peptides.py 2> /dev/null  | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | wc -l 
+cat sequences.txt  | assemble_peptides.py 2> /dev/null  | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | wc -l
 #	172
 
 cat sequences.txt  | assemble_peptides.py 2> /dev/null  | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null | assemble_peptides.py 2> /dev/null > assembled_peptides.txt
 
-wc -l assembled_peptides.txt 
+wc -l assembled_peptides.txt
 #172 assembled_peptides.txt
 
 awk '{print ">"NR;print $0}' assembled_peptides.txt > assembled_peptides.faa
@@ -25,9 +25,9 @@ tail -n +2 2025_0124_cross_analysis_summary_ha_mf_ag.tsv | cut -f2 | sort | uniq
 
 ./align_peptides.py -s peptides.txt -r assembled_peptides.txt > aligned_peptides.sam
 
-samtools sort -o aligned_peptides.bam aligned_peptides.sam 
+samtools sort -o aligned_peptides.bam aligned_peptides.sam
 
-samtools index aligned_peptides.bam 
+samtools index aligned_peptides.bam
 ```
 
 Moved all into assemble/
@@ -71,7 +71,7 @@ oligos-ref-11-0.fasta:968
 Note that this is twice the number of peptides because it creates a separate sequence for every tile replacing the last amino acid with the stop codon. Not certain what purpose this has or how it impacts things.
 
 ```
-grep -A1 ">AAAAPASR" {orf,cterm}_tiles-8-0.fasta 
+grep -A1 ">AAAAPASR" {orf,cterm}_tiles-8-0.fasta
 orf_tiles-8-0.fasta:>AAAAPASR|0-8
 orf_tiles-8-0.fasta-AAAAPASR
 --
@@ -80,7 +80,7 @@ cterm_tiles-8-0.fasta-AAAPASR*
 ```
 
 ```
-grep -A 1 AAAAPASR oligos-ref-8-0.fasta 
+grep -A 1 AAAAPASR oligos-ref-8-0.fasta
 >AAAAPASR|0-8
 GCTGCCGCTGCGCCGGCGTCTCGC
 --
@@ -90,7 +90,7 @@ GCGGCCGCACCGGCTTCTCGTTAG
 
 Additionally, another file is created that includes 16 bp appended to each end.
 ```
-grep -A 1 AAAAPASR oligos-8-0.fasta 
+grep -A 1 AAAAPASR oligos-8-0.fasta
 >AAAAPASR|0-8
 AGGAATTCCGCTGCGTGCTGCCGCTGCGCCGGCGTCTCGCGCCTGGAGACGCCATC
 --
@@ -206,7 +206,7 @@ phip_seq_create_tiles.bash -t 12 -o 0 -i peptides.faa
 
 
 ```
-wc -l peptides.faa oligos-12-0.fasta 
+wc -l peptides.faa oligos-12-0.fasta
   5906 peptides.faa
   5886 oligos-12-0.fasta
  11792 total
@@ -214,7 +214,7 @@ wc -l peptides.faa oligos-12-0.fasta
 
 
 ```
-sdiff -sd <( grep "^>" peptides.faa ) <( grep "^>" oligos-12-0.fasta | cut -d\| -f1 ) 
+sdiff -sd <( grep "^>" peptides.faa ) <( grep "^>" oligos-12-0.fasta | cut -d\| -f1 )
 >IDH1:127-137:Original					      <
 >KRAS:7-17:Original					      <
 >KRAS:7-17:Original					      <
@@ -305,10 +305,10 @@ grep -vs "^>" oligos-??-??.fasta > oligos.sequences.txt
 wc -l oligos.sequences.txt
 
 
-grep -vs "^[>0]" *.fasta.clstr 
+grep -vs "^[>0]" *.fasta.clstr
 
 
-box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
+box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos*
 ```
 
 
@@ -367,6 +367,12 @@ awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $3,$11}' s41586-020-1969-6
 awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^CNS-/){print $3,$11}' s41586-020-1969-6-SuppTable1.csv | wc -l
 287
 
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^Breast-/){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-Breast.txt
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^Breast-AdenoCA/){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-Breast-AdenoCA.txt
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^Breast-DCIS/){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-Breast-DCIS.txt
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^Breast-LobularCA/){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-Breast-LobularCA.txt
+
+
 awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11~/^CNS-/){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-CNS.txt
 awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}($11=="CNS-GBM"){print $3}' s41586-020-1969-6-SuppTable1.csv | sort > s41586-020-1969-6-CNS-GBM.txt
 
@@ -411,10 +417,10 @@ wc -l oligos.sequences.txt
 #	38 6833 CNS - 6431 - GBM
 #	28 7657 CNS - 7259 - GBM
 
-grep -vs "^[>0]" *.fasta.clstr 
+grep -vs "^[>0]" *.fasta.clstr
 
 
-box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
+box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos*
 ```
 
 
@@ -439,7 +445,7 @@ lets also add this IDH1 neoepitope: PIIIGHHAYGDQYH
 ```
 ./create.bash
 
-box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* 
+box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* SelectTumorOnlyTranscriptIds.txt
 ```
 
 

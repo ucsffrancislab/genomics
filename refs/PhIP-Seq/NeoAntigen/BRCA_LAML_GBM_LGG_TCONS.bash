@@ -10,7 +10,7 @@
 
 #	cut -d, -f1 BRCA_LAML_GBM_LGG_TCONS.csv > tmp1.csv
 
-#	/francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv 
+#	/francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv
 
 #	head -2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S1.csv | tail -n 1 | tr "," "\n" | awk '{print NR,$0}'
 #	1 Transcript ID
@@ -233,7 +233,7 @@ tail -n +2 tmp1.csv | sort >> SelectTumorOnlyTranscriptIds.txt
 #	39 LGG_normal
 
 
-#	head /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S10.csv 
+#	head /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S10.csv
 #	Transcript ID,Subfam,Chr TE,Start TE,End TE,Location TE,Gene,Splice Target,Strand,Index of Start Codon,Frame,Frame Type,Protein Sequence,Original Protein Sequence,Strategy,,,
 
 tail -n +2 /francislab/data1/raw/20230426-PanCancerAntigens/41588_2023_1349_MOESM3_ESM/S10.csv | tail -n 1 > tmp1.csv
@@ -266,9 +266,9 @@ awk -F, '(NR>1 && $13 != "None"){print ">"$1"-"$10"-"$15;print $13}' tmp2.csv
 #	13 Protein <--
 #	14 Original
 #	15 Strategy <-- cpc2, kozak
-#	16 
-#	17 
-#	18 
+#	16
+#	17
+#	18
 
 
 
