@@ -40,6 +40,8 @@ while read hotspot ; do
 				#echo ">EGFR_HotSpot:$[pos-5]-$[pos+5]:Mutation:${hotspot}"
 				#echo ${sequence:$[pos-6]:5}${mut_to}${sequence:$[pos]:5}
 
+				echo ">EGFR_HotSpot:$[pos-4]-$[pos+4]:Original"
+				echo ${sequence:$[pos-5]:9}
 				echo ">EGFR_HotSpot:$[pos-4]-$[pos+4]:Mutation:${hotspot}"
 				echo ${sequence:$[pos-5]:4}${mut_to}${sequence:$[pos]:4}
 			#else
@@ -92,10 +94,10 @@ while read hotspot ; do
 	length_of_peptide=54
 
 	codon_start_position=$[262+(3*((r1-12)/3))]
-	#range=${codon_start_position}-$[codon_start_position+length_of_peptide]
+	range=${codon_start_position}-$[codon_start_position+length_of_peptide]
 	#echo $range
 	#tail -n +2 NM_005228.5.fna | tr -d "\n" | cut -c${range}
-	#tail -n +2 NM_005228.5.fna | tr -d "\n" | cut -c${range} | sed "1i>EGFR_HotSpot:${hotspot}del:Original" | pepsyn translate - - 2>/dev/null
+	tail -n +2 NM_005228.5.fna | tr -d "\n" | cut -c${range} | sed "1i>EGFR_HotSpot:${hotspot}del:Original" | pepsyn translate - - 2>/dev/null
 
 	range=${codon_start_position}-$[262+r1-2],$[262+r2]-$[codon_start_position+length_of_deletion+length_of_peptide]
 	#echo $range
