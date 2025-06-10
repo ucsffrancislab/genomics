@@ -450,3 +450,106 @@ box_upload.bash *proteins.faa orf* cterm* protein_tiles* oligos* SelectTumorOnly
 
 
 
+
+
+
+
+
+##	20250605
+
+
+Gonna need to create a cvs
+
+Tile Id - 
+Source or Family - VirScan, Darwin, TCONS, REdiscoverTE, FRa, NeoEpitope, NeoPeptideShi, ...
+Group - 
+Species - Human, HHV3, HHV5, ...
+Public Epitope Flag - True or False only for VirScan source
+Full Protein Given - 
+Tiled Protein - 
+Oligo - 
+
+
+sorted_proteins.faa -> unique_proteins.faa -> protein_tiles-28-14.fasta -> oligos-ref-28-14.fasta
+
+==> unique_proteins.faa <==
+>CMV_11190
+ARLDARLERELQKKLPAGGRLPVYRLGDEVPRRLESRFGRTVHALSRPFNGTTETC
+
+==> protein_tiles-28-14.fasta <==
+>CMV_11190|0-28
+ARLDARLERELQKKLPAGGRLPVYRLGD
+
+==> oligos-ref-28-14.fasta <==
+>CMV_11190|0-28
+GCCCGTCTTGATGCGCGCTTAGAACGTGAATTACAGAAGAAGCTGCCGGCGGGGGGCCGCCTGCCGGTTTATCGTCTGGGCGAT
+
+
+cat oligos-ref-28-14.fasta | paste - - | awk 'BEGIN{OFS=","}{gsub("^>","",$1);print $1,$2}' | sort -t, -k1,1 | sed '1iname,oligo' > oligos-ref-28-14.csv
+cat protein_tiles-28-14.fasta | paste - - | awk 'BEGIN{OFS=","}{gsub("^>","",$1);split($1,a,"|");print $1,a[1],$2}' | sort -t, -k1,1 | sed '1iname,group,peptide' > protein_tiles-28-14.csv
+join --header -t, protein_tiles-28-14.csv oligos-ref-28-14.csv > protein_tiles-oligos-28-14.csv
+
+cat unique_proteins.faa | paste - - | awk 'BEGIN{OFS=","}{gsub("^>","",$1);print $1,$2}' | sort -t, -k1,1 | sed '1igroup,protein' > unique_proteins.csv
+cat sorted_proteins.faa | paste - - | awk 'BEGIN{OFS=","}{gsub("^>","",$1);print $1,$2}' | sort -t, -k1,1 | sed '1igroup,protein' > sorted_proteins.csv
+#join --header -t, -a 1 -o auto sorted_proteins.csv unique_proteins.csv | more
+
+#join --header -t, unique_proteins.csv protein_tiles-oligos-28-14.csv | wc -l
+
+join -t, -1 1 -2 2 <( tail -n +2 unique_proteins.csv ) <( tail -n +2 protein_tiles-oligos-28-14.csv | sort -t, -k2,2 ) | sed '1iprotein_name,protein,tile_name,peptide,oligo' > protein_protein_tiles-oligos-28-14.csv
+
+wc -l protein_tiles-28-14.csv oligos-ref-28-14.csv protein_tiles-oligos-28-14.csv protein_protein_tiles-oligos-28-14.csv
+
+
+
+>HotSpot_APC:2303-2311:Mutation:S2307L|CTERM|STOP|C-PADDED-18
+>VZV_YP_068407.1_capsid_scaffold_protein_Human_alphaherpesvirus_3|0-28
+>VZV_YP_053044.1_membrane_protein_UL56_Human_alphaherpesvirus_3|CTERM|STOP
+>HotSpot_EGFR:854-862:Original|CTERM|STOP|C-PADDED-18
+>EGFR_HotSpot:1046-1054:Mutation:I1050V|CTERM|STOP|C-PADDED-18
+
+
+try to find any sequences with to much similarity. not sure that there's anything to do about it.
+makeblastdb -in oligos-ref-28-14.fasta -dbtype nucl -title oligos -out oligos
+blastn -db oligos -query oligos-ref-28-14.fasta -outfmt 6 | more
+
+
+
+
+How to denote duplicate proteins? 
+Some are identical names and sequence and can be ignored.
+Others need noted somehow.
+
+```
+for dup in $( cat proteins.faa | paste - - | sort | uniq | awk '{print $2}' | sort | uniq -d ) ; do echo "----"; cat proteins.faa | paste - - | sort | uniq | awk '{print $1;print $2}' | grep -B1 --no-group-separator "^${dup}$" ; done
+```
+
+
+
+Could just do this in the CSV and then regenerate any fasta files needed from the csv
+
+Some corrections already. 
+
+Drop _Human_alphaherpesvirus_3 from VZV sequence names. Unnecessary. (not sure that this is needed either)
+
+```
+sed -i -e "/^>RefSeqVZV_/s/_Human_alphaherpesvirus_3//" *protein*a oligos*a cterm_tiles-28-14.fasta orf_tiles-28-14.fasta 
+```
+
+
+Add the species to the public epitope name. Something like ... (not sure that this is really needed)
+```
+for regex in $( grep "Human herpes" /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.join_sorted.csv | awk -F, '{gsub(/ /,"-",$2);print "s/\\>VirScanPublicEpitope_"$1"\\$/\\>VirScanPublicEpitope_"$2"_"$1"/";print "s/\\>VirScanPublicEpitope_"$1"\\|/\\>VirScanPublicEpitope_"$2"_"$1"\\|/" }' ); do
+echo sed -i $regex *protein*a oligos*a cterm_tiles-28-14.fasta orf_tiles-28-14.fasta
+done | bash
+```
+
+
+
+
+
+
+
+##	20250609
+
+build_csv.bash
+
