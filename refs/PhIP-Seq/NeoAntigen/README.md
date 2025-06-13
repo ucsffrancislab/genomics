@@ -553,3 +553,49 @@ done | bash
 
 build_csv.bash
 
+
+11997
+
+
+```
+module load blast
+awk -F, '(NR>1){print ">"$1;print $7}' neoantigen_dataset.csv > neoantigen.fna
+makeblastdb -in neoantigen.fna -dbtype nucl -title neoantigens -out neoantigens
+blastn -task megablast -db neoantigens -query neoantigen.fna -outfmt 6 -out neoantigen_neoantigens.megablast.tsv
+blastn -task blastn -db neoantigens -query neoantigen.fna -outfmt 6 -out neoantigen_neoantigens.blastn.tsv
+```
+
+Not all align for some reason.
+
+
+
+```
+module load bowtie2
+bowtie2-build neoantigens neoantigen.fna
+bowtie2 -f -x ${PWD}/neoantigens -U neoantigen.fna 2>/dev/null | awk '($1!~/^@/ && $5<42)' 
+
+7710	0	7710	1	36	84M	*	0	0	CCGCCGCCGCCGTTACCGGGTGCAGGTATCCCGCCGCCGCCGCCGCTTCCGGGTGCGGGTATCCCGCCGCCGCCGCCGCTGCCG	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII	AS:i:0	XS:i:-32	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:84	YT:Z:UU
+7714	0	7714	1	38	84M	*	0	0	CCGCCGCCGTTGCCGGGTGCAGGTATCCCGCCGCCGCCGCCGCTTCCGGGTGCCGGCATCCCGCCGCCGCCGCCGCTGCCGGGG	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII	AS:i:0	XS:i:-44	XN:i:0	XM:i:0	XO:i:0	XG:i:0	NM:i:0	MD:Z:84	YT:Z:UU
+
+bowtie2 -a -f -x ${PWD}/neoantigens -U neoantigen.fna 2>/dev/null | awk '($1!~/^@/ && $2>0)' 
+7710	256	7714	1	255	1M3I80M	*	0	0	CCGCCGCCGCCGTTACCGGGTGCAGGTATCCCGCCGCCGCCGCCGCTTCCGGGTGCGGGTATCCCGCCGCCGCCGCCGCTGCCG	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII	AS:i:-32	XS:i:-3XN:i:0	XM:i:3	XO:i:1	XG:i:3	NM:i:6	MD:Z:11G41C2C24	YT:Z:UU
+7714	256	7710	4	255	77M3I4M	*	0	0	CCGCCGCCGTTGCCGGGTGCAGGTATCCCGCCGCCGCCGCCGCTTCCGGGTGCCGGCATCCCGCCGCCGCCGCCGCTGCCGGGG	IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII	AS:i:-44	XS:i:-4XN:i:0	XM:i:5	XO:i:1	XG:i:3	NM:i:8	MD:Z:11A41G2T21C0C1	YT:Z:UU
+```
+
+So 7710 is similar to 7714
+
+
+
+
+```
+module load blast
+awk -F, '(NR>1){print ">"$1;print $7}' neoantigen_dataset.csv > neoantigen.fna
+cut -d, -f1,6 neoantigen_dataset.csv | cut -d\* -f1 | awk -F, '(NR>1){print ">"$1;print $2}' > neoantigen.faa
+makeblastdb -in neoantigen.faa -dbtype prot -title neoantigens -out neoantigens
+
+blastp -db neoantigens -query neoantigen.faa -outfmt 6 -out neoantigen_neoantigens.blastp.tsv
+
+```
+
+
+
