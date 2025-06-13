@@ -1077,10 +1077,17 @@ merge_matrices.py --axis columns --de_nan --de_neg \
   --header_rows 9 --index_col id --index_col species \
   --out ${PWD}/out.1234561314/Counts.csv \
   ${PWD}/out.plate*/Counts.csv
+
 merge_matrices.py --axis columns --de_nan --de_neg \
   --header_rows 9 --index_col id --index_col species \
   --out ${PWD}/out.123561314/Counts.csv \
   ${PWD}/out.plate1?/Counts.csv ${PWD}/out.plate[12356]/Counts.csv
+
+merge_matrices.py --axis columns --de_nan --de_neg \
+  --header_rows 9 --index_col id --index_col species \
+  --out ${PWD}/out.12356/Counts.normalized.normalized.subtracted.csv \
+  ${PWD}/out.plate[12356]/Counts.normalized.normalized.subtracted.csv
+
 ```
 
 
@@ -1155,10 +1162,79 @@ group                                     input  notblank
 71294  Camelpox virus                                        0.0     219.0
 53070  Human herpesvirus 4                                   0.0     226.0
 4340   Chapare virus                                         0.0     228.0
+```
 
 
 
 
+##	20250605
+
+Which proteins of CMV and VZV were actually reactive?
+
+```
+python3 
+
+import pandas as pd
+df = pd.read_csv('out.123561314/Counts.csv', header=list(range(9)),index_col=[0,1],low_memory=False)
+df=df.droplevel([1,2,3,4,5,6,7,8],axis=1)
+sums=df.loc[pd.IndexSlice[:, 'Human herpesvirus 5'], :].sum(axis='columns')
+sums=df.loc[pd.IndexSlice[:, 'Human herpesvirus 5'], :].sum(axis='columns')
+sums[sums>19000].reset_index().to_csv("testing.csv",index=False)
+```
+
+```
+cut -d, -f1 testing.csv | tail -n +2 | sort | sed '1iid' > list
+join --header -t, list /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_species_protein.uniq.csv | cut -d, -f3 | sort | uniq | wc -l
+127
+grep "Human herpesvirus 5" /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_species_protein.uniq.csv | cut -d, -f3 | sort | uniq | wc -l
+357
+```
+Not really helpful
+
+
+
+
+
+
+```
+python3 
+
+import pandas as pd
+df = pd.read_csv('out.123561314/Counts.csv', header=list(range(9)),index_col=[0,1],low_memory=False)
+df=df.droplevel([1,2,4,6,7,8],axis=1)
+df=df.loc[pd.IndexSlice[:, 'Human herpesvirus 5'], pd.IndexSlice[:,'glioma serum',:]]
+df=df.droplevel([1],axis='columns')
+df=df.droplevel([1],axis='index')
+
+df.columns=df.columns.set_names(['sample','group'])
+df=df.T.groupby(['group'],dropna=False).sum().T
+
+```
+
+```
+python3 
+
+import pandas as pd
+df = pd.read_csv('out.12356/Counts.normalized.normalized.subtracted.csv', header=list(range(9)),index_col=[0,1],low_memory=False)
+df=df.droplevel([1,2,4,6,7,8],axis=1)
+df=df.loc[pd.IndexSlice[:, 'Human herpesvirus 5'], pd.IndexSlice[:,'glioma serum',:]]
+df=df.droplevel([1],axis='columns')
+df=df.droplevel([1],axis='index')
+
+df.columns=df.columns.set_names(['sample','group'])
+sums=df.T.groupby(['group']).sum().T
+medians=df.T.groupby(['group']).median().T
+
+((1+sums['case'])/(1+sums['control'])).sort_values()
+((1+medians['case'])/(1+medians['control'])).sort_values()
+```
+
+
+Using something like
+```
+grep ",Human herpesvirus 5," out.12356/Multiplate_Peptide_Comparison-Counts.normalized.normalized.subtracted.trim-case-control-Prop_test_results-Z-0-sex-F.csv | head -100
+grep ",Human herpesvirus 5," out.12356/Multiplate_Peptide_Comparison-Counts.normalized.normalized.subtracted.trim-case-control-Prop_test_results-Z-0-sex-M.csv | head -100
+```
 
 
 
