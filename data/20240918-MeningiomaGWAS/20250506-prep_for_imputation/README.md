@@ -773,10 +773,6 @@ for chr in {1..22} ; do
 echo $chr
 plink --vcf prep_for_PRS.hg19/complete.QC.hg19.vcf --real-ref-alleles --recode vcf --output-chr 26 --chr ${chr} --out prep_for_PRS.hg19/chr${chr}
 done
-
-
-
-
 ```
 
 
@@ -784,32 +780,42 @@ done
 
 
 
-
-
-
-
----
-
 ```
-plink2 \
-	--pfile ${PWD}/imputation/chr22.dose.vcf.gz \
-	--keep $scratchpath/AGS_illumina_EUR_ids.txt \
-	--pheno iid-only $scratchpath/AGS_illumina_GWAS.phen \
-	--pheno-name idhmut_only_gwas,tripneg_gwas,idhwt_1p19qnoncodel_gwas \
-	--1 \
-	--covar iid-only $scratchpath/AGS_illumina_covariates.txt \
-	--covar-name Age,sex,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,PC9,PC10 \
-	--covar-variance-standardize \
-	--glm firth-fallback hide-covar cols=chrom,pos,ref,alt1,a1freq,firth,test,nobs,beta,orbeta,se,ci,tz,p,err \
-	--maf 0.01 \
-	--memory 15000 \
-	--threads 8 \
-	--out ${PWD}/testing
+du -sh imputed/to_upload/
+134G	imputed/to_upload/
+
+impute_pgs.bash -n 20250624-Meningioma-imputed-noancestry-1kgdeep -b hg38 -r apps@1000g-phase3-deep@1.0.0 imputed/chr{?,??}.vcf.gz
+
+Request Too Large - Hmm.
+
+impute_pgs.bash -n 20250624-Meningioma-imputed-noancestry-1kgdeep -b hg38 -r apps@1000g-phase3-deep@1.0.0 imputed/to_upload/chr17.vcf.gz imputed/to_upload/chr18.vcf.gz imputed/to_upload/chr19.vcf.gz imputed/to_upload/chr20.vcf.gz
+
+{"_links":{"self":[{"href":"/api/v2/jobs/submit/imputationserver2-pgs","templated":false,"type":null,"deprecation":null,"profile":null,"name":null,"title":null,"hreflang":null}]},"_embedded":{"errors":[{"_links":{},"_embedded":{},"message":"The content length [15745928469] exceeds the maximum allowed content length [15728640000]","logref":null,"path":null}]},"message":"Request Entity Too Large","logref":null,"path":null}
+
+impute_pgs.bash -a apps@ancestry@1.0.0 -n 20250624-Meningioma22-imputed-ancestry-1kgdeep -b hg38 -r apps@1000g-phase3-deep@1.0.0 imputed/to_upload/chr22.vcf.gz
 ```
 
-Then run a modified plink2 command like that in `Geno/GWAS/GWAS-glioma-script.sh`
 
-Then someone merge the resulting GWAS file (vcf?) with the ginormous `pgs/scores.txt`?
 
-That should create some list of SNPs with a beta and p-value?
 
+
+##	20250625
+
+Attempting to run imputation server locally
+
+
+
+
+```
+module load openjdk
+mkdir -p work/singularity
+ln -s /c4/home/gwendt/quay.io-genepi-imputationserver2-v2.0.7.img work/singularity/quay.io-genepi-imputationserver2-v2.0.7.img
+
+nextflow run ~/github/genepi/imputationserver2/main.nf -c conf/test_single_vcf.config
+
+nextflow run ~/github/genepi/imputationserver2/main.nf -c ~/github/genepi/imputationserver2/conf/test_three_vcf.config
+
+nextflow run ~/github/genepi/imputationserver2/main.nf -config 1-test.config
+
+
+```
