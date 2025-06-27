@@ -6,41 +6,18 @@ Acquiring all PGS catalogs and then combining them for use with our imputation s
 
 Being gentle. There are over 5000
 
-```
-for i in {11..99} ; do pgs=$( printf "PGS%06d" $i ) ; wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${pgs}/ScoringFiles/${pgs}.txt.gz ; done
-```
-
-
-Don't think that I need these.
-```
-wget https://imputationserver.sph.umich.edu/resources/dbsnp-index/dbsnp154_hg19.txt.gz
-wget https://imputationserver.sph.umich.edu/resources/dbsnp-index/dbsnp154_hg19.txt.gz.tbi
-```
-
 
 
 ```
-for i in {1..99} ; do pgs=$( printf "PGS%06d" $i ) ; wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${pgs}/ScoringFiles/Harmonized/${pgs}_hmPOS_GRCh37.txt.gz ; done
-for i in {100..999} ; do pgs=$( printf "PGS%06d" $i ) ; wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/scores/${pgs}/ScoringFiles/Harmonized/${pgs}_hmPOS_GRCh37.txt.gz ; done
+./download.bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=prep \
+  --output="${PWD}/prep.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=4 --mem=30G ${PWD}/prep.bash
+```
 
 
-for f in PGS*_hmPOS_GRCh37.txt.gz ; do
-echo $f
-header=$( zgrep -m 1 -n "hm_chr" $f | cut -d: -f1 )
-chr=$( zgrep -m1 -n hm_chr ${f} | cut -d: -f2 | tr "\t" "\n" | grep -n "hm_chr" | cut -d: -f1 )
-pos=$( zgrep -m1 -n hm_chr ${f} | cut -d: -f2 | tr "\t" "\n" | grep -n "hm_pos" | cut -d: -f1 )
-zcat $f | head -n ${header} > ${f%.txt.gz}.sorted.txt
-zcat $f | tail -n +$[header+1] | awk -F"\t" -v chr=${chr} '( $chr != "X" )' | sort -t $'\t' -k${chr}n,${chr} -k${pos}n,${pos} >> ${f%.txt.gz}.sorted.txt
-zcat $f | tail -n +$[header+1] | awk -F"\t" -v chr=${chr} '( $chr == "X" )' | sort -t $'\t' -k${chr}n,${chr} -k${pos}n,${pos} >> ${f%.txt.gz}.sorted.txt
-gzip ${f%.txt.gz}.sorted.txt
-done
-
-
-
-for f in PGS*_hmPOS_GRCh37.sorted.txt.gz ; do
-ln -s ${f} ${f%_hmPOS_GRCh37.sorted.txt.gz}.txt.gz
-done
-
+```
 pgs-calc create-collection --out=hg19.collection.txt.gz PGS??????.txt.gz
 ```
 Wrote 7650044 unique variants and 98 scores.
