@@ -11,26 +11,51 @@ Being gentle. There are over 5000
 ```
 ./download.bash
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --job-name=prep \
-  --output="${PWD}/prep.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=4 --mem=30G ${PWD}/prep.bash
+#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=prep \
+#  --output="${PWD}/prep.$( date "+%Y%m%d%H%M%S%N" ).out" \
+#  --time=14-0 --nodes=1 --ntasks=4 --mem=30G ${PWD}/prep.bash
+```
+
+Preferably ...
+```
+ls -1 *_hmPOS_GRCh37.txt.gz | xargs -I% echo prep_individual.bash % > commands
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
 ```
 
 
-```
-pgs-calc create-collection --out=hg19.collection.txt.gz PGS??????.txt.gz
-```
-Wrote 7650044 unique variants and 98 scores.
+Not sure how much mem it will need so giving it all of it
+Doesn't really need anywhere near this much.
 
 ```
-module load htslib
-tabix -p vcf hg19.collection.txt.gz
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=64 --mem=490G ${PWD}/create_collection.bash
 ```
-[E::get_intv] Failed to parse TBX_VCF: was wrong -p [type] used?
-The offending line was: "chr_name	chr_position	effect_allele	other_allele	PGS000001	PGS000002	PGS000003	PGS000004PGS000005	PGS000006	PGS000007	PGS000008	PGS000009	PGS000010	PGS000011	PGS000012	PGS000013	PGS000014	PGS000015	PGS000016	PGS000017	PGS000018	PGS000019	PGS000020	PGS000021	PGS000022	PGS000023PGS000024	PGS000025	PGS000026	PGS000027	PGS000028	PGS000029	PGS000030	PGS000031	PGS000032	PGS000033	PGS000034	PGS000035	PGS000036	PGS000037	PGS000038	PGS000039	PGS000040	PGS000041	PGS000042PGS000043	PGS000044	PGS000045	PGS000046	PGS000047	PGS000048	PGS000049	PGS000050	PGS000051	PGS000052	PGS000053	PGS000054	PGS000055	PGS000056	PGS000057	PGS000058	PGS000059	PGS000060	PGS000061PGS000062	PGS000063	PGS000064	PGS000065	PGS000066	PGS000067	PGS000068	PGS000069	PGS000070	PGS000071	PGS000072	PGS000073	PGS000074	PGS000075	PGS000076	PGS000077	PGS000078	PGS000079	PGS000080PGS000081	PGS000082	PGS000083	PGS000084	PGS000086	PGS000087	PGS000088	PGS000089	PGS000090	PGS000091	PGS000092	PGS000093	PGS000094	PGS000095	PGS000096	PGS000097	PGS000098	PGS000099"
 
-Is that gonna be acceptable?
+Manual fix of one line in PGS005164_hmPOS_GRCh37.txt.gz 
 
+```
+rs8176636	9	136151579	T	"TGGTGCAGGCGCAGGAAA
+AAATTGTGGCAATTCCTCA"	0.039	ENSEMBL	rs8176636	9	136151580		True	False
+```
+
+```
+Column 'effect_weight' not found in 'PGS004255.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004256.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004258.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004259.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004260.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004261.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004262.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004263.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004264.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004272.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004273.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004280.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004299.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004301.txt.gz'. Ignore.
+Column 'effect_weight' not found in 'PGS004304.txt.gz'. Ignore.
+```
 
 
 
@@ -39,14 +64,11 @@ Is that gonna be acceptable?
 Need to build the metadata json file now and not real sure how to do that.
 
 
-
-
-
 There is a json file included, but the giant matrix is not.
 
 wget https://imputationserver.sph.umich.edu/resources/pgs-catalog/pgs-catalog-20230119-hg19.zip
 
-
+```
 "PGS001909":{"id":"PGS001909",
 "trait":"Red blood cell (erythrocyte) count",
 "efo":[{"id":"EFO_0004305",
@@ -61,6 +83,6 @@ wget https://imputationserver.sph.umich.edu/resources/pgs-catalog/pgs-catalog-20
 "repository":"PGS-Catalog",
 "link":"https://www.pgscatalog.org/score/PGS001909",
 "samples":0},
-
+```
 
 
