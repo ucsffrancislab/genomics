@@ -1,15 +1,22 @@
 #!/usr/bin/env bash
 
-TOKEN=$( cat UMICH_TOKEN )
+#	https://topmedimpute.readthedocs.io/en/latest/api/
 
-command="curl https://imputationserver.sph.umich.edu/api/v2/jobs/submit/imputationserver2-pgs -H \"X-Auth-Token: $TOKEN\""
+TOKEN=$( cat TOPMED_TOKEN )
+
+#command="curl https://imputationserver.sph.umich.edu/api/v2/jobs/submit/imputationserver2 -H \"X-Auth-Token: $TOKEN\""
+command="curl https://imputation.biodatacatalyst.nhlbi.nih.gov/api/v2/jobs/submit/imputationserver -H \"X-Auth-Token: $TOKEN\""
+
 name=""
-refpanel="apps@hrc-r1.1@2.0.0"
+refpanel="apps@topmed-r3"
 build="hg19"
-r2Filter="0.3"
-pgscatalog="apps@pgs-catalog-20240318@1.0"
-traits="all"
-ancestry=""	#	"apps@ancestry@1.0.0"
+r2Filter="0.1"
+#pgscatalog="apps@pgs-catalog-20240318@1.0"
+#traits="all"
+#ancestry=""	#	"apps@ancestry@1.0.0"
+#phasing="eagle"
+population=all
+
 files=""
 
 while [ $# -gt 0 ] ; do
@@ -20,14 +27,14 @@ while [ $# -gt 0 ] ; do
 			shift;refpanel="${1}";shift;;
 		-b|--build)
 			shift;build="${1}";shift;;
-		-f|--filter|--rsq|--r2Filter)
-			shift;r2Filter="${1}";shift;;
-		-c|--catalog|--pgscatalog)
-			shift;pgscatalog="${1}";shift;;
-		-t|--traits)
-			shift;traits="${1}";shift;;
-		-a|--ancestry)
-			shift;ancestry="${1}";shift;;
+#		-f|--filter|--rsq|--r2Filter)
+#			shift;r2Filter="${1}";shift;;
+#		-c|--catalog|--pgscatalog)
+#			shift;pgscatalog="${1}";shift;;
+#		-t|--traits)
+#			shift;traits="${1}";shift;;
+#		-a|--ancestry)
+#			shift;ancestry="${1}";shift;;
 		-*)
 			echo "Unknown param :$1:"; exit;;
 		*)
@@ -41,12 +48,13 @@ if [ -z "${name}" ] ; then
 fi
 
 
-command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" -F \"pgscatalog=${pgscatalog}\" -F \"pgs_category=${traits}\" ${files}"
+#command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" ${files}"
+command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" -F \"population=${population}\" ${files}"
 
 
-if [ -n "${ancestry}" ] ; then
-	command="${command} -F \"ancestry=${ancestry}\""
-fi
+#if [ -n "${ancestry}" ] ; then
+#	command="${command} -F \"ancestry=${ancestry}\""
+#fi
 
 #	https://genepi.github.io/michigan-imputationserver/tutorials/api/
 
