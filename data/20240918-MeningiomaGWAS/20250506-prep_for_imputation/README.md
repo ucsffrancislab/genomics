@@ -819,3 +819,20 @@ nextflow run ~/github/genepi/imputationserver2/main.nf -config 1-test.config
 
 
 ```
+
+
+
+##	20250627
+
+I've never run this on the cluster
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=nextflow \
+  --export=None --output="${PWD}/nextflow.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/imputation_and_pgs.config"
+
+```
+
+
