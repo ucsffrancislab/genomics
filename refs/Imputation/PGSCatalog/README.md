@@ -200,6 +200,11 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_coll
   --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-0999.txt.gz PGS000???.txt.gz;tabix -p vcf hg19.0001-0999.txt.gz;chmod -w hg19.0001-0999.txt.gz*"
 ```
 
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection9999 --time=14-0 --export=None \
+  --output="${PWD}/create_collection9999.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-9999.txt.gz PGS00????.txt.gz;tabix -p vcf hg19.0001-9999.txt.gz;chmod -w hg19.0001-9999.txt.gz*"
+```
+
 
 
 
@@ -217,6 +222,7 @@ cat pgs-catalog-20230119-hg19/scores.meta.json | jq '.[] | select(.id | match("P
 cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS00000")))' > hg19.0001-0009.scores.json
 cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS0000")))' > hg19.0001-0099.scores.json
 cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS000")))' > hg19.0001-0999.scores.json
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS00")))' > hg19.0001-9999.scores.json
 
 
 ```
