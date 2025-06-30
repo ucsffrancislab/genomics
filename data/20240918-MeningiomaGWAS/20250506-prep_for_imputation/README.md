@@ -828,11 +828,47 @@ I've never run this on the cluster
 
 ```
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=nextflow \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=nextflow-Meningioma \
   --export=None --output="${PWD}/nextflow.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
   --wrap="module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/imputation_and_pgs.config"
 
+```
+
+
+Separate Directories: To avoid conflicts, it's essential to run each Nextflow workflow instance in a separate directory. This ensures that the .nextflow directory, which is specific to each run, doesn't interfere with other instances.
+
+
+##	20250629
+
+
+Test runs
+
+
+```
+cd 1-impute_20
+module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config
+
+cd 2-impute_20_and_PGS_test
+module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config
+
+cd 3-impute_20_and_PGS_hg19_9
+module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config
+
+cd 4-impute_20_and_PGS_hg19_99
+module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config
+
+cd 5-impute_20_and_PGS_hg19_999
+module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config
+
+cd 6-impute_20s_and_PGS_hg19_999
+module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config
+
+cd 7-impute_20s_and_PGS_hg19_999_sbatch
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=7-nextflow-Meningioma \
+  --export=None --output="${PWD}/nextflow.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load openjdk; nextflow run ~/github/genepi/imputationserver2/main.nf -config ${PWD}/test.config"
 ```
 
 
