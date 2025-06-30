@@ -23,16 +23,20 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 1
 ```
 
 
-Not sure how much mem it will need so giving it all of it
+Not sure how much mem it will need so giving it all of it.
+
 Doesn't really need anywhere near this much.
+
+It will take about a day to compile all PGS scores.
 
 ```
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection \
   --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=64 --mem=490G ${PWD}/create_collection.bash
+  --time=14-0 --nodes=1 --ntasks=8 --mem=60G ${PWD}/create_collection.bash
 ```
 
-Manual fix of one line in PGS005164_hmPOS_GRCh37.txt.gz 
+Manual fix of one line in PGS005164_hmPOS_GRCh37.txt.gz.
+I joined and removed the double quotes.
 
 ```
 rs8176636	9	136151579	T	"TGGTGCAGGCGCAGGAAA
@@ -56,6 +60,99 @@ Column 'effect_weight' not found in 'PGS004299.txt.gz'. Ignore.
 Column 'effect_weight' not found in 'PGS004301.txt.gz'. Ignore.
 Column 'effect_weight' not found in 'PGS004304.txt.gz'. Ignore.
 ```
+
+It would be nice if this could be parallelized by chromosome.
+Would probably require splitting each PGS file by chromosome, then pgs-calc create-collection, then concat.
+It is unclear what would happen when the PGS file is empty for a given chromosome. (no problem)
+
+PGS004893 and PGS004895 both had some Y chromosome stuff which I removed
+
+
+
+
+splitting each PGS file by chromosome, then pgs-calc create-collection, then concat.
+
+```
+ls -1 *_hmPOS_GRCh37.txt.gz | xargs -I% echo prep_individual_split.bash % > commands
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G
+```
+
+
+```
+for chr in {1..22} X ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${chr} \
+  --output="${PWD}/${chr}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="${PWD}/pgs-calc create-collection --out=${PWD}/hg19.${chr}.txt.gz ${chr}/PGS??????.txt.gz;chmod -w ${PWD}/hg19.${chr}.txt.gz ${PWD}/hg19.${chr}.txt.gz.info"
+done
+```
+
+
+Check that they all have the same number of columns
+
+```
+for f in hg19.*.txt.gz ; do
+echo $f 
+header_line=$( zgrep -m 1 -n "^chr" $f | cut -d: -f1 )
+zcat $f | tail -n +$[header_line] | head -1 | awk -F"\t" '{print NF}'
+done
+```
+
+
+zcat each skipping header line in all but first
+
+You probably can just concatenate the bgzipped files, but you need to remove the comments lines so ...
+
+```
+module load htslib
+zcat hg19.1.txt.gz > hg19.merged.txt
+for chr in {2..22} X ; do
+zcat hg19.${chr}.txt.gz | tail -n +6 >> hg19.merged.txt
+done
+bgzip hg19.merged.txt
+tabix -p vcf hg19.merged.txt.gz
+chmod -w hg19.merged.txt.gz hg19.merged.txt.gz.tbi
+```
+
+-rw-r----- 1 gwendt francislab 248583639886 Jun 28 16:37 hg19.merged.txt
+
+
+
+Some alleles are duplicated? Why? Problem?
+```
+20	57851950	G	C     <--
+20	57851950	A	C
+20	57851950	G	C     <--
+20	57851950	T	C
+```
+
+
+java.lang.RuntimeException: PGS002252.txt.gz: Not sorted. 1:22587728 is before Y:27332051
+
+java.lang.RuntimeException: PGS000701.txt.gz: Not sorted. 1:850780 is before XY:180351
+
+
+
+
+how to combine the info files?
+
+```
+cat > hg19.merged.txt.gz.info << EOF
+# PGS-Collection v1
+# Date=Sat Jun 28 14:46:23 PDT 2025
+# Scores=5106
+# Updated by pgs-calc 1.6.1
+EOF
+echo -e "score\tvariants\tignored" >> hg19.merged.txt.gz.info
+
+tail -q -n +6 hg19.{?,??}.txt.gz.info | awk 'BEGIN{FS=OFS="\t"}{variants[$1]+=$2;ignored[$1]+=$3}END{ for( pgs in variants ){ print pgs,variants[pgs],ignored[pgs] } }' | sort -k1,1 >> hg19.merged.txt.gz.info
+chmod -w hg19.merged.txt.gz.info
+```
+
+
+
+
+
 
 
 
@@ -84,5 +181,47 @@ wget https://imputationserver.sph.umich.edu/resources/pgs-catalog/pgs-catalog-20
 "link":"https://www.pgscatalog.org/score/PGS001909",
 "samples":0},
 ```
+
+
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection9 --time=14-0 --export=None \
+  --output="${PWD}/create_collection9.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-0009.txt.gz PGS00000?.txt.gz;tabix -p vcf hg19.0001-0009.txt.gz;chmod -w hg19.0001-0009.txt.gz*"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection99 --time=14-0 --export=None \
+  --output="${PWD}/create_collection99.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-0099.txt.gz PGS0000??.txt.gz;tabix -p vcf hg19.0001-0099.txt.gz;chmod -w hg19.0001-0099.txt.gz*"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection999 --time=14-0 --export=None \
+  --output="${PWD}/create_collection999.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-0999.txt.gz PGS000???.txt.gz;tabix -p vcf hg19.0001-0999.txt.gz;chmod -w hg19.0001-0999.txt.gz*"
+```
+
+
+
+
+
+
+
+extract subset from json
+
+```
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq | head
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq '.[] | select(.id | match("PGS00000"))' > hg19.0001-0009.scores.json
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq '.[] | select(.id | match("PGS0000"))' > hg19.0001-0099.scores.json
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq '.[] | select(.id | match("PGS000"))' > hg19.0001-0999.scores.json
+
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS00000")))' > hg19.0001-0009.scores.json
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS0000")))' > hg19.0001-0099.scores.json
+cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key | match("PGS000")))' > hg19.0001-0999.scores.json
+
+
+```
+
+check their existance
+
 
 
