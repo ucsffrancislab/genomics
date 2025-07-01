@@ -198,11 +198,25 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_coll
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection999 --time=14-0 --export=None \
   --output="${PWD}/create_collection999.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
   --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-0999.txt.gz PGS000???.txt.gz;tabix -p vcf hg19.0001-0999.txt.gz;chmod -w hg19.0001-0999.txt.gz*"
-```
+
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection9999 --time=14-0 --export=None \
   --output="${PWD}/create_collection9999.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
   --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-9999.txt.gz PGS00????.txt.gz;tabix -p vcf hg19.0001-9999.txt.gz;chmod -w hg19.0001-9999.txt.gz*"
+
+
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection999 --time=14-0 --export=None \
+  --output="${PWD}/create_collection999.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="singularity exec --writable-tmpfs --bind /francislab,/scratch /francislab/data1/refs/singularity/quay.io-genepi-imputationserver2-v2.0.7.img pgs-calc create-collection --out=hg19.0001-0999.singularity.txt.gz PGS000???.txt.gz;tabix -p vcf hg19.0001-0999.singularity.txt.gz;chmod -w hg19.0001-0999.singularity.txt.gz*"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection999 --time=14-0 --export=None \
+  --output="${PWD}/create_collection999.uniq.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=hg19.0001-0999.uniq.txt.gz PGS000???.txt.gz;tabix -p vcf hg19.0001-0999.uniq.txt.gz;chmod -w hg19.0001-0999.uniq.txt.gz*"
+
+
 ```
 
 
@@ -230,4 +244,29 @@ cat pgs-catalog-20230119-hg19/scores.meta.json | jq -r 'with_entries(select(.key
 check their existance
 
 
+
+
+
+```
+zcat hg19.0001-0999.txt.gz| cut -f1-4 | tail -n +6 | uniq -D | head
+1	3329384	T	C
+1	3329384	T	C
+1	8481016	G	T
+1	8481016	G	T
+1	27138393	T	C
+1	27138393	T	C
+1	43926305	C	T
+1	43926305	C	T
+1	55496039	C	T
+1	55496039	C	T
+```
+
+
+Takes about 341GB of memory. The full matrix would be impossible here.
+Processing takes about 30 minutes. Writing the results takes hours.
+```
+sbatch --nodes=1 --time=1-0 --ntasks=60 --mem=480G --export=None --wrap="python3 -c \"import pandas as pd;pd.read_csv('hg19.0001-0999.uniq.txt.gz',header=4,sep='\t',low_memory=False).groupby(['chr_name','chr_position','effect_allele','other_allele'],dropna=False).sum().to_csv('hg19.0001-0999.uniq.sum2.txt',sep='\t')\";module load htslib;bgzip hg19.0001-0999.uniq.sum2.txt"
+
+df.loc[('1',3329384,'T','C')]
+```
 
