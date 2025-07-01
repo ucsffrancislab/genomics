@@ -22,7 +22,7 @@ for chr in {1..22} X ; do
 
 		zcat $f | head -n ${header} > ${out}
 
-		zcat $f | tail -n +$[header+1] | awk -F"\t" -v chr=${chr} -v chr_col=${chr_col} '( $chr_col == chr )' | sort -t $'\t' -k${pos_col}n,${pos_col} >> ${out}
+		zcat $f | tail -n +$[header+1] | awk -F"\t" -v chr=${chr} -v chr_col=${chr_col} '( $chr_col == chr )' | sort -t $'\t' -k${pos_col}n,${pos_col} | uniq >> ${out}
 
 		gzip ${out}
 	
