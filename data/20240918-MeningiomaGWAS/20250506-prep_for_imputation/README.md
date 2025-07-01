@@ -872,3 +872,35 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=7-nextflow-
 ```
 
 
+
+
+
+
+
+
+
+##	20250701
+
+
+Prepping to compare PGS scores.
+
+Creating a manifest
+
+subject,group,sex,plate
+
+Sex code ('1' = male, '2' = female, '0' = unknown)
+
+Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing data if case/control)
+
+```
+awk 'BEGIN{FS=OFS=","}(NR>1){gsub(/_/,"-",$2);cc=($6=="1")?"control":"case";sex=($5=="1")?"M":"F";print $2"_"$2,cc,sex,1 }' /francislab/data1/raw/20240918-MeningiomaGWAS/MENCasesandControls.csv > output/manifest.csv
+sed -i '1isubject,group,sex,plate' output/manifest.csv
+
+
+PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o testing -p output
+PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o testing -p output --sex F
+PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o testing -p output --sex M
+```
+
+
+
