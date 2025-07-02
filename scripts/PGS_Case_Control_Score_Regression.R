@@ -277,9 +277,10 @@ rm(Zfiles)
 #	Create a shell file for analysis, Leaves the peptide column blank, we will repopulate this with every peptide.
 #	I still don't know what a "shell file" is in this context
 
-datfile = data.frame(mat.or.vec(length(uniq_sub),6))
+# datfile = data.frame(mat.or.vec(length(uniq_sub),6))
 #colnames(datfile) = c("ID", "case", "peptide", "sex", "age", "plate")
-colnames(datfile) = c("ID", "case", "peptide", "sex", "plate")
+datfile = data.frame(mat.or.vec(length(uniq_sub),8))
+colnames(datfile) = c("ID", "case", "peptide", "sex", "plate","PC1","PC2","PC3")
 datfile$ID = uniq_sub
 datfile$peptide = NA
 #print(datfile)
@@ -291,6 +292,9 @@ for(i in c(1:nrow(datfile))){
 #	datfile$age[i] = manifest$age[man_loc]
 	datfile$sex[i] = manifest$sex[man_loc]
 	datfile$plate[i] = manifest$plate[man_loc]
+	datfile$PC1[i] = manifest$PC1[man_loc]
+	datfile$PC2[i] = manifest$PC2[man_loc]
+	datfile$PC3[i] = manifest$PC3[man_loc]
 }
 #datfile$age = as.numeric(datfile$age)
 datfile$sex = as.factor(datfile$sex)
@@ -309,17 +313,23 @@ log_reg = function(df){
 	#	and so peptide probably has different associations with case based on plate.
 
 
+
+
 	#	if plate is always the same this fails. check or ignore
 
 	if ( opt$sex == "" ){
 		#logitmodel = "case~ peptide +age + sex + plate"
 		#logitmodel = "case~ peptide + sex + plate"
-		logitmodel = "case~ peptide + sex"
+		#logitmodel = "case~ peptide + sex"
+		logitmodel = "case~ peptide + sex + PC1 + PC2 + PC3"
 	} else{
 		#logitmodel = "case~ peptide +age + plate"
 		#logitmodel = "case~ peptide + plate"
-		logitmodel = "case~ peptide"
+		#logitmodel = "case~ peptide"
+		logitmodel = "case~ peptide + PC1 + PC2 + PC3"
 	}
+
+
 
 	logit_fun = glm(as.formula(logitmodel), data = df, family=binomial(link="logit"))
 
