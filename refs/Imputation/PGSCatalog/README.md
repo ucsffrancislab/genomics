@@ -263,7 +263,7 @@ zcat hg19.0001-0999.txt.gz| cut -f1-4 | tail -n +6 | uniq -D | head
 
 
 Takes about 341GB of memory. The full matrix would be impossible here.
-Processing takes about 30 minutes. Writing the results takes hours.
+Processing takes about 30 minutes. Writing the results takes about 13 hours.
 ```
 sbatch --nodes=1 --time=1-0 --ntasks=60 --mem=480G --export=None --wrap="python3 -c \"import pandas as pd;pd.read_csv('hg19.0001-0999.uniq.txt.gz',header=4,sep='\t',low_memory=False).groupby(['chr_name','chr_position','effect_allele','other_allele'],dropna=False).sum().to_csv('hg19.0001-0999.uniq.sum2.txt',sep='\t')\";module load htslib;bgzip hg19.0001-0999.uniq.sum2.txt"
 
