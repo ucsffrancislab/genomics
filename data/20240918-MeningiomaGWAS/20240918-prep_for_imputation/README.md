@@ -507,3 +507,56 @@ zgrep -m1 "^#CHROM" prep/MENINGIOMA_GWAS_SHARED-updated-chr1.vcf.gz | datamash t
 
 
 
+
+
+
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-calc \
+  --export=None --output="${PWD}/pgs-calc.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="/francislab/data1/refs/Imputation/PGSCatalog/pgs-calc apply /francislab/data1/working/20240918-MeningiomaGWAS/20240918-prep_for_imputation/imputation/chr1.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg19.0001-9999.txt.gz --out /francislab/data1/working/20240918-MeningiomaGWAS/20240918-prep_for_imputation/imputation/chr1.dose.scores.txt --info /francislab/data1/working/20240918-MeningiomaGWAS/20240918-prep_for_imputation/imputation/chr1.dose.scores.info --min-r2 0 --no-ansi"
+
+```
+
+
+
+##	20250701
+
+
+Prepping to compare PGS scores.
+
+Creating a manifest
+
+subject,group,sex,plate
+
+Sex code ('1' = male, '2' = female, '0' = unknown)
+
+Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing data if case/control)
+
+```
+awk 'BEGIN{FS=OFS=","}(NR>1){gsub(/_/,"-",$2);cc=($6=="1")?"control":"case";sex=($5=="1")?"M":"F";print $2"_"$2,cc,sex,1 }' /francislab/data1/raw/20240918-MeningiomaGWAS/MENCasesandControls.csv | sort -t, -k1,1 > pgs/mani.fest.csv
+sed -i '1isubject,group,sex,plate' pgs/mani.fest.csv
+```
+
+
+
+include ancestry estimation PC1-3 ....
+```
+
+sort estimated-population.txt
+
+join --header -t, pgs/mani.fest.csv estimated-population.sorted.txt > pgs/manifest.estimated-population.csv
+
+```
+
+
+```
+PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o pgs -p pgs
+PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o pgs -p pgs --sex F
+PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o pgs -p pgs --sex M
+```
+
+
+
