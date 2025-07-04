@@ -184,3 +184,7 @@ minimac4 --compress-reference reference.{sav,bcf,vcf.gz} > reference.msav
 
 
 
+
+wget https://github.com/genepi/imputationserver-utils/releases/download/v1.5.2/imputationserver-utils.tar.gz
+
+
