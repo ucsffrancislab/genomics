@@ -2,11 +2,10 @@
 
 f=$1
 
-#for f in PGS*_hmPOS_GRCh37.txt.gz ; do
 
-if [ -f ${f%_hmPOS_GRCh37.txt.gz}.txt.gz ] ; then
+if [ -f ${f%_hmPOS_GRCh38.txt.gz}.txt.gz ] ; then
 
-	echo "${f%_hmPOS_GRCh37.txt.gz}.txt.gz exists"
+	echo "${f%_hmPOS_GRCh38.txt.gz}.txt.gz exists"
 
 else
 
@@ -21,9 +20,11 @@ else
 
 	chmod -w ${f%.txt.gz}.sorted.txt.gz
 
-	ln -s ${f%.txt.gz}.sorted.txt.gz ${f%_hmPOS_GRCh37.txt.gz}.txt.gz
+	if [ $( zgrep -vsc "^#" ${f%.txt.gz}.sorted.txt.gz ) -gt 1 ] ; then
 
-#done
+		ln -s ${f%.txt.gz}.sorted.txt.gz ${f%_hmPOS_GRCh38.txt.gz}.txt.gz
+
+	fi
 
 fi
 
