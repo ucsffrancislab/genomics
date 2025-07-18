@@ -191,16 +191,6 @@ done
 
 TOPMed imputed results are hg38 !!!!!!
 
-```
-  java -Xmx${avail_mem}M -jar /opt/pgs-calc/pgs-calc.jar \
-      merge-score ${score_chunks} \
-      --out scores.txt
-
-  java -Xmx${avail_mem}M -jar /opt/pgs-calc/pgs-calc.jar \
-      merge-info ${report_chunks} \
-      --out scores.info
-```
-
 
 ##	20250703 - Impute PGS with UMich
 
@@ -378,3 +368,157 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-il370_4
 
 
 
+
+##	20250705
+
+
+Partial fail. Seems that once complete, they write in "temp". If multiple finish at the same time, they step on each others feet.
+
+Use Scratch instead
+
+
+
+il370_4677
+```
+for chrnum in {1..22} X ; do
+for data in onco_1347 ; do
+
+  echo "module load openjdk; cp /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0 --no-ansi --threads 8;cp \${TMPDIR}/chr${chrnum}.dose.scores.* /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/; chmod -w /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/chr${chrnum}.dose.scores.*"
+
+done
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 8 --mem 60G
+
+```
+
+
+
+
+
+```
+for data in onco_1347 il370_4677 ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
+  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/chr*.dose.scores.txt --out /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/scores.txt"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
+  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/chr*.dose.scores.info --out /francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test/topmed-${data}/scores.info"
+done
+```
+
+
+
+```
+
+
+ln -s ../pgs-onco_1347/manifest.estimated-population.csv topmed-onco_1347/
+ln -s ../pgs-il370_4677/manifest.estimated-population.csv topmed-il370_4677/
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-onco_1347- \
+  --export=None --output="${PWD}/topmed-onco_1347-.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-onco_1347 -p topmed-onco_1347"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-onco_1347-F \
+  --export=None --output="${PWD}/topmed-onco_1347-F.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-onco_1347 -p topmed-onco_1347 --sex F"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-onco_1347-M \
+  --export=None --output="${PWD}/topmed-onco_1347-M.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-onco_1347 -p topmed-onco_1347 --sex M"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-il370_4677- \
+  --export=None --output="${PWD}/topmed-il370_4677-.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-il370_4677 -p topmed-il370_4677"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-il370_4677-F \
+  --export=None --output="${PWD}/topmed-il370_4677-F.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-il370_4677 -p topmed-il370_4677 --sex F"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-il370_4677-M \
+  --export=None --output="${PWD}/topmed-il370_4677-M.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-il370_4677 -p topmed-il370_4677 --sex M"
+```
+
+
+
+
+##	20250717
+
+Redo with minR2 of 0.8
+
+
+```
+basedir=/francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test
+
+for data in onco_1347 il370_4677 ; do
+for chrnum in {1..22} X ; do
+
+  echo "module load openjdk; cp ${basedir}/topmed-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8;cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${basedir}/topmed-${data}-0.8/; mkdir -p ${basedir}/topmed-${data}-0.8/ chmod -w ${basedir}/topmed-${data}-0.8/chr${chrnum}.dose.scores.*"
+
+done
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 8 --mem 60G
+```
+
+
+
+```
+basedir=/francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_test
+
+for data in onco_1347 il370_4677 ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
+  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${basedir}/topmed-${data}-0.8/chr*.dose.scores.txt --out ${basedir}/topmed-${data}-0.8/scores.txt"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
+  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${basedir}/topmed-${data}-0.8/chr*.dose.scores.info --out ${basedir}/topmed-${data}-0.8/scores.info"
+done
+```
+
+
+
+```
+ln -s ../pgs-onco_1347/manifest.estimated-population.csv topmed-onco_1347-0.8/
+ln -s ../pgs-il370_4677/manifest.estimated-population.csv topmed-il370_4677-0.8/
+
+for sex in "" "--sex M" "--sex F" ; do
+for data in onco_1347 il370_4677 ; do
+echo $sex
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-${data}-${sex} \
+  --export=None --output="${PWD}/topmed-${data}-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-${data}-0.8 -p topmed-${data}-0.8 ${sex}"
+done
+done
+```
+
+
+
+
+
+
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwas-il370 \
+  --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash --dataset il370
+
+
+```
