@@ -873,16 +873,9 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=7-nextflow-
 
 
 
+Not sure where to get the used files
 
-
-
-
-
-
-
-
-
-
+```
     label 'ancestry'
     publishDir params.output, mode: 'copy'
 
@@ -907,4 +900,60 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=7-nextflow-
         --k 10 \
         --threshold 0.75 \
         --output estimated-population.txt
+```
+
+
+
+##	20250717
+
+
+```
+ln -s ../../20240918-prep_for_imputation/pgs/manifest.estimated-population.csv topmed/
+
+basedir=/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation
+
+for chrnum in {1..22} X ; do
+
+  echo "module load openjdk; cp ${basedir}/topmed/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8;cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${basedir}/topmed-0.8/; mkdir -p ${basedir}/topmed-0.8/ chmod -w ${basedir}/topmed-0.8/chr${chrnum}.dose.scores.*"
+
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 8 --mem 60G
+```
+
+
+
+
+```
+basedir=/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score \
+  --export=None --output="${PWD}/pgs-merge-score.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${basedir}/topmed-0.8/chr*.dose.scores.txt --out ${basedir}/topmed-0.8/scores.txt"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info \
+  --export=None --output="${PWD}/pgs-merge-info.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${basedir}/topmed-0.8/chr*.dose.scores.info --out ${basedir}/topmed-0.8/scores.info"
+done
+```
+
+
+
+```
+basedir=/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation
+
+for sex in "" "--sex M" "--sex F" ; do
+echo $sex
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-${sex} \
+  --export=None --output="${PWD}/topmed-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-0.8 -p topmed-0.8 ${sex}"
+done
+done
+```
+
+
+
 
