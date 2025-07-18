@@ -384,8 +384,8 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 1
 ```
 
 ```
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=1-0 --export=None \
-  --output="${PWD}/create_collection.uniq.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
   --wrap="module load htslib;pgs-calc create-collection --out=pgs-collection.txt.gz PGS??????.txt.gz;tabix -S 5 -p vcf pgs-collection.txt.gz;chmod -w pgs-collection.txt.gz*"
 ```
 
