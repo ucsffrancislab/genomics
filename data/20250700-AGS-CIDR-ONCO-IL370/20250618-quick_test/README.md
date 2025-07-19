@@ -465,7 +465,7 @@ basedir=/francislab/data1/working/20250700-AGS-CIDR-ONCO-IL370/20250618-quick_te
 for data in onco_1347 il370_4677 ; do
 for chrnum in {1..22} X ; do
 
-  echo "module load openjdk; cp ${basedir}/topmed-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8;cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${basedir}/topmed-${data}-0.8/; mkdir -p ${basedir}/topmed-${data}-0.8/ chmod -w ${basedir}/topmed-${data}-0.8/chr${chrnum}.dose.scores.*"
+  echo "module load openjdk; cp ${basedir}/topmed-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${basedir}/topmed-${data}-0.8/; cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${basedir}/topmed-${data}-0.8/; chmod -w ${basedir}/topmed-${data}-0.8/chr${chrnum}.dose.scores.*"
 
 done
 done > commands
@@ -516,9 +516,73 @@ done
 
 ```
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwas-il370 \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-il370 \
   --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash --dataset il370
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash --dataset il370 --outbase ${PWD}/gwas/
 
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-onco \
+  --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash --dataset onco --outbase ${PWD}/gwas/
+
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-onco \
+  --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset onco --outbase ${PWD}/gwas/
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-il370 \
+  --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset il370 --outbase ${PWD}/gwas/
 
 ```
+
+
+
+
+
+##	20250718-
+
+Run GWAS on my imputed results...
+
+Any QC filtering?
+
+
+need to rename samples? Should have done before imputation? will need to match the case list used.
+
+need to create case lists for all datasets and subsets (done for onco and il370?)
+
+
+need to merge imputed dose.vcf.gz files to create vcf
+	filter?
+	minimum R2? - Geno's file seem to only include R2>0.8
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-onco_1347 \
+  --export=None --output="${PWD}/concat-onco_1347.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load bcftools; bcftools concat --output - topmed-onco_1347/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-onco_1347/concated.0.8.vcf.gz --write-index"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-il370_4677 \
+  --export=None --output="${PWD}/concat-il370_4677.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load bcftools; bcftools concat --output - topmed-il370_4677/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-il370_4677/concated.0.8.vcf.gz --write-index"
+```
+
+need to run pull_case_dosage.bash to create dosage
+	--vcffile
+
+
+then gwasurvivr.bash 
+	--vcffile
+
+and spacox.bash
+	--dosage
+
+then merge those results
+
+then METAL
+
+
+
+
+
+
