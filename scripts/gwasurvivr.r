@@ -1,4 +1,8 @@
 #!/usr/bin/env Rscript
+#SBATCH --export=NONE
+
+#	From Geno
+
 
 # AGS i370 Pharma SNPs GWASurvivr
 
