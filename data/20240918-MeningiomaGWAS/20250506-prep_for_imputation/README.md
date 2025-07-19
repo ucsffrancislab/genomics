@@ -914,7 +914,7 @@ basedir=/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_impu
 
 for chrnum in {1..22} X ; do
 
-  echo "module load openjdk; cp ${basedir}/topmed/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8;cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${basedir}/topmed-0.8/; mkdir -p ${basedir}/topmed-0.8/ chmod -w ${basedir}/topmed-0.8/chr${chrnum}.dose.scores.*"
+  echo "module load openjdk; cp ${basedir}/topmed/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${basedir}/topmed-0.8/; cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${basedir}/topmed-0.8/; chmod -w ${basedir}/topmed-0.8/chr${chrnum}.dose.scores.*"
 
 done > commands
 
