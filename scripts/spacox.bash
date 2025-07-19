@@ -3,6 +3,7 @@
 
 #	From Geno
 
+
 pwd; hostname; date
 
 set -x
@@ -18,8 +19,8 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 		--dataset)
 			shift; dataset=$1; shift;;
-		--vcffile)
-			shift; vcffile=$1; shift;;
+		--dosage)
+			shift; dosage=$1; shift;;
 		--outbase)
 			shift; outbase=$1; shift;;
 		*)
@@ -27,18 +28,22 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
+
+
 #dataset="onco"
 #dataset="il370"
 if [ ${dataset} == "onco" ] ; then
 	array="20210226-AGS-Mayo-Oncoarray"
 	#vcffile="AGS_Onco_pharma_merged.vcf.gz"
-	#	/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
+	#vcffile="AGS_Onco_glioma_cases.dosage"
+	#	/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
 	base="AGS_Onco"
 	covariates="AGS_Mayo_Oncoarray_covariates.txt"
 elif [ ${dataset} == "il370" ] ; then
 	array="20210302-AGS-illumina"
 	#vcffile="AGS_i370_pharma_merged.vcf.gz"
-	#	/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
+	#vcffile="AGS_i370_glioma_cases.dosage"
+	#	/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
 	base="AGS_i370"
 	covariates="AGS_illumina_covariates.txt"
 else
@@ -51,42 +56,28 @@ for subset in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*met
 	subset=$( basename ${subset} .txt )
 	echo $subset
 
+	#datpath="/francislab/data1/working/$array/20220425-Pharma/data"
 	subsetpath="/francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data"
 	IDfile="$subset.txt"
-
 	covpath="/francislab/data1/working/$array/20210305-covariates/${covariates}"
 	scratchpath=$TMPDIR
 
+	#outpath="${PWD}/GWAStest/${subset}"
 	outpath="${outbase}/${subset}"
 	
+
 	mkdir -p $outpath
-	
-	cp $vcffile  $scratchpath/
-	cp $vcffile.tbi $scratchpath/
+
+	cp $datpath/$dosage  $scratchpath/
 	cp $subsetpath/$IDfile $scratchpath/
 	cp $covpath $scratchpath/covariates.txt
 
+	echo spacox.r ${dataset} $scratchpath/$dosage $scratchpath/covariates.txt $scratchpath/$IDfile $scratchpath/$subset.out
 
-#	Loading required package: gdsfmt
-#	SNPRelate -- supported by Streaming SIMD Extensions 2 (SSE2)
-#	Analysis started on 2025-07-01 at 09:29:16
-#	Covariates included in the models are: dxyear, ngrade, chemo, rad, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
-#	410 samples are included in the analysis
-#	Error in pheno.file[, covariates] : subscript out of bounds
-#	Calls: michiganCoxSurv -> coxPheno -> coxParam
-#	Execution halted
-#	mv: cannot stat '/scratch/gwendt/708643/AGS_Onco_IDHmut_meta_cases*': No such file or directory
-#	AGS_Onco_IDHwt_meta_cases
-#	Loading required package: Biobase
-#	Loading required package: BiocGenerics
-
-
-	gwasurvivr.r ${dataset} $scratchpath/$( basename $vcffile ) $scratchpath/covariates.txt $scratchpath/$IDfile $scratchpath/$subset
-
-	ls -l $scratchpath/
+	spacox.r ${dataset} $scratchpath/$( basename $dosage ) $scratchpath/covariates.txt $scratchpath/$IDfile $scratchpath/$subset.out
 
 	rm $scratchpath/$IDfile
-	mv $scratchpath/$subset* $outpath/
+	mv $scratchpath/$subset.out $outpath/SPACox_$subset.txt
 
 done
 
