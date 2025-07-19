@@ -497,15 +497,17 @@ done
 ln -s ../pgs-onco_1347/manifest.estimated-population.csv topmed-onco_1347-0.8/
 ln -s ../pgs-il370_4677/manifest.estimated-population.csv topmed-il370_4677-0.8/
 
-for sex in "" "--sex M" "--sex F" ; do
-for data in onco_1347 il370_4677 ; do
-echo $sex
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-${data}-${sex} \
-  --export=None --output="${PWD}/topmed-${data}-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-${data}-0.8 -p topmed-${data}-0.8 ${sex}"
-done
-done
+This won't work like this
+
+#for sex in "" "--sex M" "--sex F" ; do
+#for data in onco_1347 il370_4677 ; do
+#echo $sex
+#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-${data}-${sex} \
+#  --export=None --output="${PWD}/topmed-${data}-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+#  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+#  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-${data}-0.8 -p topmed-${data}-0.8 ${sex}"
+#done
+#done
 ```
 
 
@@ -539,48 +541,151 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-
 
 
 
-##	20250718-
+##	20250718
 
-Run GWAS on my imputed results...
 
-Any QC filtering?
+
+```
+mkdir topmed-both
+
+for sex in "" "M" "F" ; do
+echo $sex
+if [ -n "$sex" ] ; then
+sexopt="--sex $sex"
+else
+sexopt=""
+fi
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-both-${sex} \
+  --export=None --output="${PWD}/topmed-both-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-both -p topmed-onco_1347 -p topmed-il370_4677 ${sexopt}"
+done
+```
+
+
+
+
+```
+mkdir topmed-both-0.8
+
+for sex in "" "M" "F" ; do
+echo $sex
+if [ -n "$sex" ] ; then
+sexopt="--sex $sex"
+else
+sexopt=""
+fi
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-both-${sex} \
+  --export=None --output="${PWD}/topmed-both-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-both-0.8 -p topmed-onco_1347-0.8 -p topmed-il370_4677-0.8 ${sexopt}"
+done
+```
+
+
+
+
+
+
+
+
+
+
+##	20250719 - 
+
+This is getting really complicated so let's make some decisions. Post this on slack when "finished"
+
+
+Prep for imputation as directed and impute on TOPMed
+
+
+Run GWAS on MY imputed results...
+	impute Onco, Il370 and incoming CIDR AGS datasets on TOPMed
+	this has nothing to do with the PGSs
+
+
+Any QC filtering on the resulting imputations?
+
+	Any SNP filtering could be done by chromosome
+
+	Any sample filtering would need to wait until after concatenation
 
 
 need to rename samples? Should have done before imputation? will need to match the case list used.
 
+	Onco are all like ..
+		"0_WG0238723-DNAE03_AGS54527"
+		"0_WG0238723-DNAF01_AGS55488"
+		"0_WG0238723-DNAF02_AGS54481"
+
+		Change them to AGS_AGS?
+
+	il370
+		mostly AGS_AGS
+		also 3390 like ...
+			"1873031599_A_1873031599_A"
+			"1873031620_A_1873031620_A"
+			"1873031691_A_1873031691_A"
+		which may be ok of they are controls?
+
+	CIDR
+		not sure what these will look like
+
+
 need to create case lists for all datasets and subsets (done for onco and il370?)
+	These are used in the gwasurvivr and spacox scripts.
+	Are these "cases" then compared against ALL other samples? Doesn't seem right.
+
+	AGS_i370_HGG_IDHmut_meta_cases
+	AGS_i370_HGG_IDHwt_meta_cases
+	AGS_i370_IDHmut_meta_cases
+	AGS_i370_IDHwt_meta_cases
+	AGS_i370_LrGG_IDHmut_1p19qcodel_meta_cases
+	AGS_i370_LrGG_IDHmut_1p19qintact_meta_cases
+	AGS_i370_LrGG_IDHmut_meta_cases
+	AGS_i370_LrGG_IDHwt_meta_cases
+	AGS_Onco_HGG_IDHmut_meta_cases
+	AGS_Onco_HGG_IDHwt_meta_cases
+	AGS_Onco_IDHmut_meta_cases
+	AGS_Onco_IDHwt_meta_cases
+	AGS_Onco_LrGG_IDHmut_1p19qcodel_meta_cases
+	AGS_Onco_LrGG_IDHmut_1p19qintact_meta_cases
+	AGS_Onco_LrGG_IDHmut_meta_cases
+	AGS_Onco_LrGG_IDHwt_meta_cases
 
 
 need to merge imputed dose.vcf.gz files to create vcf
 	filter?
 	minimum R2? - Geno's file seem to only include R2>0.8
 
+
+onco is gonna take about a day
+
 ```
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-onco_1347 \
   --export=None --output="${PWD}/concat-onco_1347.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load bcftools; bcftools concat --output - topmed-onco_1347/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-onco_1347/concated.0.8.vcf.gz --write-index"
+  --wrap="module load htslib bcftools; bcftools concat --output - topmed-onco_1347/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-onco_1347/concated.0.8.vcf.gz; tabix topmed-onco_1347/concated.0.8.vcf.gz; chmod -w topmed-onco_1347/concated.0.8.vcf.gz topmed-onco_1347/concated.0.8.vcf.gz.tbi"
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-il370_4677 \
   --export=None --output="${PWD}/concat-il370_4677.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load bcftools; bcftools concat --output - topmed-il370_4677/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-il370_4677/concated.0.8.vcf.gz --write-index"
+  --wrap="module load htslib bcftools; bcftools concat --output - topmed-il370_4677/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-il370_4677/concated.0.8.vcf.gz; tabix topmed-il370_4677/concated.0.8.vcf.gz; chmod -w topmed-il370_4677/concated.0.8.vcf.gz topmed-il370_4677/concated.0.8.vcf.gz.tbi"
 ```
 
-need to run pull_case_dosage.bash to create dosage
-	--vcffile
+need to run pull_case_dosage.bash --vcffile FILE to create dosage used by spacox
 
 
-then gwasurvivr.bash 
-	--vcffile
+then gwasurvivr.bash --vcffile FILE
 
-and spacox.bash
-	--dosage
+
+and spacox.bash --dosage FILE
+
 
 then merge those results
 
-then METAL
 
+then METAL
 
 
 
