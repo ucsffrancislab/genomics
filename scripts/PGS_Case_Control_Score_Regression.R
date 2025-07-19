@@ -312,24 +312,30 @@ log_reg = function(df){
 	# as there are likely differences in the peptide calling sensitivity between plates,
 	#	and so peptide probably has different associations with case based on plate.
 
-
-
-
 	#	if plate is always the same this fails. check or ignore
 
+#	if ( opt$sex == "" ){
+#		#logitmodel = "case~ peptide +age + sex + plate"
+#		#logitmodel = "case~ peptide + sex + plate"
+#		#logitmodel = "case~ peptide + sex"
+#		logitmodel = "case~ peptide + sex + PC1 + PC2 + PC3"
+#	} else{
+#		#logitmodel = "case~ peptide +age + plate"
+#		#logitmodel = "case~ peptide + plate"
+#		#logitmodel = "case~ peptide"
+#		logitmodel = "case~ peptide + PC1 + PC2 + PC3"
+#	}
+
+	logitmodel = "case ~ peptide + PC1 + PC2 + PC3"
 	if ( opt$sex == "" ){
-		#logitmodel = "case~ peptide +age + sex + plate"
-		#logitmodel = "case~ peptide + sex + plate"
-		#logitmodel = "case~ peptide + sex"
-		logitmodel = "case~ peptide + sex + PC1 + PC2 + PC3"
-	} else{
-		#logitmodel = "case~ peptide +age + plate"
-		#logitmodel = "case~ peptide + plate"
-		#logitmodel = "case~ peptide"
-		logitmodel = "case~ peptide + PC1 + PC2 + PC3"
+		print("Including sex in the regression")
+		logitmodel = paste0( logitmodel," + sex")
 	}
-
-
+	if( length(unique(df$plate))>1 )
+		print("Including plate in the regression")
+		logitmodel = paste0( logitmodel," + plate")
+	}
+	print(logitmodel)
 
 	logit_fun = glm(as.formula(logitmodel), data = df, family=binomial(link="logit"))
 
