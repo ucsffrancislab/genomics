@@ -18,8 +18,10 @@ fi
 outbase=${PWD}
 while [ $# -gt 0 ] ; do
 	case $1 in
-		--dataset)
-			shift; dataset=$1; shift;;
+		--IDfile)
+			shift; IDfile=$1; shift;;
+#		--dataset)
+#			shift; dataset=$1; shift;;
 		--vcffile)
 			shift; vcffile=$1; shift;;
 		--outbase)
@@ -29,20 +31,27 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-if [ ${dataset} == "onco" ] ; then
-	base="AGS_Onco"
-elif [ ${dataset} == "il370" ] ; then
-	base="AGS_i370"
-else
-	echo "Unknown dataset"
-	exit 1
-fi
+#if [ ${dataset} == "onco" ] ; then
+#	base="AGS_Onco"
+#elif [ ${dataset} == "il370" ] ; then
+#	base="AGS_i370"
+#else
+#	echo "Unknown dataset"
+#	exit 1
+#fi
 
 
 cp $vcffile     $TMPDIR/
 cp $vcffile.tbi $TMPDIR/
 
-for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+
+
+#	Geno only has 1 dosage file, yet this script makes several
+
+
+#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+
+
 	subset=$( basename ${IDfile} .txt )
 	echo $subset
 
@@ -61,42 +70,42 @@ for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*met
 
 ##	The above takes way too much memory
 
-#	
 
-#	zcat $TMPDIR/$( basename $vcffile ) | \
-#	awk 'BEGIN{FS="\t";OFS=" "}
-#		(/^##/){next}
-#		(/^#CHROM/){
-#			line=""
-#			for(i=10;i<=NF;i++){ line=line","$i }
-#			next
-#		}
-#		{	
-#			if(!DS){
-#				split($9,a,":");
-#				for(i in a){
-#					if(a[i]=="DS"){DS=i;break}
-#				}
-#			}
-#			line=$1":"$2":"$5":"$6;
-#			for(i=10;i<=NF;i++){
-#				split($i,a,":");line=line","a[DS]
-#			} 
-#			print line 
-#		}' > $TMPDIR/All.dosage
+	zcat $TMPDIR/$( basename $vcffile ) | \
+	awk 'BEGIN{FS="\t";OFS=" "}
+		(/^##/){next}
+		(/^#CHROM/){
+			line=""
+			for(i=10;i<=NF;i++){ line=line","$i }
+			print line 
+			next
+		}
+		{	
+			if(!DS){
+				split($9,a,":");
+				for(i in a){
+					if(a[i]=="DS"){DS=i;break}
+				}
+			}
+			line="chr"$1":"$2":"$4":"$5;
+			for(i=10;i<=NF;i++){
+				split($i,a,":");line=line","a[DS]
+			} 
+			print line 
+		}' > $TMPDIR/All.dosage
 
 
-	#	this is probably already sorted, however ...
-#	sort $TMPDIR/$( basename $IDfile ) > $TMPDIR/sorted_case_ids
-#	sed -i '1iID' $TMPDIR/sorted_case_ids
+	#	this is probably already sorted, however ... NOT
+	sort -t, -k1,1 $TMPDIR/$( basename $IDfile ) > $TMPDIR/sorted_case_ids
+	sed -i '1iID' $TMPDIR/sorted_case_ids
 
-#	cat $TMPDIR/All.dosage | datamash transpose -t, > tmp1.csv
-#	head -1 tmp1.csv > tmp2.csv
-#	tail -n +2 tmp1.csv | sort -k1,1 >> tmp2.csv
-#	join --header -t, sorted_case_ids tmp2.csv | datamash transpose -t, | tr " " "," > $TMPDIR/${subset}.dosage
+	cat $TMPDIR/All.dosage | datamash transpose -t, > ${TMPDIR}/tmp1.csv
+	head -1 ${TMPDIR}/tmp1.csv > ${TMPDIR}/tmp2.csv
+	tail -n +2 ${TMPDIR}/tmp1.csv | sort -t, -k1,1 >> ${TMPDIR}/tmp2.csv
+	join --header -t, ${TMPDIR}/sorted_case_ids ${TMPDIR}/tmp2.csv | datamash transpose -t, | tr " " "," > $TMPDIR/${subset}.dosage
 
 	#	dosage files don't have a header for the first column
-#	sed -i '1s/^ID,//' $TMPDIR/${subset}.dosage
+	sed -i '1s/^ID,//' $TMPDIR/${subset}.dosage
 
 
 	ls -l $TMPDIR/
@@ -104,9 +113,11 @@ for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*met
 	mv $TMPDIR/${subset}.dosage $outpath/
 	chmod -w $outpath/${subset}.dosage
 
-	\rm $TMPDIR/$( basename $IDfile )
+#	\rm $TMPDIR/$( basename $IDfile )
 
-done
+#done
 
 date
+
+
 
