@@ -326,16 +326,18 @@ log_reg = function(df){
 #		logitmodel = "case~ peptide + PC1 + PC2 + PC3"
 #	}
 
+	#print("Building logitmodel")
 	logitmodel = "case ~ peptide + PC1 + PC2 + PC3"
 	if ( opt$sex == "" ){
-		print("Including sex in the regression")
+		#print("Including sex in the regression")
 		logitmodel = paste0( logitmodel," + sex")
 	}
-	if( length(unique(df$plate))>1 )
-		print("Including plate in the regression")
+	if( length(unique(df$plate))>1 ){
+		#print("Including plate in the regression")
 		logitmodel = paste0( logitmodel," + plate")
 	}
-	print(logitmodel)
+	#print("Final logitmodel")
+	#print(logitmodel)
 
 	logit_fun = glm(as.formula(logitmodel), data = df, family=binomial(link="logit"))
 
