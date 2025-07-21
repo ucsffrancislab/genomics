@@ -119,5 +119,5 @@ cp $vcffile.tbi $TMPDIR/
 
 date
 
-
+echo "Runtime : $((SECONDS/3600)) hrs $((SECONDS%3600/60)) mins $((SECONDS%3600%60)) secs"
 

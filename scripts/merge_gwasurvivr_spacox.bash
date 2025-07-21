@@ -61,3 +61,5 @@ done
 
 date
 
+echo "Runtime : $((SECONDS/3600)) hrs $((SECONDS%3600/60)) mins $((SECONDS%3600%60)) secs"
+
