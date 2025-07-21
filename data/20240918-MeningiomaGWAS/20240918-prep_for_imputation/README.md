@@ -536,18 +536,19 @@ Sex code ('1' = male, '2' = female, '0' = unknown)
 Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing data if case/control)
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR>1){gsub(/_/,"-",$2);cc=($6=="1")?"control":"case";sex=($5=="1")?"M":"F";print $2"_"$2,cc,sex,1 }' /francislab/data1/raw/20240918-MeningiomaGWAS/MENCasesandControls.csv | sort -t, -k1,1 > pgs/mani.fest.csv
-sed -i '1isubject,group,sex,plate' pgs/mani.fest.csv
+#awk 'BEGIN{FS=OFS=","}(NR>1){gsub(/_/,"-",$2);cc=($6=="1")?"control":"case";sex=($5=="1")?"M":"F";print $2"_"$2,cc,sex,1 }' /francislab/data1/raw/20240918-MeningiomaGWAS/MENCasesandControls.csv | sort -t, -k1,1 > pgs/mani.fest.csv
+
+awk 'BEGIN{FS=OFS=","}(NR>1){orig2=$2;gsub(/_/,"-",$2);cc=($6=="1")?"control":"case";sex=($5=="1")?"M":"F";print orig2"_"orig2,$2"_"$2,cc,sex,1 }' /francislab/data1/raw/20240918-MeningiomaGWAS/MENCasesandControls.csv | sort -t, -k1,1 > pgs/mani.fest.csv
+sed -i '1iorigsubject,subject,group,sex,plate' pgs/mani.fest.csv
 ```
 
 
 
 include ancestry estimation PC1-3 ....
 ```
+sort -k1,1 pgs/estimated-population.txt > pgs/estimated-population.sorted.txt
 
-sort estimated-population.txt
-
-join --header -t, pgs/mani.fest.csv estimated-population.sorted.txt > pgs/manifest.estimated-population.csv
+join --header -t, pgs/mani.fest.csv pgs/estimated-population.sorted.txt | cut -d, -f2- > pgs/manifest.estimated-population.csv
 
 ```
 
