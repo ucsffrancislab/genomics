@@ -30,20 +30,12 @@ done
 
 
 
-#dataset="onco"
-#dataset="il370"
 if [ ${dataset} == "onco" ] ; then
 	array="20210226-AGS-Mayo-Oncoarray"
-	#vcffile="AGS_Onco_pharma_merged.vcf.gz"
-	#vcffile="AGS_Onco_glioma_cases.dosage"
-	#	/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
 	base="AGS_Onco"
 	covariates="AGS_Mayo_Oncoarray_covariates.txt"
 elif [ ${dataset} == "il370" ] ; then
 	array="20210302-AGS-illumina"
-	#vcffile="AGS_i370_pharma_merged.vcf.gz"
-	#vcffile="AGS_i370_glioma_cases.dosage"
-	#	/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
 	base="AGS_i370"
 	covariates="AGS_illumina_covariates.txt"
 else
@@ -51,33 +43,26 @@ else
 	exit 1
 fi
 
+cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#covariates.txt
+cp /francislab/data1/working/$array/20220425-Pharma/data/$dosage  $TMPDIR/
 
-for subset in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-	subset=$( basename ${subset} .txt )
+for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+	subset=$( basename ${IDfile} .txt )
 	echo $subset
 
-	#datpath="/francislab/data1/working/$array/20220425-Pharma/data"
-	subsetpath="/francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data"
-	IDfile="$subset.txt"
-	covpath="/francislab/data1/working/$array/20210305-covariates/${covariates}"
-	scratchpath=$TMPDIR
-
-	#outpath="${PWD}/GWAStest/${subset}"
 	outpath="${outbase}/${subset}"
-	
 
 	mkdir -p $outpath
 
-	cp $datpath/$dosage  $scratchpath/
-	cp $subsetpath/$IDfile $scratchpath/
-	cp $covpath $scratchpath/covariates.txt
+	cp $IDfile $TMPDIR/
 
-	echo spacox.r ${dataset} $scratchpath/$dosage $scratchpath/covariates.txt $scratchpath/$IDfile $scratchpath/$subset.out
+	#echo spacox.r ${dataset} $TMPDIR/$dosage $TMPDIR/covariates.txt $TMPDIR/$IDfile $TMPDIR/$subset.out
 
-	spacox.r ${dataset} $scratchpath/$( basename $dosage ) $scratchpath/covariates.txt $scratchpath/$IDfile $scratchpath/$subset.out
+	#spacox.r ${dataset} $TMPDIR/$( basename $dosage ) $TMPDIR/covariates.txt $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset.out
+	spacox.r ${dataset} $TMPDIR/$( basename $dosage ) $TMPDIR/$( basename $covariates ) $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset.out
 
-	rm $scratchpath/$IDfile
-	mv $scratchpath/$subset.out $outpath/SPACox_$subset.txt
+	\rm $TMPDIR/$( basename $IDfile )
+	mv $TMPDIR/$subset.out $outpath/SPACox_$subset.txt
 
 done
 
