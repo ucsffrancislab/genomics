@@ -611,6 +611,28 @@ Any QC filtering on the resulting imputations?
 	Any sample filtering would need to wait until after concatenation
 
 
+
+Try this with a vcf file 
+
+```
+for f in topmed-*/*dose.vcf.gz ; do
+b=${f%.dose.vcf.gz}
+echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.005 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+done >> plink_commands
+
+commands_array_wrapper.bash --array_file plink_commands --time 1-0 --threads 4 --mem 30G
+
+Error: chrX is present in the input file, but no sex information was provided;
+rerun this import with --psam or --update-sex.  --split-par may also be
+appropriate.
+```
+
+--set-all-var-ids chr@:#:\$r:\$a --new-id-max-allele-len 50
+
+may to use vcf-dosage=DS-force to set 0s?
+
+
+
 need to rename samples? Should have done before imputation? will need to match the case list used.
 
 	Onco are all like ..
@@ -635,6 +657,7 @@ need to rename samples? Should have done before imputation? will need to match t
 need to create case lists for all datasets and subsets (done for onco and il370?)
 	These are used in the gwasurvivr and spacox scripts.
 	Are these "cases" then compared against ALL other samples? Doesn't seem right.
+	The Onco lists do match the above naming convention ( 0_WG0238627-DNAA08_AGS40816 )
 
 	AGS_i370_HGG_IDHmut_meta_cases
 	AGS_i370_HGG_IDHwt_meta_cases
@@ -660,20 +683,50 @@ need to merge imputed dose.vcf.gz files to create vcf
 
 
 onco is gonna take about a day
+il370 is gonna take more
 
 ```
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-onco_1347 \
   --export=None --output="${PWD}/concat-onco_1347.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load htslib bcftools; bcftools concat --output - topmed-onco_1347/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-onco_1347/concated.0.8.vcf.gz; tabix topmed-onco_1347/concated.0.8.vcf.gz; chmod -w topmed-onco_1347/concated.0.8.vcf.gz topmed-onco_1347/concated.0.8.vcf.gz.tbi"
+  --wrap="module load bcftools; bcftools concat --output topmed-onco_1347/concated.vcf.gz topmed-onco_1347/chr{?,??}.QC.vcf.gz; bcftools index --tbi topmed-onco_1347/concated.vcf.gz; chmod -w topmed-onco_1347/concated.vcf.gz topmed-onco_1347/concated.vcf.gz.tbi"
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-il370_4677 \
   --export=None --output="${PWD}/concat-il370_4677.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load htslib bcftools; bcftools concat --output - topmed-il370_4677/chr{?,??}.dose.vcf.gz | bcftools filter -Oz --exclude 'R2<0.8' --output topmed-il370_4677/concated.0.8.vcf.gz; tabix topmed-il370_4677/concated.0.8.vcf.gz; chmod -w topmed-il370_4677/concated.0.8.vcf.gz topmed-il370_4677/concated.0.8.vcf.gz.tbi"
+  --wrap="module load bcftools; bcftools concat --output topmed-il370_4677/concated.vcf.gz topmed-il370_4677/chr{?,??}.QC.vcf.gz; bcftools index --tbi topmed-il370_4677/concated.vcf.gz; chmod -w topmed-il370_4677/concated.vcf.gz topmed-il370_4677/concated.vcf.gz.tbi"
 ```
 
 need to run pull_case_dosage.bash --vcffile FILE to create dosage used by spacox
+
+
+
+Warning message:
+In .vcf_usertag(map, tag, nm, verbose) :
+  ScanVcfParam ‘geno’ fields not found in  header: ‘DS’
+
+
+Error: scanVcf: scanVcf: scanTabix: (internal) _vcftype_grow 'sz' < 0; cannot allocate memory?
+ path: /scratch/gwendt/753681/concated.vcf.gz
+ index: /scratch/gwendt/753681/concated.vcf.gz.tbi
+  path: /scratch/gwendt/753681/concated.vcf.gz
+Execution halted
+
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-onco_1347 \
+  --export=None --output="${PWD}/pull_dosage-onco_1347.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --wrap="pull_case_dosage.bash --dataset onco --vcffile ${PWD}/topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/topmed-onco_1347"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370_4677 \
+  --export=None --output="${PWD}/pull_dosage-il370_4677.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="pull_case_dosage.bash --dataset il370_4677 --vcffile ${PWD}/topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/topmed-il370_4677"
+```
+
+
 
 
 then gwasurvivr.bash --vcffile FILE
