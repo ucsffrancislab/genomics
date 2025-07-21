@@ -52,13 +52,9 @@ sample_list = read.csv(sample_list_filename, header = FALSE)
 vcf.file <- imputed_file
 
 # AGS Onco Specific 
-pheno.file <- read.table(cov_filename,
-                         sep="", 
-                         header=TRUE,
-                         stringsAsFactors = FALSE)
+pheno.file <- read.table(cov_filename, sep="", header=TRUE, stringsAsFactors = FALSE)
 
 pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
-
 
 
 if( dataset == "onco" ) {
