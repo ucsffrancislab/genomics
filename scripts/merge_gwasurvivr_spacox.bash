@@ -28,50 +28,34 @@ while [ $# -gt 0 ] ; do
 done
 
 
-#dataset="onco"
-#dataset="il370"
 if [ ${dataset} == "onco" ] ; then
-	array="20210226-AGS-Mayo-Oncoarray"
-	#vcffile="AGS_Onco_pharma_merged.vcf.gz"
-	#vcffile="AGS_Onco_glioma_cases.dosage"
-	#	/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
 	base="AGS_Onco"
-	#covariates="AGS_Mayo_Oncoarray_covariates.txt"
 elif [ ${dataset} == "il370" ] ; then
-	array="20210302-AGS-illumina"
-	#vcffile="AGS_i370_pharma_merged.vcf.gz"
-	#vcffile="AGS_i370_glioma_cases.dosage"
-	#	/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
 	base="AGS_i370"
-	#covariates="AGS_illumina_covariates.txt"
 else
 	echo "Unknown dataset"
 	exit 1
 fi
 
 
-for subset in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-	subset=$( basename ${subset} .txt )
+for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+	subset=$( basename ${IDfile} .txt )
 	echo $subset
-
-#	datpath="/francislab/data1/working/$array/20220425-Pharma/data"
-#	subsetpath="/francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data"
-	IDfile="$subset.txt"
-#	covpath="/francislab/data1/working/$array/20210305-covariates/${covariates}"
-	scratchpath=$TMPDIR
 
 	outpath="${outbase}/${subset}"
 	mkdir -p $outpath
 
 	outfile="merged_$subset.txt"
 
+	cp $outpath/$subset.coxph      $TMPDIR/	#srv.txt
+	cp $outpath/SPACox_$subset.txt $TMPDIR/	#spa.txt
 
-	cp $outpath/$subset.coxph  $scratchpath/srv.txt
-	cp $outpath/SPACox_$subset.txt $scratchpath/spa.txt
+	#merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/srv.txt $TMPDIR/spa.txt $TMPDIR/$subset.out
+	merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt $TMPDIR/$subset.out
 
-	merge_gwasurvivr_spacox.r ${dataset} $scratchpath/srv.txt $scratchpath/spa.txt $scratchpath/$subset.out
-
-	mv $scratchpath/$subset.out $outpath/$outfile
+	#\rm $TMPDIR/srv.txt $TMPDIR/spa.txt
+	\rm $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt
+	mv $TMPDIR/$subset.out $outpath/$outfile
 
 done
 
