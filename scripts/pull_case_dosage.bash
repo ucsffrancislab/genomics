@@ -4,6 +4,7 @@
 # From Geno
 #	/francislab/data1/working/20210302-AGS-illumina/20210310-scripts/Pharma/Pull_case_dosage
 
+
 pwd; hostname; date
 
 set -x
@@ -11,7 +12,7 @@ set -x
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
 	module load CBI WitteLab
-	module load r plink2 bcftools 
+	module load r #plink2 bcftools 
 fi
 
 outbase=${PWD}
@@ -28,72 +29,84 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-#dataset="onco"
-#dataset="il370"
 if [ ${dataset} == "onco" ] ; then
-	array="20210226-AGS-Mayo-Oncoarray"
-#	vcffile="AGS_Onco_pharma_merged.vcf.gz"
-	#	/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
 	base="AGS_Onco"
-#	covariates="AGS_Mayo_Oncoarray_covariates.txt"
 elif [ ${dataset} == "il370" ] ; then
-	array="20210302-AGS-illumina"
-	#vcffile="AGS_i370_pharma_merged.vcf.gz"
-	#	/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
 	base="AGS_i370"
-#	covariates="AGS_illumina_covariates.txt"
 else
 	echo "Unknown dataset"
 	exit 1
 fi
 
 
-for subset in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-	subset=$( basename ${subset} .txt )
+cp $vcffile     $TMPDIR/
+cp $vcffile.tbi $TMPDIR/
+
+for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+	subset=$( basename ${IDfile} .txt )
 	echo $subset
 
-#	datpath="/francislab/data1/working/$array/20220425-Pharma/data"
-
-#	subsetpath="/home/gguerra/Pharma_TMZ_glioma/Data"  # <-- can't read
-	subsetpath="/francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data"
-	IDfile="$subset.txt"
-	#scriptpath="/francislab/data1/working/$array/20210310-scripts/Pharma/Survival_GWAS"		# <-- pwd?
-#	covpath="/francislab/data1/working/$array/20210305-covariates/${covariates}"
-	scratchpath=$TMPDIR
-
-	#outpath="/francislab/data1/working/$array/20220425-Pharma/results/survival/$subset"
-	#outpath="${PWD}/GWAStest/${subset}"
 	outpath="${outbase}/${subset}"
 	
 	mkdir -p $outpath
 	
+	cp $IDfile      $TMPDIR/
+
+#	#	not sure where the GT file is used
+#	pull_case_GT.r $TMPDIR/$( basename $vcffile )  $TMPDIR/$( basename $IDfile ) $TMPDIR/${subset}.GT
+#	mv $TMPDIR/${subset}.GT $outpath/
+#	chmod -w $outpath/${subset}.GT
+
+#	pull_case_DS.r $TMPDIR/$( basename $vcffile )  $TMPDIR/$( basename $IDfile ) $TMPDIR/${subset}.dosage
+
+##	The above takes way too much memory
+
+#	
+
+#	zcat $TMPDIR/$( basename $vcffile ) | \
+#	awk 'BEGIN{FS="\t";OFS=" "}
+#		(/^##/){next}
+#		(/^#CHROM/){
+#			line=""
+#			for(i=10;i<=NF;i++){ line=line","$i }
+#			next
+#		}
+#		{	
+#			if(!DS){
+#				split($9,a,":");
+#				for(i in a){
+#					if(a[i]=="DS"){DS=i;break}
+#				}
+#			}
+#			line=$1":"$2":"$5":"$6;
+#			for(i=10;i<=NF;i++){
+#				split($i,a,":");line=line","a[DS]
+#			} 
+#			print line 
+#		}' > $TMPDIR/All.dosage
 
 
+	#	this is probably already sorted, however ...
+#	sort $TMPDIR/$( basename $IDfile ) > $TMPDIR/sorted_case_ids
+#	sed -i '1iID' $TMPDIR/sorted_case_ids
 
-#	IDfile="$1.txt"
-#	scriptpath="/francislab/data1/working/$array/20210310-scripts/Pharma/"
-#	#covpath="/francislab/data1/working/$array/20210305-covariates/AGS_Mayo_Oncoarray_covariates.txt"
-#	scratchpath=$TMPDIR
-#	outpath="/francislab/data1/working/$array/20220425-Pharma/data/"
+#	cat $TMPDIR/All.dosage | datamash transpose -t, > tmp1.csv
+#	head -1 tmp1.csv > tmp2.csv
+#	tail -n +2 tmp1.csv | sort -k1,1 >> tmp2.csv
+#	join --header -t, sorted_case_ids tmp2.csv | datamash transpose -t, | tr " " "," > $TMPDIR/${subset}.dosage
 
-	#mkdir -p $outpath
+	#	dosage files don't have a header for the first column
+#	sed -i '1s/^ID,//' $TMPDIR/${subset}.dosage
 
-#	outdate=20220427
 
-	cp $vcffile  $scratchpath/
-	cp $vcffile.tbi $scratchpath/
-	cp $subsetpath/$IDfile $scratchpath/
-	#cp $covpath $scratchpath/covariates.txt
+	ls -l $TMPDIR/
 
-	#Rscript $scriptpath/Pull_case_dosage.R $scratchpath/$vcffile  $scratchpath/$IDfile $scratchpath/$1.GT
-	pull_case_GT.r $scratchpath/$( basename $vcffile )  $scratchpath/$IDfile $scratchpath/${subset}.GT
-	mv $scratchpath/$1.GT $outpath/	#$1.GT
+	mv $TMPDIR/${subset}.dosage $outpath/
+	chmod -w $outpath/${subset}.dosage
 
-	#Rscript $scriptpath/Pull_case_dosage_2.R $scratchpath/$vcffile  $scratchpath/$IDfile $scratchpath/$1.dosage
-	pull_case_DS.r $scratchpath/$( basename $vcffile )  $scratchpath/$IDfile $scratchpath/${subset}.dosage
-	rm $scratchpath/$IDfile
-	mv $scratchpath/${subset}.dosage $outpath/	#$1.dosage
+	\rm $TMPDIR/$( basename $IDfile )
 
 done
 
+date
 
