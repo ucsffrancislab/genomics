@@ -6,7 +6,9 @@
 
 # Pull Pharma Dosage Data
 #date=20220427
-ncores = 1
+#ncores = 1
+
+ncores=as.numeric(Sys.getenv("SLURM_NTASKS", unset = 4 ))
 
 
 args = commandArgs(trailingOnly=TRUE)
@@ -41,7 +43,10 @@ sample_list = read.csv(sample_list_filename, header = FALSE)
 vcf.file <- imputed_file
 
 sample.ids = sample_list[,1]
-data <- readVcf(vcf.file, param=ScanVcfParam(geno="DS", info=c("AF", "MAF", "R2", "ER2")))
-genotypes <- geno(data)$DS[, as.character(sample.ids), drop=FALSE]
+data <- readVcf(vcf.file, param=ScanVcfParam(geno="GT", info=c("AF", "MAF", "R2", "ER2")))
+genotypes <- geno(data)$GT[, as.character(sample.ids), drop=FALSE]
 
 write.table(genotypes, out_filename, quote=FALSE, row.names=TRUE, col.names=TRUE)
+
+
+
