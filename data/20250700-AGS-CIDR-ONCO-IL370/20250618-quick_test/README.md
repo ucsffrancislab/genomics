@@ -548,37 +548,24 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-
 ```
 mkdir topmed-both
 
-for sex in "" "M" "F" ; do
-echo $sex
-if [ -n "$sex" ] ; then
-sexopt="--sex $sex"
-else
-sexopt=""
-fi
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-both-${sex} \
-  --export=None --output="${PWD}/topmed-both-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+for sex in "" "--sex M" "--sex F" ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-both-${sex#--sex } \
+  --export=None --output="${PWD}/topmed-both-${sex#--sex }.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-both -p topmed-onco_1347 -p topmed-il370_4677 ${sexopt}"
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-both -p topmed-onco_1347 -p topmed-il370_4677 ${sex}"
 done
 ```
-
 
 
 
 ```
 mkdir topmed-both-0.8
 
-for sex in "" "M" "F" ; do
-echo $sex
-if [ -n "$sex" ] ; then
-sexopt="--sex $sex"
-else
-sexopt=""
-fi
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-both-${sex} \
-  --export=None --output="${PWD}/topmed-both-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+for sex in "" "--sex M" "--sex F" ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-both-${sex#--sex } \
+  --export=None --output="${PWD}/topmed-both-${sex#--sex }.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-both-0.8 -p topmed-onco_1347-0.8 -p topmed-il370_4677-0.8 ${sexopt}"
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-both-0.8 -p topmed-onco_1347-0.8 -p topmed-il370_4677-0.8 ${sex}"
 done
 ```
 
@@ -713,19 +700,50 @@ Error: scanVcf: scanVcf: scanTabix: (internal) _vcftype_grow 'sz' < 0; cannot al
 Execution halted
 
 
+
+
+Make case ID files
+
+
+/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_glioma_cases.dosage
+/francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
+
+
+/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_glioma_cases.dosage
+/francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
+
+
+Create some dosage files to compare to Geno's
+
 ```
 
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-onco_1347-test \
+  --export=None --output="${PWD}/pull_dosage-onco_1347-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt --vcffile /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz --outbase ${PWD}/topmed-onco_1347-test"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370_4677-test \
+  --export=None --output="${PWD}/pull_dosage-il370_4677-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt --vcffile /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz --outbase ${PWD}/topmed-il370_4677-test"
+
+```
+
+
+
+If all went well, create our own.
+
+```
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-onco_1347 \
   --export=None --output="${PWD}/pull_dosage-onco_1347.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
-  --wrap="pull_case_dosage.bash --dataset onco --vcffile ${PWD}/topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/topmed-onco_1347"
+  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt --vcffile ${PWD}/topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/topmed-onco_1347"
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370_4677 \
   --export=None --output="${PWD}/pull_dosage-il370_4677.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="pull_case_dosage.bash --dataset il370_4677 --vcffile ${PWD}/topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/topmed-il370_4677"
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
+  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt --vcffile ${PWD}/topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/topmed-il370_4677"
 ```
-
 
 
 
@@ -739,8 +757,5 @@ then merge those results
 
 
 then METAL
-
-
-
 
 
