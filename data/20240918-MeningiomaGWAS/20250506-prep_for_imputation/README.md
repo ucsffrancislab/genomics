@@ -936,24 +936,22 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-i
   --export=None --output="${PWD}/pgs-merge-info.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
   --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${basedir}/topmed-0.8/chr*.dose.scores.info --out ${basedir}/topmed-0.8/scores.info"
-done
-```
-
-
 
 ```
+
+
+
+```
+ln -s ../../20240918-prep_for_imputation/pgs/manifest.estimated-population.csv topmed-0.8/
+
 basedir=/francislab/data1/working/20240918-MeningiomaGWAS/20250506-prep_for_imputation
 
 for sex in "" "--sex M" "--sex F" ; do
 echo $sex
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-${sex} \
-  --export=None --output="${PWD}/topmed-${sex}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=topmed-${sex#--sex } \
+  --export=None --output="${PWD}/topmed-${sex#--sex }.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
   --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o topmed-0.8 -p topmed-0.8 ${sex}"
 done
-done
 ```
-
-
-
 
