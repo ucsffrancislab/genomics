@@ -90,7 +90,7 @@ cp $vcffile.tbi $TMPDIR/
 		(/^##/){next}
 		(/^#CHROM/){
 			line=""
-			for(i=10;i<=NF;i++){ line=line","$i }
+			for(i=10;i<=NF;i++){ line=line" "$i }
 			print line 
 			next
 		}
@@ -103,7 +103,7 @@ cp $vcffile.tbi $TMPDIR/
 			}
 			line="chr"$1":"$2":"$4":"$5;
 			for(i=10;i<=NF;i++){
-				split($i,a,":");line=line","a[DS]
+				split($i,a,":");line=line" "a[DS]
 			} 
 			print line 
 		}' > $TMPDIR/${subset}.dosage
@@ -124,7 +124,8 @@ cp $vcffile.tbi $TMPDIR/
 #	join --header -t, ${TMPDIR}/sorted_case_ids ${TMPDIR}/tmp2.csv | datamash transpose -t, | tr "," " " > $TMPDIR/${subset}.dosage
 
 	#	dosage files don't have a header for the first column
-	sed -i '1s/^ID //' $TMPDIR/${subset}.dosage
+	#sed -i '1s/^ID //' $TMPDIR/${subset}.dosage
+#	sed -i 's/,/ /g' $TMPDIR/${subset}.dosage
 
 
 	ls -l $TMPDIR/
