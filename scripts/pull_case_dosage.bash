@@ -128,12 +128,24 @@ cp $vcffile.tbi $TMPDIR/
 #	sed -i 's/,/ /g' $TMPDIR/${subset}.dosage
 
 
+
+
+
+#	some of the DS values are just "." . Not sure how that will be received later.
+#	could fix with sed or possible before with the `vcf-dosage=DS-force`
+
+#	As a . could mean 0, 1 or 2 depending on the genotype, this NEEDs fixed by rerunning.
+
+
+
+
+
 	ls -l $TMPDIR/
 
 	mv $TMPDIR/${subset}.vcf.gz $outpath/
 	mv $TMPDIR/${subset}.vcf.gz.tbi $outpath/
 	mv $TMPDIR/${subset}.dosage $outpath/
-	chmod -w $outpath/${subset}.dosage
+	chmod -w $outpath/${subset}.*
 
 #	\rm $TMPDIR/$( basename $IDfile )
 

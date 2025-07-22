@@ -606,7 +606,7 @@ Try this with a vcf file
 ```
 for f in topmed-*/*dose.vcf.gz ; do
 b=${f%.dose.vcf.gz}
-echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.005 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.005 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 done >> plink_commands
 
 commands_array_wrapper.bash --array_file plink_commands --time 1-0 --threads 4 --mem 30G
@@ -618,7 +618,7 @@ appropriate.
 
 --set-all-var-ids chr@:#:\$r:\$a --new-id-max-allele-len 50
 
-may to use vcf-dosage=DS-force to set 0s?
+may to use vcf-dosage=DS-force to set 0s? Nulls actually. Can mean 0, 1 or 2.
 
 
 
@@ -689,22 +689,6 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-il37
 
 
 
-need to run pull_case_dosage.bash --vcffile FILE to create dosage used by spacox
-
-Warning message:
-In .vcf_usertag(map, tag, nm, verbose) :
-  ScanVcfParam ‘geno’ fields not found in  header: ‘DS’
-
-
-Error: scanVcf: scanVcf: scanTabix: (internal) _vcftype_grow 'sz' < 0; cannot allocate memory?
- path: /scratch/gwendt/753681/concated.vcf.gz
- index: /scratch/gwendt/753681/concated.vcf.gz.tbi
-  path: /scratch/gwendt/753681/concated.vcf.gz
-Execution halted
-
-
-
-
 Make case ID files
 
 /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt
@@ -725,14 +709,14 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
   pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt \
   --vcffile /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz \
-  --outbase ${PWD}/topmed-onco_1347-test
+  --outbase ${PWD}/topmed-onco_1347-test3
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370_4677-test \
   --export=None --output="${PWD}/pull_dosage-il370_4677-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
   pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt \
   --vcffile /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz \
-  --outbase ${PWD}/topmed-il370_4677-test
+  --outbase ${PWD}/topmed-il370_4677-test3
 
 ```
 
@@ -763,12 +747,12 @@ then gwasurvivr.bash --vcffile FILE
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-il370 \
   --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset il370 --vcffile topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/gwas/
+  --dataset il370 --vcffile topmed-il370_4677/AGS_i370_glioma_cases/AGS_i370_glioma_cases.vcf.gz --outbase ${PWD}/gwas/
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-onco \
   --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset onco --vcffile topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/gwas/
+  --dataset onco --vcffile topmed-onco_1347/AGS_Onco_glioma_cases/AGS_Onco_glioma_cases.vcf.gz --outbase ${PWD}/gwas/
 
 ```
 
@@ -782,19 +766,25 @@ and spacox.bash --dosage FILE
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-il370 \
   --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset il370 \
-  --dosage topmed-il370_4677/AGS_i370_glioma_cases.dosage --outbase ${PWD}/gwas/
+  --dosage topmed-il370_4677/AGS_i370_glioma_cases/AGS_i370_glioma_cases.dosage --outbase ${PWD}/gwas/
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-onco \
   --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset onco \
-  --dosage topmed-onco_1347/AGS_Onco_glioma_cases.dosage --outbase ${PWD}/gwas/
+  --dosage topmed-onco_1347/AGS_Onco_glioma_cases/AGS_Onco_glioma_cases.dosage --outbase ${PWD}/gwas/
 
 ```
 
 
 
 then merge those results
+```
 
+merge_gwasurvivr_spacox.bash --dataset il370 --outbase ${PWD}/gwas/
+
+merge_gwasurvivr_spacox.bash --dataset onco  --outbase ${PWD}/gwas/
+
+```
 
 then METAL
 
