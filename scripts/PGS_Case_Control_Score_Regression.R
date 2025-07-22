@@ -280,7 +280,7 @@ rm(Zfiles)
 # datfile = data.frame(mat.or.vec(length(uniq_sub),6))
 #colnames(datfile) = c("ID", "case", "peptide", "sex", "age", "plate")
 datfile = data.frame(mat.or.vec(length(uniq_sub),8))
-colnames(datfile) = c("ID", "case", "peptide", "sex", "plate","PC1","PC2","PC3")
+colnames(datfile) = c("ID", "case", "peptide", "sex", "plate","PC1","PC2","PC3","PC4","PC5","PC6","PC7","PC8")
 datfile$ID = uniq_sub
 datfile$peptide = NA
 #print(datfile)
@@ -295,6 +295,11 @@ for(i in c(1:nrow(datfile))){
 	datfile$PC1[i] = manifest$PC1[man_loc]
 	datfile$PC2[i] = manifest$PC2[man_loc]
 	datfile$PC3[i] = manifest$PC3[man_loc]
+	datfile$PC4[i] = manifest$PC4[man_loc]
+	datfile$PC5[i] = manifest$PC5[man_loc]
+	datfile$PC6[i] = manifest$PC6[man_loc]
+	datfile$PC7[i] = manifest$PC7[man_loc]
+	datfile$PC8[i] = manifest$PC8[man_loc]
 }
 #datfile$age = as.numeric(datfile$age)
 datfile$sex = as.factor(datfile$sex)
@@ -327,7 +332,7 @@ log_reg = function(df){
 #	}
 
 	#print("Building logitmodel")
-	logitmodel = "case ~ peptide + PC1 + PC2 + PC3"
+	logitmodel = "case ~ peptide + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8"
 	if ( opt$sex == "" ){
 		#print("Including sex in the regression")
 		logitmodel = paste0( logitmodel," + sex")
