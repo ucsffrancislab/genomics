@@ -580,6 +580,8 @@ done
 
 ##	20250719 - 
 
+
+
 This is getting really complicated so let's make some decisions. Post this on slack when "finished"
 
 
@@ -684,9 +686,10 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-il37
   --wrap="module load bcftools; bcftools concat --output topmed-il370_4677/concated.vcf.gz topmed-il370_4677/chr{?,??}.QC.vcf.gz; bcftools index --tbi topmed-il370_4677/concated.vcf.gz; chmod -w topmed-il370_4677/concated.vcf.gz topmed-il370_4677/concated.vcf.gz.tbi"
 ```
 
+
+
+
 need to run pull_case_dosage.bash --vcffile FILE to create dosage used by spacox
-
-
 
 Warning message:
 In .vcf_usertag(map, tag, nm, verbose) :
@@ -704,11 +707,11 @@ Execution halted
 
 Make case ID files
 
-
+/francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt
 /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_glioma_cases.dosage
 /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz
 
-
+/francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt
 /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_glioma_cases.dosage
 /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
 
@@ -720,12 +723,16 @@ Create some dosage files to compare to Geno's
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-onco_1347-test \
   --export=None --output="${PWD}/pull_dosage-onco_1347-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
-  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt --vcffile /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz --outbase ${PWD}/topmed-onco_1347-test"
+  pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt \
+  --vcffile /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz \
+  --outbase ${PWD}/topmed-onco_1347-test
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370_4677-test \
   --export=None --output="${PWD}/pull_dosage-il370_4677-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
-  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt --vcffile /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz --outbase ${PWD}/topmed-il370_4677-test"
+  pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt \
+  --vcffile /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz \
+  --outbase ${PWD}/topmed-il370_4677-test
 
 ```
 
@@ -736,21 +743,54 @@ If all went well, create our own.
 ```
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-onco_1347 \
   --export=None --output="${PWD}/pull_dosage-onco_1347.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
-  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt --vcffile ${PWD}/topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/topmed-onco_1347"
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
+  --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt \
+  --vcffile ${PWD}/topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/topmed-onco_1347
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370_4677 \
   --export=None --output="${PWD}/pull_dosage-il370_4677.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
-  --wrap="pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt --vcffile ${PWD}/topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/topmed-il370_4677"
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
+  --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt \
+  --vcffile ${PWD}/topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/topmed-il370_4677
 ```
 
 
 
 then gwasurvivr.bash --vcffile FILE
 
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-il370 \
+  --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
+  --dataset il370 --vcffile topmed-il370_4677/concated.vcf.gz --outbase ${PWD}/gwas/
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-onco \
+  --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
+  --dataset onco --vcffile topmed-onco_1347/concated.vcf.gz --outbase ${PWD}/gwas/
+
+```
+
 
 and spacox.bash --dosage FILE
+
+
+
+```
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-il370 \
+  --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset il370 \
+  --dosage topmed-il370_4677/AGS_i370_glioma_cases.dosage --outbase ${PWD}/gwas/
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-onco \
+  --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset onco \
+  --dosage topmed-onco_1347/AGS_Onco_glioma_cases.dosage --outbase ${PWD}/gwas/
+
+```
+
 
 
 then merge those results
