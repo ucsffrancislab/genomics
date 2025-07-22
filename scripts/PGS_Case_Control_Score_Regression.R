@@ -98,13 +98,11 @@ for(i in c(1:length(plates))){
 	print(Zfile[1:5,1:5])
 
 	species_id = data.frame(t(Zfile[c(1),]))
-	#colnames(species_id) = species_id[1,]		# id
 	species_id = species_id[-1,]
 	species_ids[[i]] = species_id
-	#Zfile = Zfile[-2,]	#	drop species name
+
 	colnames(Zfile) = Zfile[1,]
 	Zfiles[[i]] = Zfile
-	#colnames(species_ids[[i]]) = c("id")
 
 }
 rm(Zfile)
@@ -202,19 +200,6 @@ for(i in c(1:length(plates))){
 cat("\nStart converting Z scores to peptide binary calls", file = logname, append = TRUE, sep = "\n")
 
 
-
-
-
-#common_peps = common_peps[1:1000]
-#print(common_peps[1:5])
-#[1] "1"     "10"    "100"   "1000"  "10000"
-#print(dim(common_peps))
-#NULL
-
-
-
-
-
 peptide_calls = data.frame(mat.or.vec(length(uniq_sub), length(common_peps)+1))
 colnames(peptide_calls) = c("ID", common_peps)
 peptide_calls$ID = uniq_sub
@@ -241,29 +226,15 @@ for(i in c(1:nrow(peptide_calls))){
 
 	# Extract the rows containing the duplicate samples, assumes they both contain the id, and that id doesn't match another subjects in a grep (i.e IDs 100 and 1000.)
 	rlocs = grep(id, Zfiles[[mp]][,1])
-#	print("head(rlocs)")
-#	print(head(rlocs))
 
 	myZs = data.frame(t(Zfiles[[mp]][c(1,rlocs), which(Zfiles[[mp]][1,] %in% common_peps)]))
 
-#	print("myZs 1")
-#	print(myZs)
-
-	#myZs[,c(2:3)] = sapply(myZs[,c(2:3)], as.numeric)
 	myZs[,c(2)] = sapply(myZs[,c(2)], as.numeric)			# <-- needed?
-
-#	print("myZs 2")
-#	print(myZs)
 
 	if(length(which((common_peps == myZs[,1])==FALSE))>0){
 		cat(paste("\nError:", id, ":", "plate", mp, ":Peptides out of order, need to ensure they are ordered the same as the common_peps vector. This should never appear.", sep = " "), file=logname, append = TRUE, sep= "\n")
 	}
-#	mymins = apply(myZs[,c(2:3)],1, min)
-#	if(length(is.na(mymins)) >0){
-#		mymins[which(is.na(mymins))] = 0
-#	}
 
-#	peptide_calls[i, -1] = mymins
 	peptide_calls[i, -1] = myZs[,c(2)]
 
 }
@@ -277,13 +248,12 @@ rm(Zfiles)
 #	Create a shell file for analysis, Leaves the peptide column blank, we will repopulate this with every peptide.
 #	I still don't know what a "shell file" is in this context
 
-# datfile = data.frame(mat.or.vec(length(uniq_sub),6))
-#colnames(datfile) = c("ID", "case", "peptide", "sex", "age", "plate")
-datfile = data.frame(mat.or.vec(length(uniq_sub),8))
-colnames(datfile) = c("ID", "case", "peptide", "sex", "plate","PC1","PC2","PC3","PC4","PC5","PC6","PC7","PC8")
+datfile_colnames = c("ID", "case", "peptide", "sex", "plate","PC1","PC2","PC3","PC4","PC5","PC6","PC7","PC8")
+datfile = data.frame(mat.or.vec(length(uniq_sub),length(datfile_colnames)))
+colnames(datfile) = datfile_colnames
 datfile$ID = uniq_sub
 datfile$peptide = NA
-#print(datfile)
+
 print("for(i in c(1:nrow(datfile))){")
 for(i in c(1:nrow(datfile))){
 	print(i)
@@ -305,9 +275,6 @@ for(i in c(1:nrow(datfile))){
 datfile$sex = as.factor(datfile$sex)
 datfile$plate = as.factor(datfile$plate)
 
-#print("datfile")
-#print(datfile)
-
 
 #----- Shell function for logistic regression analysis.
 log_reg = function(df){
@@ -317,21 +284,6 @@ log_reg = function(df){
 	# as there are likely differences in the peptide calling sensitivity between plates,
 	#	and so peptide probably has different associations with case based on plate.
 
-	#	if plate is always the same this fails. check or ignore
-
-#	if ( opt$sex == "" ){
-#		#logitmodel = "case~ peptide +age + sex + plate"
-#		#logitmodel = "case~ peptide + sex + plate"
-#		#logitmodel = "case~ peptide + sex"
-#		logitmodel = "case~ peptide + sex + PC1 + PC2 + PC3"
-#	} else{
-#		#logitmodel = "case~ peptide +age + plate"
-#		#logitmodel = "case~ peptide + plate"
-#		#logitmodel = "case~ peptide"
-#		logitmodel = "case~ peptide + PC1 + PC2 + PC3"
-#	}
-
-	#print("Building logitmodel")
 	logitmodel = "case ~ peptide + PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8"
 	if ( opt$sex == "" ){
 		#print("Including sex in the regression")
@@ -341,15 +293,11 @@ log_reg = function(df){
 		#print("Including plate in the regression")
 		logitmodel = paste0( logitmodel," + plate")
 	}
-	#print("Final logitmodel")
-	#print(logitmodel)
 
 	logit_fun = glm(as.formula(logitmodel), data = df, family=binomial(link="logit"))
 
 	go= summary(logit_fun)
-	#beta = go$coefficients[2,1]
-	#se = go$coefficients[2,2]
-	#pval = go$coefficients[2,4]
+
 	#	sometimes "Coefficients: (1 not defined because of singularities)"
 	#	and peptide doesn't exist. This would then return the age coefficients.
 	beta <- if('peptide' %in% rownames(go$coefficients)) go$coefficients['peptide','Estimate'] else NA
@@ -361,10 +309,6 @@ log_reg = function(df){
 
 
 # Result File
-#pvalues = data.frame(mat.or.vec(length(common_peps), 7))
-#colnames(pvalues) = c("peptide", "species",  "freq_case", "freq_control", "beta", "se", "pval")
-#pvalues = data.frame(mat.or.vec(length(common_peps), 6))
-#colnames(pvalues) = c("peptide", "freq_case", "freq_control", "beta", "se", "pval")
 pvalues = data.frame(mat.or.vec(length(common_peps), 4))
 colnames(pvalues) = c("peptide", "beta", "se", "pval")
 pvalues$peptide = common_peps
@@ -387,20 +331,9 @@ print(length(common_peps))
 
 print("for(i in c(1:length(common_peps))){")
 for(i in c(1:length(common_peps))){
-#	print(i)
-
-	# Pull the species assignment of the peptide (this could be more efficient but not really a heavy lookup)
-	#pvalues$species[i] = species_ids[[1]]$species[which(species_ids[[1]]$id==common_peps[i])][1]
-
-#print("common_peps[i]")
-#print(common_peps[i])
-
-#print("colnames(peptide_calls)")
-#print(colnames(peptide_calls))
 
 	# Extract all peptide information into the new datfile.
 	datfile$peptide = peptide_calls[, which(colnames(peptide_calls)== common_peps[i])]
-#print(datfile$peptide)
 
 	#	prep for log transform of 0, or perhaps even negative
 	datfile$peptide <- ifelse(datfile$peptide <= 0, 0.001, datfile$peptide)
@@ -408,9 +341,6 @@ for(i in c(1:length(common_peps))){
 	#	log transform data to normalize
 	datfile$peptide <- log(datfile$peptide)
 
-#	pvalues$freq_case[i] = "UNK"
-#	pvalues$freq_control[i] = "UNK"
-#print(datfile)
 	results =log_reg(datfile)
 	pvalues$beta[i]= results[1]
 	pvalues$se[i] = results[2]
@@ -430,11 +360,7 @@ print(pvalues[1:5,])
 #5   10000   Human herpesvirus 8       UNK          UNK  -0.69588877
 
 
-#colnames(pvalues) = c("peptide", "species",
-colnames(pvalues) = c("peptide",
-	"beta", "se", "pval")
-#	paste0("freq_", groups_to_compare[1]),
-#	paste0("freq_", groups_to_compare[2]),
+colnames(pvalues) = c("peptide", "beta", "se", "pval")
 
 write.table(pvalues[order(pvalues$pval,decreasing = FALSE, na.last = TRUE),],paste0(output_base,'.csv'),
 	col.names = TRUE, sep = ",", row.names=FALSE, quote= FALSE)
