@@ -5,6 +5,10 @@
 #	/francislab/data1/working/20210302-AGS-illumina/20210310-scripts/Pharma/Pull_case_dosage
 
 
+TMPDIR=$TMPDIR/$$
+mkdir -p $TMPDIR
+
+
 pwd; hostname; date
 
 set -x
@@ -12,7 +16,7 @@ set -x
 if [ -n "$( declare -F module )" ] ; then
 	echo "Loading required modules"
 	module load CBI WitteLab
-	module load r #plink2 bcftools 
+	module load r bcftools #plink2
 fi
 
 outbase=${PWD}
@@ -70,8 +74,18 @@ cp $vcffile.tbi $TMPDIR/
 
 ##	The above takes way too much memory
 
+	#	My awk script doesn't take any memory. The datamash transpose call only needs the size of the uncompressed file.
+	#	The full imputed, concated vcf files are large and will likely require over 100GB
+	#	If it the dosage file really only uses cases, perhap create a vcf with just the cases.
+	#		bcftools view -S samples_to_keep.txt input.vcf > filtered.vcf 
+	#		-S (samples-file): Provide a file containing sample IDs (one per line) to include or exclude. 
 
-	zcat $TMPDIR/$( basename $vcffile ) | \
+	bcftools view -S $TMPDIR/$( basename $IDfile ) -Oz -o $TMPDIR/${subset}.vcf.gz $TMPDIR/$( basename $vcffile ) 
+	bcftools index --tbi $TMPDIR/${subset}.vcf.gz
+
+	#zcat $TMPDIR/$( basename $vcffile ) | \
+
+	zcat $TMPDIR/${subset}.vcf.gz | \
 	awk 'BEGIN{FS="\t";OFS=" "}
 		(/^##/){next}
 		(/^#CHROM/){
@@ -92,24 +106,31 @@ cp $vcffile.tbi $TMPDIR/
 				split($i,a,":");line=line","a[DS]
 			} 
 			print line 
-		}' > $TMPDIR/All.dosage
+		}' > $TMPDIR/${subset}.dosage
 
+#		}' > $TMPDIR/All.dosage
 
-	#	this is probably already sorted, however ... NOT
-	sort -t, -k1,1 $TMPDIR/$( basename $IDfile ) > $TMPDIR/sorted_case_ids
-	sed -i '1iID' $TMPDIR/sorted_case_ids
+	#	TODO Add a check for the chr prefix before adding it.
 
-	cat $TMPDIR/All.dosage | datamash transpose -t, > ${TMPDIR}/tmp1.csv
-	head -1 ${TMPDIR}/tmp1.csv > ${TMPDIR}/tmp2.csv
-	tail -n +2 ${TMPDIR}/tmp1.csv | sort -t, -k1,1 >> ${TMPDIR}/tmp2.csv
-	join --header -t, ${TMPDIR}/sorted_case_ids ${TMPDIR}/tmp2.csv | datamash transpose -t, | tr " " "," > $TMPDIR/${subset}.dosage
+#	Don't need to transpose and filter if vcf is already filtered.
+
+#	#	this is probably already sorted, however ... NOT
+#	sort -t, -k1,1 $TMPDIR/$( basename $IDfile ) > $TMPDIR/sorted_case_ids
+#	sed -i '1iID' $TMPDIR/sorted_case_ids
+#
+#	cat $TMPDIR/All.dosage | datamash transpose -t, > ${TMPDIR}/tmp1.csv
+#	head -1 ${TMPDIR}/tmp1.csv > ${TMPDIR}/tmp2.csv
+#	tail -n +2 ${TMPDIR}/tmp1.csv | sort -t, -k1,1 >> ${TMPDIR}/tmp2.csv
+#	join --header -t, ${TMPDIR}/sorted_case_ids ${TMPDIR}/tmp2.csv | datamash transpose -t, | tr "," " " > $TMPDIR/${subset}.dosage
 
 	#	dosage files don't have a header for the first column
-	sed -i '1s/^ID,//' $TMPDIR/${subset}.dosage
+	sed -i '1s/^ID //' $TMPDIR/${subset}.dosage
 
 
 	ls -l $TMPDIR/
 
+	mv $TMPDIR/${subset}.vcf.gz $outpath/
+	mv $TMPDIR/${subset}.vcf.gz.tbi $outpath/
 	mv $TMPDIR/${subset}.dosage $outpath/
 	chmod -w $outpath/${subset}.dosage
 
