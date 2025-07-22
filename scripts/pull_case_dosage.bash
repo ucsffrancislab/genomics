@@ -4,9 +4,9 @@
 # From Geno
 #	/francislab/data1/working/20210302-AGS-illumina/20210310-scripts/Pharma/Pull_case_dosage
 
-
-TMPDIR=$TMPDIR/$$
-mkdir -p $TMPDIR
+#	if running by hand off cluster ...
+#TMPDIR=$TMPDIR/$$
+#mkdir -p $TMPDIR
 
 
 pwd; hostname; date
@@ -24,8 +24,6 @@ while [ $# -gt 0 ] ; do
 	case $1 in
 		--IDfile)
 			shift; IDfile=$1; shift;;
-#		--dataset)
-#			shift; dataset=$1; shift;;
 		--vcffile)
 			shift; vcffile=$1; shift;;
 		--outbase)
@@ -35,35 +33,19 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-#if [ ${dataset} == "onco" ] ; then
-#	base="AGS_Onco"
-#elif [ ${dataset} == "il370" ] ; then
-#	base="AGS_i370"
-#else
-#	echo "Unknown dataset"
-#	exit 1
-#fi
-
 
 cp $vcffile     $TMPDIR/
 cp $vcffile.tbi $TMPDIR/
 
 
+subset=$( basename ${IDfile} .txt )
+echo $subset
 
-#	Geno only has 1 dosage file, yet this script makes several
+outpath="${outbase}/${subset}"
 
+mkdir -p $outpath
 
-#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-
-
-	subset=$( basename ${IDfile} .txt )
-	echo $subset
-
-	outpath="${outbase}/${subset}"
-	
-	mkdir -p $outpath
-	
-	cp $IDfile      $TMPDIR/
+cp $IDfile      $TMPDIR/
 
 #	#	not sure where the GT file is used
 #	pull_case_GT.r $TMPDIR/$( basename $vcffile )  $TMPDIR/$( basename $IDfile ) $TMPDIR/${subset}.GT
@@ -74,43 +56,46 @@ cp $vcffile.tbi $TMPDIR/
 
 ##	The above takes way too much memory
 
-	#	My awk script doesn't take any memory. The datamash transpose call only needs the size of the uncompressed file.
-	#	The full imputed, concated vcf files are large and will likely require over 100GB
-	#	If it the dosage file really only uses cases, perhap create a vcf with just the cases.
-	#		bcftools view -S samples_to_keep.txt input.vcf > filtered.vcf 
-	#		-S (samples-file): Provide a file containing sample IDs (one per line) to include or exclude. 
+#	My awk script doesn't take any memory. The datamash transpose call only needs the size of the uncompressed file.
+#	The full imputed, concated vcf files are large and will likely require over 100GB
+#	If it the dosage file really only uses cases, perhap create a vcf with just the cases.
+#		bcftools view -S samples_to_keep.txt input.vcf > filtered.vcf 
+#		-S (samples-file): Provide a file containing sample IDs (one per line) to include or exclude. 
 
-	bcftools view -S $TMPDIR/$( basename $IDfile ) -Oz -o $TMPDIR/${subset}.vcf.gz $TMPDIR/$( basename $vcffile ) 
-	bcftools index --tbi $TMPDIR/${subset}.vcf.gz
+bcftools view -S $TMPDIR/$( basename $IDfile ) -Oz -o $TMPDIR/${subset}.vcf.gz $TMPDIR/$( basename $vcffile ) 
+bcftools index --tbi $TMPDIR/${subset}.vcf.gz
 
-	#zcat $TMPDIR/$( basename $vcffile ) | \
+#zcat $TMPDIR/$( basename $vcffile ) | \
 
-	zcat $TMPDIR/${subset}.vcf.gz | \
-	awk 'BEGIN{FS="\t";OFS=" "}
-		(/^##/){next}
-		(/^#CHROM/){
-			line=""
-			for(i=10;i<=NF;i++){ line=line" "$i }
-			print line 
-			next
+zcat $TMPDIR/${subset}.vcf.gz | \
+awk 'BEGIN{FS="\t";OFS=" "}
+	(/^##/){next}
+	(/^#CHROM/){
+		line=$10
+		for(i=11;i<=NF;i++){ line=line" "$i }
+		print line 
+		next
+	}
+	{	
+		if(!DS){
+			split($9,a,":")
+			for(i in a){ if(a[i]=="DS"){DS=i;break} }
 		}
-		{	
-			if(!DS){
-				split($9,a,":");
-				for(i in a){
-					if(a[i]=="DS"){DS=i;break}
-				}
-			}
-			line="chr"$1":"$2":"$4":"$5;
-			for(i=10;i<=NF;i++){
-				split($i,a,":");line=line" "a[DS]
-			} 
-			print line 
-		}' > $TMPDIR/${subset}.dosage
+		if( $1 ~ /^chr/ ){
+			line=$1":"$2":"$4":"$5
+		} else {
+			line="chr"$1":"$2":"$4":"$5
+		}
+		for(i=10;i<=NF;i++){
+			split($i,a,":")
+			line=line" "a[DS]
+		} 
+		print line 
+	}' > $TMPDIR/${subset}.dosage
 
 #		}' > $TMPDIR/All.dosage
 
-	#	TODO Add a check for the chr prefix before adding it.
+
 
 #	Don't need to transpose and filter if vcf is already filtered.
 
@@ -123,12 +108,9 @@ cp $vcffile.tbi $TMPDIR/
 #	tail -n +2 ${TMPDIR}/tmp1.csv | sort -t, -k1,1 >> ${TMPDIR}/tmp2.csv
 #	join --header -t, ${TMPDIR}/sorted_case_ids ${TMPDIR}/tmp2.csv | datamash transpose -t, | tr "," " " > $TMPDIR/${subset}.dosage
 
-	#	dosage files don't have a header for the first column
-	#sed -i '1s/^ID //' $TMPDIR/${subset}.dosage
+#	#	dosage files don't have a header for the first column
+#	sed -i '1s/^ID //' $TMPDIR/${subset}.dosage
 #	sed -i 's/,/ /g' $TMPDIR/${subset}.dosage
-
-
-
 
 
 #	some of the DS values are just "." . Not sure how that will be received later.
@@ -137,15 +119,12 @@ cp $vcffile.tbi $TMPDIR/
 #	As a . could mean 0, 1 or 2 depending on the genotype, this NEEDs fixed by rerunning.
 
 
+ls -l $TMPDIR/
 
-
-
-	ls -l $TMPDIR/
-
-	mv $TMPDIR/${subset}.vcf.gz $outpath/
-	mv $TMPDIR/${subset}.vcf.gz.tbi $outpath/
-	mv $TMPDIR/${subset}.dosage $outpath/
-	chmod -w $outpath/${subset}.*
+mv $TMPDIR/${subset}.vcf.gz $outpath/
+mv $TMPDIR/${subset}.vcf.gz.tbi $outpath/
+mv $TMPDIR/${subset}.dosage $outpath/
+chmod -w $outpath/${subset}.*
 
 #	\rm $TMPDIR/$( basename $IDfile )
 
