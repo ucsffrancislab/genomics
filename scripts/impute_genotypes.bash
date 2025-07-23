@@ -2,15 +2,15 @@
 
 #	https://topmedimpute.readthedocs.io/en/latest/api/
 
-TOKEN=$( cat TOPMED_TOKEN )
+#	https://imputationserver.readthedocs.io/en/latest/api/
 
-#command="curl https://imputationserver.sph.umich.edu/api/v2/jobs/submit/imputationserver2 -H \"X-Auth-Token: $TOKEN\""
-command="curl https://imputation.biodatacatalyst.nhlbi.nih.gov/api/v2/jobs/submit/imputationserver -H \"X-Auth-Token: $TOKEN\""
+
 
 name=""
+server="topmed"
 refpanel="apps@topmed-r3"
 build="hg19"
-r2Filter="0.1"
+r2Filter="0.3"
 #pgscatalog="apps@pgs-catalog-20240318@1.0"
 #traits="all"
 #ancestry=""	#	"apps@ancestry@1.0.0"
@@ -21,6 +21,8 @@ files=""
 
 while [ $# -gt 0 ] ; do
 	case $1 in
+		-s|--server)
+			shift;server="${1}";shift;;
 		-n|--job-name)
 			shift;name="${1}";shift;;
 		-r|--refpanel)
@@ -46,6 +48,18 @@ if [ -z "${name}" ] ; then
 	echo "Name is required"
 	exit
 fi
+
+if [ "${server}" == "topmed" ] ; then
+	TOKEN=$( cat TOPMED_TOKEN )
+	command="curl https://imputation.biodatacatalyst.nhlbi.nih.gov/api/v2/jobs/submit/imputationserver -H \"X-Auth-Token: $TOKEN\""
+elif [ "${server}" == "umich" ] ; then
+	TOKEN=$( cat UMICH_TOKEN )
+	command="curl https://imputationserver.sph.umich.edu/api/v2/jobs/submit/imputationserver2 -H \"X-Auth-Token: $TOKEN\""
+else
+	echo "Unknown server :${server}:"
+	exit
+fi
+
 
 
 #command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" ${files}"
