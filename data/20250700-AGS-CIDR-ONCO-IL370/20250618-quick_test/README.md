@@ -8,6 +8,8 @@ Impute and analyse separately
 Meta analysis scripts from Geno - survival gwas
 
 
+** WHY DID I USE /francislab/data1/raw/20200520_Adult_Glioma_Study_GWAS/ AND NOT /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/ and /francislab/data1/raw/20210302-AGS-illumina/ **
+
 
 ```BASH
 for b in il370_4677 onco_1347 ; do

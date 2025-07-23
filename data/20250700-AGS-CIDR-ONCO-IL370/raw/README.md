@@ -67,3 +67,8 @@ Investigate previous AGS and runs and the format
 
 
 
+20250723 - Why did I use the older datasets?
+
+
+
+
