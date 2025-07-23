@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# https://topmedimpute.readthedocs.io/en/latest/api/ - TOPMed doesn't do PGS, yet
+
+# https://imputationserver.readthedocs.io/en/latest/api/
+
 TOKEN=$( cat UMICH_TOKEN )
 
 command="curl https://imputationserver.sph.umich.edu/api/v2/jobs/submit/imputationserver2-pgs -H \"X-Auth-Token: $TOKEN\""
