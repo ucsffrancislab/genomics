@@ -400,7 +400,7 @@ for b in onco il370 cidr ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-${s}-${b} \
   --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset ${b} --vcffile ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.vcf.gz --outbase ${PWD}/gwas/
+  --dataset ${b} --vcffile ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
 ```
@@ -417,17 +417,10 @@ for b in onco il370 cidr ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-${s}-${b} \
   --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset ${b} \
-  --dosage ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.dosage --outbase ${PWD}/gwas/
+  --dosage ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.dosage --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
 ```
-
-
-
-
-
---- 
-EDIT
 
 
 ###	Merge
@@ -438,13 +431,20 @@ then merge those results
 for s in topmed umich ; do
 for b in onco il370 cidr ; do
 
-merge_gwasurvivr_spacox.bash --dataset il370 --outbase ${PWD}/gwas/
-
-merge_gwasurvivr_spacox.bash --dataset onco  --outbase ${PWD}/gwas/
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=merge-${s}-${b} \
+  --export=None --output="${PWD}/merge-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
+  merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
 ```
 
+
+
+
+
+
 then METAL
+
 
 
