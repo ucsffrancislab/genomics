@@ -22,7 +22,7 @@ ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.bim prep-i
 ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.fam prep-il370/il370.fam
 
 
-
+#	CIDR
 
 
 ```
@@ -73,7 +73,7 @@ Will need UMICH and TOPMED TOKENS
 
 TOPMed apps@topmed-r3
 
-```
+```BASH
 impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-onco  prep-onco/onco-updated-chr*.vcf.gz
 impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-il370 prep-il370/il370-updated-chr*.vcf.gz
 impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-cidr  prep-cidr/cidr-updated-chr*.vcf.gz
@@ -83,10 +83,19 @@ impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-cidr  pre
 
 Impute on UMICH as well apps@1000g-phase3-deep@1.0.0
 
+```BASH
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-onco-1kghg38  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-il370-1kghg38 prep-il370/il370-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-cidr-1kghg38  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-onco  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-il370 prep-il370/il370-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-cidr  prep-cidr/cidr-updated-chr*.vcf.gz
+
+
+UMich 1000g hg38 BETA ??
+
+```BASH
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-onco-1kghg19  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-il370-1kghg19 prep-il370/il370-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-cidr-1kghg19  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -95,7 +104,7 @@ impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-ci
 
 ##	Download
 
-```
+```BASH
 mkdir topmed-onco
 cd topmed-onco
 
@@ -158,7 +167,7 @@ chmod -w umich-*/*
 
 Create and chmod password files for umich and topmed and each dataset
 
-```
+```BASH
 for s in topmed umich ; do
 for b in onco il370 cidr ; do
   cd ${s}-${b}
@@ -196,10 +205,10 @@ Any QC filtering on the resulting imputations?
 	Any sample filtering would need to wait until after concatenation
 
 
-
+###	QC and Filter
 Try this with a vcf file 
 
-```
+```BASH
 for f in {umich,topmed}-*/*dose.vcf.gz ; do
 b=${f%.dose.vcf.gz}
 echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.005 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
@@ -267,10 +276,12 @@ need to merge imputed dose.vcf.gz files to create vcf
 	minimum R2? - Geno's file seem to only include R2>0.8
 
 
+###	Concat
+
 onco is gonna take about a day
 il370 is gonna take more
 
-```
+```BASH
 for s in topmed umich ; do
 for b in onco il370 cidr ; do
 
@@ -298,9 +309,15 @@ STILL NEEDS EDITTING!!!
 
 
 
-link some files to create location and naming consistency
+link the support files to create location and naming consistency
 
 
+```BASH
+ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt onco_glioma_cases.txt
+ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt il370_glioma_cases.txt
+
+#	--- CIDR glioma case list
+```
 
 
 
@@ -315,10 +332,11 @@ Make case ID files
 /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_glioma_cases.dosage
 /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz
 
+###	Pull cases and dosage
 
 Create some dosage files to compare to Geno's
 
-```
+```BASH
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-onco-test \
   --export=None --output="${PWD}/pull_dosage-onco-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
@@ -338,85 +356,84 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage
 
 
 
+NEED the CIDR case list
+
+
+
 If all went well, create our own.
 
-```
-for s in topmed umich ; do
-
-  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-onco \
-    --export=None --output="${PWD}/pull_dosage-${s}-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
-    --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
-    --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt \
-    --vcffile ${PWD}/${s}-onco/concated.vcf.gz --outbase ${PWD}/${s}-onco
-
-  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-il370 \
-    --export=None --output="${PWD}/pull_dosage-${s}-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
-    --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
-    --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_il370_glioma_cases.txt \
-    --vcffile ${PWD}/${s}-il370/concated.vcf.gz --outbase ${PWD}/${s}-il370
-
-
-
-#  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-cidr \
-#    --export=None --output="${PWD}/pull_dosage-${s}-cidr.$( date "+%Y%m%d%H%M%S%N" ).out" \
-#    --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
-#
-#    --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_il370_glioma_cases.txt \			<---------
-#
-#    --vcffile ${PWD}/${s}-cidr/concated.vcf.gz --outbase ${PWD}/${s}-cidr
-
-
-
-done; done
-```
-
-
-
-then gwasurvivr.bash --vcffile FILE
-
-```
+```BASH
 for s in topmed umich ; do
 for b in onco il370 cidr ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-il370 \
-  --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset il370 --vcffile topmed-il370/AGS_i370_glioma_cases/AGS_i370_glioma_cases.vcf.gz --outbase ${PWD}/gwas/
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-onco \
-  --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset onco --vcffile topmed-onco/AGS_Onco_glioma_cases/AGS_Onco_glioma_cases.vcf.gz --outbase ${PWD}/gwas/
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
+    --export=None --output="${PWD}/pull_dosage-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+    --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
+    --IDfile ${PWD}/${b}_glioma_cases.txt \
+    --vcffile ${PWD}/${s}-${b}/concated.vcf.gz --outbase ${PWD}/${s}-${b}
 
 done; done
 ```
 
 
-and spacox.bash --dosage FILE
+
+----
+
+These scripts will need edited to include CIDR
+
+Also, create subset case lists locally
+
+Make case list dir an option?
+
+gwasurvivr.bash, spacox.bash and merge.....bash all use the same
 
 
 
-```
+
+###	gwasurvivr.bash
+
+```BASH
 for s in topmed umich ; do
 for b in onco il370 cidr ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-il370 \
-  --export=None --output="${PWD}/gwas-il370.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset il370 \
-  --dosage topmed-il370/AGS_i370_glioma_cases/AGS_i370_glioma_cases.dosage --outbase ${PWD}/gwas/
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-onco \
-  --export=None --output="${PWD}/gwas-onco.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset onco \
-  --dosage topmed-onco/AGS_Onco_glioma_cases/AGS_Onco_glioma_cases.dosage --outbase ${PWD}/gwas/
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-${s}-${b} \
+  --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
+  --dataset ${b} --vcffile ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.vcf.gz --outbase ${PWD}/gwas/
 
 done; done
 ```
 
 
+###	spacox.bash
+
+
+
+```BASH
+for s in topmed umich ; do
+for b in onco il370 cidr ; do
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-${s}-${b} \
+  --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset ${b} \
+  --dosage ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.dosage --outbase ${PWD}/gwas/
+
+done; done
+```
+
+
+
+
+
+--- 
+EDIT
+
+
+###	Merge
 
 then merge those results
-```
+
+```BASH
 for s in topmed umich ; do
 for b in onco il370 cidr ; do
 
