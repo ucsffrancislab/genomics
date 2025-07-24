@@ -1,5 +1,5 @@
 
-#	20250800-AGS-CIDR-ONCO-Illumina/20250723-survival_gwas
+#	20250800-AGS-CIDR-ONCO-Illumina-TCGA/20250723-survival_gwas
 
 
 AGS
@@ -74,8 +74,9 @@ Will need UMICH and TOPMED TOKENS
 TOPMed apps@topmed-r3
 
 ```BASH
-impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-onco  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-il370 prep-il370/il370-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250724-onco  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250724-il370 prep-il370/il370-updated-chr*.vcf.gz
+
 impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-cidr  prep-cidr/cidr-updated-chr*.vcf.gz
 
 ```
@@ -84,18 +85,18 @@ impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-cidr  pre
 Impute on UMICH as well apps@1000g-phase3-deep@1.0.0
 
 ```BASH
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-onco-1kghg38  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-il370-1kghg38 prep-il370/il370-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-cidr-1kghg38  prep-cidr/cidr-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250728-onco-1kghg38  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250728-il370-1kghg38 prep-il370/il370-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250728-cidr-1kghg38  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
 
 
 UMich 1000g hg38 BETA ??
 
 ```BASH
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-onco-1kghg19  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-il370-1kghg19 prep-il370/il370-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-cidr-1kghg19  prep-cidr/cidr-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-onco-1kghg19  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-il370-1kghg19 prep-il370/il370-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-cidr-1kghg19  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -178,7 +179,7 @@ for b in onco il370 cidr ; do
   done
   chmod 440 *gz
   cd ..
-done
+done ; done
 ```
 
 

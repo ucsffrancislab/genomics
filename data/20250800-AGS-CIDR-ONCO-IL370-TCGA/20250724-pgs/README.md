@@ -1,5 +1,5 @@
 
-#	20250800-AGS-CIDR-ONCO-IL370/20250723-pgs
+#	20250800-AGS-CIDR-ONCO-IL370-TCGA/20250723-pgs
 
 Use the prep from ../20250723-survival_gwas
 
@@ -58,8 +58,8 @@ That should be good.
 
 ```
 for b in onco il370 cidr tcga ; do
-impute_pgs.bash -b hg19 -n 20250723-1kghg19-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase-3-v5@2.0.0 prep-${b}/${b}-updated-chr*.vcf.gz
-impute_pgs.bash -b hg19 -n 20250723-1kghg38-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase3-deep@1.0.0 prep-${b}/${b}-updated-chr*.vcf.gz
+impute_pgs.bash -b hg19 -n 20250728-1kghg19-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase-3-v5@2.0.0 prep-${b}/${b}-updated-chr*.vcf.gz
+impute_pgs.bash -b hg19 -n 20250728-1kghg38-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase3-deep@1.0.0 prep-${b}/${b}-updated-chr*.vcf.gz
 done
 ```
 
