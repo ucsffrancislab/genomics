@@ -115,6 +115,28 @@ cd ..
 ##	Prepare manifests
 
 
+Family ID (FID): A unique identifier for the family the sample belongs to.
+Individual ID (IID): A unique identifier for the individual within the family.
+Paternal ID: The ID of the individual's father, or "0" if unknown or not in the dataset.
+Maternal ID: The ID of the individual's mother, or "0" if unknown or not in the dataset.
+Sex: A numerical code indicating the individual's sex (1=Male, 2=Female, 0=Unknown).
+Phenotype: A numerical code indicating the sample's phenotype (1=Control, 2=Case, -9 or 0=Missing data).
+
+FAM files ...
+Sex code ('1' = male, '2' = female, '0' = unknown)
+Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing data if case/control)
+
+
+
+I could certainly ignore the 01s
+only use the 10s as cases
+
+
+THIS FAM FILE DOES NOT HAVE CASE/CONTROL
+Set all of the TCGA-..-....-10. as case
+All else are control
+
+
 ```
 for b in onco il370 cidr tcga ; do
 for r in hg19 hg38 ; do
@@ -139,7 +161,6 @@ join --header -t, pgs-${b}-${r}/mani.fest.csv pgs-${b}-${r}/estimated-population
 
 done ; done
 ```
-
 
 
 

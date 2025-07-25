@@ -26,3 +26,9 @@ done
 
 
 
+
+FAM files ...
+Sex code ('1' = male, '2' = female, '0' = unknown)
+Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing data if case/control)
+
+

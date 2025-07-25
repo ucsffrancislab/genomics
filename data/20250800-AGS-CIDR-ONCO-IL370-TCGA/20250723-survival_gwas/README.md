@@ -108,19 +108,19 @@ impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-cid
 ```BASH
 mkdir topmed-onco
 cd topmed-onco
-
-
-
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708966/92233b11e85f99bca874e167f0169a390f637f06ab792b85fcc5a9aeeb95e790 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708970/ee404a06c50727315802521e5c4813dea3206a7248a87f72f0d6571d13cf50ef | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708973/09a79905a780fdac7a4c819e50147b8a09055eb9aa5f63f83e195920d263f8aa | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708972/287a0407544f779116fccfa4b88b504c7117b262b30d26d0ed120841684860ef | bash
 cd ..
 
 
 mkdir topmed-il370
 cd topmed-il370
-
-
-
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708942/1993b50c84336c1b17d464ecda6610b45d94a67f8a705a835f28c8d6653e1d9d | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708946/449d3f1cd0ccbbf53ba3242ac7b887092ae3e4559266a1ba78fdbd7f3fd5490c | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708949/9789e785b9b48ca4ba762fba49938797c69d08a13a2d7c1206bfb7ff7cbce14b | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708948/88f0bc5acff3cf834dfb783481ea991511f21d4f163a16da70f6f8f51a02bb34 | bash
 cd ..
 
 
@@ -319,6 +319,16 @@ ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cas
 
 #	--- CIDR glioma case list
 ```
+
+
+
+FAM files ...
+Family ID (FID): A unique identifier for the family the sample belongs to.
+Individual ID (IID): A unique identifier for the individual within the family.
+Paternal ID: The ID of the individual's father, or "0" if unknown or not in the dataset.
+Maternal ID: The ID of the individual's mother, or "0" if unknown or not in the dataset.
+Sex: A numerical code indicating the individual's sex (1=Male, 2=Female, 0=Unknown).
+Phenotype: A numerical code indicating the sample's phenotype (1=Control, 2=Case, -9 or 0=Missing data).
 
 
 
