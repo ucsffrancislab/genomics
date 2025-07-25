@@ -97,6 +97,10 @@ awk 'BEGIN{FS="\t";OFS=" "}
 
 
 
+# not sure if renaming the snps is needed but I did it to match Geno's files
+
+
+
 #	Don't need to transpose and filter if vcf is already filtered.
 
 #	#	this is probably already sorted, however ... NOT
