@@ -1,5 +1,5 @@
 
-#	20250800-AGS-CIDR-ONCO-Illumina-TCGA/20250723-survival_gwas
+#	20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas
 
 
 AGS
@@ -10,16 +10,16 @@ Meta analysis scripts from Geno - survival gwas
 
 ```BASH
 mkdir prep-onco
-mkdir prep-il370
+mkdir prep-i370
 mkdir prep-cidr
 
 ln -s /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/AGS_Mayo_Oncoarray_for_QC.bed prep-onco/onco.bed
 ln -s /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/AGS_Mayo_Oncoarray_for_QC.bim prep-onco/onco.bim
 ln -s /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/AGS_Mayo_Oncoarray_for_QC.fam prep-onco/onco.fam
 
-ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.bed prep-il370/il370.bed
-ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.bim prep-il370/il370.bim
-ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.fam prep-il370/il370.fam
+ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.bed prep-i370/i370.bed
+ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.bim prep-i370/i370.bim
+ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.fam prep-i370/i370.fam
 
 
 #	CIDR
@@ -34,7 +34,7 @@ ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.fam prep-i
 
 
 ```BASH
-for b in il370 onco ; do
+for b in i370 onco ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_freq --wrap="module load plink; plink --freq --bfile ${PWD}/prep-${b}/${b} --out ${PWD}/prep-${b}/${b};chmod -w ${PWD}/prep-${b}/${b}.frq" --out=${PWD}/prep-${b}/plink.create_frequency_file.log
 done
 ```
@@ -42,7 +42,7 @@ done
 ##	Check BIM and split
 
 ```BASH
-for b in il370 onco ; do
+for b in i370 onco ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep-${b}/${b}.bim --frequency ${PWD}/prep-${b}/${b}.frq --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" --out=${PWD}/prep-${b}/HRC-1000G-check-bim.pl.log
 done
 ```
@@ -50,7 +50,7 @@ done
 ##	Run the generated script
 
 ```BASH
-for b in il370 onco ; do
+for b in i370 onco ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_run-plink --wrap="module load plink; sh ${PWD}/prep-${b}/Run-plink.sh;\rm ${PWD}/prep-${b}/TEMP*" --out=${PWD}/prep-${b}/Run-plink.sh.log
 done
 ```
@@ -58,7 +58,7 @@ done
 ##	Compress
 
 ```BASH
-for b in il370 onco ; do
+for b in i370 onco ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_bgzip --wrap="module load htslib; bgzip ${PWD}/prep-${b}/*vcf; chmod a-w ${PWD}/prep-${b}/*{bim,bed,fam,vcf.gz}" --out=${PWD}/prep-${b}/bgzip.log
 done
 ```
@@ -75,28 +75,29 @@ TOPMed apps@topmed-r3
 
 ```BASH
 impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250724-onco  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250724-il370 prep-il370/il370-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250724-i370 prep-i370/i370-updated-chr*.vcf.gz
 
-impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250725-cidr  prep-cidr/cidr-updated-chr*.vcf.gz
-
+impute_genotypes.bash --server topmed --refpanel topmed-r3 -n 20250801-cidr  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
 
 
 Impute on UMICH as well apps@1000g-phase3-deep@1.0.0
 
 ```BASH
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250728-onco-1kghg38  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250728-il370-1kghg38 prep-il370/il370-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250728-cidr-1kghg38  prep-cidr/cidr-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-onco-1kghg38  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-i370-1kghg38 prep-i370/i370-updated-chr*.vcf.gz
+
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250801-cidr-1kghg38  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
 
 
 UMich 1000g hg38 BETA ??
 
 ```BASH
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-onco-1kghg19  prep-onco/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-il370-1kghg19 prep-il370/il370-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250728-cidr-1kghg19  prep-cidr/cidr-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-onco-1kghg19  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-i370-1kghg19 prep-i370/i370-updated-chr*.vcf.gz
+
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250801-cidr-1kghg19  prep-cidr/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -115,8 +116,8 @@ curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708972/287a040754
 cd ..
 
 
-mkdir topmed-il370
-cd topmed-il370
+mkdir topmed-i370
+cd topmed-i370
 curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708942/1993b50c84336c1b17d464ecda6610b45d94a67f8a705a835f28c8d6653e1d9d | bash
 curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708946/449d3f1cd0ccbbf53ba3242ac7b887092ae3e4559266a1ba78fdbd7f3fd5490c | bash
 curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1708949/9789e785b9b48ca4ba762fba49938797c69d08a13a2d7c1206bfb7ff7cbce14b | bash
@@ -136,8 +137,8 @@ chmod -w topmed-*/*
 ```
 
 ```
-mkdir umich-onco
-cd umich-onco
+mkdir umich19-onco
+cd umich19-onco
 
 
 
@@ -145,8 +146,8 @@ cd umich-onco
 cd ..
 
 
-mkdir umich-il370
-cd umich-il370
+mkdir umich19-i370
+cd umich19-i370
 
 
 
@@ -154,28 +155,59 @@ cd umich-il370
 cd ..
 
 
-mkdir umich-cidr
-cd umich-cidr
+mkdir umich19-cidr
+cd umich19-cidr
 
 
 
 
 cd ..
 
-chmod -w umich-*/*
+chmod -w umich19-*/*
+```
+
+```
+mkdir umich38-onco
+cd umich38-onco
+
+
+
+
+cd ..
+
+
+mkdir umich38-i370
+cd umich38-i370
+
+
+
+
+cd ..
+
+
+mkdir umich38-cidr
+cd umich38-cidr
+
+
+
+
+cd ..
+
+chmod -w umich38-*/*
 ```
 
 
 Create and chmod password files for umich and topmed and each dataset
 
 ```BASH
-for s in topmed umich ; do
-for b in onco il370 cidr ; do
+for s in topmed umich19 umich38 ; do
+for b in onco i370 cidr ; do
+  echo ${s}-${b}
   cd ${s}-${b}
   chmod a-w *
   for zip in chr*zip ; do
-  echo $zip
-  unzip -P $( cat ../password-${s}-${b} ) $zip
+    echo $zip
+    unzip -P $( cat ../password-${s}-${b} ) $zip
   done
   chmod 440 *gz
   cd ..
@@ -187,8 +219,7 @@ done ; done
 ##	Survival GWAS
 
 
-
-This is getting really complicated so let's make some decisions. Post this on slack when "finished"
+This is getting really complicated so let's make some decisions.
 
 
 Prep for imputation as directed and impute on TOPMed
@@ -210,16 +241,22 @@ Any QC filtering on the resulting imputations?
 Try this with a vcf file 
 
 ```BASH
-for f in {umich,topmed}-*/*dose.vcf.gz ; do
-b=${f%.dose.vcf.gz}
-echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.005 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+#for f in {umich19,umich38,topmed}-*/*dose.vcf.gz ; do
+for f in */*dose.vcf.gz ; do
+ b=${f%.dose.vcf.gz}
+ echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.005 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 done >> plink_commands
+
+
+#	parallel -j 16 < plink_commands
+
 
 commands_array_wrapper.bash --array_file plink_commands --time 1-0 --threads 4 --mem 30G
 
-Error: chrX is present in the input file, but no sex information was provided;
-rerun this import with --psam or --update-sex.  --split-par may also be
-appropriate.
+#	X wasn't included in these data
+#Error: chrX is present in the input file, but no sex information was provided;
+#rerun this import with --psam or --update-sex.  --split-par may also be
+#appropriate.
 ```
 
 --set-all-var-ids chr@:#:\$r:\$a --new-id-max-allele-len 50
@@ -237,7 +274,7 @@ need to rename samples? Should have done before imputation? will need to match t
 
 		Change them to AGS_AGS?
 
-	il370
+	i370
 		mostly AGS_AGS
 		also 3390 like ...
 			"1873031599_A_1873031599_A"
@@ -249,7 +286,7 @@ need to rename samples? Should have done before imputation? will need to match t
 		not sure what these will look like
 
 
-need to create case lists for all datasets and subsets (done for onco and il370?)
+need to create case lists for all datasets and subsets (done for onco and i370?)
 	These are used in the gwasurvivr and spacox scripts.
 	Are these "cases" then compared against ALL other samples? Doesn't seem right.
 	The Onco lists do match the above naming convention ( 0_WG0238627-DNAA08_AGS40816 )
@@ -280,16 +317,18 @@ need to merge imputed dose.vcf.gz files to create vcf
 ###	Concat
 
 onco is gonna take about a day
-il370 is gonna take more
+i370 is gonna take more
+
+#    --wrap="module load bcftools; bcftools concat --output ${s}-${b}/concated.vcf.gz ${s}-${b}/chr{?,??}.QC.vcf.gz; bcftools index --tbi ${s}-${b}/concated.vcf.gz; chmod -w ${s}-${b}/concated.vcf.gz ${s}-${b}/concated.vcf.gz.tbi"
 
 ```BASH
-for s in topmed umich ; do
-for b in onco il370 cidr ; do
+for s in topmed umich19 umich38 ; do
+for b in onco i370 cidr ; do
 
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-${s}-${b} \
     --export=None --output="${PWD}/concat-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
     --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-    --wrap="module load bcftools; bcftools concat --output ${s}-${b}/concated.vcf.gz ${s}-${b}/chr{?,??}.QC.vcf.gz; bcftools index --tbi ${s}-${b}/concated.vcf.gz; chmod -w ${s}-${b}/concated.vcf.gz ${s}-${b}/concated.vcf.gz.tbi"
+    --wrap="module load bcftools; bcftools concat --output ${s}-${b}/concated.vcf.gz ${s}-${b}/chr[1-9]{,?}.QC.vcf.gz; bcftools index --tbi ${s}-${b}/concated.vcf.gz; chmod -w ${s}-${b}/concated.vcf.gz ${s}-${b}/concated.vcf.gz.tbi"
 
 done; done
 ```
@@ -315,7 +354,7 @@ link the support files to create location and naming consistency
 
 ```BASH
 ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt onco_glioma_cases.txt
-ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt il370_glioma_cases.txt
+ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt i370_glioma_cases.txt
 
 #	--- CIDR glioma case list
 ```
@@ -356,12 +395,12 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage
   --vcffile /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/data/AGS_Onco_pharma_merged.vcf.gz \
   --outbase ${PWD}/topmed-onco-test3
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-il370-test \
-  --export=None --output="${PWD}/pull_dosage-il370-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-i370-test \
+  --export=None --output="${PWD}/pull_dosage-i370-test.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
   pull_case_dosage.bash --IDfile /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt \
   --vcffile /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/AGS_i370_pharma_merged.vcf.gz \
-  --outbase ${PWD}/topmed-il370-test3
+  --outbase ${PWD}/topmed-i370-test3
 
 ```
 
@@ -374,8 +413,8 @@ NEED the CIDR case list
 If all went well, create our own.
 
 ```BASH
-for s in topmed umich ; do
-for b in onco il370 cidr ; do
+for s in topmed umich19 umich38 ; do
+for b in onco i370 cidr ; do
 
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
     --export=None --output="${PWD}/pull_dosage-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
@@ -404,8 +443,8 @@ gwasurvivr.bash, spacox.bash and merge.....bash all use the same
 ###	gwasurvivr.bash
 
 ```BASH
-for s in topmed umich ; do
-for b in onco il370 cidr ; do
+for s in topmed umich19 umich38 ; do
+for b in onco i370 cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-${s}-${b} \
   --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
@@ -421,8 +460,8 @@ done; done
 
 
 ```BASH
-for s in topmed umich ; do
-for b in onco il370 cidr ; do
+for s in topmed umich19 umich38 ; do
+for b in onco i370 cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-${s}-${b} \
   --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
@@ -438,8 +477,8 @@ done; done
 then merge those results
 
 ```BASH
-for s in topmed umich ; do
-for b in onco il370 cidr ; do
+for s in topmed umich19 umich38 ; do
+for b in onco i370 cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=merge-${s}-${b} \
   --export=None --output="${PWD}/merge-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
@@ -457,4 +496,9 @@ done; done
 then METAL
 
 
+
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-onco-1kghg38  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250725-i370-1kghg38 prep-i370/i370-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-onco-1kghg19  prep-onco/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250725-i370-1kghg19 prep-i370/i370-updated-chr*.vcf.gz
 

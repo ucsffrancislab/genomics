@@ -1,5 +1,5 @@
 
-#	20250700-AGS-CIDR-ONCO-Illumina
+#	20250700-AGS-CIDR-ONCO-I370
 
 Expecting AGS SNP data from CIDR
 447 dna glioma - gwas snp arrays - add to existing case set, rerun geno’s analyses, re impute everything, genotyping, PRS. about a month
