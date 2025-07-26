@@ -238,7 +238,9 @@ Any QC filtering on the resulting imputations?
 
 
 ###	QC and Filter
-Try this with a vcf file 
+
+
+
 
 ```BASH
 #for f in {umich19,umich38,topmed}-*/*dose.vcf.gz ; do
@@ -248,10 +250,13 @@ for f in */*dose.vcf.gz ; do
 done >> plink_commands
 
 
+commands_array_wrapper.bash --array_file plink_commands --time 1-0 --threads 4 --mem 30G
+
+
+#	or if the cluster's down login to n17 and ...
 #	parallel -j 16 < plink_commands
 
 
-commands_array_wrapper.bash --array_file plink_commands --time 1-0 --threads 4 --mem 30G
 
 #	X wasn't included in these data
 #Error: chrX is present in the input file, but no sex information was provided;
@@ -265,25 +270,6 @@ may to use vcf-dosage=DS-force to set 0s? Nulls actually. Can mean 0, 1 or 2.
 
 
 
-need to rename samples? Should have done before imputation? will need to match the case list used.
-
-	Onco are all like ..
-		"0_WG0238723-DNAE03_AGS54527"
-		"0_WG0238723-DNAF01_AGS55488"
-		"0_WG0238723-DNAF02_AGS54481"
-
-		Change them to AGS_AGS?
-
-	i370
-		mostly AGS_AGS
-		also 3390 like ...
-			"1873031599_A_1873031599_A"
-			"1873031620_A_1873031620_A"
-			"1873031691_A_1873031691_A"
-		which may be ok of they are controls?
-
-	CIDR
-		not sure what these will look like
 
 
 need to create case lists for all datasets and subsets (done for onco and i370?)
@@ -309,17 +295,14 @@ need to create case lists for all datasets and subsets (done for onco and i370?)
 	AGS_Onco_LrGG_IDHwt_meta_cases
 
 
-need to merge imputed dose.vcf.gz files to create vcf
-	filter?
-	minimum R2? - Geno's file seem to only include R2>0.8
-
 
 ###	Concat
 
-onco is gonna take about a day
-i370 is gonna take more
+gonna take about a day
 
 #    --wrap="module load bcftools; bcftools concat --output ${s}-${b}/concated.vcf.gz ${s}-${b}/chr{?,??}.QC.vcf.gz; bcftools index --tbi ${s}-${b}/concated.vcf.gz; chmod -w ${s}-${b}/concated.vcf.gz ${s}-${b}/concated.vcf.gz.tbi"
+
+don't include X as not in all datasets?
 
 ```BASH
 for s in topmed umich19 umich38 ; do
