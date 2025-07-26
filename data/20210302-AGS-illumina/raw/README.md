@@ -6,6 +6,7 @@ https://pmc.ncbi.nlm.nih.gov/articles/PMC9247888/
 
 The second dataset (AGS-i370) included 659 cases and 586 controls from the UCSF Adult Glioma study genotyped on the Illumina HumanHap370duo panel.
 
+Within the I370 dataset, the non-AGS prefix controls are these illumina “icontrols” meaning they were provided by illumina, I never used these in any study, per Margaret’s advice.
 
 
 FAM file format
