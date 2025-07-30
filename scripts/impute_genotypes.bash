@@ -14,8 +14,9 @@ r2Filter="0.3"
 #pgscatalog="apps@pgs-catalog-20240318@1.0"
 #traits="all"
 #ancestry=""	#	"apps@ancestry@1.0.0"
-#phasing="eagle"
-population=all
+phasing="eagle"
+#population=all
+population="off"
 
 files=""
 
@@ -35,6 +36,10 @@ while [ $# -gt 0 ] ; do
 #			shift;pgscatalog="${1}";shift;;
 #		-t|--traits)
 #			shift;traits="${1}";shift;;
+		-p|--population)
+			shift;population="${1}";shift;;
+#		--phasing)
+#			shift;phasing="${1}";shift;;
 #		-a|--ancestry)
 #			shift;ancestry="${1}";shift;;
 		-*)
@@ -63,8 +68,12 @@ fi
 
 
 #command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" ${files}"
-command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" -F \"population=${population}\" ${files}"
+command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" -F \"phasing=${phasing}\" -F \"population=${population}\" ${files}"
 
+
+#if [ -n "${population}" ] ; then
+#	command="${command} -F \"population=${population}\""
+#fi
 
 #if [ -n "${ancestry}" ] ; then
 #	command="${command} -F \"ancestry=${ancestry}\""
