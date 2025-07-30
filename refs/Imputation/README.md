@@ -188,3 +188,26 @@ minimac4 --compress-reference reference.{sav,bcf,vcf.gz} > reference.msav
 wget https://github.com/genepi/imputationserver-utils/releases/download/v1.5.2/imputationserver-utils.tar.gz
 
 
+
+##	20250728
+
+I need to use the appropriate reference panels for pre imputation
+
+Probably gonna need to liftover before running these.
+
+
+```
+curl 'https://legacy.bravo.sph.umich.edu/freeze5/hg38/download/all' -H 'Accept-Encoding: gzip, deflate, br' -H 'Cookie: _ga=GA1.1.1792212135.1750794773; _ga_5B596RM26L=GS2.1.s1751048505$o2$g0$t1751048505$j60$l0$h0; _ga_HD76LS6C66=GS2.1.s1753728849$o7$g1$t1753728849$j60$l0$h0; remember_token="jakewendt@gmail.com|c656dbb6108ba22061ea6f87e43e9dc62222abc6a95334adbaae7f1286e682aec1166982f19e4e97d5e37ada405b638872b045643018eafb219b8c31bc1e2e40"' --compressed > bravo-dbsnp-all.vcf.gz
+
+ln -s bravo-dbsnp-all.vcf.gz ALL.TOPMed_freeze5_hg38_dbSNP.vcf.gz
+./CreateTOPMed.pl -i ALL.TOPMed_freeze5_hg38_dbSNP.vcf.gz
+```
+
+
+Not clear which reference this is hg19 or hg38.
+
+```
+wget https://www.chg.ox.ac.uk/~wrayner/tools/1000GP_Phase3_combined.legend.gz
+```
+
+
