@@ -157,6 +157,12 @@ done
 
 ##	Check BIM and split
 
+
+The `HRC-1000G-check-bim.pl` requires that the chromosomes be numeric at this stage regardless of hg19 or hg38.
+
+
+###	HRC
+
 Not using HRC but running this anyway for comparison.
 
 ```BASH
@@ -180,6 +186,8 @@ done
 ```
 
 
+###	1000g
+
 Link the original hg19 versions of plink files
 
 ```BASH
@@ -199,36 +207,13 @@ Check against a 1000 genomes panel
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep-${b}-1000g/${b}.bim --frequency ${PWD}/prep-${b}-1000g/${b}.frq --ref /francislab/data1/refs/Imputation/1000GP_Phase3_combined.legend --1000g" --out=${PWD}/prep-${b}-1000g/HRC-1000G-check-bim.pl.log
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose --bim ${PWD}/prep-${b}-1000g/${b}.bim --frequency ${PWD}/prep-${b}-1000g/${b}.frq --ref /francislab/data1/refs/Imputation/1000GP_Phase3_combined.legend --1000g" --out=${PWD}/prep-${b}-1000g/HRC-1000G-check-bim.pl.log
 done
 ```
 
 
 
-#	#	convert hg38 back to bed/bim/fam (will lose case/control sex values)
-#	#	
-#	#	```BASH
-#	#	for b in i370 onco cidr tcga ; do
-#	#	sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b} --wrap="module load plink2; plink2 --threads 4 --vcf prep-${b}/${b}.hg38.filtered.vcf.gz --output-chr chrM --make-bed --out prep-${b}/${b}.hg38; chmod -w prep-${b}/${b}.hg38.{bed,bim,fam}"  --out=${PWD}/prep-${b}/hg38_vcf_to_bed.log
-#	#	done
-#	#	```
-
-
-
-
-
-
-
-#	#	Create frequency file for hg38 bed/bim/fam file
-#	#	
-#	#	```BASH
-#	#	for b in i370 onco cidr tcga ; do
-#	#	sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_freq --wrap="module load plink; plink --freq --bfile ${PWD}/prep-${b}/${b}.hg38 --out ${PWD}/prep-${b}/${b}.hg38;chmod -w ${PWD}/prep-${b}/${b}.hg38.frq" --out=${PWD}/prep-${b}/plink.create_frequency_file.hg38.log
-#	#	done
-#	#	```
-
-
-
+###	TOPMed
 
 Link hg38 files in prep for checking again TOPMed panel
 
@@ -251,33 +236,23 @@ Dropping to 4/30 as don't think I actually need 8/60
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep-${b}-TOPMed/${b}.bim --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" --out=${PWD}/prep-${b}-TOPMed/HRC-1000G-check-bim.pl.log
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose --bim ${PWD}/prep-${b}-TOPMed/${b}.bim --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" --out=${PWD}/prep-${b}-TOPMed/HRC-1000G-check-bim.pl.log
 done
 
 ```
 
 
+i370 loses A LOT. Testing a lower frequency threshold. Probably should raise it, but trying --noexclude.
 
+i370 still ends up failing ...
 
+```
+Warning: 2 Chunk(s) excluded: < 20 SNPs (see chunks-excluded.txt for details).
+Warning: 287 Chunk(s) excluded: reference overlap < 50.0% (see chunks-excluded.txt for details).
+Remaining chunk(s): 1
+```
 
-#	#	
-#	#	Not sure that it worked. Nothing is filtered and all lines ...
-#	#	
-#	#	Argument "chr22" isn't numeric in numeric le (<=) at /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl line 507, <IN> line 70379.
-#	#	
-#	#	The script expects numeric chromosomes only
-#	#	
-#	#	Removing the "chr" with sed from the bim files. Not sure if I needed to add it previously for the liftover
-#	#	
-
-
-
-
-
-
-
-
-
+For consistency, using the 1000g filtered data on TOPMed. Not sure if this is the best decision.
 
 
 
@@ -330,6 +305,30 @@ done; done
 
 That should be good.
 
+
+
+
+
+i370 lost quite a bit and many of the surviving chunks fail on TOPMed
+
+Exclude is HIGH
+Force-Allele1 is LOW
+ID is HIGH
+Strand Flip is LOW
+
+
+```BASH
+ll prep-*/*updated.bed
+-r--r----- 1 gwendt francislab  316234383 Jul 29 19:14 prep-i370-1000g/i370-updated.bed
+-r--r----- 1 gwendt francislab  337594953 Jul 29 19:14 prep-i370-HRC/i370-updated.bed
+-r--r----- 1 gwendt francislab   12815883 Jul 30 08:05 prep-i370-TOPMed/i370-updated.bed   <----- < 5% of others
+-r--r----- 1 gwendt francislab  422324451 Jul 29 19:14 prep-onco-1000g/onco-updated.bed
+-r--r----- 1 gwendt francislab  440367567 Jul 29 19:14 prep-onco-HRC/onco-updated.bed
+-r--r----- 1 gwendt francislab  424606731 Jul 29 19:14 prep-onco-TOPMed/onco-updated.bed
+-r--r----- 1 gwendt francislab 1057654152 Jul 29 19:14 prep-tcga-1000g/tcga-updated.bed
+-r--r----- 1 gwendt francislab 1096467595 Jul 29 19:14 prep-tcga-HRC/tcga-updated.bed
+-r--r----- 1 gwendt francislab 1079667521 Jul 29 19:15 prep-tcga-TOPMed/tcga-updated.bed
+```
 
 
 
@@ -421,12 +420,26 @@ TOPMed apps@topmed-r3
 TOPMed checked hg38
 
 ```BASH
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-tcga prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-onco prep-onco-TOPMed/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-i370 prep-i370-TOPMed/i370-updated-chr*.vcf.gz
-
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250801-cidr prep-cidr-TOPMed/cidr-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-tcga prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-onco prep-onco-TOPMed/onco-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-i370 prep-i370-TOPMed/i370-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250801-cidr prep-cidr-TOPMed/cidr-updated-chr*.vcf.gz
 ```
+
+
+i370 almost entirely fails. Bad liftover??? Check script removes most. Imputation removes most of what's left.
+
+I'd love to get ahold of a hg19 TOPMed panel to use instead of the hg38
+
+
+```
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250730-i370-1kg prep-i370-1000g/i370-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250729-tcga-1kg prep-tcga-1000g/tcga-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250729-onco-1kg prep-onco-1000g/onco-updated-chr*.vcf.gz
+
+```
+
+
 
 
 UMich 1000g checked hg19
@@ -436,11 +449,7 @@ Population 'all' is not supported by reference panel '1000g-phase-3-v5'.
 ```BASH
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250729-tcga-1kghg19 prep-tcga-1000g/tcga-updated-chr*.vcf.gz
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250729-onco-1kghg19 prep-onco-1000g/onco-updated-chr*.vcf.gz
-
-
-
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250729-i370-1kghg19 prep-i370-1000g/i370-updated-chr*.vcf.gz
-
 
 
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -p off -n 20250801-cidr-1kghg19  prep-cidr-1000g/cidr-updated-chr*.vcf.gz
@@ -473,8 +482,8 @@ impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250801-ci
 ##	Download
 
 ```BASH
-mkdir topmed-onco
-cd topmed-onco
+mkdir imputed-topmed-onco
+cd imputed-topmed-onco
 
 
 
@@ -482,8 +491,8 @@ cd topmed-onco
 cd ..
 
 
-mkdir topmed-i370
-cd topmed-i370
+mkdir imputed-topmed-i370
+cd imputed-topmed-i370
 
 
 
@@ -491,66 +500,58 @@ cd topmed-i370
 cd ..
 
 
-mkdir topmed-tcga
-cd topmed-tcga
+mkdir imputed-topmed-tcga
+cd imputed-topmed-tcga
 
 
 
 
 cd ..
 
-mkdir topmed-cidr
-cd topmed-cidr
+mkdir imputed-topmed-cidr
+cd imputed-topmed-cidr
 
 
 
 
 cd ..
 
-chmod -w topmed-*/*
+chmod -w imputed-topmed-*/*
 ```
 
 ```
-mkdir umich19-onco
-cd umich19-onco
+mkdir imputed-umich19-onco
+cd imputed-umich19-onco
+curl -sL https://imputationserver.sph.umich.edu/get/GZhNBZDWp822Z0EZTUzPvIbgBCaU9K2zEQyvOYuq | bash
+cd ..
+
+mkdir imputed-umich19-i370
+cd imputed-umich19-i370
+curl -sL https://imputationserver.sph.umich.edu/get/twyYnI3P5v3XZ3WbdNGabELUWFU4mNtiHnBKLrcO | bash
+cd ..
+
+mkdir imputed-umich19-tcga
+cd imputed-umich19-tcga
+curl -sL https://imputationserver.sph.umich.edu/get/OaRAlzXs2TAxbwD1wQcDdpMIDZRWHHj5AuAewlCU | bash
+cd ..
+
+
+
+
+mkdir imputed-umich19-cidr
+cd imputed-umich19-cidr
 
 
 
 
 cd ..
 
-
-mkdir umich19-i370
-cd umich19-i370
-
-
-
-
-cd ..
-
-
-mkdir umich19-tcga
-cd umich19-tcga
-
-
-
-
-cd ..
-
-mkdir umich19-cidr
-cd umich19-cidr
-
-
-
-
-cd ..
-
-chmod -w umich19-*/*
+chmod -w imputed-umich19-*/*
 ```
 
 ```
-mkdir umich38-onco
-cd umich38-onco
+mkdir imputed-umich38-onco
+cd imputed-umich38-onco
 
 
 
@@ -558,8 +559,8 @@ cd umich38-onco
 cd ..
 
 
-mkdir umich38-i370
-cd umich38-i370
+mkdir imputed-umich38-i370
+cd imputed-umich38-i370
 
 
 
@@ -567,23 +568,23 @@ cd umich38-i370
 cd ..
 
 
-mkdir umich38-tcga
-cd umich38-tcga
+mkdir imputed-umich38-tcga
+cd imputed-umich38-tcga
 
 
 
 
 cd ..
 
-mkdir umich38-cidr
-cd umich38-cidr
+mkdir imputed-umich38-cidr
+cd imputed-umich38-cidr
 
 
 
 
 cd ..
 
-chmod -w umich38-*/*
+chmod -w imputed-umich38-*/*
 ```
 
 
