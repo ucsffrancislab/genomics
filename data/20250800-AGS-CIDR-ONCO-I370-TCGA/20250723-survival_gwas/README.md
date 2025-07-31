@@ -488,6 +488,7 @@ cd imputed-topmed-onco
 
 
 
+chmod -w *
 cd ..
 
 
@@ -497,6 +498,7 @@ cd imputed-topmed-i370
 
 
 
+chmod -w *
 cd ..
 
 
@@ -506,6 +508,7 @@ cd imputed-topmed-tcga
 
 
 
+chmod -w *
 cd ..
 
 mkdir imputed-topmed-cidr
@@ -514,25 +517,27 @@ cd imputed-topmed-cidr
 
 
 
+chmod -w *
 cd ..
-
-chmod -w imputed-topmed-*/*
 ```
 
 ```
 mkdir imputed-umich19-onco
 cd imputed-umich19-onco
 curl -sL https://imputationserver.sph.umich.edu/get/GZhNBZDWp822Z0EZTUzPvIbgBCaU9K2zEQyvOYuq | bash
+chmod -w *
 cd ..
 
 mkdir imputed-umich19-i370
 cd imputed-umich19-i370
 curl -sL https://imputationserver.sph.umich.edu/get/twyYnI3P5v3XZ3WbdNGabELUWFU4mNtiHnBKLrcO | bash
+chmod -w *
 cd ..
 
 mkdir imputed-umich19-tcga
 cd imputed-umich19-tcga
 curl -sL https://imputationserver.sph.umich.edu/get/OaRAlzXs2TAxbwD1wQcDdpMIDZRWHHj5AuAewlCU | bash
+chmod -w *
 cd ..
 
 
@@ -544,9 +549,8 @@ cd imputed-umich19-cidr
 
 
 
+chmod -w *
 cd ..
-
-chmod -w imputed-umich19-*/*
 ```
 
 ```
@@ -556,6 +560,7 @@ cd imputed-umich38-onco
 
 
 
+chmod -w *
 cd ..
 
 
@@ -565,6 +570,7 @@ cd imputed-umich38-i370
 
 
 
+chmod -w *
 cd ..
 
 
@@ -574,6 +580,7 @@ cd imputed-umich38-tcga
 
 
 
+chmod -w *
 cd ..
 
 mkdir imputed-umich38-cidr
@@ -582,9 +589,8 @@ cd imputed-umich38-cidr
 
 
 
+chmod -w *
 cd ..
-
-chmod -w imputed-umich38-*/*
 ```
 
 
