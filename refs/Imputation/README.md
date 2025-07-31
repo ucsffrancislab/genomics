@@ -211,3 +211,27 @@ wget https://www.chg.ox.ac.uk/~wrayner/tools/1000GP_Phase3_combined.legend.gz
 ```
 
 
+
+
+
+
+Trying to get a TOPMed reference for hg19. Freeze3a seems to no longer be accessible, but I'm finding some references.
+
+https://legacy.bravo.sph.umich.edu/freeze3a/hg19 bounces to https://legacy.bravo.sph.umich.edu/freeze5/hg38/
+
+https://topmed.nhlbi.nih.gov/sequencing-and-data-processing-methods-freeze3a
+
+https://github.com/statgen/topmed_freeze3_calling
+
+
+https://share.sph.umich.edu/gotcloud/ref/
+
+wget https://share.sph.umich.edu/gotcloud/ref/h37-db142-v1.tgz
+wget https://share.sph.umich.edu/gotcloud/ref/hs37d5-db142-v1.tgz
+
+
+tar xvfz h37-db142-v1.tgz gotcloud.ref/dbsnp_142.b37.vcf.gz
+ln -s gotcloud.ref/dbsnp_142.b37.vcf.gz ALL.TOPMed_freeze3a_hg19_dbSNP.vcf.gz
+./CreateTOPMed.pl -i ALL.TOPMed_freeze3a_hg19_dbSNP.vcf.gz
+
+
