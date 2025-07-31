@@ -4,23 +4,27 @@
 Use the prep from ../20250723-survival_gwas
 
 
-```
+```BASH
 ln -s ../20250723-survival_gwas/prep-onco-1000g
 ln -s ../20250723-survival_gwas/prep-i370-1000g
 ln -s ../20250723-survival_gwas/prep-cidr-1000g
 ln -s ../20250723-survival_gwas/prep-tcga-1000g
-
 ```
 
 
 ##	Impute Genotypes for all 4 datasets
 
 
-```
+```BASH
 for b in onco i370 cidr tcga ; do
 impute_pgs.bash -b hg19 -n 20250730-1kghg19-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase-3-v5@2.0.0 prep-${b}-1000g/${b}-updated-chr*.vcf.gz
-impute_pgs.bash -b hg19 -n 20250730-1kghg38-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase3-deep@1.0.0 prep-${b}-1000g/${b}-updated-chr*.vcf.gz
 done
+```
+
+These all fail with `Error: More than 100 allele switches have been detected. Imputation cannot be started!`
+
+```BASH
+#impute_pgs.bash -b hg19 -n 20250730-1kghg38-${b} -a apps@ancestry@1.0.0 -r apps@1000g-phase3-deep@1.0.0 prep-${b}-1000g/${b}-updated-chr*.vcf.gz
 ```
 
 
@@ -28,7 +32,7 @@ done
 
 ##	Download
 
-```
+```BASH
 mkdir pgs-onco-hg19
 cd pgs-onco-hg19
 
@@ -48,7 +52,10 @@ mkdir pgs-tcga-hg19
 cd pgs-tcga-hg19
 
 cd ..
+```
 
+
+```BASH
 mkdir pgs-onco-hg38
 cd pgs-onco-hg38
 
