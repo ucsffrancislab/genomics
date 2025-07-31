@@ -223,15 +223,45 @@ https://topmed.nhlbi.nih.gov/sequencing-and-data-processing-methods-freeze3a
 
 https://github.com/statgen/topmed_freeze3_calling
 
-
 https://share.sph.umich.edu/gotcloud/ref/
 
+```
 wget https://share.sph.umich.edu/gotcloud/ref/h37-db142-v1.tgz
 wget https://share.sph.umich.edu/gotcloud/ref/hs37d5-db142-v1.tgz
-
 
 tar xvfz h37-db142-v1.tgz gotcloud.ref/dbsnp_142.b37.vcf.gz
 ln -s gotcloud.ref/dbsnp_142.b37.vcf.gz ALL.TOPMed_freeze3a_hg19_dbSNP.vcf.gz
 ./CreateTOPMed.pl -i ALL.TOPMed_freeze3a_hg19_dbSNP.vcf.gz
+```
+
+This vcf doesn't contain the same fields as the Freeze5/hg38 vcf so the results are empty.
+
+Could add `-a`, but there won't be any frequencies so I'm not sure how useful it would be.
+
+
+
+
+
+```
+ 40405506 HRC.r1-1.GRCh37.wgs.mac5.sites.tab
+
+ 85167454 1000GP_Phase3_combined.legend
+
+549411155 ALL.TOPMed_freeze5_hg38_dbSNP.vcf.gz ( bravo-dbsnp-all.vcf.gz )
+463071133 PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab <---
+
+111666093 ALL.TOPMed_freeze3a_hg19_dbSNP.vcf.gz ( dbsnp_142.b37.vcf.gz )
+ 80653906 (contain a CAF which are actually 1000G frequencies. I checked the first 10. They are identical.)
+
+```
+
+```
+zcat ALL.TOPMed_freeze3a_hg19_dbSNP.vcf.gz | grep CAF | head  ( chr position CAF-second-number )
+sort -k2n,2 -k3n,3 1000GP_Phase3_combined.legend | head   ( chr position ALL )
+```
+
+
+
+
 
 
