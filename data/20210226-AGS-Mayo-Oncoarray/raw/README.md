@@ -43,6 +43,11 @@ cut -d' ' -f2,5,6 AGS_Mayo_Oncoarray_for_QC.fam | awk '(/AGS/){print "AGS",$2,$3
     750 num 2 1
     482 num 2 2
 
+cut -d' ' -f2,6 AGS_Mayo_Oncoarray_for_QC.fam | awk '(/AGS/){print "AGS",$2}(!/AGS/){print "num",$2}' | sort | uniq -c
+    331 AGS 1
+   1008 AGS 2
+   1869 num 1
+   1157 num 2
 ```
 
 
