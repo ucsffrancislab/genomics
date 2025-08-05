@@ -57,11 +57,13 @@ pheno.file <- read.table(cov_filename, sep="", header=TRUE, stringsAsFactors = F
 pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
 
 
-if( dataset == "onco" ) {
+if( dataset == "i370" ) {
+	#	I370
+	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+}else{
+  # Onco and TCGA
 	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
 	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-}else{
-	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 }
 
 
