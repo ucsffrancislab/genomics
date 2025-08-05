@@ -62,7 +62,7 @@ cp $IDfile      $TMPDIR/
 #		bcftools view -S samples_to_keep.txt input.vcf > filtered.vcf 
 #		-S (samples-file): Provide a file containing sample IDs (one per line) to include or exclude. 
 
-bcftools view -S $TMPDIR/$( basename $IDfile ) -Oz -o $TMPDIR/${subset}.vcf.gz $TMPDIR/$( basename $vcffile ) 
+bcftools view --force-samples -S $TMPDIR/$( basename $IDfile ) -Oz -o $TMPDIR/${subset}.vcf.gz $TMPDIR/$( basename $vcffile ) 
 bcftools index --tbi $TMPDIR/${subset}.vcf.gz
 
 #zcat $TMPDIR/$( basename $vcffile ) | \
