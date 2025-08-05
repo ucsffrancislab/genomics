@@ -31,10 +31,14 @@ if [ ${dataset} == "onco" ] ; then
 	array="20210226-AGS-Mayo-Oncoarray"
 	base="AGS_Onco"
 	covariates="AGS_Mayo_Oncoarray_covariates.txt"
-elif [ ${dataset} == "il370" ] ; then
+elif [ ${dataset} == "il370" -o ${dataset} == "i370" ] ; then
 	array="20210302-AGS-illumina"
 	base="AGS_i370"
 	covariates="AGS_illumina_covariates.txt"
+elif [ ${dataset} == "tcga" ] ; then
+	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
+	base="TCGA"
+	covariates="TCGA_WTCCC_covariates.txt"
 else
 	echo "Unknown dataset"
 	exit 1
