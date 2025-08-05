@@ -29,15 +29,15 @@ done
 
 if [ ${dataset} == "onco" ] ; then
 	array="20210226-AGS-Mayo-Oncoarray"
-	base="AGS_Onco"
+#	base="AGS_Onco"
 	covariates="AGS_Mayo_Oncoarray_covariates.txt"
 elif [ ${dataset} == "il370" -o ${dataset} == "i370" ] ; then
 	array="20210302-AGS-illumina"
-	base="AGS_i370"
+#	base="AGS_i370"
 	covariates="AGS_illumina_covariates.txt"
 elif [ ${dataset} == "tcga" ] ; then
 	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
-	base="TCGA"
+#	base="TCGA"
 	covariates="TCGA_WTCCC_covariates.txt"
 else
 	echo "Unknown dataset"
@@ -48,7 +48,10 @@ cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#
 cp $vcffile     $TMPDIR/
 cp $vcffile.tbi $TMPDIR/
 
-for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+#for IDfile in ${PWD}/${dataset}/cases/${dataset}*meta*cases.txt ; do
+for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
+
 	subset=$( basename ${IDfile} .txt )
 	echo $subset
 
