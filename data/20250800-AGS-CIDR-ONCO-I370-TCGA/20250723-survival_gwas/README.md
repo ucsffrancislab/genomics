@@ -601,18 +601,19 @@ commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 
 
 
 ```BASH
-mkdir lists-onco
-mkdir lists-i370
-mkdir lists-tcga
-mkdir lists-cidr
+#mkdir lists-onco
+#mkdir lists-i370
+#mkdir lists-tcga
+#mkdir lists-cidr
+mkdir lists
 ```
 
 Link Geno's lists for reference
 ```BASH
-ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt lists-onco/onco_glioma_cases.txt
-ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt lists-i370/i370_glioma_cases.txt
-sort lists-onco/onco_glioma_cases.txt > lists-onco/onco_glioma_cases.sorted.txt
-sort lists-i370/i370_glioma_cases.txt > lists-i370/i370_glioma_cases.sorted.txt
+ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_Onco_glioma_cases.txt lists/onco_glioma_cases.txt
+ln -s /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/AGS_i370_glioma_cases.txt lists/i370_glioma_cases.txt
+sort lists/onco_glioma_cases.txt > lists/onco_glioma_cases.sorted.txt
+sort lists/i370_glioma_cases.txt > lists/i370_glioma_cases.sorted.txt
 
 #	--- CIDR glioma case list
 ```
@@ -634,10 +635,10 @@ hg38's fam files DO NOT INCLUDE Sex and Phenotype as they get lost in the liftov
 
 Onco and I370
 ```BASH
-awk '($6==2){print $1"_"$2}' hg19-onco/onco.fam > lists-onco/cases.txt
-awk '($6==2){print $1"_"$2}' hg19-onco/onco.fam | sort > lists-onco/cases.sorted.txt
-awk '($6==2){print $1"_"$2}' hg19-i370/i370.fam > lists-i370/cases.txt
-awk '($6==2){print $1"_"$2}' hg19-i370/i370.fam | sort > lists-i370/cases.sorted.txt
+awk '($6==2){print $1"_"$2}' hg19-onco/onco.fam > lists/onco-cases.txt
+awk '($6==2){print $1"_"$2}' hg19-onco/onco.fam | sort > lists/onco-cases.sorted.txt
+awk '($6==2){print $1"_"$2}' hg19-i370/i370.fam > lists/i370-cases.txt
+awk '($6==2){print $1"_"$2}' hg19-i370/i370.fam | sort > lists/i370-cases.sorted.txt
 ```
 
 
@@ -648,8 +649,8 @@ My lists and Geno's lists are not identical. I presume some of his filtering rem
 Just GBM and LGG normal samples.
 
 ```BASH
-awk '($1~/^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|CS|DB|DH|DU|E1|EZ|F6|FG|FN|HK|HT|HW|IK|KT|OX|P5|QH|R8|RR|RY|S9|TM|TQ|VM|VV|VW|W9|WH|WY)-....-10/){print $1"_"$2}' hg19-tcga/tcga.fam > lists-tcga/cases.txt
-awk '($1~/^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|CS|DB|DH|DU|E1|EZ|F6|FG|FN|HK|HT|HW|IK|KT|OX|P5|QH|R8|RR|RY|S9|TM|TQ|VM|VV|VW|W9|WH|WY)-....-10/){print $1"_"$2}' hg19-tcga/tcga.fam | sort > lists-tcga/cases.sorted.txt
+awk '($1~/^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|CS|DB|DH|DU|E1|EZ|F6|FG|FN|HK|HT|HW|IK|KT|OX|P5|QH|R8|RR|RY|S9|TM|TQ|VM|VV|VW|W9|WH|WY)-....-10/){print $1"_"$2}' hg19-tcga/tcga.fam > lists/tcga-cases.txt
+awk '($1~/^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|CS|DB|DH|DU|E1|EZ|F6|FG|FN|HK|HT|HW|IK|KT|OX|P5|QH|R8|RR|RY|S9|TM|TQ|VM|VV|VW|W9|WH|WY)-....-10/){print $1"_"$2}' hg19-tcga/tcga.fam | sort > lists/tcga-cases.sorted.txt
 ```
 
 
@@ -670,7 +671,7 @@ for b in onco i370 tcga cidr ; do
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
     --export=None --output="${PWD}/pull_dosage-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
     --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
-    --IDfile ${PWD}/lists-${b}/cases.txt \
+    --IDfile ${PWD}/lists/${b}-cases.txt \
     --vcffile ${PWD}/imputed-${s}-${b}/concated.QC.vcf.gz --outbase ${PWD}/imputed-${s}-${b}
 
 done; done
@@ -710,6 +711,21 @@ TCGA_LrGG_IDHwt_meta_cases.txt
 ```
 
 
+```BASH
+for f in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/*_meta_cases.txt ; do
+l=$( basename ${f} )
+l=${l/TCGA_/tcga_}
+l=${l/AGS_Onco_/onco_}
+l=${l/AGS_i370_/i370_}
+ln -s ${f} lists/${l}
+done
+
+ln -s tcga-cases.txt lists/tcga_ALL_meta_cases.txt
+ln -s i370-cases.txt lists/i370_ALL_meta_cases.txt
+ln -s onco-cases.txt lists/onco_ALL_meta_cases.txt
+```
+
+
 
 ----
 
@@ -730,8 +746,8 @@ for b in onco i370 tcga cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-${s}-${b} \
   --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset ${b} --vcffile lists-${b}/${b}_glioma_cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
+  --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
 ```
@@ -747,8 +763,8 @@ for b in onco i370 tcga cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-${s}-${b} \
   --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset ${b} \
-  --dosage ${s}-${b}/${b}_glioma_cases/${b}_glioma_cases.dosage --outbase ${PWD}/gwas-${s}-${b}/
+  --time=1-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset ${b} \
+  --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
 ```
