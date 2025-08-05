@@ -47,7 +47,7 @@ ui <- fluidPage(
 
 			sliderInput(inputId = "max_odds_ratio", 
 				label = "Max Odds Ratio",
-				value = 5, min = 0, max = 10, step = 0.5),
+				value = 5, min = 1.25, max = 10, step = 0.25),
 
 			sliderTextInput("pvalue","PValue:",
 				choices=c(0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01),
