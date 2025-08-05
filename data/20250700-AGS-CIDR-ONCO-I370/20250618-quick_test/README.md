@@ -650,22 +650,34 @@ need to create case lists for all datasets and subsets (done for onco and il370?
 	Are these "cases" then compared against ALL other samples? Doesn't seem right.
 	The Onco lists do match the above naming convention ( 0_WG0238627-DNAA08_AGS40816 )
 
-	AGS_i370_HGG_IDHmut_meta_cases
-	AGS_i370_HGG_IDHwt_meta_cases
-	AGS_i370_IDHmut_meta_cases
-	AGS_i370_IDHwt_meta_cases
-	AGS_i370_LrGG_IDHmut_1p19qcodel_meta_cases
-	AGS_i370_LrGG_IDHmut_1p19qintact_meta_cases
-	AGS_i370_LrGG_IDHmut_meta_cases
-	AGS_i370_LrGG_IDHwt_meta_cases
-	AGS_Onco_HGG_IDHmut_meta_cases
-	AGS_Onco_HGG_IDHwt_meta_cases
-	AGS_Onco_IDHmut_meta_cases
-	AGS_Onco_IDHwt_meta_cases
-	AGS_Onco_LrGG_IDHmut_1p19qcodel_meta_cases
-	AGS_Onco_LrGG_IDHmut_1p19qintact_meta_cases
-	AGS_Onco_LrGG_IDHmut_meta_cases
-	AGS_Onco_LrGG_IDHwt_meta_cases
+```
+cd /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/
+
+AGS_i370_HGG_IDHmut_meta_cases.txt
+AGS_i370_HGG_IDHwt_meta_cases.txt
+AGS_i370_IDHmut_meta_cases.txt
+AGS_i370_IDHwt_meta_cases.txt
+AGS_i370_LrGG_IDHmut_1p19qcodel_meta_cases.txt
+AGS_i370_LrGG_IDHmut_1p19qintact_meta_cases.txt
+AGS_i370_LrGG_IDHmut_meta_cases.txt
+AGS_i370_LrGG_IDHwt_meta_cases.txt
+AGS_Onco_HGG_IDHmut_meta_cases.txt
+AGS_Onco_HGG_IDHwt_meta_cases.txt
+AGS_Onco_IDHmut_meta_cases.txt
+AGS_Onco_IDHwt_meta_cases.txt
+AGS_Onco_LrGG_IDHmut_1p19qcodel_meta_cases.txt
+AGS_Onco_LrGG_IDHmut_1p19qintact_meta_cases.txt
+AGS_Onco_LrGG_IDHmut_meta_cases.txt
+AGS_Onco_LrGG_IDHwt_meta_cases.txt
+TCGA_HGG_IDHmut_meta_cases.txt
+TCGA_HGG_IDHwt_meta_cases.txt
+TCGA_IDHmut_meta_cases.txt
+TCGA_IDHwt_meta_cases.txt
+TCGA_LrGG_IDHmut_1p19qcodel_meta_cases.txt
+TCGA_LrGG_IDHmut_1p19qintact_meta_cases.txt
+TCGA_LrGG_IDHmut_meta_cases.txt
+TCGA_LrGG_IDHwt_meta_cases.txt
+```
 
 
 need to merge imputed dose.vcf.gz files to create vcf
