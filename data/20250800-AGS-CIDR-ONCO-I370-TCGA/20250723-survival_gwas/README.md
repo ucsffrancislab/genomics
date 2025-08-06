@@ -533,14 +533,18 @@ done ; done
 
 Could filter the vcf with bcftools or other as well.
 
+DS or HDS??? doesn't seem to make a difference.
+
+export or recode vcf??? doesn't seem to make a difference.
+
+
 ```BASH
 for f in imputed-*/*dose.vcf.gz ; do
  b=${f%.dose.vcf.gz}
- echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.01 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --export vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
-done >> plink_commands
+ echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=HDS --maf 0.01 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --recode vcf bgz vcf-dosage=HDS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+done >> plink_commands1
 
-
-commands_array_wrapper.bash --array_file plink_commands --time 1-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --array_file plink_commands1 --time 1-0 --threads 4 --mem 30G
 
 
 #	or if the cluster's down login to n17 and ...
@@ -565,8 +569,9 @@ Using vcf-dosage=DS-force to set 0s? Nulls actually. Can mean 0, 1 or 2.
 
 gonna take about a day
 
-
 don't include X as not in all datasets?
+
+Add the filter to PASS all. may be needed later by the gwasurvival script. not sure yet though. Don't think this mattered.
 
 ```BASH
 for s in topmed umich19 ; do
@@ -575,9 +580,12 @@ for b in onco i370 tcga cidr ; do
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-${s}-${b} \
     --export=None --output="${PWD}/concat-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
     --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-    --wrap="module load bcftools; bcftools concat --output imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz; bcftools index --tbi imputed-${s}-${b}/concated.vcf.gz; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
+    --wrap="module load bcftools; bcftools concat --output - imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz | bcftools filter -s PASS -Oz -o imputed-${s}-${b}/concated.vcf.gz -Wtbi - ; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
 
 done; done
+
+
+#    --wrap="module load bcftools; bcftools concat --output imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz; bcftools index --tbi imputed-${s}-${b}/concated.vcf.gz; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
 ```
 
 
@@ -585,15 +593,20 @@ done; done
 ### QC samples
 
 
-```BASH
+export or recode?
 
+DS or HDS?
+
+
+```BASH
 for f in imputed-*/concated.vcf.gz ; do
  b=${f%.vcf.gz}
- echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --mind 0.01 --out ${b}.QC --export vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+ echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=HDS --output-chr chrM --set-all-var-ids @:#:\$r:\$a --new-id-max-allele-len 50 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=HDS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 done > plink_commands2
 
 commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 --mem 60G
 ```
+
 
 
 ###	Make some lists
@@ -601,10 +614,6 @@ commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 
 
 
 ```BASH
-#mkdir lists-onco
-#mkdir lists-i370
-#mkdir lists-tcga
-#mkdir lists-cidr
 mkdir lists
 ```
 
@@ -727,7 +736,6 @@ ln -s onco-cases.txt lists/onco_ALL_meta_cases.txt
 
 
 
-----
 
 These scripts will need edited to include CIDR
 
@@ -744,14 +752,21 @@ Make case list dir an option?
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwassurvivr-${s}-${b} \
-  --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasurvivr-${s}-${b} \
+  --export=None --output="${PWD}/gwas-gwasurvivor-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
+  --dataset ${b} --vcffile ${PWD}/imputed-${s}-${b}/concated.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
+
+#  --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
+
 ```
 
+something is off with the vcf file
+
++ cp /francislab/data1/working/20210302-AGS-illumina/20210305-covariates/AGS_illumina_covariates.txt /scratch/gwendt/764483/
++ cp /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/imputed-topmed-i370/i370-cases/i370-cases.dosage
 
 ###	spacox.bash
 
@@ -761,9 +776,9 @@ done; done
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasspacox-${s}-${b} \
-  --export=None --output="${PWD}/gwas-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=2 --mem=15G spacox.bash --dataset ${b} \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=spacox-${s}-${b} \
+  --export=None --output="${PWD}/gwas-spacox-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G spacox.bash --dataset ${b} \
   --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
