@@ -48,7 +48,9 @@ else
 fi
 
 cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#covariates.txt
-cp /francislab/data1/working/$array/20220425-Pharma/data/$dosage  $TMPDIR/
+#cp /francislab/data1/working/$array/20220425-Pharma/data/$dosage  $TMPDIR/
+#cp ${PWD}/lists/$dosage  $TMPDIR/
+cp $dosage  $TMPDIR/
 
 #for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
 for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
