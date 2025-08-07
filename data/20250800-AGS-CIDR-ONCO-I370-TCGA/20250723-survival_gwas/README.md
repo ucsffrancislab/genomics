@@ -748,6 +748,11 @@ ln -s onco-cases.txt lists/onco_ALL_meta_cases.txt
 
 
 
+SOME LISTS MAY BE TOO SMALL. EITHER REMOVE THEM OR IGNORE THEM.
+
+i370_HGG_IDHmut_meta_cases.txt
+
+
 
 These scripts will need edited to include CIDR
 
@@ -817,6 +822,76 @@ Calls: SPACox_Null_Model -> solve -> solve.default
 In addition: Warning message:
 In coxph.fit(X, Y, istrat, offset, init, control, weights = weights,  :
   Ran out of iterations and did not converge
+Execution halted
+```
+
+I have 3 more different spacox failures. They are also on the low count.
+
+This list initially has 9 (passes gwasurvivr but not spacox)
+```BASH
++ spacox.r i370 /scratch/gwendt/771787/i370-cases.dosage /scratch/gwendt/771787/AGS_illumina_covariates.txt /scratch/gwendt/771787/i370_LrGG_IDHmut_1p19qcodel_meta_cases.txt /scratch/gwendt/771787/i370_LrGG_IDHmut_1p19qcodel_meta_cases.out
+Loading required package: seqminer
+Loading required package: data.table
+Warning messages:
+1: In FUN(X[[i]], ...) : NAs introduced by coercion
+...
+9: In FUN(X[[i]], ...) : NAs introduced by coercion
+There were 50 or more warnings (use warnings() to see the first 50)
+[1] 4
+[1] 9
+[1] "Start calculating empirical CGF for martingale residuals..."
+[1] "Complete 1000/10000."
+...
+[1] "Complete 10000/10000."
+[1] "Sample size is 4."
+[1] "Number of variants is 1250641."
+[1] "Start Analyzing..."
+[1] "2025-08-07 09:42:35 PDT"
+Error in if (abs(z1) < Cutoff) { : missing value where TRUE/FALSE needed
+Calls: SPACox -> SPACox.one.SNP
+Execution halted
+```
+This list initially has 57 and passes gwasurvivr
+```BASH
++ spacox.r i370 /scratch/gwendt/771787/i370-cases.dosage /scratch/gwendt/771787/AGS_illumina_covariates.txt /scratch/gwendt/771787/i370_LrGG_IDHmut_1p19qintact_meta_cases.txt /scratch/gwendt/771787/i370_LrGG_IDHmut_1p19qintact_meta_cases.out
+Loading required package: seqminer
+Loading required package: data.table
+There were 50 or more warnings (use warnings() to see the first 50)
+There were 50 or more warnings (use warnings() to see the first 50)
+[1] 14
+[1] 57
+Error in solve.default(t(X) %*% X) :
+  system is computationally singular: reciprocal condition number = 5.39886e-27
+Calls: SPACox_Null_Model -> solve -> solve.default
+In addition: Warning message:
+In coxph.fit(X, Y, istrat, offset, init, control, weights = weights,  :
+  Ran out of iterations and did not converge
+Execution halted
+```
+
+This list initially has 41 and passes gwasurvivr
+```BASH
++ spacox.r i370 /scratch/gwendt/771787/i370-cases.dosage /scratch/gwendt/771787/AGS_illumina_covariates.txt /scratch/gwendt/771787/i370_LrGG_IDHwt_meta_cases.txt /scratch/gwendt/771787/i370_LrGG_IDHwt_meta_cases.out
+Loading required package: seqminer
+Loading required package: data.table
+There were 41 warnings (use warnings() to see them)
+There were 50 or more warnings (use warnings() to see the first 50)
+[1] 21
+[1] 41
+[1] "Start calculating empirical CGF for martingale residuals..."
+[1] "Complete 1000/10000."
+...
+[1] "Complete 10000/10000."
+Warning message:
+In coxph.fit(X, Y, istrat, offset, init, control, weights = weights,  :
+  Ran out of iterations and did not converge
+[1] "Sample size is 21."
+[1] "Number of variants is 1250641."
+[1] "Start Analyzing..."
+[1] "2025-08-07 10:19:46 PDT"
+Error in uniroot(K1_adj, c(-20, 20), extendInt = "upX", G2NB = G2NB, G2NA = G2NA,  :
+  no sign change found in 1000 iterations
+Calls: SPACox -> SPACox.one.SNP -> GetProb_SPA -> uniroot
 Execution halted
 ```
 
