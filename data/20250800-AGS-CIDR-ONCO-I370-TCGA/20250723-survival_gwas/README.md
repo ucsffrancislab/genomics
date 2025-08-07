@@ -541,8 +541,8 @@ export or recode vcf??? doesn't seem to make a difference.
 ```BASH
 for f in imputed-*/*dose.vcf.gz ; do
  b=${f%.dose.vcf.gz}
- echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=HDS --maf 0.01 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --recode vcf bgz vcf-dosage=HDS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
-done >> plink_commands1
+ echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.01 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+done > plink_commands1
 
 commands_array_wrapper.bash --array_file plink_commands1 --time 1-0 --threads 4 --mem 30G
 
@@ -571,22 +571,26 @@ gonna take about a day
 
 don't include X as not in all datasets?
 
-Add the filter to PASS all. may be needed later by the gwasurvival script. not sure yet though. Don't think this mattered.
+Add the filter to PASS all. may be needed later by the gwasurvival script. not sure yet though. Don't think this mattered, but doesn't hurt.
+
+gwasurvivr NEEDS the AF and DS tags to be Number=1 and NOT Number=A,
+so split the multiallelics (if they exist) and manually set the types.
+
 
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-${s}-${b} \
-    --export=None --output="${PWD}/concat-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+    --export=None --output="${PWD}/concat-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
     --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-    --wrap="module load bcftools; bcftools concat --output - imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz | bcftools filter -s PASS -Oz -o imputed-${s}-${b}/concated.vcf.gz -Wtbi - ; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
+    --wrap="module load bcftools; bcftools concat --output - imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz | bcftools norm --multiallelics - --output - -  | sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | bcftools filter -s PASS -Oz -o imputed-${s}-${b}/concated.vcf.gz -Wtbi - ; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
 
 done; done
 
-
-#    --wrap="module load bcftools; bcftools concat --output imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz; bcftools index --tbi imputed-${s}-${b}/concated.vcf.gz; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
 ```
+
+
 
 
 
@@ -599,9 +603,17 @@ DS or HDS?
 
 
 ```BASH
+The longest observed allele code in this dataset has length 159. If you're fine
+with the corresponding ID length, rerun with "--new-id-max-allele-len 159"
+added to your command line.
+```
+
+Setting it to 200
+
+```BASH
 for f in imputed-*/concated.vcf.gz ; do
  b=${f%.vcf.gz}
- echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=HDS --output-chr chrM --set-all-var-ids @:#:\$r:\$a --new-id-max-allele-len 50 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=HDS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+ echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 done > plink_commands2
 
 commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 --mem 60G
@@ -678,7 +690,7 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
-    --export=None --output="${PWD}/pull_dosage-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+    --export=None --output="${PWD}/pull_dosage-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
     --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
     --IDfile ${PWD}/lists/${b}-cases.txt \
     --vcffile ${PWD}/imputed-${s}-${b}/concated.QC.vcf.gz --outbase ${PWD}/imputed-${s}-${b}
@@ -753,20 +765,16 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasurvivr-${s}-${b} \
-  --export=None --output="${PWD}/gwas-gwasurvivor-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=2 --mem=15G gwasurvivr.bash \
-  --dataset ${b} --vcffile ${PWD}/imputed-${s}-${b}/concated.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
+  --export=None --output="${PWD}/gwas-gwasurvivor-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=16 --mem=120G gwasurvivr.bash \
+  --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
 
 done; done
 
-#  --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
-
 ```
 
-something is off with the vcf file
 
-+ cp /francislab/data1/working/20210302-AGS-illumina/20210305-covariates/AGS_illumina_covariates.txt /scratch/gwendt/764483/
-+ cp /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/data/imputed-topmed-i370/i370-cases/i370-cases.dosage
+
 
 ###	spacox.bash
 
@@ -777,7 +785,7 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=spacox-${s}-${b} \
-  --export=None --output="${PWD}/gwas-spacox-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --export=None --output="${PWD}/gwas-spacox-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=16 --mem=120G spacox.bash --dataset ${b} \
   --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/
 
@@ -794,7 +802,7 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=merge-${s}-${b} \
-  --export=None --output="${PWD}/merge-${s}-${b}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --export=None --output="${PWD}/merge-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
   merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${s}-${b}/
 
