@@ -760,6 +760,29 @@ Make case list dir an option?
 
 ###	gwasurvivr.bash
 
+
+Occassional completion with no results?
+
+```BASH
+Analyzing chunk 108900-109000
+Analysis completed on 2025-08-07 at 08:25:13
+578 SNPs were removed from the analysis for not meeting the threshold criteria.
+List of removed SNPs can be found in /scratch/gwendt/771767/i370_HGG_IDHmut_meta_cases.snps_removed
+ SNPs were analyzed in total
+The survival output can be found at /scratch/gwendt/771767/i370_HGG_IDHmut_meta_cases.coxph
++ ls -l /scratch/gwendt/771767/
+total 114812
+-rw-r----- 1 gwendt francislab    396101 Aug  7 07:35 AGS_illumina_covariates.txt
+-rw-r----- 1 gwendt francislab 116942257 Aug  7 07:35 i370-cases.vcf.gz
+-rw-r----- 1 gwendt francislab    166884 Aug  7 07:35 i370-cases.vcf.gz.tbi
+-rw-r----- 1 gwendt francislab         1 Aug  7 08:10 i370_HGG_IDHmut_meta_cases.coxph
+-rw-r----- 1 gwendt francislab     46046 Aug  7 08:25 i370_HGG_IDHmut_meta_cases.snps_removed
+-rw-r-x--- 1 gwendt francislab       576 Aug  7 08:07 i370_HGG_IDHmut_meta_cases.txt
+```
+
+
+
+
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
@@ -777,6 +800,25 @@ done; done
 
 
 ###	spacox.bash
+
+Occassional failures
+
+```BASH
++ spacox.r i370 /scratch/gwendt/771787/i370-cases.dosage /scratch/gwendt/771787/AGS_illumina_covariates.txt /scratch/gwendt/771787/i370_HGG_IDHmut_meta_cases.txt /scratch/gwendt/771787/i370_HGG_IDHmut_meta_cases.out
+Loading required package: seqminer
+Loading required package: data.table
+There were 32 warnings (use warnings() to see them)
+There were 50 or more warnings (use warnings() to see the first 50)
+[1] 14
+[1] 32
+Error in solve.default(t(X) %*% X) : 
+  Lapack routine dgesv: system is exactly singular: U[17,17] = 0
+Calls: SPACox_Null_Model -> solve -> solve.default
+In addition: Warning message:
+In coxph.fit(X, Y, istrat, offset, init, control, weights = weights,  :
+  Ran out of iterations and did not converge
+Execution halted
+```
 
 
 
