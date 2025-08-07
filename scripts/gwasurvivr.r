@@ -46,40 +46,155 @@ library(SNPRelate)
 
 options("gwasurvivr.cores"=ncores)
 
-# Read in the data 
-sample_list = read.csv(sample_list_filename, header = FALSE)
+
 
 vcf.file <- imputed_file
+print(vcf.file)
 
-# AGS Onco Specific 
+
+		#	This takes quite a while
+		#print("Reading vcf to get the sample ids in it")
+		#data <- readVcf(vcf.file, param=ScanVcfParam(geno="GT", info=c("AF", "MAF", "R2", "ER2")))
+		#	This is fast
+		vcf_header <- scanVcfHeader(vcf.file)
+		print(vcf_header)
+
+
+
+# Read in the data 
+sample_list = read.csv(sample_list_filename, header = FALSE)
+sample.ids = sample_list[,1]
+head(sample.ids)
+
+
+
+		print(paste("Sample ids length before ",length(sample.ids)))
+		print("Geno's sample id filter")
+		# sample IDS not in the genotype file for some reason
+		#ni = which((as.character(sample.ids) %in% colnames(geno(data)$GT))== FALSE)
+		#ni = which((as.character(sample.ids) %in% samples(vcf_header))== FALSE)
+		#print(paste("Found ",length(ni)," not in vcf")
+		#if(length(ni)>0){
+		#	sample.ids = sample.ids[-ni]
+		#}
+		sample.ids=intersect(as.character(sample.ids),samples(vcf_header))
+		print(paste("Sample ids length after ",length(sample.ids)))
+
+
+
+
+print("Reading pheno file")
+
 pheno.file <- read.table(cov_filename, sep="", header=TRUE, stringsAsFactors = FALSE)
-
 pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
 
 
-if( dataset == "i370" ) {
-	#	I370
-	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-}else{
-  # Onco and TCGA
+#	only ONCO has a 'source' column
+#if( dataset == "i370" ) {
+#	#	I370
+#	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+#}else{
+#  # Onco and TCGA
+#	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
+#	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+#}
+
+if( dataset == "onco" ) {
 	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
 	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+}else{
+	#	I370 and TCGA
+	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 }
 
 
+		print("Filtering sample ids in pheno file")
+		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
+		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
+		sample.ids=intersect(as.character(sample.ids),pheno.file$IID)
+		print(paste("Sample ids length after pheno filter ",length(sample.ids)))
 
 
-sample.ids = sample_list[,1]
 
+head(sample.ids)
+
+dim(pheno.file)
+print("Filtering pheno file")
 pheno.file= pheno.file[which(pheno.file$IID %in% sample.ids),]
+head(pheno.file)
+dim(pheno.file)
 
 
 if(length(unique(pheno.file$ngrade)) >1){
 	covs = c(covs, "ngrade")
 }
 
-#	be nice if knew how many "chunks" there were so knew how long
 
+
+
+
+
+
+
+
+
+#		cox.params <- coxPheno(covariate.file=pheno.file,
+#			covariates=covs,
+#			id.column='IID',
+#			inter.term=NULL,
+#			time.to.event='survdays',
+#			event='vstatus',
+#			sample.ids=sample.ids,
+#			verbose=TRUE)
+#		head(cox.params)
+#		head(cox.params$ids)
+#		
+#		#data <- readVcf(vcf.file,
+#		#	param=ScanVcfParam(geno="DS",
+#		#	info=c("AF", "MAF", "R2", "ER2")))
+#		#head(data)
+#		#	genotypes <- geno(data)$DS[, cox.params$ids, drop=FALSE]
+#		#	head(genotypes)
+#		
+#		library("vcfR")
+#		my_vcf <- read.vcfR(vcf.file)
+#		genos <- extract.gt(my_vcf, element = "DS", as.numeric=TRUE)
+#		genotypes <- genos[, as.character(sample.ids), drop=FALSE]
+#		
+#		rowmeans <- rowMeans2(genotypes)
+#		head(rowmeans)
+#		
+#		samp.exp_alt <- round(rowMeans2(genotypes)*0.5, 4)
+#		head(samp.exp_alt))
+
+
+
+
+
+
+
+#	print("Reading VCF. takes a while.")
+#	data <- readVcf(vcf.file, param=ScanVcfParam(geno="DS", info=c("AF", "MAF", "R2", "ER2")))
+#	genotypes <- geno(data)$DS[, as.character(sample.ids), drop=FALSE]
+#	print(class(genotypes))
+#	print(head(genotypes))
+
+#	print("Analyzing")
+#	a=0
+#	for(i in c(1:nrow(genotypes))){
+#		for( j in c(1:ncol(genotypes))){
+#			if(genotypes[i,j][[1]]>=0 && genotypes[i,j][[1]]<=2.0 ){
+#				a=a+1
+#			}else{
+#				print(genotypes[i,j][[1]])
+#				print(paste("row ", i,", col ", j, sep = ""))
+#			}
+#		}
+#	}
+
+
+
+#	be nice if knew how many "chunks" there were so knew how long
 
 #	Analyzing chunk 298400-298500
 #	Analyzing chunk 298500-298600
@@ -98,7 +213,7 @@ print("michiganCoxSurv")
 michiganCoxSurv(vcf.file=as.character(vcf.file),
                 covariate.file=pheno.file,
                 id.column="IID",
-                sample.ids=sample.ids,
+                sample.ids=as.character(sample.ids),
                 time.to.event="survdays",
                 event="vstatus",
                 covariates=covs,
@@ -111,20 +226,30 @@ michiganCoxSurv(vcf.file=as.character(vcf.file),
                 verbose=TRUE,
                 clusterObj=NULL)
 
-# 
-# 
-# data <- readVcf(vcf.file, param=ScanVcfParam(geno="DS", info=c("AF", "MAF", "R2", "ER2")))
-# genotypes <- geno(data)$DS[, as.character(sample.ids), drop=FALSE]
-# a=0
-# for(i in c(1:nrow(genotypes))){
-#   for( j in c(1:ncol(genotypes))){
-#     if(genotypes[i,j][[1]]>=0 && genotypes[i,j][[1]]<=2.0 ){
-#       a=a+1
-#     }else{
-#       print(genotypes[i,j][[1]])
-#       print(paste("row ", i,", col ", j, sep = ""))
-#     }
-#     
-#   }
-# }
+
+
+#	AF and DS NEED to be Number=1 AND NOT Number=A
+
+#	If DS is Number=A ...
+#
+#	Covariates included in the models are: Age, dxyear, ngrade, chemo, rad, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
+#	41 samples are included in the analysis
+#	Analyzing chunk 0-100
+#	Error in rowMeans2(genotypes) : 
+#  Argument 'x' must be of type logical, integer or numeric, not 'list'
+#	Calls: michiganCoxSurv -> coxVcfMichigan -> rowMeans2
+#	Execution halted
+
+#	If AF is Number=A ...
+#
+#	Covariates included in the models are: Age, dxyear, chemo, rad, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
+#	371 samples are included in the analysis
+#	Analyzing chunk 0-100
+#	Error in write.table(out.list$res, paste0(out.file, ".coxph"), append = FALSE,  : 
+#	 unimplemented type 'list' in 'EncodeElement'
+#	Calls: michiganCoxSurv -> write.table
+#	Execution halted
+
+#	recommended fix is bcftools norm -m- followed by sed to actually change the tag.
+
 
