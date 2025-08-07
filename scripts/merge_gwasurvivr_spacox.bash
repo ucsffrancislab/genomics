@@ -18,6 +18,8 @@ fi
 outbase=${PWD}
 while [ $# -gt 0 ] ; do
 	case $1 in
+		--idfile)
+			shift; IDfile=$1; shift;;
 		--dataset)
 			shift; dataset=$1; shift;;
 		--outbase)
@@ -28,17 +30,21 @@ while [ $# -gt 0 ] ; do
 done
 
 
-if [ ${dataset} == "onco" ] ; then
-	base="AGS_Onco"
-elif [ ${dataset} == "il370" ] ; then
-	base="AGS_i370"
-else
-	echo "Unknown dataset"
-	exit 1
-fi
+#if [ ${dataset} == "onco" ] ; then
+#	base="AGS_Onco"
+#elif [ ${dataset} == "il370" ] ; then
+#	base="AGS_i370"
+#elif [ ${dataset} == "tcga" ] ; then
+#	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
+##	base="TCGA"
+#	covariates="TCGA_WTCCC_covariates.txt"
+#else
+#	echo "Unknown dataset"
+#	exit 1
+#fi
 
 
-for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
+#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
 	subset=$( basename ${IDfile} .txt )
 	echo $subset
 
@@ -57,7 +63,7 @@ for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*met
 	\rm $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt
 	mv $TMPDIR/$subset.out $outpath/$outfile
 
-done
+#done
 
 date
 

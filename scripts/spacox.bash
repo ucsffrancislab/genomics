@@ -17,6 +17,8 @@ fi
 outbase=${PWD}
 while [ $# -gt 0 ] ; do
 	case $1 in
+		--idfile)
+			shift; IDfile=$1; shift;;
 		--dataset)
 			shift; dataset=$1; shift;;
 		--dosage)
@@ -53,7 +55,7 @@ cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#
 cp $dosage  $TMPDIR/
 
 #for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
+#for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
 	subset=$( basename ${IDfile} .txt )
 	echo $subset
 
@@ -71,7 +73,7 @@ for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
 	\rm $TMPDIR/$( basename $IDfile )
 	mv $TMPDIR/$subset.out $outpath/SPACox_$subset.txt
 
-done
+#done
 
 date
 

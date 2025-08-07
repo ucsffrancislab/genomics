@@ -16,6 +16,8 @@ fi
 outbase=${PWD}
 while [ $# -gt 0 ] ; do
 	case $1 in
+		--idfile)
+			shift; IDfile=$1; shift;;
 		--dataset)
 			shift; dataset=$1; shift;;
 		--vcffile)
@@ -50,7 +52,7 @@ cp $vcffile.tbi $TMPDIR/
 
 #for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
 #for IDfile in ${PWD}/${dataset}/cases/${dataset}*meta*cases.txt ; do
-for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
+#for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
 
 	subset=$( basename ${IDfile} .txt )
 	echo $subset
@@ -84,7 +86,7 @@ for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
 	\rm $TMPDIR/$( basename $IDfile )
 	mv $TMPDIR/$subset* $outpath/
 
-done
+#done
 
 date
 
