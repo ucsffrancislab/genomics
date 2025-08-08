@@ -391,3 +391,30 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_coll
 
 
 
+
+
+
+##	20250808
+
+
+```BASH
+
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata.tar.gz
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata.xlsx
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_cohorts.csv
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_efo_traits.csv
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_evaluation_sample_sets.csv
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_performance_metrics.csv
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_publications.csv
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_score_development_samples.csv
+wget https://ftp.ebi.ac.uk/pub/databases/spot/pgs/metadata/pgs_all_metadata_scores.csv
+
+
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ print NF }' metadata/pgs_all_metadata_scores.csv | uniq 
+sed s/\"\"sparse\”/'sparse'/ metadata/pgs_all_metadata_scores.csv > metadata/pgs_all_metadata_scores.corrected.csv
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ print NF }' metadata/pgs_all_metadata_scores.corrected.csv | uniq 
+
+```
+
+
+
