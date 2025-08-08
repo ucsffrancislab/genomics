@@ -59,6 +59,7 @@ print(vcf.file)
 		vcf_header <- scanVcfHeader(vcf.file)
 		print(vcf_header)
 
+print(paste("Sample length ",length(samples(vcf_header))," in VCF"))
 
 
 # Read in the data 
@@ -68,8 +69,9 @@ head(sample.ids)
 
 
 
-		print(paste("Sample ids length before ",length(sample.ids)))
-		print("Geno's sample id filter")
+print(paste("Sample length ",length(sample.ids)," in list"))
+
+		#print("Geno's sample id filter")
 		# sample IDS not in the genotype file for some reason
 		#ni = which((as.character(sample.ids) %in% colnames(geno(data)$GT))== FALSE)
 		#ni = which((as.character(sample.ids) %in% samples(vcf_header))== FALSE)
@@ -78,8 +80,8 @@ head(sample.ids)
 		#	sample.ids = sample.ids[-ni]
 		#}
 		sample.ids=intersect(as.character(sample.ids),samples(vcf_header))
-		print(paste("Sample ids length after ",length(sample.ids)))
 
+print(paste("Sample length ",length(sample.ids)," in list AND VCF"))
 
 
 
@@ -107,16 +109,17 @@ if( dataset == "onco" ) {
 	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 }
 
+print(paste("Sample length ",length(pheno.file$IID)," in cov file"))
 
 		print("Filtering sample ids in pheno file")
 		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
 		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
 		sample.ids=intersect(as.character(sample.ids),pheno.file$IID)
-		print(paste("Sample ids length after pheno filter ",length(sample.ids)))
 
-
+print(paste("Sample length ",length(sample.ids)," in all 3"))
 
 head(sample.ids)
+tail(sample.ids)
 
 dim(pheno.file)
 print("Filtering pheno file")

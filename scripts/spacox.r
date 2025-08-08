@@ -25,7 +25,7 @@ if (length(args)!=5) {
 
 dataset = args[1]
 
-imputed_filename = args[2] #VCF 
+imputed_filename = args[2] #VCF , actually a DOSAGE
 
 cov_filename= args[3]
 
@@ -43,42 +43,83 @@ library(survival)
 
 
 
+
 # Read in the data 
 sample_list = read.csv(sample_list_filename, header = FALSE)
-if ( dataset == "il370" ){
-	sep=""
-} else {
-	sep="\t"
-}
+
+sample.ids = sample_list[,1]
+
+print(paste("Sample length ",length(sample.ids)," in list"))
+
+
+
+
+#	I don't think the separate separators are needed. I renamed il370 to i370 and it still worked
+sep=""
+#if ( dataset == "il370" ){
+#if ( dataset == "i370" ){
+#	sep=""
+#} else {
+#	sep="\t"
+#}
 pheno.file <- read.table(cov_filename, sep=sep, header=TRUE, stringsAsFactors = FALSE)
+pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
+
+print(paste("Sample length ",length(pheno.file$IID)," in cov file"))
+
+sample.ids = intersect(sample.ids, pheno.file$IID)
+
+print(paste("Sample length ",length(sample.ids)," in list and cov file"))
+
 
 vcf.file =read.csv(imputed_filename, sep = "", header =TRUE, row.names = 1)
 vcf.file = t(vcf.file)
 
-pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
+print(paste("Sample length ",length(row.names(vcf.file))," in dosage file"))
+
+sample.ids = intersect(sample.ids, row.names(vcf.file))
+
+print(paste("Sample length ",length(sample.ids)," in all 3"))
 
 
-#sample.ids = sample_list[,1]
-
-# Convert IDs with integer first character to have an "X" at the start, to accomodate the row.names of vcf.file
-add_X =function(rname){
-	b= strsplit(rname, split = "")[[1]]
-	retname = rname
-
-	if(!is.na(as.numeric(b[1]))){
-		retname = paste("X", rname, sep ="")
-	#}else{
-	}
-	return(retname)
-}
-sample.ids = as.character(sapply(as.character(sample_list[,1]) , add_X))
-
-pheno.file$IID = as.character(sapply(as.character(pheno.file$IID), add_X))
+head(sample.ids)
+tail(sample.ids)
 
 
 
-# Alter the VCF rownames by replacing the period with a -
+
+
+
+#	Is this true? The dosage files don't have any samples that start with X
+#	
+#	
+#	# Convert IDs with integer first character to have an "X" at the start, to accomodate the row.names of vcf.file
+#	add_X =function(rname){
+#		b= strsplit(rname, split = "")[[1]]
+#		retname = rname
+#	
+#		if(!is.na(as.numeric(b[1]))){
+#			retname = paste("X", rname, sep ="")
+#		#}else{
+#		}
+#		return(retname)
+#	}
+#	sample.ids = as.character(sapply(as.character(sample_list[,1]) , add_X))
+#	
+#	pheno.file$IID = as.character(sapply(as.character(pheno.file$IID), add_X))
+
+
+
+
+
+
+
+#	Why is this needed? I'm guessing that one of these functions doesn't like the '.'
+
+# Alter the VCF rownames by replacing ALL periods with dashes.
+#	gsub would've been a cleaner solution
 dotwithdash = function(rname){
+	#return( gsub('.','-',rname,fixed=TRUE) )
 	b= strsplit(rname, split = "")[[1]]
 	b[which(b ==".")]= "-"
 	d= paste(b, collapse = "")
@@ -89,14 +130,21 @@ sample.ids = as.character(sapply(as.character(sample.ids) , dotwithdash))
 pheno.file$IID = as.character(sapply(as.character(pheno.file$IID), dotwithdash))
 
 
+
+
+#	row.names? aren't the samples in column names?
+#	the vcf.file has been transposed, so yes, row.names
+
+
 #Restrict vcf.file and pheno.file to sample.ids
 vcf.file = vcf.file[which(row.names(vcf.file) %in% sample.ids), ]
 pheno.file = pheno.file[which(pheno.file$IID %in% sample.ids), ]
 
 
-in_both = intersect(row.names(vcf.file), pheno.file$IID)
-vcf.file = vcf.file[which(row.names(vcf.file) %in% in_both), ]
-pheno.file = pheno.file[which(pheno.file$IID %in% in_both), ]
+#	I don't think we need this as I filtered earlier
+#in_both = intersect(row.names(vcf.file), pheno.file$IID)
+#vcf.file = vcf.file[which(row.names(vcf.file) %in% in_both), ]
+#pheno.file = pheno.file[which(pheno.file$IID %in% in_both), ]
 
 nrow(pheno.file)
 length(sample.ids)
@@ -107,7 +155,6 @@ length(sample.ids)
 
 
 
-#	
 
 if( dataset == "onco" ){
 	if(length(unique(pheno.file$ngrade)) >1){
