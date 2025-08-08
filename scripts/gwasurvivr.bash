@@ -22,6 +22,8 @@ while [ $# -gt 0 ] ; do
 			shift; dataset=$1; shift;;
 		--vcffile)
 			shift; vcffile=$1; shift;;
+		--covfile)
+			shift; covfile=$1; shift;;
 		--outbase)
 			shift; outbase=$1; shift;;
 		*)
@@ -29,24 +31,25 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-if [ ${dataset} == "onco" ] ; then
-	array="20210226-AGS-Mayo-Oncoarray"
-#	base="AGS_Onco"
-	covariates="AGS_Mayo_Oncoarray_covariates.txt"
-elif [ ${dataset} == "il370" -o ${dataset} == "i370" ] ; then
-	array="20210302-AGS-illumina"
-#	base="AGS_i370"
-	covariates="AGS_illumina_covariates.txt"
-elif [ ${dataset} == "tcga" ] ; then
-	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
-#	base="TCGA"
-	covariates="TCGA_WTCCC_covariates.txt"
-else
-	echo "Unknown dataset"
-	exit 1
-fi
+#if [ ${dataset} == "onco" ] ; then
+#	array="20210226-AGS-Mayo-Oncoarray"
+##	base="AGS_Onco"
+#	covariates="AGS_Mayo_Oncoarray_covariates.txt"
+#elif [ ${dataset} == "il370" -o ${dataset} == "i370" ] ; then
+#	array="20210302-AGS-illumina"
+##	base="AGS_i370"
+#	covariates="AGS_illumina_covariates.txt"
+#elif [ ${dataset} == "tcga" ] ; then
+#	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
+##	base="TCGA"
+#	covariates="TCGA_WTCCC_covariates.txt"
+#else
+#	echo "Unknown dataset"
+#	exit 1
+#fi
 
-cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#covariates.txt
+#cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#covariates.txt
+cp $covfile     $TMPDIR/
 cp $vcffile     $TMPDIR/
 cp $vcffile.tbi $TMPDIR/
 
@@ -79,7 +82,8 @@ cp $vcffile.tbi $TMPDIR/
 
 
 	#gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/covariates.txt $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
-	gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/$( basename $covariates ) $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
+	#gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/$( basename $covariates ) $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
+	gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/$( basename $covfile ) $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
 
 	ls -l $TMPDIR/
 

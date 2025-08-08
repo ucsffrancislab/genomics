@@ -567,7 +567,7 @@ Using vcf-dosage=DS-force to set 0s? Nulls actually. Can mean 0, 1 or 2.
 
 ###	Concat
 
-gonna take about a day
+gonna take about a 2-6 hours
 
 don't include X as not in all datasets?
 
@@ -587,7 +587,6 @@ for b in onco i370 tcga cidr ; do
     --wrap="module load bcftools; bcftools concat --output - imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz | bcftools norm --multiallelics - --output - -  | sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | bcftools filter -s PASS -Oz -o imputed-${s}-${b}/concated.vcf.gz -Wtbi - ; chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
 
 done; done
-
 ```
 
 
@@ -608,14 +607,25 @@ added to your command line.
 
 Setting it to 200
 
+plink2 sets DS back to Number=A, but not AF. Not sure if it merged any multiallelics.
+
+
+
 ```BASH
 for f in imputed-*/concated.vcf.gz ; do
  b=${f%.vcf.gz}
- echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+ echo "module load bcftools plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.tmp.QC --recode vcf bgz vcf-dosage=DS-force; bcftools norm --multiallelics - --output - ${b}.tmp.QC.vcf.gz  | sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | bgzip > ${b}.QC.vcf.gz; bcftools index --tbi ${b}.QC.vcf.gz ; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi; \rm ${b}.tmp.QC.vcf.gz"
 done > plink_commands2
 
 commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 --mem 60G
+
+
+
+#echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 ```
+
+
+
 
 
 
@@ -681,7 +691,7 @@ awk '($1~/^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|CS|DB|
 NEED the CIDR case list
 
 
-
+These take about 3-4 hours
 
 ```BASH
 for s in topmed umich19 ; do
@@ -747,6 +757,34 @@ ln -s onco-cases.txt lists/onco_ALL_meta_cases.txt
 
 
 
+We also need to copy the covariates files because at least one needs changed.
+
+```BASH
+awk -F"\t" '{
+if( $1 ~ /^FAM_/ ){
+gsub(/_/,"-",$1)
+sub(/-/,"_",$1)
+}
+print
+}' /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210305-covariates/TCGA_WTCCC_covariates.txt > lists/tcga_covariates.tsv
+
+awk -F"\t" '{
+if( $1 ~ /^0_WG/ ){
+gsub(/_/,"-",$1)
+sub(/-/,"_",$1)
+}
+print
+}' /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210305-covariates/AGS_Mayo_Oncoarray_covariates.txt > lists/onco_covariates.tsv
+
+cp /francislab/data1/working/20210302-AGS-illumina/20210305-covariates/AGS_illumina_covariates.txt lists/i370_covariates.tsv
+
+chmod -w lists/*_covariates.tsv
+```
+
+
+
+
+
 SOME LISTS MAY BE TOO SMALL. EITHER REMOVE THEM OR IGNORE THEM.
 
 i370_HGG_IDHmut_meta_cases.txt
@@ -769,8 +807,7 @@ i370 are all AGS
 
 Could remove the tumors from the TCGA lists, but they aren't actually in the vcf so its unnecessary.
 
-
-Correct the underscores in the onco lists
+Correct the underscores in the onco lists AND IN THE COVARIATES FILE.
 
 0_WG0238717-DNAC08_AGS55694
 
@@ -787,10 +824,35 @@ sed -i '/^0_WG/s/_/-/g;s/-/_/' lists/onco*.txt
 
 
 
+plink2 QC set DS back to Number=A. Not sure if it remerged multiallelics though.
+
+Quick correction rather than rerun. (This can take a couple hours.)
+
+```BASH
+
+for vcf in imputed-*/*cases/*cases.vcf.gz imputed-*/concated.QC.vcf.gz ; do
+
+echo "module load htslib bcftools; chmod +w ${vcf} ${vcf}.tbi; \rm ${vcf}.tbi; gunzip ${vcf}; sed -i -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' ${vcf%.gz}; bgzip ${vcf%.gz}; bcftools index --tbi ${vcf}; chmod -w ${vcf} ${vcf}.tbi"
+
+done > correction_commands
+
+commands_array_wrapper.bash --array_file correction_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+
+
+
+
+
+
 ###	gwasurvivr.bash
 
 
-Occassional completion with no results?
+Occassional completion with no results? Dataset is too small
 
 ```BASH
 Analyzing chunk 108900-109000
@@ -817,7 +879,7 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id}
+echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id} --covfile lists/${b}_covariates.tsv
 
 done; done ; done > gwas_commands
 
@@ -829,7 +891,7 @@ commands_array_wrapper.bash --array_file gwas_commands --time 1-0 --threads 16 -
 
 ###	spacox.bash
 
-Occassional failures
+Occassional failures. Dataset is too small is the usual cause.
 
 ```BASH
 + spacox.r i370 /scratch/gwendt/771787/i370-cases.dosage /scratch/gwendt/771787/AGS_illumina_covariates.txt /scratch/gwendt/771787/i370_HGG_IDHmut_meta_cases.txt /scratch/gwendt/771787/i370_HGG_IDHmut_meta_cases.out
@@ -925,7 +987,7 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id}
+echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id} --covfile lists/${b}_covariates.tsv
 
 done; done ; done > spa_commands
 
