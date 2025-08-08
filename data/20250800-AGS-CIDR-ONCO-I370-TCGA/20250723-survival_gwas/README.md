@@ -592,8 +592,6 @@ done; done
 
 
 
-
-
 ### QC samples
 
 
@@ -738,7 +736,8 @@ l=$( basename ${f} )
 l=${l/TCGA_/tcga_}
 l=${l/AGS_Onco_/onco_}
 l=${l/AGS_i370_/i370_}
-ln -s ${f} lists/${l}
+\rm lists/${l}
+cp ${f} lists/${l}
 done
 
 ln -s tcga-cases.txt lists/tcga_ALL_meta_cases.txt
@@ -756,9 +755,34 @@ i370_HGG_IDHmut_meta_cases.txt
 
 These scripts will need edited to include CIDR
 
-Also, create subset case lists locally
 
-Make case list dir an option?
+
+
+
+
+
+
+
+
+
+i370 are all AGS
+
+Could remove the tumors from the TCGA lists, but they aren't actually in the vcf so its unnecessary.
+
+
+Correct the underscores in the onco lists
+
+0_WG0238717-DNAC08_AGS55694
+
+
+
+```BASH
+sed -i '/^0_WG/s/_/-/g;s/-/_/' lists/onco*.txt
+```
+
+
+
+
 
 
 
@@ -791,14 +815,13 @@ total 114812
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
+for id in lists/${b}*meta_cases.txt ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=gwasurvivr-${s}-${b} \
-  --export=None --output="${PWD}/gwas-gwasurvivor-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=16 --mem=120G gwasurvivr.bash \
-  --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/
+echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id}
 
-done; done
+done; done ; done > gwas_commands
 
+commands_array_wrapper.bash --array_file gwas_commands --time 1-0 --threads 16 --mem 120G
 ```
 
 
@@ -900,14 +923,17 @@ Execution halted
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
+for id in lists/${b}*meta_cases.txt ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=spacox-${s}-${b} \
-  --export=None --output="${PWD}/gwas-spacox-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=1-0 --nodes=1 --ntasks=16 --mem=120G spacox.bash --dataset ${b} \
-  --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/
+echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id}
 
-done; done
+done; done ; done > spa_commands
+
+commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 16 --mem 120G
 ```
+
+
+
 
 
 ###	Merge
@@ -917,13 +943,13 @@ then merge those results
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
+for id in lists/${b}*meta_cases.txt ; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=merge-${s}-${b} \
-  --export=None --output="${PWD}/merge-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
-  --time=14-0 --nodes=1 --ntasks=2 --mem=15G \
-  merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${s}-${b}/
+echo merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id}
 
-done; done
+done; done ; done > merge_commands
+
+commands_array_wrapper.bash --array_file merge_commands --time 1-0 --threads 8 --mem 60G
 ```
 
 
