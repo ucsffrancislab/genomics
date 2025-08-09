@@ -760,7 +760,7 @@ ln -s onco-cases.txt lists/onco_ALL_meta_cases.txt
 We also need to copy the covariates files because at least one needs changed.
 
 ```BASH
-awk -F"\t" '{
+awk 'BEGIN{FS=OFS="\t"}{
 if( $1 ~ /^FAM_/ ){
 gsub(/_/,"-",$1)
 sub(/-/,"_",$1)
@@ -768,7 +768,7 @@ sub(/-/,"_",$1)
 print
 }' /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20210305-covariates/TCGA_WTCCC_covariates.txt > lists/tcga_covariates.tsv
 
-awk -F"\t" '{
+awk 'BEGIN{FS=OFS="\t"}{
 if( $1 ~ /^0_WG/ ){
 gsub(/_/,"-",$1)
 sub(/-/,"_",$1)
@@ -873,7 +873,7 @@ total 114812
 
 
 
-
+These take 6 to 12 hours
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
@@ -883,7 +883,7 @@ echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-
 
 done; done ; done > gwas_commands
 
-commands_array_wrapper.bash --array_file gwas_commands --time 1-0 --threads 16 --mem 120G
+commands_array_wrapper.bash --array_file gwas_commands --time 1-0 --threads 2 --mem 15G
 ```
 
 
@@ -991,7 +991,7 @@ echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases
 
 done; done ; done > spa_commands
 
-commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 16 --mem 120G
+commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 4 --mem 30G
 ```
 
 
