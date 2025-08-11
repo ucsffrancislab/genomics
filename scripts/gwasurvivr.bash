@@ -48,22 +48,22 @@ done
 #	exit 1
 #fi
 
-#cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#covariates.txt
-cp $covfile     $TMPDIR/
-cp $vcffile     $TMPDIR/
-cp $vcffile.tbi $TMPDIR/
 
-#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-#for IDfile in ${PWD}/${dataset}/cases/${dataset}*meta*cases.txt ; do
-#for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
 
-	subset=$( basename ${IDfile} .txt )
-	echo $subset
+subset=$( basename ${IDfile} .txt )
+echo $subset
 
-	outpath="${outbase}/${subset}"
+outpath="${outbase}/${subset}"
 	
-	mkdir -p $outpath
-	
+mkdir -p $outpath
+
+if [ -f $outpath/$subset.coxph ] ; then
+	echo "$outpath/$subset.coxph exists. Skipping"
+else
+
+	cp $covfile     $TMPDIR/
+	cp $vcffile     $TMPDIR/
+	cp $vcffile.tbi $TMPDIR/
 	cp $IDfile      $TMPDIR/
 
 
@@ -89,8 +89,9 @@ cp $vcffile.tbi $TMPDIR/
 
 	\rm $TMPDIR/$( basename $IDfile )
 	mv $TMPDIR/$subset* $outpath/
+	chmod -w $outpath/$subset*
 
-#done
+fi
 
 date
 
