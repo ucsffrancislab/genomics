@@ -51,21 +51,20 @@ done
 #	exit 1
 #fi
 
-#cp /francislab/data1/working/$array/20210305-covariates/${covariates} $TMPDIR/	#covariates.txt
-#cp /francislab/data1/working/$array/20220425-Pharma/data/$dosage  $TMPDIR/
-#cp ${PWD}/lists/$dosage  $TMPDIR/
-cp $covfile $TMPDIR/
-cp $dosage  $TMPDIR/
 
-#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-#for IDfile in ${PWD}/lists/${dataset}*meta*cases.txt ; do
-	subset=$( basename ${IDfile} .txt )
-	echo $subset
+subset=$( basename ${IDfile} .txt )
+echo $subset
 
-	outpath="${outbase}/${subset}"
+outpath="${outbase}/${subset}"
 
-	mkdir -p $outpath
+mkdir -p $outpath
 
+if [ -f $outpath/SPACox_$subset.txt ] ; then
+	echo "$outpath/SPACox_$subset.txt exists. Skipping"
+else
+
+	cp $covfile $TMPDIR/
+	cp $dosage  $TMPDIR/
 	cp $IDfile $TMPDIR/
 
 	#echo spacox.r ${dataset} $TMPDIR/$dosage $TMPDIR/covariates.txt $TMPDIR/$IDfile $TMPDIR/$subset.out
@@ -76,8 +75,9 @@ cp $dosage  $TMPDIR/
 
 	\rm $TMPDIR/$( basename $IDfile )
 	mv $TMPDIR/$subset.out $outpath/SPACox_$subset.txt
+	chmod -w $outpath/SPACox_$subset.txt
 
-#done
+fi
 
 date
 
