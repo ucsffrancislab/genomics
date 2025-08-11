@@ -59,7 +59,7 @@ print(vcf.file)
 		vcf_header <- scanVcfHeader(vcf.file)
 		print(vcf_header)
 
-print(paste("Sample length ",length(samples(vcf_header))," in VCF"))
+print(paste("Sample length",length(samples(vcf_header)),"in VCF"))
 
 
 # Read in the data 
@@ -69,7 +69,7 @@ head(sample.ids)
 
 
 
-print(paste("Sample length ",length(sample.ids)," in list"))
+print(paste("Sample length",length(sample.ids),"in list"))
 
 		#print("Geno's sample id filter")
 		# sample IDS not in the genotype file for some reason
@@ -81,13 +81,14 @@ print(paste("Sample length ",length(sample.ids)," in list"))
 		#}
 		sample.ids=intersect(as.character(sample.ids),samples(vcf_header))
 
-print(paste("Sample length ",length(sample.ids)," in list AND VCF"))
+print(paste("Sample length",length(sample.ids),"in list AND VCF"))
 
 
 
 print("Reading pheno file")
 
-pheno.file <- read.table(cov_filename, sep="", header=TRUE, stringsAsFactors = FALSE)
+#	Some pheno files include spaces in the fields so this MUST be a tab sep
+pheno.file <- read.table(cov_filename, sep="\t", header=TRUE, stringsAsFactors = FALSE)
 pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
 
 
@@ -101,22 +102,51 @@ pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
 #	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 #}
 
-if( dataset == "onco" ) {
-	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
-	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-}else{
-	#	I370 and TCGA
-	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-}
 
-print(paste("Sample length ",length(pheno.file$IID)," in cov file"))
+#if( dataset == "onco" ) {
+#	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
+#	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+#}else if(dataset == 'i370') {
+#	#	I370 and TCGA
+#	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+#}else{
+#	covs = c("age", "SexFemale", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+#}
+
+covs=c()
+if( 'source' %in% names(pheno.file) ){
+	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
+	covs=c(covs,"SourceAGS")
+}
+if( 'age' %in% names(pheno.file) ) covs=c(covs,"age")
+if( 'Age' %in% names(pheno.file) ) covs=c(covs,"Age")
+if( 'chemo' %in% names(pheno.file) ) covs=c(covs,"chemo")
+if( 'rad' %in% names(pheno.file) ) covs=c(covs,"rad")
+if( 'dxyear' %in% names(pheno.file) ) covs=c(covs,"dxyear")
+covs=c(covs,"SexFemale","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+
+print("Using covs")
+print(covs)
+
+
+#	head -1 lists/tcga_covariates.tsv 
+#	IID	sex	case	idh	pqimpute	tert	vstatus	survdays	age	hist	idhmut_gwas	idhmut_1p19qnoncodel_gwas	trippos_gwas	idhwt_gwas	idhmut_1p19qcodel_gwas	idhwt_1p19qnoncodel_TERTmut_gwas	idhwt_1p19qnoncodel_gwas	idhmut_only_gwas	tripneg_gwas	PC1	PC2	PC3	PC4	PC5	PC6	PC7	PC8	PC9	PC10	PC11	PC12	PC13	PC14	PC15	PC16	PC17	PC18	PC19	PC20
+#	
+#	head -1 lists/onco_covariates.tsv 
+#	IID	case	sex	age_group	idh	pq	tert	vstatus	survdays	source	VZVsr	age	dxcode	WHO2016type	temodar	dxyear	hospname	ngrade	chemo	rad	idhmut_gwas	idhmut_1p19qnoncodel_gwas	trippos_gwas	idhwt_gwas	idhmut_1p19qcodel_gwas	idhwt_1p19qnoncodel_TERTmut_gwas	idhwt_1p19qnoncodel_gwas	idhmut_only_gwas	tripneg_gwas	PC1	PC2	PC3	PCPC5	PC6	PC7	PC8	PC9	PC10	PC11	PC12	PC13	PC14	PC15	PC16	PC17	PC18	PC19	PC20
+#	
+#	head -1 lists/i370_covariates.tsv 
+#	IID	Age	sex	case	idhmut	pqimpute	tert	idhmut_gwas	idhmut_1p19qnoncodel_gwas	trippos_gwas	idhwt_gwas	idhmut_1p19qcodel_gwas	idhwt_1p19qnoncodel_TERTmut_gwas	idhmut_only_gwas	tripneg_gwas	idhwt_1p19qnoncodel_gwas	vstatus	survdays	VZVsr	dxcode	WHO2016type	temodar	dxyear	hospname	ngrade	chemo	rad	PC1	PC2	PC3	PC4	PC5	PC6	PCPC8	PC9	PC10	PC11	PC12	PC13	PC14	PC15	PC16	PC17	PC18	PC19	PC20
+
+
+print(paste("Sample length",length(pheno.file$IID),"in cov file"))
 
 		print("Filtering sample ids in pheno file")
 		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
 		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
 		sample.ids=intersect(as.character(sample.ids),pheno.file$IID)
 
-print(paste("Sample length ",length(sample.ids)," in all 3"))
+print(paste("Sample length",length(sample.ids),"in all 3"))
 
 head(sample.ids)
 tail(sample.ids)
@@ -128,12 +158,19 @@ head(pheno.file)
 dim(pheno.file)
 
 
+#	After any filtering cause they all could be the same then it would probably cause an issue
 if(length(unique(pheno.file$ngrade)) >1){
 	covs = c(covs, "ngrade")
 }
 
 
 
+#	Analysis started on 2025-08-08 at 18:55:08
+#	Covariates included in the models are: PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
+#	696 samples are included in the analysis
+#	Error in pheno.file[, covariates] : subscript out of bounds
+#	Calls: michiganCoxSurv -> coxPheno -> coxParam
+#	Execution halted
 
 
 
@@ -197,7 +234,6 @@ if(length(unique(pheno.file$ngrade)) >1){
 
 
 
-#	be nice if knew how many "chunks" there were so knew how long
 
 #	Analyzing chunk 298400-298500
 #	Analyzing chunk 298500-298600
