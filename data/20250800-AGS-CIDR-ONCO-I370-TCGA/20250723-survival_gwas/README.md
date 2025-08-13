@@ -833,7 +833,7 @@ Recreate covariate files with the PCs
 for b in onco i370 tcga ; do
  cov_in=lists/${b}_covariates.tsv
  cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
- cat ${cov_in} | cut -f1-$((cols-20)) | tr '\t' , > $TMPDIR/tmp.csv
+ cat ${cov_in} | cut -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
  head -1 ${TMPDIR}/tmp.csv > ${cov_in%.tsv}_base.csv
  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> ${cov_in%.tsv}_base.csv
  for s in topmed umich19 ; do
@@ -1072,6 +1072,5 @@ commands_array_wrapper.bash --array_file merge_commands --time 1-0 --threads 8 -
 Add exit to r scripts when the sample count drops below a certain number.
 
 Geno : I’d say anything running less than 30 individuals is very unreliable for survival models. Possibly the saddle point approximation in SPACox needs even more.
-
 
 
