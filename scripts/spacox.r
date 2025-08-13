@@ -12,9 +12,6 @@
 # UCSF
 #date=20220810
 
-
-
-
 args = commandArgs(trailingOnly=TRUE)
 
 # test if there are enough arguments: if not, return an error
@@ -40,6 +37,9 @@ library(survival)
 #	tranpose t() does add an X before sample names that start with a number
 #		and replaces - with . ( X0_WG0238625.DNAB04.AGS51818 )
 #
+#	0_WG0238625.DNAB04.AGS51818
+#	0_WG0238625-DNAB04-AGS51818
+#
 #	Oddly, you can change it back so I don't know why it does that.
 #
 # Alter the Dosage rownames by replacing ALL periods with dashes.
@@ -55,16 +55,17 @@ dotwithdash = function(rname){
 #	tranpose t() does add an X before sample names that start with a number
 #	Rather than remove leading Xs, which could be incorrect, add leading X to the other lists.
 #
+#	0_WG0238625.DNAB04.AGS51818
 #	X0_WG0238625.DNAB04.AGS51818
 #
 # Convert IDs with integer first character to have an "X" at the start, to accomodate the row.names of dosage
 add_X =function(rname){
+	#return( sub('^([[:digit:]])',"X\\1",rname) )
 	b= strsplit(rname, split = "")[[1]]
 	retname = rname
 
 	if(!is.na(as.numeric(b[1]))){
 		retname = paste("X", rname, sep ="")
-	#}else{
 	}
 	return(retname)
 }
@@ -91,7 +92,13 @@ tail(sample.ids)
 
 print(paste("Reading covariates file:",cov_filename))
 pheno.file <- read.table(cov_filename, sep="\t", header=TRUE, stringsAsFactors = FALSE)
-pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
+#	tcga is male/female
+#	i370 and onco are M/F
+#pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
+pheno.file$SexFemale = ifelse( ( pheno.file$sex == "F" | pheno.file$sex == "female" ), 1L, 0L) # single | not double
+
+
+
 pheno.file$IID = as.character(sapply(as.character(pheno.file$IID), add_X))
 #pheno.file$IID = as.character(sapply(as.character(pheno.file$IID), dotwithdash))
 head(pheno.file$IID)
@@ -104,21 +111,15 @@ head(sample.ids)
 tail(sample.ids)
 
 
-#	This is actually a LARGE dosage SPACE-separated file. The whole this is read in so needs MEMORY
+#	This is actually a LARGE dosage SPACE-separated file. The whole thing is read in so needs MEMORY
 #	This file's header is 1 column less than the rest
 
 #	do it once then use the transposed dosage file
 #	for f in imputed-*/*/*dosage ; do echo $f; sed '1s/^/ /' $f | datamash transpose -t' ' | sed '1s/^ //' > ${f}.transposed; done
-#	won't load
+#	won't load? Too many columns?
 
 
 library(data.table)
-
-#print("Read data table")
-#dt <- data.table::fread(dosage_filename, sep = " ")
-#print("Convert to data frame")
-#dosage <- data.frame(dt,row.names=1)
-#rm(dt)
 
 #	topmed onco is the largest by far and takes about 300GB of memory
 #	-r--r----- 1 gwendt francislab  9024128667 Aug  7 18:18 imputed-topmed-i370/i370-cases/i370-cases.dosage
@@ -133,10 +134,8 @@ dt <- data.table::fread(dosage_filename, sep = " ")
 
 #	For some reason, reading the transposed dosage file causes ...
 #[1] "Read data table"
-#
 # *** caught segfault ***
 #address 0x7f1c71792920, cause 'memory not mapped'
-#
 #Traceback:
 # 1: data.table::fread(transposed_dosage_filename, sep = " ")
 #An irrecoverable exception occurred. R is aborting now ...
@@ -154,12 +153,6 @@ tail(row.names(dosage))
 #dosage =read.csv(transposed_dosage_filename, sep = "", header =TRUE, row.names = 1) #	never completed and job hangs
 #dosage = t(dosage)	#	using an already transposed dosage file
 
-#> dosage[1:2,1:2]
-#                  chr1.1005806.C.T chr1.1021415.A.G
-#AGS40015_AGS40015                0            1.000
-#AGS40020_AGS40020                0            1.002
-#> class(dosage)
-#[1] "data.frame"
 
 print(paste("Sample length",length(row.names(dosage)),"in dosage file"))
 sample.ids = intersect(sample.ids, row.names(dosage))
@@ -168,9 +161,8 @@ head(sample.ids)
 tail(sample.ids)
 
 
-
+print(paste("Writing samples ids to",paste0(out_filename,".samples")))
 write.table(sample.ids, paste0(out_filename,".samples"),quote=FALSE ,row.names=FALSE ,col.names=FALSE )
-
 
 
 
@@ -182,52 +174,28 @@ write.table(sample.ids, paste0(out_filename,".samples"),quote=FALSE ,row.names=F
 dosage = dosage[which(row.names(dosage) %in% sample.ids), ]
 pheno.file = pheno.file[which(pheno.file$IID %in% sample.ids), ]
 
-
-#	I don't think we need this as I filtered earlier
-#in_both = intersect(row.names(dosage), pheno.file$IID)
-#dosage = dosage[which(row.names(dosage) %in% in_both), ]
-#pheno.file = pheno.file[which(pheno.file$IID %in% in_both), ]
-
-#nrow(pheno.file)
-#length(sample.ids)
-
-
-
-#	sex or SexFemale????
-
-
-
-
-print("unique(pheno.file$ngrade)")
-print(unique(pheno.file$ngrade))
-
-print("length(unique(pheno.file$ngrade))")
-print(length(unique(pheno.file$ngrade)))
-
-#	Not sure if this'll work.
+fields=c()
 if( 'age' %in% names(pheno.file) ){
-	formula="Surv(survdays, vstatus)~ age + SexFemale"
-	#formula=paste(formula,"+ age")
+	fields=c(fields,'age')
 } else if( 'Age' %in% names(pheno.file) ) {
-	formula="Surv(survdays, vstatus)~ Age + SexFemale"
-	#formula=paste(formula,"+ Age")
-} else {
-	formula="Surv(survdays, vstatus)~ SexFemale"
+	fields=c(fields,'Age')
 }
+if( 'SexFemale' %in% names(pheno.file) && length(unique(pheno.file$SexFemale)) > 1 )
+	fields=c(fields,'SexFemale')
 if( 'chemo' %in% names(pheno.file)  && length(unique(pheno.file$chemo)) > 1 )
-	formula=paste(formula,"+ chemo")
+	fields=c(fields,'chemo')
 if( 'rad' %in% names(pheno.file)    && length(unique(pheno.file$rad)) > 1 )
-	formula=paste(formula,"+ rad")
+	fields=c(fields,'rad')
 if( 'ngrade' %in% names(pheno.file) && length(unique(pheno.file$ngrade)) > 1 )
-	formula=paste(formula,"+ ngrade")
+	fields=c(fields,'ngrade')
 if( 'dxyear' %in% names(pheno.file) && length(unique(pheno.file$dxyear)) > 1 )
-	formula=paste(formula,"+ dxyear")
+	fields=c(fields,'dxyear')
 
-formula=paste(formula,"+ PC1 + PC2 + PC3 + PC4 + PC5 + PC6 + PC7 + PC8 + PC9 + PC10")
+fields=c(fields, "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+formula=paste("Surv(survdays, vstatus) ~",paste(fields,collapse=" + "))
 print("Using formula:")
 print(formula)
 obj.null = SPACox_Null_Model( as.formula(formula), data = pheno.file, pIDs = pheno.file$IID, gIDs = rownames(dosage) )
-
 
 print("Running SPACox")
 SPACox.res = SPACox(obj.null, dosage)

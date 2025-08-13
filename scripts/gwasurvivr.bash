@@ -31,24 +31,6 @@ while [ $# -gt 0 ] ; do
 	esac
 done
 
-#if [ ${dataset} == "onco" ] ; then
-#	array="20210226-AGS-Mayo-Oncoarray"
-##	base="AGS_Onco"
-#	covariates="AGS_Mayo_Oncoarray_covariates.txt"
-#elif [ ${dataset} == "il370" -o ${dataset} == "i370" ] ; then
-#	array="20210302-AGS-illumina"
-##	base="AGS_i370"
-#	covariates="AGS_illumina_covariates.txt"
-#elif [ ${dataset} == "tcga" ] ; then
-#	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
-##	base="TCGA"
-#	covariates="TCGA_WTCCC_covariates.txt"
-#else
-#	echo "Unknown dataset"
-#	exit 1
-#fi
-
-
 
 subset=$( basename ${IDfile} .txt )
 echo $subset
@@ -66,29 +48,14 @@ else
 	cp $vcffile.tbi $TMPDIR/
 	cp $IDfile      $TMPDIR/
 
-
-#	Loading required package: gdsfmt
-#	SNPRelate -- supported by Streaming SIMD Extensions 2 (SSE2)
-#	Analysis started on 2025-07-01 at 09:29:16
-#	Covariates included in the models are: dxyear, ngrade, chemo, rad, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
-#	410 samples are included in the analysis
-#	Error in pheno.file[, covariates] : subscript out of bounds
-#	Calls: michiganCoxSurv -> coxPheno -> coxParam
-#	Execution halted
-#	mv: cannot stat '/scratch/gwendt/708643/AGS_Onco_IDHmut_meta_cases*': No such file or directory
-#	AGS_Onco_IDHwt_meta_cases
-#	Loading required package: Biobase
-#	Loading required package: BiocGenerics
-
-
-	#gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/covariates.txt $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
-	#gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/$( basename $covariates ) $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
 	gwasurvivr.r ${dataset} $TMPDIR/$( basename $vcffile ) $TMPDIR/$( basename $covfile ) $TMPDIR/$( basename $IDfile ) $TMPDIR/$subset
 
 	ls -l $TMPDIR/
 
 	\rm $TMPDIR/$( basename $IDfile )
-	mv $TMPDIR/$subset* $outpath/
+	mv $TMPDIR/$subset.coxph $outpath/
+	mv $TMPDIR/$subset.snps_removed $outpath/
+	mv $TMPDIR/$subset.samples $outpath/
 	chmod -w $outpath/$subset*
 
 fi

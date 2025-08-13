@@ -13,9 +13,6 @@
 # UCSF
 #date=20220427
 
-
-
-
 ncores = 1
 
 args = commandArgs(trailingOnly=TRUE)
@@ -75,7 +72,10 @@ print("Reading pheno file")
 
 #	Some pheno files include spaces in the fields so this MUST be a tab sep
 pheno.file <- read.table(cov_filename, sep="\t", header=TRUE, stringsAsFactors = FALSE)
-pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
+#	tcga is male/female
+#	i370 and onco are M/F
+#pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
+pheno.file$SexFemale = ifelse( ( pheno.file$sex == "F" | pheno.file$sex == "female" ), 1L, 0L) # single | not double
 
 
 
@@ -98,6 +98,7 @@ print(paste("Sample length",length(sample.ids),"in all 3"))
 head(sample.ids)
 tail(sample.ids)
 
+print(paste("Writing samples ids to",paste0(out_filename,".samples")))
 write.table(sample.ids, paste0(out_filename,".samples"),quote=FALSE ,row.names=FALSE ,col.names=FALSE )
 
 dim(pheno.file)
@@ -139,33 +140,6 @@ if( 'ngrade' %in% names(pheno.file) && length(unique(pheno.file$ngrade)) >1 ){
 print("Using covs")
 print(covs)
 
-
-#	Analysis started on 2025-08-08 at 18:55:08
-#	Covariates included in the models are: PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
-#	696 samples are included in the analysis
-#	Error in pheno.file[, covariates] : subscript out of bounds
-#	Calls: michiganCoxSurv -> coxPheno -> coxParam
-#	Execution halted
-
-
-
-
-
-
-
-
-
-#	Analyzing chunk 298400-298500
-#	Analyzing chunk 298500-298600
-#	Analysis completed on 2025-07-01 at 10:06:41
-#	8387 SNPs were removed from the analysis for not meeting the threshold criteria.
-#	List of removed SNPs can be found in /scratch/gwendt/708647/AGS_Onco_HGG_IDHmut_meta_cases.snps_removed
-#	 SNPs were analyzed in total
-#	The survival output can be found at /scratch/gwendt/708647/AGS_Onco_HGG_IDHmut_meta_cases.coxph
-#	There were 50 or more warnings (use warnings() to see the first 50)
-#	AGS_Onco_HGG_IDHwt_meta_cases
-#	Loading required package: Biobase
-#	Loading required package: BiocGenerics
 
 print("michiganCoxSurv")
 
