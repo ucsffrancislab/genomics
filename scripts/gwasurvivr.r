@@ -3,7 +3,6 @@
 
 #	From Geno
 
-
 # AGS i370 Pharma SNPs GWASurvivr
 
 # gwasurvivr analysis pipeline 
@@ -14,19 +13,22 @@
 # UCSF
 #date=20220427
 
+
+
+
 ncores = 1
 
 args = commandArgs(trailingOnly=TRUE)
 
-# # test if there is at least one argument: if not, return an error
+# test if there are enough arguments: if not, return an error
 if (length(args)!=5) {
   print(length(args))
   stop(print("5 arguments needed"), call.=FALSE)
 }
 
-dataset = args[1]
+dataset = args[1]			#	No longer used
 
-imputed_file = args[2] #VCF 
+vcf.file = args[2] #VCF 
 
 cov_filename= args[3]
 
@@ -48,16 +50,10 @@ options("gwasurvivr.cores"=ncores)
 
 
 
-vcf.file <- imputed_file
 print(vcf.file)
 
-
-		#	This takes quite a while
-		#print("Reading vcf to get the sample ids in it")
-		#data <- readVcf(vcf.file, param=ScanVcfParam(geno="GT", info=c("AF", "MAF", "R2", "ER2")))
-		#	This is fast
-		vcf_header <- scanVcfHeader(vcf.file)
-		print(vcf_header)
+vcf_header <- scanVcfHeader(vcf.file)
+print(vcf_header)
 
 print(paste("Sample length",length(samples(vcf_header)),"in VCF"))
 
@@ -66,21 +62,11 @@ print(paste("Sample length",length(samples(vcf_header)),"in VCF"))
 sample_list = read.csv(sample_list_filename, header = FALSE)
 sample.ids = sample_list[,1]
 head(sample.ids)
-
+tail(sample.ids)
 
 
 print(paste("Sample length",length(sample.ids),"in list"))
-
-		#print("Geno's sample id filter")
-		# sample IDS not in the genotype file for some reason
-		#ni = which((as.character(sample.ids) %in% colnames(geno(data)$GT))== FALSE)
-		#ni = which((as.character(sample.ids) %in% samples(vcf_header))== FALSE)
-		#print(paste("Found ",length(ni)," not in vcf")
-		#if(length(ni)>0){
-		#	sample.ids = sample.ids[-ni]
-		#}
-		sample.ids=intersect(as.character(sample.ids),samples(vcf_header))
-
+sample.ids=intersect(as.character(sample.ids),samples(vcf_header))
 print(paste("Sample length",length(sample.ids),"in list AND VCF"))
 
 
@@ -91,42 +77,6 @@ print("Reading pheno file")
 pheno.file <- read.table(cov_filename, sep="\t", header=TRUE, stringsAsFactors = FALSE)
 pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
 
-
-#	only ONCO has a 'source' column
-#if( dataset == "i370" ) {
-#	#	I370
-#	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-#}else{
-#  # Onco and TCGA
-#	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
-#	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-#}
-
-
-#if( dataset == "onco" ) {
-#	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
-#	covs = c("age", "SexFemale","SourceAGS","chemo","rad", "dxyear","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-#}else if(dataset == 'i370') {
-#	#	I370 and TCGA
-#	covs = c("Age", "SexFemale", "chemo","rad", "dxyear", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-#}else{
-#	covs = c("age", "SexFemale", "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-#}
-
-covs=c()
-if( 'source' %in% names(pheno.file) ){
-	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
-	covs=c(covs,"SourceAGS")
-}
-if( 'age' %in% names(pheno.file) ) covs=c(covs,"age")
-if( 'Age' %in% names(pheno.file) ) covs=c(covs,"Age")
-if( 'chemo' %in% names(pheno.file) ) covs=c(covs,"chemo")
-if( 'rad' %in% names(pheno.file) ) covs=c(covs,"rad")
-if( 'dxyear' %in% names(pheno.file) ) covs=c(covs,"dxyear")
-covs=c(covs,"SexFemale","PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-
-print("Using covs")
-print(covs)
 
 
 #	head -1 lists/tcga_covariates.tsv 
@@ -141,28 +91,53 @@ print(covs)
 
 print(paste("Sample length",length(pheno.file$IID),"in cov file"))
 
-		print("Filtering sample ids in pheno file")
-		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
-		#sample.ids = as.character(sample.ids[which(sample.ids %in% pheno.file$IID)])
-		sample.ids=intersect(as.character(sample.ids),pheno.file$IID)
+print("Filtering sample ids in pheno file")
+sample.ids=intersect(as.character(sample.ids),pheno.file$IID)
 
 print(paste("Sample length",length(sample.ids),"in all 3"))
-
 head(sample.ids)
 tail(sample.ids)
+
+write.table(sample.ids, paste0(out_filename,".samples"),quote=FALSE ,row.names=FALSE ,col.names=FALSE )
 
 dim(pheno.file)
 print("Filtering pheno file")
 pheno.file= pheno.file[which(pheno.file$IID %in% sample.ids),]
-head(pheno.file)
+#head(pheno.file)
 dim(pheno.file)
 
 
-#	After any filtering cause they all could be the same then it would probably cause an issue
-if(length(unique(pheno.file$ngrade)) >1){
+
+
+
+
+
+covs=c()
+if( 'source' %in% names(pheno.file) && length(unique(pheno.file$source)) > 1 ){
+	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
+	covs=c(covs,"SourceAGS")
+}
+if( 'age' %in% names(pheno.file) )
+	covs=c(covs,"age")
+if( 'Age' %in% names(pheno.file) )
+	covs=c(covs,"Age")
+if( 'SexFemale' %in% names(pheno.file) && length(unique(pheno.file$SexFemale)) > 1 )
+	covs=c(covs,"SexFemale")
+if( 'chemo' %in% names(pheno.file) && length(unique(pheno.file$chemo)) > 1 )
+	covs=c(covs,"chemo")
+if( 'rad' %in% names(pheno.file) && length(unique(pheno.file$rad)) > 1 )
+	covs=c(covs,"rad")
+if( 'dxyear' %in% names(pheno.file) && length(unique(pheno.file$dxyear)) > 1 )
+	covs=c(covs,"dxyear")
+
+covs=c(covs,"PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+
+if( 'ngrade' %in% names(pheno.file) && length(unique(pheno.file$ngrade)) >1 ){
 	covs = c(covs, "ngrade")
 }
 
+print("Using covs")
+print(covs)
 
 
 #	Analysis started on 2025-08-08 at 18:55:08
