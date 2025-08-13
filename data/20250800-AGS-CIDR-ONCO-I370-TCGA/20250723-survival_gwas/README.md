@@ -13,7 +13,7 @@ Not sure how Geno dealt with this.
 After some test runs with --update-ids, simply changing underscores to dashes in the fam file does not change the bim or bed file so just changing the fam files.
 
 
-
+##	Prepare
 
 ```BASH
 mkdir hg19-onco
@@ -43,7 +43,7 @@ sed -e 's/_/-/g' /francislab/data1/raw/20210223-TCGA-GBMLGG-WTCCC-Affy6/TCGA_WTC
 
 
 
-##	Create a frequency file
+###	Create a frequency file
 
 
 ```BASH
@@ -57,13 +57,32 @@ done
 
 
 
-##	Liftover hg19 to hg38
+###	Liftover hg19 to hg38
+
+Liftover from hg19 to hg38.
+This is needed for use with the TOPMed and 1000G hg38 reference panel prep.
+This inevitably fails, so can be skipped now.
+
 
 Both picard and bcftools drop A LOT of SNPs.
 
+
+```BASH
+
+bcftools +liftover prep-${b}/${b}.hg19chr.vcf.gz -Oz --output prep-${b}/${b}.hg38.vcf.gz -W=tbi -- --src-fasta-ref /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/latest/hg19.fa.gz --chain /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz --fasta-ref /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz --reject prep-${b}/${b}.hg38.rejected.vcf.gz
+
+```
+
+
+```BASH
+
+module load picard; java -Xmx220G -jar \$PICARD_HOME/picard.jar LiftoverVcf I=prep-${b}/${b}.hg19chr.vcf.gz O=prep-${b}/${b}.hg38.vcf.gz CHAIN=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz REJECT=prep-${b}/${b}.hg38-rejected.vcf.gz R=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa.gz
+
+```
+
+
+
 This built-in liftover from the imputation server utils allows many more to pass. Not sure if this is good or bad.
-
-
 
 ```BASH
 for b in i370 onco cidr tcga ; do
@@ -75,93 +94,13 @@ done
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#	#	The HRC reference panel is hg19 so no need to do anything if using that.
-#	#	
-#	#	
-#	#	The TOPMed reference panel to check is hg38 so I'm pretty sure that our data needs to be lifted over to hg38.
-#	#	
-#	#	I'm not sure what build the 1000genomes reference panel is.
-#	#	
-#	#	I don't trust lifting over, but here we are.
-#	#	
-#	#	
-#	#	
-#	#	Adding the "chr" prefix to the hg19 reference before lifting it over. 
-#	#	
-#	#	Not sure if needed here, but when uploading to impute it will be.
-#	#	
-#	#	That's how they test which build it is.
-#	#	
-#	#	
-#	#	Convert bed/bim/fam to hg19 vcf file with chr prefix
-#	#	```BASH
-#	#	for b in i370 onco cidr tcga ; do
-#	#	sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b} --wrap="module load plink2; plink2 --threads 4 --bfile prep-${b}/${b} --output-chr chrM --out prep-${b}/${b}.hg19chr --export vcf bgz; bcftools index --tbi prep-${b}/${b}.hg19.vcf.gz; chmod -w prep-${b}/${b}.hg19.vcf.gz prep-${b}/${b}.hg19.vcf.gz.tbi"
-#	#	done
-#	#	```
-#	#	
-#	#	
-#	#	Liftover hg19 vcf file to hg38
-#	#	
-#	#	
-#	#	Change hg38.chrXYM_alts.fa.gz to  hg38.chrXYM_no_alts.fa.gz to drop all of the alternate chromosomes which plink doesn't like.
-#	#	
-#	#	`Error: Invalid chromosome code 'chr7_KI270803v1_alt' on line 299312 of .bim`
-#	#	
-#	#	Liftover now fails. How can I just ignore these?
-#	#	
-#	#	`ERROR	2025-07-29 08:16:51	LiftoverVcf	Encountered a contig, chr7_KI270803v1_alt that is not part of the target reference.`
-#	#	
-#	#	Looks like we may need to keep them and then filter them. Put the "alts" version back
-#	#	
-#	#	
-#	#	```BASH
-#	#	for b in i370 onco cidr tcga ; do
-#	#	
-#	#	sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=32 --mem=240G --export=None --job-name=${b} --out=${PWD}/prep-${b}/picard-liftover.log --wrap="module load picard; java -Xmx220G -jar \$PICARD_HOME/picard.jar LiftoverVcf I=prep-${b}/${b}.hg19chr.vcf.gz O=prep-${b}/${b}.hg38.vcf.gz CHAIN=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz REJECT=prep-${b}/${b}.hg38-rejected.vcf.gz R=/francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.chrXYM_alts.fa.gz; chmod -w prep-${b}/${b}.hg38.vcf.gz prep-${b}/${b}.hg38.vcf.gz.tbi"
-#	#	
-#	#	done
-#	#	```
-#	#	
-#	#	
-#	#	filter out alternate chromosomes
-#	#	
-#	#	```BASH
-#	#	for b in i370 onco cidr tcga ; do
-#	#	sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b} --out=${PWD}/prep-${b}/filter_out_alternates.log --wrap="bcftools view -r chr1,chr2,chr3,chr4,chr5,chr6,chr7,chr8,chr9,chr10,chr11,chr12,chr13,chr14,chr15,chr16,chr17,chr18,chr19,chr20,chr21,chr22 prep-${b}/${b}.hg38.vcf.gz -Oz --output prep-${b}/${b}.hg38.filtered.vcf.gz; bcftools index --tbi prep-${b}/${b}.hg38.filtered.vcf.gz; chmod -w prep-${b}/${b}.hg38.filtered.vcf.gz prep-${b}/${b}.hg38.filtered.vcf.gz.tbi"
-#	#	done
-#	#	```
-#	#	
-
-
-
-
-
-
-
-
-
-
-##	Check BIM and split
+###	Check BIM and split
 
 
 The `HRC-1000G-check-bim.pl` requires that the chromosomes be numeric at this stage regardless of hg19 or hg38.
 
 
-###	HRC
+####	HRC
 
 Not using HRC but running this anyway for comparison.
 
@@ -186,7 +125,7 @@ done
 ```
 
 
-###	1000g
+####	1000g
 
 Link the original hg19 versions of plink files
 
@@ -213,7 +152,7 @@ done
 
 
 
-###	TOPMed
+####	TOPMed
 
 Link hg38 files in prep for checking again TOPMed panel
 
@@ -264,7 +203,7 @@ Looks like the 1000g panel is the same as the latest hg19 TOPMed panel.
 
 
 
-##	Run the generated scripts
+###	Run the generated scripts
 
 
 
@@ -301,7 +240,7 @@ done
 
 
 
-##	Compress
+###	Compress
 
 ```BASH
 for b in i370 onco cidr tcga ; do
@@ -525,7 +464,7 @@ done ; done
 
 
 
-##	Survival GWAS
+##	QC
 
 
 
@@ -537,6 +476,7 @@ DS or HDS??? doesn't seem to make a difference.
 
 export or recode vcf??? doesn't seem to make a difference.
 
+Why plink2 instead of plink?
 
 ```BASH
 for f in imputed-*/*dose.vcf.gz ; do
@@ -609,6 +549,7 @@ Setting it to 200
 
 plink2 sets DS back to Number=A, but not AF. Not sure if it merged any multiallelics.
 
+Why plink2 instead of plink?
 
 
 ```BASH
@@ -623,6 +564,14 @@ commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 
 
 #echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 ```
+
+
+
+
+
+
+
+##	Survival GWAS
 
 
 
@@ -759,6 +708,9 @@ ln -s onco-cases.txt lists/onco_ALL_meta_cases.txt
 
 We also need to copy the covariates files because at least one needs changed.
 
+Onco has hospitals with apostrophes in the name which messes with the read.
+Was a problem in gwasurvivr but not spacox read?
+
 ```BASH
 awk 'BEGIN{FS=OFS="\t"}{
 if( $1 ~ /^FAM_/ ){
@@ -774,7 +726,8 @@ gsub(/_/,"-",$1)
 sub(/-/,"_",$1)
 }
 print
-}' /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210305-covariates/AGS_Mayo_Oncoarray_covariates.txt > lists/onco_covariates.tsv
+}' /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20210305-covariates/AGS_Mayo_Oncoarray_covariates.txt \
+| sed "s/'//g" > lists/onco_covariates.tsv
 
 cp /francislab/data1/working/20210302-AGS-illumina/20210305-covariates/AGS_illumina_covariates.txt lists/i370_covariates.tsv
 
@@ -784,14 +737,6 @@ chmod -w lists/*_covariates.tsv
 
 
 
-
-SOME LISTS MAY BE TOO SMALL. EITHER REMOVE THEM OR IGNORE THEM.
-
-i370_HGG_IDHmut_meta_cases.txt
-
-
-
-These scripts will need edited to include CIDR
 
 
 
@@ -822,14 +767,15 @@ sed -i '/^0_WG/s/_/-/g;s/-/_/' lists/onco*.txt
 
 
 
+###	One time data correction
 
+This no longer needs done.
 
 plink2 QC set DS back to Number=A. Not sure if it remerged multiallelics though.
 
 Quick correction rather than rerun. (This can take a couple hours.)
 
 ```BASH
-
 for vcf in imputed-*/*cases/*cases.vcf.gz imputed-*/concated.QC.vcf.gz ; do
 
 echo "module load htslib bcftools; chmod +w ${vcf} ${vcf}.tbi; \rm ${vcf}.tbi; gunzip ${vcf}; sed -i -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' ${vcf%.gz}; bgzip ${vcf%.gz}; bcftools index --tbi ${vcf}; chmod -w ${vcf} ${vcf}.tbi"
@@ -838,6 +784,70 @@ done > correction_commands
 
 commands_array_wrapper.bash --array_file correction_commands --time 1-0 --threads 4 --mem 30G
 ```
+
+
+
+
+
+
+
+
+
+###	Recompute population estimate for PCs
+
+Rather than use Geno's PCs, compute new ones from the QC'd dataset.
+
+https://speciationgenomics.github.io/pca/
+
+The PCs are only used in the case survival analysis so, only need the cases.
+
+They take about 5-10 minutes
+
+```BASH
+for vcf in imputed-*/*cases/*cases.vcf.gz ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=$(dirname $(dirname $vcf)) --wrap="module load plink; plink --vcf $vcf --indep-pairwise 50 10 0.1 --out ${vcf%.vcf.gz}; plink --vcf $vcf --extract ${vcf%.vcf.gz}.prune.in --pca --out ${vcf%.vcf.gz}" --out=${PWD}/plink_pca.$(dirname $(dirname $vcf)).log
+done
+```
+
+
+```R
+library(tidyverse)
+
+for( f in Sys.glob("imputed-*/*cases/*cases.eigenvec") ) {
+ pca <- read_table(f, col_names = FALSE)
+ pca <- pca %>% unite(col = IID, X1, X2, sep = "_")
+ names(pca)[2:ncol(pca)] <- paste0("PC", 1:(ncol(pca)-1))
+ pca <-  pca[order(pca$IID), ]
+ write_csv(pca, paste0(sub(".eigenvec", "", f),".pca.csv"))
+}
+```
+
+
+Now we have multiple PCs for each dataset!!! Errrrrr.
+
+Recreate covariate files with the PCs
+
+
+
+```BASH
+for b in onco i370 tcga ; do
+ cov_in=lists/${b}_covariates.tsv
+ cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
+ cat ${cov_in} | cut -f1-$((cols-20)) | tr '\t' , > $TMPDIR/tmp.csv
+ head -1 ${TMPDIR}/tmp.csv > ${cov_in%.tsv}_base.csv
+ tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> ${cov_in%.tsv}_base.csv
+ for s in topmed umich19 ; do
+  head -1 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv > $TMPDIR/tmp.csv
+  tail -n +2 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv | sort -t, -k1,1 >> $TMPDIR/tmp.csv
+  join --header -t, ${cov_in%.tsv}_base.csv $TMPDIR/tmp.csv | tr , '\t' > imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
+done; done
+```
+
+
+
+
+
+
 
 
 
@@ -873,17 +883,19 @@ total 114812
 
 
 
-These take 6 to 12 hours
+These take 4 to 26 hours
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id} --covfile lists/${b}_covariates.tsv
+echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id} --covfile imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
 
 done; done ; done > gwas_commands
 
-commands_array_wrapper.bash --array_file gwas_commands --time 1-0 --threads 2 --mem 15G
+#lists/${b}_covariates.tsv
+
+commands_array_wrapper.bash --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
 ```
 
 
@@ -981,18 +993,43 @@ Execution halted
 ```
 
 
+SPA cox read in entire dosage file which can be large (30GB for topmed onco)
+Will need memory to support this
+umich i370 is only 3GB
+
+For some reason, reading the transposed crashes so no need to do this. Too many columns?
+
+```BASH
+for f in imputed-*/*/*dosage ; do
+echo "sed '1s/^/ /' $f | datamash transpose -t' ' | sed '1s/^ //' > ${f}.transposed; chmod -w ${f}.transposed"
+done > transpose_commands
+
+commands_array_wrapper.bash --array_file transpose_commands --time 1-0 --threads 16 --mem 120G
+```
+2/6 worked with 60G
+3/6 needed 120G
+1 needed 240G
+
+
+
+This can take 15-60 mins
 
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id} --covfile lists/${b}_covariates.tsv
+echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/ --idfile ${id} --covfile imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
 
 done; done ; done > spa_commands
 
-commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 4 --mem 30G
+#	lists/${b}_covariates.tsv
+
+commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 64 --mem 490G
 ```
+
+60G isn't enough for many
+490G is overkill but works for all
 
 
 
@@ -1020,6 +1057,21 @@ commands_array_wrapper.bash --array_file merge_commands --time 1-0 --threads 8 -
 
 
 ### METAL
+
+
+
+
+
+
+
+
+
+
+
+
+Add exit to r scripts when the sample count drops below a certain number.
+
+Geno : I’d say anything running less than 30 individuals is very unreliable for survival models. Possibly the saddle point approximation in SPACox needs even more.
 
 
 
