@@ -5,11 +5,11 @@
 
 # AGS i370 Pharma SNPs GWASurvivr
 
-# gwasurvivr analysis pipeline 
+# gwasurvivr analysis pipeline
 
 #https://bioconductor.org/packages/release/bioc/vignettes/gwasurvivr/inst/doc/gwasurvivr_Introduction.html
 #http://www.bioconductor.org/packages/devel/bioc/manuals/gwasurvivr/man/gwasurvivr.pdf
-# GG 
+# GG
 # UCSF
 #date=20220427
 
@@ -28,7 +28,7 @@ if (length(args)!=5) {
 
 dataset = args[1]			#	No longer used
 
-vcf.file = args[2] #VCF 
+vcf.file = args[2] #VCF
 
 cov_filename= args[3]
 
@@ -58,7 +58,7 @@ print(vcf_header)
 print(paste("Sample length",length(samples(vcf_header)),"in VCF"))
 
 
-# Read in the data 
+# Read in the data
 sample_list = read.csv(sample_list_filename, header = FALSE)
 sample.ids = sample_list[,1]
 head(sample.ids)
@@ -79,13 +79,13 @@ pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
 
 
 
-#	head -1 lists/tcga_covariates.tsv 
+#	head -1 lists/tcga_covariates.tsv
 #	IID	sex	case	idh	pqimpute	tert	vstatus	survdays	age	hist	idhmut_gwas	idhmut_1p19qnoncodel_gwas	trippos_gwas	idhwt_gwas	idhmut_1p19qcodel_gwas	idhwt_1p19qnoncodel_TERTmut_gwas	idhwt_1p19qnoncodel_gwas	idhmut_only_gwas	tripneg_gwas	PC1	PC2	PC3	PC4	PC5	PC6	PC7	PC8	PC9	PC10	PC11	PC12	PC13	PC14	PC15	PC16	PC17	PC18	PC19	PC20
-#	
-#	head -1 lists/onco_covariates.tsv 
+#
+#	head -1 lists/onco_covariates.tsv
 #	IID	case	sex	age_group	idh	pq	tert	vstatus	survdays	source	VZVsr	age	dxcode	WHO2016type	temodar	dxyear	hospname	ngrade	chemo	rad	idhmut_gwas	idhmut_1p19qnoncodel_gwas	trippos_gwas	idhwt_gwas	idhmut_1p19qcodel_gwas	idhwt_1p19qnoncodel_TERTmut_gwas	idhwt_1p19qnoncodel_gwas	idhmut_only_gwas	tripneg_gwas	PC1	PC2	PC3	PCPC5	PC6	PC7	PC8	PC9	PC10	PC11	PC12	PC13	PC14	PC15	PC16	PC17	PC18	PC19	PC20
-#	
-#	head -1 lists/i370_covariates.tsv 
+#
+#	head -1 lists/i370_covariates.tsv
 #	IID	Age	sex	case	idhmut	pqimpute	tert	idhmut_gwas	idhmut_1p19qnoncodel_gwas	trippos_gwas	idhwt_gwas	idhmut_1p19qcodel_gwas	idhwt_1p19qnoncodel_TERTmut_gwas	idhmut_only_gwas	tripneg_gwas	idhwt_1p19qnoncodel_gwas	vstatus	survdays	VZVsr	dxcode	WHO2016type	temodar	dxyear	hospname	ngrade	chemo	rad	PC1	PC2	PC3	PC4	PC5	PC6	PCPC8	PC9	PC10	PC11	PC12	PC13	PC14	PC15	PC16	PC17	PC18	PC19	PC20
 
 
@@ -153,61 +153,6 @@ print(covs)
 
 
 
-#		cox.params <- coxPheno(covariate.file=pheno.file,
-#			covariates=covs,
-#			id.column='IID',
-#			inter.term=NULL,
-#			time.to.event='survdays',
-#			event='vstatus',
-#			sample.ids=sample.ids,
-#			verbose=TRUE)
-#		head(cox.params)
-#		head(cox.params$ids)
-#		
-#		#data <- readVcf(vcf.file,
-#		#	param=ScanVcfParam(geno="DS",
-#		#	info=c("AF", "MAF", "R2", "ER2")))
-#		#head(data)
-#		#	genotypes <- geno(data)$DS[, cox.params$ids, drop=FALSE]
-#		#	head(genotypes)
-#		
-#		library("vcfR")
-#		my_vcf <- read.vcfR(vcf.file)
-#		genos <- extract.gt(my_vcf, element = "DS", as.numeric=TRUE)
-#		genotypes <- genos[, as.character(sample.ids), drop=FALSE]
-#		
-#		rowmeans <- rowMeans2(genotypes)
-#		head(rowmeans)
-#		
-#		samp.exp_alt <- round(rowMeans2(genotypes)*0.5, 4)
-#		head(samp.exp_alt))
-
-
-
-
-
-
-
-#	print("Reading VCF. takes a while.")
-#	data <- readVcf(vcf.file, param=ScanVcfParam(geno="DS", info=c("AF", "MAF", "R2", "ER2")))
-#	genotypes <- geno(data)$DS[, as.character(sample.ids), drop=FALSE]
-#	print(class(genotypes))
-#	print(head(genotypes))
-
-#	print("Analyzing")
-#	a=0
-#	for(i in c(1:nrow(genotypes))){
-#		for( j in c(1:ncol(genotypes))){
-#			if(genotypes[i,j][[1]]>=0 && genotypes[i,j][[1]]<=2.0 ){
-#				a=a+1
-#			}else{
-#				print(genotypes[i,j][[1]])
-#				print(paste("row ", i,", col ", j, sep = ""))
-#			}
-#		}
-#	}
-
-
 
 
 #	Analyzing chunk 298400-298500
@@ -249,7 +194,7 @@ michiganCoxSurv(vcf.file=as.character(vcf.file),
 #	Covariates included in the models are: Age, dxyear, ngrade, chemo, rad, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
 #	41 samples are included in the analysis
 #	Analyzing chunk 0-100
-#	Error in rowMeans2(genotypes) : 
+#	Error in rowMeans2(genotypes) :
 #  Argument 'x' must be of type logical, integer or numeric, not 'list'
 #	Calls: michiganCoxSurv -> coxVcfMichigan -> rowMeans2
 #	Execution halted
@@ -259,7 +204,7 @@ michiganCoxSurv(vcf.file=as.character(vcf.file),
 #	Covariates included in the models are: Age, dxyear, chemo, rad, PC1, PC2, PC3, PC4, PC5, PC6, PC7, PC8, PC9, PC10, SexFemale
 #	371 samples are included in the analysis
 #	Analyzing chunk 0-100
-#	Error in write.table(out.list$res, paste0(out.file, ".coxph"), append = FALSE,  : 
+#	Error in write.table(out.list$res, paste0(out.file, ".coxph"), append = FALSE,  :
 #	 unimplemented type 'list' in 'EncodeElement'
 #	Calls: michiganCoxSurv -> write.table
 #	Execution halted

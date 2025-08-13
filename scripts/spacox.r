@@ -5,10 +5,10 @@
 
 # AGS i370 Pharma SNPs SPACox
 
-# gwasurvivr analysis pipeline 
+# gwasurvivr analysis pipeline
 
 #https://rdrr.io/github/WenjianBI/SPACox/man/SPACox.html
-# GG 
+# GG
 # UCSF
 #date=20220810
 
@@ -54,9 +54,9 @@ dotwithdash = function(rname){
 
 #	tranpose t() does add an X before sample names that start with a number
 #	Rather than remove leading Xs, which could be incorrect, add leading X to the other lists.
-#	
+#
 #	X0_WG0238625.DNAB04.AGS51818
-#	
+#
 # Convert IDs with integer first character to have an "X" at the start, to accomodate the row.names of dosage
 add_X =function(rname){
 	b= strsplit(rname, split = "")[[1]]
@@ -74,7 +74,7 @@ add_X =function(rname){
 
 
 
-# Read in the data 
+# Read in the data
 print(paste("Reading select case sample list file:",sample_list_filename))
 sample_list = read.csv(sample_list_filename, header = FALSE)
 sample.ids = as.character(sapply(as.character(sample_list[,1]) , add_X))
