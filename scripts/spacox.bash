@@ -56,6 +56,7 @@ else
 	\rm $TMPDIR/$( basename $IDfile )
 	mv $TMPDIR/$subset.out $outpath/SPACox_$subset.txt
 	mv $TMPDIR/$subset.out.samples $outpath/SPACox_$subset.samples
+	mv $TMPDIR/$subset.out.log $outpath/SPACox_$subset.log
 	chmod -w $outpath/SPACox_$subset.txt
 
 fi

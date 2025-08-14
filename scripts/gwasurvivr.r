@@ -33,6 +33,10 @@ sample_list_filename = args[4]
 
 out_filename = args[5]
 
+log <- file(paste0(out_filename,".log"), open = "wt")
+sink( log )
+sink( log, type = "message" )
+
 library(gwasurvivr)
 library(ncdf4)
 library(matrixStats)
@@ -185,4 +189,7 @@ michiganCoxSurv(vcf.file=as.character(vcf.file),
 
 #	recommended fix is bcftools norm -m- followed by sed to actually change the tag.
 
+
+sink( type = "message" )
+sink( )
 

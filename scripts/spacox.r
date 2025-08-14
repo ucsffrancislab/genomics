@@ -30,6 +30,10 @@ sample_list_filename = args[4]
 
 out_filename = args[5]
 
+log <- file(paste0(out_filename,".log"), open = "wt")
+sink( log )
+sink( log, type = "message" )
+
 library(SPACox)
 library(survival)
 
@@ -208,4 +212,7 @@ colnames(SPACox.res)[1] ="RSID"
 
 print("Writing table")
 write.table(file= out_filename, x = SPACox.res, col.names =TRUE, quote = FALSE, row.names= FALSE, sep = "\t")
+
+sink( type = "message" )
+sink( )
 

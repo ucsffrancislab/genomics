@@ -56,6 +56,7 @@ else
 	mv $TMPDIR/$subset.coxph $outpath/
 	mv $TMPDIR/$subset.snps_removed $outpath/
 	mv $TMPDIR/$subset.samples $outpath/
+	mv $TMPDIR/$subset.log $outpath/
 	chmod -w $outpath/$subset*
 
 fi
