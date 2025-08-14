@@ -30,40 +30,22 @@ while [ $# -gt 0 ] ; do
 done
 
 
-#if [ ${dataset} == "onco" ] ; then
-#	base="AGS_Onco"
-#elif [ ${dataset} == "il370" ] ; then
-#	base="AGS_i370"
-#elif [ ${dataset} == "tcga" ] ; then
-#	array="20210223-TCGA-GBMLGG-WTCCC-Affy6"
-##	base="TCGA"
-#	covariates="TCGA_WTCCC_covariates.txt"
-#else
-#	echo "Unknown dataset"
-#	exit 1
-#fi
+subset=$( basename ${IDfile} .txt )
+echo $subset
 
+outpath="${outbase}/${subset}"
+mkdir -p $outpath
 
-#for IDfile in /francislab/data1/users/gguerra/Pharma_TMZ_glioma/Data/${base}*meta*cases.txt ; do
-	subset=$( basename ${IDfile} .txt )
-	echo $subset
+outfile="merged_$subset.txt"
 
-	outpath="${outbase}/${subset}"
-	mkdir -p $outpath
+cp $outpath/$subset.coxph      $TMPDIR/	#srv.txt
+cp $outpath/SPACox_$subset.txt $TMPDIR/	#spa.txt
 
-	outfile="merged_$subset.txt"
+merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt $TMPDIR/$subset.out
 
-	cp $outpath/$subset.coxph      $TMPDIR/	#srv.txt
-	cp $outpath/SPACox_$subset.txt $TMPDIR/	#spa.txt
+\rm $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt
+mv $TMPDIR/$subset.out $outpath/$outfile
 
-	#merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/srv.txt $TMPDIR/spa.txt $TMPDIR/$subset.out
-	merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt $TMPDIR/$subset.out
-
-	#\rm $TMPDIR/srv.txt $TMPDIR/spa.txt
-	\rm $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt
-	mv $TMPDIR/$subset.out $outpath/$outfile
-
-#done
 
 date
 

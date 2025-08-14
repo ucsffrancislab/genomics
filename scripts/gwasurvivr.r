@@ -135,6 +135,11 @@ if( 'rad' %in% names(pheno.file) && length(unique(pheno.file$rad)) > 1 )
 if( 'dxyear' %in% names(pheno.file) && length(unique(pheno.file$dxyear)) > 1 )
 	covs=c(covs,"dxyear")
 
+#if( 'idh' %in% names(pheno.file) && length(unique(pheno.file$idh)) > 1 )
+#	covs=c(covs,"idh")
+#if( 'idhmut' %in% names(pheno.file) && length(unique(pheno.file$idhmut)) > 1 )
+#	covs=c(covs,"idhmut")
+
 covs=c(covs,"PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
 
 if( 'ngrade' %in% names(pheno.file) && length(unique(pheno.file$ngrade)) >1 ){
