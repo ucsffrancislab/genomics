@@ -37,10 +37,23 @@ ui <- fluidPage(
 #			fileInput("file1", "Choose TSV File",
 #				multiple = FALSE,
 #				accept = c("text/tsv", "text/tab-separated-values,text/plain", ".tsv")),
-			fileInput("file1", "Choose CSV File",
+#			fileInput("file1", "Choose CSV File",
+#				multiple = FALSE,
+#				accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
+#				#accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".tsv")),
+
+			fileInput("file1", "Choose CSV/TSV File",
 				multiple = FALSE,
-				accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv")),
-				#accept = c("text/csv", "text/comma-separated-values,text/plain", ".csv", ".tsv")),
+				accept = c(".gz", 
+					"text/tsv", "text/tab-separated-values,text/plain", ".tsv",
+					"text/csv", "text/comma-separated-values,text/plain", ".csv")),
+
+			# Input: Select separator ----
+			radioButtons("sep", "Separator",
+				choices = c(Comma = ",",
+				Semicolon = ";",
+				Tab = "\t"),
+				selected = ","),
 
 			# Horizontal line ----
 			tags$hr(),
@@ -52,6 +65,11 @@ ui <- fluidPage(
 			sliderTextInput("pvalue","PValue:",
 				choices=c(0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01),
 				selected=0.00001, grid = T),
+
+
+
+			uiOutput("p_value_column_selector"),
+
 
 		), #	sidebarPanel( width = 2,
 
@@ -78,7 +96,7 @@ server <- function(input, output, session) {
 		# having a comma separator causes `read.csv` to error
 		tryCatch(
 			{
-				rawdf <- data.frame(data.table::fread(input$file1$datapath, sep = ",", header=TRUE))
+				rawdf <- data.frame(data.table::fread(input$file1$datapath, sep = input$sep, header=TRUE))
 
 				rawdf = rawdf[rawdf$pval < 0.9,]	#	remove those that log transform to near 0. this way should be able to remove hard limits
 
@@ -94,6 +112,27 @@ server <- function(input, output, session) {
 				stop(safeError(e))
 			}
 		)
+
+
+		if( input$file1$datapath != filedatapath ){
+			session$userData$filedatapath=input$file1$datapath
+			output$p_value_column_selector <- renderUI({
+				selectInput(
+					inputId = "pvaluecol",
+					label = "P-Value Column:",
+					choices = c("Cylinders" = "cyl",
+                  "Transmission" = "am",
+                  "Gears" = "gear"),
+					selected = NULL, multiple = FALSE, selectize = TRUE)
+
+#					min   = floor(min(df)),
+#					max   = ceiling(max(df)),
+#					step  = 10,
+#					value = max(df)
+				)
+
+			})
+		}
 
 		return( df )
 	})
