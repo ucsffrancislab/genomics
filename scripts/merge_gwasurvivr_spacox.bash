@@ -51,7 +51,7 @@ tail -n +2 $outpath/$subset.coxph | sort -t $'\t' -k1,1 >> $TMPDIR/$subset.coxph
 head -1 $outpath/SPACox_$subset.txt | cut -d $'\t' -f1,4 > $TMPDIR/SPACox_$subset.txt
 tail -n +2 $outpath/SPACox_$subset.txt | cut -d $'\t' -f1,4 | sort -t $'\t' -k1,1 >> $TMPDIR/SPACox_$subset.txt
 
-join --header $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt > $TMPDIR/$subset.out
+join --header -t $'\t' $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt > $TMPDIR/$subset.out
 
 
 #	#	This is just a join script so this could be done outside R
