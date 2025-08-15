@@ -38,10 +38,30 @@ mkdir -p $outpath
 
 outfile="merged_$subset.txt"
 
-cp $outpath/$subset.coxph      $TMPDIR/	#srv.txt
-cp $outpath/SPACox_$subset.txt $TMPDIR/	#spa.txt
 
-merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt $TMPDIR/$subset.out
+
+#cp $outpath/$subset.coxph      $TMPDIR/	#srv.txt
+#cp $outpath/SPACox_$subset.txt $TMPDIR/	#spa.txt
+
+#	May already be sorted
+
+head -1 $outpath/$subset.coxph > $TMPDIR/$subset.coxph
+tail -n +2 $outpath/$subset.coxph | sort -t $'\t' -k1,1 >> $TMPDIR/$subset.coxph
+
+head -1 $outpath/SPACox_$subset.txt | cut -d $'\t' -f1,4 > $TMPDIR/SPACox_$subset.txt
+tail -n +2 $outpath/SPACox_$subset.txt | cut -d $'\t' -f1,4 | sort -t $'\t' -k1,1 >> $TMPDIR/SPACox_$subset.txt
+
+join --header $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt > $TMPDIR/$subset.out
+
+
+#	#	This is just a join script so this could be done outside R
+#	merge_gwasurvivr_spacox.r ${dataset} $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt $TMPDIR/$subset.out
+
+#	join is about 100x faster
+
+
+
+
 
 \rm $TMPDIR/$subset.coxph $TMPDIR/SPACox_$subset.txt
 mv $TMPDIR/$subset.out $outpath/$outfile
