@@ -8,32 +8,41 @@ GENOMICCONTROL OFF
 # enable tracking of allele frequencies across all files
 AVERAGEFREQ ON
 MINMAXFREQ ON
+
 # describe and process first input file
 MARKER RSID
 ALLELE ALT REF
 EFFECT COEF
-PVALUE PVALUE.SPA
+PVALUE p.value.spa
 WEIGHTLABEL N
 FREQLABEL AF
-PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/results/survival/AGS_Onco_SUBSETNAME/merged_AGS_Onco_SUBSETNAME.txt
+#PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/results/survival/AGS_Onco_SUBSETNAME/merged_AGS_Onco_SUBSETNAME.txt
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-onco/onco_SUBSETNAME/merged_onco_SUBSETNAME.txt
+
 # describe and process second input file
 MARKER RSID
 ALLELE ALT REF
 EFFECT COEF
-PVALUE PVALUE.SPA
+PVALUE p.value.spa
 WEIGHTLABEL N
 FREQLABEL AF
-PROCESS /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/results/survival/AGS_i370_SUBSETNAME/merged_AGS_i370_SUBSETNAME.txt
+#PROCESS /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/results/survival/AGS_i370_SUBSETNAME/merged_AGS_i370_SUBSETNAME.txt
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-i370/i370_SUBSETNAME/merged_i370_SUBSETNAME.txt
+
 # describe and process third input file
 MARKER RSID
 ALLELE ALT REF
 EFFECT COEF
-PVALUE PVALUE.SPA
+PVALUE p.value.spa
 WEIGHTLABEL N
 FREQLABEL AF
-PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20220425-Pharma/results/survival/TCGA_SUBSETNAME/merged_TCGA_SUBSETNAME.txt
+#PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20220425-Pharma/results/survival/TCGA_SUBSETNAME/merged_TCGA_SUBSETNAME.txt
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-tcga/tcga_SUBSETNAME/merged_tcga_SUBSETNAME.txt
+
+#	later add the cidr dataset
+
 # run analysis
-OUTFILE /home/gguerra/Pharma_TMZ_glioma/results/survival/spa_meta_survival_SUBSETNAME_ .tbl
+OUTFILE /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/spa_meta_survival_SERVER_SUBSETNAME_ .tbl
 ANALYZE HETEROGENEITY
 QUIT
 

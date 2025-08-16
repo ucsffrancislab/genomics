@@ -1059,6 +1059,16 @@ commands_array_wrapper.bash --array_file merge_commands --time 1-0 --threads 2 -
 ### METAL
 
 
+```BASH
+for s in topmed umich19 ; do
+for id in lists/onco*meta_cases.txt ; do
+
+echo Pharma_surv_meta_wrapper_spa_all3.bash $s $id
+
+done ; done > metal_commands
+
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+```
 
 
 
@@ -1093,6 +1103,16 @@ I've built wrapper files which loop through all subtypes and call this script, s
 
 
 
+head -1 spa_meta_survival_ALL_meta_cases_1.tbl > spa_meta_survival_ALL_meta_cases_1.top.tbl 
+tail -n +2 spa_meta_survival_ALL_meta_cases_1.tbl | sort -t $'\t' -k10g,10 | head -10000 >> spa_meta_survival_ALL_meta_cases_1.top.tbl 
+
+
+
+
+
+
+
+
 
 
 
@@ -1100,5 +1120,6 @@ I've built wrapper files which loop through all subtypes and call this script, s
 Add exit to r scripts when the sample count drops below a certain number.
 
 Geno : I’d say anything running less than 30 individuals is very unreliable for survival models. Possibly the saddle point approximation in SPACox needs even more.
+
 
 
