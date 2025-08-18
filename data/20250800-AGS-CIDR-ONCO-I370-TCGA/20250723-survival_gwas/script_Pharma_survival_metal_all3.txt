@@ -1,0 +1,36 @@
+# this is a script to run METAL meta-analysis software. Two gwases against glioma subtypes  were conducted on AGS_illumina and AGS_Onco cohorts and will be used in this analysis.
+# define meta-analysis scheme to use effect-sizes (beta) and standard error
+SCHEME STDERR
+# define separation format of input files
+SEPARATOR TAB 
+# enable genomic correction (adjusts test stats to account for small amounts of population stratification or unaccounted for relatedness)
+GENOMICCONTROL OFF
+# enable tracking of allele frequencies across all files
+AVERAGEFREQ ON
+MINMAXFREQ ON
+# describe and process first input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/results/survival/AGS_Onco_SUBSETNAME/AGS_Onco_SUBSETNAME.coxph
+# describe and process second input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/results/survival/AGS_i370_SUBSETNAME/AGS_i370_SUBSETNAME.coxph
+# describe and process second input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20220425-Pharma/results/survival/TCGA_SUBSETNAME/TCGA_SUBSETNAME.coxph
+# run analysis
+OUTFILE /home/gguerra/Pharma_TMZ_glioma/results/survival/meta_survival_SUBSETNAME_ .tbl
+ANALYZE HETEROGENEITY
+QUIT
+
