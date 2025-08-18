@@ -1065,6 +1065,20 @@ for id in lists/onco*meta_cases.txt ; do
 
 echo Pharma_surv_meta_wrapper_spa_all3.bash $s $id
 
+done ; done > metalspa_commands
+
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
+
+```BASH
+for s in topmed umich19 ; do
+for id in lists/onco*meta_cases.txt ; do
+
+echo Pharma_surv_meta_wrapper_all3.bash $s $id
+
 done ; done > metal_commands
 
 commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
