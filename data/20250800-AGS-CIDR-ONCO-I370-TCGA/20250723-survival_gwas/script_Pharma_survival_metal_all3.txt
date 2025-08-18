@@ -8,29 +8,38 @@ GENOMICCONTROL OFF
 # enable tracking of allele frequencies across all files
 AVERAGEFREQ ON
 MINMAXFREQ ON
+
 # describe and process first input file
 MARKER RSID
 ALLELE ALT REF
 EFFECT COEF
 STDERR SE.COEF
 FREQLABEL AF
-PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/results/survival/AGS_Onco_SUBSETNAME/AGS_Onco_SUBSETNAME.coxph
+#PROCESS /francislab/data1/working/20210226-AGS-Mayo-Oncoarray/20220425-Pharma/results/survival/AGS_Onco_SUBSETNAME/AGS_Onco_SUBSETNAME.coxph
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-onco/onco_SUBSETNAME/onco_SUBSETNAME.coxph
+
 # describe and process second input file
 MARKER RSID
 ALLELE ALT REF
 EFFECT COEF
 STDERR SE.COEF
 FREQLABEL AF
-PROCESS /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/results/survival/AGS_i370_SUBSETNAME/AGS_i370_SUBSETNAME.coxph
+#PROCESS /francislab/data1/working/20210302-AGS-illumina/20220425-Pharma/results/survival/AGS_i370_SUBSETNAME/AGS_i370_SUBSETNAME.coxph
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-i370/i370_SUBSETNAME/i370_SUBSETNAME.coxph
+
 # describe and process second input file
 MARKER RSID
 ALLELE ALT REF
 EFFECT COEF
 STDERR SE.COEF
 FREQLABEL AF
-PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20220425-Pharma/results/survival/TCGA_SUBSETNAME/TCGA_SUBSETNAME.coxph
+#PROCESS /francislab/data1/working/20210223-TCGA-GBMLGG-WTCCC-Affy6/20220425-Pharma/results/survival/TCGA_SUBSETNAME/TCGA_SUBSETNAME.coxph
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-tcga/tcga_SUBSETNAME/tcga_SUBSETNAME.coxph
+
+#	later add the cidr dataset
+
 # run analysis
-OUTFILE /home/gguerra/Pharma_TMZ_glioma/results/survival/meta_survival_SUBSETNAME_ .tbl
+OUTFILE /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/meta_survival_SERVER_SUBSETNAME_ .tbl
 ANALYZE HETEROGENEITY
 QUIT
 
