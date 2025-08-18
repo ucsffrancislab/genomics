@@ -1059,18 +1059,18 @@ commands_array_wrapper.bash --array_file merge_commands --time 1-0 --threads 2 -
 ### METAL
 
 
-```BASH
-for s in topmed umich19 ; do
-for id in lists/onco*meta_cases.txt ; do
 
-echo Pharma_surv_meta_wrapper_spa_all3.bash $s $id
+I use the software METAL, which I downloaded to C4, its a very lightweight script, but does not seem to like being called in a shell script, .sh, I have always had to create .bash files and run those from the command line to get metal to loop over multiple analyses (e.g. multiple subtypes). 
 
-done ; done > metalspa_commands
+You can find a very straightforward guide here: https://genome.sph.umich.edu/wiki/METAL_Documentation
 
-commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
-```
+Depending on which estimates are available, like the beta (effect size) or just p-values (like survival analysis using SPAcox would give), you must specify which mode to use. 
 
+Easy examples of these differences are in the Script_Repository/metal folder of this Box container. 
 
+I've built wrapper files which loop through all subtypes and call this script, see Pharma_surv_meta_wrapper_spa_all3.txt as an example. 
+
+Using Beta estimates look at: script_Pharma_survival_metal_all3.txt
 
 
 ```BASH
@@ -1088,30 +1088,19 @@ commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 -
 
 
 
-I use the software METAL, which I downloaded to C4, its a very lightweight script, but does not seem to like being called in a shell script, .sh, I have always had to create .bash files and run those from the command line to get metal to loop over multiple analyses (e.g. multiple subtypes). 
-
-You can find a very straightforward guide here: https://genome.sph.umich.edu/wiki/METAL_Documentation
-
-Depending on which estimates are available, like the beta (effect size) or just p-values (like survival analysis using SPAcox would give), you must specify which mode to use. 
-
-Easy examples of these differences are in the Script_Repository/metal folder of this Box container. 
-
-Using Beta estimates look at: script_Pharma_survival_metal_all3.txt
-
 Using just P-values look at: script_Pharma_survival_metal_spa_all3.txt
 
-I've built wrapper files which loop through all subtypes and call this script, see Pharma_surv_meta_wrapper_spa_all3.txt as an example. 
 
+```BASH
+for s in topmed umich19 ; do
+for id in lists/onco*meta_cases.txt ; do
 
+echo Pharma_surv_meta_wrapper_spa_all3.bash $s $id
 
+done ; done > metalspa_commands
 
-
-
-
-head -1 spa_meta_survival_ALL_meta_cases_1.tbl > spa_meta_survival_ALL_meta_cases_1.top.tbl 
-tail -n +2 spa_meta_survival_ALL_meta_cases_1.tbl | sort -t $'\t' -k10g,10 | head -10000 >> spa_meta_survival_ALL_meta_cases_1.top.tbl 
-
-
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+```
 
 
 
