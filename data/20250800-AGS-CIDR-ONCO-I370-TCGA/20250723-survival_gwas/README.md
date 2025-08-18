@@ -48,8 +48,10 @@ sed -e 's/_/-/g' /francislab/data1/raw/20210223-TCGA-GBMLGG-WTCCC-Affy6/TCGA_WTC
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_freq \
- --wrap="module load plink; plink --freq --bfile ${PWD}/hg19-${b}/${b} --out ${PWD}/hg19-${b}/${b};chmod -w ${PWD}/hg19-${b}/${b}.frq" \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_freq \
+ --wrap="module load plink; plink --freq --bfile ${PWD}/hg19-${b}/${b} --out ${PWD}/hg19-${b}/${b}; \
+  chmod -w ${PWD}/hg19-${b}/${b}.frq" \
  --out=${PWD}/hg19-${b}/plink.create_frequency_file.log
 done
 ```
@@ -132,7 +134,8 @@ Standard HRC on original hg19 bed/bim/fam
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
+ --job-name=${b}_check-bim \
  --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep-${b}-HRC/${b}.bim \
  --frequency ${PWD}/prep-${b}-HRC/${b}.frq --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" \
  --out=${PWD}/prep-${b}-HRC/HRC-1000G-check-bim.pl.log
@@ -161,9 +164,11 @@ Check against a 1000 genomes panel
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
+ --job-name=${b}_check-bim \
  --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose --bim ${PWD}/prep-${b}-1000g/${b}.bim \
- --frequency ${PWD}/prep-${b}-1000g/${b}.frq --ref /francislab/data1/refs/Imputation/1000GP_Phase3_combined.legend --1000g" \
+ --frequency ${PWD}/prep-${b}-1000g/${b}.frq \
+ --ref /francislab/data1/refs/Imputation/1000GP_Phase3_combined.legend --1000g" \
  --out=${PWD}/prep-${b}-1000g/HRC-1000G-check-bim.pl.log
 done
 ```
@@ -193,9 +198,11 @@ Dropping to 4/30 as don't think I actually need 8/60
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_check-bim \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
+ --job-name=${b}_check-bim \
  --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose --bim ${PWD}/prep-${b}-TOPMed/${b}.bim \
- --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" \
+ --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq \
+ --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" \
  --out=${PWD}/prep-${b}-TOPMed/HRC-1000G-check-bim.pl.log
 done
 
@@ -231,7 +238,7 @@ Looks like the 1000g panel is the same as the latest hg19 TOPMed panel.
 WAIT UNTIL THE PREVIOUS SCRIPT COMPLETE!
 
 
-Don't need the individual bed/bim/fam filesets so commenting them out.
+Don't need the individual bed/bim/fam filesets so commenting them out of the `Run-plink.sh` commands.
 
 
 Standard HRC and 1000 genomes
@@ -240,7 +247,8 @@ Standard HRC and 1000 genomes
 for b in i370 onco cidr tcga ; do
 for s in HRC 1000g ; do
 sed -i -e '/--make-bed --chr/s/^/#/' prep-${b}-${s}/Run-plink.sh
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_run-plink \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_run-plink \
  --wrap="module load plink; sh ${PWD}/prep-${b}-${s}/Run-plink.sh;\rm ${PWD}/prep-${b}-${s}/TEMP?.*" \
  --out=${PWD}/prep-${b}-${s}/Run-plink.sh.log
 done
@@ -253,8 +261,10 @@ TOPMed
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sed -i -e '/--recode vcf --chr/s/--chr/--output-chr chrM --chr/' -e '/--make-bed --chr/s/^/#/' prep-${b}-TOPMed/Run-plink.sh
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_run-plink \
+sed -i -e '/--recode vcf --chr/s/--chr/--output-chr chrM --chr/' \
+ -e '/--make-bed --chr/s/^/#/' prep-${b}-TOPMed/Run-plink.sh
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_run-plink \
  --wrap="module load plink; sh ${PWD}/prep-${b}-TOPMed/Run-plink.sh;\rm ${PWD}/prep-${b}-TOPMed/TEMP?.*" \
  --out=${PWD}/prep-${b}-TOPMed/Run-plink.sh.log
 done
@@ -270,7 +280,8 @@ done
 ```BASH
 for b in i370 onco cidr tcga ; do
 for s in HRC 1000g TOPMed ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None --job-name=${b}_bgzip \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_bgzip \
  --wrap="module load htslib; bgzip ${PWD}/prep-${b}-${s}/*vcf; chmod a-w ${PWD}/prep-${b}-${s}/*{bim,bed,fam,vcf.gz}" \
  --out=${PWD}/prep-${b}-${s}/bgzip.log
 done; done
@@ -330,10 +341,14 @@ TOPMed apps@topmed-r3
 TOPMed checked hg38
 
 ```BASH
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-tcga prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-onco prep-onco-TOPMed/onco-updated-chr*.vcf.gz
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250729-i370 prep-i370-TOPMed/i370-updated-chr*.vcf.gz
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all -n 20250801-cidr prep-cidr-TOPMed/cidr-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+# -n 20250729-tcga prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+# -n 20250729-onco prep-onco-TOPMed/onco-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+# -n 20250729-i370 prep-i370-TOPMed/i370-updated-chr*.vcf.gz
+#impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+# -n 20250801-cidr prep-cidr-TOPMed/cidr-updated-chr*.vcf.gz
 ```
 
 i370 almost entirely fails. Bad liftover??? Check script removes most. Imputation removes most of what's left.
@@ -347,12 +362,16 @@ Impute on TOPMed using 1000G prepared data.
 It appears that the 1000G panel is very similar, if not the same, as the hg19 TOPMed panel.
 
 ```
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250730-i370-1kg prep-i370-1000g/i370-updated-chr*.vcf.gz
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250729-tcga-1kg prep-tcga-1000g/tcga-updated-chr*.vcf.gz
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250729-onco-1kg prep-onco-1000g/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
+ -n 20250730-i370-1kg prep-i370-1000g/i370-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
+ -n 20250729-tcga-1kg prep-tcga-1000g/tcga-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
+ -n 20250729-onco-1kg prep-onco-1000g/onco-updated-chr*.vcf.gz
 
 
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all -n 20250729-cidr-1kg prep-cidr-1000g/cidr-updated-chr*.vcf.gz
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
+ -n 20250729-cidr-1kg prep-cidr-1000g/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -363,11 +382,15 @@ UMich 1000g checked hg19
 Population 'all' is not supported by reference panel '1000g-phase-3-v5'.
 
 ```BASH
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250729-tcga-1kghg19 prep-tcga-1000g/tcga-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250729-onco-1kghg19 prep-onco-1000g/onco-updated-chr*.vcf.gz
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250729-i370-1kghg19 prep-i370-1000g/i370-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 \
+ -n 20250729-tcga-1kghg19 prep-tcga-1000g/tcga-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 \
+ -n 20250729-onco-1kghg19 prep-onco-1000g/onco-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 \
+ -n 20250729-i370-1kghg19 prep-i370-1000g/i370-updated-chr*.vcf.gz
 
-impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 -n 20250801-cidr-1kghg19 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
+impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 \
+ -n 20250801-cidr-1kghg19 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -382,11 +405,15 @@ Error: More than 100 allele switches have been detected. Imputation cannot be st
 Now they fail silently????
 
 ```BASH
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250729-tcga-1kghg38 prep-tcga-1000g/tcga-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250729-onco-1kghg38 prep-onco-1000g/onco-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250729-i370-1kghg38 prep-i370-1000g/i370-updated-chr*.vcf.gz
+#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
+# -n 20250729-tcga-1kghg38 prep-tcga-1000g/tcga-updated-chr*.vcf.gz
+#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
+# -n 20250729-onco-1kghg38 prep-onco-1000g/onco-updated-chr*.vcf.gz
+#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
+# -n 20250729-i370-1kghg38 prep-i370-1000g/i370-updated-chr*.vcf.gz
 #
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep -n 20250801-cidr-1kghg38 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
+#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
+# -n 20250801-cidr-1kghg38 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -508,8 +535,9 @@ Why plink2 instead of plink?
 ```BASH
 for f in imputed-*/*dose.vcf.gz ; do
  b=${f%.dose.vcf.gz}
- echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.01 --hwe 1e-5 --geno 0.01 --exclude-if-info 'R2 < 0.8' \
- --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
+ echo "module load plink2; plink2 --threads 4 --vcf ${f} dosage=DS --maf 0.01 --hwe 1e-5 --geno 0.01 \
+ --exclude-if-info 'R2 < 0.8' --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; \
+  bcftools index --tbi ${b}.QC.vcf.gz; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 done > plink_commands1
 
 commands_array_wrapper.bash --array_file plink_commands1 --time 1-0 --threads 4 --mem 30G
@@ -549,14 +577,15 @@ so split the multiallelics (if they exist) and manually set the types.
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 
-  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-${s}-${b} \
-    --export=None --output="${PWD}/concat-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
-    --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-    --wrap="module load bcftools; bcftools concat --output - imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz | \
-     bcftools norm --multiallelics - --output - -  | \
-     sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | \
-     bcftools filter -s PASS -Oz -o imputed-${s}-${b}/concated.vcf.gz -Wtbi - ; \
-     chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
+ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-${s}-${b} \
+   --export=None --output="${PWD}/concat-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
+   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
+   --wrap="module load bcftools; bcftools concat --output - imputed-${s}-${b}/chr[1-9]{,?}.QC.vcf.gz | \
+    bcftools norm --multiallelics - --output - -  | \
+    sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' \
+     -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | \
+    bcftools filter -s PASS -Oz -o imputed-${s}-${b}/concated.vcf.gz -Wtbi - ; \
+    chmod -w imputed-${s}-${b}/concated.vcf.gz imputed-${s}-${b}/concated.vcf.gz.tbi"
 
 done; done
 ```
@@ -587,19 +616,23 @@ Why plink2 instead of plink?
 ```BASH
 for f in imputed-*/concated.vcf.gz ; do
  b=${f%.vcf.gz}
- echo "module load bcftools plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' \
-     --new-id-max-allele-len 200 --mind 0.01 --out ${b}.tmp.QC --recode vcf bgz vcf-dosage=DS-force; \
-     bcftools norm --multiallelics - --output - ${b}.tmp.QC.vcf.gz  | \
-     sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | \
-     bgzip > ${b}.QC.vcf.gz; bcftools index --tbi ${b}.QC.vcf.gz ; chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi; \rm ${b}.tmp.QC.vcf.gz"
+ echo "module load bcftools plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM \
+  --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.tmp.QC \
+  --recode vcf bgz vcf-dosage=DS-force; \
+  bcftools norm --multiallelics - --output - ${b}.tmp.QC.vcf.gz  | \
+  sed -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' \
+   -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' | \
+  bgzip > ${b}.QC.vcf.gz; bcftools index --tbi ${b}.QC.vcf.gz ; \
+  chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi; \rm ${b}.tmp.QC.vcf.gz"
 done > plink_commands2
 
 commands_array_wrapper.bash --array_file plink_commands2 --time 1-0 --threads 8 --mem 60G
 
 
 
-#echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM --set-all-var-ids '@:#:\$r:\$a' \
-# --new-id-max-allele-len 200 --mind 0.01 --out ${b}.QC --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; \
+#echo "module load plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM \
+#  --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.QC \
+#  --recode vcf bgz vcf-dosage=DS-force; bcftools index --tbi ${b}.QC.vcf.gz; \
 # chmod -w ${b}.QC.vcf.gz ${b}.QC.vcf.gz.tbi"
 ```
 
@@ -817,7 +850,8 @@ Quick correction rather than rerun. (This can take a couple hours.)
 for vcf in imputed-*/*cases/*cases.vcf.gz imputed-*/concated.QC.vcf.gz ; do
 
 echo "module load htslib bcftools; chmod +w ${vcf} ${vcf}.tbi; \rm ${vcf}.tbi; gunzip ${vcf}; \
- sed -i -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' ${vcf%.gz}; \
+ sed -i -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' \
+  -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' ${vcf%.gz}; \
  bgzip ${vcf%.gz}; bcftools index --tbi ${vcf}; chmod -w ${vcf} ${vcf}.tbi"
 
 done > correction_commands
@@ -845,8 +879,8 @@ They take about 5-10 minutes
 
 ```BASH
 for vcf in imputed-*/*cases/*cases.vcf.gz ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
- --job-name=$(dirname $(dirname $vcf)) \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=$(dirname $(dirname $vcf)) \
  --wrap="module load plink; plink --vcf $vcf --indep-pairwise 50 10 0.1 --out ${vcf%.vcf.gz}; \
   plink --vcf $vcf --extract ${vcf%.vcf.gz}.prune.in --pca --out ${vcf%.vcf.gz}" \
  --out=${PWD}/plink_pca.$(dirname $(dirname $vcf)).log
@@ -933,7 +967,8 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz --outbase ${PWD}/gwas-${s}-${b}/ \
+echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-cases.vcf.gz \
+ --outbase ${PWD}/gwas-${s}-${b}/ \
  --idfile ${id} --covfile imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
 
 done; done ; done > gwas_commands
@@ -1064,7 +1099,8 @@ for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage --outbase ${PWD}/gwas-${s}-${b}/ \
+echo spacox.bash --dataset ${b} --dosage imputed-${s}-${b}/${b}-cases/${b}-cases.dosage \
+ --outbase ${PWD}/gwas-${s}-${b}/ \
  --idfile ${id} --covfile imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
 
 done; done ; done > spa_commands
