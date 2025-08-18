@@ -134,10 +134,11 @@ Standard HRC on original hg19 bed/bim/fam
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
- --job-name=${b}_check-bim \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_check-bim \
  --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep-${b}-HRC/${b}.bim \
- --frequency ${PWD}/prep-${b}-HRC/${b}.frq --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" \
+ --frequency ${PWD}/prep-${b}-HRC/${b}.frq \
+ --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" \
  --out=${PWD}/prep-${b}-HRC/HRC-1000G-check-bim.pl.log
 done
 ```
@@ -164,10 +165,10 @@ Check against a 1000 genomes panel
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
- --job-name=${b}_check-bim \
- --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose --bim ${PWD}/prep-${b}-1000g/${b}.bim \
- --frequency ${PWD}/prep-${b}-1000g/${b}.frq \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_check-bim \
+ --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose \
+ --bim ${PWD}/prep-${b}-1000g/${b}.bim --frequency ${PWD}/prep-${b}-1000g/${b}.frq \
  --ref /francislab/data1/refs/Imputation/1000GP_Phase3_combined.legend --1000g" \
  --out=${PWD}/prep-${b}-1000g/HRC-1000G-check-bim.pl.log
 done
@@ -198,10 +199,10 @@ Dropping to 4/30 as don't think I actually need 8/60
 
 ```BASH
 for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G --export=None \
- --job-name=${b}_check-bim \
- --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose --bim ${PWD}/prep-${b}-TOPMed/${b}.bim \
- --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_check-bim \
+ --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose \
+ --bim ${PWD}/prep-${b}-TOPMed/${b}.bim --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq \
  --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" \
  --out=${PWD}/prep-${b}-TOPMed/HRC-1000G-check-bim.pl.log
 done
