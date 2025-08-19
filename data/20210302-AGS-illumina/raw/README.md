@@ -80,7 +80,7 @@ wc -l *rsids
 ```
 
 
-the rsids say that this is hg19 plus one. Not entirely sure how or why this happens
+the rsids say that this is hg19 MINUS one. Not entirely sure how or why this happens
 
 
 
