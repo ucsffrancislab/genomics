@@ -1117,3 +1117,108 @@ Geno : I’d say anything running less than 30 individuals is very unreliable fo
 
 
 
+
+
+
+
+
+##	20250818 
+
+
+It appears that the i370 dataset's positions are all 1 less than "should be".
+
+I'm gonna increment the positions by one on the lifted over data and run the check script.
+
+
+
+Link hg38 files in prep for checking again TOPMed panel
+
+
+```BASH
+for b in i370 ; do
+mkdir prep-${b}-TOPMed-TEST
+cd prep-${b}-TOPMed-TEST
+ln -s ../hg38-${b}/${b}.bed
+#ln -s ../hg38-${b}/${b}.bim
+ln -s ../hg38-${b}/${b}.fam
+ln -s ../hg38-${b}/${b}.frq
+cd ..
+done
+```
+
+
+increment the positions(3) in the bim file
+```BASH
+awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,1+$4,$5,$6}' hg38-${b}/${b}.bim > prep-${b}-TOPMed-TEST/${b}.bim
+chmod -w prep-${b}-TOPMed-TEST/${b}.bim 
+```
+
+
+
+
+
+Check against TOPMed panel
+
+Dropping to 4/30 as don't think I actually need 8/60
+
+```BASH
+for b in i370 ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_check-bim \
+ --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose \
+ --bim ${PWD}/prep-${b}-TOPMed-TEST/${b}.bim --frequency ${PWD}/prep-${b}-TOPMed-TEST/${b}.frq \
+ --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" \
+ --out=${PWD}/prep-${b}-TOPMed-TEST/HRC-1000G-check-bim.pl.log
+done
+
+```
+
+
+
+TOPMed
+
+```BASH
+for b in i370 ; do
+sed -i -e '/--recode vcf --chr/s/--chr/--output-chr chrM --chr/' \
+ -e '/--make-bed --chr/s/^/#/' prep-${b}-TOPMed-TEST/Run-plink.sh
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_run-plink \
+ --wrap="module load plink; sh ${PWD}/prep-${b}-TOPMed-TEST/Run-plink.sh;\rm ${PWD}/prep-${b}-TOPMed-TEST/TEMP?.*" \
+ --out=${PWD}/prep-${b}-TOPMed-TEST/Run-plink.sh.log
+done
+```
+
+```BASH
+for b in i370 ; do
+for s in TOPMed ; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_bgzip \
+ --wrap="module load htslib; bgzip ${PWD}/prep-${b}-${s}-TEST/*vcf; chmod a-w ${PWD}/prep-${b}-${s}-TEST/*{bim,bed,fam,vcf.gz}" \
+ --out=${PWD}/prep-${b}-${s}-TEST/bgzip.log
+done; done
+```
+
+```BASH
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+ -n 20250818-i370 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz
+
+
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
+ -n 20250818-i370-1kghg38 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz | sh
+
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
+ -n 20250819-tcga-1kghg38 prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz | sh
+impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
+ -n 20250819-onco-1kghg38 prep-onco-TOPMed/onco-updated-chr*.vcf.gz | sh
+```
+
+
+```BASH
+mkdir imputed-umich19-i370hg38-1kghg38-TEST
+cd imputed-umich19-i370hg38-1kghg38-TEST
+curl -sL https://imputationserver.sph.umich.edu/get/nTop0fFuLUW3CgBGj5Y5qtb7ooSCHFTuRcn79G8F | bash
+chmod -w *
+cd ..
+```
+
+
