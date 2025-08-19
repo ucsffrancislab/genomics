@@ -51,3 +51,40 @@ cut -d' ' -f2,6 AGS_Mayo_Oncoarray_for_QC.fam | awk '(/AGS/){print "AGS",$2}(!/A
 ```
 
 
+Assuming hg19 or hg38 as no data available for hg18
+
+```BASH
+awk 'BEGIN{OFS=":"}{print $1,$4,$2}' AGS_Mayo_Oncoarray_for_QC.bim | sort > rsids
+awk 'BEGIN{OFS=":"}{print $1,1+$4,$2}' AGS_Mayo_Oncoarray_for_QC.bim | sort > plusonersids
+
+
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_rsids > hg19_common_plusonersids
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/All_rsids > hg19_All_plusonersids
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/common_rsids > hg38_common_plusonersids
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids > hg38_All_plusonersids
+
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_rsids > hg19_common_rsids
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/All_rsids > hg19_All_rsids
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/common_rsids > hg38_common_rsids
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids > hg38_All_rsids
+
+wc -l *rsids
+
+       0 hg19_All_plusonersids
+  300782 hg19_All_rsids
+       0 hg19_common_plusonersids
+  299991 hg19_common_rsids
+    1965 hg38_All_plusonersids
+    2835 hg38_All_rsids
+    1948 hg38_common_plusonersids
+    2816 hg38_common_rsids
+  403388 plusonersids
+  403388 rsids
+ 1417113 total
+
+```
+
+Again, the rsids say this is hg19.
+
+
+

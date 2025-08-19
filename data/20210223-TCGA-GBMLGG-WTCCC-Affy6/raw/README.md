@@ -48,3 +48,42 @@ cut -d' ' -f2,5,6 TCGA_WTCCC_for_QC.fam | awk '(/WTCC/){print "WTCCC",$2,$3}(/TC
 ```
 
 
+
+Assuming hg19 or hg38 as no data available for hg18
+```BASH
+
+awk 'BEGIN{OFS=":"}{print $1,$4,$2}' TCGA_WTCCC_for_QC.bim | sort > rsids
+awk 'BEGIN{OFS=":"}{print $1,1+$4,$2}' TCGA_WTCCC_for_QC.bim | sort > plusonersids
+
+
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_rsids > hg19_common_plusonersids
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/All_rsids > hg19_All_plusonersids
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/common_rsids > hg38_common_plusonersids
+join plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids > hg38_All_plusonersids
+
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_rsids > hg19_common_rsids
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/All_rsids > hg19_All_rsids
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/common_rsids > hg38_common_rsids
+join rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids > hg38_All_rsids
+
+wc -l *rsids
+
+       0 hg19_All_plusonersids
+  733603 hg19_All_rsids
+       0 hg19_common_plusonersids
+  731129 hg19_common_rsids
+    3011 hg38_All_plusonersids
+    6925 hg38_All_rsids
+    2991 hg38_common_plusonersids
+    6835 hg38_common_rsids
+  733799 plusonersids
+  733799 rsids
+ 2952092 total
+```
+
+rsids say this is hg19
+
+
+
+
+
