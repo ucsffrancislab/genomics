@@ -205,7 +205,11 @@ if( 'source' %in% names(pheno.file) && length(unique(pheno.file$source)) > 1 ){
 	cov=c(cov,"SourceAGS")
 }
 
-cov=c(cov, "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
+cov=c(cov, "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8") #, "PC9", "PC10")
+if( 'PC9' %in% names(pheno.file) )
+	cov=c(cov,'PC9')
+if( 'PC10' %in% names(pheno.file) )
+	cov=c(cov,'PC10')
 formula=paste("Surv(survdays, vstatus) ~",paste(cov,collapse=" + "))
 print("Using formula:")
 print(formula)
