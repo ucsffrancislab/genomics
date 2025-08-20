@@ -5,6 +5,7 @@ Use the prep from ../20250723-survival_gwas
 
 
 ```BASH
+ln -s ../20250723-survival_gwas/lists
 ln -s ../20250723-survival_gwas/prep-onco-1000g
 ln -s ../20250723-survival_gwas/prep-i370-1000g
 ln -s ../20250723-survival_gwas/prep-cidr-1000g
@@ -215,5 +216,66 @@ done
 ```BASH
 box_upload.bash results/PGS_Case_Control-*
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	PGS Survival Analysis
+
+Extract just cases from PGS matrix
+
+```BASH
+for b in onco i370 tcga ; do
+
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_pgs-${b} \
+    --output="${PWD}/pull_pgs-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
+    --time=1-0 --nodes=1 --ntasks=4 --mem=30G pull_case_pgs.bash \
+    --IDfile ${PWD}/lists/${b}-cases.txt \
+    --pgsfile ${PWD}/pgs-${b}-hg19/scores.txt --outbase ${PWD}/pgs-${b}-hg19
+
+done
+```
+
+
+
+```BASH
+for b in onco i370 tcga ; do
+ cov_in=lists/${b}_covariates.tsv
+ cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
+ cat ${cov_in} | cut -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+ head -1 ${TMPDIR}/tmp.csv > pgs-${b}-hg19/${b}-covariates_base.csv
+ tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-${b}-hg19/${b}-covariates_base.csv
+ cat pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+ join --header -t, pgs-${b}-hg19/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-${b}-hg19/${b}-covariates.tsv
+done
+```
+
+
+
+```BASH
+for b in onco i370 tcga ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo spacox.bash --dataset ${b} --dosage pgs-${b}-hg19/case_scores.csv \
+ --outbase ${PWD}/pgs-${b}-hg19/ \
+ --idfile ${id} --covfile pgs-${b}-hg19/${b}-covariates.tsv
+
+done; done > spa_commands
+
+commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
 
 
