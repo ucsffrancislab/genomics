@@ -178,7 +178,7 @@ done
 
 ####	TOPMed
 
-Link hg38 files in prep for checking again TOPMed panel
+Link hg38 files in prep for checking against TOPMed panel
 
 
 ```BASH
@@ -1130,8 +1130,7 @@ It appears that the i370 dataset's positions are all 1 less than "should be".
 I'm gonna increment the positions by one on the lifted over data and run the check script.
 
 
-
-Link hg38 files in prep for checking again TOPMed panel
+Link hg38 files in prep for checking against TOPMed panel
 
 
 ```BASH
@@ -1147,7 +1146,7 @@ done
 ```
 
 
-increment the positions(3) in the bim file
+increment the positions(4) in the bim file
 ```BASH
 awk 'BEGIN{FS=OFS="\t"}{print $1,$2,$3,1+$4,$5,$6}' hg38-${b}/${b}.bim > prep-${b}-TOPMed-TEST/${b}.bim
 chmod -w prep-${b}-TOPMed-TEST/${b}.bim 
@@ -1200,12 +1199,11 @@ done; done
 
 ```BASH
 impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
- -n 20250818-i370 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz
+ -n 20250818-i370 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz  #		<-- down until Aug 22
 
 
 impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
  -n 20250818-i370-1kghg38 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz | sh
-
 impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
  -n 20250819-tcga-1kghg38 prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz | sh
 impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
@@ -1219,6 +1217,36 @@ cd imputed-umich19-i370hg38-1kghg38-TEST
 curl -sL https://imputationserver.sph.umich.edu/get/nTop0fFuLUW3CgBGj5Y5qtb7ooSCHFTuRcn79G8F | bash
 chmod -w *
 cd ..
+
+mkdir imputed-umich19-oncohg38-1kghg38
+cd imputed-umich19-oncohg38-1kghg38
+curl -sL https://imputationserver.sph.umich.edu/get/6enpKNfR8zMnvFfzBLFlB2L9nB0cRFdmZzWbYNmy | bash
+chmod -w *
+cd ..
+
+mkdir imputed-umich19-tcgahg38-1kghg38
+cd imputed-umich19-tcgahg38-1kghg38
+curl -sL https://imputationserver.sph.umich.edu/get/GYTc1ZcSbCayRAc8UrnL70c6p8I59WcuVnZcLR8c | bash
+chmod -w *
+cd ..
 ```
+
+```BASH
+for s in umich19 ; do
+for b in onco i370 tcga ; do
+  echo ${s}-${b}
+  cd imputed-${s}-${b}hg38-1kghg38
+  chmod a-w *
+  for zip in chr*zip ; do
+    echo $zip
+    unzip -P $( cat ../password-${s}-${b}hg38-1kghg38 ) $zip
+  done
+  chmod 440 *gz
+  cd ..
+done ; done
+```
+
+
+
 
 
