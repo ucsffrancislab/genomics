@@ -83,5 +83,13 @@ wc -l *rsids
 the rsids say that this is hg19 MINUS one. Not entirely sure how or why this happens
 
 
+##	20250821
 
+Incrementing position by 1 in bim file.
+
+```
+mv AGS_illumina_for_QC.bim AGS_illumina_for_QC.bim.original
+awk 'BEGIN{FS=OFS="\t"}{$4=$4+1;print}' AGS_illumina_for_QC.bim.original > AGS_illumina_for_QC.bim
+chmod -w AGS_illumina_for_QC.bim
+```
 
