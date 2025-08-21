@@ -278,4 +278,18 @@ commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 4 --m
 
 
 
+##	20250820
+
+
+
+```BASH
+for b in onco i370 tcga ; do
+cat pgs-${b}-hg19/case_scores.csv | datamash transpose -t ' ' --output-delimiter=, > pgs-${b}-hg19/case_scores.t.csv
+cat pgs-${b}-hg19/${b}-covariates.tsv | tr '\t' ',' > pgs-${b}-hg19/${b}-covariates.csv
+join --header -t, pgs-${b}-hg19/${b}-covariates.csv pgs-${b}-hg19/case_scores.t.csv > pgs-${b}-hg19/${b}-covariates-scores.csv
+done
+
+extract_cox_coeffs_for_pgs.r
+```
+
 
