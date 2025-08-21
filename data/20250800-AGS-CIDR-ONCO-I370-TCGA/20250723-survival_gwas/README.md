@@ -1197,11 +1197,8 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 -
 done; done
 ```
 
+
 ```BASH
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
- -n 20250818-i370 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz  #		<-- down until Aug 22
-
-
 impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
  -n 20250818-i370-1kghg38 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz | sh
 impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
@@ -1246,6 +1243,38 @@ for b in onco i370 tcga ; do
 done ; done
 ```
 
+
+
+
+
+```BASH
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+ -n 20250818-i370-hg38 prep-i370-TOPMed-TEST/i370-updated-chr*.vcf.gz | sh
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+ -n 20250818-onco-hg38 prep-onco-TOPMed/onco-updated-chr*.vcf.gz | sh
+impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
+ -n 20250818-tcga-hg38 prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz | sh
+```
+
+```BASH
+mkdir imputed-topmed-i370hg38
+cd imputed-topmed-i370hg38
+
+chmod -w *
+cd ..
+
+mkdir imputed-topmed-oncohg38
+cd imputed-topmed-oncohg38
+
+chmod -w *
+cd ..
+
+mkdir imputed-topmed-tcgahg38
+cd imputed-topmed-tcgahg38
+
+chmod -w *
+cd ..
+```
 
 
 
