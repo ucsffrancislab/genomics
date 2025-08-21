@@ -94,7 +94,7 @@ for( b in c('i370','onco','tcga') ){
 		df[nrow(df) + 1, ] <- list( PGS, cox_coef, cox_expcoef, cox_secoef, cox_z, cox_pvalue, cox_HR, cox_CI1, cox_CI2)
 	}
 
-	write.csv(df, paste0('pgs-',b,'-hg19/',b,'-coxphoutput.csv'),row.names = FALSE)
+	write.csv(df, paste0('pgs-',b,'-hg19/',b,'-coxphoutput.csv'),row.names = FALSE, quote = FALSE)
 }
 
 
