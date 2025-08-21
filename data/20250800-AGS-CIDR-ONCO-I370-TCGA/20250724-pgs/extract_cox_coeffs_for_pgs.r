@@ -3,7 +3,10 @@
 
 library(survival)
 for( b in c('i370','onco','tcga') ){
+
 	scores=paste0('pgs-',b,'-hg19/',b,'-covariates-scores.csv')
+
+	#	prepare an empty dataframe
 	df <- as.data.frame(list(
 		pgs = character(),
 		coef = numeric(),
@@ -46,7 +49,10 @@ for( b in c('i370','onco','tcga') ){
 	)){
 	
 		pgs_scores <- data.table::fread( scores , sep = ",")
+
 		pgs_scores$SexFemale = ifelse( ( pgs_scores$sex == "F" | pgs_scores$sex == "female" ), 1L, 0L)
+
+		#	prepare all available covariates for the formula
 		cov=c()
 		if( 'age' %in% names(pgs_scores) ){
 			cov=c(cov,'age')
@@ -84,8 +90,10 @@ for( b in c('i370','onco','tcga') ){
 		cox_CI1     <- exp(confint(res.cox))[PGS,1]
 		cox_CI2     <- exp(confint(res.cox))[PGS,2]
 		
+		#	add these data to the data frame
 		df[nrow(df) + 1, ] <- list( PGS, cox_coef, cox_expcoef, cox_secoef, cox_z, cox_pvalue, cox_HR, cox_CI1, cox_CI2)
 	}
+
 	write.csv(df, paste0('pgs-',b,'-hg19/',b,'-coxphoutput.csv'),row.names = FALSE)
 }
 
