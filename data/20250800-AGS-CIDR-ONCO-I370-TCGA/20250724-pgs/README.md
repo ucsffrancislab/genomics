@@ -293,3 +293,38 @@ extract_cox_coeffs_for_pgs.r
 ```
 
 
+
+
+
+
+pgs-${b}-hg19/${b}-covariates-scores.csv
+
+
+
+```BASH
+for b in onco i370 tcga ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo pgscox.bash --dataset ${b} --pgsscores pgs-${b}-hg19/scores.txt \
+ --outbase ${PWD}/pgs-${b}-hg19/ \
+ --idfile ${id} --covfile pgs-${b}-hg19/${b}-covariates.tsv
+
+done; done > cox_commands
+
+commands_array_wrapper.bash --array_file cox_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+Use METAL to analyze all 3 datasets together.
+
+```BASH
+for id in lists/onco*meta_cases.txt ; do
+
+echo survival_metal_wrapper_all3.bash $id
+
+done > metal_commands
+
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
