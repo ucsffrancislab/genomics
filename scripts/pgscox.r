@@ -144,34 +144,36 @@ df <- as.data.frame(list(
 	ci2 = numeric()
 ))
 
-for ( PGS in c(
-	'PGS000017',
-	'PGS000155',
-	'PGS000618',
-	'PGS000619',
-	'PGS000620',
-	'PGS000621',
-	'PGS000622',
-	'PGS000623',
-	'PGS000624',
-	'PGS000625',
-	'PGS000781',
-	'PGS002302',
-	'PGS002724',
-	'PGS002788',
-	'PGS003384',
-	'PGS003387',
-	'PGS003737',
-	'PGS003981',
-	'PGS004013',
-	'PGS004023',
-	'PGS004038',
-	'PGS004051',
-	'PGS004067',
-	'PGS004081',
-	'PGS004135',
-	'PGS004151'
-)){
+#for ( PGS in c(
+#	'PGS000017',
+#	'PGS000155',
+#	'PGS000618',
+#	'PGS000619',
+#	'PGS000620',
+#	'PGS000621',
+#	'PGS000622',
+#	'PGS000623',
+#	'PGS000624',
+#	'PGS000625',
+#	'PGS000781',
+#	'PGS002302',
+#	'PGS002724',
+#	'PGS002788',
+#	'PGS003384',
+#	'PGS003387',
+#	'PGS003737',
+#	'PGS003981',
+#	'PGS004013',
+#	'PGS004023',
+#	'PGS004038',
+#	'PGS004051',
+#	'PGS004067',
+#	'PGS004081',
+#	'PGS004135',
+#	'PGS004151'
+#)){
+
+for ( PGS in names(pgsscores) ) {
 
 #	scores <- data.table::fread( scores , sep = ",")
 #
@@ -216,7 +218,8 @@ for ( PGS in c(
 	cox_CI2     <- exp(confint(res.cox))[PGS,2]
 	
 	#	add these data to the data frame
-	df[nrow(df) + 1, ] <- list( PGS, cox_coef, cox_expcoef, cox_secoef, cox_z, cox_pvalue, cox_HR, cox_CI1, cox_CI2)
+	if( !is.na( cox_pvalue ) )
+		df[nrow(df) + 1, ] <- list( PGS, cox_coef, cox_expcoef, cox_secoef, cox_z, cox_pvalue, cox_HR, cox_CI1, cox_CI2)
 }
 
 write.csv(df[order(df$pvalue), ], paste0(out_base,".csv"),row.names = FALSE, quote = FALSE)
