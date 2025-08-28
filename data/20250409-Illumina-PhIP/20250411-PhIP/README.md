@@ -2,7 +2,7 @@
 #	20250409-Illumina-PhIP/20250411-PhIP
 
 
-DO NOT USE Blank24dup plate6
+DO NOT USE Blank24dup plate6. WHY???? Nearly empty fastq file.
 
 
 ##	All
