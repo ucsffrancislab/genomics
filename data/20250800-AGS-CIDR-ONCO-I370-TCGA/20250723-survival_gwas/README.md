@@ -1259,23 +1259,47 @@ impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --popula
 ```BASH
 mkdir imputed-topmed-i370hg38
 cd imputed-topmed-i370hg38
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732726/0163721818eba1ef876befa1e605bcbb810c5869e910be6004ce91f77b58fc71 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732730/0d0acc43730fb5770dea0596d7ee3fca9b994a5b3bd982a99e66de533ba95517 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732733/6e6fa6a14d74b088dc2756ce358181f88eb606ef3570ec9c54970742cfc53dfc | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732732/d81773638f1701a7a334df93cdd16662853b7cc642f93135e4007ff5d21fa35f | bash
 chmod -w *
 cd ..
 
 mkdir imputed-topmed-oncohg38
 cd imputed-topmed-oncohg38
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732798/6c8fb541d15782d7dc8806c9fb765a4e5684f6f71b330f60ff23ed87a2f54482 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732802/5d913833863c8b5203fb8f0b0353966ec34f1fe8682f41d825887eb669988f46 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732805/d443d232a1c0472f2d0ef9d498cfb60f2b96ea3030400a914d65460eac637698 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732804/96fb7a1b2b382bebe10ecd5070fece56f3fd305dfb62f38d9aa804da1138bf5a | bash
 chmod -w *
 cd ..
 
 mkdir imputed-topmed-tcgahg38
 cd imputed-topmed-tcgahg38
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732822/cc38ec04fc3d9b064fdb5f2fd4907f2930a51bfca029ca08c61a1ed76c9dcc40 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732826/0ce6d0ea0da5cb0e7508769e9db9c28a0b40e29fa7bf681622bf84f2bf72ce93 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732829/52e3da39e1ef2a7fe9d97f151bf0df324de2a120649f1d92a2c62f4e867df0af | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1732828/595f3c2c3968c432907a62134e1ea43b5ca9e359e21b95f8cb8a403e335634c3 | bash
 chmod -w *
 cd ..
 ```
 
+
+```BASH
+for s in topmed ; do
+for b in onco i370 tcga ; do
+  echo ${s}-${b}
+  cd imputed-${s}-${b}hg38
+  chmod a-w *
+  for zip in chr*zip ; do
+    echo $zip
+    unzip -P $( cat ../password-${s}-${b}hg38 ) $zip
+  done
+  chmod 440 *gz
+  cd ..
+done ; done
+```
 
 
 
