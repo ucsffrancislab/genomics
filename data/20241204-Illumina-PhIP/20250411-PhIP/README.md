@@ -2,7 +2,10 @@
 #	20241204-Illumina-PhIP/20250411-PhIP
 
 
-DO NOT USE Blank03_2
+DO NOT USE Blank03_2 - WHY???
+@Helen Hansen @Mi Zhou We spent a little time reviewing the blanks today. one blank from the first batch (Blank03_2) is clearly different. We are currently thinking of using an alignment % cutoff to toss blanks. all the other blanks are at or under ~25% alignment, Blank03_2 was around 70%.  So our current thinking is to too any blanks with an alignment rate greater than 40% (open for discussion though!)
+
+DO NOT USE Blank50_1 - WHY??? Too many unique aligned tiles??? It was noted in the phip_seq_normalize_counts.py
 
 
 ##  All
@@ -13,6 +16,7 @@ awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.all.csv
 sed -i 's/,PBS blank,/,input,/' manifest.all.csv
 sed -i '/Blank03_2/d' manifest.all.csv
+sed -i '/Blank50_1/d' manifest.all.csv
 chmod -w manifest.all.csv
 ```
 
@@ -36,6 +40,7 @@ for manifest in manifest.plate*.csv ; do
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' ${manifest}
 sed -i 's/,PBS blank,/,input,/' ${manifest}
 sed -i '/Blank03_2/d' ${manifest}
+sed -i '/Blank50_1/d' ${manifest}
 chmod -w ${manifest}
 done
 
