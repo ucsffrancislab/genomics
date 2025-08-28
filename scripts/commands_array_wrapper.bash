@@ -116,6 +116,7 @@ else
 	array=""
 	mem=""
 	scratch=""
+	jobname=$(basename $0)
 	time="7-0"
 
 	while [ $# -gt 0 ] ; do
@@ -128,6 +129,8 @@ else
 				shift; threads=$1; shift;;
 			--mem)
 				shift; mem=$1; shift;;
+			--jobname)
+				shift; jobname=$1; shift;;
 			--scratch)
 				shift; scratch=$1; shift;;
 			--time)
@@ -176,7 +179,7 @@ else
 		# --time=0 is actually invalid, at least here. Not passing a value results in a 10 minute limit.
 
 		sbatch_command="sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
-			--parsable --job-name="$(basename $0)" \
+			--parsable --job-name="${jobname}" \
 			--time=${time} --nodes=1 --ntasks=${threads} ${mem_option} ${scratch_option} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
 				$( realpath ${0} ) ${array_options}"
