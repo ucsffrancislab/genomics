@@ -1250,3 +1250,109 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1
 ```
 ./heatmap.Rmd -i /francislab/data1/working/20250128-Illumina-PhIP/20250128c-PhIP/out.all.test/cpm_blank_subtracted.csv -o glioma_cpm_blank_subtracted
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	20250822
+
+
+Can you do me a favor and turn to the PHIP-seq for the meningioma data real quick?
+
+I need to look at it for a potential small grant application next week.
+
+lets start with what we already did- I believe we did the meningioma/AGS control comparison, is that correct?
+
+Can you please go ahead and do that?
+
+We can try using just the controls that were on the mengingioma plate (if there were) or all the controls we have done so far, ignoring plate.
+
+I don’t think we can adjust for plate because there is no cross over, but thats ok for preliminary data
+
+
+All pvalues ~1 when including plate in the formula as its a "perfect predictor".
+
+
+
+```
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,5,6,13,14} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a meningioma -b control --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --counts --ignore_plate >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a meningioma -b control --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --counts --sex M --ignore_plate >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 -a meningioma -b control --zfile_basename Counts.normalized.subtracted.trim.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --counts --sex F --ignore_plate >> commands
+
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a meningioma -b control --zfile_basename Zscores.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a meningioma -b control --zfile_basename Zscores.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --sex M --ignore_plate
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} -a meningioma -b control --zfile_basename Zscores.select-123561314.csv -o ${PWD}/out.123561314 -p ${plates} --sex F --ignore_plate
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 2 --mem 15G --array 1-12%12
+```
+
+
+
+
+
+##	20250827
+
+There aren't meningioma and controls on each plate so these may all fail at some point.
+
+
+Count_Viral_Tile_Hit_Fraction.R fails AFTER writing Viral_Frac_Hits-\*
+
+Case_Control_Z_Script.R writes Tile_Comparison
+
+Seropositivity_Comparison.R fails so no Seropositivity_Prop_test_results-\*
+
+
+
+```
+\rm commands
+
+for p in 1 2 3 5 6 13 14 ; do
+plate=out.plate${p}
+manifest=${plate}/manifest.plate${p}.csv
+for z in 3.5 10 ; do
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} -a meningioma -b control --zfilename ${plate}/Zscores.select-123561314.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} -a meningioma -b control --zfilename ${plate}/Zscores.select-123561314.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} -a meningioma -b control --sfilename ${plate}/seropositive.${z}.csv
+done ; done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+```
+box_upload.bash out.plate*/{Seropositivity,Tile_Comparison,Viral}*meningioma*
+```
+
+```
+\rm commands
+plates=$( ls -d ${PWD}/out.plate{1,2,3,5,6,13,14} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} -a meningioma -b control -o ${PWD}/out.123561314 -p ${plates} --ignore_plate --zfile_basename Zscores.select-123561314.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a meningioma -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a meningioma -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} -a meningioma -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate --sex F
+done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+```
+box_upload.bash out.123561314/Multiplate_*meningioma*{log,csv}
+```
+
