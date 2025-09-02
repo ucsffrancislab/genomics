@@ -204,7 +204,6 @@ server <- function(input, output, session) {
 		#p <- ggplot(df, aes(x = exp_beta, y = -log10(my_selected_pvalue),size=sig,fill=sig)) +
 		p <- ggplot(df, aes(x = my_selected_beta, y = -log10(my_selected_pvalue),size=sig,fill=sig)) +
 			ggtitle(input$file1$name) +
-			geom_vline(xintercept=1, linewidth = 0.5,col="gray60",linetype=2)+
 			geom_point(aes(fill=sig,size=sig),shape=21) +
 			geom_text(aes(label=as.character(my_selected_label)), hjust=0.5, nudge_y = 0.1)+
 			geom_hline(yintercept=1.305, linewidth = 0.5, linetype=2)+
@@ -218,6 +217,12 @@ server <- function(input, output, session) {
 				legend.text = element_text(size=13, color="black",lineheight = 1.2),
 				axis.text=element_text(size=15,color="black",margin=margin(7,7,7,7,"pt")),
 				axis.title = element_text(size=16,color="black",margin=margin(7,7,7,7,"pt")))
+
+		if( input$exp_beta ) {
+			p <- p + geom_vline(xintercept=1, linewidth = 0.5,col="gray60",linetype=2)
+		} else {
+			p <- p + geom_vline(xintercept=0, linewidth = 0.5,col="gray60",linetype=2)
+		}
 
 		p <- p + coord_cartesian()
 		p <- p + xlim(input$xlim_range[1], input$xlim_range[2]) # Set x-axis limits based on slider input
