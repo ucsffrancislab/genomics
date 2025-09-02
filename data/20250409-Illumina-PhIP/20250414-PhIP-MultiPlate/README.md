@@ -1356,3 +1356,40 @@ commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 3
 box_upload.bash out.123561314/Multiplate_*meningioma*{log,csv}
 ```
 
+
+##	20250828
+
+
+Cross plate analysis of Phage Library samples, CSE samples and Blank samples.
+
+
+T-test grid?
+
+
+
+How to force include ALL tile ids?
+
+```
+mkdir out.12345613141516
+merge_all_combined_counts_files.py --int --de_nan --out out.12345613141516/Plibs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/PLib*.count.csv.gz
+sed -i 's/\.0//g' out.12345613141516/Plibs.csv 
+merge_all_combined_counts_files.py --int --de_nan --out out.12345613141516/CSEs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/CSE*.count.csv.gz
+sed -i 's/\.0//g' out.12345613141516/CSEs.csv 
+merge_all_combined_counts_files.py --int --de_nan --out out.12345613141516/Blanks.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/input/Blank*.count.csv.gz
+sed -i 's/\.0//g' out.12345613141516/Blanks.csv 
+
+```
+
+
+
+```
+python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/Plibs.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
+
+python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/CSEs.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
+
+python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/Blanks.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
+
+```
+
+
+
