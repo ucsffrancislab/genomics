@@ -418,3 +418,36 @@ awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ print NF }' metadata/pgs_all_me
 
 
 
+
+
+
+
+##20250829
+
+Compare Glioma and IBD PGSs
+
+```
+awk -F, '($4=="inflammatory bowel disease"){print $1}' metadata/pgs_all_metadata_scores.csv | paste -sd,
+PGS000017,PGS001288,PGS003981,PGS003997,PGS004013,PGS004023,PGS004038,PGS004051,PGS004067,PGS004081,PGS004097,PGS004105,PGS004121,PGS004135,PGS004151,PGS004270,PGS004271,PGS004272,PGS004273,PGS004274
+
+grep glio metadata/pgs_all_metadata_scores.csv | cut -d, -f1 | paste -sd,
+awk -F, '($3=="Glioma"||$3=="Glioblastoma"){print $1}' metadata/pgs_all_metadata_scores.csv | paste -sd,
+PGS000155,PGS000781,PGS002302,PGS003384
+```
+
+
+```
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=pgs-GLIO-IBD.txt.gz {PGS000155,PGS000781,PGS002302,PGS003384,PGS000017,PGS001288,PGS003981,PGS003997,PGS004013,PGS004023,PGS004038,PGS004051,PGS004067,PGS004081,PGS004097,PGS004105,PGS004121,PGS004135,PGS004151,PGS004270,PGS004271,PGS004272,PGS004273,PGS004274}.txt.gz; tabix -S 5 -p vcf pgs-GLIO-IBD.txt.gz;chmod -w pgs-GLIO-IBD.txt.gz*"
+```
+
+zcat pgs-GLIO-IBD.txt.gz > pgs-GLIO-IBD.tsv
+
+tail -n +6 pgs-GLIO-IBD.tsv | awk 'BEGIN{FS=OFS="\t"}{c=0;for(i=5;i<=9;i++){if($i)c+=1};print $1,$2,$3,$4,c}' | sort -k5n,5 | head
+
+tail -n +5 pgs-GLIO-IBD.tsv | awk 'BEGIN{FS=OFS="\t"}(NR==1){print $1,$2,$3,$4,$5,$6,$7,$8,$9}(NR>1){if( $9 && ( $5 || $6 || $7 || $8 ) ) print $1,$2,$3,$4,$5,$6,$7,$8,$9}' > pgs-GLIO-IBD.PGS000017-shared.tsv
+
+tail -n +5 pgs-GLIO-IBD.tsv | awk 'BEGIN{FS=OFS="\t"}(NR==1){print $1,$2,$3,$4,$5,$6,$7,$8,$9}(NR>1){if( $5 || $6 || $7 || $8 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9}' > pgs-GLIO-IBD.Glio-shared.tsv
+
+
