@@ -1777,6 +1777,7 @@ No duplicated ids
 awk -F, '{print ">"$1;print $2}' VirScan/VIR3_clean.id_upper_oligo.uniq.csv > VirScan/VIR3_clean.id_upper_oligo.uniq.fna
 awk -F, '{print ">"$1;print substr($2,1,80)}' VirScan/VIR3_clean.id_upper_oligo.uniq.csv > VirScan/VIR3_clean.id_upper_oligo.uniq.1-80.fna
 awk -F, '{print ">"$1;print substr($2,1,80)}' VirScan/VIR3_clean.id_oligo.uniq.csv > VirScan/VIR3_clean.id_oligo.uniq.1-80.fna
+awk -F, 'BEGIN{print "id,oligo"}{print $1","substr($2,1,80)}' VirScan/VIR3_clean.id_oligo.uniq.csv > VirScan/VIR3_clean.id_oligo.uniq.1-80.csv
 bowtie2-build VirScan/VIR3_clean.id_oligo.uniq.1-80.fna VirScan/VIR3_clean.id_oligo.uniq.1-80
 bowtie2-build VirScan/VIR3_clean.id_upper_oligo.uniq.1-80.fna VirScan/VIR3_clean.id_upper_oligo.uniq.1-80
 ```
