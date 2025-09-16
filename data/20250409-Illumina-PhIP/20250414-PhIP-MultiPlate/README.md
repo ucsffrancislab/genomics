@@ -1371,25 +1371,119 @@ How to force include ALL tile ids?
 
 ```
 mkdir out.12345613141516
-merge_all_combined_counts_files.py --int --de_nan --out out.12345613141516/Plibs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/PLib*.count.csv.gz
+merge_all_combined_counts_files.py --de_nan --out out.12345613141516/Plibs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/PLib*.q40.count.csv.gz
 sed -i 's/\.0//g' out.12345613141516/Plibs.csv 
-merge_all_combined_counts_files.py --int --de_nan --out out.12345613141516/CSEs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/CSE*.count.csv.gz
+merge_all_combined_counts_files.py --de_nan --out out.12345613141516/CSEs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/CSE*.q40.count.csv.gz
 sed -i 's/\.0//g' out.12345613141516/CSEs.csv 
-merge_all_combined_counts_files.py --int --de_nan --out out.12345613141516/Blanks.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/input/Blank*.count.csv.gz
+merge_all_combined_counts_files.py --de_nan --out out.12345613141516/Blanks.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/input/Blank*.q40.count.csv.gz
 sed -i 's/\.0//g' out.12345613141516/Blanks.csv 
-
 ```
 
 
 
+##	20250909
+
+```BASH
+merge_all_combined_counts_files.py --de_nan --out out.12345613141516/AllSamples.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/input/*.q40.count.csv.gz out.plate*/counts/*.q40.count.csv.gz
+sed -i 's/\.0//g' out.12345613141516/AllSamples.csv 
+merge_all_combined_counts_files.py --de_nan --out out.12345613141516/AllActualSamples.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv $( ls -1 out.plate*/counts/*.q40.count.csv.gz | grep -vs PLib | grep -vs CSE | paste -s )
+sed -i 's/\.0//g' out.12345613141516/AllActualSamples.csv 
 ```
-python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/Plibs.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
 
-python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/CSEs.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
+```BASH
+wc -l out.12345613141516/{Blanks,CSEs,Plibs,AllSamples,AllActualSamples}.csv
 
-python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/Blanks.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
-
+for csv in out.12345613141516/{Blanks,CSEs,Plibs,AllSamples,AllActualSamples}.csv ; do
+echo $csv
+head -1 ${csv} | tr ',' '\n' | tail -n +3 | wc -l
+done
 ```
 
+
+Write sums?
+
+```BASH
+for csv in out.12345613141516/{Blanks,CSEs,Plibs,AllSamples,AllActualSamples}.csv ; do
+
+python3 -c "import pandas as pd;df=pd.read_csv('"${csv}"',header=0,index_col=[0,1]);sums=df.sum(axis='columns');print(len(sums[sums<10]));print(len(sums[sums<1]))"
+
+done
+```
+
+
+Create small subsets of these csvs by: public epitopes, viral species, ???
+
+```BASH
+for csv in out.12345613141516/{Blanks,CSEs,Plibs,AllSamples,AllActualSamples}.csv ; do
+for hhv in 1 2 3 4 5 6 6A 6B 7 8 ; do
+join --header -t, <( awk -v hhv=${hhv} -F, '(NR==1 || $2 == "Human herpesvirus "hhv ){print $1}' /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_species.uniq.csv ) <(head -n 1 ${csv}; tail -n +2 ${csv} | sort -t, -k1,1 ) | cut -d, -f1,3- > ${csv%.csv}.HHV${hhv}.csv
+done
+join --header -t, /francislab/data1/refs/PhIP-Seq/VirScan/public_epitope_annotations.ids.join_sorted.txt <(head -n 1 ${csv}; tail -n +2 ${csv} | sort -t, -k1,1 ) | cut -d, -f1,3- > ${csv%.csv}.public.csv
+done
+```
+
+
+Shiny app to load csv, show plot, color sections by never found, always found
+
+
+
+python3 -c "import pandas as pd;df=pd.read_csv('out.12345613141516/AllSamples.csv',header=0,index_col=[0,1]);sums=df.sum(axis='columns')"
+
+
+
+
+
+
+
+##	20250912
+
+
+
+1,2,3,5,6,15,16
+
+```BASH
+\rm commands
+
+for p in 1 2 3 5 6 15 16 ; do 
+plate=out.plate${p}
+manifest=${plate}/manifest.plate${p}.csv
+for z in 3.5 10 ; do 
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
+done ; done >> commands
+
+commands_array_wrapper.bash --jobname individual --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+
+```
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,5,6,15,16} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/out.123561516 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/out.123561516 -p ${plates} --counts --sex M >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/out.123561516 -p ${plates} --counts --sex F >> commands
+
+for z in 3.5 10 ; do
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.123561516 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.123561516 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.123561516 -p ${plates} --sex F
+
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control -o ${PWD}/out.123561516 -p ${plates} --zfile_basename Zscores.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561516 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561516 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561516 -p ${plates} --sex F
+
+done >> commands
+
+commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-0 --threads 4 --mem 30G
+```
 
 
