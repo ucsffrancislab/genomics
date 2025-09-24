@@ -78,8 +78,9 @@ print("Reading pheno file")
 pheno.file <- read.table(cov_filename, sep="\t", header=TRUE, stringsAsFactors = FALSE)
 #	tcga is male/female
 #	i370 and onco are M/F
+#	cidr is 1/2
 #pheno.file$SexFemale = ifelse(pheno.file$sex == "F", 1L, 0L)
-pheno.file$SexFemale = ifelse( ( pheno.file$sex == "F" | pheno.file$sex == "female" ), 1L, 0L) # single | not double
+pheno.file$SexFemale = ifelse( ( pheno.file$sex == "F" | pheno.file$sex == "female" | pheno.file$sex == 2 ), 1L, 0L) # single | not double
 
 
 
@@ -122,32 +123,31 @@ if( 'source' %in% names(pheno.file) && length(unique(pheno.file$source)) > 1 ){
 	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
 	covs=c(covs,"SourceAGS")
 }
-if( 'age' %in% names(pheno.file) )
-	covs=c(covs,"age")
-if( 'Age' %in% names(pheno.file) )
-	covs=c(covs,"Age")
-if( 'SexFemale' %in% names(pheno.file) && length(unique(pheno.file$SexFemale)) > 1 )
-	covs=c(covs,"SexFemale")
-if( 'chemo' %in% names(pheno.file) && length(unique(pheno.file$chemo)) > 1 )
-	covs=c(covs,"chemo")
-if( 'rad' %in% names(pheno.file) && length(unique(pheno.file$rad)) > 1 )
-	covs=c(covs,"rad")
-if( 'dxyear' %in% names(pheno.file) && length(unique(pheno.file$dxyear)) > 1 )
-	covs=c(covs,"dxyear")
+for( possible in c('age','Age','age_ucsf_surg','SexFemale','chemo','rad','dxyear','ngrade','grade',
+	'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10') ) {
 
-#if( 'idh' %in% names(pheno.file) && length(unique(pheno.file$idh)) > 1 )
-#	covs=c(covs,"idh")
-#if( 'idhmut' %in% names(pheno.file) && length(unique(pheno.file$idhmut)) > 1 )
-#	covs=c(covs,"idhmut")
-
-covs=c(covs,"PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10")
-
-if( 'ngrade' %in% names(pheno.file) && length(unique(pheno.file$ngrade)) >1 ){
-	covs = c(covs, "ngrade")
+	if( possible %in% names(pheno.file) ) {
+		print(paste(possible,"found in pheno file"))
+		uniq_count = length(unique(pheno.file[[possible]]))
+		print(paste(uniq_count,"values for",possible,"found"))
+		if( uniq_count > 1 ){
+			print(paste("Adding",possible,"to covariates used"))
+			covs=c(covs,possible)
+		} else {
+			print(paste("Not adding",possible,"to covariates used"))
+		}
+	} else {
+		print(paste(possible,"NOT found in pheno file"))
+	}
 }
 
 print("Using covs")
 print(covs)
+
+
+#	for cidr
+if( ( 'deceased' %in% names(pheno.file) ) && !( 'vstatus' %in% names(pheno.file) ) )
+	names(pheno.file)[names(pheno.file) == "deceased"] <- "vstatus"
 
 
 print("michiganCoxSurv")

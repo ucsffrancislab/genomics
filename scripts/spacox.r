@@ -178,38 +178,30 @@ write.table(sample.ids, paste0(out_filename,".samples"),quote=FALSE ,row.names=F
 dosage = dosage[which(row.names(dosage) %in% sample.ids), ]
 pheno.file = pheno.file[which(pheno.file$IID %in% sample.ids), ]
 
-cov=c()
-if( 'age' %in% names(pheno.file) ){
-	cov=c(cov,'age')
-} else if( 'Age' %in% names(pheno.file) ) {
-	cov=c(cov,'Age')
-}
-if( 'SexFemale' %in% names(pheno.file) && length(unique(pheno.file$SexFemale)) > 1 )
-	cov=c(cov,'SexFemale')
-if( 'chemo' %in% names(pheno.file)  && length(unique(pheno.file$chemo)) > 1 )
-	cov=c(cov,'chemo')
-if( 'rad' %in% names(pheno.file)    && length(unique(pheno.file$rad)) > 1 )
-	cov=c(cov,'rad')
-if( 'ngrade' %in% names(pheno.file) && length(unique(pheno.file$ngrade)) > 1 )
-	cov=c(cov,'ngrade')
-if( 'dxyear' %in% names(pheno.file) && length(unique(pheno.file$dxyear)) > 1 )
-	cov=c(cov,'dxyear')
 
-#if( 'idh' %in% names(pheno.file) && length(unique(pheno.file$idh)) > 1 )
-#	cov=c(cov,'idh')
-#if( 'idhmut' %in% names(pheno.file) && length(unique(pheno.file$idhmut)) > 1 )
-#	cov=c(cov,'idhmut')
-
+covs=c()
 if( 'source' %in% names(pheno.file) && length(unique(pheno.file$source)) > 1 ){
 	pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
-	cov=c(cov,"SourceAGS")
+	covs=c(covs,"SourceAGS")
+}
+for( possible in c('age','Age','age_ucsf_surg','SexFemale','chemo','rad','dxyear','ngrade','grade',
+	'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10') ) {
+
+	if( possible %in% names(pheno.file) ) {
+		print(paste(possible,"found in pheno file"))
+		uniq_count = length(unique(pheno.file[[possible]]))
+		print(paste(uniq_count,"values for",possible,"found"))
+		if( uniq_count > 1 ){
+			print(paste("Adding",possible,"to covariates used"))
+			covs=c(covs,possible)
+		} else {
+			print(paste("Not adding",possible,"to covariates used"))
+		}
+	} else {
+		print(paste(possible,"NOT found in pheno file"))
+	}
 }
 
-cov=c(cov, "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8") #, "PC9", "PC10")
-if( 'PC9' %in% names(pheno.file) )
-	cov=c(cov,'PC9')
-if( 'PC10' %in% names(pheno.file) )
-	cov=c(cov,'PC10')
 formula=paste("Surv(survdays, vstatus) ~",paste(cov,collapse=" + "))
 print("Using formula:")
 print(formula)
