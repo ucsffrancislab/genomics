@@ -15,10 +15,14 @@ After some test runs with --update-ids, simply changing underscores to dashes in
 
 ##	Prepare
 
+
+
+20250916 - I think that the CIDR data may actually be hg38 and not hg19 as expected. this'll be tricky
+
+
 ```BASH
 mkdir hg19-onco
 mkdir hg19-i370
-mkdir hg19-cidr
 mkdir hg19-tcga
 
 ln -s /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/AGS_Mayo_Oncoarray_for_QC.bed hg19-onco/onco.bed
@@ -31,15 +35,32 @@ ln -s /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.bim hg19-i
 sed -e 's/_/-/g' /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.fam > hg19-i370/i370.fam
 
 
-#	CIDR
-
-
 ln -s /francislab/data1/raw/20210223-TCGA-GBMLGG-WTCCC-Affy6/TCGA_WTCCC_for_QC.bed hg19-tcga/tcga.bed
 ln -s /francislab/data1/raw/20210223-TCGA-GBMLGG-WTCCC-Affy6/TCGA_WTCCC_for_QC.bim hg19-tcga/tcga.bim
 sed -e 's/_/-/g' /francislab/data1/raw/20210223-TCGA-GBMLGG-WTCCC-Affy6/TCGA_WTCCC_for_QC.fam > hg19-tcga/tcga.fam
 
+
+mkdir hg38-cidr
+
+ln -s /francislab/data1/raw/20250813-CIDR/CIDR.bed hg38-cidr/cidr.bed
+ln -s /francislab/data1/raw/20250813-CIDR/CIDR.bim hg38-cidr/cidr.bim
+sed -e 's/_/-/g' /francislab/data1/raw/20250813-CIDR/CIDR.fam > hg38-cidr/cidr.fam
+
 ```
 
+
+The CIDR data has many more SNPs than the other datasets.
+
+```BASH
+wc -l hg??-*/*bim
+   293698 hg19-i370/i370.bim
+   403388 hg19-onco/onco.bim
+   733799 hg19-tcga/tcga.bim
+  1904599 hg38-cidr/cidr.bim
+   293563 hg38-i370/i370.bim
+   403187 hg38-onco/onco.bim
+   733435 hg38-tcga/tcga.bim
+```
 
 
 
@@ -47,13 +68,20 @@ sed -e 's/_/-/g' /francislab/data1/raw/20210223-TCGA-GBMLGG-WTCCC-Affy6/TCGA_WTC
 
 
 ```BASH
-for b in i370 onco cidr tcga ; do
+for b in i370 onco tcga ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G \
  --export=None --job-name=${b}_freq \
  --wrap="module load plink; plink --freq --bfile ${PWD}/hg19-${b}/${b} --out ${PWD}/hg19-${b}/${b}; \
   chmod -w ${PWD}/hg19-${b}/${b}.frq" \
  --out=${PWD}/hg19-${b}/plink.create_frequency_file.log
 done
+
+b=cidr
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=4 --mem=30G \
+ --export=None --job-name=${b}_freq \
+ --wrap="module load plink; plink --freq --bfile ${PWD}/hg38-${b}/${b} --out ${PWD}/hg38-${b}/${b}; \
+  chmod -w ${PWD}/hg38-${b}/${b}.frq" \
+ --out=${PWD}/hg38-${b}/plink.create_frequency_file.log
 ```
 
 
@@ -97,11 +125,34 @@ module load picard; java -Xmx220G -jar \$PICARD_HOME/picard.jar LiftoverVcf I=pr
 This built-in liftover from the imputation server utils allows many more to pass. Not sure if this is good or bad.
 
 ```BASH
-for b in i370 onco cidr tcga ; do
+for b in i370 onco tcga ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None \
  --job-name=${b}_plink_liftover --out=${PWD}/plink_liftover_${b}.out \
  ${PWD}/plink_liftover_hg19_to_hg38.bash ${PWD}/hg19-${b}/${b} ${PWD}/hg38-${b}
 done
+
+
+b=cidr
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None \
+ --job-name=${b}_plink_liftover --out=${PWD}/plink_liftover_${b}.out \
+ ${PWD}/plink_liftover_hg38_to_hg19.bash ${PWD}/hg38-${b}/${b} ${PWD}/hg19-${b}
+```
+
+
+
+
+```BASH
+wc -l hg??-*/*bim
+
+  1824987 hg19-cidr/cidr.bim
+   293698 hg19-i370/i370.bim
+   403388 hg19-onco/onco.bim
+   733799 hg19-tcga/tcga.bim
+  1904599 hg38-cidr/cidr.bim
+   293563 hg38-i370/i370.bim
+   403187 hg38-onco/onco.bim
+   733435 hg38-tcga/tcga.bim
+
 ```
 
 
@@ -119,7 +170,7 @@ The `HRC-1000G-check-bim.pl` requires that the chromosomes be numeric at this st
 Not using HRC but running this anyway for comparison.
 
 ```BASH
-for b in i370 onco cidr tcga ; do
+for b in i370 onco tcga cidr ; do
 mkdir prep-${b}-HRC
 cd prep-${b}-HRC
 ln -s ../hg19-${b}/${b}.bed
@@ -208,6 +259,14 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 -
 done
 
 ```
+
+
+
+
+
+
+
+FIXED THE FOLLOWING BY ADJUSTING POSITIONS BY 1. This is no longer relevant.
 
 
 i370 loses A LOT. Testing a lower frequency threshold. Probably should raise it, but trying --noexclude.
@@ -313,6 +372,36 @@ ll prep-*/*updated.bed
 -r--r----- 1 gwendt francislab 1057654152 Jul 29 19:14 prep-tcga-1000g/tcga-updated.bed
 -r--r----- 1 gwendt francislab 1096467595 Jul 29 19:14 prep-tcga-HRC/tcga-updated.bed
 -r--r----- 1 gwendt francislab 1079667521 Jul 29 19:15 prep-tcga-TOPMed/tcga-updated.bed
+
+
+wc -l prep-*/*bim
+  1824987 prep-cidr-1000g/cidr.bim
+  1092774 prep-cidr-1000g/cidr-updated.bim
+  1824987 prep-cidr-HRC/cidr.bim
+  1074373 prep-cidr-HRC/cidr-updated.bim
+  1904599 prep-cidr-TOPMed/cidr.bim
+  1088706 prep-cidr-TOPMed/cidr-updated.bim
+   293698 prep-i370-1000g/i370.bim
+   273796 prep-i370-1000g/i370-updated.bim
+   293698 prep-i370-HRC/i370.bim
+   292290 prep-i370-HRC/i370-updated.bim
+   293563 prep-i370-TOPMed/i370.bim
+    44546 prep-i370-TOPMed/i370-updated.bim
+   293563 prep-i370-TOPMed-TEST/i370.bim
+   285585 prep-i370-TOPMed-TEST/i370-updated.bim
+   403388 prep-onco-1000g/onco.bim
+   386744 prep-onco-1000g/onco-updated.bim
+   403388 prep-onco-HRC/onco.bim
+   403267 prep-onco-HRC/onco-updated.bim
+   403187 prep-onco-TOPMed/onco.bim
+   388834 prep-onco-TOPMed/onco-updated.bim
+   733799 prep-tcga-1000g/tcga.bim
+   629931 prep-tcga-1000g/tcga-updated.bim
+   733799 prep-tcga-HRC/tcga.bim
+   653048 prep-tcga-HRC/tcga-updated.bim
+   733435 prep-tcga-TOPMed/tcga.bim
+   643042 prep-tcga-TOPMed/tcga-updated.bim
+
 ```
 
 
@@ -362,7 +451,7 @@ I'd love to get ahold of a hg19 TOPMed panel to use instead of the hg38.
 Impute on TOPMed using 1000G prepared data.
 It appears that the 1000G panel is very similar, if not the same, as the hg19 TOPMed panel.
 
-```
+```BASH
 impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
  -n 20250730-i370-1kg prep-i370-1000g/i370-updated-chr*.vcf.gz
 impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
@@ -372,7 +461,7 @@ impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
 
 
 impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
- -n 20250729-cidr-1kg prep-cidr-1000g/cidr-updated-chr*.vcf.gz
+ -n 20250916-cidr-1kg prep-cidr-1000g/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -391,7 +480,7 @@ impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 \
  -n 20250729-i370-1kghg19 prep-i370-1000g/i370-updated-chr*.vcf.gz
 
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 \
- -n 20250801-cidr-1kghg19 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
+ -n 20250916-cidr-1kghg19 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
 ```
 
 
@@ -454,10 +543,10 @@ cd ..
 
 mkdir imputed-topmed-cidr
 cd imputed-topmed-cidr
-
-
-
-
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765078/c3441bcfe4a25d5c651ba6e34397a272af4eba83f685a5ffbb3f1dd545ae184f | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765082/b0bf19024d42fde7b03dcea62c7c2e8651a67f9c07ac8f1c6994c7145ff7e066 | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765085/70ad29df27ebec7e178326a82a2a6d5628d4d76de6b3f8369b67e69009f3eedd | bash
+curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765084/825b1663a7d3363184122ab0e3b5d6afaa129e6032ea9597f2eee9f7443fb7b3 | bash
 chmod -w *
 cd ..
 ```
@@ -481,15 +570,9 @@ curl -sL https://imputationserver.sph.umich.edu/get/OaRAlzXs2TAxbwD1wQcDdpMIDZRW
 chmod -w *
 cd ..
 
-
-
-
 mkdir imputed-umich19-cidr
 cd imputed-umich19-cidr
-
-
-
-
+curl -sL https://imputationserver.sph.umich.edu/get/y4ZnrdmEoMkl5TGLhn5B6NR6QZSrIQu5ENqRsHGH | bash
 chmod -w *
 cd ..
 ```
@@ -617,7 +700,7 @@ Why plink2 instead of plink?
 ```BASH
 for f in imputed-*/concated.vcf.gz ; do
  b=${f%.vcf.gz}
- echo "module load bcftools plink2; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM \
+ echo "module load bcftools plink2 htslib; plink2 --threads 8 --vcf ${f} dosage=DS --output-chr chrM \
   --set-all-var-ids '@:#:\$r:\$a' --new-id-max-allele-len 200 --mind 0.01 --out ${b}.tmp.QC \
   --recode vcf bgz vcf-dosage=DS-force; \
   bcftools norm --multiallelics - --output - ${b}.tmp.QC.vcf.gz  | \
@@ -708,8 +791,58 @@ awk '($1~/^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|CS|DB|
 
 
 
-
 NEED the CIDR case list
+
+```BASH
+awk '($2~/^G/){print $1"_"$2}' hg19-cidr/cidr.fam > lists/cidr-cases.txt
+awk '($2~/^G/){print $1"_"$2}' hg19-cidr/cidr.fam | sort > lists/cidr-cases.txt
+
+
+#grep -f <( awk -F, '($13==0){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_IDHwt_meta_cases.txt
+#grep -f <( awk -F, '($13==0 && ($10==3 || $10==4)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_HGG_IDHwt_meta_cases.txt
+#grep -f <( awk -F, '($13==0 && ($10==1 || $10==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_LrGG_IDHwt_meta_cases.txt
+#
+#grep -f <( awk -F, '($13==1){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_IDHmut_meta_cases.txt
+#grep -f <( awk -F, '($13==1 && ($10==3 || $10==4)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_HGG_IDHmut_meta_cases.txt
+#grep -f <( awk -F, '($13==1 && ($10==1 || $10==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_LrGG_IDHmut_meta_cases.txt
+#
+#grep -f <( awk -F, '($13==1 && ($12=="" || $12==0) && ($10==1 || $10==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt
+#
+#grep -f <( awk -F, '($13==1 && $12==1 && ($10==1 || $10==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv ) lists/cidr-cases.txt > lists/cidr_LrGG_IDHmut_1p19qcodel_meta_cases.txt
+
+
+
+awk -F, '($12==0){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_IDHwt_meta_cases.txt
+awk -F, '($12==0 && ($9==3 || $9==4)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_HGG_IDHwt_meta_cases.txt
+awk -F, '($12==0 && ($9==1 || $9==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_LrGG_IDHwt_meta_cases.txt
+
+awk -F, '($12==1){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_IDHmut_meta_cases.txt
+awk -F, '($12==1 && ($9==3 || $9==4)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_HGG_IDHmut_meta_cases.txt
+awk -F, '($12==1 && ($9==1 || $9==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_LrGG_IDHmut_meta_cases.txt
+
+awk -F, '($12==1 && ($11=="" || $11==0) && ($9==1 || $9==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt
+awk -F, '($12==1 && $11==1 && ($9==1 || $9==2)){print $1}' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_LrGG_IDHmut_1p19qcodel_meta_cases.txt
+
+ln -s cidr-cases.txt lists/cidr_ALL_meta_cases.txt
+
+```
+
+
+
+
+
+
+
+Not sure about the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt list
+
+
+
+
+
+
+
+
+
 
 
 These take about 3-4 hours
@@ -803,7 +936,12 @@ print
 
 cp /francislab/data1/working/20210302-AGS-illumina/20210305-covariates/AGS_illumina_covariates.txt lists/i370_covariates.tsv
 
+
+sed 's/,/\t/g' /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.csv > lists/cidr_covariates.tsv
+
+
 chmod -w lists/*_covariates.tsv
+
 ```
 
 
@@ -848,16 +986,16 @@ plink2 QC set DS back to Number=A. Not sure if it remerged multiallelics though.
 Quick correction rather than rerun. (This can take a couple hours.)
 
 ```BASH
-for vcf in imputed-*/*cases/*cases.vcf.gz imputed-*/concated.QC.vcf.gz ; do
-
-echo "module load htslib bcftools; chmod +w ${vcf} ${vcf}.tbi; \rm ${vcf}.tbi; gunzip ${vcf}; \
- sed -i -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' \
-  -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' ${vcf%.gz}; \
- bgzip ${vcf%.gz}; bcftools index --tbi ${vcf}; chmod -w ${vcf} ${vcf}.tbi"
-
-done > correction_commands
-
-commands_array_wrapper.bash --array_file correction_commands --time 1-0 --threads 4 --mem 30G
+#for vcf in imputed-*/*cases/*cases.vcf.gz imputed-*/concated.QC.vcf.gz ; do
+#
+#echo "module load htslib bcftools; chmod +w ${vcf} ${vcf}.tbi; \rm ${vcf}.tbi; gunzip ${vcf}; \
+# sed -i -e 's/^##FORMAT=<ID=DS,Number=A,/##FORMAT=<ID=DS,Number=1,/' \
+#  -e 's/^##INFO=<ID=AF,Number=A,/##INFO=<ID=AF,Number=1,/' ${vcf%.gz}; \
+# bgzip ${vcf%.gz}; bcftools index --tbi ${vcf}; chmod -w ${vcf} ${vcf}.tbi"
+#
+#done > correction_commands
+#
+#commands_array_wrapper.bash --array_file correction_commands --time 1-0 --threads 4 --mem 30G
 ```
 
 
@@ -907,6 +1045,8 @@ Now we have multiple PCs for each dataset!!! Errrrrr.
 Recreate covariate files with the PCs
 
 
+DROP THE PC columns
+
 
 ```BASH
 for b in onco i370 tcga ; do
@@ -923,6 +1063,21 @@ done; done
 ```
 
 
+
+
+CIDR's covariates don't include PCs
+```BASH
+b=cidr
+cov_in=lists/${b}_covariates.tsv
+cat ${cov_in} | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+head -1 ${TMPDIR}/tmp.csv > ${cov_in%.tsv}_base.csv
+tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> ${cov_in%.tsv}_base.csv
+for s in topmed umich19 ; do
+  head -1 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv > $TMPDIR/tmp.csv
+  tail -n +2 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv | sort -t, -k1,1 >> $TMPDIR/tmp.csv
+  join --header -t, ${cov_in%.tsv}_base.csv $TMPDIR/tmp.csv | tr , '\t' > imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
+done
+```
 
 
 
@@ -962,7 +1117,10 @@ total 114812
 
 
 
-These take 4 to 26 hours
+These take 4 to 26 hours. Really wish that the michiganCoxSurv was parallelizable.
+
+May need to rerun the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt if I redefine it.
+
 ```BASH
 for s in topmed umich19 ; do
 for b in onco i370 tcga cidr ; do
@@ -974,9 +1132,7 @@ echo gwasurvivr.bash --dataset ${b} --vcffile imputed-${s}-${b}/${b}-cases/${b}-
 
 done; done ; done > gwas_commands
 
-#lists/${b}_covariates.tsv
-
-commands_array_wrapper.bash --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
+commands_array_wrapper.bash --jobname gwasurvivr --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
 ```
 
 
@@ -994,11 +1150,11 @@ umich i370 is only 3GB
 For some reason, reading the transposed crashes so no need to do this. Too many columns?
 
 ```BASH
-for f in imputed-*/*/*dosage ; do
-echo "sed '1s/^/ /' $f | datamash transpose -t' ' | sed '1s/^ //' > ${f}.transposed; chmod -w ${f}.transposed"
-done > transpose_commands
+#for f in imputed-*/*/*dosage ; do
+#echo "sed '1s/^/ /' $f | datamash transpose -t' ' | sed '1s/^ //' > ${f}.transposed; chmod -w ${f}.transposed"
+#done > transpose_commands
 
-commands_array_wrapper.bash --array_file transpose_commands --time 1-0 --threads 16 --mem 120G
+#commands_array_wrapper.bash --array_file transpose_commands --time 1-0 --threads 16 --mem 120G
 ```
 
 2/6 worked with 60G
@@ -1024,7 +1180,7 @@ done; done ; done > spa_commands
 
 #	lists/${b}_covariates.tsv
 
-commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 64 --mem 490G
+commands_array_wrapper.bash --jobname spacox --array_file spa_commands --time 1-0 --threads 64 --mem 490G
 ```
 
 60G isn't enough for many
@@ -1048,7 +1204,7 @@ echo merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${s}-${b}
 
 done; done ; done > merge_commands
 
-commands_array_wrapper.bash --array_file merge_commands --time 1-0 --threads 2 --mem 15G
+commands_array_wrapper.bash --jobname mergegwasspa --array_file merge_commands --time 1-0 --threads 2 --mem 15G
 ```
 
 
@@ -1081,7 +1237,7 @@ echo Pharma_surv_meta_wrapper_all3.bash $s $id
 
 done ; done > metal_commands
 
-commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --jobname metal --array_file metal_commands --time 1-0 --threads 4 --mem 30G
 ```
 
 
@@ -1099,7 +1255,7 @@ echo Pharma_surv_meta_wrapper_spa_all3.bash $s $id
 
 done ; done > metalspa_commands
 
-commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --jobname metalspa --array_file metalspa_commands --time 1-0 --threads 4 --mem 30G
 ```
 
 
@@ -1300,6 +1456,11 @@ for b in onco i370 tcga ; do
   cd ..
 done ; done
 ```
+
+
+##	20250916
+
+Running the CIDR data through the above.
 
 
 
