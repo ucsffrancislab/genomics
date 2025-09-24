@@ -14,10 +14,11 @@ name=""
 refpanel="apps@hrc-r1.1@2.0.0"
 
 build="hg19"
-r2Filter="0.3"
+#r2Filter="0.3"
 #pgscatalog="apps@pgs-catalog-20240318@1.0"
 #traits="all"
 #ancestry=""	#	"apps@ancestry@1.0.0"
+phasing="eagle"
 files=""
 
 while [ $# -gt 0 ] ; do
@@ -50,7 +51,8 @@ fi
 
 
 #command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" -F \"pgscatalog=${pgscatalog}\" -F \"pgs_category=${traits}\" ${files}"
-command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" ${files}"
+#command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"r2Filter=${r2Filter}\" ${files}"
+command="${command} -F \"job-name=${name}\" -F \"refpanel=${refpanel}\" -F \"build=${build}\" -F \"phasing=${phasing}\" ${files}"
 
 
 #if [ -n "${ancestry}" ] ; then
