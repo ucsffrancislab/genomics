@@ -35,8 +35,8 @@ done
 
 mkdir ${TMPDIR}/maf-output/
 mkdir ${TMPDIR}/chunksDir/
-mkdir ${TMPDIR}/statisticsDir/
-mkdir ${TMPDIR}/metaFilesDir/
+mkdir ${2}/statisticsDir/
+mkdir ${2}/metaFilesDir/
 
 
 #	SLURM_TASKS_PER_NODE=16
@@ -58,7 +58,7 @@ java -Xmx$((9 * SLURM_MEM_PER_NODE / 10))M -jar /francislab/data1/refs/Imputatio
 	--chunksize 20000000 \
 	--chunks-out ${TMPDIR}/chunksDir/ \
 	--statistics-out ${2}/statisticsDir/ \
-	--metafiles-out ${TMPDIR}/metaFilesDir/ \
+	--metafiles-out ${2}/metaFilesDir/ \
 	--report ${2}/qc_report.txt \
 	--no-index \
 	--chain /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz \
