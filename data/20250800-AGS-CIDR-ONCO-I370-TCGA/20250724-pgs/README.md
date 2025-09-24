@@ -58,7 +58,7 @@ cd ..
 
 mkdir pgs-cidr-hg19
 cd pgs-cidr-hg19
-
+curl -sL https://imputationserver.sph.umich.edu/get/4qETYKSztetEmZIFT0P2dajzEjTs3hqWjTPUZ0oR | bash
 chmod -w *
 cd ..
 ```
@@ -83,7 +83,8 @@ Phenotype value ('1' = control, '2' = case, '-9'/'0'/non-numeric = missing data 
 
 
 
-hg38's fam files DO NOT INCLUDE Sex and Phenotype as they get lost in the liftover
+hg38's fam files DO NOT INCLUDE Sex and Phenotype as they get lost in the liftover.
+Why does this matter? I'm not using them am I?
 
 (previously I skipped the first line. thought it included a header?)
 
@@ -97,7 +98,6 @@ sed -i '1isubject,group,sex' pgs-${b}-${r}/mani.fest.csv
 
 done ; done
 ```
-
 
 
 TCGA cases are JUST THE BLOOD NORMAL? Not the SOLID NORMAL (just 1 sample)? Not the TUMOR? Correct?
@@ -151,6 +151,22 @@ sed -i '1isubject,group,sex' pgs-${b}-${r}/mani.fest.csv
 
 
 
+
+CIDR's hg19 is a liftover and doesn't have sex. Neither fam files have case/control.
+
+```BASH
+ln -s ../20250723-survival_gwas/prep-cidr-TOPMed
+b=cidr
+r=hg19
+
+awk 'BEGIN{FS=" ";OFS=","}{cc=($2~"^G")?"case":"control";sex=($5=="1")?"M":"F";print $1"_"$2,cc,sex }' prep-${b}-TOPMed/${b}.fam | sort -t, -k1,1 > pgs-${b}-${r}/mani.fest.csv
+sed -i '1isubject,group,sex' pgs-${b}-${r}/mani.fest.csv
+```
+
+
+
+
+
 include ancestry estimation PCs ...
 ```
 for b in onco i370 cidr tcga ; do
@@ -182,6 +198,7 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-${b}-${
   --export=None --output=${PWD}/pgs-${b}-${sex#--sex }.$( date "+%Y%m%d%H%M%S%N" ).out \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
   --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o pgs-${b}-hg19 -p pgs-${b}-hg19 ${sex}"
+
 done
 done
 
@@ -192,7 +209,7 @@ for sex in "" "--sex M" "--sex F" ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-all-${sex#--sex } \
   --export=None --output=${PWD}/pgs-all-${sex#--sex }.$( date "+%Y%m%d%H%M%S%N" ).out \
   --time=1-0 --nodes=1 --ntasks=2 --mem=15G \
-  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o pgs-all -p pgs-i370-hg19 -p pgs-onco-hg19 -p pgs-tcga-hg19 ${sex}"
+  --wrap="module load r;PGS_Case_Control_Score_Regression.R -a case -b control --zfile_basename scores.txt -o pgs-all -p pgs-i370-hg19 -p pgs-onco-hg19 -p pgs-tcga-hg19 -p pgs-cidr-hg19 ${sex}"
 done
 ```
 
