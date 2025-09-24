@@ -73,7 +73,7 @@ cd ..
 
 mkdir hla-cidr-hg19
 cd hla-cidr-hg19
-
+curl -sL https://imputationserver.sph.umich.edu/get/sRJX2FbbwlpXjmCWMoM4niyAbDcMt0Amcgvicunl | bash
 chmod -w *
 cd ..
 
@@ -82,7 +82,7 @@ cd ..
 
 mkdir hla-tcga-hg19
 cd hla-tcga-hg19
-
+curl -sL https://imputationserver.sph.umich.edu/get/jkzYfdpjCjdGJM1n60oy05yzhLGiFs9Sx2jWkaxf | bash
 chmod -w *
 cd ..
 
@@ -91,5 +91,32 @@ cd ..
 
 
 
+```BASH
+for b in onco i370 tcga cidr ; do
+  echo ${b}
+  cd hla-${b}-hg19
+  chmod a-w *
+  for zip in chr*zip ; do
+    echo $zip
+    unzip -P $( cat ../password-${b} ) $zip
+  done
+  chmod 440 *gz
+  cd ..
+done
+```
 
+
+
+
+These results, despite the name of the panel, DO NOT INCLUDE any HLA types. It's just imputation of the HLA region. 
+
+
+Are these coordinates hg19 or hg38?
+
+
+https://github.com/immunogenomics/HLA-TAPAS/
+
+
+
+snp2hla
 
