@@ -114,7 +114,7 @@ for s in ${samples} ; do
 done
 echo
 
-echo -n "Age XXX"
+echo -n "Age"
 for s in ${samples} ; do
 	v=$( awk -F, -v sample=${s} '( $1 == sample ){print $13}' ${manifest} )
 	echo -n ",${v}"
