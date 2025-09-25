@@ -73,6 +73,8 @@ head -4 reports.csv | tail -n 1 | tr , "\n" | sort | uniq -c
 ```BASH
 scp c4:/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/reports.csv ./
 cat reports.csv | datamash transpose -t, > reports.t.csv
+module load r
 ./read_counts.Rmd
+box_upload.bash read_counts.html
 ```
 

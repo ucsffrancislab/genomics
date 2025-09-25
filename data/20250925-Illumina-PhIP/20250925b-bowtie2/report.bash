@@ -169,6 +169,9 @@ echo
 echo -n "Plate"
 for s in ${snumbers} ; do
 	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $25}' ${manifest} )
+
+v=99
+
 	echo -n ",${v}"
 done
 echo
