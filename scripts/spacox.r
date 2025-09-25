@@ -202,7 +202,7 @@ for( possible in c('age','Age','age_ucsf_surg','SexFemale','chemo','rad','dxyear
 	}
 }
 
-formula=paste("Surv(survdays, vstatus) ~",paste(cov,collapse=" + "))
+formula=paste("Surv(survdays, vstatus) ~",paste(covs,collapse=" + "))
 print("Using formula:")
 print(formula)
 obj.null = SPACox_Null_Model( as.formula(formula), data = pheno.file, pIDs = pheno.file$IID, gIDs = rownames(dosage) )
