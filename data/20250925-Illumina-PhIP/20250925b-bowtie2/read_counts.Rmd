@@ -1,0 +1,90 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+
+
+#       argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-r", "--report", type="character",
+	default=paste0(Sys.getenv('PWD'),'/reports.t.csv'),
+	help="report file to reference [default=%(default)s]", metavar="filename")
+
+opt <- parser$parse_args()
+
+rmarkdown::render(newfname, output_dir = dirname('read_counts.html'), output_file = 'read_counts.html' )
+
+q("no")
+
+
+
+
+---
+title: "Read Counts boxplots"
+author: "Jake W"
+date: "2025-09-25"
+output: html_document
+---
+
+
+
+
+```{r "Setup"}
+#knitr::opts_chunk$set(out.height='1500px',out.width='1000px', dpi=300)
+library(ggplot2)
+```
+
+```{r "Read data"}
+#	NEED THE FULL PATH SINCE THIS IS RUN IN /scratch
+df=read.csv( opt$report, sep=",", header=TRUE)
+```
+
+```{r "Dim"}
+dim(df)
+```
+
+```{r}
+colnames(df)
+```
+
+```{r}
+df <- df[,colnames(df) %in% c('Type','Plate','Aligned.Read.Count','Q20.Aligned.Read.Count','Q40.Aligned.Read.Count','Raw.Read.Count','Trimmed.Read.Count')]
+```
+
+```{r}
+#	NEEDS TO BE A DATA FRAME AND NOT A MATRIX ARRAY
+#df=as.data.frame(t(df))
+```
+
+```{r}
+#	NEEDS TO BE NUMERIC
+#df$Raw.Read.Count <- as.integer(df$Raw.Read.Count)
+```
+
+```{r "plates"}
+df$Plate <- as.factor(df$Plate)
+plates=unique(df$Plate)
+plates
+```
+
+```{r "Boxplots", fig.align="center", fig.width = 10, fig.height = 6}
+for( x in c('Plate','Type') ){
+for( y in c('Raw.Read.Count','Trimmed.Read.Count','Aligned.Read.Count','Q20.Aligned.Read.Count','Q40.Aligned.Read.Count') ) {
+	p = ggplot(aes(x = .data[[x]], y = .data[[y]]), data = df) +
+		ggtitle(paste(y,"by",x,"comparison")) +
+		geom_boxplot(aes(fill=.data[[x]])) + 
+		theme(axis.text.x = element_text(angle = 45, vjust = 0.9, hjust=1),plot.title = element_text(hjust = 0.5))
+	print(p)
+} }
+```
+
+
