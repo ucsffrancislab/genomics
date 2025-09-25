@@ -1,5 +1,5 @@
 
-#	20250822-Illumina-PhIP/20250822a-cutadapt]
+#	20250822-Illumina-PhIP/20250822a-cutadapt
 
 
 ```
