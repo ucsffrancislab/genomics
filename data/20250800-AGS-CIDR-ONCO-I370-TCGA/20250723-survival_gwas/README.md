@@ -1224,16 +1224,16 @@ Depending on which estimates are available, like the beta (effect size) or just 
 
 Easy examples of these differences are in the Script_Repository/metal folder of this Box container. 
 
-I've built wrapper files which loop through all subtypes and call this script, see Pharma_surv_meta_wrapper_spa_all3.txt as an example. 
+I've built wrapper files which loop through all subtypes and call this script, see Pharma_surv_meta_wrapper_spa_all4.txt as an example. 
 
-Using Beta estimates look at: script_Pharma_survival_metal_all3.txt
+Using Beta estimates look at: script_Pharma_survival_metal_all4.txt
 
 
 ```BASH
 for s in topmed umich19 ; do
 for id in lists/onco*meta_cases.txt ; do
 
-echo Pharma_surv_meta_wrapper_all3.bash $s $id
+echo Pharma_surv_meta_wrapper_all4.bash $s $id
 
 done ; done > metal_commands
 
@@ -1244,14 +1244,14 @@ commands_array_wrapper.bash --jobname metal --array_file metal_commands --time 1
 
 
 
-Using just P-values look at: script_Pharma_survival_metal_spa_all3.txt
+Using just P-values look at: script_Pharma_survival_metal_spa_all4.txt
 
 
 ```BASH
 for s in topmed umich19 ; do
 for id in lists/onco*meta_cases.txt ; do
 
-echo Pharma_surv_meta_wrapper_spa_all3.bash $s $id
+echo Pharma_surv_meta_wrapper_spa_all4.bash $s $id
 
 done ; done > metalspa_commands
 
@@ -1267,7 +1267,11 @@ commands_array_wrapper.bash --jobname metalspa --array_file metalspa_commands --
 
 
 
-Add exit to r scripts when the sample count drops below a certain number.
+
+
+
+
+Add exit to r scripts when the sample count drops below a certain number?
 
 Geno : I’d say anything running less than 30 individuals is very unreliable for survival models. Possibly the saddle point approximation in SPACox needs even more.
 

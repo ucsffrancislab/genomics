@@ -1,0 +1,48 @@
+# this is a script to run METAL meta-analysis software. Two gwases against glioma subtypes  were conducted on AGS_illumina and AGS_Onco cohorts and will be used in this analysis.
+# define meta-analysis scheme to use effect-sizes (beta) and standard error
+SCHEME STDERR
+# define separation format of input files
+SEPARATOR TAB 
+# enable genomic correction (adjusts test stats to account for small amounts of population stratification or unaccounted for relatedness)
+GENOMICCONTROL OFF
+# enable tracking of allele frequencies across all files
+AVERAGEFREQ ON
+MINMAXFREQ ON
+
+# describe and process first input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-onco/onco_SUBSETNAME/onco_SUBSETNAME.coxph
+
+# describe and process second input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-i370/i370_SUBSETNAME/i370_SUBSETNAME.coxph
+
+# describe and process third input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-tcga/tcga_SUBSETNAME/tcga_SUBSETNAME.coxph
+
+# describe and process fourth input file
+MARKER RSID
+ALLELE ALT REF
+EFFECT COEF
+STDERR SE.COEF
+FREQLABEL AF
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/gwas-SERVER-cidr/cidr_SUBSETNAME/cidr_SUBSETNAME.coxph
+
+# run analysis
+OUTFILE /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250723-survival_gwas/meta_survival_SERVER_SUBSETNAME_ .tbl
+ANALYZE HETEROGENEITY
+QUIT
+
