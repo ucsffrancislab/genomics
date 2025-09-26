@@ -289,25 +289,21 @@ sed -i '1isample,s' sample_s_number.csv
 
 
 ```
-dos2unix L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv
+dos2unix L6_full_covariates_Vir3_phip-seq_GBM_ALL_p17_and_p18_9-25-25hmh.csv
 ```
 
-edit `L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv`
+edit L6_full_covariates_Vir3_phip-seq_GBM_ALL_p17_and_p18_9-25-25hmh.csv
 
 remove commas from some field for ease of use later
 
 remove new lines from header fields
 
 
-change group CA to case
-change group CO to control
-
-
-This set is plate 15 and 16
+This set is plate 17 and 18
 
 ```
 \rm -f manifest.csv
-cp L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv manifest.csv
+cp L6_full_covariates_Vir3_phip-seq_GBM_ALL_p17_and_p18_9-25-25hmh.csv manifest.csv
 
 sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
 chmod -w manifest.csv

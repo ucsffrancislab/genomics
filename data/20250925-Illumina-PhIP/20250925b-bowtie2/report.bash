@@ -66,8 +66,8 @@ echo
 
 echo -n "Subject"
 for s in ${snumbers} ; do
-	#v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $6}' ${manifest} )
-	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $2}' ${manifest} )
+	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $6}' ${manifest} )
+	#v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $2}' ${manifest} )
 	v=${v/dup/}
 	echo -n ",${v}"
 done
@@ -75,8 +75,8 @@ echo
 
 echo -n "Name"
 for s in ${snumbers} ; do
-	#v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $7}' ${manifest} )
-	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $2}' ${manifest} )
+	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $7}' ${manifest} )
+	#v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $2}' ${manifest} )
 	echo -n ",${v}"
 done
 echo
@@ -106,18 +106,18 @@ echo
 #  20 Phage Library - Name starts with PLib
 echo -n "Type"
 for s in ${snumbers} ; do
-	#v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $8}' ${manifest} )
+	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $8}' ${manifest} )
 
-	subject=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $2}' ${manifest} )
-	if [[ "${subject}" == Blank* ]] ; then
-		v="PBS blank"
-	elif [[ "${subject}" == CSE* ]] ; then
-		v="commercial serum control"
-	elif [[ "${subject}" == PLib* ]] ; then
-		v="Phage Library"
-	else
-		v="Unknown"
-	fi
+#	subject=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $2}' ${manifest} )
+#	if [[ "${subject}" == Blank* ]] ; then
+#		v="PBS blank"
+#	elif [[ "${subject}" == CSE* ]] ; then
+#		v="commercial serum control"
+#	elif [[ "${subject}" == PLib* ]] ; then
+#		v="Phage Library"
+#	else
+#		v="Unknown"
+#	fi
 
 	echo -n ",${v}"
 done
@@ -169,9 +169,7 @@ echo
 echo -n "Plate"
 for s in ${snumbers} ; do
 	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $25}' ${manifest} )
-
-v=99
-
+#	v=99
 	echo -n ",${v}"
 done
 echo
