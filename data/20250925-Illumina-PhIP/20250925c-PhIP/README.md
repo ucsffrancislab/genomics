@@ -231,6 +231,15 @@ commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-
 
 
 
+```BASH
+
+box_upload.bash out.plate*/{Viral_,Seropositivity}* out.1718/*
+
+```
+
+
+
+
 
 ##	202050902
 
