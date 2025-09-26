@@ -202,6 +202,13 @@ for( possible in c('age','Age','age_ucsf_surg','SexFemale','chemo','rad','dxyear
 	}
 }
 
+print("Using covs")
+print(covs)
+
+#	for cidr
+if( ( 'deceased' %in% names(pheno.file) ) && !( 'vstatus' %in% names(pheno.file) ) )
+	names(pheno.file)[names(pheno.file) == "deceased"] <- "vstatus"
+
 formula=paste("Surv(survdays, vstatus) ~",paste(covs,collapse=" + "))
 print("Using formula:")
 print(formula)
