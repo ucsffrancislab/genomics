@@ -56,7 +56,6 @@ done
 
 
 
-
 ```BASH
 mkdir hla-onco-hg19
 cd hla-onco-hg19
@@ -70,24 +69,18 @@ curl -sL https://imputationserver.sph.umich.edu/get/gUxz7jTdMNyMyMPxaIzmpXapyhgG
 chmod -w *
 cd ..
 
-
 mkdir hla-cidr-hg19
 cd hla-cidr-hg19
 curl -sL https://imputationserver.sph.umich.edu/get/sRJX2FbbwlpXjmCWMoM4niyAbDcMt0Amcgvicunl | bash
 chmod -w *
 cd ..
 
-
-
-
 mkdir hla-tcga-hg19
 cd hla-tcga-hg19
 curl -sL https://imputationserver.sph.umich.edu/get/jkzYfdpjCjdGJM1n60oy05yzhLGiFs9Sx2jWkaxf | bash
 chmod -w *
 cd ..
-
 ```
-
 
 
 
@@ -106,17 +99,43 @@ done
 ```
 
 
-
-
-These results, despite the name of the panel, DO NOT INCLUDE any HLA types. It's just imputation of the HLA region. 
-
-
 Are these coordinates hg19 or hg38?
 
 
-https://github.com/immunogenomics/HLA-TAPAS/
+Assuming hg19 or hg38 as no data available for hg18
+
+```BASH
+for vcf in hla-*-hg19/chr6.info.gz ; do
+echo $vcf
+zgrep "^6" $vcf | awk 'BEGIN{OFS=":"}{print $1,$2,$3}' | sort > $(dirname $vcf)/rsids
+zgrep "^6" $vcf | awk 'BEGIN{OFS=":"}{print $1,1+$2,$3}' | sort > $(dirname $vcf)/plusonersids
+
+join $(dirname $vcf)/plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_rsids > $( dirname $vcf)/hg19_common_plusonersids
+join $(dirname $vcf)/plusonersids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/common_rsids > $( dirname $vcf)/hg38_common_plusonersids
+join $(dirname $vcf)/rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh37p13/VCF/common_rsids > $( dirname $vcf)/hg19_common_rsids
+join $(dirname $vcf)/rsids /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/common_rsids > $( dirname $vcf)/hg38_common_rsids
+done
 
 
+wc -l /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250725-hla/hla-*/*ids
+```
 
-snp2hla
+Looks like these are standard hg19
+
+
+Covert vcf to bim/bed/fam if needed.
+```BASH
+for vcf in hla-*-hg19/*.dose.vcf.gz ; do
+echo $vcf
+sbatch --job-name=$(dirname $vcf) --time=1 --ntasks=4 --mem=30G --output=${vcf}.makebed.${date}.txt \
+--export=NONE --wrap="module load plink; plink --make-bed --vcf ${vcf} --out ${vcf%%.vcf.gz}"
+done
+```
+
+
+HLA types are included in the VCFs just like a SNP.
+
+```BASH
+zcat hla-*-hg19/*.dose.vcf.gz | grep HLA
+```
 
