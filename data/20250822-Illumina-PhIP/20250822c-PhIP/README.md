@@ -2,7 +2,7 @@
 #	20250822-Illumina-PhIP/20250822c-PhIP
 
 
-DO NOT USE ...
+DO NOT USE the following samples ...
 
 
 

@@ -299,10 +299,10 @@ sed -i '1isample,s' sample_s_number.csv
 
 
 ```
-dos2unix L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv
+dos2unix L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv
 ```
 
-edit `L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv`
+edit L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv
 
 remove commas from some field for ease of use later
 
@@ -312,15 +312,33 @@ remove new lines from header fields
 change group CA to case
 change group CO to control
 
+```
+sed -i 's/,"Black, Non-Hispanic",/,Black Non-Hispanic,/' L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv
+sed -i 's/,"White, Non-Hispanic",/,White Non-Hispanic,/' L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv
+sed -i 's/,CA,/,case,/' L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv
+sed -i 's/,CO,/,control,/' L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv
+```
+
 
 This set is plate 15 and 16
 
 ```
 \rm -f manifest.csv
-cp L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv manifest.csv
+cp L5_full_covariatesv2_Vir3_phip-seq_GBM_ALL_p15_and_p16_9-25-25hmh.csv manifest.csv
 
 sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
 chmod -w manifest.csv
 ```
+
+
+
+
+
+Attached is a corrected version (v2) of the L5 covariate file.  The 8-22-25 version has 4 mistakes in the ‘Study’ variable for libraries S88, S96, S184, and S192.  The study variable should be ‘IPS’ instead of ‘PRN’. 
+
+These are the IPS repeat serum libraries originally assayed on GBM plate 4 which we used to fill the small number of empty wells in L5 & L6. 
+
+
+
 
 
