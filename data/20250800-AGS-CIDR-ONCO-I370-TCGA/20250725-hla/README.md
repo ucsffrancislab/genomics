@@ -139,3 +139,72 @@ HLA types are included in the VCFs just like a SNP.
 zcat hla-*-hg19/*.dose.vcf.gz | grep HLA
 ```
 
+
+
+
+```BASH
+for vcf in hla-*/chr6.dose.vcf.gz ; do
+ echo $vcf
+ zcat $vcf | awk 'BEGIN{FS=OFS="\t"}
+  ($1~/^#CHROM/){gsub("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT","NAME\tAF\tR2",$0);print $0}
+  ($3~/^HLA/){
+   split($8,a,";");
+   for(i in a){split(a[i],b,"=");if(b[1]=="AF")AF=b[2];if(b[1]=="R2")R2=b[2]}
+   split($9,a,":");
+   for(i in a){if(a[i]=="GT")GTP=i}
+   out=$3"\t"AF"\t"R2;
+   for(i=10;i<=NF;i++){split($i,a,":");out=out"\t"a[GTP]};
+   print out}' > ${vcf%.dose.vcf.gz}.hla_genotype.csv
+done
+
+for vcf in hla-*/chr6.dose.vcf.gz ; do
+ echo $vcf
+ zcat $vcf | awk 'BEGIN{FS=OFS="\t"}
+  ($1~/^#CHROM/){gsub("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT","NAME\tAF\tR2",$0);print $0}
+  ($3~/^HLA/){
+   split($8,a,";");
+   for(i in a){split(a[i],b,"=");if(b[1]=="AF")AF=b[2];if(b[1]=="R2")R2=b[2]}
+   split($9,a,":");
+   for(i in a){if(a[i]=="DS")DSP=i}
+   out=$3"\t"AF"\t"R2;
+   for(i=10;i<=NF;i++){split($i,a,":");out=out"\t"a[DSP]};
+   print out}' > ${vcf%.dose.vcf.gz}.hla_dosage.csv
+done
+```
+
+
+```BASH
+cat hla-*/*csv | awk '{print NF}' | uniq -c
+    571 485
+    571 4622
+    571 4368
+    571 6719
+```
+
+```BASH
+for csv in  hla-*-hg19/*csv ; do
+python3 -c "import pandas as pd;df=pd.read_csv('"${csv}"',header=0,index_col=[0,1,2],sep='\t');row_value_counts=df.apply(lambda row: row.value_counts(), axis=1).fillna(0);row_value_counts.div(len(df.columns),axis=0).to_csv('"${csv%.csv}.freqs.csv"')"
+done
+```
+
+AF/MAF is 1/2 of the average dosage. (ALLELE frequency NOT SAMPLE frequency)
+```BASH
+for csv in hla-*-hg19/*dosage.csv ; do
+python3 -c "import pandas as pd;df=pd.read_csv('"${csv}"',header=0,index_col=[0,1,2],sep='\t');means=df.mean(axis='columns').div(2,axis=0);print(means)"
+done
+```
+
+
+Sums are all about 32 which would correspond to 16 different HLAs. Correct?
+```BASH
+for csv in hla-*-hg19/*dosage.csv ; do
+python3 -c "import pandas as pd;df=pd.read_csv('"${csv}"',header=0,index_col=[0,1,2],sep='\t');print(df.sum(axis='index'))"
+done
+```
+
+
+Add source column and join all four.
+Would need to drop the AF and R2 columns, or rename them.
+
+
+
