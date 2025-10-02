@@ -89,3 +89,38 @@ done
 ```
 
 
+##	20250930
+
+Include Zscore=5 filter
+
+```BASH
+
+for manifest in manifest.plate*.csv ; do
+num=${manifest%.csv}
+num=${num#manifest.plate}
+echo $num
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+  --job-name=phip_seq_plate${num} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+  /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --thresholds 3.5,5,10  \
+  --manifest ${PWD}/${manifest} --output ${PWD}/out.plate${num}
+
+done
+
+
+for manifest in manifest.plate*.csv ; do
+  plate=${manifest%.csv}
+  plate=${plate#manifest.plate}
+  echo $plate
+  cp ${manifest} out.plate${plate}/
+  sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+    --job-name=phip_seq_plate${plate} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+    --output=${PWD}/logs/phip_seq.aggregate.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+    /c4/home/gwendt/.local/bin/phip_seq_aggregate.bash ${manifest} out.plate${plate}/
+done
+```
+
+
+
+
