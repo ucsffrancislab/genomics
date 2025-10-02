@@ -1,0 +1,392 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+
+
+#       argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-d", "--dosage", type="character",
+	default=paste0(Sys.getenv('PWD'),'/hla-cidr-hg19/chr6.hla_dosage.csv'),
+	help="report file to reference [default=%(default)s]", metavar="filename")
+
+opt <- parser$parse_args()
+
+rmarkdown::render(newfname, output_dir = dirname('hla.html'), output_file = 'hla.html')
+
+
+q("no")
+
+
+
+
+---
+title: "HLA"
+author: "Jake W"
+date: "2025-10-01"
+output: html_document
+---
+
+
+HLA (Human Leukocyte Antigen) type names describe genetic variations using a system of letters and numbers, such as HLA-A*01:01. The letters (e.g., A, B, DR) identify the specific HLA locus and class. The first number (e.g., 01) designates the antigen serological type, while subsequent numbers (e.g., 01) denote specific allelic variants discovered at different times. Optional suffixes like N (null), L (low expression), or S (secreted) further indicate an allele's expression status. 
+
+Understanding the HLA Type Name
+
+An HLA type name has a specific structure, typically including: 
+
+Locus (Letters)
+
+The first letter(s) identify the HLA locus and class.
+* Class I: HLA-A, HLA-B, HLA-C.
+* Class II: HLA-DR, HLA-DQ, HLA-DP. 
+
+Allele Number (Digits)
+These numbers identify specific variants of an HLA gene.
+First number(s): Indicates the serological antigen type.
+Subsequent numbers: Denote variations in the protein's amino acid sequence due to DNA differences, assigned in order of discovery. 
+
+Optional Suffixes (Letters)
+These indicate the expression status of the protein.
+* N: Null (not expressed).
+* L: Low expression.
+* S: Secreted (soluble, not on the cell surface).
+* C: Cytoplasmic (not on the cell surface). 
+
+Example Breakdown (HLA-A*01:01)
+
+HLA
+Human Leukocyte Antigen. 
+
+A
+Refers to the HLA-A locus, a Class I antigen. 
+
+\*01
+Designates the antigen serological type (e.g., antigen A1). 
+
+\*01:01
+Identifies a specific allele variant within that type, indicating a particular nucleotide sequence. 
+
+Why is HLA Naming Important?
+
+HLA typing is used for:
+
+Transplant Matching
+HLA genes are highly polymorphic, and finding a compatible donor involves matching HLA types to minimize rejection. 
+
+Disease Association
+Certain HLA alleles are linked to an increased risk or protection against specific diseases. 
+
+Understanding Immune Response
+HLA molecules present antigens to T cells, so identifying HLA types helps understand how the immune system responds to pathogens. 
+
+
+```{r "Setup"}
+#	BiocManager::install(c('ggplot2','tidyr','dplyr','webr'))
+
+library(ggplot2)
+library(tidyr)
+library(webr)
+library(dplyr)
+library(stringr)
+```
+
+```{r "Read data"}
+#	NEED THE FULL PATH SINCE THIS IS RUN IN /scratch
+df=read.csv( opt$dosage, sep="\t", header=TRUE)
+
+df$AF <- NULL
+df$R2 <- NULL
+
+rownames(df)=df[[colnames(df)[1]]]
+df[[colnames(df)[1]]]=NULL
+df[0:9,0:9]
+```
+
+```{r "Dim"}
+dim(df)
+```
+
+```{r}
+row_sums <- data.frame(sum = rowSums(df, na.rm = TRUE) )
+row_sums$hla3 = rownames(row_sums)
+row_sums
+```
+
+```{r my_ggplot_chunk, fig.height = 64, fig.width = 10}
+ggplot(row_sums, aes(x=hla3, y=sum)) + 
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+
+Just 2-digit
+
+
+```{r}
+two = row_sums[!grepl(":", rownames(row_sums)), ]
+dim(two)
+```
+
+```{r fig.height = 16, fig.width = 10}
+ggplot(two, aes(x=hla3, y=sum)) + 
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+
+```{r}
+hla_a = row_sums[grepl("^HLA_A.*:", rownames(row_sums)), ]
+head(hla_a)
+```
+
+```{r fig.height = 12, fig.width = 10}
+ggplot(hla_a, aes(x=hla3, y=sum)) + 
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+
+```{r}
+df_split <- separate(
+	data = hla_a,
+	col = hla3,
+	into = c("locus", "two", "four"),
+	sep = "[*:]"
+)
+df_split$locus <- as.factor(df_split$locus)
+df_split$two <- as.factor(df_split$two)
+df_split$four <- as.factor(df_split$four)
+```
+
+```{r}
+head(df_split)
+```
+
+https://statdoe.com/pie-donut-chart-in-r/
+
+```{r fig.height = 16, fig.width = 16}
+#PieDonut(PD, aes(two, four, count=sum), title = "HLA")
+PieDonut(df_split, aes(two, four, count=sum), title = "HLA", explode=1:length(unique(df_split$two)))
+```
+
+
+
+
+
+```{r}
+hla_abc = row_sums[grepl("^HLA_[ABC].*:", rownames(row_sums)), ]
+head(hla_abc)
+```
+
+```{r fig.height = 12, fig.width = 10}
+ggplot(hla_abc, aes(x=hla3, y=sum)) + 
+  geom_bar(stat="identity") +
+  coord_flip()
+```
+
+```{r}
+split_names <- str_split_fixed(hla_abc$hla3, ":", 2)
+hla_abc$hla2 <- split_names[, 1]
+split_names <- str_split_fixed(hla_abc$hla3, "\\*", 2)
+hla_abc$hla1 <- split_names[, 1]
+head(hla_abc)
+
+p0 <- mutate(hla_abc, top_level = hla1)
+p1 <- pivot_longer(p0, cols = c(hla1, hla2, hla3))
+p2 <- group_by(p1, name, value)
+p3 <- mutate(p2, width = sum(sum))
+p3$sum <- NULL
+p4 <- unique(p3)
+#p5 <- arrange(p4, value) # ? not real sure what this if for
+p6 <- group_by(p4, name)
+p7 <- mutate(p6, ymid = as.numeric(sub("\\D+", "", name)),
+         ymax = ymid + 0.5, ymin = ymid - 0.5,
+         xmin = c(0, head(cumsum(width), -1)),
+         xmax = cumsum(width),
+         xmid = (xmax + xmin) / 2)
+#print(p7,n=120)
+head(p7)
+```
+
+```{r}
+## 1 HLA_A     hla1  HLA_A        956.        1   1.5   0.5    0   956. 478.      A
+## 2 HLA_A     hla2  HLA_A*01     127.        2   2.5   1.5    0   127.  63.3     01
+## 3 HLA_A     hla3  HLA_A*01:01  126.        3   3.5   2.5    0   126.  63.1     01
+#	change values to just be the level value
+
+#p7 <- as.data.frame(p7)
+
+p7$label <- p7$value
+p7$label <- gsub(".*:", "", p7$label)
+p7$label <- gsub(".*\\*", "", p7$label)
+
+head(p7)
+```
+
+
+```{r fig.height = 12, fig.width = 10}
+ggplot(p7, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid, label = label, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1)) +
+  scale_fill_manual(values = c("#cd9900", "#00817e","#FF0000")) +
+  scale_colour_manual(values = c("#cd9900", "#00817e","#FF0000")) +
+  scale_y_continuous(limits = c(-4, 3.5)) +
+  coord_polar() +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+
+```{r}
+## # A tibble: 6 × 10
+## # Groups:   name [3]
+##   top_level  name   value      width  ymid  ymax  ymin  xmin  xmax  xmid
+##   <chr>      <chr>  <chr>      <int> <dbl> <dbl> <dbl> <dbl> <int> <dbl>
+## 1 Flavour    Level1 Flavour       11     1   1.5   0.5     0    11   5.5
+## 2 Appearance Level1 Appearance     4     1   1.5   0.5    11    15  13  
+## 3 Flavour    Level2 Misc           6     2   2.5   1.5     0     6   3  
+## 4 Flavour    Level2 Pungent        5     2   2.5   1.5     6    11   8.5
+## 5 Appearance Level2 Colour         4     2   2.5   1.5    11    15  13  
+## 6 Flavour    Level3 Fresh          1     3   3.5   2.5     0     1   0.5
+```
+
+
+```{r fig.height = 16, fig.width = 16}
+#PieDonut(PD, aes(two, four, count=sum), title = "HLA")
+#PieDonut(df_split, aes(locus, two, four, count=sum), title = "HLA")
+```
+
+
+
+```{r}
+lexicon <- data.frame("Level1" = c(rep("Flavour", 11), rep("Appearance", 4)),
+                  "Level2" = c(rep("Misc", 6), rep("Pungent", 5), rep("Colour", 4)),
+                  "Level3" = c("Fresh", "Refreshing", "Soapy", "Minty", "Nutty", "Milky", "Peppery", "Sharp", "Horseradish", "Mustard hot", "Spicy", "Colourful"," Fresh Green", "Dark Green", "Bright Green")
+)
+head(lexicon)
+```
+
+```{r}
+ldata <- lexicon %>%
+  mutate(top_level = Level1) %>%
+  pivot_longer(1:3) %>%
+  group_by(name, value) %>%
+  mutate(width = n()) %>%
+  unique() %>%
+  arrange(name) %>%
+  group_by(name) %>%
+  mutate(ymid = as.numeric(sub("\\D+", "", name)),
+         ymax = ymid + 0.5, ymin = ymid - 0.5,
+         xmin = c(0, head(cumsum(width), -1)),
+         xmax = cumsum(width),
+         xmid = (xmax + xmin) / 2)
+head(ldata,10)
+
+## # A tibble: 10 × 10
+## # Groups:   name [3]
+##    top_level  name   value      width  ymid  ymax  ymin  xmin  xmax  xmid
+##    <chr>      <chr>  <chr>      <int> <dbl> <dbl> <dbl> <dbl> <int> <dbl>
+##  1 Flavour    Level1 Flavour       11     1   1.5   0.5     0    11   5.5
+##  2 Appearance Level1 Appearance     4     1   1.5   0.5    11    15  13  
+##  3 Flavour    Level2 Misc           6     2   2.5   1.5     0     6   3  
+##  4 Flavour    Level2 Pungent        5     2   2.5   1.5     6    11   8.5
+##  5 Appearance Level2 Colour         4     2   2.5   1.5    11    15  13  
+##  6 Flavour    Level3 Fresh          1     3   3.5   2.5     0     1   0.5
+##  7 Flavour    Level3 Refreshing     1     3   3.5   2.5     1     2   1.5
+##  8 Flavour    Level3 Soapy          1     3   3.5   2.5     2     3   2.5
+##  9 Flavour    Level3 Minty          1     3   3.5   2.5     3     4   3.5
+## 10 Flavour    Level3 Nutty          1     3   3.5   2.5     4     5   4.5
+```
+
+
+```{r}
+library('geomtextpath')
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level))
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value))
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1))
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1)) +
+  scale_fill_manual(values = c("#cd9900", "#00817e"))
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1)) +
+  scale_fill_manual(values = c("#cd9900", "#00817e")) +
+  scale_colour_manual(values = c("#cd9900", "#00817e")) 
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1)) +
+  scale_fill_manual(values = c("#cd9900", "#00817e")) +
+  scale_colour_manual(values = c("#cd9900", "#00817e")) +
+  scale_y_continuous(limits = c(-0.5, 3.6))
+```
+
+```{r fig.height = 4, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1)) +
+  scale_fill_manual(values = c("#cd9900", "#00817e")) +
+  scale_colour_manual(values = c("#cd9900", "#00817e")) +
+  scale_y_continuous(limits = c(-0.5, 3.6)) +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+
+```{r fig.height = 12, fig.width = 10}
+ggplot(ldata, aes(xmid, ymid, fill = top_level)) +
+  geom_rect(aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, alpha = name, color = top_level)) +
+  geomtextpath::geom_textpath(aes(y = ymid + 0.25, label = value, group = value)) +
+  scale_alpha_manual(values = c(1, 0.3, 0.1)) +
+  scale_fill_manual(values = c("#cd9900", "#00817e")) +
+  scale_colour_manual(values = c("#cd9900", "#00817e")) +
+  scale_y_continuous(limits = c(-0.5, 3.6)) +
+  coord_polar() +
+  theme_void() +
+  theme(legend.position = "none")
+```
+
+
+
