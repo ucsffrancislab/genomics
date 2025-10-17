@@ -203,7 +203,8 @@ server <- function(input, output, session) {
 
 	output$table <- renderTable({
 		req(input$file1)
-		head(df(),50)
+		#head(df(),50)
+		head(filtered_df(),50)
 	}, rownames = TRUE, digits=9 )
 
 
