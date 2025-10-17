@@ -341,4 +341,53 @@ These are the IPS repeat serum libraries originally assayed on GBM plate 4 which
 
 
 
+##	20251008
+
+Also in your in-box: USC doesn’t have the mom’s age at serum sampling readily available. They are going to request it from their outside collaborators, along with clarification of the race variable, as part of a future data request. In the meantime, updated versions of the L5 and L6 covariate files are [in your in-box] The headers for the PRN variables have been clarified to indicate whether they apply to the serum donor mothers or their case/control children. The Sex variable has been clarified to ‘sex (SE donor)’. The serum donor mothers ‘F’ gender has been added to ‘sex (SE donor)’, and a new variable ‘Sex_ch (PRN - child)’ has been created for the case/control children. Please let me know if you have any questions!
+
+
+```BASH
+head -1 L5_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p15_and_p16_10-7-25hmh.csv | tr , "\n" | awk '{print NR,$0}'
+1 Sequencer S#
+2 Avera Sample_ID
+3 "Avera RunName"
+4 Index primer
+5 Index 'READ'
+6 "UCSF sample name (PRN BlindID/PLCO liid)"
+7 "UCSF sample name for sequencing (PRN BlindID/PLCO liid)"
+8 Sample type
+9 Study
+10 "Analysis group (PLCO and PRN - child)"
+11 PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 IPS GBM repeats]
+12 sex (SE donor)
+13 age
+14 "best_draw_label (PLCO)"
+15 match_race7 (PLCO)
+16 self-identified race/ethnicity (PRN - birth certificate?)
+17 M_BLINDID (PRN - mother)
+18 BIRTH_YEAR (PRN - child)
+19 Sex (PRN - child)
+20 "Matching Race (IPS case)"
+21 "IDH mut (IPS case)"
+22 dex_draw (IPS case)
+23 "dex_prior_month (IPS case)"
+24 "Timepoint (IPS cases)"
+25 192 sequencing Lane
+26 Plate
+27 well
+28 column order
+29 
+30 
+```
+
+
+
+```
+\rm -f manifest.csv
+cp L5_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p15_and_p16_10-7-25hmh.csv manifest.csv
+
+sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
+chmod -w manifest.csv
+```
+
 

@@ -308,3 +308,62 @@ cp L6_full_covariates_Vir3_phip-seq_GBM_ALL_p17_and_p18_9-25-25hmh.csv manifest.
 sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
 chmod -w manifest.csv
 ```
+
+
+
+
+
+
+
+##	20251008
+
+
+```BASH
+dos2unix L6_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p17_and_p18_10-7-25hmh.csv
+
+vi L6_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p17_and_p18_10-7-25hmh.csv
+
+
+\rm -f manifest.csv
+cp L6_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p17_and_p18_10-7-25hmh.csv manifest.csv
+
+sed -i -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' manifest.csv
+chmod -w manifest.csv
+```
+
+
+```BASH
+head -1 L6_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p17_and_p18_10-7-25hmh.csv | tr , "\n" | awk '{print NR,$0}'
+1 Sequencer S#
+2 Avera Sample_ID
+3 "Avera RunName"
+4 Index primer
+5 Index 'READ'
+6 "UCSF sample name (PRN BlindID/PLCO liid)"
+7 UCSF sample name for sequencing (PRN BlindID/PLCO liid)
+8 Sample type
+9 Study
+10 "Analysis group (PLCO and PRN - Child)"
+11 PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 repeats]
+12 sex (SE donor)
+13 age
+14 "best_draw_label (PLCO)"
+15 match_race7 (PLCO)
+16 self-identified race/ethnicity (PRN - birth certificate?)
+17 M_BLINDID (PRN - mother)
+18 BIRTH_YEAR (PRN - child)
+19 Sex-ch (PRN - child)
+20 "Matching Race (IPS case)"
+21 "IDH mut (IPS case)"
+22 dex_draw (IPS case)
+23 "dex_prior_month (IPS case)"
+24 "Timepoint (IPS cases)"
+25 192 sequencing Lane
+26 Plate
+27 well
+28 column order
+29 
+30 
+```
+
+
