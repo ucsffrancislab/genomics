@@ -87,7 +87,16 @@ ui <- fluidPage(
 				inputId = "betacol",
 				label = "Beta Column:",
 				choices = c('beta'),
-				selected = 'beta', multiple = FALSE, selectize = FALSE)
+				selected = 'beta', multiple = FALSE, selectize = FALSE),
+
+			textInput(
+				inputId = "filtercol",
+				label = "Filter Column:",
+				value = 'species'),
+			textInput(
+				inputId = "filterval",
+				label = "Filter Value:",
+				value = ''),
 
 		), #	sidebarPanel( width = 2,
 
@@ -158,6 +167,10 @@ server <- function(input, output, session) {
 				df$my_selected_beta=df[,input$betacol]
 				if( input$exp_beta ) { #== 'TRUE' ) {
 					df$my_selected_beta=exp(df$my_selected_beta)
+				}
+
+				if( nzchar(input$filtercol) && nzchar(input$filterval) ){
+					df <- df[df[,input$filtercol] == trimws(input$filterval),]
 				}
 
 				df <- df %>% mutate(my_selected_label = ifelse( df[,input$pvaluecol] <= input$pvalue, as.character(df[,input$labelcol]), ""))
