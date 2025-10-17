@@ -8,47 +8,37 @@ bowdir=/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out
 
 manifest=/francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv
 
-#[gwendt@c4-log1 /francislab/data1/raw/20250925-Illumina-PhIP]$ head -1 L5_full_covariates_Vir3_phip-seq_GBM_ALL_p15_and_p16_8-22-25hmh.csv 
-#Sequencer S#,Avera Sample_ID,Avera RunName,Index primer,Index 'READ',UCSF sample name (PRN BlindID/PLCO liid),UCSF sample name for sequencing (PRN BlindID/PLCO liid),Sample type,Study,Analysis group (PLCO and PRN),PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 IPS GBM repeats],sex,age,best_draw_label (PLCO),match_race7 (PLCO),self-identified race/ethnicity (PRN),M_BLINDID (PRN),BIRTH_YEAR (PRN),Matching Race (IPS case),IDH mut (IPS case),dex_draw (IPS case),dex_prior_month (IPS case),Timepoint (IPS cases),192 sequencing Lane,Plate,well,column order,,
-
-#head /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csvSequencer S#,Avera Sample_ID,Avera RunName,Index primer,Index 'READ',UCSF sample name (PRN BlindID/PLCO liid),UCSF sample name for sequencing (PRN BlindID/PLCO liid),Sample type,Study,Analysis group (PLCO and PRN),PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 IPS GBM repeats],sex,age,best_draw_label (PLCO),match_race7 (PLCO),self-identified race/ethnicity (PRN),M_BLINDID (PRN),BIRTH_YEAR (PRN),Matching Race (IPS case),IDH mut (IPS case),dex_draw (IPS case),dex_prior_month (IPS case),Timepoint (IPS cases),192 sequencing Lane,Plate,well,column order,,
-#S1,D149048_082025,082125_192Phip_L5,IDX001,AACCAAG,D149048,D149048,glioma serum,PLCO,CA,UP6094,M,59,draw5,White Non-Hispanic,,,,,,,,,L5,15,A01,1,,
-#S2,465513_082025,082125_192Phip_L5,IDX002,AACCGCA,465513,465513,ALL maternal serum,PRN,CA,33100,F,,,,LAT,15850,2003,,,,,,L5,15,B01,2,,
-#S3,846782_082025,082125_192Phip_L5,IDX003,AACCTGC,846782,846782,ALL maternal serum,PRN,CO,33434,F,,,,LAT,132078,2003,,,,,,L5,15,C01,3,,
-#S4,D051856_082025,082125_192Phip_L5,IDX004,AACGACC,D051856,D051856,glioma serum,PLCO,CA,UZ6656,M,69,draw4,White Non-Hispanic,,,,,,,,,L5,15,D01,4,,
-#S5,E150248_082025,082125_192Phip_L5,IDX005,AACGCAT,E150248,E150248,glioma serum,PLCO,CO,KF1413,M,67,baseline (1st) draw,White Non-Hispanic,,,,,,,,,L5,15,E01,5,,
-
-
-#	head -1 manifest.csv | tr ',' '\n' | awk '{print NR,$0}'
+#	head -1 /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv | tr ',' '\n' | awk '{print NR,$0}'
 #	1 Sequencer S#
 #	2 Avera Sample_ID
-#	3 Avera RunName
+#	3 "Avera RunName"
 #	4 Index primer
 #	5 Index 'READ'
-#	6 UCSF sample name (PRN BlindID/PLCO liid)
+#	6 "UCSF sample name (PRN BlindID/PLCO liid)"
 #	7 UCSF sample name for sequencing (PRN BlindID/PLCO liid)
 #	8 Sample type
 #	9 Study
-#	10 Analysis group (PLCO and PRN)
-#	11 PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 IPS GBM repeats]
-#	12 sex
+#	10 "Analysis group (PLCO and PRN - Child)"
+#	11 PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 repeats]
+#	12 sex (SE donor)
 #	13 age
-#	14 best_draw_label (PLCO)
+#	14 "best_draw_label (PLCO)"
 #	15 match_race7 (PLCO)
-#	16 self-identified race/ethnicity (PRN)
-#	17 M_BLINDID (PRN)
-#	18 BIRTH_YEAR (PRN)
-#	19 Matching Race (IPS case)
-#	20 IDH mut (IPS case)
-#	21 dex_draw (IPS case)
-#	22 dex_prior_month (IPS case)
-#	23 Timepoint (IPS cases)
-#	24 192 sequencing Lane
-#	25 Plate
-#	26 well
-#	27 column order
-#	28 
+#	16 self-identified race/ethnicity (PRN - birth certificate?)
+#	17 M_BLINDID (PRN - mother)
+#	18 BIRTH_YEAR (PRN - child)
+#	19 Sex-ch (PRN - child)
+#	20 "Matching Race (IPS case)"
+#	21 "IDH mut (IPS case)"
+#	22 dex_draw (IPS case)
+#	23 "dex_prior_month (IPS case)"
+#	24 "Timepoint (IPS cases)"
+#	25 192 sequencing Lane
+#	26 Plate
+#	27 well
+#	28 column order
 #	29 
+#	30 
 
 
 
@@ -168,7 +158,7 @@ echo
 
 echo -n "Plate"
 for s in ${snumbers} ; do
-	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $25}' ${manifest} )
+	v=$( awk -F, -v snumber=${s} '( $1 == snumber ){print $26}' ${manifest} )
 #	v=99
 	echo -n ",${v}"
 done
@@ -176,14 +166,14 @@ echo
 
 echo -n "Well X"
 for s in ${snumbers} ; do
-	v=$( awk -F"," -v snumber=${s} '( $1 == snumber ){x=substr($26,1,1); print x}' ${manifest} | tr 'A-H' '1-8' )
+	v=$( awk -F"," -v snumber=${s} '( $1 == snumber ){x=substr($27,1,1); print x}' ${manifest} | tr 'A-H' '1-8' )
 	echo -n ",${v}"
 done
 echo
 
 echo -n "Well Y"
 for s in ${snumbers} ; do
-	v=$( awk -F"," -v snumber=${s} '( $1 == snumber ){x=substr($26,2,2); print int(x)}' ${manifest} )
+	v=$( awk -F"," -v snumber=${s} '( $1 == snumber ){x=substr($27,2,2); print int(x)}' ${manifest} )
 	echo -n ",${v}"
 done
 echo
