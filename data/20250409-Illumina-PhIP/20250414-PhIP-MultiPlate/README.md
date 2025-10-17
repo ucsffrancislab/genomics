@@ -1584,19 +1584,13 @@ commands_array_wrapper.bash --jobname individual --array_file commands --time 1-
 plates=$( ls -d ${PWD}/out.plate{15,16,17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
 
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/out.15161718 -p ${plates} --counts >> commands
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/out.15161718 -p ${plates} --counts --sex M >> commands
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.csv -o ${PWD}/out.15161718 -p ${plates} --counts --sex F >> commands
 
 for z in 3.5 5 10 ; do
 
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.15161718 -p ${plates}
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.15161718 -p ${plates} --sex M
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.15161718 -p ${plates} --sex F
 
 echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control -o ${PWD}/out.15161718 -p ${plates} --zfile_basename Zscores.csv
 echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.15161718 -p ${plates}
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.15161718 -p ${plates} --sex M
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.15161718 -p ${plates} --sex F
 
 done >> commands
 
@@ -1658,7 +1652,7 @@ commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-
 
 ##	20251001
 
-```
+```BASH
 mkdir out.123456131415161718
 merge_all_combined_counts_files.py --de_nan --out out.123456131415161718/Plibs.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/PLib*.q40.count.csv.gz
 sed -i 's/\.0//g' out.123456131415161718/Plibs.csv
@@ -1666,5 +1660,14 @@ merge_all_combined_counts_files.py --de_nan --out out.123456131415161718/CSEs.cs
 sed -i 's/\.0//g' out.123456131415161718/CSEs.csv
 merge_all_combined_counts_files.py --de_nan --out out.123456131415161718/Blanks.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/input/Blank*.q40.count.csv.gz
 sed -i 's/\.0//g' out.123456131415161718/Blanks.csv
+```
+
+##	20251006
+
+```BASH
+merge_all_combined_counts_files.py --de_nan --out out.123456131415161718/AllSamples.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv out.plate*/counts/input/*.q40.count.csv.gz out.plate*/counts/*.q40.count.csv.gz
+sed -i 's/\.0//g' out.123456131415161718/AllSamples.csv 
+merge_all_combined_counts_files.py --de_nan --out out.123456131415161718/AllActualSamples.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_oligo.uniq.1-80.csv $( ls -1 out.plate*/counts/*.q40.count.csv.gz | grep -vs PLib | grep -vs CSE | paste -s )
+sed -i 's/\.0//g' out.123456131415161718/AllActualSamples.csv 
 ```
 
