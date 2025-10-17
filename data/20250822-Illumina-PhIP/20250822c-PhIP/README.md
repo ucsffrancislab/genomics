@@ -36,7 +36,7 @@ DO NOT USE the following samples ...
 ##	All
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$25}' /francislab/data1/raw/20250822-Illumina-PhIP/manifest.csv > manifest.all.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$26}' /francislab/data1/raw/20250822-Illumina-PhIP/manifest.csv > manifest.all.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.all.csv
 sed -i 's/,PBS blank,/,input,/' manifest.all.csv
@@ -57,7 +57,7 @@ chmod -w manifest.all.csv
 
 
 ```
-awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$25 > "manifest.plate"$25".csv" }' /francislab/data1/raw/20250822-Illumina-PhIP/manifest.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$26 > "manifest.plate"$26".csv" }' /francislab/data1/raw/20250822-Illumina-PhIP/manifest.csv
 
 for manifest in manifest.plate*.csv ; do
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' ${manifest}
@@ -177,12 +177,12 @@ for z in 3.5 5 10 ; do
 echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.select-1516.csv
 echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.select-1516.csv
 echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
-echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1516.csv
-echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1516.csv
-echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"ALL maternal serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1516.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1516.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
 done ; done >> commands
 
-commands_array_wrapper.bash --jobname individual --array_file commands --time 4-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --jobname individual --array_file commands --time 1-0 --threads 2 --mem 15G
 ```
 
 
@@ -192,7 +192,7 @@ commands_array_wrapper.bash --jobname individual --array_file commands --time 4-
 
 plates=$( ls -d ${PWD}/out.plate{15,16} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1516.csv -o ${PWD}/out.1516 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1516.csv -o ${PWD}/out.1516 -p ${plates} --counts >> commands
 
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1516.csv -o ${PWD}/out.1516 -p ${plates} --counts >> commands
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1516.csv -o ${PWD}/out.1516 -p ${plates} --counts --sex M >> commands
@@ -200,10 +200,10 @@ echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \
 
 for z in 3.5 5 10 ; do
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.select-1516.csv -o ${PWD}/out.1516 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.select-1516.csv -o ${PWD}/out.1516 -p ${plates}
 
-echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"ALL maternal serum\" -a case -b control -o ${PWD}/out.1516 -p ${plates} --zfile_basename Zscores.select-1516.csv
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1516 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control -o ${PWD}/out.1516 -p ${plates} --zfile_basename Zscores.select-1516.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1516 -p ${plates}
 
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1516.csv -o ${PWD}/out.1516 -p ${plates}
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1516.csv -o ${PWD}/out.1516 -p ${plates} --sex M

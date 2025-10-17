@@ -5,40 +5,43 @@
 DO NOT USE the following samples ...
 
 
-
-
-#	1 Sequencer S# 
+#	head -1 /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv | tr ',' '\n' | awk '{print NR,$0}'
+#	1 Sequencer S#
 #	2 Avera Sample_ID
-#	3 Avera RunName
+#	3 "Avera RunName"
 #	4 Index primer
 #	5 Index 'READ'
-#	6 UCSF sample name (PRN BlindID/PLCO liid)
+#	6 "UCSF sample name (PRN BlindID/PLCO liid)"
 #	7 UCSF sample name for sequencing (PRN BlindID/PLCO liid)
 #	8 Sample type
 #	9 Study
-#	10 Analysis group (PLCO and PRN)
-#	11 PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 IPS GBM repeats]
-#	12 sex
+#	10 "Analysis group (PLCO and PRN - Child)"
+#	11 PLCO barcode [GBM]/PRN tube no [ALL] /IPS kitno [Plate 4 repeats]
+#	12 sex (SE donor)
 #	13 age
-#	14 best_draw_label (PLCO)
+#	14 "best_draw_label (PLCO)"
 #	15 match_race7 (PLCO)
-#	16 self-identified race/ethnicity (PRN)
-#	17 M_BLINDID (PRN)
-#	18 BIRTH_YEAR (PRN)
-#	19 Matching Race (IPS case)
-#	20 IDH mut (IPS case)
-#	21 dex_draw (IPS case)
-#	22 dex_prior_month (IPS case)
-#	23 Timepoint (IPS cases)
-#	24 192 sequencing Lane
-#	25 Plate
-#	26 well
-#	27 column order
+#	16 self-identified race/ethnicity (PRN - birth certificate?)
+#	17 M_BLINDID (PRN - mother)
+#	18 BIRTH_YEAR (PRN - child)
+#	19 Sex-ch (PRN - child)
+#	20 "Matching Race (IPS case)"
+#	21 "IDH mut (IPS case)"
+#	22 dex_draw (IPS case)
+#	23 "dex_prior_month (IPS case)"
+#	24 "Timepoint (IPS cases)"
+#	25 192 sequencing Lane
+#	26 Plate
+#	27 well
+#	28 column order
+#	29 
+#	30 
+
 
 ##	All
 
 ```BASH
-awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$25}' /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv > manifest.all.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$26}' /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv > manifest.all.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.all.csv
 sed -i 's/,PBS blank,/,input,/' manifest.all.csv
@@ -59,7 +62,7 @@ chmod -w manifest.all.csv
 
 
 ```BASH
-awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$25 > "manifest.plate"$25".csv" }' /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){print $6,$7,"/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$8,$9,$10,$13,$12,$26 > "manifest.plate"$26".csv" }' /francislab/data1/raw/20250925-Illumina-PhIP/manifest.csv
 
 for manifest in manifest.plate*.csv ; do
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' ${manifest}
@@ -185,12 +188,12 @@ for z in 3.5 5 10 ; do
 echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
 echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
 echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
-echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
-echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
-echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"ALL maternal serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
 done ; done >> commands
 
-commands_array_wrapper.bash --jobname individual --array_file commands --time 4-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --jobname individual --array_file commands --time 1-0 --threads 2 --mem 15G
 ```
 
 
@@ -200,7 +203,7 @@ commands_array_wrapper.bash --jobname individual --array_file commands --time 4-
 
 plates=$( ls -d ${PWD}/out.plate{17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts >> commands
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts >> commands
 
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts >> commands
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts --sex M >> commands
@@ -208,10 +211,10 @@ echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \
 
 for z in 3.5 5 10 ; do
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates}
 
-echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"ALL maternal serum\" -a case -b control -o ${PWD}/out.1718 -p ${plates} --zfile_basename Zscores.select-1718.csv
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control -o ${PWD}/out.1718 -p ${plates} --zfile_basename Zscores.select-1718.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1718 -p ${plates}
 
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates}
 echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --sex M
