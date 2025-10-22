@@ -1671,3 +1671,42 @@ merge_all_combined_counts_files.py --de_nan --out out.123456131415161718/AllActu
 sed -i 's/\.0//g' out.123456131415161718/AllActualSamples.csv 
 ```
 
+
+
+##	20251021
+
+
+```bash
+
+merge_matrices.py --axis columns --de_nan --de_neg --int \
+  --header_rows 9 --index_col id --index_col species \
+  --out ${PWD}/out.123456131415161718/Counts.csv \
+  ${PWD}/out.plate{1,2,3,4,5,6,13,14,15,16,17,18}/Counts.csv
+
+```
+
+
+
+Error in `select()`:
+! Names must be unique.
+✖ These names are duplicated:
+  * "D082062" at locations 849 and 1045.
+  * "D082062dup" at locations 850 and 1046.
+  * "E045528" at locations 949 and 1139.
+  * "E045528dup" at locations 950 and 1140.
+Backtrace:
+
+rep D082062 out.plate*/mani*
+out.plate15/manifest.plate15.csv:D082062,D082062,/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/S65.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,73,M,15
+out.plate15/manifest.plate15.csv:D082062,D082062dup,/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/S73.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,73,M,15
+out.plate17/manifest.plate17.csv:D082062,D082062,/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/S82.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,73,M,17
+out.plate17/manifest.plate17.csv:D082062,D082062dup,/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/S90.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,73,M,17
+
+grep E045528 out.plate*/mani*
+out.plate16/manifest.plate16.csv:E045528,E045528,/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/S113.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,63,M,16
+out.plate16/manifest.plate16.csv:E045528,E045528dup,/francislab/data1/working/20250822-Illumina-PhIP/20250822b-bowtie2/out/S121.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,63,M,16
+out.plate18/manifest.plate18.csv:E045528,E045528,/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/S100.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,63,M,18
+out.plate18/manifest.plate18.csv:E045528,E045528dup,/francislab/data1/working/20250925-Illumina-PhIP/20250925b-bowtie2/out/S108.VIR3_clean.id_upper_oligo.uniq.1-80.bam,glioma serum,PLCO,case,63,M,18
+
+
+Manually added "xxx" behind half

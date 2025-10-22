@@ -1,0 +1,347 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#       argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-i", "--input", type="character",
+  help="input file", metavar="filename",
+  default = "/francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv")
+parser$add_argument("-o", "--output", type="character", default="PhIPseq_ChatGPT_2",
+  help="output file base [default=%(default)s]", metavar="file base")
+
+opt <- parser$parse_args()
+
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
+
+q("no")
+
+
+
+
+
+
+---
+title: "PhIP-seq (VirScan) QC, Normalization and Visualization — Fixed"
+author: "Jake and ChatGPT"
+date: "2025-10-21"
+output:
+  html_document:
+    fig_width: 12
+    fig_height: 8
+---
+
+```{r setup, message=FALSE, warning=FALSE}
+# Packages
+packages <- c("tidyverse", "data.table", "edgeR", "limma", "ggplot2", "RColorBrewer", "pheatmap")
+for(p in packages) if(!requireNamespace(p, quietly=TRUE)) install.packages(p)
+lapply(packages, library, character.only=TRUE)
+```
+
+
+#	0. Settings
+
+```{r}
+csv_file <- opt$input			#	"merged_counts.csv"   # <-- change this path if needed
+meta_rows <- 9                    # number of metadata header rows you described
+```
+
+
+
+
+#	1. Robust load & parse metadata + counts
+
+
+```{r}
+# Read metadata rows as a data.frame (no header)
+
+meta_raw <- read.csv(csv_file, header = FALSE, nrows = meta_rows, stringsAsFactors = FALSE, check.names = FALSE)
+
+# Each metadata row appears to start with the same first two columns (id,species).
+
+# We'll extract sample labels from the first metadata row, skipping the first two columns.
+
+# Trim whitespace and convert to character
+
+sample_ids <- as.character(meta_raw[1, -c(1,2)])
+sample_ids <- trimws(sample_ids)
+
+# Read the remainder of the file (counts). No header: we will assign column names ourselves.
+
+counts_df <- fread(csv_file, skip = meta_rows, header = FALSE, data.table = FALSE, check.names = FALSE)
+
+# Ensure counts_df has at least 2 columns (id, species)
+
+if(ncol(counts_df) < 2) stop("Count file appears malformed: fewer than 2 columns after metadata rows.")
+
+# Determine how many sample columns exist in the counts data
+
+n_counts_samples <- ncol(counts_df) - 2
+
+# If sample_ids length mismatches the counts columns, trim or extend with generic names
+
+if(length(sample_ids) != n_counts_samples){
+	message("Warning: number of sample IDs in metadata (", length(sample_ids),
+	") does not equal number of sample columns in counts (", n_counts_samples, ").\n",
+	" -> aligning by taking the first ", n_counts_samples, " sample IDs (or creating names if missing).")
+	if(length(sample_ids) >= n_counts_samples){
+		sample_ids <- sample_ids[seq_len(n_counts_samples)]
+	} else {
+		# pad with generic names if metadata had fewer columns than counts
+		sample_ids <- c(sample_ids, paste0("S_extra_", seq_len(n_counts_samples - length(sample_ids))))
+	}
+}
+
+# Assign column names: first two are "id","species" then sample IDs
+
+colnames(counts_df) <- c("id", "species", sample_ids)
+
+# Convert counts columns to numeric matrix, coerce non-numeric to NA -> then to 0
+
+counts_mat <- counts_df %>%
+select(-species) %>%
+column_to_rownames("id") %>%
+as.matrix()
+
+# Coerce to numeric robustly (in case some columns read as character)
+
+counts_mat <- apply(counts_mat, 2, function(col) as.numeric(as.character(col)))
+rownames(counts_mat) <- counts_df$id
+
+# Replace NAs with 0 (assumes missing -> zero counts)
+
+counts_mat[is.na(counts_mat)] <- 0
+
+# Create sample metadata table from the 9 metadata rows:
+
+# Each row of meta_raw corresponds to a metadata field. We map them to names.
+
+meta_names <- c("sample_id", "subject", "path", "type", "study", "group", "age", "sex", "plate")
+meta_list <- lapply(seq_len(meta_rows), function(i) as.character(meta_raw[i, -c(1,2)]))
+names(meta_list) <- meta_names
+
+# Build a tibble
+
+sample_metadata <- tibble(
+	sample = sample_ids,
+	subject = trimws(meta_list$subject),
+	path = trimws(meta_list$path),
+	type = trimws(meta_list$type),
+	study = trimws(meta_list$study),
+	group = trimws(meta_list$group),
+	age = suppressWarnings(as.numeric(trimws(meta_list$age))),
+	sex = trimws(meta_list$sex),
+	plate = as.numeric(trimws(meta_list$plate))
+)
+
+# If any NA in 'age' because of empty strings, it's fine; keep as NA
+
+rownames(sample_metadata) <- sample_metadata$sample
+
+# Sanity checks
+
+message("Counts matrix dimensions: ", nrow(counts_mat), " peptides x ", ncol(counts_mat), " samples")
+message("Metadata rows: ", nrow(sample_metadata), " samples")
+if(!all(colnames(counts_mat) == sample_metadata$sample)){
+	message("Note: column names of counts matrix and metadata sample names are not identical after parsing.\n",
+	"Using the intersection to ensure alignment.")
+	common <- intersect(colnames(counts_mat), sample_metadata$sample)
+	if(length(common) == 0) stop("No overlapping sample names between counts matrix and metadata after parsing.")
+
+	# Subset both to the common set in the same order
+
+	counts_mat <- counts_mat[, common, drop=FALSE]
+	sample_metadata <- sample_metadata[common, , drop=FALSE]
+}
+
+```
+
+
+#	2. Basic QC metrics
+
+```{r}
+# Library sizes
+
+lib_sizes <- colSums(counts_mat, na.rm = TRUE)
+sample_metadata$lib_size <- lib_sizes
+
+# Top-100 fraction (protect against tiny libraries)
+
+top_frac <- apply(counts_mat, 2, function(x){
+	s <- sum(x)
+	if(s == 0) return(NA_real_)
+	sum(sort(x, decreasing = TRUE)[1:min(100, length(x))]) / s
+})
+sample_metadata$top100_frac <- top_frac
+
+# Boxplot of library sizes by plate
+
+p1 <- ggplot(sample_metadata, aes(x = as.factor(plate), y = lib_size, fill = type)) +
+	geom_boxplot(outlier.shape = NA) + geom_jitter(width=0.2, size=1) +
+	scale_y_log10() + theme_bw() + labs(title="Library sizes per plate", y="Total reads (log10)")
+print(p1)
+
+# Top100 fraction vs lib size
+
+p2 <- ggplot(sample_metadata, aes(x = lib_size, y = top100_frac, color = type)) +
+	geom_point(size=2) + scale_x_log10() + theme_bw() +
+	labs(title="Top 100 peptide fraction vs library size", x="Library size (log10)", y="Fraction in top 100 peptides")
+print(p2)
+
+```
+
+
+
+#	3. Filter low-count peptides (edgeR DGEList)
+
+```{r}
+
+dge <- DGEList(counts = counts_mat)
+keep <- rowSums(cpm(dge) > 1) >= 3  # adjust thresholds if needed
+message(sum(keep), " peptides pass the CPM > 1 in >= 3 samples filter (out of ", nrow(dge), ")")
+dge <- dge[keep, , keep.lib.sizes = FALSE]
+
+```
+
+
+#	4. TMM normalization
+
+```{r calcnormfactors}
+
+dge <- calcNormFactors(dge, method = "TMM")
+logCPM <- cpm(dge, log = TRUE, prior.count = 1)
+sample_metadata$norm_factor <- dge$samples$norm.factors
+
+```
+
+```{r logcpmhead}
+logCPM[1:5,1:5]
+```
+
+
+#	5. PCA before/after normalization (uses logCPM and raw logCPM)
+
+```{r rawlogcpm}
+
+# Raw logCPM computed from un-normalized DGEList for comparison
+
+raw_dge <- DGEList(counts = counts_mat)
+raw_logCPM <- cpm(raw_dge, log = TRUE, prior.count = 1)
+
+raw_logCPM[1:5,1:5]
+```
+
+
+```{r plotpcas}
+plot_pca <- function(mat, title) {
+  pca <- prcomp(t(mat), scale. = TRUE)
+  df <- data.frame(pca$x[, 1:2], sample_metadata)
+  df$letter <- LETTERS[match(df$plate, c(1:6, 13:18))]
+
+  # Unique plate-to-letter mapping for legend
+  plate_labels <- df[!duplicated(df$plate), c("plate", "letter")]
+  plate_labels <- plate_labels[order(plate_labels$plate), ]
+  legend_labels <- paste0(plate_labels$letter, " = Plate ", plate_labels$plate)
+
+  ggplot(df, aes(PC1, PC2, color = type)) +
+    # Draw the sample letters
+    geom_text(aes(label = letter), size = 4, fontface = "bold", show.legend = FALSE) +
+    # Add dummy points *off the plot area* to create a dot legend for type
+    geom_point(aes(x = Inf, y = Inf), size = 3, show.legend = TRUE) +
+    # Add dummy (invisible) points for the plate-letter mapping legend
+    geom_point(aes(shape = as.factor(plate)), alpha = 0) +
+    scale_shape_discrete(
+      name = "Plate",
+      labels = legend_labels
+    ) +
+    theme_bw() +
+    labs(title = title)
+}
+
+
+print(plot_pca(raw_logCPM, "PCA (raw logCPM)"))
+print(plot_pca(logCPM, "PCA (TMM normalized logCPM)"))
+
+```
+
+
+
+#	6. Control detection & correlation heatmap (defensive)
+
+```{r patterns}
+
+# Detect controls robustly (case-insensitive, allow variations)
+
+#pattern_input <- "(?i)\b(input|blank)\b"
+pattern_input <- "(?i)input|blank"
+pattern_commercial <- "(?i)commercial|cse|serum control"
+pattern_phage <- "(?i)phage|plib|library"
+```
+
+```{r controls_input}
+controls_input <- sample_metadata$sample[grepl(pattern_input, sample_metadata$type) | grepl(pattern_input, sample_metadata$subject)]
+controls_input
+```
+
+```{r controls_commercial}
+controls_commercial <- sample_metadata$sample[grepl(pattern_commercial, sample_metadata$type) | grepl(pattern_commercial, sample_metadata$subject)]
+controls_commercial
+```
+
+```{r controls_phage}
+controls_phage <- sample_metadata$sample[grepl(pattern_phage, sample_metadata$type) | grepl(pattern_phage, sample_metadata$subject)]
+controls_phage
+```
+
+
+```{r controlsall}
+controls_all <- unique(c(controls_input, controls_commercial, controls_phage))
+controls_all <- intersect(controls_all, colnames(logCPM))  # ensure present in matrix
+
+message("Detected control samples: ", paste(controls_all, collapse=", "))
+if(length(controls_all) < 2){
+	message("Too few control samples (less than 2) found in the normalized matrix; skipping control correlation heatmap.")
+} else {
+	corr_mat <- cor(logCPM[, controls_all], method = "spearman")
+	pheatmap(corr_mat, main = "Control sample correlation (Spearman)", color = colorRampPalette(brewer.pal(9, "Blues"))(100))
+}
+```
+
+
+#	7. Plate median library size check
+
+```{r platemedian}
+
+plate_medians <- sample_metadata %>%
+group_by(plate) %>%
+summarise(median_lib = median(lib_size, na.rm = TRUE), n = n())
+
+ggplot(plate_medians, aes(x = as.factor(plate), y = median_lib)) +
+	geom_col(fill = "steelblue") + theme_bw() + scale_y_log10() +
+	labs(title = "Median library size per plate (pre-normalization)", y = "Median total reads (log10)")
+print(ggplot(sample_metadata, aes(x=as.factor(plate), y=lib_size)) + geom_boxplot() + scale_y_log10() + theme_bw())
+
+
+```
+
+#	8. Save outputs
+
+
+```{r}
+
+write.csv(logCPM, file = "normalized_logCPM_fixed.csv", quote = FALSE)
+write.csv(sample_metadata, file = "sample_metadata_parsed_fixed.csv", row.names = FALSE)
+message("Saved normalized_logCPM_fixed.csv and sample_metadata_parsed_fixed.csv")
+
+
+```
+
