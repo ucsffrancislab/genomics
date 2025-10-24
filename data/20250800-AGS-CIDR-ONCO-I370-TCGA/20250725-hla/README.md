@@ -594,3 +594,109 @@ mv tmp3.csv ags_hla_sample_tile_q40_counts.species.csv
 
 ```
 
+
+
+
+
+
+
+##	20251023
+
+
+The above was just the AGS controls. The cases are actually IPS samples. IPS ids are in the PhIPseq data and G ids are in the imputed files. I'll need to create a mapping to convert.
+
+```bash
+cut -d, -f1,2 /francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv > Gid_IPSid.csv
+```
+
+The subject id in the manifest is either 12345, 12345dup, 1234501, 1234502, 12345-01 12345-02, 12345_01, 12345_02.
+I'm guessing the the first 5 are consistently the IPS id.
+
+```bash
+
+awk -F, '($5=="IPS"){print substr($1, 1, 5)}' /francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.plate*/manifest* | sort | uniq > IPS_samples_in_PhIPseq
+
+\grep --no-filename -E -o 'G[[:digit:]]{3}' hla-cidr-hg19/*fam | sort | uniq > G_IPS_samples_in_Imputation
+
+join -t, <( tail -n +2 Gid_IPSid.csv ) G_IPS_samples_in_Imputation | cut -d, -f2 | sort > IPS_samples_in_Imputation 
+
+join IPS_samples_in_[IP]* > IPS_samples_in_both
+
+
+wc -l IPS_samples_in_*
+ 446 IPS_samples_in_Imputation
+ 126 IPS_samples_in_PhIPseq
+ 113 IPS_samples_in_both
+```
+
+
+
+
+
+for s in dosage genotype ; do
+
+paste <( cut -f1,3 hla-onco-hg19/chr6.hla_${s}.csv ) <( cut -f3 hla-i370-hg19/chr6.hla_${s}.csv ) <( cut -f3 hla-cidr-hg19/chr6.hla_${s}.csv ) | awk '(NR>1 && $2 >= 0.8 && $3 >= 0.8){print $1}' | sort | sed '1iNAME' > chr6.hla_${s}.onco_i370_cidr_gte_0.8.csv
+
+head -1 hla-cidr-hg19/chr6.hla_${s}.csv > hla-cidr-hg19/chr6.hla_${s}.sorted.csv
+tail -n +2 hla-cidr-hg19/chr6.hla_${s}.csv | sort -t $'\t' -k1,1 >> hla-cidr-hg19/chr6.hla_${s}.sorted.csv
+join --header -t $'\t' chr6.hla_${s}.onco_i370_cidr_gte_0.8.csv hla-cidr-hg19/chr6.hla_${s}.sorted.csv | datamash transpose -t $'\t' > tmp
+head -1 tmp > hla-cidr-hg19/chr6.hla_${s}.t.agsipsonly.csv
+tail -n +4 tmp | sort -t $'\t' -k1,1 > hla-cidr-hg19/chr6.hla_${s}.t.csv
+awk 'BEGIN{FS=OFS="\t"}($1~/_G/){split($1,a,"-");split(a[1],b,"_");print $1,b[2]}' hla-cidr-hg19/chr6.hla_${s}.t.csv > hla-cidr-hg19/chr6.hla_${s}.t.g_ips_ids.csv
+awk 'BEGIN{FS=OFS="\t"}($1~/_G/){split($1,a,"-");split(a[1],b,"_");print b[2],$1}' hla-cidr-hg19/chr6.hla_${s}.t.csv > hla-cidr-hg19/chr6.hla_${s}.t.ips_g_ids.csv
+join -t $'\t' <( tail -n +2 Gid_IPSid.csv | tr , $'\t' ) <( sort -k1,1 hla-cidr-hg19/chr6.hla_${s}.t.ips_g_ids.csv ) | cut -f1,2 | sort -k1,1 > hla-cidr-hg19/chr6.hla_${s}.t.ips_ids.csv
+join -t $'\t' hla-cidr-hg19/chr6.hla_${s}.t.g_ips_ids.csv hla-cidr-hg19/chr6.hla_${s}.t.csv | cut -d $'\t' -f2-  | sort -k1,1 > tmp
+join -t $'\t' <( tail -n +2 Gid_IPSid.csv | tr , $'\t' ) tmp | cut -d $'\t' -f2- | sort -k1,1 >> hla-cidr-hg19/chr6.hla_${s}.t.agsipsonly.csv
+
+
+head -1 hla-onco-hg19/chr6.hla_${s}.csv > hla-onco-hg19/chr6.hla_${s}.sorted.csv
+tail -n +2 hla-onco-hg19/chr6.hla_${s}.csv | sort -t $'\t' -k1,1 >> hla-onco-hg19/chr6.hla_${s}.sorted.csv
+join --header -t $'\t' chr6.hla_${s}.onco_i370_cidr_gte_0.8.csv hla-onco-hg19/chr6.hla_${s}.sorted.csv | datamash transpose -t $'\t' > tmp
+head -1 tmp > hla-onco-hg19/chr6.hla_${s}.t.agsipsonly.csv
+tail -n +4 tmp | sort -t $'\t' -k1,1 > hla-onco-hg19/chr6.hla_${s}.t.csv
+awk 'BEGIN{FS=OFS="\t"}($1~/AGS/){split($1,a,"-");print $1,a[3]}' hla-onco-hg19/chr6.hla_${s}.t.csv > hla-onco-hg19/chr6.hla_${s}.t.ags_ids.csv
+join -t $'\t' hla-onco-hg19/chr6.hla_${s}.t.ags_ids.csv hla-onco-hg19/chr6.hla_${s}.t.csv | cut -d $'\t' -f2- | sort -k1,1 >> hla-onco-hg19/chr6.hla_${s}.t.agsipsonly.csv
+
+head -1 hla-i370-hg19/chr6.hla_${s}.csv > hla-i370-hg19/chr6.hla_${s}.sorted.csv
+tail -n +2 hla-i370-hg19/chr6.hla_${s}.csv | sort -t $'\t' -k1,1 >> hla-i370-hg19/chr6.hla_${s}.sorted.csv
+join --header -t $'\t' chr6.hla_${s}.onco_i370_cidr_gte_0.8.csv hla-i370-hg19/chr6.hla_${s}.sorted.csv | datamash transpose -t $'\t' > tmp
+head -1 tmp > hla-i370-hg19/chr6.hla_${s}.t.agsipsonly.csv
+tail -n +4 tmp | sort -t $'\t' -k1,1 > hla-i370-hg19/chr6.hla_${s}.t.csv
+awk 'BEGIN{FS=OFS="\t"}($1~/AGS/){split($1,a,"_");print $1,a[1]}' hla-i370-hg19/chr6.hla_${s}.t.csv > hla-i370-hg19/chr6.hla_${s}.t.ags_ids.csv
+join -t $'\t' hla-i370-hg19/chr6.hla_${s}.t.ags_ids.csv hla-i370-hg19/chr6.hla_${s}.t.csv | cut -d $'\t' -f2- | sort -k1,1 >> hla-i370-hg19/chr6.hla_${s}.t.agsipsonly.csv
+
+done
+
+```
+
+
+
+```BASH
+
+awk 'BEGIN{FS=OFS=","}(NR>1 && (($6=="AGS") || ($6=="IPS"))){if($6=="IPS"){$8=substr($2,1,5)}print $8,$2,$9,$10,$21}' /francislab/data1/raw/20241204-Illumina-PhIP/L1_full_covariatesv2_Vir3_phip-seq_GBM_p1_MENPEN_p13_12-6-24hmh.csv  > tmp1.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && (($8=="AGS") || ($8=="IPS"))){if($8=="IPS"){$10=substr($3,1,5)}print $10,$3,$11,$12,$23}' /francislab/data1/raw/20241224-Illumina-PhIP/L2_full_covariates_Vir3_phip-seq_GBM_p2_MENPEN_p14_12-29-24hmh_L2_Covar.csv >> tmp1.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && (($8=="AGS") || ($8=="IPS"))){if($8=="IPS"){$10=substr($3,1,5)}print $10,$3,$11,$12,$23}' /francislab/data1/raw/20250128-Illumina-PhIP/L3_full_covariates_Vir3_phip-seq_GBM_p3_and_p4_1-28-25hmh.csv >> tmp1.csv
+awk 'BEGIN{FS=OFS=","}(NR>1 && (($8=="AGS") || ($8=="IPS"))){if($8=="IPS"){$10=substr($3,1,5)}print $10,$3,$11,$12,$23}' /francislab/data1/raw/20250409-Illumina-PhIP/L4_full_covariates_Vir3_phip-seq_GBM_p5_and_p6_4-10-25hmh.csv >> tmp1.csv
+
+sort -t, -k1,1 tmp1.csv | uniq > agsips_manifest.csv
+sed -i '1iAGSIPSid,UCSFid,age,sex,plate' agsips_manifest.csv
+
+
+head -1 hla-onco-hg19/chr6.hla_dosage.t.agsipsonly.csv > tmp2.csv
+tail -q -n +2 hla-*-hg19/chr6.hla_dosage.t.agsipsonly.csv | sort -t $'\t' -k1,1 >> tmp2.csv
+
+
+awk '{print $2",cidr"}' hla-cidr-hg19/chr6.hla_dosage.t.ips_ids.csv > tmp3.csv
+awk '{print $2",onco"}' hla-onco-hg19/chr6.hla_dosage.t.ags_ids.csv >> tmp3.csv
+awk '{print $2",i370"}' hla-i370-hg19/chr6.hla_dosage.t.ags_ids.csv >> tmp3.csv
+sort -k1,1 -t, tmp3.csv | sed '1iid,dataset' > agsips_datasets.csv
+join --header -t, agsips_manifest.csv agsips_datasets.csv > agsips_covars.csv
+
+join --header -t $'\t' <( cat agsips_covars.csv | tr , '\t' ) tmp2.csv | tr '\t' , | cut -d, -f1,3- | uniq > chr6.hla_dosage.onco_i370_cidr_gte_0.8.t.agsipsonly.select.csv
+
+
+\rm tmp*.csv
+```
+
+
+
