@@ -2,6 +2,7 @@
 
 args <- commandArgs()
 fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+#print(fname)
 thisfile <- readLines(fname)
 newfname <- paste0(tempdir(), "/", basename(fname))
 writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
@@ -16,10 +17,11 @@ parser <- ArgumentParser(description=scriptname)
 parser$add_argument("-i", "--input", type="character",
   help="input file", metavar="filename",
   default = "/francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv")
-parser$add_argument("-o", "--output", type="character", default="PhIPseq_ChatGPT_2",
+parser$add_argument("-o", "--output", type="character", default=paste0(getwd(),"/PhIPseq_ChatGPT_2"),
   help="output file base [default=%(default)s]", metavar="file base")
 
 opt <- parser$parse_args()
+#print(dirname(opt$output))
 
 rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
 
@@ -40,7 +42,7 @@ output:
     fig_height: 8
 ---
 
-```{r setup, message=FALSE, warning=FALSE}
+```{r setup, message=FALSE, warning=FALSE, results='hide'}
 # Packages
 packages <- c("tidyverse", "data.table", "edgeR", "limma", "ggplot2", "RColorBrewer", "pheatmap")
 for(p in packages) if(!requireNamespace(p, quietly=TRUE)) install.packages(p)
@@ -333,13 +335,24 @@ print(ggplot(sample_metadata, aes(x=as.factor(plate), y=lib_size)) + geom_boxplo
 
 ```
 
+```{r}
+ggplot(sample_metadata, aes(x=as.factor(plate), y=lib_size, fill=type)) +
+    geom_boxplot(outlier.shape=NA) +
+    geom_jitter(width=0.2, size=1) +
+    scale_y_log10() +
+    theme_bw() +
+    labs(title="Library sizes per plate", y="Total reads (log10)")
+```
+
 #	8. Save outputs
 
 
 ```{r}
-
-write.csv(logCPM, file = "normalized_logCPM_fixed.csv", quote = FALSE)
-write.csv(sample_metadata, file = "sample_metadata_parsed_fixed.csv", row.names = FALSE)
+print(dirname(opt$output))
+print(paste0(dirname(opt$output),"/normalized_logCPM_fixed.csv"))
+print(paste0(dirname(opt$output),"/sample_metadata_parsed_fixed.csv"))
+write.csv(logCPM, file = paste0(dirname(opt$output),"/normalized_logCPM_fixed.csv"), quote = FALSE)
+write.csv(sample_metadata, file = paste0(dirname(opt$output),"/sample_metadata_parsed_fixed.csv"), row.names = FALSE)
 message("Saved normalized_logCPM_fixed.csv and sample_metadata_parsed_fixed.csv")
 
 
