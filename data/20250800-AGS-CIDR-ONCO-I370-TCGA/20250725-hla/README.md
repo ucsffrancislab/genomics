@@ -700,3 +700,39 @@ join --header -t $'\t' <( cat agsips_covars.csv | tr , '\t' ) tmp2.csv | tr '\t'
 
 
 
+
+
+
+##	20251024
+
+
+```BASH
+
+tail -n +2 ags_manifest.csv | cut -d, -f1,3- | sort -t, -k1,1 | uniq | sed '1iAGS,AGE,SEX,PLATE' > PHIP_AGS.csv
+
+cut -d' ' -f2 hla-i370-hg19/chr6.dose.fam | awk '(/AGS/){print $0","$0}' | sort -t, -k1,1 | sed '1iAGS,I370' > I370_AGS.csv
+
+cut -d' ' -f2 hla-onco-hg19/chr6.dose.fam | awk '(/AGS/){print substr($0,18,8)","$0}' | sort -t, -k1,1 | sed '1iAGS,ONCO' > ONCO_AGS.csv
+
+
+join --header -t, -a1 -a2 -o auto PHIP_AGS.csv I370_AGS.csv > tmp1.csv
+join --header -t, -a1 -a2 -o auto tmp1.csv ONCO_AGS.csv > ALL_AGS.csv
+wc -l PHIP_AGS.csv I370_AGS.csv ONCO_AGS.csv tmp1.csv ALL_AGS.csv 
+
+join --header -t, PHIP_AGS.csv I370_AGS.csv | wc -l
+join --header -t, PHIP_AGS.csv ONCO_AGS.csv | wc -l
+
+
+
+
+
+tail -n +2 agsips_manifest.csv | grep -vs AGS | cut -d, -f1,3- | sort -t, -k1,1 | uniq | sed '1iIPS,AGE,SEX,PLATE' > PHIP_IPS.csv
+
+cut -d' ' -f2 hla-cidr-hg19/chr6.dose.fam | awk '(/^G/){print substr($0,0,4)","$0}' | sort -t, -k1,1 | sed '1igIPS,CIDR' > CIDR_gIPS.csv
+join --header -t, Gid_IPSid.csv CIDR_gIPS.csv | cut -d, -f1,2 | tail -n +2 | sort -t, -k2,2 | sed '1isubject_id,id' > CIDR_IPS.csv
+wc -l PHIP_IPS.csv CIDR_gIPS.csv 
+join --header -t, -2 2 PHIP_IPS.csv CIDR_IPS.csv | wc -l
+```
+
+
+
