@@ -1710,3 +1710,63 @@ out.plate18/manifest.plate18.csv:E045528,E045528dup,/francislab/data1/working/20
 
 
 Manually added "xxx" behind half
+
+
+
+
+
+
+
+
+
+##	20251112
+
+
+
+```
+\rm commands
+plates=$( ls -d ${PWD}/out.plate{1,2,3,5,6,13,14} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for group in Hypermitotic Immune-enriched Merlin-intact ; do
+for z in 3.5 5 10 ; do
+
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study MENS --study AGS -a ${group} -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study MENS --study AGS -a ${group} -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study MENS --study AGS -a ${group} -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123561314 -p ${plates} --ignore_plate --sex F
+
+done ; done >> commands
+
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+
+
+
+
+
+
+##	20251112 - Downsample and recount
+
+Downsample all q40 bams to 1,000,000
+
+Then create and use a manifest with just these 1034 samples
+
+
+tail -q -n +2 /francislab/data1/working/{20241204-Illumina-PhIP/20250410-bowtie2,20241224-Illumina-PhIP/20250410-bowtie2,20250128-Illumina-PhIP/20250410-bowtie2,20250409-Illumina-PhIP/20250410-bowtie2,20250822-Illumina-PhIP/20250822b-bowtie2,20250925-Illumina-PhIP/20250925b-bowtie2}/report.t.csv | awk -F, '( $9 != "4" )' |  awk -F, '( $19 > 1000000 )' | grep D082062
+S65,D082062,D082062,glioma serum,PLCO,case,73,M,15,1,9,3096856,3078147,99.39,3019209,98.08,2993657,97.25,2871443,93.28,36535,36535
+S73,D082062,D082062dup,glioma serum,PLCO,case,73,M,15,1,10,3271971,3252396,99.40,3184945,97.92,3149800,96.84,3009017,92.51,45543,45543
+S82,D082062,D082062,glioma serum,PLCO,case,73,M,17,2,11,3800594,3758662,98.89,3699181,98.41,3670356,97.65,3572615,95.05,30421,30421
+S90,D082062,D082062dup,glioma serum,PLCO,case,73,M,17,2,12,3818915,3776938,98.90,3719185,98.47,3681760,97.48,3583837,94.88,32828,32828
+[gwendt@c4-dev3 /francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate]$ tail -q -n +2 /francislab/data1/working/{20241204-Illumina-PhIP/20250410-bowtie2,20241224-Illumina-PhIP/20250410-bowtie2,20250128-Illumina-PhIP/20250410-bowtie2,20250409-Illumina-PhIP/20250410-bowtie2,20250822-Illumina-PhIP/20250822b-bowtie2,20250925-Illumina-PhIP/20250925b-bowtie2}/report.t.csv | awk -F, '( $9 != "4" )' |  awk -F, '( $19 > 1000000 )' | grep E045528
+S113,E045528,E045528,glioma serum,PLCO,case,63,M,16,1,3,1285834,1281838,99.68,1262898,98.52,1254359,97.85,1225265,95.58,40318,40318
+S121,E045528,E045528dup,glioma serum,PLCO,case,63,M,16,1,4,1902517,1896384,99.67,1868335,98.52,1855148,97.82,1806986,95.28,48298,48298
+S100,E045528,E045528,glioma serum,PLCO,case,63,M,18,4,1,1682760,1676459,99.62,1644596,98.09,1629823,97.21,1588161,94.73,61996,61996
+S108,E045528,E045528dup,glioma serum,PLCO,case,63,M,18,4,2,1681893,1675730,99.63,1644937,98.16,1630073,97.27,1590231,94.89,61266,61266
+
+
+
+
