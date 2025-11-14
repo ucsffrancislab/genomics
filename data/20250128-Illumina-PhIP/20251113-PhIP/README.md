@@ -61,6 +61,9 @@ done
 ```
 
 
+THAT CAN TAKE BETWEEN 2 and 8+ hours.
+
+
 ```BASH
 for manifest in manifest.plate*.csv ; do
   plate=${manifest%.csv}

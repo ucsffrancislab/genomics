@@ -11,7 +11,7 @@ DO NOT USE .... ?
 ##  All
 
 ```BASH
-awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20241224-Illumina-PhIP/20251113-downsample/out/S"s".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$7,$8,$9,$11,$12,$23,$22}' /francislab/data1/raw/20241224-Illumina-PhIP/manifest.csv > manifest.all.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);sub(/_1$/,"",subject);sub(/_2$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20241224-Illumina-PhIP/20251113-downsample/out/S"s".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$7,$8,$9,$11,$12,$23,$22}' /francislab/data1/raw/20241224-Illumina-PhIP/manifest.csv > manifest.all.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate,lane' manifest.all.csv
 sed -i 's/,PBS blank,/,input,/' manifest.all.csv
@@ -32,7 +32,7 @@ chmod -w manifest.all.csv
 
 ```BASH
 
-awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20241224-Illumina-PhIP/20251113-downsample/out/S"s".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$7,$8,$9,$11,$12,$23,$22 > "manifest.plate"$23".csv" }' /francislab/data1/raw/20241224-Illumina-PhIP/manifest.csv
+awk 'BEGIN{FS=OFS=","}(NR>1){subject=$3;sub(/dup$/,"",subject);sub(/_1$/,"",subject);sub(/_2$/,"",subject);s=$1;sub(/S/,"",s);s=int(s); print subject,$3,"/francislab/data1/working/20241224-Illumina-PhIP/20251113-downsample/out/S"s".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$7,$8,$9,$11,$12,$23,$22 > "manifest.plate"$23".csv" }' /francislab/data1/raw/20241224-Illumina-PhIP/manifest.csv
 
 for manifest in manifest.plate*.csv ; do 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate,lane' ${manifest}
@@ -59,6 +59,9 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 
 done
 ```
+
+
+THAT CAN TAKE BETWEEN 2 and 8+ hours.
 
 
 
