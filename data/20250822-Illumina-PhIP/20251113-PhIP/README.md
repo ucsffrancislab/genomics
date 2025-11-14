@@ -53,7 +53,7 @@ num=${num#manifest.plate}
 echo $num
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-  --job-name=phip_seq_plate${num} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --job-name=phip_seq_process_${num} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
   --output=${PWD}/logs/phip_seq.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
   /c4/home/gwendt/.local/bin/phip_seq_process.bash -q 40 --thresholds 3.5,5,10  \
   --manifest ${PWD}/${manifest} --output ${PWD}/out.plate${num}
@@ -62,7 +62,9 @@ done
 ```
 
 
-THAT CAN TAKE BETWEEN 2 and 8+ hours.
+THAT CAN TAKE BETWEEN 2 and 24+ hours.
+
+Some plates, like Plate16, can really take a while in the virus scoring step
 
 
 
@@ -73,7 +75,7 @@ for manifest in manifest.plate*.csv ; do
   echo $plate
   cp ${manifest} out.plate${plate}/
   sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
-    --job-name=phip_seq_plate${plate} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+    --job-name=phip_seq_agg_${plate} --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
     --output=${PWD}/logs/phip_seq.aggregate.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
     /c4/home/gwendt/.local/bin/phip_seq_aggregate.bash ${manifest} out.plate${plate}/
 done
