@@ -324,14 +324,3 @@ chmod -w manifest.csv
 
 
 
-##	20251105
-
-I noticed that the PLib, CSE and Blanks for plate's 1, 2, 13 and 14 have the sample names as subject names
-so they include the _1 and _2. I don't think this is an issue during normal processing, but does
-creep in when I have merged everything and expected the number of merged samples to be something.
-
-20241204 and 20241224
-
-Manually correcting.
-
-
