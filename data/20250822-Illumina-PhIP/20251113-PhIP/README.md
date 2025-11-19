@@ -63,6 +63,7 @@ done
 
 
 THAT CAN TAKE BETWEEN 2 and 24+ hours.
+Only about an hour since I updated novel function.
 
 Some plates, like Plate16, can really take a while in the virus scoring step
 

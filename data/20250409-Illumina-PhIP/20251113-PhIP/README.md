@@ -64,6 +64,7 @@ done
 
 
 THAT CAN TAKE BETWEEN 2 and 24+ hours.
+Only about an hour since I updated novel function.
 
 
 
