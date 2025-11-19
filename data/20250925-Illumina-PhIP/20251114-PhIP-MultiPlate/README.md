@@ -31,7 +31,20 @@ merge_matrices.py --axis columns --de_nan --de_neg --int \
 
 
 
+```bash
+
+./prep_zscores_for_merging.bash
+
+```
 
 
 
+```bash
+
+merge_matrices.py --axis columns --de_nan --de_neg \
+  --header_rows 10 --index_col id --index_col species \
+  --out ${PWD}/out.123456131415161718/Zscores.manifest.csv \
+  ${PWD}/out.plate{1,2,3,4,5,6,13,14,15,16,17,18}/Zscores.manifest.csv
+
+```
 
