@@ -1,0 +1,13 @@
+out.123456/
+out.123456131415161718/Counts.csv
+out.123456131415161718/data.csv
+out.123456131415161718/manifest.csv
+out.123456131415161718/manifest_final.csv
+out.123456131415161718/normalized_data_final.csv
+out.123456131415161718/normalized_data_plate_corrected.csv
+out.123456131415161718/normalized_data_zscored_unmerged.csv
+out.123456131415161718/pca_results_final.csv
+out.123456131415161718/phipseq_data_exploration.ipynb
+out.123456131415161718/phipseq_normalization_2.py
+out.plate5/
+out.plate6/
