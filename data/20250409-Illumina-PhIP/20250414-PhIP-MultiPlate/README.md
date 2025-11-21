@@ -1770,3 +1770,19 @@ S108,E045528,E045528dup,glioma serum,PLCO,case,63,M,18,4,2,1681893,1675730,99.63
 
 
 
+
+
+
+
+##	20251119
+
+Investigate Zscore methods
+
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=plate5 --wrap="compare_zscoring_methods.bash /francislab/data1/working/20250409-Illumina-PhIP/20250411-PhIP/out.plate5/"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=plate6 --wrap="compare_zscoring_methods.bash /francislab/data1/working/20250409-Illumina-PhIP/20250411-PhIP/out.plate6/"
+
+```
