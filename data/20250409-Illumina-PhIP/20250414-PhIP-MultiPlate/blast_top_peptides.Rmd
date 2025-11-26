@@ -1,0 +1,90 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+
+#       argparse (as opposed to optparse) allow the "append" action and the "required" option.
+library("argparse")
+args=commandArgs()
+scriptname=sub("--file=", "", args[grepl("--file=", args)])
+parser <- ArgumentParser(description=scriptname)
+
+parser$add_argument("-i", "--input", type="character",
+	help="input file", metavar="filename",
+	default = "/francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv")
+
+parser$add_argument("-o", "--output", type="character", default=paste0(getwd(),"/blast_top_peptides"),
+	help="output file base [default=%(default)s]", metavar="file base")
+
+opt <- parser$parse_args()
+
+rmarkdown::render(newfname, output_dir = dirname(opt$output), output_file = paste0(opt$output,'.html') )
+
+q("no")
+
+
+
+---
+title: "Blast Top Peptides to TCONS"
+author: "Jake"
+date: "2025-11-25"
+output:
+  html_document:
+    fig_width: 12
+    fig_height: 8
+---
+
+
+Search for the top peptides
+
+```{bash, results='asis'}
+head -q -n 1 /francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.*/Multiplate_Peptide_Comparison-Zs*AGS*glioma*csv | head -1 > table.csv
+head -q -n 1 /francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.*/Multiplate_Peptide_Comparison-Zs*AGS*glioma*csv | head -1 | sed 's/\w\+/---/g' >> table.csv
+awk -F, '($7<0.001)' /francislab/data1/working/20250409-Illumina-PhIP/20250414-PhIP-MultiPlate/out.*/Multiplate_Peptide_Comparison-Zs*AGS*glioma*csv | sort -t, -k7nr,7 >> table.csv
+
+sed -e 's/,/ | /g' -e 's/^/| /' -e 's/$/ |/' table.csv
+```
+
+
+```{bash, results='asis'}
+tail -n +3 table.csv | cut -d, -f1 | sort | uniq | sed '1iid' > peptides
+head -1 /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_peptide.for_joining.csv > peptides.csv
+head -1 /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_peptide.for_joining.csv | sed 's/\w\+/---/g' >> peptides.csv
+join --header -t, peptides /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_peptide.for_joining.csv | tail -n +2 >> peptides.csv
+
+sed -e 's/,/ | /g' -e 's/^/| /' -e 's/$/ |/' peptides.csv
+```
+
+```{bash}
+awk -F, '(NR>2){print ">"$1;print $2}' peptides.csv > peptide.faa
+head peptide.faa
+```
+
+
+S10 does not have ALL of the transcripts. Only 3000 modified plus original.
+
+```{bash}
+module load blast
+makeblastdb -in /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10.faa -dbtype prot -title S10 -out /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10
+```
+
+```{bash}
+blastp \
+-query peptide.faa \
+-db /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10
+
+```
+
+
+
+
+Need structures to use foldseek
+
+~/.local/foldseek/bin/foldseek createdb homo_sapiens.tsv homo_sapiens 
+~/.local/foldseek/bin/foldseek easy-search Herpesvirales_cifs/*cif.gz homo_sapiens HerpesInHuman.tsv tmpFolder -e 1e-40
+
+
