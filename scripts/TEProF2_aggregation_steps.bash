@@ -261,6 +261,12 @@ if [ $( basename ${0} ) == "slurm_script" ] ; then
 	if ${using_reference} ; then
 
 		echo "mergeAnnotationProcess_Ref.R"
+
+#	this is actually already run in the reference directory so those files could just be copied locally.
+#	no project data is used. just references.
+#	mergeAnnotationProcess_Ref.R -f /francislab/data1/refs/TEProf2/rnapipelinerefhg38/reference_merged_candidates.gff3_annotated_filtered_test_all -a /francislab/data1/refs/TEProf2/rnapipelinerefhg38/TEProF2.arguments.txt
+#	creates Step10.RData, candidate_introns.txt and candidate_names.txt
+
 		f=${OUT}/Step10.RData 
 		#	candidate_introns.txt candidate_names.txt?
 		if [ -f $f ] && [ ! -w $f ] ; then
