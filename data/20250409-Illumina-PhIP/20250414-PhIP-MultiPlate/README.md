@@ -1780,9 +1780,30 @@ Investigate Zscore methods
 
 
 ```bash
-
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=plate5 --wrap="compare_zscoring_methods.bash /francislab/data1/working/20250409-Illumina-PhIP/20250411-PhIP/out.plate5/"
-
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name=plate6 --wrap="compare_zscoring_methods.bash /francislab/data1/working/20250409-Illumina-PhIP/20250411-PhIP/out.plate6/"
 
+cat out.plate5/All.count.Zscores.elledge.with_input_and_bin.csv | cut -d, -f61- > Elledge.grouping.csv
+cat out.plate5/All.count.Zscores.jake.with_input_and_bin.csv | cut -d, -f1,90- > Jake.grouping.csv
+
+sdiff <( tail -n +2 Elledge.grouping.csv | cut -d, -f2 | sort -n | uniq -c ) <(tail -n +2 Jake.grouping.csv | cut -d, -f3 | sort -nr | uniq -c )
 ```
+
+
+~/.local/foldseek/bin/foldseek easy-search 1/refs/alphafold/TCONS/TCONS_*/ranked_0.pdb /francislab/data1/refs/alphafold/HHV3-VZV/VZV/VZV aln.exhaustive.html tmpFolder --exhaustive-search 1 --format-mode 3
+
+
+
+
+
+
+##	20251214
+
+df = pd.read_csv('out.123456131415161718/Counts.csv', header=list(range(9)), index_col=[0,1])
+
+Takes a few hours. Mostly used writing the file.
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --wrap="$PWD/correlation.py"
+```
+
