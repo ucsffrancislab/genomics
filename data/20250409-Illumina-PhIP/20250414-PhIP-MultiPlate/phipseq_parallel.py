@@ -27,7 +27,16 @@ def prepare_data():
     
     # Load BLAST edges
     log("Loading BLAST edges...")
-    reference_edges_df = pd.read_csv("edgelist.csv")
+    reference_edges_df = pd.read_csv("edgelist.csv")				#				<-- this is from blasting peptides to themselves
+    # head edgelist.csv 
+    # query,target,weight
+    # 1,76530,53.5
+    # 1,42970,38.9
+    # 1,19604,37.4
+    # 1,19599,35.0
+    # 1,2,30.0
+    # 1,120610,24.3
+    # 2,3,57.4
     log(f"Loaded {len(reference_edges_df)} BLAST edges")
     
     # Get BLAST-based communities
@@ -50,7 +59,10 @@ def prepare_data():
     
     # Load correlations
     log("Loading correlation edges...")
-    correlations_df = pd.read_csv("out.123456131415161718/correlation_edges.csv.gz")
+    correlations_df = pd.read_csv("out.123456131415161718/correlation_edges.csv.gz")	# <--- this is from running correlations.py
+    #
+    # It is the pairwise correlations save in an undirected list with just abs(corr) > 0.3
+    #
     log(f"Loaded {len(correlations_df)} correlation edges")
     
     correlations_df = correlations_df[correlations_df['weight'] > 0]
