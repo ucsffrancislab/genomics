@@ -1873,3 +1873,15 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+
 zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,toupper(substr($18,15+i,length($18)-30-i)); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_upper_oligo.uniq.csv
 
 
+## 20251202
+
+,Aclstr50,Bclstr50,Entry,Gene names,Gene ontology (GO),Gene ontology IDs,Genus,Organism,Protein names,Sequence,Species,Subcellular location,Version (entry),Version (sequence),end,id,oligo,source,start,peptide
+
+
+```
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ print $17,toupper($21); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_upper_peptide.uniq.csv
+
+awk -F, '{print ">"$1;print $2}' VirScan/VIR3_clean.id_upper_peptide.uniq.csv > VirScan/VIR3_clean.id_upper_peptide.uniq.faa
+```
+
+
