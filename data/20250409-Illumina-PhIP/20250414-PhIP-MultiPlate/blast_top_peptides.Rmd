@@ -73,10 +73,19 @@ makeblastdb -in /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10.fa
 ```
 
 ```{bash}
+module load blast
 blastp \
 -query peptide.faa \
 -db /francislab/data1/refs/TEProf2/41588_2023_1349_MOESM3_ESM/S10
+```
 
+
+```{bash}
+module load blast
+blastp -word_size 2 \
+-query peptide.faa \
+-db /francislab/data1/refs/PhIP-Seq/NeoAntigen/darwin
+#-db /francislab/data1/refs/PhIP-Seq/NeoAntigen/neoantigens
 ```
 
 
