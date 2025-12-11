@@ -4,7 +4,10 @@ import numpy as np
 import pandas as pd
 import gzip
 
-df = pd.read_csv('out.123456131415161718/Counts.csv', header=list(range(9)), index_col=[0,1])
+#df = pd.read_csv('out.123456131415161718/Counts.csv', header=list(range(9)), index_col=[0,1])
+df = pd.read_csv('out.123456131415161718/Counts.normalized.subtracted.csv', header=list(range(9)), index_col=[0,1])
+
+#df = pd.read_csv('out.123456131415161718/Zscores.t.csv', header=list(range(3)), index_col=[0,1])
 print(f"DataFrame shape: {df.shape}", flush=True)
 
 data = df.T.values.astype(np.float64)
@@ -23,22 +26,27 @@ del data
 
 # Set threshold to reduce edges
 threshold = 0.3  # Both positive and negative correlations with |r| >= 0.3
+#threshold = 0  # Both positive and negative correlations with |r| >= 0.3
 
 print("Creating edge list with streaming write...", flush=True)
 rows, cols = np.triu_indices_from(corr_matrix, k=1)
 weights = corr_matrix[rows, cols]
 
 # Filter by threshold and validity
-valid_mask = np.isfinite(weights) & (np.abs(weights) >= threshold)
+#valid_mask = np.isfinite(weights) & (np.abs(weights) >= threshold)
+valid_mask = np.isfinite(weights) & (weights >= threshold)
 rows = rows[valid_mask]
 cols = cols[valid_mask]
 weights = weights[valid_mask]
 
-print(f"Writing {len(rows):,} edges (filtered by |threshold|>={threshold})", flush=True)
+#print(f"Writing {len(rows):,} edges (filtered by |threshold|>={threshold})", flush=True)
+print(f"Writing {len(rows):,} edges (filtered by threshold>={threshold})", flush=True)
 
 # Write directly to CSV in chunks
 chunk_size = 1_000_000
-with gzip.open('out.123456131415161718/correlation_edges.csv.gz', 'wt') as f:
+#with gzip.open('out.123456131415161718/counts.correlation_edges.csv.gz', 'wt') as f:
+with gzip.open('out.123456131415161718/counts.normalized.subtracted.correlation_edges.csv.gz', 'wt') as f:
+#with gzip.open('out.123456131415161718/zscore.correlation_edges.csv.gz', 'wt') as f:
     f.write('source,target,weight\n')
     
     for start in range(0, len(rows), chunk_size):
@@ -82,6 +90,7 @@ print(f"NaNs: {np.isnan(corr_matrix).sum()}, Infs: {np.isinf(corr_matrix).sum()}
 #NaNs: 375922764, Infs: 0
 #free(): invalid size
 
+#	No matter what I do, trying to clear corr_matrix raises the "free(): invalid size" error.
 
 corr_matrix = np.nan_to_num(corr_matrix)
 

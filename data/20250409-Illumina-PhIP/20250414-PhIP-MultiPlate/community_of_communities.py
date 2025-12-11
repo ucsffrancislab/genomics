@@ -73,3 +73,8 @@ for comm_id in range(len(blast_communities)):
 print(f"Final number of communities: {community_id}")
 
 
+#	First version of using alignement count correlations on blast correlations
+# Tried running this on my laptop and it was still going after about 60 hours.
+#	Claude wrote a parellelized version.
+
+

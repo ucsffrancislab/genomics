@@ -59,7 +59,8 @@ log("Starting PhipSeq community detection")
 
 # Load BLAST edges
 log("Loading BLAST edges...")
-reference_edges_df = pd.read_csv("edgelist.csv")
+#reference_edges_df = pd.read_csv("edgelist.csv")
+reference_edges_df = pd.read_csv("edgelist.word_size-2.csv.gz")
 log(f"Loaded {len(reference_edges_df)} BLAST edges")
 
 # Get BLAST-based communities
@@ -73,7 +74,8 @@ peptide_to_community = {i + 1: blast_communities.membership[i] for i in range(le
 
 # Load correlations
 log("Loading correlation edges...")
-correlations_df = pd.read_csv("out.123456131415161718/correlation_edges.csv.gz")
+#correlations_df = pd.read_csv("out.123456131415161718/correlation_edges.csv.gz")
+correlations_df = pd.read_csv("out.123456131415161718/zscore.correlation_edges.csv.gz")
 log(f"Loaded {len(correlations_df)} correlation edges")
 
 correlations_df = correlations_df[correlations_df['weight'] > 0]
@@ -144,7 +146,7 @@ for peptide, comm in final_communities.items():
     community_sizes[comm] = community_sizes.get(comm, 0) + 1
 
 sizes = sorted(community_sizes.values())
-log(f"\nFinal community statistics:")
+log(f"Final community statistics:")
 log(f"  Total communities: {len(community_sizes)}")
 log(f"  Peptides assigned: {len(final_communities)}")
 log(f"  Community sizes - min: {min(sizes)}, max: {max(sizes)}, median: {sizes[len(sizes)//2]}")

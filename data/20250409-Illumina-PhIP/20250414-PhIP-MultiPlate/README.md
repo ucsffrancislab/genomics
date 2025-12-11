@@ -1807,3 +1807,75 @@ Takes a few hours. Mostly used writing the file.
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --wrap="$PWD/correlation.py"
 ```
 
+
+
+
+##	20251208
+
+
+```bash
+
+module load blast
+
+makeblastdb -in /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.faa -dbtype prot -title VIR3_clean.id_upper_peptide.uniq -out /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq
+
+blastp -word_size 2 -query /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.faa -db /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq -outfmt 6 -out /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.sequence_similarity.word_size-2.tsv
+
+awk 'BEGIN{FS="\t";OFS=",";print "query","target","weight"}($1 != $2){print $1,$2,$12}' /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.sequence_similarity.word_size-2.tsv | gzip > /francislab/data1/refs/PhIP-Seq/VirScan/edgelist.word_size-2.csv.gz
+
+ln -s /francislab/data1/refs/PhIP-Seq/VirScan/edgelist.csv.gz
+```
+
+
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name=prep --wrap="phipseq_parallel.py prepare 32"
+
+sbatch run_parallel.sh
+
+phipseq_parallel.py merge
+```
+
+
+
+##	20251209
+
+Recorrelate using the Zscores
+
+```bash
+merge_matrices.py --axis columns --de_nan --header_rows 3 --index_col id --index_col species --out ${PWD}/out.123456131415161718/Zscores.t.csv ${PWD}/out.plate*/Zscores.t.csv
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1 --ntasks=64 --mem=490G --export=None --wrap="$PWD/correlation.py"
+
+phipseq_parallel.py prepare 32
+
+sbatch run_parallel.sh
+
+phipseq_parallel.py merge
+```
+
+
+
+
+```BASH
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,4,5,6} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 ; do
+
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.123456 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.123456 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.csv -o ${PWD}/out.123456 -p ${plates} --sex F
+
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.communities.csv -o ${PWD}/out.123456 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.communities.csv -o ${PWD}/out.123456 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.communities.csv -o ${PWD}/out.123456 -p ${plates} --sex F
+
+done >> commands
+
+commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
