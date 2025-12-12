@@ -25,63 +25,84 @@ def prepare_data():
     """Step 1: Prepare data for parallel processing"""
     log("Starting data preparation...")
     
+    # Load master peptide list
+    log("Loading master peptide list...")
+    master_peptides_df = pd.read_csv("/francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.csv", 
+                                      header=None, names=['peptide_id', 'sequence'])
+    actual_peptides = sorted(master_peptides_df['peptide_id'].unique())
+    log(f"Master peptide list: {len(actual_peptides)} peptides")
+    log(f"Peptide ID range: {min(actual_peptides)} to {max(actual_peptides)}")
+    
     # Load BLAST edges
     log("Loading BLAST edges...")
-    #reference_edges_df = pd.read_csv("edgelist.csv")				#				<-- this is from blasting peptides to themselves
-    reference_edges_df = pd.read_csv("edgelist.word_size-2.csv.gz")				#				<-- this is from blasting peptides to themselves
-    # head edgelist.csv 
-    # query,target,weight
-    # 1,76530,53.5
-    # 1,42970,38.9
-    # 1,19604,37.4
-    # 1,19599,35.0
-    # 1,2,30.0
-    # 1,120610,24.3
-    # 2,3,57.4
+    reference_edges_df = pd.read_csv("edgelist.csv.gz")
     log(f"Loaded {len(reference_edges_df)} BLAST edges")
     
-    # Get BLAST-based communities
+    blast_peptides = set(reference_edges_df['source']) | set(reference_edges_df['target'])
+    log(f"Unique peptides in BLAST: {len(blast_peptides)}")
+    log(f"Peptides in master but not in BLAST: {len(set(actual_peptides) - blast_peptides)}")
+    
+    # Save the actual peptide list
+    output_dir = Path("parallel_work")
+    output_dir.mkdir(exist_ok=True)
+    
+    with open(output_dir / "actual_peptides.pkl", 'wb') as f:
+        pickle.dump(set(actual_peptides), f)
+    
+    # Create mapping: original peptide ID -> sequential index (0-based)
+    # Only for peptides that appear in BLAST
+    blast_peptides_sorted = sorted(blast_peptides)
+    peptide_to_idx = {peptide: idx for idx, peptide in enumerate(blast_peptides_sorted)}
+    idx_to_peptide = {idx: peptide for peptide, idx in peptide_to_idx.items()}
+    
+    # Remap BLAST edges to use sequential indices
+    reference_edges_df['source_idx'] = reference_edges_df['source'].map(peptide_to_idx)
+    reference_edges_df['target_idx'] = reference_edges_df['target'].map(peptide_to_idx)
+    
+    # Get BLAST-based communities using remapped edges
     log("Running Leiden on BLAST graph...")
-    g = ig.Graph.DataFrame(edges=reference_edges_df, directed=True)
+    g = ig.Graph.DataFrame(
+        edges=reference_edges_df[['source_idx', 'target_idx', 'weight']].rename(
+            columns={'source_idx': 'source', 'target_idx': 'target'}
+        ),
+        directed=True
+    )
     blast_communities = g.community_leiden(weights='weight', resolution=1.0)
     log(f"BLAST clustering: {len(blast_communities)} communities from {len(g.vs)} peptides")
     
-    # Create mapping: peptide_id = vertex_index + 1
-    peptide_to_community = {i + 1: blast_communities.membership[i] for i in range(len(g.vs))}
+    # Create mapping: actual peptide_id -> community, using idx_to_peptide
+    peptide_to_community = {}
+    for i in range(len(g.vs)):
+        peptide_id = idx_to_peptide[i]
+        peptide_to_community[peptide_id] = blast_communities.membership[i]
+    
+    # Handle peptides not in BLAST - assign them each to a singleton community
+    peptides_not_in_blast = set(actual_peptides) - set(peptide_to_community.keys())
+    if len(peptides_not_in_blast) > 0:
+        log(f"Assigning {len(peptides_not_in_blast)} peptides without BLAST edges to singleton communities")
+        next_comm_id = len(blast_communities)
+        for peptide_id in sorted(peptides_not_in_blast):
+            peptide_to_community[peptide_id] = next_comm_id
+            next_comm_id += 1
     
     # Create list of peptides per BLAST community
     blast_comm_peptides = {}
-    for i in range(len(g.vs)):
-        comm_id = blast_communities.membership[i]
-        peptide_id = i + 1
+    for peptide_id, comm_id in peptide_to_community.items():
         if comm_id not in blast_comm_peptides:
             blast_comm_peptides[comm_id] = []
         blast_comm_peptides[comm_id].append(peptide_id)
-
-
-
-
-
-#    # ADD THIS FOR TESTING - only keep first 100 communities
-#    log(f"TESTING MODE: Limiting to first 100 BLAST communities")
-#    all_comm_ids = sorted(blast_comm_peptides.keys())
-#    blast_comm_peptides = {k: blast_comm_peptides[k] for k in all_comm_ids[:100]}
-
-
-
-
-
     
     # Load correlations
     log("Loading correlation edges...")
-    #correlations_df = pd.read_csv("out.123456131415161718/correlation_edges.csv.gz")	# <--- this is from running correlations.py
-    correlations_df = pd.read_csv("out.123456131415161718/zscore.correlation_edges.csv.gz")	# <--- this is from running correlations.py
-    #
-    # It is the pairwise correlations save in an undirected list with just abs(corr) > 0.3
-    #
-    # the latest version is completely unfiltered
-    #
+    correlations_df = pd.read_csv("out.123456131415161718/zscore.correlation_edges.csv.gz")
     log(f"Loaded {len(correlations_df)} correlation edges")
+    
+    # Filter correlations to only actual peptides
+    correlations_df = correlations_df[
+        correlations_df['source'].isin(actual_peptides) &
+        correlations_df['target'].isin(actual_peptides)
+    ]
+    log(f"After filtering to actual peptides: {len(correlations_df)} edges")
     
     correlations_df = correlations_df[correlations_df['weight'] > 0]
     log(f"After filtering positive correlations: {len(correlations_df)} edges")
@@ -98,150 +119,20 @@ def prepare_data():
     log(f"Within-community correlation edges: {len(filtered_corr)}")
     
     # Save prepared data
-    output_dir = Path("parallel_work")
-    output_dir.mkdir(exist_ok=True)
-    
     with open(output_dir / "blast_comm_peptides.pkl", 'wb') as f:
         pickle.dump(blast_comm_peptides, f)
+    
+    # Also save the full peptide_to_community mapping
+    with open(output_dir / "peptide_to_community.pkl", 'wb') as f:
+        pickle.dump(peptide_to_community, f)
     
     filtered_corr.to_parquet(output_dir / "filtered_correlations.parquet")
     
     log(f"Saved prepared data to {output_dir}/")
     log(f"Total BLAST communities to process: {len(blast_comm_peptides)}")
+    log(f"Total peptides with community assignments: {len(peptide_to_community)}")
     
     return len(blast_comm_peptides)
-
-#def process_batch(batch_id, num_batches, resolution=0.01):
-#    """Step 2: Process a batch of BLAST communities"""
-#    log(f"Starting batch {batch_id}/{num_batches}")
-#    
-#    output_dir = Path("parallel_work")
-#    
-#    # Load prepared data
-#    with open(output_dir / "blast_comm_peptides.pkl", 'rb') as f:
-#        blast_comm_peptides = pickle.load(f)
-#    
-#    filtered_corr = pd.read_parquet(output_dir / "filtered_correlations.parquet")
-#    
-#    # Determine which communities this batch processes
-#    all_comm_ids = sorted(blast_comm_peptides.keys())
-#    batch_size = len(all_comm_ids) // num_batches + 1
-#    start_idx = batch_id * batch_size
-#    end_idx = min((batch_id + 1) * batch_size, len(all_comm_ids))
-#    my_comm_ids = all_comm_ids[start_idx:end_idx]
-#    
-#    log(f"Batch {batch_id} processing communities {start_idx} to {end_idx-1} ({len(my_comm_ids)} communities)")
-#    
-#    batch_results = []
-#    
-#    for idx, comm_id in enumerate(my_comm_ids):
-#        if idx % 10 == 0:
-#            log(f"Batch {batch_id}: Processing {idx}/{len(my_comm_ids)} ({100*idx/len(my_comm_ids):.1f}%)")
-#        
-#    #    comm_peptides = blast_comm_peptides[comm_id]
-#    #    
-#    #    # Get correlation edges within this community
-#    #    comm_edges = filtered_corr[filtered_corr['source_comm'] == comm_id][['source', 'target', 'weight']].copy()
-#    #    
-#    #    if len(comm_edges) > 0:
-#    #        # Get unique peptides and create a mapping to 0-based indices
-#    #        unique_peptides = sorted(set(comm_edges['source']) | set(comm_edges['target']))
-#    #        peptide_to_idx = {peptide: idx for idx, peptide in enumerate(unique_peptides)}
-#    #        
-#    #        # Remap edges to 0-based indices
-#    #        comm_edges['source_idx'] = comm_edges['source'].map(peptide_to_idx)
-#    #        comm_edges['target_idx'] = comm_edges['target'].map(peptide_to_idx)
-#    #        
-#    #        # Create subgraph with remapped indices
-#    #        subg = ig.Graph.DataFrame(
-#    #            edges=comm_edges[['source_idx', 'target_idx', 'weight']].rename(
-#    #                columns={'source_idx': 'source', 'target_idx': 'target'}
-#    #            ),
-#    #            directed=False
-#    #        )
-#    #        subcommunities = subg.community_leiden(weights='weight', resolution=resolution)
-#    #        
-#    #        # Store results for this BLAST community
-#    #        for i in range(len(subg.vs)):
-#    #            peptide_id = unique_peptides[i]
-#    #            subcomm_id = subcommunities.membership[i]
-#    #            batch_results.append({
-#    #                'blast_comm': comm_id,
-#    #                'peptide_id': peptide_id,
-#    #                'subcomm_id': subcomm_id
-#    #            })
-#    #    else:
-#    #        # No correlations - each peptide is its own community
-#    #        for subcomm_id, peptide in enumerate(comm_peptides):
-#    #            batch_results.append({
-#    #                'blast_comm': comm_id,
-#    #                'peptide_id': peptide,
-#    #                'subcomm_id': subcomm_id
-#    #            })
-#
-#    comm_peptides = blast_comm_peptides[comm_id]
-#    
-#    # Get correlation edges within this community
-#    comm_edges = filtered_corr[filtered_corr['source_comm'] == comm_id][['source', 'target', 'weight']].copy()
-#    
-#    # Get peptides that have correlation edges within this community
-#    peptides_with_edges = set(comm_edges['source']) | set(comm_edges['target']) if len(comm_edges) > 0 else set()
-#    
-#    if len(peptides_with_edges) > 1:
-#        # Cluster peptides with correlation edges
-#        unique_peptides = sorted(peptides_with_edges)
-#        peptide_to_idx = {peptide: idx for idx, peptide in enumerate(unique_peptides)}
-#        
-#        # Remap edges to 0-based indices
-#        comm_edges['source_idx'] = comm_edges['source'].map(peptide_to_idx)
-#        comm_edges['target_idx'] = comm_edges['target'].map(peptide_to_idx)
-#        
-#        # Create subgraph with remapped indices
-#        subg = ig.Graph.DataFrame(
-#            edges=comm_edges[['source_idx', 'target_idx', 'weight']].rename(
-#                columns={'source_idx': 'source', 'target_idx': 'target'}
-#            ),
-#            directed=False
-#        )
-#        subcommunities = subg.community_leiden(weights='weight', resolution=resolution)
-#        
-#        # Store results for peptides with edges
-#        for i in range(len(subg.vs)):
-#            peptide_id = unique_peptides[i]
-#            subcomm_id = subcommunities.membership[i]
-#            batch_results.append({
-#                'blast_comm': comm_id,
-#                'peptide_id': peptide_id,
-#                'subcomm_id': subcomm_id
-#            })
-#        
-#        # Add peptides WITHOUT edges in this community as singletons
-#        peptides_without_edges = set(comm_peptides) - peptides_with_edges
-#        next_subcomm_id = len(subcommunities)
-#        for idx, peptide in enumerate(sorted(peptides_without_edges)):
-#            batch_results.append({
-#                'blast_comm': comm_id,
-#                'peptide_id': peptide,
-#                'subcomm_id': next_subcomm_id + idx
-#            })
-#    else:
-#        # No edges or only 1 peptide with edges - all peptides are singletons
-#        for subcomm_id, peptide in enumerate(sorted(comm_peptides)):
-#            batch_results.append({
-#                'blast_comm': comm_id,
-#                'peptide_id': peptide,
-#                'subcomm_id': subcomm_id
-#            })
-#    
-#    # Save batch results
-#    batch_df = pd.DataFrame(batch_results)
-#    batch_df.to_parquet(output_dir / f"batch_{batch_id:04d}.parquet")
-#    log(f"Batch {batch_id} complete: {len(batch_df)} peptides assigned")
-
-
-
-
-
 
 def process_batch(batch_id, num_batches, resolution=0.01):
     """Step 2: Process a batch of BLAST communities"""
@@ -328,14 +219,17 @@ def process_batch(batch_id, num_batches, resolution=0.01):
     batch_df.to_parquet(output_dir / f"batch_{batch_id:04d}.parquet")
     log(f"Batch {batch_id} complete: {len(batch_df)} peptides assigned")
 
-
-
-
 def merge_results():
     """Step 3: Merge all batch results"""
     log("Merging batch results...")
     
     output_dir = Path("parallel_work")
+    
+    # Load actual peptides
+    with open(output_dir / "actual_peptides.pkl", 'rb') as f:
+        actual_peptides = pickle.load(f)
+    log(f"Actual peptides in dataset: {len(actual_peptides)}")
+    
     batch_files = sorted(output_dir.glob("batch_*.parquet"))
     
     log(f"Found {len(batch_files)} batch files")
@@ -346,7 +240,31 @@ def merge_results():
         all_results.append(df)
     
     combined = pd.concat(all_results, ignore_index=True)
-    log(f"Total peptides: {len(combined)}")
+    log(f"Total peptides from batch processing: {len(combined)}")
+    
+    # Load the full peptide_to_community mapping to find missing peptides
+    with open(output_dir / "peptide_to_community.pkl", 'rb') as f:
+        peptide_to_community = pickle.load(f)
+    
+    # Find peptides that didn't get processed (singleton BLAST communities with no correlations)
+    processed_peptides = set(combined['peptide_id'])
+    missing_peptides = set(peptide_to_community.keys()) - processed_peptides
+    
+    if len(missing_peptides) > 0:
+        log(f"Found {len(missing_peptides)} peptides not in batch results - adding them as singletons")
+        
+        # Get their BLAST community IDs
+        missing_rows = []
+        for peptide_id in missing_peptides:
+            missing_rows.append({
+                'blast_comm': peptide_to_community[peptide_id],
+                'peptide_id': peptide_id,
+                'subcomm_id': 0  # They're singletons in their BLAST community
+            })
+        
+        missing_df = pd.DataFrame(missing_rows)
+        combined = pd.concat([combined, missing_df], ignore_index=True)
+        log(f"Total peptides after adding missing: {len(combined)}")
     
     # Assign global community IDs
     # Sort by blast_comm, then by subcomm_id to ensure consistent ordering
@@ -362,6 +280,14 @@ def merge_results():
         columns={'final_comm_id': 'community_id'}
     ).sort_values('peptide_id')
     
+    # Verify all output peptides are actual peptides
+    invalid_peptides = set(final_output['peptide_id']) - actual_peptides
+    if len(invalid_peptides) > 0:
+        log(f"WARNING: Found {len(invalid_peptides)} invalid peptide IDs, removing them")
+        final_output = final_output[final_output['peptide_id'].isin(actual_peptides)]
+    
+    log(f"Final output contains {len(final_output)} peptides (expected {len(actual_peptides)})")
+    
     # Save results
     final_output.to_csv('final_communities.csv', index=False)
     log(f"Saved community assignments to final_communities.csv")
@@ -374,7 +300,7 @@ def merge_results():
     
     # Print summary statistics
     community_sizes = final_output['community_id'].value_counts()
-    log(f"\nFinal community statistics:")
+    log(f"Final community statistics:")
     log(f"  Total communities: {len(community_sizes)}")
     log(f"  Peptides assigned: {len(final_output)}")
     log(f"  Community sizes - min: {community_sizes.min()}, max: {community_sizes.max()}, median: {community_sizes.median():.0f}")
@@ -426,8 +352,7 @@ if __name__ == "__main__":
     elif command == "process":
         batch_id = int(sys.argv[2])
         num_batches = int(sys.argv[3])
-        #process_batch(batch_id, num_batches)
-        process_batch(batch_id, num_batches, resolution=0.001) # decreasing resolution to try to create fewer, larger communities
+        process_batch(batch_id, num_batches)
     
     elif command == "merge":
         merge_results()
@@ -435,3 +360,4 @@ if __name__ == "__main__":
     else:
         print(f"Unknown command: {command}")
         sys.exit(1)
+

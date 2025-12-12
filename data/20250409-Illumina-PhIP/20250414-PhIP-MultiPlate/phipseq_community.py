@@ -57,24 +57,61 @@ def process_community(comm_id, comm_peptides, filtered_corr, starting_comm_id, r
 # Main script
 log("Starting PhipSeq community detection")
 
+# Load master peptide list
+log("Loading master peptide list...")
+master_peptides_df = pd.read_csv("/francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.csv", 
+                                  header=None, names=['peptide_id', 'sequence'])
+actual_peptides = sorted(master_peptides_df['peptide_id'].unique())
+log(f"Master peptide list: {len(actual_peptides)} peptides")
+log(f"Peptide ID range: {min(actual_peptides)} to {max(actual_peptides)}")
+
 # Load BLAST edges
 log("Loading BLAST edges...")
-#reference_edges_df = pd.read_csv("edgelist.csv")
-reference_edges_df = pd.read_csv("edgelist.word_size-2.csv.gz")
+reference_edges_df = pd.read_csv("edgelist.csv.gz")
 log(f"Loaded {len(reference_edges_df)} BLAST edges")
+
+blast_peptides = set(reference_edges_df['source']) | set(reference_edges_df['target'])
+log(f"Unique peptides in BLAST: {len(blast_peptides)}")
+log(f"Peptides in master but not in BLAST: {len(set(actual_peptides) - blast_peptides)}")
+
+# Create mapping: original peptide ID -> sequential index (0-based)
+# Only for peptides that appear in BLAST
+blast_peptides_sorted = sorted(blast_peptides)
+peptide_to_idx = {peptide: idx for idx, peptide in enumerate(blast_peptides_sorted)}
+idx_to_peptide = {idx: peptide for peptide, idx in peptide_to_idx.items()}
+
+# Remap edges to use sequential indices
+reference_edges_df['source_idx'] = reference_edges_df['source'].map(peptide_to_idx)
+reference_edges_df['target_idx'] = reference_edges_df['target'].map(peptide_to_idx)
 
 # Get BLAST-based communities
 log("Running Leiden on BLAST graph...")
-g = ig.Graph.DataFrame(edges=reference_edges_df, directed=True)
+g = ig.Graph.DataFrame(
+    edges=reference_edges_df[['source_idx', 'target_idx', 'weight']].rename(
+        columns={'source_idx': 'source', 'target_idx': 'target'}
+    ),
+    directed=True
+)
 blast_communities = g.community_leiden(weights='weight', resolution=1.0)
 log(f"BLAST clustering: {len(blast_communities)} communities from {len(g.vs)} peptides")
 
-# Create mapping: peptide_id = vertex_index + 1
-peptide_to_community = {i + 1: blast_communities.membership[i] for i in range(len(g.vs))}
+# Create mapping: actual peptide_id -> community, using idx_to_peptide
+peptide_to_community = {}
+for i in range(len(g.vs)):
+    peptide_id = idx_to_peptide[i]
+    peptide_to_community[peptide_id] = blast_communities.membership[i]
+
+# Handle peptides not in BLAST - assign them each to a singleton community
+peptides_not_in_blast = set(actual_peptides) - set(peptide_to_community.keys())
+if len(peptides_not_in_blast) > 0:
+    log(f"Assigning {len(peptides_not_in_blast)} peptides without BLAST edges to singleton communities")
+    next_comm_id = len(blast_communities)
+    for peptide_id in sorted(peptides_not_in_blast):
+        peptide_to_community[peptide_id] = next_comm_id
+        next_comm_id += 1
 
 # Load correlations
 log("Loading correlation edges...")
-#correlations_df = pd.read_csv("out.123456131415161718/correlation_edges.csv.gz")
 correlations_df = pd.read_csv("out.123456131415161718/zscore.correlation_edges.csv.gz")
 log(f"Loaded {len(correlations_df)} correlation edges")
 
@@ -111,8 +148,7 @@ for comm_id in range(len(blast_communities)):
             f"Total subcommunities so far: {community_id}")
     
     # Get peptides in this BLAST community
-    comm_peptides = [i + 1 for i in range(len(g.vs)) 
-                     if blast_communities.membership[i] == comm_id]
+    comm_peptides = [peptide_id for peptide_id, c_id in peptide_to_community.items() if c_id == comm_id]
     
     # Process this community
     result, num_subcommunities = process_community(
@@ -153,3 +189,4 @@ log(f"  Community sizes - min: {min(sizes)}, max: {max(sizes)}, median: {sizes[l
 log(f"  Singletons: {sum(1 for s in sizes if s == 1)}")
 
 log("Complete!")
+

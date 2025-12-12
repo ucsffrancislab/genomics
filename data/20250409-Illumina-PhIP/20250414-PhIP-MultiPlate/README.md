@@ -1821,7 +1821,7 @@ makeblastdb -in /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_pept
 
 blastp -word_size 2 -query /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.faa -db /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq -outfmt 6 -out /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.sequence_similarity.word_size-2.tsv
 
-awk 'BEGIN{FS="\t";OFS=",";print "query","target","weight"}($1 != $2){print $1,$2,$12}' /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.sequence_similarity.word_size-2.tsv | gzip > /francislab/data1/refs/PhIP-Seq/VirScan/edgelist.word_size-2.csv.gz
+awk 'BEGIN{FS="\t";OFS=",";print "query","target","weight"}($1 != $2){print $1,$2,$12}' /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.sequence_similarity.word_size-2.tsv | gzip > /francislab/data1/refs/PhIP-Seq/VirScan/edgelist.csv.gz
 
 ln -s /francislab/data1/refs/PhIP-Seq/VirScan/edgelist.csv.gz
 ```
@@ -1877,5 +1877,15 @@ done >> commands
 commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-0 --threads 4 --mem 30G
 ```
 
+
+
+
+
+grep "^>" /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.faa | sed 's/^>//' | sort | uniq > faa.list
+
+
+awk 'BEGIN{FS="\t";OFS=","}{print $1}' /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_upper_peptide.uniq.sequence_similarity.word_size-2.tsv | sort | uniq > blast.list
+
+comm -2 -3 faa.list blast.list
 
 
