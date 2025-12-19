@@ -56,7 +56,8 @@ fi
 
 if [ "${server}" == "topmed" ] ; then
 	TOKEN=$( cat TOPMED_TOKEN )
-	command="curl https://imputation.biodatacatalyst.nhlbi.nih.gov/api/v2/jobs/submit/imputationserver -H \"X-Auth-Token: $TOKEN\""
+	#command="curl https://imputation.biodatacatalyst.nhlbi.nih.gov/api/v2/jobs/submit/imputationserver -H \"X-Auth-Token: $TOKEN\""
+	command="curl https://imputation.biodatacatalyst.nhlbi.nih.gov/api/v2/jobs/submit/imputationserver2 -H \"X-Auth-Token: $TOKEN\""
 elif [ "${server}" == "umich" ] ; then
 	TOKEN=$( cat UMICH_TOKEN )
 	command="curl https://imputationserver.sph.umich.edu/api/v2/jobs/submit/imputationserver2 -H \"X-Auth-Token: $TOKEN\""
