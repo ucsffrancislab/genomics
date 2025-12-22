@@ -115,6 +115,31 @@ sed -i '1iName,Fastq,Layout,Group' out/Immune-enriched.input.csv
 sed -i '1iName,Fastq,Layout,Group' out/Hypermitotic.input.csv
 ```
 
+
+
+```bash
+
+wc -l out/*input.csv
+   83 out/Hypermitotic.input.csv
+  110 out/Immune-enriched.input.csv
+  295 out/input.csv
+  104 out/Merlin-intact.input.csv
+  592 total
+
+
+wc -l out/QM*/VIRTUS.output.tsv | sort -k1n,1
+     1 out/QM101/VIRTUS.output.tsv
+     1 out/QM105/VIRTUS.output.tsv
+     1 out/QM181/VIRTUS.output.tsv
+     1 out/QM219/VIRTUS.output.tsv
+     1 out/QM221/VIRTUS.output.tsv
+     1 out/QM242/VIRTUS.output.tsv
+     1 out/QM59/VIRTUS.output.tsv
+```
+
+
+
+
 Be sure to change the scatterplot call to square=False
 
 ```bash
