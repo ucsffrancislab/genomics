@@ -1,7 +1,7 @@
 
 #	20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
 
-This is a select rerun of 20250723-survival_gwas. Just hg38 on UMich
+This is a select rerun of 20250723-survival_gwas. Just hg19 on UMich
 
 
 ##	Prepare
@@ -66,13 +66,7 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 14-0 --nodes=1 
 
 
 
-###	Liftover hg19 to hg38
-
-Liftover from hg19 to hg38.
-This is needed for use with the TOPMed and 1000G hg38 reference panel prep.
-
-This inevitably fails, so can be skipped now.
-Both picard and bcftools drop A LOT of SNPs.
+###	Liftover CIDR hg38 to hg19
 
 
 ```BASH
@@ -102,16 +96,12 @@ This built-in liftover from the imputation server utils allows many more to pass
 Takes about 5 minutes.
 
 ```BASH
-for b in i370 onco tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None \
- --job-name=${b}_plink_liftover --out=${PWD}/plink_liftover_${b}.out \
- ${PWD}/plink_liftover_hg19_to_hg38.bash ${PWD}/hg19-${b}/${b} ${PWD}/hg38-${b}
-done
 
 b=cidr
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None \
  --job-name=${b}_plink_liftover --out=${PWD}/plink_liftover_${b}.out \
  ${PWD}/plink_liftover_hg38_to_hg19.bash ${PWD}/hg38-${b}/${b} ${PWD}/hg19-${b}
+
 ```
 
 
@@ -120,13 +110,11 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 -
 ```BASH
 wc -l hg??-*/*bim
 
+  1824987 hg19-cidr/cidr.bim
    293698 hg19-i370/i370.bim
    403388 hg19-onco/onco.bim
    733799 hg19-tcga/tcga.bim
   1904599 hg38-cidr/cidr.bim
-   293564 hg38-i370/i370.bim
-   403187 hg38-onco/onco.bim
-   733435 hg38-tcga/tcga.bim
 
 ```
 
@@ -141,36 +129,6 @@ The CIDR data has many more SNPs than the other datasets.
 
 
 The `HRC-1000G-check-bim.pl` requires that the chromosomes be numeric at this stage regardless of hg19 or hg38.
-
-
-####	HRC
-
-Not using HRC but running this anyway for comparison.
-
-```BASH
-#for b in i370 onco tcga cidr ; do
-#mkdir prep-${b}-HRC
-#cd prep-${b}-HRC
-#ln -s ../hg19-${b}/${b}.bed
-#ln -s ../hg19-${b}/${b}.bim
-#ln -s ../hg19-${b}/${b}.fam
-#ln -s ../hg19-${b}/${b}.frq
-#cd ..
-#done
-```
-
-Standard HRC on original hg19 bed/bim/fam
-
-```BASH
-#for b in i370 onco cidr tcga ; do
-#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
-# --export=None --job-name=${b}_check-bim \
-# --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --bim ${PWD}/prep-${b}-HRC/${b}.bim \
-# --frequency ${PWD}/prep-${b}-HRC/${b}.frq \
-# --ref /francislab/data1/refs/Imputation/HRC.r1-1.GRCh37.wgs.mac5.sites.tab --hrc" \
-# --out=${PWD}/prep-${b}-HRC/HRC-1000G-check-bim.pl.log
-#done
-```
 
 
 ####	1000g
@@ -205,71 +163,6 @@ done
 
 
 
-####	TOPMed
-
-Link hg38 files in prep for checking against TOPMed panel
-
-
-```BASH
-for b in i370 onco cidr tcga ; do
-mkdir prep-${b}-TOPMed
-cd prep-${b}-TOPMed
-ln -s ../hg38-${b}/${b}.bed
-ln -s ../hg38-${b}/${b}.bim
-ln -s ../hg38-${b}/${b}.fam
-ln -s ../hg38-${b}/${b}.frq
-cd ..
-done
-```
-
-Check hg38 against TOPMed panel takes about an hour.
-
-Dropping to 4/30 as don't think I actually need 8/60
-
-```BASH
-for b in i370 onco cidr tcga ; do
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
- --export=None --job-name=${b}_check-bim \
- --wrap="perl /francislab/data1/refs/Imputation/HRC-1000G-check-bim.pl --verbose \
- --bim ${PWD}/prep-${b}-TOPMed/${b}.bim --frequency ${PWD}/prep-${b}-TOPMed/${b}.frq \
- --ref /francislab/data1/refs/Imputation/PASS.Variants.TOPMed_freeze5_hg38_dbSNP.tab --hrc" \
- --out=${PWD}/prep-${b}-TOPMed/HRC-1000G-check-bim.pl.log
-done
-
-```
-
-
-
-
-
-
-
-#	
-#	FIXED THE FOLLOWING BY ADJUSTING POSITIONS BY 1. This is no longer relevant.
-#	
-#	
-#	i370 loses A LOT. Testing a lower frequency threshold. Probably should raise it, but trying --noexclude.
-#	
-#	(There's a good chance that these are the same as the other software liftover output which removes a lot.)
-#	
-#	i370 still ends up failing ...
-#	
-#	```
-#	Warning: 2 Chunk(s) excluded: < 20 SNPs (see chunks-excluded.txt for details).
-#	Warning: 287 Chunk(s) excluded: reference overlap < 50.0% (see chunks-excluded.txt for details).
-#	Remaining chunk(s): 1
-#	```
-#	
-#	For consistency, using the 1000g filtered data on TOPMed. Not sure if this is the best decision.
-#	
-#	Looks like the 1000g panel is the same as the latest hg19 TOPMed panel.
-#	
-
-
-
-
-
-
 ###	Run the generated scripts
 
 
@@ -280,11 +173,7 @@ WAIT UNTIL THE PREVIOUS SCRIPT COMPLETE!
 Don't need the individual bed/bim/fam filesets so commenting them out of the `Run-plink.sh` commands.
 
 
-Standard HRC and 1000 genomes
-
 ```BASH
-#for s in HRC 1000g ; do
-
 for b in i370 onco cidr tcga ; do
 for s in 1000g ; do
 sed -i -e '/--make-bed --chr/s/^/#/' prep-${b}-${s}/Run-plink.sh
@@ -299,41 +188,18 @@ done
 
 
 
-
-
-Since this is hg38, NEED to re-add the chr prefix so changing the output chr format.
-
-TOPMed
-
-```BASH
-for b in i370 onco cidr tcga ; do
-sed -i -e '/--recode vcf --chr/s/--chr/--output-chr chrM --chr/' \
- -e '/--make-bed --chr/s/^/#/' prep-${b}-TOPMed/Run-plink.sh
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
- --export=None --job-name=${b}_run-plink \
- --wrap="module load plink; sh ${PWD}/prep-${b}-TOPMed/Run-plink.sh;\rm ${PWD}/prep-${b}-TOPMed/TEMP?.*" \
- --out=${PWD}/prep-${b}-TOPMed/Run-plink.sh.log
-done
-```
-
-
-
-
-
-
 ###	Compress
 
 ```BASH
-#for s in HRC 1000g TOPMed ; do
-#for s in TOPMed ; do
 
 for b in i370 onco cidr tcga ; do
-for s in 1000g TOPMed ; do
+for s in 1000g ; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=4 --mem=30G \
  --export=None --job-name=${b}_bgzip \
  --wrap="module load htslib; bgzip ${PWD}/prep-${b}-${s}/*vcf; chmod a-w ${PWD}/prep-${b}-${s}/*{bim,bed,fam,vcf.gz}" \
  --out=${PWD}/prep-${b}-${s}/bgzip.log
 done; done
+
 ```
 
 That should be good.
@@ -342,43 +208,25 @@ That should be good.
 
 
 
-i370 lost quite a bit and many of the surviving chunks fail on TOPMed
-
-Exclude is HIGH
-Force-Allele1 is LOW
-ID is HIGH
-Strand Flip is LOW
 
 
 ```BASH
 ll prep-*/*updated.bed
 -rw-r----- 1 gwendt francislab  132225657 Dec 18 16:06 prep-cidr-1000g/cidr-updated.bed
--rw-r----- 1 gwendt francislab  131733429 Dec 18 16:06 prep-cidr-TOPMed/cidr-updated.bed
 -rw-r----- 1 gwendt francislab  316226298 Dec 18 16:06 prep-i370-1000g/i370-updated.bed
--rw-r----- 1 gwendt francislab  329847213 Dec 18 16:06 prep-i370-TOPMed/i370-updated.bed
 -rw-r----- 1 gwendt francislab  422324451 Dec 18 16:06 prep-onco-1000g/onco-updated.bed
--rw-r----- 1 gwendt francislab  424606731 Dec 18 16:06 prep-onco-TOPMed/onco-updated.bed
 -rw-r----- 1 gwendt francislab 1057654152 Dec 18 16:06 prep-tcga-1000g/tcga-updated.bed
--rw-r----- 1 gwendt francislab 1079667521 Dec 18 16:06 prep-tcga-TOPMed/tcga-updated.bed
 
 
 wc -l prep-*/*bim
   1824987 prep-cidr-1000g/cidr.bim
   1092774 prep-cidr-1000g/cidr-updated.bim
-  1904599 prep-cidr-TOPMed/cidr.bim
-  1088706 prep-cidr-TOPMed/cidr-updated.bim
    293698 prep-i370-1000g/i370.bim
    273789 prep-i370-1000g/i370-updated.bim
-   293564 prep-i370-TOPMed/i370.bim
-   285582 prep-i370-TOPMed/i370-updated.bim
    403388 prep-onco-1000g/onco.bim
    386744 prep-onco-1000g/onco-updated.bim
-   403187 prep-onco-TOPMed/onco.bim
-   388834 prep-onco-TOPMed/onco-updated.bim
    733799 prep-tcga-1000g/tcga.bim
    629931 prep-tcga-1000g/tcga-updated.bim
-   733435 prep-tcga-TOPMed/tcga.bim
-   643042 prep-tcga-TOPMed/tcga-updated.bim
 ```
 
 ##	Impute Genotypes
@@ -389,67 +237,14 @@ ALWAYS USE EAGLE. NEVER USE BEAGLE!
 
 Will need to create a UMICH TOKEN from your account. Put it in the file called UMICH_TOKEN
 
-Will need to create a TOPMED TOKEN from your account. Put it in the file called TOPMED_TOKEN
 
 ```bash
-vi TOPMED_TOKEN
-chmod 400 TOPMED_TOKEN
 
 vi UMICH_TOKEN
 chmod 400 UMICH_TOKEN
+
 ```
 
-
-
-
-
-TOPMed apps@topmed-r3
-
-TOPMed checked hg38
-
--F "refpanel=topmed-r3" -F "build=hg38" -F "r2Filter=0.3" -F "phasing=eagle" -F "population=all" 
-
-
-TOPMed only allows 3 jobs in the queue at a time.
-
-```BASH
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
- -n 20251218-tcga-topmedhg38 prep-tcga-TOPMed/tcga-updated-chr*.vcf.gz | sh
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
- -n 20251218-onco-topmedhg38 prep-onco-TOPMed/onco-updated-chr*.vcf.gz | sh
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
- -n 20251218-i370-topmedhg38 prep-i370-TOPMed/i370-updated-chr*.vcf.gz | sh
-
-impute_genotypes.bash --server topmed --refpanel topmed-r3 --build hg38 --population all \
- -n 20251218-cidr-topmedhg38 prep-cidr-TOPMed/cidr-updated-chr*.vcf.gz | sh
-```
-
-
-
-
-
-
-# 
-# i370 almost entirely fails. Bad liftover??? Check script removes most. Imputation removes most of what's left.
-# 
-# I'd love to get ahold of a hg19 TOPMed panel to use instead of the hg38.
-# 
-
-
-
-Impute on TOPMed using 1000G prepared data.
-It appears that the 1000G panel is very similar, if not the same, as the hg19 TOPMed panel.
-
-```BASH
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
-# -n 20250730-i370-1kg prep-i370-1000g/i370-updated-chr*.vcf.gz
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
-# -n 20250729-tcga-1kg prep-tcga-1000g/tcga-updated-chr*.vcf.gz
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
-# -n 20250729-onco-1kg prep-onco-1000g/onco-updated-chr*.vcf.gz
-#impute_genotypes.bash --server topmed --refpanel topmed-r3 --population all \
-# -n 20250916-cidr-1kg prep-cidr-1000g/cidr-updated-chr*.vcf.gz
-```
 
 
 
@@ -460,12 +255,14 @@ Population 'all' is not supported by reference panel '1000g-phase-3-v5'.
 
 UMich only allows 2 jobs in the queue at a time.
 
+-F "job-name=20251218-tcga-1kghg19" -F "refpanel=1000g-phase-3-v5" -F "build=hg19" -F "r2Filter=0.3" -F "phasing=eagle" -F "population=off"
+
+
 ```BASH
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 --build hg19 \
  -n 20251218-tcga-1kghg19 prep-tcga-1000g/tcga-updated-chr*.vcf.gz | sh
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 --build hg19 \
  -n 20251218-onco-1kghg19 prep-onco-1000g/onco-updated-chr*.vcf.gz | sh
-
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 --build hg19 \
  -n 20251218-i370-1kghg19 prep-i370-1000g/i370-updated-chr*.vcf.gz | sh
 impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 --build hg19 \
@@ -475,145 +272,43 @@ impute_genotypes.bash --server umich --refpanel 1000g-phase-3-v5 --build hg19 \
 
 
 
-Impute on UMICH hg38 beta as well apps@1000g-phase3-deep@1.0.0
-
-after liftover ...
-
-Error: More than 100 allele switches have been detected. Imputation cannot be started!
-
-Now they fail silently????
-
-```BASH
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
-# -n 20251218-tcga-1kghg38 prep-tcga-1000g/tcga-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
-# -n 20251218-onco-1kghg38 prep-onco-1000g/onco-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
-# -n 20251218-i370-1kghg38 prep-i370-1000g/i370-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep \
-# -n 20251218-cidr-1kghg38 prep-cidr-1000g/cidr-updated-chr*.vcf.gz
-```
-
-
-
-
-
-
-
-
-
-```BASH
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
-# -n 20251218-tcga-hg38 prep-tcga-topmed/tcga-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
-# -n 20251218-onco-hg38 prep-onco-topmed/onco-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
-# -n 20251218-i370-hg38 prep-i370-topmed/i370-updated-chr*.vcf.gz
-#impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
-# -n 20251218-cidr-hg38 prep-cidr-topmed/cidr-updated-chr*.vcf.gz
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ##	Download
 
-```BASH
-mkdir imputed-topmed-onco
-cd imputed-topmed-onco
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718854/976514550d5d0178fe265d5a67548cb6a5652651b7d313692d8d41d41d3602d1 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718858/6b0ae805edc7def18473350d5c3940e7f4b953385ec1da259dc5c1b850572cd6 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718861/8e8061868aa2771219b1003587c120ff4e70fff3afc136b9f9c3e757270d4dc0 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718860/0ac983310aaccb69f1a112fbf30931de59646a474518d85f6d3098570a009b9d | bash
-chmod -w *
-cd ..
-
-
-mkdir imputed-topmed-i370
-cd imputed-topmed-i370
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718086/9d7268561ade570db2d55cf4e19237551b5a7628c4568f4511a169e2d8b51e2f | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718090/ff223aa00ce0d36299268b0c6d481df75bbd94467c016e383ef57715fb255025 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718093/55f2d067eea7d421ddcf843b59aa828f78c1ad661cae521281d4f59e47536665 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718092/c11c07aaceaaac73a7be1f5c134d6035929bed7d4bdb860c379ef127214d427e | bash
-chmod -w *
-cd ..
-
-
-mkdir imputed-topmed-tcga
-cd imputed-topmed-tcga
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718566/b909c298ffdec74af4b82a1b6f4bd4ec30798e996ecfb4dfa1a48bd2eb95f734 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718570/0cebf63433e30220d59da6cfa2e05d98ee4c46b97c5f464d9aa990be1d7498c1 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718573/b6d9d42ff0b391517012d06c4f8982fa1a9e9195b9eca7251d873dd83c3dd6e0 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1718572/2a3469a12491188dc8992e6aad5fdbb5ad3ad9629f6761e31193f9424a643c53 | bash
-chmod -w *
-cd ..
-
-mkdir imputed-topmed-cidr
-cd imputed-topmed-cidr
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765078/c3441bcfe4a25d5c651ba6e34397a272af4eba83f685a5ffbb3f1dd545ae184f | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765082/b0bf19024d42fde7b03dcea62c7c2e8651a67f9c07ac8f1c6994c7145ff7e066 | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765085/70ad29df27ebec7e178326a82a2a6d5628d4d76de6b3f8369b67e69009f3eedd | bash
-curl -sL https://imputation.biodatacatalyst.nhlbi.nih.gov/get/1765084/825b1663a7d3363184122ab0e3b5d6afaa129e6032ea9597f2eee9f7443fb7b3 | bash
-chmod -w *
-cd ..
-```
 
 ```
-mkdir imputed-umich19-onco
-cd imputed-umich19-onco
-curl -sL https://imputationserver.sph.umich.edu/get/GZhNBZDWp822Z0EZTUzPvIbgBCaU9K2zEQyvOYuq | bash
+mkdir imputed-umich-onco
+cd imputed-umich-onco
+curl -sL https://imputationserver.sph.umich.edu/get/VwkIsecWepH98QNnCnWPm9JSUuJJYg8fbd5AoHam | bash
 chmod -w *
 cd ..
 
-mkdir imputed-umich19-i370
-cd imputed-umich19-i370
-curl -sL https://imputationserver.sph.umich.edu/get/twyYnI3P5v3XZ3WbdNGabELUWFU4mNtiHnBKLrcO | bash
+mkdir imputed-umich-i370
+cd imputed-umich-i370
+curl -sL https://imputationserver.sph.umich.edu/get/pj1iTq92zHRetrWwBULi4YOOsoaolvEADJSakp5W | bash
 chmod -w *
 cd ..
 
-mkdir imputed-umich19-tcga
-cd imputed-umich19-tcga
-curl -sL https://imputationserver.sph.umich.edu/get/OaRAlzXs2TAxbwD1wQcDdpMIDZRWHHj5AuAewlCU | bash
+mkdir imputed-umich-tcga
+cd imputed-umich-tcga
+curl -sL https://imputationserver.sph.umich.edu/get/tKMtDc5mwDl1Sg7PpI2VGraM0Yd5jZvzAgnb3UgQ | bash
 chmod -w *
 cd ..
 
-mkdir imputed-umich19-cidr
-cd imputed-umich19-cidr
-curl -sL https://imputationserver.sph.umich.edu/get/y4ZnrdmEoMkl5TGLhn5B6NR6QZSrIQu5ENqRsHGH | bash
+mkdir imputed-umich-cidr
+cd imputed-umich-cidr
+curl -sL https://imputationserver.sph.umich.edu/get/48PihKmEZAjy8HgYiWvjTwqWWigzuzAr75UzMTHi | bash
 chmod -w *
 cd ..
 ```
 
 
-Using the TOPMed 1kg version, NOT the topmed TOPMed version
 
 
-Create and chmod password files for umich and topmed and each dataset
+
+Create and chmod password files for umich and each dataset
 
 ```BASH
-for s in topmed umich19 ; do
+for s in umich ; do
 for b in onco i370 tcga cidr ; do
   echo ${s}-${b}
   cd imputed-${s}-${b}
@@ -626,6 +321,20 @@ for b in onco i370 tcga cidr ; do
   cd ..
 done ; done
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -687,7 +396,7 @@ so split the multiallelics (if they exist) and manually set the types.
 
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for b in onco i370 tcga cidr ; do
 
  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=concat-${s}-${b} \
@@ -877,7 +586,7 @@ Not sure about the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt list
 These take about 3-4 hours
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for b in onco i370 tcga cidr ; do
 
   sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
@@ -1084,7 +793,7 @@ for b in onco i370 tcga ; do
  cat ${cov_in} | cut -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
  head -1 ${TMPDIR}/tmp.csv > ${cov_in%.tsv}_base.csv
  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> ${cov_in%.tsv}_base.csv
- for s in topmed umich19 ; do
+ for s in topmed umich ; do
   head -1 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv > $TMPDIR/tmp.csv
   tail -n +2 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv | sort -t, -k1,1 >> $TMPDIR/tmp.csv
   join --header -t, ${cov_in%.tsv}_base.csv $TMPDIR/tmp.csv | tr , '\t' > imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
@@ -1101,7 +810,7 @@ cov_in=lists/${b}_covariates.tsv
 cat ${cov_in} | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
 head -1 ${TMPDIR}/tmp.csv > ${cov_in%.tsv}_base.csv
 tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> ${cov_in%.tsv}_base.csv
-for s in topmed umich19 ; do
+for s in topmed umich ; do
   head -1 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv > $TMPDIR/tmp.csv
   tail -n +2 imputed-${s}-${b}/${b}-cases/${b}-cases.pca.csv | sort -t, -k1,1 >> $TMPDIR/tmp.csv
   join --header -t, ${cov_in%.tsv}_base.csv $TMPDIR/tmp.csv | tr , '\t' > imputed-${s}-${b}/${b}-cases/${b}-covariates.tsv
@@ -1151,7 +860,7 @@ These take 4 to 26 hours. Really wish that the michiganCoxSurv was parallelizabl
 May need to rerun the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt if I redefine it.
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
@@ -1197,7 +906,7 @@ For some reason, reading the transposed crashes so no need to do this. Too many 
 This can take 15-60 mins
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
@@ -1225,7 +934,7 @@ commands_array_wrapper.bash --jobname spacox --array_file spa_commands --time 1-
 then merge those results
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for b in onco i370 tcga cidr ; do
 for id in lists/${b}*meta_cases.txt ; do
 
@@ -1259,7 +968,7 @@ Using Beta estimates look at: script_Pharma_survival_metal_all4.txt
 
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for id in lists/onco*meta_cases.txt ; do
 
 echo Pharma_surv_meta_wrapper_all4.bash $s $id
@@ -1277,7 +986,7 @@ Using just P-values look at: script_Pharma_survival_metal_spa_all4.txt
 
 
 ```BASH
-for s in topmed umich19 ; do
+for s in topmed umich ; do
 for id in lists/onco*meta_cases.txt ; do
 
 echo Pharma_surv_meta_wrapper_spa_all4.bash $s $id
@@ -1398,27 +1107,27 @@ impute_genotypes.bash --server umich --refpanel 1000g-phase3-deep --build hg38 \
 
 
 ```BASH
-mkdir imputed-umich19-i370hg38-1kghg38-TEST
-cd imputed-umich19-i370hg38-1kghg38-TEST
+mkdir imputed-umich-i370hg38-1kghg38-TEST
+cd imputed-umich-i370hg38-1kghg38-TEST
 curl -sL https://imputationserver.sph.umich.edu/get/nTop0fFuLUW3CgBGj5Y5qtb7ooSCHFTuRcn79G8F | bash
 chmod -w *
 cd ..
 
-mkdir imputed-umich19-oncohg38-1kghg38
-cd imputed-umich19-oncohg38-1kghg38
+mkdir imputed-umich-oncohg38-1kghg38
+cd imputed-umich-oncohg38-1kghg38
 curl -sL https://imputationserver.sph.umich.edu/get/6enpKNfR8zMnvFfzBLFlB2L9nB0cRFdmZzWbYNmy | bash
 chmod -w *
 cd ..
 
-mkdir imputed-umich19-tcgahg38-1kghg38
-cd imputed-umich19-tcgahg38-1kghg38
+mkdir imputed-umich-tcgahg38-1kghg38
+cd imputed-umich-tcgahg38-1kghg38
 curl -sL https://imputationserver.sph.umich.edu/get/GYTc1ZcSbCayRAc8UrnL70c6p8I59WcuVnZcLR8c | bash
 chmod -w *
 cd ..
 ```
 
 ```BASH
-for s in umich19 ; do
+for s in umich ; do
 for b in onco i370 tcga ; do
   echo ${s}-${b}
   cd imputed-${s}-${b}hg38-1kghg38
