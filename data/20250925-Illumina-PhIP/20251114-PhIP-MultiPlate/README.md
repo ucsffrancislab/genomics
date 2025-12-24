@@ -1,6 +1,24 @@
 
 #	20250925-Illumina-PhIP/20251114-PhIP-MultiPlate
 
+
+
+
+
+
+
+This is downsampled data. You probably don't want to use it.
+
+
+
+
+
+
+
+
+
+
+
 reference 20250409-Illumina-PhIP/20250414-PhIP-MultiPlate
 
 ```
