@@ -381,16 +381,6 @@ commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-
 
 
 
-
-SOMEHOW SOMEWHERE IMPLEMENT THE Benjamini–Hochberg (BH) FDR
-
-
-
-
-
-
-
-
 Convert this to a commands_array job
 
 ```bash
@@ -431,52 +421,44 @@ box_upload.bash out.{123456,15161718}/Multiplate_Community*gliomafilteredthresho
 
 
 
-In terms of what to do- it would be great if you could keep digging and refining the PHiP-seq analysis, especially for the GBMs (PLCO analyzed separately, but included) .
-I want to make sure we don’t mis anything! Just a reminder- Our over arching mission is to detect specific (single peptide/tile/antigen) and systematic (global shifts, pathway/virus-level patterns, communities/modules) seroreactivity differences,   then see if those differences exist in the PLCO prior to diagnosis.
-So first we need to decide on if we like the communities, and set the p-value threshold based on those. How do you feel about the current community analysis?A lot flows from that.
-One question- did we ever remove low prevalence tiles? I think we should do this before anything. Like remove tiles that are in 10 or less subjects. Thoughts?
-Along those lines, investigating the correlation structure between the cases and controls may be a good avenue. Comparing the liden communities created when the cases/controls are separated may be a good way to do this?
-I’d also like to figure out some creative and cool looking ways to display the data. Heatmaps and more refined volcano plots come to mind.
- Lets get creative!
-For a bit of concrete instruction.  If we are happy with the communities. Take the p-values from the GBM case/control comparisons and run a  Benjamini–Hochberg (BH) FDR.  we can accept anything with than q<0.05 as significant
-Lets try that on the existing communities and see what happens. Happy to chat around noon if that works for you.
-Nominating gbm features
+
+Benjamini–Hochberg (BH) FDR
+
+```bash
+for f in ${PWD}/out.{123456,15161718}/Multiplate_Community*gliomafilteredthreshold5*.csv ; do
+basename $f
+python3 -c "import pandas as pd; from statsmodels.stats.multitest import multipletests; df = pd.read_csv('"${f}"'); print(multipletests(df['pval'].dropna(), alpha=0.05, method='fdr_bh')[1].min())"
+done
+
+```
 
 
 
+```python
 
-Obvious differences in counts? Between cases/controls? Between AGS, IPS, or PLCO?
+df = pd.read_csv('out.123456/Multiplate_Community_Comparison-Zscores.gliomafilteredthreshold5.communities-AGS-IPS-glioma_serum-case-control-Z-3.5-sex-M.csv').dropna()
+df.index += 1
+df['m']=len(df)
+df['m.p']=df.m*df.pval
+df['m.p/i']=df.m*df.pval/df.index
 
+df['adjusted_pvalue'] = [df['m.p/i'][i:].min() for i in range(len(df))]
 
-Case control comparisons of communities comparison -> pvalues
-BH FDR adjust based on that table -> qvalues (< 0.05) ( do not include PLCO. Just AGS & IPS ) look up the same communities in PLCO. Or FDR on PCLO separately.  
+df
+       community  freq_case  freq_control      beta        se      pval      m           m.p     m.p/i adjusted_pvalue
+1          11676   0.614458      0.385542  1.294750  0.387527  0.000835  10309      8.603759  8.603759        0.999992
+2          90141   0.662651      0.867470 -1.440715  0.442043  0.001117  10309     11.517157  5.758578        0.999992
+3          89984   0.240964      0.457831 -1.194477  0.377978  0.001577  10309     16.254566  5.418189        0.999992
+4         100265   0.204819      0.036145  2.052616  0.664848  0.002020  10309     20.819163  5.204791        0.999992
+5          91000   0.518072      0.313253  1.109675  0.374881  0.003076  10309     31.707253  6.341451        0.999992
+...          ...        ...           ...       ...       ...       ...    ...           ...       ...             ...
+10305      30113   0.084337      0.084337 -0.000054  0.565798  0.999924  10309  10308.217538  1.000312        0.999992
+10306      56442   0.349398      0.349398  0.000016  0.341999  0.999963  10309  10308.620507  1.000254        0.999992
+10307      91162   0.036145      0.036145  0.000042  0.921221  0.999963  10309  10308.623326  1.000157        0.999992
+10308      73831   0.024096      0.024096  0.000047  1.024684  0.999964  10309  10308.626600  1.000061        0.999992
+10309       7147   0.036145      0.036145  0.000008  0.846910  0.999992  10309  10308.918339  0.999992        0.999992
 
-
-Add "Time to diagnosis" of PLCO subjects in the model when creating the pvalues ( may not have this value just yet so may need to ask Lucie )
-
-
-Then separate correlation counts on the case and control studies to see if communities are different?
-
-
-Pretty plots of communities, correlations, sub communities
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- for f in out.plate*/Zscores.t.csv ; do   echo $f;   d=$( dirname ${f} );   head -2 ${f} > ${d}/tmp1.csv;   join --header -t, final_communities.to_join.csv <( tail -n +3 ${f} ) >> ${d}/tmp1.csv;   sed -i '1,2s/^/z,/' ${d}/tmp1.csv;   group_by_community.py ${d}/tmp1.csv | datamash transpose -t, > ${d}/tmp2.csv;   head -1 ${d}/tmp2.csv > ${d}/Zscores.communities.csv;   cat ${d}/tmp2.csv >> ${d}/Zscores.communities.csv;   sed -i '1s/^subject,type,sample,/y,x,id,/' ${d}/Zscores.communities.csv;   sed -i '2s/^subject,type,sample,/subject,type,species,/' ${d}/Zscores.communities.csv; done
-34558  2025-12-23 08:02:55 cp /c4/hom
+```
 
 
 
@@ -484,45 +466,131 @@ Pretty plots of communities, correlations, sub communities
 
 
 
+Seropositivity
+
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control -o ${PWD}/out.123456 -p ${plates} --zfile_basename Zscores.csv
+
+```bash
+
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,4,5,6} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123456 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123456 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.123456 -p ${plates} --sex F
+done >> commands
+
+plates=$( ls -d ${PWD}/out.plate{15,16,17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.15161718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.15161718 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.15161718 -p ${plates} --sex F
+done >> commands
+
+commands_array_wrapper.bash --jobname sero --array_file commands --time 1-0 --threads 4 --mem 30G
+```
 
 
 
 
+```BASH
+\rm commands
 
+for p in 1 2 3 4 5 6 ; do
+plate=out.plate${p}
+manifest=${plate}/manifest.plate${p}.csv
+for z in 3.5 5 10 ; do
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.csv
+done ; done >> commands
 
+for p in 15 16 17 18 ; do
+plate=out.plate${p}
+manifest=${plate}/manifest.plate${p}.csv
+for z in 3.5 5 10 ; do
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PLCO --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.csv
+done ; done >> commands
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+commands_array_wrapper.bash --jobname individual --array_file commands --time 1-0 --threads 2 --mem 15G
+```
 
 
 
 
 ```bash
 
-./prep_zscores_for_merging.bash
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,4,5,6} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control -o ${PWD}/out.123456 -p ${plates} --zfile_basename Zscores.csv
+done >> commands
+
+plates=$( ls -d ${PWD}/out.plate{15,16,17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control -o ${PWD}/out.15161718 -p ${plates} --zfile_basename Zscores.csv
+done >> commands
+
+commands_array_wrapper.bash --jobname sero --array_file commands --time 1-0 --threads 4 --mem 30G
 
 ```
+
+
+```bash
+for z in 3.5 5 10 ; do
+merge_matrices.py --axis columns --de_nan --int \
+  --header_rows 3 --index_col species \
+  --out ${PWD}/out.123456131415161718/seropositive.${z}.t.csv \
+  ${PWD}/out.plate*/seropositive.${z}.t.csv 
+done
+
+box_upload.bash out.123456131415161718/seropositive.*
+```
+
+
+
+
+
+
+
+##	20251230
 
 
 
 ```bash
+awk 'BEGIN{FS=OFS=","}{print $2,$1,$3,$4,$5,$6,$7,$8}' manifest.csv > tmp.csv
+head -1 tmp.csv > manifest.sample_sorted.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> manifest.sample_sorted.csv
 
-merge_matrices.py --axis columns --de_nan --de_neg \
-  --header_rows 10 --index_col id --index_col species \
-  --out ${PWD}/out.123456131415161718/Zscores.manifest.csv \
-  ${PWD}/out.plate{1,2,3,4,5,6,13,14,15,16,17,18}/Zscores.manifest.csv
+awk 'BEGIN{FS=OFS=","}{print $2,$1}' /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250725-hla/agsips_manifest.csv > tmp.csv
+head -1 tmp.csv > ucsf-agsips.sample_sorted.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> ucsf-agsips.sample_sorted.csv
+
+join --header -t, ucsf-agsips.sample_sorted.csv manifest.sample_sorted.csv | cut -d, -f2- > tmp.csv
+head -1 tmp.csv > agsips.manifest.agsips_sorted.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 | uniq >> agsips.manifest.agsips_sorted.csv
+
+join --header -t, agsips.manifest.agsips_sorted.csv /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250725-hla/chr6.hla_dosage.onco_i370_cidr_gte_0.8.t.agsipsonly.select.csv | cut -d, -f1-8,12- > agsips.manifest.hla.agsips_sorted.csv
+
+cut -d, -f2- agsips.manifest.hla.agsips_sorted.csv > tmp.csv
+head -1 tmp.csv > agsips.manifest.hla.subject_sorted.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> agsips.manifest.hla.subject_sorted.csv
+
+
+
+for z in 3.5 5 10 ; do
+echo $z
+
+cat out.123456131415161718/seropositive.${z}.t.csv | datamash transpose -t, | awk 'BEGIN{FS=OFS=","}(NR==1 || $3~/_B/)' | cut -d, -f1,4- > tmp.csv
+head -1 tmp.csv > tmp.${z}.csv
+tail -n +2 tmp.csv | sort -t, -k1,1 >> tmp.${z}.csv
+
+join --header -t, agsips.manifest.hla.subject_sorted.csv tmp.${z}.csv > agsips.manifest.hla.seropositive.${z}.subject_sorted.csv
+
+done
 
 ```
+
 
