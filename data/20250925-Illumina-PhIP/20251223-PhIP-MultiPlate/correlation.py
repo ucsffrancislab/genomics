@@ -1,20 +1,36 @@
 #!/usr/bin/env python3
 
+import os
 import numpy as np
 import pandas as pd
 import gzip
 
-#df = pd.read_csv('out.123456131415161718/Counts.csv', header=list(range(9)), index_col=[0,1])
-#df = pd.read_csv('out.123456131415161718/Counts.normalized.subtracted.csv', header=list(range(9)), index_col=[0,1])
-#df = pd.read_csv('out.123456131415161718/Zscores.t.csv', header=list(range(3)), index_col=[0,1])
 
-#df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.csv', header=list(range(3)), index_col=[0,1])
-#df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.csv', header=list(range(3)), index_col=[0,1])
-##	use a smaller data type?
-#df = df.astype(np.float32)
+# include standard modules
+import argparse
 
-#df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.threshold5.csv', header=list(range(3)), index_col=[0,1])
-df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered.threshold5.csv', header=list(range(3)), index_col=[0,1])
+# initiate the parser
+parser = argparse.ArgumentParser(prog=os.path.basename(__file__))
+
+# Don't use "nargs=1". It makes it an array.
+
+#parser.add_argument('files', nargs='*', help='files help')
+parser.add_argument('-V','--version', action='version', version='%(prog)s 1.1')
+parser.add_argument('-i', '--input', type=str, default='zscores.csv.gz',
+  help='input csv filename to %(prog)s (default: %(default)s)')
+parser.add_argument('-o', '--output', type=str, default='zscores.correlation_edges.csv.gz',
+  help='output csv filename to %(prog)s (default: %(default)s)')
+
+#parser.add_argument('-z','--zscore_threshold', type=float, default=3.5,
+#  help='z-score thresholdto %(prog)s (default: %(default)s)')
+
+# read arguments from the command line
+args = parser.parse_args()
+print(args)
+
+
+#df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered.threshold5.csv', header=list(range(3)), index_col=[0,1])
+df = pd.read_csv(args.input, header=list(range(3)), index_col=[0,1])
 #df = df.astype(np.int32)
 #df = df.astype(np.float32)
 print(df.dtypes, flush=True)
@@ -90,7 +106,8 @@ chunk_size = 1_000_000
 #with gzip.open('out.123456131415161718/counts.correlation_edges.csv.gz', 'wt') as f:
 #with gzip.open('out.123456131415161718/counts.normalized.subtracted.correlation_edges.csv.gz', 'wt') as f:
 #with gzip.open('out.123456131415161718/zscore.threshold5.correlation_edges.csv.gz', 'wt') as f:
-with gzip.open('out.123456131415161718/zscore.filtered.threshold5.correlation_edges.csv.gz', 'wt') as f:
+#with gzip.open('out.123456131415161718/zscore.filtered.threshold5.correlation_edges.csv.gz', 'wt') as f:
+with gzip.open(args.output, 'wt') as f:
     f.write('source,target,weight\n')
     
     for start in range(0, len(rows), chunk_size):
