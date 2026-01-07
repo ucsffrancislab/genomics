@@ -128,6 +128,20 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 14-0 --nodes=1
 
 
 
+NOTE that there are 2 samples that were duplicated and result in a "case.1"
+
+```bash
+D082062,glioma serum,case.1,-0.4017747074166513,-0.36865675158647,1.1437890863435758,-0.304810488431
+E045528,glioma serum,case.1,-0.2242502741447536,0.6009915046815617,-0.956172414395978,-0.56453062324
+
+D082062,glioma serum,case,-0.5742714362920343,0.136882128228649,0.6636839491208902,-0.26445577766371
+D082062,glioma serum,case.1,-0.4017747074166513,-0.36865675158647,1.1437890863435758,-0.304810488431
+
+E045528,glioma serum,case,2.2855960406819285,0.4557236003834186,-0.5873627480145671,-0.4255087868925
+E045528,glioma serum,case.1,-0.2242502741447536,0.6009915046815617,-0.956172414395978,-0.56453062324
+```
+
+
 
 
 
@@ -441,9 +455,7 @@ df.index += 1
 df['m']=len(df)
 df['m.p']=df.m*df.pval
 df['m.p/i']=df.m*df.pval/df.index
-
 df['adjusted_pvalue'] = [df['m.p/i'][i:].min() for i in range(len(df))]
-
 df
        community  freq_case  freq_control      beta        se      pval      m           m.p     m.p/i adjusted_pvalue
 1          11676   0.614458      0.385542  1.294750  0.387527  0.000835  10309      8.603759  8.603759        0.999992
@@ -593,4 +605,346 @@ done
 
 ```
 
+
+
+
+
+## 20251230 - try communities based just on the call correlations
+
+
+```bash
+import pandas as pd
+import igraph as ig
+correlations_df = pd.read_csv("out.123456131415161718/zscore.filtered.threshold5.correlation_edges.csv.gz")
+g = ig.Graph.DataFrame(edges=correlations_df, directed=False) 
+communities = g.community_leiden(weights='weight', resolution=0.01)
+data = [ [member_id,comm_id]  for comm_id, members in enumerate(communities) for member_id in members ]
+pd.DataFrame(data,columns=['peptide_id','community_id']).drop(0).to_csv('out.123456131415161718/zscore.filtered.threshold5.correlation.communities.csv.gz',index=False)
+
+```
+
+
+
+Convert peptides to communities
+
+```bash
+
+for f in out.plate*/Zscores.t.csv ; do
+  echo $f
+  d=$( dirname ${f} )
+
+  head -3 ${f} > ${d}/tmp0.csv
+  join -t, <( tail -n +4 out.123456131415161718/Zscores.minimums.t.glioma.filtered.threshold5.joinsorted.csv | cut -d, -f1 ) <( tail -n +4 ${f} ) >> ${d}/tmp0.csv
+
+  head -2 ${d}/tmp0.csv > ${d}/tmp1.csv
+  #join --header -t, final_communities.to_join.csv <( tail -n +3 ${d}/tmp0.csv ) >> ${d}/tmp1.csv
+  join --header -t, out.123456131415161718/zscore.filtered.threshold5.correlation.communities.to_join.csv <( tail -n +3 ${d}/tmp0.csv ) >> ${d}/tmp1.csv
+
+  sed -i '1,2s/^/z,/' ${d}/tmp1.csv
+  group_by_community.py ${d}/tmp1.csv | datamash transpose -t, > ${d}/tmp2.csv
+  head -1 ${d}/tmp2.csv > ${d}/Zscores.gliomafilteredthreshold5.communities2.csv
+  cat ${d}/tmp2.csv >> ${d}/Zscores.gliomafilteredthreshold5.communities2.csv
+  sed -i '1s/^subject,type,sample,/y,x,id,/' ${d}/Zscores.gliomafilteredthreshold5.communities2.csv
+  sed -i '2s/^subject,type,sample,/subject,type,species,/' ${d}/Zscores.gliomafilteredthreshold5.communities2.csv
+done
+
+```
+
+
+
+
+
+
+
+
+```bash
+join --header -t, out.123456131415161718/zscore.filtered.threshold5.correlation.communities.to_join.csv /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_species.uniq.csv > out.123456131415161718/zscore.filtered.threshold5.correlation.communities.to_join.with_species.csv
+```
+
+
+
+```bash
+while read count community ; do
+ echo "Community: $community; Count: $count"
+ awk -F, '( $2=="'${community}'"){print $3}' out.123456131415161718/zscore.filtered.threshold5.correlation.communities.to_join.with_species.csv | sort | uniq -c
+done < <( tail -n +2 out.123456131415161718/zscore.filtered.threshold5.correlation.communities.to_join.csv | cut -d, -f2 | sort | uniq -c | sed 's/^\s*//' | sort -t' ' -k1nr,1 | head -5 )
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+```BASH
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,4,5,6} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold5.communities2.csv -o ${PWD}/out.123456 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold5.communities2.csv -o ${PWD}/out.123456 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold5.communities2.csv -o ${PWD}/out.123456 -p ${plates} --sex F
+done >> commands
+
+plates=$( ls -d ${PWD}/out.plate{15,16,17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 ; do
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold5.communities2.csv -o ${PWD}/out.15161718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold5.communities2.csv -o ${PWD}/out.15161718 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold5.communities2.csv -o ${PWD}/out.15161718 -p ${plates} --sex F
+done >> commands
+
+commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
+```python
+import pandas as pd
+df = pd.read_csv('out.15161718/Multiplate_Community_Comparison-Zscores.gliomafilteredthreshold5.communities2-PLCO-glioma_serum-case-control-Z-3.5-sex-.csv').dropna()
+df.index += 1
+df['m']=len(df)
+df['m.p']=df.m*df.pval
+df['m.p/i']=df.m*df.pval/df.index
+df['adjusted_pvalue'] = [df['m.p/i'][i:].min() for i in range(len(df))]
+df
+
+
+import pandas as pd
+df = pd.read_csv('out.15161718/Multiplate_Community_Comparison-Zscores.gliomafilteredthreshold5.communities2-PLCO-glioma_serum-case-control-Z-3.5-sex-.csv').dropna()
+from statsmodels.stats.multitest import multipletests
+df['q']=multipletests(df['pval'], alpha=0.05, method='fdr_bh')[1]
+```
+
+
+
+
+```bash
+
+for z in 3.5 5 10 ; do
+echo $z
+
+cat out.123456131415161718/seropositive.${z}.t.csv | datamash transpose -t, | awk -F, '(NR==1 || ($2 ~/maternal/ && $3 ~ /_B/))' | cut -d, -f1,4- | datamash transpose -t, | awk -F, '( NR==1 || $1~/Influenza A/ || $1~/Human herpesvirus 5/ )' > out.123456131415161718/seropositive.Maternal.CMV-FluA.${z}.csv
+cat out.123456131415161718/seropositive.Maternal.CMV-FluA.${z}.csv | datamash transpose -t, > out.123456131415161718/seropositive.Maternal.CMV-FluA.${z}.t.csv
+
+done
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	20260105
+
+
+
+
+
+###	Re-compute communities with varying z-scores
+
+Should I create communities based on sequence similarity and then sub-communities by call correlations? Or just call correlations?
+
+Modify correlations to take a z-score threshold option.
+
+try communities based just on the call correlations
+
+
+```bash
+
+# Remove tiles with 10 or less subjects zscore > threshold
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --wrap="python3 -c \"import pandas as pd; df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.csv', header=[0,1,2], index_col=[0,1]); df[(df>="${z}").sum(axis='columns')>10].to_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered-"${z}".csv')\""
+done
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name ${z}thresh --wrap="python3 -c \"import pandas as pd; df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered-"${z}".csv', header=[0,1,2], index_col=[0,1]); df=(df >= "${z}").astype(int);df.to_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered-"${z}".threshold-"${z}".csv')\""
+done
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+head -3 out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.csv > out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.to_join.csv
+tail -n +4 out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.csv | sort -t, -k1,1 >> out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.to_join.csv
+done
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name ${z}cor --wrap="$PWD/correlation.py -i out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.csv -o out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.correlation_edges.csv.gz"
+done
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name ${z}comm --wrap="python3 -c \"import pandas as pd; import igraph as ig; correlations_df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered-"${z}".threshold-"${z}".correlation_edges.csv.gz'); g = ig.Graph.DataFrame(edges=correlations_df, directed=False) ; communities = g.community_leiden(weights='weight', resolution=0.01); data = [ [member_id,comm_id]  for comm_id, members in enumerate(communities) for member_id in members ]; pd.DataFrame(data,columns=['peptide_id','community_id']).drop(0).to_csv('out.123456131415161718/Zscores.minimums.t.glioma.filtered-"${z}".threshold-"${z}".correlation.communities.csv.gz',index=False)\""
+done
+
+```
+
+
+Convert peptides to communities
+
+```bash
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+zcat out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.correlation.communities.csv.gz | head -1 > out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.correlation.communities.to_join.csv
+zcat out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.correlation.communities.csv.gz | tail -n +2 | sort -t, -k1,1 >> out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.correlation.communities.to_join.csv
+done
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+for f in out.plate*/Zscores.t.csv ; do
+  echo $f
+  d=$( dirname ${f} )
+
+  # select just these tiles
+  head -3 ${f} > ${d}/tmp0.csv
+  join -t, <( tail -n +4 out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.to_join.csv | cut -d, -f1 ) <( tail -n +4 ${f} ) >> ${d}/tmp0.csv
+
+  head -2 ${d}/tmp0.csv > ${d}/tmp1.csv
+  join --header -t, out.123456131415161718/Zscores.minimums.t.glioma.filtered-${z}.threshold-${z}.correlation.communities.to_join.csv <( tail -n +3 ${d}/tmp0.csv ) >> ${d}/tmp1.csv
+
+  sed -i '1,2s/^/z,/' ${d}/tmp1.csv
+  group_by_community.py ${d}/tmp1.csv | datamash transpose -t, > ${d}/tmp2.csv
+  head -1 ${d}/tmp2.csv > ${d}/Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv
+  cat ${d}/tmp2.csv >> ${d}/Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv
+  sed -i '1s/^subject,type,sample,/y,x,id,/' ${d}/Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv
+  sed -i '2s/^subject,type,sample,/subject,type,species,/' ${d}/Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv
+done ; done
+
+```
+
+```bash
+\rm commands
+
+plates=$( ls -d ${PWD}/out.plate{1,2,3,4,5,6} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv -o ${PWD}/out.123456 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv -o ${PWD}/out.123456 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study AGS --study IPS --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv -o ${PWD}/out.123456 -p ${plates} --sex F
+done >> commands
+
+plates=$( ls -d ${PWD}/out.plate{15,16,17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
+
+for z in 3.5 5 10 15 20 25 30 40 50 ; do
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv -o ${PWD}/out.15161718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv -o ${PWD}/out.15161718 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Community_Regression.R -z ${z} --study PLCO --type \"glioma serum\" -a case -b control --zfile_basename Zscores.gliomafilteredthreshold-${z}.correlation_communities.csv -o ${PWD}/out.15161718 -p ${plates} --sex F
+done >> commands
+
+commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+
+
+
+
+
+
+```python
+z=3.5
+
+import pandas as pd
+df = pd.read_csv(f'out.15161718/Multiplate_Community_Comparison-Zscores.gliomafilteredthreshold-{z}.correlation_communities-PLCO-glioma_serum-case-control-Z-{z}-sex-.csv').dropna()
+df.index += 1
+df['m']=len(df)
+df['m.p']=df.m*df.pval
+df['m.p/i']=df.m*df.pval/df.index
+df['adjusted_pvalue'] = [df['m.p/i'][i:].min() for i in range(len(df))]
+df
+
+import pandas as pd
+df = pd.read_csv(f'out.15161718/Multiplate_Community_Comparison-Zscores.gliomafilteredthreshold-{z}.correlation_communities-PLCO-glioma_serum-case-control-Z-{z}-sex-.csv').dropna()
+from statsmodels.stats.multitest import multipletests
+df['q']=multipletests(df['pval'], alpha=0.05, method='fdr_bh')[1]
+df
+```
+
+
+
+
+
+
+
+###	Export maternal data set results
+
+Could you export a matrix of the subjects and the CMV and Influenza peptides for these subjects with counts?
+
+Are you looking for the raw alignment counts? Or computed z-scores? Or computed calls based on a particular z-score?
+
+A matrix by subject (not sample) of calls where the z-score minimum of the replicates are greater than or equal to 10, so just 0/1, for each peptide?
+
+correct, by subjects and yes or no for each peptide (edited) 
+
+
+```bash
+cat out.123456131415161718/Zscores.minimums.t.csv | datamash transpose -t, > out.123456131415161718/tmp1.csv
+
+head -2 out.123456131415161718/tmp1.csv > out.123456131415161718/tmp2.csv
+awk -F, '($2 == "ALL maternal serum")' out.123456131415161718/tmp1.csv >> out.123456131415161718/tmp2.csv
+
+cat out.123456131415161718/tmp2.csv | datamash transpose -t, > out.123456131415161718/Zscores.minimums.t.maternal.csv
+
+awk -F, '(NR<=3 || $2~/Influenza A/ || $2~/Human herpesvirus 5/ )' out.123456131415161718/Zscores.minimums.t.maternal.csv > out.123456131415161718/Zscores.minimums.t.maternal.CMV-FluA.csv
+
+```
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name zthresh --wrap="python3 -c \"import pandas as pd; df = pd.read_csv('out.123456131415161718/Zscores.minimums.t.maternal.CMV-FluA.csv', header=[0,1,2], index_col=[0,1]); df=(df>=10).astype(int);df.to_csv('out.123456131415161718/Zscores.minimums.t.maternal.CMV-FluA.threshold-10.csv')\""
+
+```
+
+
+
+##	20260106
+
+Redo yesterday's work with more aggressive filtering on subjects.
+Rather than just 10 subjects, filter on 10%, 15% and 20%.
+
+
+###	Re-compute communities with varying subject positive percentages
+
+
+Communities based just on the call correlations
+
+
+
+
+Only tiles with more than 10%, 15% and 20% subjects zscore > threshold
+
+
+50% is too aggressive and causes problems.
+
+"45 50", "50 40", "50 50"
+
+
+```bash
+
+for p in 03 05 10 15 ; do
+for z in 3.5 5 10 15 20 25 30 ; do
+echo "./20260106-filter_and_analysis.bash ${p} ${z}"
+done ; done > commands
+
+commands_array_wrapper.bash --jobname Analysis --jobcount 16 --array_file commands --time 1-0 --threads 4 --mem 30G
+
+```
 
