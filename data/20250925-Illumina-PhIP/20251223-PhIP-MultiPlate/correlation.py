@@ -121,6 +121,7 @@ with gzip.open(args.output, 'wt') as f:
             f.write(f"{source},{target},{weights[i]:.4f}\n")
 
 print(f"Saved {len(rows):,} edges", flush=True)
+print(f"Saved to {args.output}", flush=True)
 
 # Clean up to avoid memory issues on exit
 #import gc
