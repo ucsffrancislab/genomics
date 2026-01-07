@@ -112,6 +112,7 @@ else
 
 	echo "Preparing array job :${date}:"
 	
+	jobcount=1
 	threads="4"
 	array=""
 	mem=""
@@ -123,6 +124,8 @@ else
 		case $1 in
 			--array)
 				shift; array=$1; shift;;
+			--jobcount)
+				shift; jobcount=$1; shift;;
 			--array_file)
 				shift; array_file=$( realpath $1 ); shift;;
 			--ntasks|--threads)
@@ -178,7 +181,7 @@ else
 		#	"hours:minutes:seconds", "days-hours", "days-hours:minutes" and "days-hours:minutes:seconds".
 		# --time=0 is actually invalid, at least here. Not passing a value results in a 10 minute limit.
 
-		sbatch_command="sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%1 \
+		sbatch_command="sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --array=${array}%${jobcount} \
 			--parsable --job-name="${jobname}" \
 			--time=${time} --nodes=1 --ntasks=${threads} ${mem_option} ${scratch_option} \
 			--output=${PWD}/logs/$(basename $0).${date}-%A_%a.out.log \
