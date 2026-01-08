@@ -915,7 +915,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 
 
 
 
-##	20260106
+##	20260106-07
 
 Redo yesterday's work with more aggressive filtering on subjects.
 Rather than just 10 subjects, filter on 10%, 15% and 20%.
@@ -939,12 +939,74 @@ Only tiles with more than 10%, 15% and 20% subjects zscore > threshold
 
 ```bash
 
-for p in 03 05 10 15 ; do
-for z in 3.5 5 10 15 20 25 30 ; do
-echo "./20260106-filter_and_analysis.bash ${p} ${z}"
+for p in 03 05 10 15 20 25 30 35 40 ; do
+for z in 3.5 5 10 15 20 25 30 35 40 ; do
+echo "./filter_and_analyze.bash ${p} ${z}"
 done ; done > commands
 
 commands_array_wrapper.bash --jobname Analysis --jobcount 16 --array_file commands --time 1-0 --threads 4 --mem 30G
 
 ```
+
+
+
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_23.out.log <== 10% z=20
+   community  freq_case  freq_control      beta        se      pval         q
+0         14   0.650794      0.809524 -1.242225  0.376679  0.000974  0.078920
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_32.out.log <== 15% z=20
+   community  freq_case  freq_control      beta        se      pval         q
+0          9   0.650794      0.809524 -1.242225  0.376679  0.000974  0.049690
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_38.out.log <== 20% z=5
+   community  freq_case  freq_control      beta        se      pval         q
+0         30   0.349206      0.555556 -0.885868  0.265858  0.000862  0.079295
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_41.out.log <== 20% z=20 
+   community  freq_case  freq_control      beta        se      pval         q
+0          5   0.650794      0.809524 -1.242225  0.376679  0.000974  0.039947
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_46.out.log <== 25% z=3.5
+   community  freq_case  freq_control      beta        se      pval         q
+0         24   0.634921      0.428571  1.050637  0.292604  0.000330  0.031997
+1         38   0.452381      0.650794 -0.872924  0.268601  0.001155  0.055993
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_47.out.log <== 25% z=5
+   community  freq_case  freq_control      beta        se      pval         q
+0         20   0.380952      0.587302 -0.879018  0.264600  0.000894  0.059867
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_50.out.log <== 25% z=20
+   community  freq_case  freq_control      beta        se      pval         q
+0          5   0.650794      0.809524 -1.242225  0.376679  0.000974  0.034101
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_55.out.log <== 30% z=3.5
+   community  freq_case  freq_control      beta        se      pval        q
+0         30   0.460317      0.650794 -0.832334  0.267215  0.001840  0.09247
+1         61   0.492063      0.317460  0.825891  0.278481  0.003020  0.09247
+2         71   0.523810      0.349206  0.784512  0.271402  0.003845  0.09247
+3         19   0.658730      0.507937  0.845314  0.303569  0.005360  0.09247
+4         49   0.698413      0.547619  0.813323  0.296482  0.006084  0.09247
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_59.out.log <== 30% z=20
+   community  freq_case  freq_control      beta        se      pval         q
+0          5   0.650794      0.809524 -1.242225  0.376679  0.000974  0.027281
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_65.out.log <== 35% z=5
+   community  freq_case  freq_control      beta        se      pval         q
+0         24   0.626984      0.452381  0.899100  0.292020  0.002078  0.089339
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_66.out.log <== 35% z=10
+   community  freq_case  freq_control      beta        se      pval         q
+0         21   0.547619      0.373016  0.903006  0.292058  0.001989  0.055691
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_73.out.log <== 40% z=3.5
+   community  freq_case  freq_control      beta        se      pval         q
+0         33   0.785714      0.595238  1.075607  0.308678  0.000493  0.024154
+1         18   0.674603      0.500000  0.929228  0.297290  0.001774  0.043464
+
+==> logs/commands_array_wrapper.bash.20260107080509745467840-992416_75.out.log <== 40% z=10
+   community  freq_case  freq_control      beta        se      pval         q
+0         18   0.587302      0.404762  0.891069  0.283426  0.001667  0.041676
+
 
