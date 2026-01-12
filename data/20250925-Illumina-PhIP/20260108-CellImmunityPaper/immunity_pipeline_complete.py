@@ -460,7 +460,13 @@ class ImmunityPhIPSeqPipeline:
         
         # Reset index to make peptide_id a column
         enriched_with_id = peptide_enriched.reset_index()
-        enriched_with_id.rename(columns={'index': 'peptide_id'}, inplace=True)
+        
+        # The index name might be None, 'index', or the actual index name
+        # Rename whatever the first column is to 'peptide_id'
+        if 'peptide_id' not in enriched_with_id.columns:
+            # Assume first column is the peptide_id
+            old_name = enriched_with_id.columns[0]
+            enriched_with_id.rename(columns={old_name: 'peptide_id'}, inplace=True)
         
         # Ensure peptide_id is same type in both dataframes
         enriched_with_id['peptide_id'] = enriched_with_id['peptide_id'].astype(str)
@@ -514,7 +520,13 @@ class ImmunityPhIPSeqPipeline:
         
         # Reset index to make peptide_id a column
         enriched_with_id = peptide_enriched.reset_index()
-        enriched_with_id.rename(columns={'index': 'peptide_id'}, inplace=True)
+        
+        # The index name might be None, 'index', or the actual index name
+        # Rename whatever the first column is to 'peptide_id'
+        if 'peptide_id' not in enriched_with_id.columns:
+            # Assume first column is the peptide_id
+            old_name = enriched_with_id.columns[0]
+            enriched_with_id.rename(columns={old_name: 'peptide_id'}, inplace=True)
         
         # Ensure peptide_id is same type in both dataframes
         enriched_with_id['peptide_id'] = enriched_with_id['peptide_id'].astype(str)
