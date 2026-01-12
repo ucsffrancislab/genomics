@@ -66,3 +66,86 @@ print(f"Data dimensions: {counts.shape}")
 print(f"Total reads per sample:\n{counts.sum(axis=0).describe()}")
 
 ```
+
+
+
+##	20260112
+
+Formating data to run in Claude's code.
+
+Testing on the known CMV AGS samples
+
+```bash
+
+mkdir CMV_test
+
+awk 'BEGIN{FS=OFS=","}(NR==1 || $6==0 || $6==1){print $1,$6}' /francislab/data1/refs/AGS/AGS.csv > CMV_test/CMV.csv
+
+```
+
+
+Just sample ids and peptide ids for JUST THE glioma serum AGS subjects
+
+```bash
+
+cut -d, -f1,3- ../20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv | datamash transpose -t, > tmp1.csv
+head -1 tmp1.csv > tmp2.csv
+tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+cut -d, -f1,10- tmp2.csv > tmp3.csv
+join --header -t, <( cut -d, -f1 CMV_test/CMV.csv ) tmp3.csv | datamash transpose -t, > CMV_test/phipseq_counts_experimental_only.csv
+
+```
+
+
+Format the VIR3 CSV
+
+Drop the duplicated 89962
+
+
+```bash
+
+zcat /francislab/data1/refs/PhIP-Seq/VIR3_clean.csv.gz \
+  | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
+  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
+  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
+  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
+  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
+  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
+  -e 's/New York virus (NYV)/New York virus/g' \
+  -e 's/Capsid scaffolding protein (Capsid protein P40) (Protease precursor) (pPR) (Virion structural gene 33 protein) \[Cleaved into: Assemblin (EC 3.4.21.97) (Capsid protein VP24) (Protease); Assembly protein (Capsid protein VP22A)\]/Capsid protein P40/g' \
+  -e 's/Tripartite terminase subunit UL15 homolog (DNA-packaging protein 45) (Terminase large subunit) \[Cleaved into: Gene 42 protein\]/Tripartite terminase subunit UL15 homolog/g' \
+  | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{gsub(/,/,"",$10);print $17,$10,$12,$21}' | sort | uniq | sort -t, -k1,1 > peptide_metadata.csv
+
+
+sed -i '1ipeptide_id,protein_name,organism,sequence' peptide_metadata.csv
+sed -i '/^89962,/d' peptide_metadata.csv
+chmod a-w peptide_metadata.csv
+
+```
+
+
+
+```bash
+
+head -1 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv > tmp1.csv
+tail -n +2 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv | sort -t, -k1,1 >> tmp1.csv
+
+join --header -t, CMV_test/CMV.csv tmp1.csv > tmp2.csv
+
+awk 'BEGIN{FS=OFS=","}($2==0){$2="control"}($2==1){$2="case"}{print $1,$2,$7,$8,$9}' tmp2.csv > tmp3.csv
+
+sed '1c\sample_id,status,age,sex,plate' tmp3.csv > CMV_test/sample_metadata.csv
+
+```
+
+
+
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name enrichment --wrap="./CMV_enrichment.py"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name casecontrol --wrap="./CMV_case_control_analysis.py"
+
+```
+
