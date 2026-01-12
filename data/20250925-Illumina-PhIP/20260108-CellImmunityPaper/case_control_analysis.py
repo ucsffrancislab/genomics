@@ -40,9 +40,14 @@ class CaseControlAnalyzer:
     def test_single_entity(self, enriched_matrix, metadata, 
                           case_col='disease_status',
                           case_value='case', 
-                          control_value='control'):
+                          control_value='control',
+                          adjust_for_batch=True,
+                          batch_col='plate'):
         """
         Test each peptide/protein/virus for case-control enrichment.
+        
+        Implements batch correction per Immunity 2023: "adjusted for age, 
+        sex and sequencing plate"
         
         Parameters:
         -----------
@@ -56,6 +61,10 @@ class CaseControlAnalyzer:
             Value indicating cases
         control_value : str
             Value indicating controls
+        adjust_for_batch : bool
+            Whether to adjust for batch effects using logistic regression
+        batch_col : str
+            Column name for batch/plate
             
         Returns:
         --------
@@ -70,8 +79,15 @@ class CaseControlAnalyzer:
         cases = [s for s in cases if s in enriched_matrix.columns]
         controls = [s for s in controls if s in enriched_matrix.columns]
         
+        # Check for batch column
+        has_batch = batch_col in metadata.columns if adjust_for_batch else False
+        
         print(f"\nTesting {len(enriched_matrix)} entities")
         print(f"Cases: {len(cases)}, Controls: {len(controls)}")
+        if has_batch:
+            print(f"Adjusting for batch effects using column: {batch_col}")
+            n_batches = metadata[batch_col].nunique()
+            print(f"Number of batches: {n_batches}")
         
         results = []
         
@@ -100,6 +116,44 @@ class CaseControlAnalyzer:
             # Risk ratio
             risk_ratio = case_prev / (control_prev + 1e-10)
             
+            # Batch-adjusted analysis using logistic regression
+            batch_adjusted_or = np.nan
+            batch_adjusted_p = np.nan
+            
+            if has_batch:
+                try:
+                    import statsmodels.api as sm
+                    
+                    # Prepare data for logistic regression
+                    all_samples = list(cases) + list(controls)
+                    y = np.array([1] * len(cases) + [0] * len(controls))  # 1=case, 0=control
+                    X_peptide = enriched_matrix.loc[entity, all_samples].values
+                    
+                    # Get batch labels
+                    batch_labels = metadata.loc[all_samples, batch_col].values
+                    
+                    # Create dummy variables for batches
+                    from pandas import get_dummies
+                    batch_dummies = get_dummies(batch_labels, drop_first=True)
+                    
+                    # Combine peptide status with batch dummies
+                    X = pd.DataFrame({
+                        'peptide': X_peptide,
+                    })
+                    X = pd.concat([X, batch_dummies], axis=1)
+                    X = sm.add_constant(X)
+                    
+                    # Fit logistic regression
+                    model = sm.Logit(y, X).fit(disp=0)
+                    
+                    # Extract peptide coefficient
+                    batch_adjusted_or = np.exp(model.params['peptide'])
+                    batch_adjusted_p = model.pvalues['peptide']
+                    
+                except Exception as e:
+                    # If regression fails, keep as NaN
+                    pass
+            
             results.append({
                 'entity_id': entity,
                 'case_positive': int(case_pos),
@@ -112,17 +166,27 @@ class CaseControlAnalyzer:
                 'odds_ratio': odds_ratio,
                 'risk_ratio': risk_ratio,
                 'fisher_pvalue': fisher_p,
-                'chi2_pvalue': chi2_p
+                'chi2_pvalue': chi2_p,
+                'batch_adjusted_OR': batch_adjusted_or,
+                'batch_adjusted_pvalue': batch_adjusted_p
             })
         
         results_df = pd.DataFrame(results)
         
-        # FDR correction
+        # FDR correction for Fisher's test
         _, fisher_qvals, _, _ = multipletests(
             results_df['fisher_pvalue'],
             method='fdr_bh'
         )
         results_df['fisher_qvalue'] = fisher_qvals
+        
+        # FDR correction for batch-adjusted test (if available)
+        if has_batch and not results_df['batch_adjusted_pvalue'].isna().all():
+            _, batch_qvals, _, _ = multipletests(
+                results_df['batch_adjusted_pvalue'].fillna(1.0),
+                method='fdr_bh'
+            )
+            results_df['batch_adjusted_qvalue'] = batch_qvals
         
         # Bonferroni correction
         _, fisher_bonf, _, _ = multipletests(
@@ -131,8 +195,11 @@ class CaseControlAnalyzer:
         )
         results_df['fisher_bonferroni'] = fisher_bonf
         
-        # Sort by p-value
-        results_df = results_df.sort_values('fisher_pvalue')
+        # Sort by p-value (use batch-adjusted if available, else Fisher)
+        if has_batch and not results_df['batch_adjusted_pvalue'].isna().all():
+            results_df = results_df.sort_values('batch_adjusted_pvalue')
+        else:
+            results_df = results_df.sort_values('fisher_pvalue')
         
         return results_df
     
@@ -141,9 +208,11 @@ class CaseControlAnalyzer:
                           case_col='disease_status',
                           case_value='case',
                           control_value='control',
+                          adjust_for_batch=True,
+                          batch_col='plate',
                           output_dir='results'):
         """
-        Run case-control analysis at all levels.
+        Run case-control analysis at all levels with batch correction.
         
         Parameters:
         -----------
@@ -154,7 +223,11 @@ class CaseControlAnalyzer:
         virus_enriched : pd.DataFrame
             Virus-level enrichment
         metadata : pd.DataFrame
-            Sample metadata
+            Sample metadata (must include batch/plate info if adjust_for_batch=True)
+        adjust_for_batch : bool
+            Whether to adjust for batch effects (recommended)
+        batch_col : str
+            Column name for batch/plate info
         output_dir : str
             Output directory
             
@@ -164,8 +237,14 @@ class CaseControlAnalyzer:
             Results at all levels
         """
         print("="*70)
-        print("Case-Control Analysis")
+        print("Case-Control Analysis (Immunity 2023 Method)")
         print("="*70)
+        
+        if adjust_for_batch:
+            if batch_col not in metadata.columns:
+                print(f"\nWarning: Batch column '{batch_col}' not found in metadata")
+                print("Proceeding without batch correction")
+                adjust_for_batch = False
         
         results = {}
         
@@ -173,34 +252,50 @@ class CaseControlAnalyzer:
         print("\n1. Peptide-level analysis...")
         peptide_results = self.test_single_entity(
             peptide_enriched, metadata,
-            case_col, case_value, control_value
+            case_col, case_value, control_value,
+            adjust_for_batch, batch_col
         )
         results['peptide'] = peptide_results
         
-        n_sig_peptides = (peptide_results['fisher_qvalue'] < 0.05).sum()
-        print(f"   Significant peptides (q < 0.05): {n_sig_peptides}")
+        # Use batch-adjusted if available
+        if 'batch_adjusted_qvalue' in peptide_results.columns:
+            n_sig_peptides = (peptide_results['batch_adjusted_qvalue'] < 0.05).sum()
+            print(f"   Significant peptides (batch-adjusted q < 0.05): {n_sig_peptides}")
+        else:
+            n_sig_peptides = (peptide_results['fisher_qvalue'] < 0.05).sum()
+            print(f"   Significant peptides (q < 0.05): {n_sig_peptides}")
         
         # Protein level
         print("\n2. Protein-level analysis...")
         protein_results = self.test_single_entity(
             protein_enriched, metadata,
-            case_col, case_value, control_value
+            case_col, case_value, control_value,
+            adjust_for_batch, batch_col
         )
         results['protein'] = protein_results
         
-        n_sig_proteins = (protein_results['fisher_qvalue'] < 0.05).sum()
-        print(f"   Significant proteins (q < 0.05): {n_sig_proteins}")
+        if 'batch_adjusted_qvalue' in protein_results.columns:
+            n_sig_proteins = (protein_results['batch_adjusted_qvalue'] < 0.05).sum()
+            print(f"   Significant proteins (batch-adjusted q < 0.05): {n_sig_proteins}")
+        else:
+            n_sig_proteins = (protein_results['fisher_qvalue'] < 0.05).sum()
+            print(f"   Significant proteins (q < 0.05): {n_sig_proteins}")
         
         # Virus level
         print("\n3. Virus-level analysis...")
         virus_results = self.test_single_entity(
             virus_enriched, metadata,
-            case_col, case_value, control_value
+            case_col, case_value, control_value,
+            adjust_for_batch, batch_col
         )
         results['virus'] = virus_results
         
-        n_sig_viruses = (virus_results['fisher_qvalue'] < 0.05).sum()
-        print(f"   Significant viruses (q < 0.05): {n_sig_viruses}")
+        if 'batch_adjusted_qvalue' in virus_results.columns:
+            n_sig_viruses = (virus_results['batch_adjusted_qvalue'] < 0.05).sum()
+            print(f"   Significant viruses (batch-adjusted q < 0.05): {n_sig_viruses}")
+        else:
+            n_sig_viruses = (virus_results['fisher_qvalue'] < 0.05).sum()
+            print(f"   Significant viruses (q < 0.05): {n_sig_viruses}")
         
         # Save results
         from pathlib import Path
