@@ -34,7 +34,7 @@ class ImmunityPhIPSeqPipeline:
     beads-only control.
     """
     
-    def __init__(self, rarefaction_depth=1_250_000, bonferroni_alpha=0.05):
+    def __init__(self, rarefaction_depth=1_250_000, bonferroni_alpha=0.05, n_jobs=1):
         """
         Initialize pipeline.
         
@@ -44,9 +44,13 @@ class ImmunityPhIPSeqPipeline:
             Target read depth for rarefaction (default: 1,250,000)
         bonferroni_alpha : float
             Significance threshold for Bonferroni correction (default: 0.05)
+        n_jobs : int
+            Number of parallel jobs for enrichment calling (default: 1)
+            Set to -1 to use all available CPUs
         """
         self.rarefaction_depth = rarefaction_depth
         self.bonferroni_alpha = bonferroni_alpha
+        self.n_jobs = n_jobs
         
     def load_counts(self, counts_file):
         """
@@ -332,6 +336,8 @@ class ImmunityPhIPSeqPipeline:
         Uses library complexity (estimated from sample distribution) as baseline,
         NOT a separate input/beads sample.
         
+        Now parallelized for speed!
+        
         Parameters:
         -----------
         rarefied_counts : pd.DataFrame
@@ -355,6 +361,9 @@ class ImmunityPhIPSeqPipeline:
         
         print(f"Bonferroni-corrected threshold: p < {threshold:.2e}")
         
+        if self.n_jobs != 1:
+            print(f"Using {self.n_jobs if self.n_jobs > 0 else 'all available'} CPU cores for parallel processing...")
+        
         enriched = pd.DataFrame(
             0,
             index=rarefied_counts.index,
@@ -368,17 +377,29 @@ class ImmunityPhIPSeqPipeline:
             dtype=float
         )
         
-        for i, sample in enumerate(rarefied_counts.columns):
-            ip_counts_sample = rarefied_counts[sample].values
+        # Parallelize across samples
+        from joblib import Parallel, delayed
+        
+        def process_sample(sample, ip_counts_sample):
+            """Process a single sample."""
             pvals = self.fit_generalized_poisson_per_sample(
                 library_complexity.values,
                 ip_counts_sample
             )
-            
+            enriched_sample = (pvals < threshold).astype(int)
+            n_enriched = enriched_sample.sum()
+            return sample, pvals, enriched_sample, n_enriched
+        
+        # Run in parallel
+        results = Parallel(n_jobs=self.n_jobs, verbose=1)(
+            delayed(process_sample)(sample, rarefied_counts[sample].values)
+            for sample in rarefied_counts.columns
+        )
+        
+        # Collect results
+        for sample, pvals, enriched_sample, n_enriched in results:
             pvalues_df[sample] = pvals
-            enriched[sample] = (pvals < threshold).astype(int)
-            
-            n_enriched = enriched[sample].sum()
+            enriched[sample] = enriched_sample
             print(f"  {sample}: {n_enriched} enriched peptides")
         
         total_enriched = (enriched.sum(axis=1) > 0).sum()
@@ -426,7 +447,7 @@ class ImmunityPhIPSeqPipeline:
         Parameters:
         -----------
         peptide_enriched : pd.DataFrame
-            Binary enrichment at peptide level
+            Binary enrichment at peptide level (peptide_id as INDEX)
         peptide_metadata : pd.DataFrame
             Peptide annotations with protein_name
             
@@ -437,19 +458,34 @@ class ImmunityPhIPSeqPipeline:
         """
         print("\nAggregating peptides to protein level...")
         
-        # Merge enrichment with metadata
-        enriched_with_meta = peptide_enriched.copy()
-        enriched_with_meta = enriched_with_meta.merge(
-            peptide_metadata[['peptide_id', 'protein_name']],
-            left_index=True,
-            right_on='peptide_id',
+        # Reset index to make peptide_id a column
+        enriched_with_id = peptide_enriched.reset_index()
+        enriched_with_id.rename(columns={'index': 'peptide_id'}, inplace=True)
+        
+        # Ensure peptide_id is same type in both dataframes
+        enriched_with_id['peptide_id'] = enriched_with_id['peptide_id'].astype(str)
+        peptide_metadata_copy = peptide_metadata.copy()
+        peptide_metadata_copy['peptide_id'] = peptide_metadata_copy['peptide_id'].astype(str)
+        
+        # Merge with metadata
+        enriched_with_meta = enriched_with_id.merge(
+            peptide_metadata_copy[['peptide_id', 'protein_name']],
+            on='peptide_id',
             how='left'
         )
         
+        # Check for missing protein names
+        missing_protein = enriched_with_meta['protein_name'].isna().sum()
+        if missing_protein > 0:
+            print(f"  Warning: {missing_protein} peptides missing protein_name, will be dropped")
+            enriched_with_meta = enriched_with_meta.dropna(subset=['protein_name'])
+        
+        # Get sample columns (exclude peptide_id and protein_name)
+        sample_cols = [col for col in enriched_with_meta.columns 
+                      if col not in ['peptide_id', 'protein_name']]
+        
         # Group by protein, take max (any peptide positive = protein positive)
-        protein_enriched = enriched_with_meta.groupby('protein_name')[
-            peptide_enriched.columns
-        ].max()
+        protein_enriched = enriched_with_meta.groupby('protein_name')[sample_cols].max()
         
         print(f"Aggregated to {len(protein_enriched)} proteins")
         
@@ -465,7 +501,7 @@ class ImmunityPhIPSeqPipeline:
         Parameters:
         -----------
         peptide_enriched : pd.DataFrame
-            Binary enrichment at peptide level
+            Binary enrichment at peptide level (peptide_id as INDEX)
         peptide_metadata : pd.DataFrame
             Peptide annotations with organism
             
@@ -476,19 +512,34 @@ class ImmunityPhIPSeqPipeline:
         """
         print("\nAggregating peptides to virus/organism level...")
         
-        # Merge enrichment with metadata
-        enriched_with_meta = peptide_enriched.copy()
-        enriched_with_meta = enriched_with_meta.merge(
-            peptide_metadata[['peptide_id', 'organism']],
-            left_index=True,
-            right_on='peptide_id',
+        # Reset index to make peptide_id a column
+        enriched_with_id = peptide_enriched.reset_index()
+        enriched_with_id.rename(columns={'index': 'peptide_id'}, inplace=True)
+        
+        # Ensure peptide_id is same type in both dataframes
+        enriched_with_id['peptide_id'] = enriched_with_id['peptide_id'].astype(str)
+        peptide_metadata_copy = peptide_metadata.copy()
+        peptide_metadata_copy['peptide_id'] = peptide_metadata_copy['peptide_id'].astype(str)
+        
+        # Merge with metadata
+        enriched_with_meta = enriched_with_id.merge(
+            peptide_metadata_copy[['peptide_id', 'organism']],
+            on='peptide_id',
             how='left'
         )
         
+        # Check for missing organism
+        missing_organism = enriched_with_meta['organism'].isna().sum()
+        if missing_organism > 0:
+            print(f"  Warning: {missing_organism} peptides missing organism, will be dropped")
+            enriched_with_meta = enriched_with_meta.dropna(subset=['organism'])
+        
+        # Get sample columns (exclude peptide_id and organism)
+        sample_cols = [col for col in enriched_with_meta.columns 
+                      if col not in ['peptide_id', 'organism']]
+        
         # Group by organism, take max (any peptide positive = virus positive)
-        virus_enriched = enriched_with_meta.groupby('organism')[
-            peptide_enriched.columns
-        ].max()
+        virus_enriched = enriched_with_meta.groupby('organism')[sample_cols].max()
         
         print(f"Aggregated to {len(virus_enriched)} viruses/organisms")
         
@@ -647,10 +698,11 @@ class ImmunityPhIPSeqPipeline:
 # Example usage
 if __name__ == "__main__":
     
-    # Initialize pipeline
+    # Initialize pipeline with parallel processing
     pipeline = ImmunityPhIPSeqPipeline(
         rarefaction_depth=1_250_000,
-        bonferroni_alpha=0.05
+        bonferroni_alpha=0.05,
+        n_jobs=-1  # Use all available CPUs, or set to specific number like 8
     )
     
     # Run complete pipeline
