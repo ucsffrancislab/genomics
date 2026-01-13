@@ -5,6 +5,7 @@ from immunity_pipeline_complete import ImmunityPhIPSeqPipeline
 # Initialize pipeline with threshold based on literature
 # CMV study used threshold of 4 proteins for virus seropositivity
 pipeline = ImmunityPhIPSeqPipeline(
+    drop_low_depth=True,  # Drop samples with < 1.25M reads (recommended)
     rarefaction_depth=1_250_000,
     bonferroni_alpha=0.05,
     n_jobs=-1,  # Use all CPUs
