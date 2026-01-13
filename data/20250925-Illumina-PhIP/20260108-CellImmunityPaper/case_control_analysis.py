@@ -27,7 +27,7 @@ class CaseControlAnalyzer:
         -----------
         metadata_file : str
             Path to sample metadata CSV
-            Expected columns: sample_id, disease_status (or similar)
+            Expected columns: sample_id, status (or similar)
             
         Returns:
         --------
@@ -38,7 +38,7 @@ class CaseControlAnalyzer:
         return metadata
     
     def test_single_entity(self, enriched_matrix, metadata, 
-                          case_col='disease_status',
+                          case_col='status',
                           case_value='case', 
                           control_value='control',
                           adjust_for_batch=True,
@@ -205,7 +205,7 @@ class CaseControlAnalyzer:
     
     def analyze_all_levels(self, peptide_enriched, protein_enriched, 
                           virus_enriched, metadata,
-                          case_col='disease_status',
+                          case_col='status',
                           case_value='case',
                           control_value='control',
                           adjust_for_batch=True,
@@ -378,7 +378,7 @@ class CaseControlAnalyzer:
         return fig
     
     def create_heatmap(self, enriched_matrix, metadata, results_df,
-                      top_n=50, case_col='disease_status',
+                      top_n=50, case_col='status',
                       case_value='case', control_value='control',
                       output_file=None):
         """
@@ -546,7 +546,7 @@ if __name__ == "__main__":
         protein_enriched,
         virus_enriched,
         metadata,
-        case_col='cancer_status',
+        case_col='status',
         case_value='case',
         control_value='control',
         output_dir='results/case_control'

@@ -87,12 +87,18 @@ awk 'BEGIN{FS=OFS=","}(NR==1 || $6==0 || $6==1){print $1,$6}' /francislab/data1/
 Just sample ids and peptide ids for JUST THE glioma serum AGS subjects
 
 ```bash
+peptide_id,sample_001,sample_002,...,sample_1000
+pep_0001,150,203,...,89
+pep_0002,5,8,...,23
+```
+
+```bash
 
 cut -d, -f1,3- ../20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv | datamash transpose -t, > tmp1.csv
 head -1 tmp1.csv > tmp2.csv
 tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
 cut -d, -f1,10- tmp2.csv > tmp3.csv
-join --header -t, <( cut -d, -f1 CMV_test/CMV.csv ) tmp3.csv | datamash transpose -t, > CMV_test/phipseq_counts_experimental_only.csv
+join --header -t, <( cut -d, -f1 CMV_test/CMV.csv ) tmp3.csv | datamash transpose -t, | sed '1s/^UCSFid/peptide_id/' > CMV_test/phipseq_counts_experimental_only.csv
 
 ```
 
@@ -143,9 +149,9 @@ sed '1c\sample_id,status,age,sex,plate' tmp3.csv > CMV_test/sample_metadata.csv
 
 ```bash
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name enrichment --wrap="./CMV_enrichment.py"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./CMV_enrichment.py"
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=16 --mem=120G --export=None --job-name casecontrol --wrap="./CMV_case_control_analysis.py"
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./CMV_case_control_analysis.py"
 
 ```
 
