@@ -168,7 +168,7 @@ class ImmunityPhIPSeqPipeline:
         print(f"Loaded metadata for {len(metadata)} samples")
         return metadata
     
-    def rarefy_counts(self, counts_df):
+    def rarefy_counts(self, counts_df, drop_low_depth=True):
         """
         Rarefy counts to target depth using random subsampling.
         
@@ -176,6 +176,9 @@ class ImmunityPhIPSeqPipeline:
         -----------
         counts_df : pd.DataFrame
             Raw counts (peptides x samples)
+        drop_low_depth : bool
+            If True, drop samples with reads below rarefaction_depth (default: True)
+            If False, keep low-depth samples with their original counts
         
         Returns:
         --------
@@ -183,6 +186,10 @@ class ImmunityPhIPSeqPipeline:
             Rarefied counts
         """
         print(f"\nRarefying counts to {self.rarefaction_depth:,} reads per sample...")
+        if drop_low_depth:
+            print(f"  Samples below {self.rarefaction_depth:,} reads will be DROPPED")
+        else:
+            print(f"  Samples below {self.rarefaction_depth:,} reads will be KEPT (not rarefied)")
         
         from numpy.random import default_rng
         rng = default_rng(42)  # For reproducibility
@@ -193,14 +200,21 @@ class ImmunityPhIPSeqPipeline:
             dtype=int
         )
         
+        samples_to_drop = []
+        
         for sample in counts_df.columns:
             sample_counts = counts_df[sample].values.astype(int)
             total = sample_counts.sum()
             
             if total < self.rarefaction_depth:
-                print(f"  Warning: {sample} has only {total:,} reads (below target)")
-                rarefied[sample] = sample_counts
-                continue
+                if drop_low_depth:
+                    print(f"  DROPPING: {sample} has only {total:,} reads (below target)")
+                    samples_to_drop.append(sample)
+                    continue
+                else:
+                    print(f"  Warning: {sample} has only {total:,} reads (below target, keeping original counts)")
+                    rarefied[sample] = sample_counts
+                    continue
             
             # Create pool of peptide indices weighted by counts
             peptide_pool = np.repeat(
@@ -225,7 +239,14 @@ class ImmunityPhIPSeqPipeline:
             if sample == counts_df.columns[0]:  # First sample
                 print(f"  {sample}: {total:,} → {self.rarefaction_depth:,} reads")
         
-        print(f"Rarefaction complete. Total samples: {len(rarefied.columns)}")
+        # Drop low-depth samples if requested
+        if drop_low_depth and len(samples_to_drop) > 0:
+            rarefied = rarefied.drop(columns=samples_to_drop)
+            print(f"\nDropped {len(samples_to_drop)} low-depth samples")
+            print(f"Remaining samples: {len(rarefied.columns)}")
+        else:
+            print(f"Rarefaction complete. Total samples: {len(rarefied.columns)}")
+        
         return rarefied
     
     def estimate_library_complexity(self, rarefied_counts):
@@ -556,7 +577,8 @@ class ImmunityPhIPSeqPipeline:
     def run_complete_pipeline(self, counts_file, peptide_metadata_file,
                              sample_metadata_file=None,
                              output_dir="results",
-                             skip_filtering=True):
+                             skip_filtering=True,
+                             drop_low_depth=True):
         """
         Run complete pipeline from counts to seropositivity at all levels.
         
@@ -572,6 +594,9 @@ class ImmunityPhIPSeqPipeline:
             Directory for output files
         skip_filtering : bool
             If True, skip prevalence-based peptide filtering (recommended)
+        drop_low_depth : bool
+            If True, drop samples with reads below rarefaction_depth (default: True)
+            If False, keep low-depth samples with their original counts
             
         Returns:
         --------
@@ -589,6 +614,7 @@ class ImmunityPhIPSeqPipeline:
         print("- Protein names prefixed with organism (organism::protein_name)")
         print(f"- Protein threshold: {self.min_peptides_per_protein} enriched peptides")
         print(f"- Virus threshold: {self.min_proteins_per_virus} seropositive proteins")
+        print(f"- Low-depth samples: {'DROP' if drop_low_depth else 'KEEP'}")
         print("="*70)
         
         # Step 1: Load data
@@ -600,7 +626,7 @@ class ImmunityPhIPSeqPipeline:
             sample_metadata = self.load_sample_metadata(sample_metadata_file)
         
         # Step 2: Rarefy
-        rarefied = self.rarefy_counts(counts)
+        rarefied = self.rarefy_counts(counts, drop_low_depth=drop_low_depth)
         
         # Step 3: Call enriched peptides
         enriched, pvalues = self.call_enriched_peptides(rarefied)
@@ -660,7 +686,8 @@ class ImmunityPhIPSeqPipeline:
             'bonferroni_alpha': self.bonferroni_alpha,
             'min_peptides_per_protein': self.min_peptides_per_protein,
             'min_proteins_per_virus': self.min_proteins_per_virus,
-            'skip_filtering': skip_filtering
+            'skip_filtering': skip_filtering,
+            'drop_low_depth': drop_low_depth
         }
         pd.Series(params).to_csv(output_path / "pipeline_parameters.csv")
         
@@ -707,7 +734,8 @@ if __name__ == "__main__":
         counts_file="phipseq_counts.csv",
         peptide_metadata_file="peptide_metadata.csv",
         sample_metadata_file="sample_metadata.csv",
-        output_dir="results"
+        output_dir="results",
+        drop_low_depth=True  # Drop samples below rarefaction depth (recommended)
     )
     
     # Print summary
