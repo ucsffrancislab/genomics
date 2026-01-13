@@ -155,3 +155,27 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 
 
 ```
 
+
+
+
+```bash
+
+head -1 CMV_test/results/case_control/case_control_peptide.csv > tmp1.csv
+tail -n +2 CMV_test/results/case_control/case_control_peptide.csv | sort -t, -k1,1 >> tmp1.csv
+join --header -t, peptide_metadata.csv tmp1.csv > tmp2.csv
+head -1 tmp2.csv > CMV_test/results/case_control/case_control_peptide_with_protein_species.csv
+tail -n +2 tmp2.csv | sort -t, -k14g,14 >> CMV_test/results/case_control/case_control_peptide_with_protein_species.csv
+
+```
+
+
+I'd call this a successful test of peptides analysis. By far the top peptides are HHV5 which is known.
+The problem is with the protein and virus seropositivity calls.
+It looks like it only takes 1 peptide to result in a positive seropositivity.
+Moving forward, we'd need to do something about that.
+
+
+
+
+
+
