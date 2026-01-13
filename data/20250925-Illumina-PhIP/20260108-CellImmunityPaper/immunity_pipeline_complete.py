@@ -357,9 +357,16 @@ class ImmunityPhIPSeqPipeline:
         library_complexity = self.estimate_library_complexity(rarefied_counts)
         
         n_peptides = len(rarefied_counts)
+        n_samples = len(rarefied_counts.columns)
+        
+        # Calculate threshold
+        # Note: threshold is applied PER SAMPLE, so we correct for n_peptides only
         threshold = self.bonferroni_alpha / n_peptides
         
-        print(f"Bonferroni-corrected threshold: p < {threshold:.2e}")
+        print(f"Number of peptides: {n_peptides:,}")
+        print(f"Number of samples: {n_samples}")
+        print(f"Bonferroni alpha: {self.bonferroni_alpha}")
+        print(f"Per-peptide threshold: p < {threshold:.2e}")
         
         if self.n_jobs != 1:
             print(f"Using {self.n_jobs if self.n_jobs > 0 else 'all available'} CPU cores for parallel processing...")
@@ -397,13 +404,20 @@ class ImmunityPhIPSeqPipeline:
         )
         
         # Collect results
+        total_enriched_per_sample = []
         for sample, pvals, enriched_sample, n_enriched in results:
             pvalues_df[sample] = pvals
             enriched[sample] = enriched_sample
+            total_enriched_per_sample.append(n_enriched)
             print(f"  {sample}: {n_enriched} enriched peptides")
         
         total_enriched = (enriched.sum(axis=1) > 0).sum()
+        avg_per_sample = np.mean(total_enriched_per_sample)
+        
         print(f"\nTotal unique enriched peptides: {total_enriched}")
+        print(f"Average enriched per sample: {avg_per_sample:.1f}")
+        print(f"Min per sample: {min(total_enriched_per_sample)}")
+        print(f"Max per sample: {max(total_enriched_per_sample)}")
         
         return enriched, pvalues_df
     
@@ -447,53 +461,47 @@ class ImmunityPhIPSeqPipeline:
         Parameters:
         -----------
         peptide_enriched : pd.DataFrame
-            Binary enrichment at peptide level (peptide_id as INDEX)
+            Binary enrichment at peptide level (peptides as ROWS, samples as COLUMNS)
         peptide_metadata : pd.DataFrame
             Peptide annotations with protein_name
             
         Returns:
         --------
         protein_enriched : pd.DataFrame
-            Binary enrichment at protein level
+            Binary enrichment at protein level (proteins as ROWS, samples as COLUMNS)
         """
         print("\nAggregating peptides to protein level...")
         
-        # Reset index to make peptide_id a column
-        enriched_with_id = peptide_enriched.reset_index()
-        
-        # The index name might be None, 'index', or the actual index name
-        # Rename whatever the first column is to 'peptide_id'
-        if 'peptide_id' not in enriched_with_id.columns:
-            # Assume first column is the peptide_id
-            old_name = enriched_with_id.columns[0]
-            enriched_with_id.rename(columns={old_name: 'peptide_id'}, inplace=True)
-        
-        # Ensure peptide_id is same type in both dataframes
-        enriched_with_id['peptide_id'] = enriched_with_id['peptide_id'].astype(str)
+        # Create a mapping of peptide_id to protein_name
+        # Ensure both are strings
         peptide_metadata_copy = peptide_metadata.copy()
         peptide_metadata_copy['peptide_id'] = peptide_metadata_copy['peptide_id'].astype(str)
+        peptide_to_protein = peptide_metadata_copy.set_index('peptide_id')['protein_name'].to_dict()
         
-        # Merge with metadata
-        enriched_with_meta = enriched_with_id.merge(
-            peptide_metadata_copy[['peptide_id', 'protein_name']],
-            on='peptide_id',
-            how='left'
-        )
+        # Map peptide index to protein names
+        peptide_index_str = peptide_enriched.index.astype(str)
+        protein_names = peptide_index_str.map(lambda x: peptide_to_protein.get(x, None))
         
-        # Check for missing protein names
-        missing_protein = enriched_with_meta['protein_name'].isna().sum()
-        if missing_protein > 0:
-            print(f"  Warning: {missing_protein} peptides missing protein_name, will be dropped")
-            enriched_with_meta = enriched_with_meta.dropna(subset=['protein_name'])
+        # Check for missing mappings
+        n_missing = protein_names.isna().sum()
+        if n_missing > 0:
+            print(f"  Warning: {n_missing} peptides missing protein_name mapping, will be dropped")
         
-        # Get sample columns (exclude peptide_id and protein_name)
-        sample_cols = [col for col in enriched_with_meta.columns 
-                      if col not in ['peptide_id', 'protein_name']]
+        # Create temporary dataframe with protein names
+        temp_df = peptide_enriched.copy()
+        temp_df['protein_name'] = protein_names
+        
+        # Drop peptides without protein mapping
+        temp_df = temp_df.dropna(subset=['protein_name'])
+        
+        # Get sample columns (everything except protein_name)
+        sample_cols = [col for col in temp_df.columns if col != 'protein_name']
         
         # Group by protein, take max (any peptide positive = protein positive)
-        protein_enriched = enriched_with_meta.groupby('protein_name')[sample_cols].max()
+        # This maintains proteins as rows, samples as columns
+        protein_enriched = temp_df.groupby('protein_name')[sample_cols].max()
         
-        print(f"Aggregated to {len(protein_enriched)} proteins")
+        print(f"Aggregated {len(peptide_enriched)} peptides to {len(protein_enriched)} proteins")
         
         return protein_enriched
     
@@ -507,53 +515,47 @@ class ImmunityPhIPSeqPipeline:
         Parameters:
         -----------
         peptide_enriched : pd.DataFrame
-            Binary enrichment at peptide level (peptide_id as INDEX)
+            Binary enrichment at peptide level (peptides as ROWS, samples as COLUMNS)
         peptide_metadata : pd.DataFrame
             Peptide annotations with organism
             
         Returns:
         --------
         virus_enriched : pd.DataFrame
-            Binary enrichment at virus level
+            Binary enrichment at virus level (viruses as ROWS, samples as COLUMNS)
         """
         print("\nAggregating peptides to virus/organism level...")
         
-        # Reset index to make peptide_id a column
-        enriched_with_id = peptide_enriched.reset_index()
-        
-        # The index name might be None, 'index', or the actual index name
-        # Rename whatever the first column is to 'peptide_id'
-        if 'peptide_id' not in enriched_with_id.columns:
-            # Assume first column is the peptide_id
-            old_name = enriched_with_id.columns[0]
-            enriched_with_id.rename(columns={old_name: 'peptide_id'}, inplace=True)
-        
-        # Ensure peptide_id is same type in both dataframes
-        enriched_with_id['peptide_id'] = enriched_with_id['peptide_id'].astype(str)
+        # Create a mapping of peptide_id to organism
+        # Ensure both are strings
         peptide_metadata_copy = peptide_metadata.copy()
         peptide_metadata_copy['peptide_id'] = peptide_metadata_copy['peptide_id'].astype(str)
+        peptide_to_organism = peptide_metadata_copy.set_index('peptide_id')['organism'].to_dict()
         
-        # Merge with metadata
-        enriched_with_meta = enriched_with_id.merge(
-            peptide_metadata_copy[['peptide_id', 'organism']],
-            on='peptide_id',
-            how='left'
-        )
+        # Map peptide index to organism names
+        peptide_index_str = peptide_enriched.index.astype(str)
+        organism_names = peptide_index_str.map(lambda x: peptide_to_organism.get(x, None))
         
-        # Check for missing organism
-        missing_organism = enriched_with_meta['organism'].isna().sum()
-        if missing_organism > 0:
-            print(f"  Warning: {missing_organism} peptides missing organism, will be dropped")
-            enriched_with_meta = enriched_with_meta.dropna(subset=['organism'])
+        # Check for missing mappings
+        n_missing = organism_names.isna().sum()
+        if n_missing > 0:
+            print(f"  Warning: {n_missing} peptides missing organism mapping, will be dropped")
         
-        # Get sample columns (exclude peptide_id and organism)
-        sample_cols = [col for col in enriched_with_meta.columns 
-                      if col not in ['peptide_id', 'organism']]
+        # Create temporary dataframe with organism names
+        temp_df = peptide_enriched.copy()
+        temp_df['organism'] = organism_names
+        
+        # Drop peptides without organism mapping
+        temp_df = temp_df.dropna(subset=['organism'])
+        
+        # Get sample columns (everything except organism)
+        sample_cols = [col for col in temp_df.columns if col != 'organism']
         
         # Group by organism, take max (any peptide positive = virus positive)
-        virus_enriched = enriched_with_meta.groupby('organism')[sample_cols].max()
+        # This maintains viruses as rows, samples as columns
+        virus_enriched = temp_df.groupby('organism')[sample_cols].max()
         
-        print(f"Aggregated to {len(virus_enriched)} viruses/organisms")
+        print(f"Aggregated {len(peptide_enriched)} peptides to {len(virus_enriched)} viruses/organisms")
         
         return virus_enriched
     
@@ -564,7 +566,7 @@ class ImmunityPhIPSeqPipeline:
         Parameters:
         -----------
         enriched_df : pd.DataFrame
-            Binary enrichment matrix
+            Binary enrichment matrix (entities as ROWS, samples as COLUMNS)
         level_name : str
             Level name for reporting (peptide/protein/virus)
             
@@ -575,6 +577,7 @@ class ImmunityPhIPSeqPipeline:
         """
         stats = []
         
+        # enriched_df should have entities as rows, samples as columns
         for entity in enriched_df.index:
             n_positive = enriched_df.loc[entity].sum()
             n_total = len(enriched_df.columns)
