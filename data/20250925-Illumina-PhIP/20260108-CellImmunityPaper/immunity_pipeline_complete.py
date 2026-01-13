@@ -489,12 +489,12 @@ class ImmunityPhIPSeqPipeline:
         print(f"\nAggregating proteins to virus level (threshold: {self.min_proteins_per_virus} proteins)...")
         
         # Extract organism from composite protein name (organism::protein_name)
-        # The protein index should already have organism prefix
-        split_names = protein_enriched.index.str.split('::', expand=True)
-        if split_names.shape[1] >= 1:
-            organisms = split_names[0].values  # Get first column and convert to array
-        else:
-            raise ValueError("Protein names do not contain '::' delimiter. Ensure composite_protein_name was created.")
+        # Use str.split with n=1 to split only on first occurrence
+        organisms = protein_enriched.index.str.split('::', n=1).str[0]
+        
+        # Verify that we have valid organism names
+        if organisms.isna().any():
+            raise ValueError("Some protein names do not contain '::' delimiter. Ensure composite_protein_name was created.")
         
         # Create temporary dataframe with organism names
         temp_df = protein_enriched.copy()
