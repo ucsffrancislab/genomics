@@ -14,12 +14,28 @@ metadata = pd.read_csv("CMV_test/sample_metadata.csv", index_col=0)
 
 # After collapsing replicates, we have subjects as columns
 # But metadata still has all samples
-# Create subject-level metadata (one row per subject)
+# Create subject-level metadata - keep first occurrence of each subject
+# IMPORTANT: Check that status/plate don't vary within a subject!
 print("Creating subject-level metadata...")
+print(f"  Original samples: {len(metadata)}")
+
+# Check for inconsistencies within subjects
+status_check = metadata.groupby('subject_id')['status'].nunique()
+if (status_check > 1).any():
+    print("WARNING: Some subjects have different status values across replicates!")
+    print(status_check[status_check > 1])
+
+# Take first row for each subject (they should all be the same)
 metadata_subjects = metadata.groupby('subject_id').first()
 
-print(f"Subjects in enrichment data: {len(peptide_enriched.columns)}")
-print(f"Subjects in metadata: {len(metadata_subjects)}")
+# Verify the status column is present
+print(f"  Unique subjects: {len(metadata_subjects)}")
+print(f"  Status column present: {'status' in metadata_subjects.columns}")
+print(f"  Status distribution: {metadata_subjects['status'].value_counts().to_dict()}")
+
+# Check overlap with enrichment data
+common_subjects = peptide_enriched.columns.intersection(metadata_subjects.index)
+print(f"  Subjects in both enrichment and metadata: {len(common_subjects)}")
 
 # Create output directory
 os.makedirs('CMV_test/results/case_control', exist_ok=True)
@@ -35,6 +51,7 @@ results = analyzer.test_single_entity(
 )
 
 # Apply FDR correction
+print("\nApplying FDR correction...")
 results = analyzer.apply_fdr_correction(results)
 
 # Save results

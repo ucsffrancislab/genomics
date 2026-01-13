@@ -203,6 +203,50 @@ class CaseControlAnalyzer:
         
         return results_df
     
+    def apply_fdr_correction(self, results_df, alpha=0.05):
+        """
+        Apply FDR correction to p-values.
+        
+        Parameters:
+        -----------
+        results_df : pd.DataFrame
+            Results from test_single_entity
+        alpha : float
+            FDR threshold (default: 0.05)
+            
+        Returns:
+        --------
+        results_df : pd.DataFrame
+            Results with FDR column added
+        """
+        from statsmodels.stats.multitest import multipletests
+        
+        # Determine which p-value column to use
+        if 'batch_adjusted_pvalue' in results_df.columns:
+            pval_col = 'batch_adjusted_pvalue'
+        elif 'pvalue' in results_df.columns:
+            pval_col = 'pvalue'
+        elif 'fisher_pvalue' in results_df.columns:
+            pval_col = 'fisher_pvalue'
+        else:
+            raise ValueError("No p-value column found in results")
+        
+        print(f"Applying FDR correction to {pval_col}...")
+        
+        # Apply Benjamini-Hochberg FDR correction
+        reject, pvals_corrected, alphacSidak, alphacBonf = multipletests(
+            results_df[pval_col], 
+            alpha=alpha, 
+            method='fdr_bh'
+        )
+        
+        results_df['fdr'] = pvals_corrected
+        results_df['significant_fdr'] = reject
+        
+        print(f"  Significant at FDR < {alpha}: {reject.sum()}")
+        
+        return results_df
+    
     def analyze_all_levels(self, peptide_enriched, protein_enriched, 
                           virus_enriched, metadata,
                           case_col='status',
