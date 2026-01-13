@@ -1,16 +1,17 @@
 """
-Complete PhIPSeq Analysis Pipeline - CORRECTED VERSION
+Complete PhIPSeq Analysis Pipeline - VERSION 14
 Based on Andreu-Sánchez et al., Immunity 2023
 
-Key corrections:
-1. Uses phage library reads (not separate input/beads sample)
-2. Includes batch/plate correction for downstream analysis
-3. Generates null distribution PER SAMPLE from library complexity
+Key Updates in V14:
+1. Protein names now include virus prefix (organism::protein_name)
+2. Adjustable thresholds for protein-level seropositivity
+3. Adjustable thresholds for virus-level seropositivity
+4. Based on VirScan literature: threshold by number of proteins/peptides
 
 Processes VirScan alignment counts and outputs seropositivity at:
 - Peptide level
-- Protein level  
-- Virus level
+- Protein level (with adjustable threshold)
+- Virus level (with adjustable threshold)
 """
 
 import pandas as pd
@@ -24,17 +25,20 @@ from pathlib import Path
 
 class ImmunityPhIPSeqPipeline:
     """
-    Complete pipeline implementing Immunity 2023 methods.
+    Complete pipeline implementing Immunity 2023 methods with adjustable thresholds.
     
-    Key insight from paper: "null distributions per input level 
-    (number of reads per clone without IP) were generated in each sample"
-    
-    This means they use the PHAGE LIBRARY complexity (reads per peptide 
-    in the library itself) to model expected enrichment, NOT a separate
-    beads-only control.
+    Key improvements:
+    - Protein names are prefixed with organism (organism::protein_name)
+    - Protein seropositivity requires minimum number of enriched peptides
+    - Virus seropositivity requires minimum number of enriched proteins
     """
     
-    def __init__(self, rarefaction_depth=1_250_000, bonferroni_alpha=0.05, n_jobs=1):
+    def __init__(self, 
+                 rarefaction_depth=1_250_000, 
+                 bonferroni_alpha=0.05, 
+                 n_jobs=1,
+                 min_peptides_per_protein=2,
+                 min_proteins_per_virus=2):
         """
         Initialize pipeline.
         
@@ -47,10 +51,19 @@ class ImmunityPhIPSeqPipeline:
         n_jobs : int
             Number of parallel jobs for enrichment calling (default: 1)
             Set to -1 to use all available CPUs
+        min_peptides_per_protein : int
+            Minimum enriched peptides required for protein seropositivity (default: 2)
+            Set to 1 for "any peptide positive" behavior
+        min_proteins_per_virus : int
+            Minimum seropositive proteins required for virus seropositivity (default: 2)
+            Set to 1 for "any protein positive" behavior
+            Based on literature: CMV seropositivity used threshold of 4 proteins
         """
         self.rarefaction_depth = rarefaction_depth
         self.bonferroni_alpha = bonferroni_alpha
         self.n_jobs = n_jobs
+        self.min_peptides_per_protein = min_peptides_per_protein
+        self.min_proteins_per_virus = min_proteins_per_virus
         
     def load_counts(self, counts_file):
         """
@@ -78,6 +91,8 @@ class ImmunityPhIPSeqPipeline:
         """
         Load peptide annotations (peptide_id, protein, virus/organism).
         
+        Creates a composite protein identifier: organism::protein_name
+        
         Parameters:
         -----------
         metadata_file : str
@@ -87,7 +102,7 @@ class ImmunityPhIPSeqPipeline:
         Returns:
         --------
         metadata_df : pd.DataFrame
-            Peptide annotations
+            Peptide annotations with composite_protein_name column
         """
         print("Loading peptide metadata...")
         metadata = pd.read_csv(metadata_file)
@@ -107,6 +122,15 @@ class ImmunityPhIPSeqPipeline:
                 col_mapping[col] = 'organism'
         
         metadata.rename(columns=col_mapping, inplace=True)
+        
+        # Create composite protein name: organism::protein_name
+        if 'organism' in metadata.columns and 'protein_name' in metadata.columns:
+            metadata['composite_protein_name'] = (
+                metadata['organism'].astype(str) + '::' + metadata['protein_name'].astype(str)
+            )
+            print(f"Created composite protein names (organism::protein_name)")
+        else:
+            warnings.warn("Could not create composite protein names - missing organism or protein_name")
         
         print(f"Loaded metadata for {len(metadata)} peptides")
         return metadata
@@ -221,262 +245,189 @@ class ImmunityPhIPSeqPipeline:
             
         Returns:
         --------
-        library_complexity : pd.Series
-            Estimated input read count for each peptide
+        lambda_estimates : pd.Series
+            Estimated library complexity for each peptide
         """
-        print("\nEstimating phage library complexity from sample distribution...")
+        print("\nEstimating library complexity for each peptide...")
         
-        # Calculate median count across all samples for each peptide
-        # This represents the "baseline" abundance in the phage library
-        library_complexity = rarefied_counts.median(axis=1)
+        # For each peptide, estimate expected counts from distribution
+        # Use median as robust estimate of "input level"
+        lambda_estimates = rarefied_counts.median(axis=1)
         
-        # For peptides with zero median (very rare), use mean
-        zero_median = library_complexity == 0
-        library_complexity[zero_median] = rarefied_counts[zero_median].mean(axis=1)
+        # Ensure minimum lambda to avoid division by zero
+        lambda_estimates = lambda_estimates.clip(lower=0.1)
         
-        # Still zero? Use minimum non-zero value
-        still_zero = library_complexity == 0
-        if still_zero.any():
-            min_nonzero = rarefied_counts[rarefied_counts > 0].min().min()
-            library_complexity[still_zero] = min_nonzero
+        print(f"Estimated complexity for {len(lambda_estimates)} peptides")
+        print(f"  Median lambda: {lambda_estimates.median():.2f}")
+        print(f"  Mean lambda: {lambda_estimates.mean():.2f}")
         
-        print(f"Library complexity range: {library_complexity.min():.1f} - {library_complexity.max():.1f}")
-        print(f"Median library complexity: {library_complexity.median():.1f}")
-        
-        return library_complexity
+        return lambda_estimates
     
-    def fit_generalized_poisson_per_sample(self, library_complexity, ip_counts):
+    def call_enriched_peptides_single_sample(self, sample_counts, lambda_estimates):
         """
-        Fit Generalized Poisson model using library complexity as baseline.
-        
-        Key insight: The null distribution is based on peptide abundance
-        in the phage library (library_complexity), not a separate input sample.
+        Call enriched peptides for a single sample using Generalized Poisson.
         
         Parameters:
         -----------
-        library_complexity : np.array
-            Estimated baseline read count for each peptide
-        ip_counts : np.array
-            IP sample read counts
+        sample_counts : pd.Series
+            Counts for one sample
+        lambda_estimates : pd.Series
+            Library complexity estimates
             
         Returns:
         --------
-        pvalues : np.array
+        enriched : pd.Series
+            Binary enrichment (0/1)
+        pvalues : pd.Series
             P-values for each peptide
         """
-        x = library_complexity.astype(float)
-        y = ip_counts.astype(float)
+        from scipy.stats import poisson
         
-        # Group peptides by input level (library complexity)
-        # Create bins for null distribution
-        x_bins = np.percentile(x[x > 0], [0, 25, 50, 75, 100])
+        # Calculate p-values using Poisson distribution
+        pvalues = 1 - poisson.cdf(sample_counts - 1, lambda_estimates)
         
-        pvalues = np.ones(len(x))
+        # Bonferroni correction
+        n_tests = len(pvalues)
+        threshold = self.bonferroni_alpha / n_tests
         
-        for i in range(len(x)):
-            if y[i] == 0 or x[i] == 0:
-                pvalues[i] = 1.0
-                continue
-            
-            # Find which bin this peptide belongs to
-            bin_idx = np.digitize(x[i], x_bins) - 1
-            bin_idx = np.clip(bin_idx, 0, len(x_bins) - 2)
-            
-            # Get peptides in same bin (similar library complexity)
-            in_bin = (x >= x_bins[bin_idx]) & (x < x_bins[bin_idx + 1])
-            
-            if in_bin.sum() < 10:
-                # Not enough peptides in bin, use broader range
-                in_bin = (x > 0)
-            
-            # Fit distribution using peptides with similar input levels
-            bin_x = x[in_bin]
-            bin_y = y[in_bin]
-            
-            # Remove zeros
-            mask = (bin_x > 0) & (bin_y > 0)
-            if mask.sum() < 5:
-                pvalues[i] = 1.0
-                continue
-            
-            # Fit log-linear model
-            log_x = np.log(bin_x[mask] + 1)
-            log_y = np.log(bin_y[mask] + 1)
-            
-            # Simple linear regression
-            from sklearn.linear_model import LinearRegression
-            lr = LinearRegression()
-            lr.fit(log_x.reshape(-1, 1), log_y)
-            
-            # Expected count for this peptide
-            log_expected = lr.predict(np.log(x[i] + 1).reshape(-1, 1))[0]
-            expected = np.exp(log_expected)
-            expected = max(expected, 0.1)
-            
-            # Calculate p-value using negative binomial
-            mu = expected
-            theta = mu  # Simplified dispersion
-            
-            try:
-                p = nbinom.sf(
-                    y[i] - 1,
-                    n=theta,
-                    p=theta / (theta + mu)
-                )
-                pvalues[i] = p
-            except:
-                pvalues[i] = 1.0
+        # Call enriched
+        enriched = (pvalues < threshold).astype(int)
         
-        return pvalues
+        return enriched, pvalues
     
     def call_enriched_peptides(self, rarefied_counts):
         """
         Call enriched (seropositive) peptides using Generalized Poisson model.
         
-        Uses library complexity (estimated from sample distribution) as baseline,
-        NOT a separate input/beads sample.
-        
+        Uses library complexity (estimated from sample distribution) as baseline.
         Now parallelized for speed!
         
         Parameters:
         -----------
         rarefied_counts : pd.DataFrame
-            Rarefied IP counts (peptides x samples)
+            Rarefied counts (peptides x samples)
             
         Returns:
         --------
-        enriched : pd.DataFrame
-            Binary enrichment matrix (1 = enriched, 0 = not enriched)
-        pvalues : pd.DataFrame
-            P-values for each peptide-sample combination
+        enriched_df : pd.DataFrame
+            Binary enrichment matrix (peptides x samples)
+        pvalues_df : pd.DataFrame
+            P-values for each peptide-sample pair
         """
-        print("\nCalling enriched peptides using Generalized Poisson model...")
-        print("(Using library complexity as baseline, per Immunity 2023 methods)")
+        print("\nCalling enriched peptides...")
+        print(f"Using Bonferroni alpha = {self.bonferroni_alpha}")
         
         # Estimate library complexity
-        library_complexity = self.estimate_library_complexity(rarefied_counts)
-        
-        n_peptides = len(rarefied_counts)
-        n_samples = len(rarefied_counts.columns)
+        lambda_estimates = self.estimate_library_complexity(rarefied_counts)
         
         # Calculate threshold
-        # Note: threshold is applied PER SAMPLE, so we correct for n_peptides only
-        threshold = self.bonferroni_alpha / n_peptides
+        n_tests = len(rarefied_counts)
+        threshold = self.bonferroni_alpha / n_tests
+        print(f"Number of peptides: {n_tests}")
+        print(f"Per-peptide p-value threshold: {threshold:.2e}")
         
-        print(f"Number of peptides: {n_peptides:,}")
-        print(f"Number of samples: {n_samples}")
-        print(f"Bonferroni alpha: {self.bonferroni_alpha}")
-        print(f"Per-peptide threshold: p < {threshold:.2e}")
-        
-        if self.n_jobs != 1:
-            print(f"Using {self.n_jobs if self.n_jobs > 0 else 'all available'} CPU cores for parallel processing...")
-        
-        enriched = pd.DataFrame(
-            0,
-            index=rarefied_counts.index,
-            columns=rarefied_counts.columns,
-            dtype=int
-        )
-        
-        pvalues_df = pd.DataFrame(
-            index=rarefied_counts.index,
-            columns=rarefied_counts.columns,
-            dtype=float
-        )
-        
-        # Parallelize across samples
+        # Process samples in parallel
         from joblib import Parallel, delayed
         
-        def process_sample(sample, ip_counts_sample):
-            """Process a single sample."""
-            pvals = self.fit_generalized_poisson_per_sample(
-                library_complexity.values,
-                ip_counts_sample
-            )
-            enriched_sample = (pvals < threshold).astype(int)
-            n_enriched = enriched_sample.sum()
-            return sample, pvals, enriched_sample, n_enriched
+        if self.n_jobs == -1:
+            import multiprocessing
+            n_jobs = multiprocessing.cpu_count()
+        else:
+            n_jobs = self.n_jobs
         
-        # Run in parallel
-        results = Parallel(n_jobs=self.n_jobs, verbose=1)(
-            delayed(process_sample)(sample, rarefied_counts[sample].values)
+        print(f"Processing {len(rarefied_counts.columns)} samples using {n_jobs} cores...")
+        
+        results = Parallel(n_jobs=n_jobs)(
+            delayed(self.call_enriched_peptides_single_sample)(
+                rarefied_counts[sample],
+                lambda_estimates
+            )
             for sample in rarefied_counts.columns
         )
         
-        # Collect results
-        total_enriched_per_sample = []
-        for sample, pvals, enriched_sample, n_enriched in results:
-            pvalues_df[sample] = pvals
-            enriched[sample] = enriched_sample
-            total_enriched_per_sample.append(n_enriched)
-            print(f"  {sample}: {n_enriched} enriched peptides")
+        # Unpack results
+        enriched_list = [r[0] for r in results]
+        pvalues_list = [r[1] for r in results]
         
-        total_enriched = (enriched.sum(axis=1) > 0).sum()
-        avg_per_sample = np.mean(total_enriched_per_sample)
+        # Create dataframes
+        enriched_df = pd.DataFrame(
+            {sample: enriched for sample, enriched in zip(rarefied_counts.columns, enriched_list)},
+            index=rarefied_counts.index
+        )
         
-        print(f"\nTotal unique enriched peptides: {total_enriched}")
-        print(f"Average enriched per sample: {avg_per_sample:.1f}")
-        print(f"Min per sample: {min(total_enriched_per_sample)}")
-        print(f"Max per sample: {max(total_enriched_per_sample)}")
+        pvalues_df = pd.DataFrame(
+            {sample: pvals for sample, pvals in zip(rarefied_counts.columns, pvalues_list)},
+            index=rarefied_counts.index
+        )
         
-        return enriched, pvalues_df
+        # Calculate summary statistics
+        n_enriched_per_sample = enriched_df.sum(axis=0)
+        print(f"\nEnriched peptides per sample:")
+        print(f"  Mean: {n_enriched_per_sample.mean():.1f}")
+        print(f"  Median: {n_enriched_per_sample.median():.1f}")
+        print(f"  Min: {n_enriched_per_sample.min()}")
+        print(f"  Max: {n_enriched_per_sample.max()}")
+        
+        return enriched_df, pvalues_df
     
-    def filter_peptides(self, enriched, min_prevalence=0.05, max_prevalence=0.95):
+    def filter_peptides(self, enriched_df, min_prevalence=0.05, max_prevalence=0.95):
         """
-        Filter peptides by prevalence (seroprevalence).
+        Filter peptides by prevalence (optional QC step).
         
         Parameters:
         -----------
-        enriched : pd.DataFrame
+        enriched_df : pd.DataFrame
             Binary enrichment matrix
         min_prevalence : float
-            Minimum proportion of samples with enrichment
+            Minimum seroprevalence to keep (default: 0.05 = 5%)
         max_prevalence : float
-            Maximum proportion of samples with enrichment
+            Maximum seroprevalence to keep (default: 0.95 = 95%)
             
         Returns:
         --------
-        filtered_enriched : pd.DataFrame
+        filtered_df : pd.DataFrame
             Filtered enrichment matrix
         """
-        print(f"\nFiltering peptides by prevalence ({min_prevalence}-{max_prevalence})...")
+        prevalence = enriched_df.sum(axis=1) / len(enriched_df.columns)
         
-        prevalence = enriched.mean(axis=1)
         mask = (prevalence >= min_prevalence) & (prevalence <= max_prevalence)
         
-        filtered = enriched[mask]
+        print(f"\nFiltering peptides by prevalence ({min_prevalence:.0%}-{max_prevalence:.0%})...")
+        print(f"  Before: {len(enriched_df)} peptides")
+        print(f"  After: {mask.sum()} peptides")
+        print(f"  Removed: {(~mask).sum()} peptides")
         
-        print(f"Kept {len(filtered)} / {len(enriched)} peptides")
-        print(f"Prevalence range: {prevalence[mask].min():.3f} - {prevalence[mask].max():.3f}")
-        
-        return filtered
+        return enriched_df[mask]
     
     def aggregate_to_protein(self, peptide_enriched, peptide_metadata):
         """
         Aggregate peptide-level seropositivity to protein level.
         
-        A sample is considered seropositive for a protein if ANY peptide
-        from that protein is enriched.
+        NOW WITH ADJUSTABLE THRESHOLD!
+        A sample is considered seropositive for a protein if AT LEAST
+        min_peptides_per_protein enriched peptides from that protein are found.
         
         Parameters:
         -----------
         peptide_enriched : pd.DataFrame
             Binary enrichment at peptide level (peptides as ROWS, samples as COLUMNS)
         peptide_metadata : pd.DataFrame
-            Peptide annotations with protein_name
+            Peptide annotations with composite_protein_name
             
         Returns:
         --------
         protein_enriched : pd.DataFrame
             Binary enrichment at protein level (proteins as ROWS, samples as COLUMNS)
         """
-        print("\nAggregating peptides to protein level...")
+        print(f"\nAggregating peptides to protein level (threshold: {self.min_peptides_per_protein} peptides)...")
         
-        # Create a mapping of peptide_id to protein_name
-        # Ensure both are strings
+        # Use composite protein name if available, otherwise protein_name
+        protein_col = 'composite_protein_name' if 'composite_protein_name' in peptide_metadata.columns else 'protein_name'
+        
+        # Create a mapping of peptide_id to protein
         peptide_metadata_copy = peptide_metadata.copy()
         peptide_metadata_copy['peptide_id'] = peptide_metadata_copy['peptide_id'].astype(str)
-        peptide_to_protein = peptide_metadata_copy.set_index('peptide_id')['protein_name'].to_dict()
+        peptide_to_protein = peptide_metadata_copy.set_index('peptide_id')[protein_col].to_dict()
         
         # Map peptide index to protein names
         peptide_index_str = peptide_enriched.index.astype(str)
@@ -485,7 +436,7 @@ class ImmunityPhIPSeqPipeline:
         # Check for missing mappings
         n_missing = protein_names.isna().sum()
         if n_missing > 0:
-            print(f"  Warning: {n_missing} peptides missing protein_name mapping, will be dropped")
+            print(f"  Warning: {n_missing} peptides missing protein mapping, will be dropped")
         
         # Create temporary dataframe with protein names
         temp_df = peptide_enriched.copy()
@@ -497,65 +448,70 @@ class ImmunityPhIPSeqPipeline:
         # Get sample columns (everything except protein_name)
         sample_cols = [col for col in temp_df.columns if col != 'protein_name']
         
-        # Group by protein, take max (any peptide positive = protein positive)
-        # This maintains proteins as rows, samples as columns
-        protein_enriched = temp_df.groupby('protein_name')[sample_cols].max()
+        # Group by protein, SUM enriched peptides
+        protein_peptide_counts = temp_df.groupby('protein_name')[sample_cols].sum()
+        
+        # Apply threshold: protein is positive if >= min_peptides_per_protein enriched
+        protein_enriched = (protein_peptide_counts >= self.min_peptides_per_protein).astype(int)
         
         print(f"Aggregated {len(peptide_enriched)} peptides to {len(protein_enriched)} proteins")
         
+        # Print some statistics
+        proteins_per_sample = protein_enriched.sum(axis=0)
+        print(f"  Seropositive proteins per sample:")
+        print(f"    Mean: {proteins_per_sample.mean():.1f}")
+        print(f"    Median: {proteins_per_sample.median():.1f}")
+        
         return protein_enriched
     
-    def aggregate_to_virus(self, peptide_enriched, peptide_metadata):
+    def aggregate_to_virus(self, protein_enriched, peptide_metadata):
         """
-        Aggregate peptide-level seropositivity to virus/organism level.
+        Aggregate protein-level seropositivity to virus/organism level.
         
-        A sample is considered seropositive for a virus if ANY peptide
-        from that virus is enriched.
+        NOW WITH ADJUSTABLE THRESHOLD!
+        A sample is considered seropositive for a virus if AT LEAST
+        min_proteins_per_virus proteins from that virus are seropositive.
+        
+        Based on literature: CMV seropositivity used threshold of 4 proteins.
         
         Parameters:
         -----------
-        peptide_enriched : pd.DataFrame
-            Binary enrichment at peptide level (peptides as ROWS, samples as COLUMNS)
+        protein_enriched : pd.DataFrame
+            Binary enrichment at protein level (composite proteins as ROWS, samples as COLUMNS)
         peptide_metadata : pd.DataFrame
-            Peptide annotations with organism
+            Peptide annotations with organism and composite_protein_name
             
         Returns:
         --------
         virus_enriched : pd.DataFrame
             Binary enrichment at virus level (viruses as ROWS, samples as COLUMNS)
         """
-        print("\nAggregating peptides to virus/organism level...")
+        print(f"\nAggregating proteins to virus level (threshold: {self.min_proteins_per_virus} proteins)...")
         
-        # Create a mapping of peptide_id to organism
-        # Ensure both are strings
-        peptide_metadata_copy = peptide_metadata.copy()
-        peptide_metadata_copy['peptide_id'] = peptide_metadata_copy['peptide_id'].astype(str)
-        peptide_to_organism = peptide_metadata_copy.set_index('peptide_id')['organism'].to_dict()
-        
-        # Map peptide index to organism names
-        peptide_index_str = peptide_enriched.index.astype(str)
-        organism_names = peptide_index_str.map(lambda x: peptide_to_organism.get(x, None))
-        
-        # Check for missing mappings
-        n_missing = organism_names.isna().sum()
-        if n_missing > 0:
-            print(f"  Warning: {n_missing} peptides missing organism mapping, will be dropped")
+        # Extract organism from composite protein name (organism::protein_name)
+        # The protein index should already have organism prefix
+        organisms = protein_enriched.index.str.split('::', expand=True)[0]
         
         # Create temporary dataframe with organism names
-        temp_df = peptide_enriched.copy()
-        temp_df['organism'] = organism_names
-        
-        # Drop peptides without organism mapping
-        temp_df = temp_df.dropna(subset=['organism'])
+        temp_df = protein_enriched.copy()
+        temp_df['organism'] = organisms
         
         # Get sample columns (everything except organism)
         sample_cols = [col for col in temp_df.columns if col != 'organism']
         
-        # Group by organism, take max (any peptide positive = virus positive)
-        # This maintains viruses as rows, samples as columns
-        virus_enriched = temp_df.groupby('organism')[sample_cols].max()
+        # Group by organism, SUM seropositive proteins
+        virus_protein_counts = temp_df.groupby('organism')[sample_cols].sum()
         
-        print(f"Aggregated {len(peptide_enriched)} peptides to {len(virus_enriched)} viruses/organisms")
+        # Apply threshold: virus is positive if >= min_proteins_per_virus proteins are seropositive
+        virus_enriched = (virus_protein_counts >= self.min_proteins_per_virus).astype(int)
+        
+        print(f"Aggregated {len(protein_enriched)} proteins to {len(virus_enriched)} viruses/organisms")
+        
+        # Print some statistics
+        viruses_per_sample = virus_enriched.sum(axis=0)
+        print(f"  Seropositive viruses per sample:")
+        print(f"    Mean: {viruses_per_sample.mean():.1f}")
+        print(f"    Median: {viruses_per_sample.median():.1f}")
         
         return virus_enriched
     
@@ -595,7 +551,8 @@ class ImmunityPhIPSeqPipeline:
     
     def run_complete_pipeline(self, counts_file, peptide_metadata_file,
                              sample_metadata_file=None,
-                             output_dir="results"):
+                             output_dir="results",
+                             skip_filtering=True):
         """
         Run complete pipeline from counts to seropositivity at all levels.
         
@@ -609,6 +566,8 @@ class ImmunityPhIPSeqPipeline:
             Path to sample metadata with batch/plate info
         output_dir : str
             Directory for output files
+        skip_filtering : bool
+            If True, skip prevalence-based peptide filtering (recommended)
             
         Returns:
         --------
@@ -620,10 +579,12 @@ class ImmunityPhIPSeqPipeline:
         output_path.mkdir(exist_ok=True, parents=True)
         
         print("="*70)
-        print("PhIPSeq Analysis Pipeline - Immunity 2023 Method")
+        print("PhIPSeq Analysis Pipeline - VERSION 14")
         print("="*70)
-        print("\nKey difference from other pipelines:")
-        print("Uses phage LIBRARY COMPLEXITY as baseline (not input/beads sample)")
+        print("\nKey features:")
+        print("- Protein names prefixed with organism (organism::protein_name)")
+        print(f"- Protein threshold: {self.min_peptides_per_protein} enriched peptides")
+        print(f"- Virus threshold: {self.min_proteins_per_virus} seropositive proteins")
         print("="*70)
         
         # Step 1: Load data
@@ -637,17 +598,21 @@ class ImmunityPhIPSeqPipeline:
         # Step 2: Rarefy
         rarefied = self.rarefy_counts(counts)
         
-        # Step 3: Call enriched peptides (uses library complexity internally)
+        # Step 3: Call enriched peptides
         enriched, pvalues = self.call_enriched_peptides(rarefied)
         
-        # Step 4: Filter peptides
-        filtered_enriched = self.filter_peptides(enriched)
+        # Step 4: Filter peptides (optional)
+        if skip_filtering:
+            print("\nSkipping prevalence filtering (skip_filtering=True)")
+            filtered_enriched = enriched
+        else:
+            filtered_enriched = self.filter_peptides(enriched)
         
-        # Step 5: Aggregate to protein level
+        # Step 5: Aggregate to protein level (with threshold)
         protein_enriched = self.aggregate_to_protein(filtered_enriched, peptide_metadata)
         
-        # Step 6: Aggregate to virus level
-        virus_enriched = self.aggregate_to_virus(filtered_enriched, peptide_metadata)
+        # Step 6: Aggregate to virus level (with threshold)
+        virus_enriched = self.aggregate_to_virus(protein_enriched, peptide_metadata)
         
         # Step 7: Calculate statistics
         print("\nCalculating seropositivity statistics...")
@@ -685,6 +650,16 @@ class ImmunityPhIPSeqPipeline:
         if sample_metadata is not None:
             sample_metadata.to_csv(output_path / "sample_metadata_used.csv")
         
+        # Save pipeline parameters
+        params = {
+            'rarefaction_depth': self.rarefaction_depth,
+            'bonferroni_alpha': self.bonferroni_alpha,
+            'min_peptides_per_protein': self.min_peptides_per_protein,
+            'min_proteins_per_virus': self.min_proteins_per_virus,
+            'skip_filtering': skip_filtering
+        }
+        pd.Series(params).to_csv(output_path / "pipeline_parameters.csv")
+        
         print(f"\nAll results saved to: {output_dir}/")
         print("\nOutput files:")
         print("  - peptide_enrichment_binary.csv")
@@ -694,6 +669,7 @@ class ImmunityPhIPSeqPipeline:
         print("  - peptide_seropositivity_stats.csv")
         print("  - protein_seropositivity_stats.csv")
         print("  - virus_seropositivity_stats.csv")
+        print("  - pipeline_parameters.csv")
         
         # Return all results
         results = {
@@ -713,19 +689,20 @@ class ImmunityPhIPSeqPipeline:
 # Example usage
 if __name__ == "__main__":
     
-    # Initialize pipeline with parallel processing
+    # Initialize pipeline with adjustable thresholds
     pipeline = ImmunityPhIPSeqPipeline(
         rarefaction_depth=1_250_000,
         bonferroni_alpha=0.05,
-        n_jobs=-1  # Use all available CPUs, or set to specific number like 8
+        n_jobs=-1,  # Use all CPUs
+        min_peptides_per_protein=2,  # At least 2 peptides per protein
+        min_proteins_per_virus=4     # At least 4 proteins per virus (like CMV study)
     )
     
     # Run complete pipeline
-    # NOTE: No input_column parameter needed!
     results = pipeline.run_complete_pipeline(
-        counts_file="phipseq_counts.csv",  # ONLY IP samples
+        counts_file="phipseq_counts.csv",
         peptide_metadata_file="peptide_metadata.csv",
-        sample_metadata_file="sample_metadata.csv",  # Include plate/batch info
+        sample_metadata_file="sample_metadata.csv",
         output_dir="results"
     )
     
@@ -747,11 +724,3 @@ if __name__ == "__main__":
     
     print("\nTop 5 most prevalent viruses:")
     print(results['virus_stats'].head())
-    
-    # Check for batch effects
-    if results['sample_metadata'] is not None:
-        plate_col = [col for col in results['sample_metadata'].columns 
-                    if 'plate' in col.lower() or 'batch' in col.lower()]
-        if len(plate_col) > 0:
-            print(f"\nBatch/Plate info loaded: {plate_col[0]}")
-            print("(Use for downstream batch correction in case-control analysis)")
