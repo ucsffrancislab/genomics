@@ -12,6 +12,9 @@ print("Loading data...")
 peptide_enriched = pd.read_csv("CMV_test/results/peptide_enrichment_binary.csv", index_col=0)
 metadata = pd.read_csv("CMV_test/sample_metadata.csv", index_col=0)
 
+print(f"DEBUG - Sample enrichment columns (first 5): {list(peptide_enriched.columns[:5])}")
+print(f"DEBUG - Sample metadata index (first 5): {list(metadata.index[:5])}")
+
 # After collapsing replicates, we have subjects as columns
 # But metadata still has all samples
 # Create subject-level metadata - keep first occurrence of each subject
@@ -28,6 +31,8 @@ if (status_check > 1).any():
 # Take first row for each subject (they should all be the same)
 metadata_subjects = metadata.groupby('subject_id').first()
 
+print(f"DEBUG - Subject metadata index (first 5): {list(metadata_subjects.index[:5])}")
+
 # Verify the status column is present
 print(f"  Unique subjects: {len(metadata_subjects)}")
 print(f"  Status column present: {'status' in metadata_subjects.columns}")
@@ -36,6 +41,17 @@ print(f"  Status distribution: {metadata_subjects['status'].value_counts().to_di
 # Check overlap with enrichment data
 common_subjects = peptide_enriched.columns.intersection(metadata_subjects.index)
 print(f"  Subjects in both enrichment and metadata: {len(common_subjects)}")
+
+if len(common_subjects) == 0:
+    print("\nERROR: No subject IDs match between enrichment data and metadata!")
+    print("This means the pipeline's collapse_replicates didn't work as expected.")
+    print("The enrichment file still has sample IDs, not subject IDs as column names.")
+    print("\nPlease check:")
+    print("1. Did the enrichment script actually run with collapse_replicates=True?")
+    print("2. Does your metadata have a 'subject_id' column?")
+    print("3. Check the pipeline output for 'Collapsing technical replicates' message")
+    import sys
+    sys.exit(1)
 
 # Create output directory
 os.makedirs('CMV_test/results/case_control', exist_ok=True)
@@ -58,18 +74,26 @@ results = analyzer.apply_fdr_correction(results)
 results.to_csv('CMV_test/results/case_control/peptide_results.csv', index=False)
 print(f"Saved results to: CMV_test/results/case_control/peptide_results.csv")
 
+# Determine which p-value column to use
+if 'batch_adjusted_pvalue' in results.columns:
+    pval_col = 'batch_adjusted_pvalue'
+elif 'pvalue' in results.columns:
+    pval_col = 'pvalue'
+else:
+    pval_col = 'fisher_pvalue'
+
 # Print summary
 print("\n" + "="*70)
 print("CASE-CONTROL SUMMARY")
 print("="*70)
 print(f"Total peptides tested: {len(results)}")
-print(f"Significant (p < 0.05): {(results['pvalue'] < 0.05).sum()}")
+print(f"Significant (p < 0.05): {(results[pval_col] < 0.05).sum()}")
 print(f"Significant (FDR < 0.05): {(results['fdr'] < 0.05).sum()}")
 print(f"Significant (FDR < 0.01): {(results['fdr'] < 0.01).sum()}")
 
 print("\nTop 10 most significant peptides:")
 print(results.head(10)[['entity_id', 'case_prevalence', 'control_prevalence', 
-                        'odds_ratio', 'pvalue', 'fdr']])
+                        'odds_ratio', pval_col, 'fdr']])
 
 # Create visualizations
 print("\n" + "="*70)
