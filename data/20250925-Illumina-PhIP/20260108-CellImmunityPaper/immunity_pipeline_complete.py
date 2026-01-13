@@ -574,11 +574,62 @@ class ImmunityPhIPSeqPipeline:
         stats_df = pd.DataFrame(stats)
         return stats_df.sort_values('seroprevalence', ascending=False)
     
+    def collapse_technical_replicates(self, enriched_df, sample_metadata, subject_col='subject_id'):
+        """
+        Collapse technical replicates by subject.
+        
+        Conservative approach: ALL replicates must show enrichment for
+        the subject to be considered enriched for that peptide.
+        
+        Parameters:
+        -----------
+        enriched_df : pd.DataFrame
+            Binary enrichment matrix (peptides × samples)
+        sample_metadata : pd.DataFrame
+            Sample metadata with subject_col
+        subject_col : str
+            Column containing subject IDs
+            
+        Returns:
+        --------
+        collapsed_df : pd.DataFrame
+            Binary enrichment matrix (peptides × subjects)
+        """
+        print(f"\nCollapsing technical replicates by {subject_col}...")
+        
+        # Check if subject_col exists
+        if subject_col not in sample_metadata.columns:
+            raise ValueError(f"Column '{subject_col}' not found in sample_metadata")
+        
+        # Get subject IDs for each sample
+        # Only include samples that are in enriched_df
+        common_samples = enriched_df.columns.intersection(sample_metadata.index)
+        subject_mapping = sample_metadata.loc[common_samples, subject_col]
+        
+        print(f"  Found {len(common_samples)} samples with subject IDs")
+        print(f"  Number of unique subjects: {subject_mapping.nunique()}")
+        
+        # Group samples by subject and take minimum (all must be enriched)
+        collapsed = enriched_df[common_samples].T.groupby(subject_mapping).min().T
+        
+        # Report replicate statistics
+        replicates_per_subject = subject_mapping.value_counts()
+        print(f"  Replicates per subject:")
+        print(f"    Mean: {replicates_per_subject.mean():.1f}")
+        print(f"    Min: {replicates_per_subject.min()}")
+        print(f"    Max: {replicates_per_subject.max()}")
+        print(f"  Subjects with >1 replicate: {(replicates_per_subject > 1).sum()}")
+        
+        return collapsed
+    
     def run_complete_pipeline(self, counts_file, peptide_metadata_file,
                              sample_metadata_file=None,
                              output_dir="results",
                              skip_filtering=True,
-                             drop_low_depth=True):
+                             drop_low_depth=True,
+                             skip_protein_virus=False,
+                             collapse_replicates=True,
+                             subject_col='subject_id'):
         """
         Run complete pipeline from counts to seropositivity at all levels.
         
@@ -597,6 +648,13 @@ class ImmunityPhIPSeqPipeline:
         drop_low_depth : bool
             If True, drop samples with reads below rarefaction_depth (default: True)
             If False, keep low-depth samples with their original counts
+        skip_protein_virus : bool
+            If True, skip protein and virus aggregation (peptide-level only)
+        collapse_replicates : bool
+            If True, collapse technical replicates by subject (requires subject_col in metadata)
+            ALL replicates must show enrichment for subject to be enriched
+        subject_col : str
+            Column name in sample_metadata containing subject IDs (default: 'subject_id')
             
         Returns:
         --------
@@ -608,13 +666,17 @@ class ImmunityPhIPSeqPipeline:
         output_path.mkdir(exist_ok=True, parents=True)
         
         print("="*70)
-        print("PhIPSeq Analysis Pipeline - VERSION 14")
+        print("PhIPSeq Analysis Pipeline - VERSION 16")
         print("="*70)
         print("\nKey features:")
-        print("- Protein names prefixed with organism (organism::protein_name)")
-        print(f"- Protein threshold: {self.min_peptides_per_protein} enriched peptides")
-        print(f"- Virus threshold: {self.min_proteins_per_virus} seropositive proteins")
+        if not skip_protein_virus:
+            print("- Protein names prefixed with organism (organism::protein_name)")
+            print(f"- Protein threshold: {self.min_peptides_per_protein} enriched peptides")
+            print(f"- Virus threshold: {self.min_proteins_per_virus} seropositive proteins")
+        else:
+            print("- PEPTIDE-LEVEL ANALYSIS ONLY (protein/virus aggregation skipped)")
         print(f"- Low-depth samples: {'DROP' if drop_low_depth else 'KEEP'}")
+        print(f"- Replicate handling: {'COLLAPSE by subject' if collapse_replicates else 'Keep separate'}")
         print("="*70)
         
         # Step 1: Load data
@@ -638,26 +700,51 @@ class ImmunityPhIPSeqPipeline:
         else:
             filtered_enriched = self.filter_peptides(enriched)
         
-        # Step 5: Aggregate to protein level (with threshold)
-        protein_enriched = self.aggregate_to_protein(filtered_enriched, peptide_metadata)
+        # Step 4b: Collapse technical replicates (optional)
+        if collapse_replicates:
+            if sample_metadata is None:
+                raise ValueError("collapse_replicates=True requires sample_metadata_file")
+            filtered_enriched = self.collapse_technical_replicates(
+                filtered_enriched, 
+                sample_metadata, 
+                subject_col
+            )
+            # Also collapse pvalues for consistency
+            common_samples = pvalues.columns.intersection(sample_metadata.index)
+            subject_mapping = sample_metadata.loc[common_samples, subject_col]
+            # For p-values, take maximum (most conservative)
+            pvalues = pvalues[common_samples].T.groupby(subject_mapping).max().T
         
-        # Step 6: Aggregate to virus level (with threshold)
-        virus_enriched = self.aggregate_to_virus(protein_enriched, peptide_metadata)
+        # Step 5-6: Aggregate to protein and virus levels (optional)
+        if skip_protein_virus:
+            print("\nSkipping protein and virus aggregation (skip_protein_virus=True)")
+            protein_enriched = None
+            virus_enriched = None
+            protein_stats = None
+            virus_stats = None
+        else:
+            # Step 5: Aggregate to protein level (with threshold)
+            protein_enriched = self.aggregate_to_protein(filtered_enriched, peptide_metadata)
+            
+            # Step 6: Aggregate to virus level (with threshold)
+            virus_enriched = self.aggregate_to_virus(protein_enriched, peptide_metadata)
+            
+            # Calculate protein and virus statistics
+            print("\nCalculating protein and virus seropositivity statistics...")
+            protein_stats = self.calculate_seropositivity_stats(
+                protein_enriched,
+                "protein"
+            )
+            virus_stats = self.calculate_seropositivity_stats(
+                virus_enriched,
+                "virus"
+            )
         
-        # Step 7: Calculate statistics
-        print("\nCalculating seropositivity statistics...")
-        
+        # Step 7: Calculate peptide statistics
+        print("\nCalculating peptide seropositivity statistics...")
         peptide_stats = self.calculate_seropositivity_stats(
             filtered_enriched, 
             "peptide"
-        )
-        protein_stats = self.calculate_seropositivity_stats(
-            protein_enriched,
-            "protein"
-        )
-        virus_stats = self.calculate_seropositivity_stats(
-            virus_enriched,
-            "virus"
         )
         
         # Step 8: Save all results
@@ -665,16 +752,18 @@ class ImmunityPhIPSeqPipeline:
         
         # Binary enrichment matrices
         filtered_enriched.to_csv(output_path / "peptide_enrichment_binary.csv")
-        protein_enriched.to_csv(output_path / "protein_enrichment_binary.csv")
-        virus_enriched.to_csv(output_path / "virus_enrichment_binary.csv")
+        if not skip_protein_virus:
+            protein_enriched.to_csv(output_path / "protein_enrichment_binary.csv")
+            virus_enriched.to_csv(output_path / "virus_enrichment_binary.csv")
         
         # P-values
         pvalues.to_csv(output_path / "peptide_pvalues.csv")
         
         # Statistics
         peptide_stats.to_csv(output_path / "peptide_seropositivity_stats.csv", index=False)
-        protein_stats.to_csv(output_path / "protein_seropositivity_stats.csv", index=False)
-        virus_stats.to_csv(output_path / "virus_seropositivity_stats.csv", index=False)
+        if not skip_protein_virus:
+            protein_stats.to_csv(output_path / "protein_seropositivity_stats.csv", index=False)
+            virus_stats.to_csv(output_path / "virus_seropositivity_stats.csv", index=False)
         
         # Save sample metadata if provided
         if sample_metadata is not None:
@@ -687,19 +776,24 @@ class ImmunityPhIPSeqPipeline:
             'min_peptides_per_protein': self.min_peptides_per_protein,
             'min_proteins_per_virus': self.min_proteins_per_virus,
             'skip_filtering': skip_filtering,
-            'drop_low_depth': drop_low_depth
+            'drop_low_depth': drop_low_depth,
+            'skip_protein_virus': skip_protein_virus,
+            'collapse_replicates': collapse_replicates,
+            'subject_col': subject_col if collapse_replicates else 'N/A'
         }
         pd.Series(params).to_csv(output_path / "pipeline_parameters.csv")
         
         print(f"\nAll results saved to: {output_dir}/")
         print("\nOutput files:")
         print("  - peptide_enrichment_binary.csv")
-        print("  - protein_enrichment_binary.csv")
-        print("  - virus_enrichment_binary.csv")
+        if not skip_protein_virus:
+            print("  - protein_enrichment_binary.csv")
+            print("  - virus_enrichment_binary.csv")
         print("  - peptide_pvalues.csv")
         print("  - peptide_seropositivity_stats.csv")
-        print("  - protein_seropositivity_stats.csv")
-        print("  - virus_seropositivity_stats.csv")
+        if not skip_protein_virus:
+            print("  - protein_seropositivity_stats.csv")
+            print("  - virus_seropositivity_stats.csv")
         print("  - pipeline_parameters.csv")
         
         # Return all results

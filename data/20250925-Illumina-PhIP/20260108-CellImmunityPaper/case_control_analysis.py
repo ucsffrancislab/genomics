@@ -455,6 +455,69 @@ class CaseControlAnalyzer:
         
         return g
     
+    def create_enrichment_distribution(self, enriched_matrix, metadata,
+                                       case_col='status', case_value='case',
+                                       control_value='control',
+                                       output_file='enrichment_distribution.png'):
+        """
+        Create distribution plot showing number of enriched peptides per subject.
+        
+        Parameters:
+        -----------
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        case_col : str
+            Column for case/control status
+        case_value, control_value : str
+            Values for cases and controls
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        
+        # Get case and control samples
+        cases = metadata[metadata[case_col] == case_value].index
+        controls = metadata[metadata[case_col] == control_value].index
+        
+        cases = [s for s in cases if s in enriched_matrix.columns]
+        controls = [s for s in controls if s in enriched_matrix.columns]
+        
+        # Calculate number of enriched peptides per sample
+        case_counts = enriched_matrix[cases].sum(axis=0)
+        control_counts = enriched_matrix[controls].sum(axis=0)
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(10, 6))
+        
+        # Plot histograms
+        bins = np.linspace(0, max(case_counts.max(), control_counts.max()), 30)
+        
+        ax.hist(control_counts, bins=bins, alpha=0.5, label='Controls', color='blue', edgecolor='black')
+        ax.hist(case_counts, bins=bins, alpha=0.5, label='Cases', color='red', edgecolor='black')
+        
+        # Add mean lines
+        ax.axvline(control_counts.mean(), color='blue', linestyle='--', linewidth=2, 
+                   label=f'Control mean: {control_counts.mean():.1f}')
+        ax.axvline(case_counts.mean(), color='red', linestyle='--', linewidth=2,
+                   label=f'Case mean: {case_counts.mean():.1f}')
+        
+        ax.set_xlabel('Number of Enriched Peptides', fontsize=12)
+        ax.set_ylabel('Number of Subjects', fontsize=12)
+        ax.set_title('Distribution of Enriched Peptides per Subject', fontsize=14, fontweight='bold')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved enrichment distribution plot to {output_file}")
+        
+        return fig
+    
     def create_prevalence_barplot(self, results_df, top_n=20, 
                                  level_name='peptide', output_file=None):
         """
