@@ -490,7 +490,11 @@ class ImmunityPhIPSeqPipeline:
         
         # Extract organism from composite protein name (organism::protein_name)
         # The protein index should already have organism prefix
-        organisms = protein_enriched.index.str.split('::', expand=True)[0]
+        split_names = protein_enriched.index.str.split('::', expand=True)
+        if split_names.shape[1] >= 1:
+            organisms = split_names[0].values  # Get first column and convert to array
+        else:
+            raise ValueError("Protein names do not contain '::' delimiter. Ensure composite_protein_name was created.")
         
         # Create temporary dataframe with organism names
         temp_df = protein_enriched.copy()
