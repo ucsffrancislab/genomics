@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from immunity_pipeline_v14 import ImmunityPhIPSeqPipeline
+from immunity_pipeline_complete import ImmunityPhIPSeqPipeline
 
 # Initialize pipeline with threshold based on literature
 # CMV study used threshold of 4 proteins for virus seropositivity
@@ -8,15 +8,15 @@ pipeline = ImmunityPhIPSeqPipeline(
     rarefaction_depth=1_250_000,
     bonferroni_alpha=0.05,
     n_jobs=-1,  # Use all CPUs
-    min_peptides_per_protein=2,  # At least 2 enriched peptides per protein
-    min_proteins_per_virus=4     # At least 4 proteins per virus (CMV study threshold)
+    min_peptides_per_protein=5,  # At least 2 enriched peptides per protein
+    min_proteins_per_virus=5     # At least 4 proteins per virus (CMV study threshold)
 )
 
 results = pipeline.run_complete_pipeline(
     counts_file="CMV_test/phipseq_counts_experimental_only.csv",
     peptide_metadata_file="peptide_metadata.csv",
     sample_metadata_file="CMV_test/sample_metadata.csv",
-    output_dir="CMV_test/results_v14"
+    output_dir="CMV_test/results"
 )
 
 # Print summary
@@ -40,13 +40,15 @@ print("CMV-SPECIFIC RESULTS")
 print("="*70)
 
 # Check CMV specifically
-cmv_viruses = results['virus_stats'][results['virus_stats']['virus_id'].str.contains('CMV|cytomegalovirus', case=False, na=False)]
+#cmv_viruses = results['virus_stats'][results['virus_stats']['virus_id'].str.contains('CMV|cytomegalovirus', case=False, na=False)]
+cmv_viruses = results['virus_stats'][results['virus_stats']['virus_id'].str.contains('Human herpesvirus 5', case=False, na=False)]
 if len(cmv_viruses) > 0:
     print("\nCMV virus seropositivity:")
     print(cmv_viruses)
     
     # Get CMV from virus_enriched
-    cmv_mask = results['virus_enriched'].index.str.contains('CMV|cytomegalovirus', case=False, na=False)
+    #cmv_mask = results['virus_enriched'].index.str.contains('CMV|cytomegalovirus', case=False, na=False)
+    cmv_mask = results['virus_enriched'].index.str.contains('Human herpesvirus 5', case=False, na=False)
     if cmv_mask.any():
         cmv_data = results['virus_enriched'][cmv_mask]
         print(f"\nCMV-positive samples: {cmv_data.sum(axis=0).sum()} out of {len(cmv_data.columns)}")
@@ -55,7 +57,8 @@ else:
     print("\nNo CMV viruses found in results (may need to adjust thresholds)")
 
 # Show CMV proteins
-cmv_proteins = results['protein_stats'][results['protein_stats']['protein_id'].str.contains('CMV|cytomegalovirus', case=False, na=False)]
+#cmv_proteins = results['protein_stats'][results['protein_stats']['protein_id'].str.contains('CMV|cytomegalovirus', case=False, na=False)]
+cmv_proteins = results['protein_stats'][results['protein_stats']['protein_id'].str.contains('Human herpesvirus 5', case=False, na=False)]
 if len(cmv_proteins) > 0:
     print(f"\nCMV proteins detected: {len(cmv_proteins)}")
     print("\nTop 10 most prevalent CMV proteins:")
@@ -75,3 +78,4 @@ print("  pipeline = ImmunityPhIPSeqPipeline(")
 print("      min_peptides_per_protein=X,")
 print("      min_proteins_per_virus=Y")
 print("  )")
+
