@@ -169,7 +169,8 @@ class CaseControlAnalyzer:
                           control_value='control',
                           adjust_for_batch=True,
                           batch_col='plate',
-                          skip_failed_batch=True):
+                          skip_failed_batch=True,
+                          peptide_metadata=None):
         """
         Test each peptide/protein/virus for case-control enrichment.
         
@@ -195,6 +196,9 @@ class CaseControlAnalyzer:
         skip_failed_batch : bool
             If True, use Fisher's p-value when batch adjustment fails (recommended)
             If False, keep NaN for failed batch adjustments
+        peptide_metadata : pd.DataFrame, optional
+            Peptide metadata with organism, protein_name columns
+            If provided, these will be merged into results
             
         Returns:
         --------
@@ -276,6 +280,47 @@ class CaseControlAnalyzer:
             r.pop('batch_failed', None)
         
         results_df = pd.DataFrame(results)
+        
+        # Rename entity_id to peptide_id (more specific and clear)
+        results_df.rename(columns={'entity_id': 'peptide_id'}, inplace=True)
+        
+        # Merge peptide metadata if provided
+        if peptide_metadata is not None:
+            # Ensure peptide_id is string in both
+            results_df['peptide_id'] = results_df['peptide_id'].astype(str)
+            
+            # Check what columns are available in peptide_metadata
+            merge_cols = ['peptide_id']
+            output_cols = []
+            
+            if 'organism' in peptide_metadata.columns:
+                merge_cols.append('organism')
+                output_cols.append('organism')
+            if 'protein_name' in peptide_metadata.columns:
+                merge_cols.append('protein_name')
+                output_cols.append('protein_name')
+            
+            if len(output_cols) > 0:
+                # Prepare peptide_metadata for merge
+                peptide_meta_subset = peptide_metadata[merge_cols].copy()
+                peptide_meta_subset['peptide_id'] = peptide_meta_subset['peptide_id'].astype(str)
+                
+                # Remove duplicates (keep first)
+                peptide_meta_subset = peptide_meta_subset.drop_duplicates(subset=['peptide_id'])
+                
+                # Merge
+                results_df = results_df.merge(
+                    peptide_meta_subset,
+                    on='peptide_id',
+                    how='left'
+                )
+                
+                # Reorder columns: organism, protein_name, peptide_id, then rest
+                first_cols = output_cols + ['peptide_id']
+                other_cols = [c for c in results_df.columns if c not in first_cols]
+                results_df = results_df[first_cols + other_cols]
+                
+                print(f"  Merged peptide metadata ({', '.join(output_cols)} columns)")
         
         # Report on batch adjustment failures
         if has_batch and failed_batch_count > 0:
@@ -1070,9 +1115,10 @@ class CaseControlAnalyzer:
         
         return fig
     
-    def create_manhattan_plot(self, results_df, output_file='manhattan_plot.png'):
+    def create_manhattan_plot(self, results_df, output_file='manhattan_plot.png',
+                             organism_filter=None):
         """
-        Create Manhattan-style plot showing -log10(p-value) for all peptides.
+        Create Manhattan-style plot showing -log10(p-value) for peptides.
         
         Parameters:
         -----------
@@ -1080,12 +1126,53 @@ class CaseControlAnalyzer:
             Results with p-values
         output_file : str
             Output file path
+        organism_filter : str, optional
+            If provided, only plot peptides from this organism
+            Example: 'Human herpesvirus 5'
         """
         import matplotlib.pyplot as plt
         
+        # Filter by organism if specified
+        if organism_filter is not None:
+            if 'organism' in results_df.columns:
+                results_plot = results_df[results_df['organism'] == organism_filter].copy()
+                if len(results_plot) == 0:
+                    print(f"Warning: No peptides found for organism '{organism_filter}'. Skipping plot.")
+                    return None
+                print(f"  Plotting {len(results_plot)} peptides from {organism_filter}")
+            else:
+                print(f"Warning: 'organism' column not in results. Cannot filter by organism.")
+                results_plot = results_df.copy()
+        else:
+            results_plot = results_df.copy()
+        
+        # Sort by peptide_id (natural ordering) to keep neighbors together
+        if 'peptide_id' in results_plot.columns:
+            # Try to sort numerically if possible
+            try:
+                results_plot['peptide_id_num'] = pd.to_numeric(results_plot['peptide_id'])
+                results_plot = results_plot.sort_values('peptide_id_num')
+                results_plot = results_plot.drop('peptide_id_num', axis=1)
+            except:
+                # Fall back to string sorting
+                results_plot = results_plot.sort_values('peptide_id')
+        
         # Calculate -log10(p-value)
-        results_plot = results_df.copy()
         results_plot['-log10(p)'] = -np.log10(results_plot['fisher_pvalue'].clip(lower=1e-300))
+        
+        # Determine direction based on odds ratio
+        # Positive effect (OR > 1): enriched in cases -> plot UP (positive)
+        # Negative effect (OR < 1): enriched in controls -> plot DOWN (negative)
+        if 'odds_ratio' in results_plot.columns:
+            results_plot['signed_log10p'] = np.where(
+                results_plot['odds_ratio'] >= 1,
+                results_plot['-log10(p)'],   # Cases enriched: positive
+                -results_plot['-log10(p)']   # Controls enriched: negative
+            )
+            use_signed = True
+        else:
+            results_plot['signed_log10p'] = results_plot['-log10(p)']
+            use_signed = False
         
         # Create figure
         fig, ax = plt.subplots(figsize=(14, 6))
@@ -1094,20 +1181,48 @@ class CaseControlAnalyzer:
         x = np.arange(len(results_plot))
         colors = ['#1f77b4' if i % 2 == 0 else '#ff7f0e' for i in range(len(results_plot))]
         
-        ax.scatter(x, results_plot['-log10(p)'], c=colors, alpha=0.6, s=10)
+        ax.scatter(x, results_plot['signed_log10p'], c=colors, alpha=0.6, s=10)
         
         # Significance threshold lines
-        bonf_threshold = -np.log10(0.05 / len(results_plot))
-        fdr_threshold = -np.log10(0.05)
+        if use_signed:
+            bonf_threshold = -np.log10(0.05 / len(results_plot))
+            fdr_threshold = -np.log10(0.05)
+            
+            # Positive (cases enriched)
+            ax.axhline(bonf_threshold, color='red', linestyle='--', linewidth=2, alpha=0.7,
+                      label=f'Bonferroni (p={0.05/len(results_plot):.2e})')
+            ax.axhline(fdr_threshold, color='green', linestyle='--', linewidth=2, alpha=0.7,
+                      label=f'FDR threshold (p=0.05)')
+            
+            # Negative (controls enriched)
+            ax.axhline(-bonf_threshold, color='red', linestyle='--', linewidth=2, alpha=0.7)
+            ax.axhline(-fdr_threshold, color='green', linestyle='--', linewidth=2, alpha=0.7)
+            
+            # Zero line
+            ax.axhline(0, color='black', linestyle='-', linewidth=1, alpha=0.3)
+            
+            ax.set_ylabel('Signed -log10(p-value)\n[+ enriched in cases, - enriched in controls]', 
+                         fontsize=12)
+        else:
+            bonf_threshold = -np.log10(0.05 / len(results_plot))
+            fdr_threshold = -np.log10(0.05)
+            
+            ax.axhline(bonf_threshold, color='red', linestyle='--', linewidth=2,
+                      label=f'Bonferroni (p={0.05/len(results_plot):.2e})')
+            ax.axhline(fdr_threshold, color='green', linestyle='--', linewidth=2,
+                      label=f'FDR threshold (p=0.05)')
+            
+            ax.set_ylabel('-log10(p-value)', fontsize=12)
         
-        ax.axhline(bonf_threshold, color='red', linestyle='--', linewidth=2, 
-                  label=f'Bonferroni (p={0.05/len(results_plot):.2e})')
-        ax.axhline(fdr_threshold, color='green', linestyle='--', linewidth=2,
-                  label=f'FDR threshold (p=0.05)')
+        ax.set_xlabel('Peptide Index (sorted by peptide_id)', fontsize=12)
         
-        ax.set_xlabel('Peptide Index', fontsize=12)
-        ax.set_ylabel('-log10(p-value)', fontsize=12)
-        ax.set_title('Manhattan Plot - All Peptides', fontsize=14, fontweight='bold')
+        # Title
+        if organism_filter:
+            title = f'Manhattan Plot - {organism_filter}'
+        else:
+            title = 'Manhattan Plot - All Peptides'
+        ax.set_title(title, fontsize=14, fontweight='bold')
+        
         ax.legend()
         ax.grid(True, alpha=0.3, axis='y')
         
