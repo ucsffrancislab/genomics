@@ -67,7 +67,10 @@ results = analyzer.test_single_entity(
     metadata_subjects,
     case_col='status',
     case_value='case',
-    control_value='control'
+    control_value='control',
+    adjust_for_batch=True,
+    batch_col='plate',
+    skip_failed_batch=True  # Use Fisher's p-value when batch adjustment fails
 )
 
 # Apply FDR correction

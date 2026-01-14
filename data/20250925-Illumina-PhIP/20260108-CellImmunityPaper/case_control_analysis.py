@@ -42,7 +42,8 @@ class CaseControlAnalyzer:
                           case_value='case', 
                           control_value='control',
                           adjust_for_batch=True,
-                          batch_col='plate'):
+                          batch_col='plate',
+                          skip_failed_batch=True):
         """
         Test each peptide/protein/virus for case-control enrichment.
         
@@ -65,6 +66,9 @@ class CaseControlAnalyzer:
             Whether to adjust for batch effects using logistic regression
         batch_col : str
             Column name for batch/plate
+        skip_failed_batch : bool
+            If True, use Fisher's p-value when batch adjustment fails (recommended)
+            If False, keep NaN for failed batch adjustments
             
         Returns:
         --------
@@ -88,8 +92,15 @@ class CaseControlAnalyzer:
             print(f"Adjusting for batch effects using column: {batch_col}")
             n_batches = metadata[batch_col].nunique()
             print(f"Number of batches: {n_batches}")
+            
+            # Warn if sample size is small relative to batches
+            if len(cases) + len(controls) < n_batches * 5:
+                print(f"WARNING: Small sample size ({len(cases) + len(controls)}) relative to batches ({n_batches})")
+                print(f"         Logistic regression may fail frequently.")
+                print(f"         Will use Fisher's exact test as fallback when this happens.")
         
         results = []
+        failed_batch_count = 0
         
         for entity in enriched_matrix.index:
             # Create 2x2 contingency table
@@ -144,15 +155,21 @@ class CaseControlAnalyzer:
                     X = sm.add_constant(X)
                     
                     # Fit logistic regression
-                    model = sm.Logit(y, X).fit(disp=0)
+                    model = sm.Logit(y, X).fit(disp=0, maxiter=100)
                     
                     # Extract peptide coefficient
                     batch_adjusted_or = np.exp(model.params['peptide'])
                     batch_adjusted_p = model.pvalues['peptide']
                     
                 except Exception as e:
-                    # If regression fails, keep as NaN
-                    pass
+                    # If regression fails, use Fisher's p-value as fallback
+                    failed_batch_count += 1
+                    if skip_failed_batch:
+                        batch_adjusted_or = odds_ratio
+                        batch_adjusted_p = fisher_p
+                    else:
+                        batch_adjusted_or = np.nan
+                        batch_adjusted_p = np.nan
             
             results.append({
                 'entity_id': entity,
@@ -172,6 +189,14 @@ class CaseControlAnalyzer:
             })
         
         results_df = pd.DataFrame(results)
+        
+        # Report on batch adjustment failures
+        if has_batch and failed_batch_count > 0:
+            print(f"\nBatch adjustment failed for {failed_batch_count}/{len(enriched_matrix)} entities")
+            if skip_failed_batch:
+                print(f"  → Used Fisher's exact test as fallback for these entities")
+            else:
+                print(f"  → These entities have NaN batch-adjusted p-values")
         
         # FDR correction for Fisher's test
         _, fisher_qvals, _, _ = multipletests(
