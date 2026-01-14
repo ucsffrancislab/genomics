@@ -1187,8 +1187,7 @@ class CaseControlAnalyzer:
             Output file path
         """
         try:
-            from upsetplot import plot as upset_plot_func
-            from upsetplot import from_contents
+            from upsetplot import UpSet
             import matplotlib.pyplot as plt
             import warnings
             
@@ -1196,6 +1195,10 @@ class CaseControlAnalyzer:
             cases = metadata[metadata[case_col] == case_value].index
             # Convert to strings to match enriched_matrix columns
             cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
+            
+            if len(cases) == 0:
+                print("Warning: No cases found for UpSet plot. Skipping.")
+                return None
             
             # Get top peptides
             top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
@@ -1206,33 +1209,43 @@ class CaseControlAnalyzer:
                 return None
             
             # Get enrichment data for top peptides in cases
-            case_data = enriched_matrix.loc[top_peptides, cases]
+            case_data = enriched_matrix.loc[top_peptides, cases].astype(bool)
             
-            # Convert to UpSet format using from_contents (better for binary data)
-            # Create a dict: {peptide_name: set_of_positive_subjects}
-            peptide_dict = {}
-            for peptide in case_data.index:
-                positive_subjects = set(case_data.columns[case_data.loc[peptide] == 1])
-                if len(positive_subjects) > 0:  # Only include peptides with at least 1 positive
-                    # Convert peptide ID to string
-                    peptide_dict[str(peptide)] = positive_subjects
+            # Convert to MultiIndex format (UpSet's preferred format)
+            # Each row is a subject, columns are peptides (True/False)
+            case_data_T = case_data.T
             
-            if len(peptide_dict) == 0:
-                print("Warning: No positive peptide combinations found for UpSet plot. Skipping.")
+            # Rename columns to strings
+            case_data_T.columns = [str(c) for c in case_data_T.columns]
+            
+            # Remove subjects with no positive peptides
+            case_data_T = case_data_T[case_data_T.sum(axis=1) > 0]
+            
+            if len(case_data_T) == 0:
+                print("Warning: No subjects with positive peptides for UpSet plot. Skipping.")
                 return None
+            
+            # Convert to the format UpSet expects: MultiIndex with peptide names as levels
+            case_data_T_multi = case_data_T.set_index(list(case_data_T.columns))
+            
+            # Count occurrences of each combination
+            combo_counts = case_data_T_multi.groupby(level=list(range(len(case_data_T_multi.index.names)))).size()
             
             # Create upset plot - suppress FutureWarning from upsetplot internals
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=FutureWarning, module='upsetplot')
                 
                 fig = plt.figure(figsize=(14, 8))
-                upset_data = from_contents(peptide_dict)
                 
-                # Use explicit subset_size instead of "auto" to avoid the error
-                upset_plot_func(upset_data, fig=fig, show_counts=True, 
-                               subset_size='count')  # Use 'count' instead of 'auto'
+                # Create UpSet object with explicit parameters
+                upset = UpSet(combo_counts, 
+                             subset_size='count',
+                             show_counts=True,
+                             element_size=None)  # Let UpSet decide
+                
+                upset.plot(fig=fig)
             
-            plt.suptitle(f'Peptide Combinations in Cases - Top {min(top_n, len(peptide_dict))} Peptides',
+            plt.suptitle(f'Peptide Combinations in Cases - Top {len(top_peptides)} Peptides',
                         fontsize=14, fontweight='bold', y=0.98)
             
             plt.tight_layout()
@@ -1246,7 +1259,9 @@ class CaseControlAnalyzer:
             print("Install with: pip install upsetplot")
             fig = None
         except Exception as e:
+            import traceback
             print(f"Warning: UpSet plot failed with error: {e}")
+            print(f"Details: {traceback.format_exc()}")
             print("Skipping UpSet plot.")
             fig = None
         
