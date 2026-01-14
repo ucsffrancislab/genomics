@@ -1181,12 +1181,17 @@ class CaseControlAnalyzer:
             # Get enrichment data for top peptides in cases
             case_data = enriched_matrix.loc[top_peptides, cases]
             
-            # Convert to UpSet format
+            # Convert to UpSet format - ensure peptide IDs are strings
             memberships = []
             for col in case_data.columns:
-                positive_peptides = case_data.index[case_data[col] == 1].tolist()
+                # Convert peptide IDs to strings for UpSet
+                positive_peptides = [str(p) for p in case_data.index[case_data[col] == 1]]
                 if positive_peptides:
                     memberships.append(positive_peptides)
+            
+            if len(memberships) == 0:
+                print("Warning: No peptide combinations found for UpSet plot. Skipping.")
+                return None
             
             # Create upset plot
             fig = plt.figure(figsize=(14, 8))
@@ -1205,6 +1210,10 @@ class CaseControlAnalyzer:
         except ImportError:
             print("Warning: upsetplot package not installed. Skipping UpSet plot.")
             print("Install with: pip install upsetplot")
+            fig = None
+        except Exception as e:
+            print(f"Warning: UpSet plot failed with error: {e}")
+            print("Skipping UpSet plot.")
             fig = None
         
         return fig
