@@ -249,6 +249,42 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 
 Glioma AGS / IPS
 
 
+###	Prepare sample list
+
+```bash
+mkdir -p Glioma_AGS_IPS
+head -1 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv > tmp1.csv
+tail -n +2 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv | sort -t, -k1,1 >> tmp1.csv
+awk 'BEGIN{FS=OFS=","}($4=="AGS" || $4=="IPS"){print $1,$2,$5,$6,$7,$8}' tmp1.csv > tmp2.csv
+sed '1i\sample_id,subject_id,status,age,sex,plate' tmp2.csv > Glioma_AGS_IPS/sample_metadata.csv
+```
+
+###	Prepare sample data
+
+```bash
+cut -d, -f1,3- ../20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv | datamash transpose -t, > tmp1.csv
+head -1 tmp1.csv > tmp2.csv
+tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+cut -d, -f1,10- tmp2.csv > tmp3.csv
+join --header -t, <( cut -d, -f1 Glioma_AGS_IPS/sample_metadata.csv ) tmp3.csv | datamash transpose -t, | sed '1s/^UCSFid/peptide_id/' > Glioma_AGS_IPS/phipseq_counts_experimental_only.csv
+```
 
 
 
+
+
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./Glioma_AGS_IPS_enrichment.py"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./Glioma_AGS_IPS_case_control_analysis.py"
+```
+
+```bash
+head -1 CMV_test/results/case_control/case_control_peptide.csv > tmp1.csv
+tail -n +2 CMV_test/results/case_control/case_control_peptide.csv | sort -t, -k1,1 >> tmp1.csv
+join --header -t, peptide_metadata.csv tmp1.csv > tmp2.csv
+head -1 tmp2.csv > CMV_test/results/case_control/case_control_peptide_with_protein_species.csv
+tail -n +2 tmp2.csv | sort -t, -k14g,14 >> CMV_test/results/case_control/case_control_peptide_with_protein_species.csv
+```
