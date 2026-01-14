@@ -638,8 +638,9 @@ class CaseControlAnalyzer:
         cases = metadata[metadata[case_col] == case_value].index
         controls = metadata[metadata[case_col] == control_value].index
         
-        cases = [s for s in cases if s in enriched_matrix.columns]
-        controls = [s for s in controls if s in enriched_matrix.columns]
+        # Convert to strings to match enriched_matrix columns
+        cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
+        controls = [str(s) for s in controls if str(s) in enriched_matrix.columns]
         
         # Calculate number of enriched peptides per sample
         case_counts = enriched_matrix[cases].sum(axis=0)
@@ -700,6 +701,14 @@ class CaseControlAnalyzer:
         cases = metadata[metadata[case_col] == case_value].index
         controls = metadata[metadata[case_col] == control_value].index
         
+        # Convert to strings to match enriched_matrix columns
+        cases = [str(s) for s in cases]
+        controls = [str(s) for s in controls]
+        
+        # Filter to samples in enriched_matrix
+        cases = [s for s in cases if s in enriched_matrix.columns]
+        controls = [s for s in controls if s in enriched_matrix.columns]
+        
         all_samples = list(cases) + list(controls)
         y_true = np.array([1] * len(cases) + [0] * len(controls))
         
@@ -759,8 +768,9 @@ class CaseControlAnalyzer:
         cases = metadata[metadata[case_col] == case_value].index
         controls = metadata[metadata[case_col] == control_value].index
         
-        cases = [s for s in cases if s in enriched_matrix.columns]
-        controls = [s for s in controls if s in enriched_matrix.columns]
+        # Convert to strings to match enriched_matrix columns
+        cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
+        controls = [str(s) for s in controls if str(s) in enriched_matrix.columns]
         
         # Get peptides enriched in at least one sample per group
         case_peptides = set(enriched_matrix.index[enriched_matrix[cases].sum(axis=1) > 0])
@@ -877,8 +887,9 @@ class CaseControlAnalyzer:
         cases = metadata[metadata[case_col] == case_value].index
         controls = metadata[metadata[case_col] == control_value].index
         
-        cases = [s for s in cases if s in enriched_matrix.columns]
-        controls = [s for s in controls if s in enriched_matrix.columns]
+        # Convert to strings to match enriched_matrix columns
+        cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
+        controls = [str(s) for s in controls if str(s) in enriched_matrix.columns]
         
         # Sort peptides by significance
         sorted_peptides = results_df.sort_values('fisher_pvalue')['entity_id'].values
@@ -946,8 +957,9 @@ class CaseControlAnalyzer:
         cases = metadata[metadata[case_col] == case_value].index
         controls = metadata[metadata[case_col] == control_value].index
         
-        cases = [s for s in cases if s in enriched_matrix.columns]
-        controls = [s for s in controls if s in enriched_matrix.columns]
+        # Convert to strings to match enriched_matrix columns
+        cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
+        controls = [str(s) for s in controls if str(s) in enriched_matrix.columns]
         
         # Get counts
         case_counts = enriched_matrix[cases].sum(axis=0)
@@ -1159,7 +1171,8 @@ class CaseControlAnalyzer:
             
             # Get cases only
             cases = metadata[metadata[case_col] == case_value].index
-            cases = [s for s in cases if s in enriched_matrix.columns]
+            # Convert to strings to match enriched_matrix columns
+            cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
             
             # Get top peptides
             top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
