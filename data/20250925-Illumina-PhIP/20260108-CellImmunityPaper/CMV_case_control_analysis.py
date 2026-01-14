@@ -126,7 +126,7 @@ analyzer.create_heatmap(
 )
 
 # 3. Enrichment distribution
-print("3. Enrichment distribution...")
+print("3. Enrichment distribution (histogram)...")
 analyzer.create_enrichment_distribution(
     peptide_enriched,
     metadata_subjects,
@@ -143,14 +143,105 @@ analyzer.create_prevalence_barplot(
     output_file='CMV_test/results/case_control/prevalence_peptides.png'
 )
 
+# 5. ROC curves
+print("5. ROC curves (top 10 peptides)...")
+analyzer.create_roc_curve(
+    results,
+    peptide_enriched,
+    metadata_subjects,
+    top_n=10,
+    output_file='CMV_test/results/case_control/roc_curve.png'
+)
+
+# 6. Venn diagram
+print("6. Venn diagram (peptide overlap)...")
+analyzer.create_venn_diagram(
+    peptide_enriched,
+    metadata_subjects,
+    case_col='status',
+    output_file='CMV_test/results/case_control/venn_diagram.png'
+)
+
+# 7. Effect size plot (forest plot)
+print("7. Effect size plot (forest plot with CI)...")
+analyzer.create_effect_size_plot(
+    results,
+    top_n=30,
+    output_file='CMV_test/results/case_control/effect_sizes.png'
+)
+
+# 8. Cumulative prevalence
+print("8. Cumulative prevalence curve...")
+analyzer.create_cumulative_prevalence(
+    peptide_enriched,
+    metadata_subjects,
+    results,
+    case_col='status',
+    output_file='CMV_test/results/case_control/cumulative_prevalence.png'
+)
+
+# 9. Violin plot
+print("9. Violin plot (peptide count distribution)...")
+analyzer.create_violin_plot(
+    peptide_enriched,
+    metadata_subjects,
+    case_col='status',
+    output_file='CMV_test/results/case_control/violin_plot.png'
+)
+
+# 10. Peptide correlation heatmap
+print("10. Peptide correlation heatmap (top 50)...")
+analyzer.create_peptide_correlation_heatmap(
+    peptide_enriched,
+    results,
+    top_n=50,
+    output_file='CMV_test/results/case_control/peptide_correlations.png'
+)
+
+# 11. Manhattan plot
+print("11. Manhattan plot (all peptides)...")
+analyzer.create_manhattan_plot(
+    results,
+    output_file='CMV_test/results/case_control/manhattan_plot.png'
+)
+
+# 12. Prevalence comparison
+print("12. Prevalence comparison (side-by-side bars)...")
+analyzer.create_prevalence_comparison_plot(
+    results,
+    top_n=30,
+    output_file='CMV_test/results/case_control/prevalence_comparison.png'
+)
+
+# 13. UpSet plot (optional - requires upsetplot package)
+print("13. UpSet plot (peptide combinations)...")
+analyzer.create_upset_plot(
+    peptide_enriched,
+    results,
+    metadata_subjects,
+    case_col='status',
+    top_n=20,
+    output_file='CMV_test/results/case_control/upset_plot.png'
+)
+
 print("\n" + "="*70)
 print("ANALYSIS COMPLETE!")
 print("="*70)
-print("\nOutput files:")
-print("  CMV_test/results/case_control/")
+print("\nOutput files in CMV_test/results/case_control/:")
+print("  Statistical results:")
 print("    - peptide_results.csv")
-print("    - volcano_peptide.png")
-print("    - heatmap_peptides.png")
-print("    - enrichment_distribution.png")
-print("    - prevalence_peptides.png")
+print("\n  Visualization files:")
+print("    1.  volcano_peptide.png          - Volcano plot")
+print("    2.  heatmap_peptides.png         - Clustered heatmap")
+print("    3.  enrichment_distribution.png  - Histogram of peptide counts")
+print("    4.  prevalence_peptides.png      - Top peptides bar chart")
+print("    5.  roc_curve.png                - ROC curves for top peptides")
+print("    6.  venn_diagram.png             - Case/control peptide overlap")
+print("    7.  effect_sizes.png             - Forest plot with confidence intervals")
+print("    8.  cumulative_prevalence.png    - Cumulative coverage curve")
+print("    9.  violin_plot.png              - Distribution comparison")
+print("    10. peptide_correlations.png     - Co-occurrence heatmap")
+print("    11. manhattan_plot.png           - Genome-wide association style plot")
+print("    12. prevalence_comparison.png    - Side-by-side prevalence bars")
+print("    13. upset_plot.png               - Peptide combination sets (if available)")
 print("\nReview the plots and significant peptides to identify CMV-associated epitopes!")

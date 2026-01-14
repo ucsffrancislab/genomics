@@ -674,6 +674,528 @@ class CaseControlAnalyzer:
         
         return fig
     
+    def create_roc_curve(self, results_df, enriched_matrix, metadata,
+                        case_col='status', case_value='case', control_value='control',
+                        top_n=10, output_file='roc_curve.png'):
+        """
+        Create ROC curves for top discriminatory peptides.
+        
+        Parameters:
+        -----------
+        results_df : pd.DataFrame
+            Results with p-values
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        top_n : int
+            Number of top peptides to plot
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        from sklearn.metrics import roc_curve, auc
+        
+        # Get case/control labels
+        cases = metadata[metadata[case_col] == case_value].index
+        controls = metadata[metadata[case_col] == control_value].index
+        
+        all_samples = list(cases) + list(controls)
+        y_true = np.array([1] * len(cases) + [0] * len(controls))
+        
+        # Get top N peptides
+        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
+        colors = plt.cm.tab10(np.linspace(0, 1, top_n))
+        
+        for i, peptide in enumerate(top_peptides):
+            if peptide in enriched_matrix.index:
+                y_score = enriched_matrix.loc[peptide, all_samples].values
+                fpr, tpr, _ = roc_curve(y_true, y_score)
+                roc_auc = auc(fpr, tpr)
+                
+                ax.plot(fpr, tpr, color=colors[i], lw=2, 
+                       label=f'{peptide} (AUC = {roc_auc:.3f})')
+        
+        # Diagonal line
+        ax.plot([0, 1], [0, 1], 'k--', lw=2, label='Random (AUC = 0.500)')
+        
+        ax.set_xlabel('False Positive Rate', fontsize=12)
+        ax.set_ylabel('True Positive Rate', fontsize=12)
+        ax.set_title(f'ROC Curves - Top {top_n} Discriminatory Peptides', fontsize=14, fontweight='bold')
+        ax.legend(loc='lower right', fontsize=9)
+        ax.grid(True, alpha=0.3)
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved ROC curve plot to {output_file}")
+        
+        return fig
+    
+    def create_venn_diagram(self, enriched_matrix, metadata,
+                           case_col='status', case_value='case', control_value='control',
+                           output_file='venn_diagram.png'):
+        """
+        Create Venn diagram showing peptide overlap between cases and controls.
+        
+        Parameters:
+        -----------
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        from matplotlib_venn import venn2
+        
+        # Get case and control samples
+        cases = metadata[metadata[case_col] == case_value].index
+        controls = metadata[metadata[case_col] == control_value].index
+        
+        cases = [s for s in cases if s in enriched_matrix.columns]
+        controls = [s for s in controls if s in enriched_matrix.columns]
+        
+        # Get peptides enriched in at least one sample per group
+        case_peptides = set(enriched_matrix.index[enriched_matrix[cases].sum(axis=1) > 0])
+        control_peptides = set(enriched_matrix.index[enriched_matrix[controls].sum(axis=1) > 0])
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(10, 8))
+        
+        venn = venn2([case_peptides, control_peptides], 
+                     set_labels=(f'Cases\n(n={len(cases)})', f'Controls\n(n={len(controls)})'),
+                     set_colors=('red', 'blue'),
+                     alpha=0.5,
+                     ax=ax)
+        
+        # Add title
+        ax.set_title('Peptide Enrichment Overlap', fontsize=14, fontweight='bold')
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved Venn diagram to {output_file}")
+        
+        return fig
+    
+    def create_effect_size_plot(self, results_df, top_n=30, 
+                                output_file='effect_sizes.png'):
+        """
+        Create forest plot showing odds ratios with confidence intervals.
+        
+        Parameters:
+        -----------
+        results_df : pd.DataFrame
+            Results with odds ratios
+        top_n : int
+            Number of top peptides to plot
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        
+        # Get top N significant peptides
+        top = results_df.nsmallest(top_n, 'fisher_pvalue').copy()
+        
+        # Calculate 95% CI for odds ratio (approximate)
+        # Using log scale: log(OR) ± 1.96 * SE
+        # SE ≈ sqrt(1/a + 1/b + 1/c + 1/d) for 2x2 table
+        top['log_or'] = np.log(top['odds_ratio'].clip(lower=0.01))
+        
+        # Approximate SE from contingency table
+        top['se'] = np.sqrt(
+            1/top['case_positive'].clip(lower=1) + 
+            1/(top['case_total'] - top['case_positive']).clip(lower=1) +
+            1/top['control_positive'].clip(lower=1) +
+            1/(top['control_total'] - top['control_positive']).clip(lower=1)
+        )
+        
+        top['ci_lower'] = np.exp(top['log_or'] - 1.96 * top['se'])
+        top['ci_upper'] = np.exp(top['log_or'] + 1.96 * top['se'])
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(10, max(8, top_n * 0.3)))
+        
+        # Plot
+        y_pos = np.arange(len(top))
+        
+        # Error bars
+        ax.errorbar(top['odds_ratio'], y_pos, 
+                   xerr=[top['odds_ratio'] - top['ci_lower'], 
+                         top['ci_upper'] - top['odds_ratio']],
+                   fmt='o', markersize=6, capsize=4, color='darkblue')
+        
+        # Reference line at OR=1
+        ax.axvline(1, color='red', linestyle='--', linewidth=2, alpha=0.7, label='OR = 1 (no effect)')
+        
+        # Labels
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(top['entity_id'], fontsize=9)
+        ax.set_xlabel('Odds Ratio (95% CI)', fontsize=12)
+        ax.set_ylabel('Peptide ID', fontsize=12)
+        ax.set_title(f'Effect Sizes - Top {top_n} Peptides', fontsize=14, fontweight='bold')
+        ax.set_xscale('log')
+        ax.grid(True, alpha=0.3, axis='x')
+        ax.legend()
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved effect size plot to {output_file}")
+        
+        return fig
+    
+    def create_cumulative_prevalence(self, enriched_matrix, metadata, results_df,
+                                    case_col='status', case_value='case', control_value='control',
+                                    output_file='cumulative_prevalence.png'):
+        """
+        Create cumulative prevalence plot showing coverage by top peptides.
+        
+        Parameters:
+        -----------
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        results_df : pd.DataFrame
+            Results sorted by significance
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        
+        # Get case and control samples
+        cases = metadata[metadata[case_col] == case_value].index
+        controls = metadata[metadata[case_col] == control_value].index
+        
+        cases = [s for s in cases if s in enriched_matrix.columns]
+        controls = [s for s in controls if s in enriched_matrix.columns]
+        
+        # Sort peptides by significance
+        sorted_peptides = results_df.sort_values('fisher_pvalue')['entity_id'].values
+        
+        # Calculate cumulative positive subjects
+        case_cumulative = []
+        control_cumulative = []
+        
+        case_positive_set = set()
+        control_positive_set = set()
+        
+        for peptide in sorted_peptides:
+            if peptide in enriched_matrix.index:
+                # Add subjects positive for this peptide
+                case_pos = set([s for s in cases if enriched_matrix.loc[peptide, s] == 1])
+                control_pos = set([s for s in controls if enriched_matrix.loc[peptide, s] == 1])
+                
+                case_positive_set.update(case_pos)
+                control_positive_set.update(control_pos)
+                
+                case_cumulative.append(len(case_positive_set) / len(cases) * 100)
+                control_cumulative.append(len(control_positive_set) / len(controls) * 100)
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(12, 6))
+        
+        x = np.arange(1, len(case_cumulative) + 1)
+        ax.plot(x, case_cumulative, 'r-', linewidth=2, label='Cases')
+        ax.plot(x, control_cumulative, 'b-', linewidth=2, label='Controls')
+        
+        ax.set_xlabel('Number of Top Peptides (ranked by p-value)', fontsize=12)
+        ax.set_ylabel('Cumulative % Subjects Seropositive', fontsize=12)
+        ax.set_title('Cumulative Coverage by Top Peptides', fontsize=14, fontweight='bold')
+        ax.legend(fontsize=11)
+        ax.grid(True, alpha=0.3)
+        ax.set_xlim(0, min(500, len(x)))  # Show first 500 peptides
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved cumulative prevalence plot to {output_file}")
+        
+        return fig
+    
+    def create_violin_plot(self, enriched_matrix, metadata,
+                          case_col='status', case_value='case', control_value='control',
+                          output_file='violin_plot.png'):
+        """
+        Create violin plot comparing peptide counts between cases and controls.
+        
+        Parameters:
+        -----------
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        metadata : pd.DataFrame
+            Sample metadata
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        
+        # Get case and control samples
+        cases = metadata[metadata[case_col] == case_value].index
+        controls = metadata[metadata[case_col] == control_value].index
+        
+        cases = [s for s in cases if s in enriched_matrix.columns]
+        controls = [s for s in controls if s in enriched_matrix.columns]
+        
+        # Get counts
+        case_counts = enriched_matrix[cases].sum(axis=0)
+        control_counts = enriched_matrix[controls].sum(axis=0)
+        
+        # Prepare data for seaborn
+        plot_data = pd.DataFrame({
+            'Peptide Count': list(case_counts) + list(control_counts),
+            'Group': ['Case'] * len(case_counts) + ['Control'] * len(control_counts)
+        })
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(8, 6))
+        
+        # Violin plot
+        sns.violinplot(data=plot_data, x='Group', y='Peptide Count', 
+                      palette={'Case': 'red', 'Control': 'blue'},
+                      ax=ax, inner='box')
+        
+        # Add individual points
+        sns.swarmplot(data=plot_data, x='Group', y='Peptide Count',
+                     color='black', alpha=0.3, size=3, ax=ax)
+        
+        ax.set_ylabel('Number of Enriched Peptides', fontsize=12)
+        ax.set_xlabel('Group', fontsize=12)
+        ax.set_title('Peptide Enrichment Distribution', fontsize=14, fontweight='bold')
+        ax.grid(True, alpha=0.3, axis='y')
+        
+        # Add statistics
+        from scipy import stats
+        t_stat, p_val = stats.ttest_ind(case_counts, control_counts)
+        ax.text(0.5, 0.98, f'T-test p-value: {p_val:.2e}',
+               transform=ax.transAxes, ha='center', va='top',
+               bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved violin plot to {output_file}")
+        
+        return fig
+    
+    def create_peptide_correlation_heatmap(self, enriched_matrix, results_df,
+                                          top_n=50, output_file='peptide_correlations.png'):
+        """
+        Create correlation heatmap for top peptides.
+        
+        Parameters:
+        -----------
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        results_df : pd.DataFrame
+            Results with p-values
+        top_n : int
+            Number of top peptides
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        import seaborn as sns
+        
+        # Get top peptides
+        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
+        top_peptides = [p for p in top_peptides if p in enriched_matrix.index]
+        
+        # Calculate correlation matrix
+        corr_matrix = enriched_matrix.loc[top_peptides].T.corr()
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(12, 10))
+        
+        # Heatmap
+        sns.heatmap(corr_matrix, cmap='RdBu_r', center=0, vmin=-1, vmax=1,
+                   square=True, linewidths=0.5, cbar_kws={'label': 'Correlation'},
+                   ax=ax, xticklabels=True, yticklabels=True)
+        
+        ax.set_title(f'Peptide Co-occurrence Correlation - Top {len(top_peptides)} Peptides',
+                    fontsize=14, fontweight='bold')
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved correlation heatmap to {output_file}")
+        
+        return fig
+    
+    def create_manhattan_plot(self, results_df, output_file='manhattan_plot.png'):
+        """
+        Create Manhattan-style plot showing -log10(p-value) for all peptides.
+        
+        Parameters:
+        -----------
+        results_df : pd.DataFrame
+            Results with p-values
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        
+        # Calculate -log10(p-value)
+        results_plot = results_df.copy()
+        results_plot['-log10(p)'] = -np.log10(results_plot['fisher_pvalue'].clip(lower=1e-300))
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(14, 6))
+        
+        # Scatter plot
+        x = np.arange(len(results_plot))
+        colors = ['#1f77b4' if i % 2 == 0 else '#ff7f0e' for i in range(len(results_plot))]
+        
+        ax.scatter(x, results_plot['-log10(p)'], c=colors, alpha=0.6, s=10)
+        
+        # Significance threshold lines
+        bonf_threshold = -np.log10(0.05 / len(results_plot))
+        fdr_threshold = -np.log10(0.05)
+        
+        ax.axhline(bonf_threshold, color='red', linestyle='--', linewidth=2, 
+                  label=f'Bonferroni (p={0.05/len(results_plot):.2e})')
+        ax.axhline(fdr_threshold, color='green', linestyle='--', linewidth=2,
+                  label=f'FDR threshold (p=0.05)')
+        
+        ax.set_xlabel('Peptide Index', fontsize=12)
+        ax.set_ylabel('-log10(p-value)', fontsize=12)
+        ax.set_title('Manhattan Plot - All Peptides', fontsize=14, fontweight='bold')
+        ax.legend()
+        ax.grid(True, alpha=0.3, axis='y')
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved Manhattan plot to {output_file}")
+        
+        return fig
+    
+    def create_prevalence_comparison_plot(self, results_df, top_n=30,
+                                         output_file='prevalence_comparison.png'):
+        """
+        Create side-by-side bar plot comparing case vs control prevalence.
+        
+        Parameters:
+        -----------
+        results_df : pd.DataFrame
+            Results with prevalence data
+        top_n : int
+            Number of top peptides
+        output_file : str
+            Output file path
+        """
+        import matplotlib.pyplot as plt
+        
+        # Get top peptides
+        top = results_df.nsmallest(top_n, 'fisher_pvalue')
+        
+        # Create figure
+        fig, ax = plt.subplots(figsize=(12, max(8, top_n * 0.3)))
+        
+        y_pos = np.arange(len(top))
+        width = 0.35
+        
+        # Bars
+        ax.barh(y_pos - width/2, top['case_prevalence'] * 100, width, 
+               label='Cases', color='red', alpha=0.7)
+        ax.barh(y_pos + width/2, top['control_prevalence'] * 100, width,
+               label='Controls', color='blue', alpha=0.7)
+        
+        ax.set_yticks(y_pos)
+        ax.set_yticklabels(top['entity_id'], fontsize=9)
+        ax.set_xlabel('Prevalence (%)', fontsize=12)
+        ax.set_ylabel('Peptide ID', fontsize=12)
+        ax.set_title(f'Prevalence Comparison - Top {top_n} Peptides', 
+                    fontsize=14, fontweight='bold')
+        ax.legend()
+        ax.grid(True, alpha=0.3, axis='x')
+        
+        plt.tight_layout()
+        plt.savefig(output_file, dpi=300, bbox_inches='tight')
+        plt.close()
+        
+        print(f"Saved prevalence comparison plot to {output_file}")
+        
+        return fig
+    
+    def create_upset_plot(self, enriched_matrix, results_df, metadata,
+                         case_col='status', case_value='case',
+                         top_n=20, output_file='upset_plot.png'):
+        """
+        Create UpSet plot showing combinations of top peptides.
+        
+        Parameters:
+        -----------
+        enriched_matrix : pd.DataFrame
+            Binary enrichment matrix
+        results_df : pd.DataFrame
+            Results with p-values
+        metadata : pd.DataFrame
+            Sample metadata
+        top_n : int
+            Number of top peptides
+        output_file : str
+            Output file path
+        """
+        try:
+            from upsetplot import plot as upset_plot_func
+            from upsetplot import from_memberships
+            import matplotlib.pyplot as plt
+            
+            # Get cases only
+            cases = metadata[metadata[case_col] == case_value].index
+            cases = [s for s in cases if s in enriched_matrix.columns]
+            
+            # Get top peptides
+            top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
+            top_peptides = [p for p in top_peptides if p in enriched_matrix.index]
+            
+            # Get enrichment data for top peptides in cases
+            case_data = enriched_matrix.loc[top_peptides, cases]
+            
+            # Convert to UpSet format
+            memberships = []
+            for col in case_data.columns:
+                positive_peptides = case_data.index[case_data[col] == 1].tolist()
+                if positive_peptides:
+                    memberships.append(positive_peptides)
+            
+            # Create upset plot
+            fig = plt.figure(figsize=(14, 8))
+            upset_data = from_memberships(memberships)
+            upset_plot_func(upset_data, fig=fig, show_counts=True)
+            
+            plt.suptitle(f'Peptide Combinations in Cases - Top {top_n} Peptides',
+                        fontsize=14, fontweight='bold', y=0.98)
+            
+            plt.tight_layout()
+            plt.savefig(output_file, dpi=300, bbox_inches='tight')
+            plt.close()
+            
+            print(f"Saved UpSet plot to {output_file}")
+            
+        except ImportError:
+            print("Warning: upsetplot package not installed. Skipping UpSet plot.")
+            print("Install with: pip install upsetplot")
+            fig = None
+        
+        return fig
+    
     def create_prevalence_barplot(self, results_df, top_n=20, 
                                  level_name='peptide', output_file=None):
         """
