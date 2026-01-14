@@ -996,10 +996,10 @@ class CaseControlAnalyzer:
         # Create figure
         fig, ax = plt.subplots(figsize=(8, 6))
         
-        # Violin plot
+        # Violin plot - use hue to avoid FutureWarning
         sns.violinplot(data=plot_data, x='Group', y='Peptide Count', 
-                      palette={'Case': 'red', 'Control': 'blue'},
-                      ax=ax, inner='box')
+                      hue='Group', palette={'Case': 'red', 'Control': 'blue'},
+                      ax=ax, inner='box', legend=False)
         
         # Add individual points
         sns.swarmplot(data=plot_data, x='Group', y='Peptide Count',
@@ -1190,6 +1190,7 @@ class CaseControlAnalyzer:
             from upsetplot import plot as upset_plot_func
             from upsetplot import from_memberships
             import matplotlib.pyplot as plt
+            import warnings
             
             # Get cases only
             cases = metadata[metadata[case_col] == case_value].index
@@ -1215,10 +1216,13 @@ class CaseControlAnalyzer:
                 print("Warning: No peptide combinations found for UpSet plot. Skipping.")
                 return None
             
-            # Create upset plot
-            fig = plt.figure(figsize=(14, 8))
-            upset_data = from_memberships(memberships)
-            upset_plot_func(upset_data, fig=fig, show_counts=True)
+            # Create upset plot - suppress FutureWarning from upsetplot internals
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=FutureWarning, module='upsetplot')
+                
+                fig = plt.figure(figsize=(14, 8))
+                upset_data = from_memberships(memberships)
+                upset_plot_func(upset_data, fig=fig, show_counts=True)
             
             plt.suptitle(f'Peptide Combinations in Cases - Top {top_n} Peptides',
                         fontsize=14, fontweight='bold', y=0.98)
