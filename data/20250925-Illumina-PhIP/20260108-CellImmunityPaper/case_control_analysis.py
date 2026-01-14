@@ -599,9 +599,26 @@ class CaseControlAnalyzer:
         output_file : str, optional
             Path to save plot
         """
-        # Get top entities
-        top_entities = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id']
-        plot_data = enriched_matrix.loc[top_entities]
+        # Get top entities (peptide_ids)
+        top_peptide_ids = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
+        
+        # Convert to strings and filter enriched_matrix
+        # enriched_matrix index should match peptide_ids
+        top_peptide_ids_str = [str(p) for p in top_peptide_ids]
+        enriched_index_str = enriched_matrix.index.astype(str)
+        
+        # Find matching indices
+        matching_indices = [i for i, idx in enumerate(enriched_index_str) if idx in top_peptide_ids_str]
+        
+        if len(matching_indices) == 0:
+            print(f"Warning: No matching peptides found in enriched_matrix for heatmap. Skipping.")
+            return None
+        
+        # Get the actual index values from enriched_matrix
+        actual_indices = enriched_matrix.index[matching_indices]
+        plot_data = enriched_matrix.loc[actual_indices]
+        
+        print(f"  Plotting {len(plot_data)} peptides in heatmap")
         
         # Sort samples by case/control
         cases = metadata[metadata[case_col] == case_value].index
@@ -761,19 +778,32 @@ class CaseControlAnalyzer:
         # Get top N peptides
         top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
         
+        # Convert both to strings for matching
+        top_peptides_str = [str(p) for p in top_peptides]
+        enriched_index_str = enriched_matrix.index.astype(str)
+        
         # Create figure
         fig, ax = plt.subplots(figsize=(10, 8))
         
         colors = plt.cm.tab10(np.linspace(0, 1, top_n))
         
-        for i, peptide in enumerate(top_peptides):
-            if peptide in enriched_matrix.index:
-                y_score = enriched_matrix.loc[peptide, all_samples].values
+        plotted = 0
+        for i, peptide_id in enumerate(top_peptides_str):
+            # Find matching index in enriched_matrix
+            matching = [idx for idx, val in enumerate(enriched_index_str) if val == peptide_id]
+            if len(matching) > 0:
+                actual_idx = enriched_matrix.index[matching[0]]
+                y_score = enriched_matrix.loc[actual_idx, all_samples].values
                 fpr, tpr, _ = roc_curve(y_true, y_score)
                 roc_auc = auc(fpr, tpr)
                 
                 ax.plot(fpr, tpr, color=colors[i], lw=2, 
-                       label=f'{peptide} (AUC = {roc_auc:.3f})')
+                       label=f'{peptide_id} (AUC = {roc_auc:.3f})')
+                plotted += 1
+        
+        if plotted == 0:
+            print("Warning: No matching peptides found for ROC curves. Skipping.")
+            return None
         
         # Diagonal line
         ax.plot([0, 1], [0, 1], 'k--', lw=2, label='Random (AUC = 0.500)')
@@ -1090,11 +1120,28 @@ class CaseControlAnalyzer:
         import seaborn as sns
         
         # Get top peptides
-        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
-        top_peptides = [p for p in top_peptides if p in enriched_matrix.index]
+        top_peptide_ids = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
+        
+        # Convert to strings and match with enriched_matrix index
+        top_peptide_ids_str = [str(p) for p in top_peptide_ids]
+        enriched_index_str = enriched_matrix.index.astype(str)
+        
+        # Find matching indices
+        matching_indices = []
+        for pid in top_peptide_ids_str:
+            matches = [i for i, idx in enumerate(enriched_index_str) if idx == pid]
+            if matches:
+                matching_indices.append(matches[0])
+        
+        if len(matching_indices) == 0:
+            print("Warning: No matching peptides found for correlation heatmap. Skipping.")
+            return None
+        
+        # Get actual indices from enriched_matrix
+        actual_indices = enriched_matrix.index[matching_indices]
         
         # Calculate correlation matrix
-        corr_matrix = enriched_matrix.loc[top_peptides].T.corr()
+        corr_matrix = enriched_matrix.loc[actual_indices].T.corr()
         
         # Create figure
         fig, ax = plt.subplots(figsize=(12, 10))
