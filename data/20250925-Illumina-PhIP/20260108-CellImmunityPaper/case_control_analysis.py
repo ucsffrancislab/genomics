@@ -1151,7 +1151,7 @@ class CaseControlAnalyzer:
                    square=True, linewidths=0.5, cbar_kws={'label': 'Correlation'},
                    ax=ax, xticklabels=True, yticklabels=True)
         
-        ax.set_title(f'Peptide Co-occurrence Correlation - Top {len(top_peptides)} Peptides',
+        ax.set_title(f'Peptide Co-occurrence Correlation - Top {len(actual_indices)} Peptides',
                     fontsize=14, fontweight='bold')
         
         plt.tight_layout()
