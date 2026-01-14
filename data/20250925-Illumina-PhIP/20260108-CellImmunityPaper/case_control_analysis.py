@@ -1188,7 +1188,7 @@ class CaseControlAnalyzer:
         """
         try:
             from upsetplot import plot as upset_plot_func
-            from upsetplot import from_memberships
+            from upsetplot import from_contents
             import matplotlib.pyplot as plt
             import warnings
             
@@ -1201,19 +1201,24 @@ class CaseControlAnalyzer:
             top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
             top_peptides = [p for p in top_peptides if p in enriched_matrix.index]
             
+            if len(top_peptides) == 0:
+                print("Warning: No peptides available for UpSet plot. Skipping.")
+                return None
+            
             # Get enrichment data for top peptides in cases
             case_data = enriched_matrix.loc[top_peptides, cases]
             
-            # Convert to UpSet format - ensure peptide IDs are strings
-            memberships = []
-            for col in case_data.columns:
-                # Convert peptide IDs to strings for UpSet
-                positive_peptides = [str(p) for p in case_data.index[case_data[col] == 1]]
-                if positive_peptides:
-                    memberships.append(positive_peptides)
+            # Convert to UpSet format using from_contents (better for binary data)
+            # Create a dict: {peptide_name: set_of_positive_subjects}
+            peptide_dict = {}
+            for peptide in case_data.index:
+                positive_subjects = set(case_data.columns[case_data.loc[peptide] == 1])
+                if len(positive_subjects) > 0:  # Only include peptides with at least 1 positive
+                    # Convert peptide ID to string
+                    peptide_dict[str(peptide)] = positive_subjects
             
-            if len(memberships) == 0:
-                print("Warning: No peptide combinations found for UpSet plot. Skipping.")
+            if len(peptide_dict) == 0:
+                print("Warning: No positive peptide combinations found for UpSet plot. Skipping.")
                 return None
             
             # Create upset plot - suppress FutureWarning from upsetplot internals
@@ -1221,10 +1226,13 @@ class CaseControlAnalyzer:
                 warnings.filterwarnings('ignore', category=FutureWarning, module='upsetplot')
                 
                 fig = plt.figure(figsize=(14, 8))
-                upset_data = from_memberships(memberships)
-                upset_plot_func(upset_data, fig=fig, show_counts=True)
+                upset_data = from_contents(peptide_dict)
+                
+                # Use explicit subset_size instead of "auto" to avoid the error
+                upset_plot_func(upset_data, fig=fig, show_counts=True, 
+                               subset_size='count')  # Use 'count' instead of 'auto'
             
-            plt.suptitle(f'Peptide Combinations in Cases - Top {top_n} Peptides',
+            plt.suptitle(f'Peptide Combinations in Cases - Top {min(top_n, len(peptide_dict))} Peptides',
                         fontsize=14, fontweight='bold', y=0.98)
             
             plt.tight_layout()
