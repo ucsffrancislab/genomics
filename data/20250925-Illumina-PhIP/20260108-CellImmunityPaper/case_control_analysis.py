@@ -128,7 +128,7 @@ class CaseControlAnalyzer:
                     batch_adjusted_p = np.nan
         
         return {
-            'entity_id': entity,
+            'peptide_id': entity,
             'case_positive': int(case_pos),
             'case_total': len(cases),
             'control_positive': int(control_pos),
@@ -282,7 +282,7 @@ class CaseControlAnalyzer:
         results_df = pd.DataFrame(results)
         
         # Rename entity_id to peptide_id (more specific and clear)
-        results_df.rename(columns={'entity_id': 'peptide_id'}, inplace=True)
+        results_df.rename(columns={'peptide_id': 'peptide_id'}, inplace=True)
         
         # Merge peptide metadata if provided
         if peptide_metadata is not None:
@@ -600,7 +600,7 @@ class CaseControlAnalyzer:
             Path to save plot
         """
         # Get top entities
-        top_entities = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id']
+        top_entities = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id']
         plot_data = enriched_matrix.loc[top_entities]
         
         # Sort samples by case/control
@@ -759,7 +759,7 @@ class CaseControlAnalyzer:
         y_true = np.array([1] * len(cases) + [0] * len(controls))
         
         # Get top N peptides
-        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
+        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
         
         # Create figure
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -915,7 +915,7 @@ class CaseControlAnalyzer:
         
         # Labels
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(top['entity_id'], fontsize=9)
+        ax.set_yticklabels(top['peptide_id'], fontsize=9)
         ax.set_xlabel('Odds Ratio (95% CI)', fontsize=12)
         ax.set_ylabel('Peptide ID', fontsize=12)
         ax.set_title(f'Effect Sizes - Top {len(top)} Peptides', fontsize=14, fontweight='bold')
@@ -959,7 +959,7 @@ class CaseControlAnalyzer:
         controls = [str(s) for s in controls if str(s) in enriched_matrix.columns]
         
         # Sort peptides by significance
-        sorted_peptides = results_df.sort_values('fisher_pvalue')['entity_id'].values
+        sorted_peptides = results_df.sort_values('fisher_pvalue')['peptide_id'].values
         
         # Calculate cumulative positive subjects
         case_cumulative = []
@@ -1090,7 +1090,7 @@ class CaseControlAnalyzer:
         import seaborn as sns
         
         # Get top peptides
-        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
+        top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
         top_peptides = [p for p in top_peptides if p in enriched_matrix.index]
         
         # Calculate correlation matrix
@@ -1266,7 +1266,7 @@ class CaseControlAnalyzer:
                label='Controls', color='blue', alpha=0.7)
         
         ax.set_yticks(y_pos)
-        ax.set_yticklabels(top['entity_id'], fontsize=9)
+        ax.set_yticklabels(top['peptide_id'], fontsize=9)
         ax.set_xlabel('Prevalence (%)', fontsize=12)
         ax.set_ylabel('Peptide ID', fontsize=12)
         ax.set_title(f'Prevalence Comparison - Top {top_n} Peptides', 
@@ -1318,7 +1318,7 @@ class CaseControlAnalyzer:
                 return None
             
             # Get top peptides
-            top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
+            top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
             top_peptides = [str(p) for p in top_peptides if p in enriched_matrix.index]
             
             if len(top_peptides) == 0:
@@ -1431,7 +1431,7 @@ class CaseControlAnalyzer:
         
         # Labels
         ax.set_yticks(x)
-        ax.set_yticklabels(top_results['entity_id'], fontsize=8)
+        ax.set_yticklabels(top_results['peptide_id'], fontsize=8)
         ax.set_xlabel('Seroprevalence', fontsize=14, fontweight='bold')
         ax.set_title(
             f'Top {len(top_results)} {level_name.capitalize()}s: Case vs Control',
