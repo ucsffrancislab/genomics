@@ -11,6 +11,7 @@ analyzer = CaseControlAnalyzer(n_jobs=-1)  # Use all CPUs
 print("Loading data...")
 peptide_enriched = pd.read_csv("Glioma_AGS_IPS/results/peptide_enrichment_binary.csv", index_col=0)
 metadata = pd.read_csv("Glioma_AGS_IPS/sample_metadata.csv", index_col=0)
+peptide_metadata = pd.read_csv("peptide_metadata.csv")  # Load peptide metadata
 
 print(f"DEBUG - Sample enrichment columns (first 5): {list(peptide_enriched.columns[:5])}")
 print(f"DEBUG - Sample metadata index (first 5): {list(metadata.index[:5])}")
@@ -70,7 +71,8 @@ results = analyzer.test_single_entity(
     control_value='control',
     adjust_for_batch=True,
     batch_col='plate',
-    skip_failed_batch=True  # Use Fisher's p-value when batch adjustment fails
+    skip_failed_batch=True,  # Use Fisher's p-value when batch adjustment fails
+    peptide_metadata=peptide_metadata  # NEW: Pass peptide metadata for merging
 )
 
 # Apply FDR correction
@@ -104,8 +106,11 @@ print(f"Significant (FDR < 0.05): {(results['fdr'] < 0.05).sum()}")
 print(f"Significant (FDR < 0.01): {(results['fdr'] < 0.01).sum()}")
 
 print("\nTop 10 most significant peptides:")
-print(results.head(10)[['entity_id', 'case_prevalence', 'control_prevalence', 
-                        'odds_ratio', pval_col, 'fdr']])
+top_cols = ['peptide_id', 'case_prevalence', 'control_prevalence', 'odds_ratio', pval_col, 'fdr']
+# Add organism/protein columns if they exist
+if 'organism' in results.columns:
+    top_cols = ['organism', 'protein_name', 'peptide_id', 'case_prevalence', 'control_prevalence', 'odds_ratio', pval_col, 'fdr']
+print(results.head(10)[top_cols])
 
 # Create visualizations
 print("\n" + "="*70)
@@ -203,11 +208,40 @@ analyzer.create_peptide_correlation_heatmap(
     output_file='Glioma_AGS_IPS/results/case_control/peptide_correlations.png'
 )
 
-# 11. Manhattan plot
+# 11. Manhattan plots
 print("11. Manhattan plot (all peptides)...")
 analyzer.create_manhattan_plot(
     results,
-    output_file='Glioma_AGS_IPS/results/case_control/manhattan_plot.png'
+    output_file='Glioma_AGS_IPS/results/case_control/manhattan_plot_all.png'
+)
+
+# Organism-specific Manhattan plots
+print("11a. Manhattan plot (Human herpesvirus 3)...")
+analyzer.create_manhattan_plot(
+    results,
+    output_file='Glioma_AGS_IPS/results/case_control/manhattan_plot_HHV3.png',
+    organism_filter='Human herpesvirus 3'
+)
+
+print("11b. Manhattan plot (Human herpesvirus 4)...")
+analyzer.create_manhattan_plot(
+    results,
+    output_file='Glioma_AGS_IPS/results/case_control/manhattan_plot_HHV4.png',
+    organism_filter='Human herpesvirus 4'
+)
+
+print("11c. Manhattan plot (Human herpesvirus 5)...")
+analyzer.create_manhattan_plot(
+    results,
+    output_file='Glioma_AGS_IPS/results/case_control/manhattan_plot_HHV5.png',
+    organism_filter='Human herpesvirus 5'
+)
+
+print("11d. Manhattan plot (Influenza A virus)...")
+analyzer.create_manhattan_plot(
+    results,
+    output_file='Glioma_AGS_IPS/results/case_control/manhattan_plot_InfluenzaA.png',
+    organism_filter='Influenza A virus'
 )
 
 # 12. Prevalence comparison
@@ -234,19 +268,26 @@ print("ANALYSIS COMPLETE!")
 print("="*70)
 print("\nOutput files in Glioma_AGS_IPS/results/case_control/:")
 print("  Statistical results:")
-print("    - peptide_results.csv")
+print("    - peptide_results.csv (with organism and protein_name columns)")
 print("\n  Visualization files:")
-print("    1.  volcano_peptide.png          - Volcano plot")
-print("    2.  heatmap_peptides.png         - Clustered heatmap")
-print("    3.  enrichment_distribution.png  - Histogram of peptide counts")
-print("    4.  prevalence_peptides.png      - Top peptides bar chart")
-print("    5.  roc_curve.png                - ROC curves for top peptides")
-print("    6.  venn_diagram.png             - Case/control peptide overlap")
-print("    7.  effect_sizes.png             - Forest plot with confidence intervals")
-print("    8.  cumulative_prevalence.png    - Cumulative coverage curve")
-print("    9.  violin_plot.png              - Distribution comparison")
-print("    10. peptide_correlations.png     - Co-occurrence heatmap")
-print("    11. manhattan_plot.png           - Genome-wide association style plot")
-print("    12. prevalence_comparison.png    - Side-by-side prevalence bars")
-print("    13. upset_plot.png               - Peptide combination sets (if available)")
+print("    1.  volcano_peptide.png              - Volcano plot")
+print("    2.  heatmap_peptides.png             - Clustered heatmap")
+print("    3.  enrichment_distribution.png      - Histogram of peptide counts")
+print("    4.  prevalence_peptides.png          - Top peptides bar chart")
+print("    5.  roc_curve.png                    - ROC curves for top peptides")
+print("    6.  venn_diagram.png                 - Case/control peptide overlap")
+print("    7.  effect_sizes.png                 - Forest plot with confidence intervals")
+print("    8.  cumulative_prevalence.png        - Cumulative coverage curve")
+print("    9.  violin_plot.png                  - Distribution comparison")
+print("    10. peptide_correlations.png         - Co-occurrence heatmap")
+print("    11. manhattan_plot_all.png           - All peptides (directional)")
+print("    11a. manhattan_plot_HHV3.png         - Human herpesvirus 3 only")
+print("    11b. manhattan_plot_HHV4.png         - Human herpesvirus 4 only")
+print("    11c. manhattan_plot_HHV5.png         - Human herpesvirus 5 only")
+print("    11d. manhattan_plot_InfluenzaA.png   - Influenza A virus only")
+print("    12. prevalence_comparison.png        - Side-by-side prevalence bars")
+print("    13. upset_plot.png                   - Peptide combination sets (if available)")
+print("\nNOTE: Manhattan plots are:")
+print("  - Sorted by peptide_id (neighbors stay together)")
+print("  - Directional: UP = enriched in cases, DOWN = enriched in controls")
 print("\nReview the plots and significant peptides to identify associated epitopes!")

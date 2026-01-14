@@ -11,6 +11,7 @@ analyzer = CaseControlAnalyzer(n_jobs=-1)  # Use all CPUs
 print("Loading data...")
 peptide_enriched = pd.read_csv("CMV_test/results/peptide_enrichment_binary.csv", index_col=0)
 metadata = pd.read_csv("CMV_test/sample_metadata.csv", index_col=0)
+peptide_metadata = pd.read_csv("peptide_metadata.csv")  # Load peptide metadata
 
 print(f"DEBUG - Sample enrichment columns (first 5): {list(peptide_enriched.columns[:5])}")
 print(f"DEBUG - Sample metadata index (first 5): {list(metadata.index[:5])}")
@@ -70,7 +71,8 @@ results = analyzer.test_single_entity(
     control_value='control',
     adjust_for_batch=True,
     batch_col='plate',
-    skip_failed_batch=True  # Use Fisher's p-value when batch adjustment fails
+    skip_failed_batch=True,  # Use Fisher's p-value when batch adjustment fails
+    peptide_metadata=peptide_metadata  # Pass peptide metadata for merging
 )
 
 # Apply FDR correction
@@ -103,8 +105,10 @@ print(f"Significant (FDR < 0.05): {(results['fdr'] < 0.05).sum()}")
 print(f"Significant (FDR < 0.01): {(results['fdr'] < 0.01).sum()}")
 
 print("\nTop 10 most significant peptides:")
-print(results.head(10)[['entity_id', 'case_prevalence', 'control_prevalence', 
-                        'odds_ratio', pval_col, 'fdr']])
+top_cols = ['peptide_id', 'case_prevalence', 'control_prevalence', 'odds_ratio', pval_col, 'fdr']
+if 'organism' in results.columns:
+    top_cols = ['organism', 'protein_name', 'peptide_id', 'case_prevalence', 'control_prevalence', 'odds_ratio', pval_col, 'fdr']
+print(results.head(10)[top_cols])
 
 # Create visualizations
 print("\n" + "="*70)
@@ -202,11 +206,19 @@ analyzer.create_peptide_correlation_heatmap(
     output_file='CMV_test/results/case_control/peptide_correlations.png'
 )
 
-# 11. Manhattan plot
+# 11. Manhattan plots
 print("11. Manhattan plot (all peptides)...")
 analyzer.create_manhattan_plot(
     results,
-    output_file='CMV_test/results/case_control/manhattan_plot.png'
+    output_file='CMV_test/results/case_control/manhattan_plot_all.png'
+)
+
+# CMV-specific Manhattan plot
+print("11a. Manhattan plot (Human herpesvirus 5 - CMV)...")
+analyzer.create_manhattan_plot(
+    results,
+    output_file='CMV_test/results/case_control/manhattan_plot_CMV.png',
+    organism_filter='Human herpesvirus 5'
 )
 
 # 12. Prevalence comparison
