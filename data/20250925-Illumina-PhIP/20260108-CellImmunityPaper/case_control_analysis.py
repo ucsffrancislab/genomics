@@ -989,7 +989,18 @@ class CaseControlAnalyzer:
         controls = [str(s) for s in controls if str(s) in enriched_matrix.columns]
         
         # Sort peptides by significance
-        sorted_peptides = results_df.sort_values('fisher_pvalue')['peptide_id'].values
+        sorted_peptide_ids = results_df.sort_values('fisher_pvalue')['peptide_id'].values
+        
+        # Convert to strings for matching
+        sorted_peptide_ids_str = [str(p) for p in sorted_peptide_ids]
+        enriched_index_str = enriched_matrix.index.astype(str)
+        
+        # Create mapping from peptide_id to enriched_matrix index
+        peptide_to_idx = {}
+        for pid in sorted_peptide_ids_str:
+            matches = [i for i, idx in enumerate(enriched_index_str) if idx == pid]
+            if matches:
+                peptide_to_idx[pid] = enriched_matrix.index[matches[0]]
         
         # Calculate cumulative positive subjects
         case_cumulative = []
@@ -998,17 +1009,23 @@ class CaseControlAnalyzer:
         case_positive_set = set()
         control_positive_set = set()
         
-        for peptide in sorted_peptides:
-            if peptide in enriched_matrix.index:
+        for peptide_id in sorted_peptide_ids_str:
+            if peptide_id in peptide_to_idx:
+                actual_idx = peptide_to_idx[peptide_id]
+                
                 # Add subjects positive for this peptide
-                case_pos = set([s for s in cases if enriched_matrix.loc[peptide, s] == 1])
-                control_pos = set([s for s in controls if enriched_matrix.loc[peptide, s] == 1])
+                case_pos = set([s for s in cases if enriched_matrix.loc[actual_idx, s] == 1])
+                control_pos = set([s for s in controls if enriched_matrix.loc[actual_idx, s] == 1])
                 
                 case_positive_set.update(case_pos)
                 control_positive_set.update(control_pos)
                 
                 case_cumulative.append(len(case_positive_set) / len(cases) * 100)
                 control_cumulative.append(len(control_positive_set) / len(controls) * 100)
+        
+        if len(case_cumulative) == 0:
+            print("Warning: No matching peptides found for cumulative prevalence plot. Skipping.")
+            return None
         
         # Create figure
         fig, ax = plt.subplots(figsize=(12, 6))
