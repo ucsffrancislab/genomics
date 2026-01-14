@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 # Initialize analyzer
-analyzer = CaseControlAnalyzer()
+analyzer = CaseControlAnalyzer(n_jobs=-1)  # Use all CPUs
 
 # Load data
 print("Loading data...")

@@ -16,8 +16,134 @@ class CaseControlAnalyzer:
     Case-control analysis for PhIPSeq seropositivity data.
     """
     
-    def __init__(self):
-        pass
+    def __init__(self, n_jobs=1):
+        """
+        Initialize analyzer.
+        
+        Parameters:
+        -----------
+        n_jobs : int
+            Number of parallel jobs (default: 1)
+            Set to -1 to use all CPU cores
+        """
+        self.n_jobs = n_jobs
+    
+    def load_sample_metadata(self, metadata_file):
+        """
+        Load sample metadata with case/control labels.
+        
+        Parameters:
+        -----------
+        metadata_file : str
+            Path to sample metadata CSV
+            Expected columns: sample_id, status (or similar)
+            
+        Returns:
+        --------
+        metadata : pd.DataFrame
+            Sample metadata
+        """
+        metadata = pd.read_csv(metadata_file, index_col=0)
+        return metadata
+    
+    def _test_single_entity_worker(self, args):
+        """
+        Worker function for parallel testing of a single entity.
+        
+        Parameters:
+        -----------
+        args : tuple
+            (entity_id, entity_data, cases, controls, has_batch, batch_data, skip_failed_batch)
+            
+        Returns:
+        --------
+        result : dict
+            Test results for this entity
+        """
+        entity, entity_data, cases, controls, has_batch, batch_data, skip_failed_batch = args
+        
+        # Create 2x2 contingency table
+        case_pos = entity_data[cases].sum()
+        case_neg = len(cases) - case_pos
+        control_pos = entity_data[controls].sum()
+        control_neg = len(controls) - control_pos
+        
+        table = [[case_pos, case_neg], [control_pos, control_neg]]
+        
+        # Fisher's exact test
+        odds_ratio, fisher_p = fisher_exact(table, alternative='two-sided')
+        
+        # Chi-square test (if sufficient counts)
+        if all(x >= 5 for row in table for x in row):
+            chi2_stat, chi2_p, _, _ = chi2_contingency(table)
+        else:
+            chi2_stat, chi2_p = np.nan, np.nan
+        
+        # Calculate prevalences
+        case_prev = case_pos / len(cases) if len(cases) > 0 else 0
+        control_prev = control_pos / len(controls) if len(controls) > 0 else 0
+        
+        # Risk ratio
+        risk_ratio = case_prev / (control_prev + 1e-10)
+        
+        # Batch-adjusted analysis using logistic regression
+        batch_adjusted_or = np.nan
+        batch_adjusted_p = np.nan
+        batch_failed = False
+        
+        if has_batch:
+            try:
+                import statsmodels.api as sm
+                from pandas import get_dummies
+                
+                # Prepare data for logistic regression
+                all_samples, y, X_peptide, batch_labels = batch_data
+                
+                # This entity's data
+                X_peptide_entity = entity_data[all_samples].values
+                
+                # Create dummy variables for batches
+                batch_dummies = get_dummies(batch_labels, drop_first=True)
+                
+                # Combine peptide status with batch dummies
+                X = pd.DataFrame({'peptide': X_peptide_entity})
+                X = pd.concat([X, batch_dummies], axis=1)
+                X = sm.add_constant(X)
+                
+                # Fit logistic regression
+                model = sm.Logit(y, X).fit(disp=0, maxiter=100)
+                
+                # Extract peptide coefficient
+                batch_adjusted_or = np.exp(model.params['peptide'])
+                batch_adjusted_p = model.pvalues['peptide']
+                
+            except Exception as e:
+                # If regression fails, use Fisher's p-value as fallback
+                batch_failed = True
+                if skip_failed_batch:
+                    batch_adjusted_or = odds_ratio
+                    batch_adjusted_p = fisher_p
+                else:
+                    batch_adjusted_or = np.nan
+                    batch_adjusted_p = np.nan
+        
+        return {
+            'entity_id': entity,
+            'case_positive': int(case_pos),
+            'case_total': len(cases),
+            'control_positive': int(control_pos),
+            'control_total': len(controls),
+            'case_prevalence': case_prev,
+            'control_prevalence': control_prev,
+            'prevalence_diff': case_prev - control_prev,
+            'odds_ratio': odds_ratio,
+            'risk_ratio': risk_ratio,
+            'fisher_pvalue': fisher_p,
+            'chi2_pvalue': chi2_p,
+            'batch_adjusted_OR': batch_adjusted_or,
+            'batch_adjusted_pvalue': batch_adjusted_p,
+            'batch_failed': batch_failed
+        }
     
     def load_sample_metadata(self, metadata_file):
         """
@@ -99,94 +225,55 @@ class CaseControlAnalyzer:
                 print(f"         Logistic regression may fail frequently.")
                 print(f"         Will use Fisher's exact test as fallback when this happens.")
         
-        results = []
-        failed_batch_count = 0
+        # Determine number of jobs
+        if self.n_jobs == -1:
+            import multiprocessing
+            n_jobs = multiprocessing.cpu_count()
+        else:
+            n_jobs = self.n_jobs
         
-        for entity in enriched_matrix.index:
-            # Create 2x2 contingency table
-            case_pos = enriched_matrix.loc[entity, cases].sum()
-            case_neg = len(cases) - case_pos
-            control_pos = enriched_matrix.loc[entity, controls].sum()
-            control_neg = len(controls) - control_pos
-            
-            table = [[case_pos, case_neg], [control_pos, control_neg]]
-            
-            # Fisher's exact test
-            odds_ratio, fisher_p = fisher_exact(table, alternative='two-sided')
-            
-            # Chi-square test (if sufficient counts)
-            if all(x >= 5 for row in table for x in row):
-                chi2_stat, chi2_p, _, _ = chi2_contingency(table)
-            else:
-                chi2_stat, chi2_p = np.nan, np.nan
-            
-            # Calculate prevalences
-            case_prev = case_pos / len(cases) if len(cases) > 0 else 0
-            control_prev = control_pos / len(controls) if len(controls) > 0 else 0
-            
-            # Risk ratio
-            risk_ratio = case_prev / (control_prev + 1e-10)
-            
-            # Batch-adjusted analysis using logistic regression
-            batch_adjusted_or = np.nan
-            batch_adjusted_p = np.nan
-            
-            if has_batch:
-                try:
-                    import statsmodels.api as sm
-                    
-                    # Prepare data for logistic regression
-                    all_samples = list(cases) + list(controls)
-                    y = np.array([1] * len(cases) + [0] * len(controls))  # 1=case, 0=control
-                    X_peptide = enriched_matrix.loc[entity, all_samples].values
-                    
-                    # Get batch labels
-                    batch_labels = metadata.loc[all_samples, batch_col].values
-                    
-                    # Create dummy variables for batches
-                    from pandas import get_dummies
-                    batch_dummies = get_dummies(batch_labels, drop_first=True)
-                    
-                    # Combine peptide status with batch dummies
-                    X = pd.DataFrame({
-                        'peptide': X_peptide,
-                    })
-                    X = pd.concat([X, batch_dummies], axis=1)
-                    X = sm.add_constant(X)
-                    
-                    # Fit logistic regression
-                    model = sm.Logit(y, X).fit(disp=0, maxiter=100)
-                    
-                    # Extract peptide coefficient
-                    batch_adjusted_or = np.exp(model.params['peptide'])
-                    batch_adjusted_p = model.pvalues['peptide']
-                    
-                except Exception as e:
-                    # If regression fails, use Fisher's p-value as fallback
-                    failed_batch_count += 1
-                    if skip_failed_batch:
-                        batch_adjusted_or = odds_ratio
-                        batch_adjusted_p = fisher_p
-                    else:
-                        batch_adjusted_or = np.nan
-                        batch_adjusted_p = np.nan
-            
-            results.append({
-                'entity_id': entity,
-                'case_positive': int(case_pos),
-                'case_total': len(cases),
-                'control_positive': int(control_pos),
-                'control_total': len(controls),
-                'case_prevalence': case_prev,
-                'control_prevalence': control_prev,
-                'prevalence_diff': case_prev - control_prev,
-                'odds_ratio': odds_ratio,
-                'risk_ratio': risk_ratio,
-                'fisher_pvalue': fisher_p,
-                'chi2_pvalue': chi2_p,
-                'batch_adjusted_OR': batch_adjusted_or,
-                'batch_adjusted_pvalue': batch_adjusted_p
-            })
+        if n_jobs > 1:
+            print(f"Using {n_jobs} parallel workers...")
+        
+        # Prepare batch data for all entities
+        batch_data = None
+        if has_batch:
+            all_samples = list(cases) + list(controls)
+            y = np.array([1] * len(cases) + [0] * len(controls))
+            batch_labels = metadata.loc[all_samples, batch_col].values
+            batch_data = (all_samples, y, None, batch_labels)
+        
+        # Prepare arguments for parallel processing
+        args_list = [
+            (
+                entity,
+                enriched_matrix.loc[entity],
+                cases,
+                controls,
+                has_batch,
+                batch_data,
+                skip_failed_batch
+            )
+            for entity in enriched_matrix.index
+        ]
+        
+        # Process in parallel
+        if n_jobs > 1:
+            from joblib import Parallel, delayed
+            results = Parallel(n_jobs=n_jobs)(
+                delayed(self._test_single_entity_worker)(args)
+                for args in args_list
+            )
+        else:
+            # Sequential processing
+            results = [self._test_single_entity_worker(args) for args in args_list]
+        
+        # Count batch failures
+        failed_batch_count = sum(1 for r in results if r.get('batch_failed', False))
+        
+        # Remove batch_failed flag (not needed in output)
+        for r in results:
+            r.pop('batch_failed', None)
         
         results_df = pd.DataFrame(results)
         
