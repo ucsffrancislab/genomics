@@ -33,6 +33,15 @@ metadata_subjects = metadata.groupby('subject_id').first()
 
 print(f"DEBUG - Subject metadata index (first 5): {list(metadata_subjects.index[:5])}")
 
+# FIX: Convert both to strings to ensure they match
+print("\nConverting IDs to strings for matching...")
+peptide_enriched.columns = peptide_enriched.columns.astype(str)
+metadata_subjects.index = metadata_subjects.index.astype(str)
+
+print(f"DEBUG - After conversion:")
+print(f"  Enrichment columns (first 5): {list(peptide_enriched.columns[:5])}")
+print(f"  Metadata index (first 5): {list(metadata_subjects.index[:5])}")
+
 # Verify the status column is present
 print(f"  Unique subjects: {len(metadata_subjects)}")
 print(f"  Status column present: {'status' in metadata_subjects.columns}")
@@ -44,12 +53,7 @@ print(f"  Subjects in both enrichment and metadata: {len(common_subjects)}")
 
 if len(common_subjects) == 0:
     print("\nERROR: No subject IDs match between enrichment data and metadata!")
-    print("This means the pipeline's collapse_replicates didn't work as expected.")
-    print("The enrichment file still has sample IDs, not subject IDs as column names.")
-    print("\nPlease check:")
-    print("1. Did the enrichment script actually run with collapse_replicates=True?")
-    print("2. Does your metadata have a 'subject_id' column?")
-    print("3. Check the pipeline output for 'Collapsing technical replicates' message")
+    print("This should not happen after type conversion!")
     import sys
     sys.exit(1)
 
