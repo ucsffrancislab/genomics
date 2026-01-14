@@ -1173,6 +1173,9 @@ class CaseControlAnalyzer:
         """
         Create UpSet plot showing combinations of top peptides.
         
+        Note: This plot shows which combinations of peptides co-occur in case subjects.
+        It's optional and will skip gracefully if it encounters issues.
+        
         Parameters:
         -----------
         enriched_matrix : pd.DataFrame
@@ -1187,13 +1190,12 @@ class CaseControlAnalyzer:
             Output file path
         """
         try:
-            from upsetplot import UpSet
+            from upsetplot import from_indicators
             import matplotlib.pyplot as plt
             import warnings
             
             # Get cases only
             cases = metadata[metadata[case_col] == case_value].index
-            # Convert to strings to match enriched_matrix columns
             cases = [str(s) for s in cases if str(s) in enriched_matrix.columns]
             
             if len(cases) == 0:
@@ -1202,70 +1204,66 @@ class CaseControlAnalyzer:
             
             # Get top peptides
             top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['entity_id'].values
-            top_peptides = [p for p in top_peptides if p in enriched_matrix.index]
+            top_peptides = [str(p) for p in top_peptides if p in enriched_matrix.index]
             
             if len(top_peptides) == 0:
                 print("Warning: No peptides available for UpSet plot. Skipping.")
                 return None
             
+            # Limit to reasonable number of peptides for UpSet (gets messy with too many)
+            if len(top_peptides) > 15:
+                print(f"Note: Limiting UpSet plot to top 15 peptides (requested {len(top_peptides)}) for readability")
+                top_peptides = top_peptides[:15]
+            
             # Get enrichment data for top peptides in cases
-            case_data = enriched_matrix.loc[top_peptides, cases].astype(bool)
+            # Transpose so rows are subjects, columns are peptides
+            case_data = enriched_matrix.loc[top_peptides, cases].T
             
-            # Convert to MultiIndex format (UpSet's preferred format)
-            # Each row is a subject, columns are peptides (True/False)
-            case_data_T = case_data.T
+            # Ensure boolean type
+            case_data = case_data.astype(bool)
             
-            # Rename columns to strings
-            case_data_T.columns = [str(c) for c in case_data_T.columns]
+            # Set proper column names (peptide IDs)
+            case_data.columns = [str(c) for c in case_data.columns]
             
             # Remove subjects with no positive peptides
-            case_data_T = case_data_T[case_data_T.sum(axis=1) > 0]
+            case_data = case_data[case_data.sum(axis=1) > 0]
             
-            if len(case_data_T) == 0:
+            if len(case_data) == 0:
                 print("Warning: No subjects with positive peptides for UpSet plot. Skipping.")
                 return None
             
-            # Convert to the format UpSet expects: MultiIndex with peptide names as levels
-            case_data_T_multi = case_data_T.set_index(list(case_data_T.columns))
-            
-            # Count occurrences of each combination
-            combo_counts = case_data_T_multi.groupby(level=list(range(len(case_data_T_multi.index.names)))).size()
-            
-            # Create upset plot - suppress FutureWarning from upsetplot internals
+            # Create UpSet data from indicator matrix
             with warnings.catch_warnings():
                 warnings.filterwarnings('ignore', category=FutureWarning, module='upsetplot')
                 
+                upset_data = from_indicators(case_data.columns, data=case_data)
+                
+                # Create plot
                 fig = plt.figure(figsize=(14, 8))
                 
-                # Create UpSet object with explicit parameters
-                upset = UpSet(combo_counts, 
-                             subset_size='count',
-                             show_counts=True,
-                             element_size=None)  # Let UpSet decide
-                
-                upset.plot(fig=fig)
+                # Simple plot call
+                from upsetplot import plot as upset_plot
+                upset_plot(upset_data, fig=fig, show_counts='%d')
             
             plt.suptitle(f'Peptide Combinations in Cases - Top {len(top_peptides)} Peptides',
-                        fontsize=14, fontweight='bold', y=0.98)
+                        fontsize=14, fontweight='bold')
             
             plt.tight_layout()
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
             plt.close()
             
             print(f"Saved UpSet plot to {output_file}")
+            return fig
             
         except ImportError:
             print("Warning: upsetplot package not installed. Skipping UpSet plot.")
             print("Install with: pip install upsetplot")
-            fig = None
+            return None
         except Exception as e:
-            import traceback
-            print(f"Warning: UpSet plot failed with error: {e}")
-            print(f"Details: {traceback.format_exc()}")
-            print("Skipping UpSet plot.")
-            fig = None
-        
-        return fig
+            # UpSet plots can be finicky - just skip if there's any issue
+            print(f"Warning: UpSet plot failed. Skipping.")
+            print(f"  (This is optional and doesn't affect other analyses)")
+            return None
     
     def create_prevalence_barplot(self, results_df, top_n=20, 
                                  level_name='peptide', output_file=None):
