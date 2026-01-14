@@ -75,7 +75,11 @@ results = analyzer.test_single_entity(
 
 # Apply FDR correction
 print("\nApplying FDR correction...")
-results = analyzer.apply_fdr_correction(results)
+# You can adjust FDR threshold:
+# - 0.05 (default, standard)
+# - 0.01 (stringent, for high-confidence discoveries)
+# - 0.10 (exploratory, for hypothesis generation)
+results = analyzer.apply_fdr_correction(results, fdr_threshold=0.05)
 
 # Save results
 results.to_csv('CMV_test/results/case_control/peptide_results.csv', index=False)

@@ -315,7 +315,7 @@ class CaseControlAnalyzer:
         
         return results_df
     
-    def apply_fdr_correction(self, results_df, alpha=0.05):
+    def apply_fdr_correction(self, results_df, fdr_threshold=0.05):
         """
         Apply FDR correction to p-values.
         
@@ -323,8 +323,9 @@ class CaseControlAnalyzer:
         -----------
         results_df : pd.DataFrame
             Results from test_single_entity
-        alpha : float
-            FDR threshold (default: 0.05)
+        fdr_threshold : float
+            FDR threshold for significance (default: 0.05)
+            Common values: 0.05 (standard), 0.01 (stringent), 0.10 (exploratory)
             
         Returns:
         --------
@@ -343,19 +344,19 @@ class CaseControlAnalyzer:
         else:
             raise ValueError("No p-value column found in results")
         
-        print(f"Applying FDR correction to {pval_col}...")
+        print(f"Applying FDR correction to {pval_col} with threshold {fdr_threshold}...")
         
         # Apply Benjamini-Hochberg FDR correction
         reject, pvals_corrected, alphacSidak, alphacBonf = multipletests(
             results_df[pval_col], 
-            alpha=alpha, 
+            alpha=fdr_threshold, 
             method='fdr_bh'
         )
         
         results_df['fdr'] = pvals_corrected
         results_df['significant_fdr'] = reject
         
-        print(f"  Significant at FDR < {alpha}: {reject.sum()}")
+        print(f"  Significant at FDR < {fdr_threshold}: {reject.sum()}")
         
         return results_df
     
@@ -815,10 +816,19 @@ class CaseControlAnalyzer:
         # Get top N significant peptides
         top = results_df.nsmallest(top_n, 'fisher_pvalue').copy()
         
+        # Check if we have any peptides to plot
+        if len(top) == 0:
+            print(f"Warning: No peptides available for effect size plot. Skipping.")
+            return None
+        
         # Calculate 95% CI for odds ratio (approximate)
         # Using log scale: log(OR) ± 1.96 * SE
         # SE ≈ sqrt(1/a + 1/b + 1/c + 1/d) for 2x2 table
-        top['log_or'] = np.log(top['odds_ratio'].clip(lower=0.01))
+        
+        # Handle infinite and zero odds ratios
+        top['odds_ratio_clean'] = top['odds_ratio'].replace([np.inf, -np.inf], np.nan)
+        top['odds_ratio_clean'] = top['odds_ratio_clean'].fillna(top['odds_ratio_clean'].max() * 10)
+        top['log_or'] = np.log(top['odds_ratio_clean'].clip(lower=0.01))
         
         # Approximate SE from contingency table
         top['se'] = np.sqrt(
@@ -828,19 +838,31 @@ class CaseControlAnalyzer:
             1/(top['control_total'] - top['control_positive']).clip(lower=1)
         )
         
+        # Calculate confidence intervals
         top['ci_lower'] = np.exp(top['log_or'] - 1.96 * top['se'])
         top['ci_upper'] = np.exp(top['log_or'] + 1.96 * top['se'])
         
+        # Ensure lower CI is not negative and error bars are valid
+        top['ci_lower'] = top['ci_lower'].clip(lower=0.01)
+        top['error_lower'] = (top['odds_ratio_clean'] - top['ci_lower']).clip(lower=0)
+        top['error_upper'] = (top['ci_upper'] - top['odds_ratio_clean']).clip(lower=0)
+        
+        # Remove any rows with invalid data
+        top = top.dropna(subset=['odds_ratio_clean', 'error_lower', 'error_upper'])
+        
+        if len(top) == 0:
+            print(f"Warning: No valid peptides for effect size plot after filtering. Skipping.")
+            return None
+        
         # Create figure
-        fig, ax = plt.subplots(figsize=(10, max(8, top_n * 0.3)))
+        fig, ax = plt.subplots(figsize=(10, max(8, len(top) * 0.3)))
         
         # Plot
         y_pos = np.arange(len(top))
         
         # Error bars
-        ax.errorbar(top['odds_ratio'], y_pos, 
-                   xerr=[top['odds_ratio'] - top['ci_lower'], 
-                         top['ci_upper'] - top['odds_ratio']],
+        ax.errorbar(top['odds_ratio_clean'], y_pos, 
+                   xerr=[top['error_lower'], top['error_upper']],
                    fmt='o', markersize=6, capsize=4, color='darkblue')
         
         # Reference line at OR=1
@@ -851,7 +873,7 @@ class CaseControlAnalyzer:
         ax.set_yticklabels(top['entity_id'], fontsize=9)
         ax.set_xlabel('Odds Ratio (95% CI)', fontsize=12)
         ax.set_ylabel('Peptide ID', fontsize=12)
-        ax.set_title(f'Effect Sizes - Top {top_n} Peptides', fontsize=14, fontweight='bold')
+        ax.set_title(f'Effect Sizes - Top {len(top)} Peptides', fontsize=14, fontweight='bold')
         ax.set_xscale('log')
         ax.grid(True, alpha=0.3, axis='x')
         ax.legend()
