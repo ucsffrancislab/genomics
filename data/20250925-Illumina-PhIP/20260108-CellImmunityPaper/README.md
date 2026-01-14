@@ -156,6 +156,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 
 ```
 
 
+##	20260113
 
 
 ```bash
@@ -174,6 +175,78 @@ The problem is with the protein and virus seropositivity calls.
 It looks like it only takes 1 peptide to result in a positive seropositivity.
 Moving forward, we'd need to do something about that.
 
+
+
+
+
+
+
+
+Percentages rather than fixed counts for calling proteins and viruses?
+
+How to merge replicates? Before or after enrichment analysis?
+
+
+
+Checking CMV findings
+
+```bash
+join --header -t, CMV_test/CMV.csv <( awk -F, '(NR==1 || $1=="Human herpesvirus 5")' CMV_test/results/virus_enrichment_binary.csv | datamash transpose -t, ) | awk -F, '($2!=$3)'
+```
+
+```bash
+head -1 CMV_test/results/peptide_enrichment_binary.csv > tmp1.csv
+tail -n +2 CMV_test/results/peptide_enrichment_binary.csv | sort -t, -k1,1 >> tmp1.csv
+join --header -t, peptide_metadata.csv tmp1.csv | cut -d, -f1,2,3,5- | awk -F, '(NR==1 || $3=="Human herpesvirus 5")' | datamash transpose -t, > tmp2.csv
+join --header -t, <( head -1 CMV_test/CMV.csv ) <( tail -n +1 tmp2.csv | head -n 1 ) > tmp3.csv
+join --header -t, <( head -1 CMV_test/CMV.csv ) <( tail -n +2 tmp2.csv | head -n 1 ) >> tmp3.csv
+join --header -t, CMV_test/CMV.csv <( tail -n +3 tmp2.csv ) >> tmp3.csv
+```
+
+
+```python3
+import pandas as pd
+df=pd.read_csv('tmp3.csv',header=[0,1,2],index_col=0)
+df.head()
+df.T.groupby(level=[1,2]).sum()
+df.T.groupby(level=[1,2]).sum().to_csv('protein_counts.csv')
+```
+
+
+
+
+
+```bash
+
+head -1 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv > tmp1.csv
+tail -n +2 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv | sort -t, -k1,1 >> tmp1.csv
+
+join --header -t, CMV_test/CMV.csv tmp1.csv > tmp2.csv
+
+awk 'BEGIN{FS=OFS=","}($2==0){$2="control"}($2==1){$2="case"}{print $1,$3,$2,$7,$8,$9}' tmp2.csv > tmp3.csv
+
+sed '1c\sample_id,subject_id,status,age,sex,plate' tmp3.csv > CMV_test/sample_metadata.csv
+
+```
+
+
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./CMV_enrichment.py"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./CMV_case_control_analysis.py"
+
+```
+
+
+
+
+
+
+##	20260114
+
+Glioma AGS / IPS
 
 
 
