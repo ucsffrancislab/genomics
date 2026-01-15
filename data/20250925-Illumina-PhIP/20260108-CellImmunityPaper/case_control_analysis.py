@@ -608,20 +608,18 @@ class CaseControlAnalyzer:
         # Get top entities (peptide_ids)
         top_peptide_ids = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
         
-        # Convert to strings and filter enriched_matrix
-        # enriched_matrix index should match peptide_ids
-        top_peptide_ids_str = [str(p) for p in top_peptide_ids]
-        enriched_index_str = enriched_matrix.index.astype(str)
+        # Create O(1) lookup dictionary
+        top_peptide_ids_set = set(str(p) for p in top_peptide_ids)
+        str_to_idx = {str(enriched_matrix.index[i]): enriched_matrix.index[i] 
+                      for i in range(len(enriched_matrix.index))}
         
-        # Find matching indices
-        matching_indices = [i for i, idx in enumerate(enriched_index_str) if idx in top_peptide_ids_str]
+        # Find matching indices efficiently
+        actual_indices = [str_to_idx[pid] for pid in top_peptide_ids_set if pid in str_to_idx]
         
-        if len(matching_indices) == 0:
+        if len(actual_indices) == 0:
             print(f"Warning: No matching peptides found in enriched_matrix for heatmap. Skipping.")
             return None
         
-        # Get the actual index values from enriched_matrix
-        actual_indices = enriched_matrix.index[matching_indices]
         plot_data = enriched_matrix.loc[actual_indices]
         
         print(f"  Plotting {len(plot_data)} peptides in heatmap")
@@ -784,9 +782,10 @@ class CaseControlAnalyzer:
         # Get top N peptides
         top_peptides = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
         
-        # Convert both to strings for matching
+        # Create O(1) lookup dictionary
         top_peptides_str = [str(p) for p in top_peptides]
-        enriched_index_str = enriched_matrix.index.astype(str)
+        str_to_idx = {str(enriched_matrix.index[i]): enriched_matrix.index[i] 
+                      for i in range(len(enriched_matrix.index))}
         
         # Create figure
         fig, ax = plt.subplots(figsize=(10, 8))
@@ -794,17 +793,15 @@ class CaseControlAnalyzer:
         colors = plt.cm.tab10(np.linspace(0, 1, top_n))
         
         plotted = 0
-        for i, peptide_id in enumerate(top_peptides_str):
-            # Find matching index in enriched_matrix
-            matching = [idx for idx, val in enumerate(enriched_index_str) if val == peptide_id]
-            if len(matching) > 0:
-                actual_idx = enriched_matrix.index[matching[0]]
+        for i, peptide_id_str in enumerate(top_peptides_str):
+            if peptide_id_str in str_to_idx:
+                actual_idx = str_to_idx[peptide_id_str]
                 y_score = enriched_matrix.loc[actual_idx, all_samples].values
                 fpr, tpr, _ = roc_curve(y_true, y_score)
                 roc_auc = auc(fpr, tpr)
                 
                 ax.plot(fpr, tpr, color=colors[i], lw=2, 
-                       label=f'{peptide_id} (AUC = {roc_auc:.3f})')
+                       label=f'{peptide_id_str} (AUC = {roc_auc:.3f})')
                 plotted += 1
         
         if plotted == 0:
@@ -997,16 +994,13 @@ class CaseControlAnalyzer:
         # Sort peptides by significance
         sorted_peptide_ids = results_df.sort_values('fisher_pvalue')['peptide_id'].values
         
-        # Convert to strings for matching
+        # Convert to strings for matching - DO THIS ONCE OUTSIDE LOOP
         sorted_peptide_ids_str = [str(p) for p in sorted_peptide_ids]
-        enriched_index_str = enriched_matrix.index.astype(str)
         
-        # Create mapping from peptide_id to enriched_matrix index
-        peptide_to_idx = {}
-        for pid in sorted_peptide_ids_str:
-            matches = [i for i, idx in enumerate(enriched_index_str) if idx == pid]
-            if matches:
-                peptide_to_idx[pid] = enriched_matrix.index[matches[0]]
+        # Create O(1) lookup dictionary: string_index -> actual_index
+        # This is CRITICAL for performance with 100K+ peptides
+        enriched_index_str = enriched_matrix.index.astype(str)
+        str_to_idx = {str(idx): actual_idx for idx, actual_idx in enumerate(enriched_matrix.index)}
         
         # Calculate cumulative positive subjects
         case_cumulative = []
@@ -1015,9 +1009,9 @@ class CaseControlAnalyzer:
         case_positive_set = set()
         control_positive_set = set()
         
-        for peptide_id in sorted_peptide_ids_str:
-            if peptide_id in peptide_to_idx:
-                actual_idx = peptide_to_idx[peptide_id]
+        for peptide_id_str in sorted_peptide_ids_str:
+            if peptide_id_str in str_to_idx:
+                actual_idx = str_to_idx[peptide_id_str]
                 
                 # Add subjects positive for this peptide
                 case_pos = set([s for s in cases if enriched_matrix.loc[actual_idx, s] == 1])
@@ -1145,23 +1139,17 @@ class CaseControlAnalyzer:
         # Get top peptides
         top_peptide_ids = results_df.nsmallest(top_n, 'fisher_pvalue')['peptide_id'].values
         
-        # Convert to strings and match with enriched_matrix index
-        top_peptide_ids_str = [str(p) for p in top_peptide_ids]
-        enriched_index_str = enriched_matrix.index.astype(str)
+        # Create O(1) lookup dictionary
+        top_peptide_ids_set = set(str(p) for p in top_peptide_ids)
+        str_to_idx = {str(enriched_matrix.index[i]): enriched_matrix.index[i] 
+                      for i in range(len(enriched_matrix.index))}
         
-        # Find matching indices
-        matching_indices = []
-        for pid in top_peptide_ids_str:
-            matches = [i for i, idx in enumerate(enriched_index_str) if idx == pid]
-            if matches:
-                matching_indices.append(matches[0])
+        # Find matching indices efficiently
+        actual_indices = [str_to_idx[pid] for pid in top_peptide_ids_set if pid in str_to_idx]
         
-        if len(matching_indices) == 0:
+        if len(actual_indices) == 0:
             print("Warning: No matching peptides found for correlation heatmap. Skipping.")
             return None
-        
-        # Get actual indices from enriched_matrix
-        actual_indices = enriched_matrix.index[matching_indices]
         
         # Calculate correlation matrix
         corr_matrix = enriched_matrix.loc[actual_indices].T.corr()
