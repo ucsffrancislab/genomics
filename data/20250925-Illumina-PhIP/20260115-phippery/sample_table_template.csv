@@ -1,0 +1,12 @@
+sample_name,subject_id,replicate,control_status,plate,group,sex,age,batch
+S001_rep1,SUBJ_001,1,empirical,plate_01,case,M,45,batch_A
+S001_rep2,SUBJ_001,2,empirical,plate_01,case,M,45,batch_A
+S002_rep1,SUBJ_002,1,empirical,plate_01,control,F,52,batch_A
+S002_rep2,SUBJ_002,2,empirical,plate_01,control,F,52,batch_A
+BLANK_P01_A1,,1,beads_only,plate_01,,,batch_A
+BLANK_P01_A2,,2,beads_only,plate_01,,,batch_A
+LIB_P01_A1,,1,library,plate_01,,,batch_A
+S003_rep1,SUBJ_003,1,empirical,plate_02,case,M,38,batch_A
+S003_rep2,SUBJ_003,2,empirical,plate_02,case,M,38,batch_A
+BLANK_P02_A1,,1,beads_only,plate_02,,,batch_A
+LIB_P02_A1,,1,library,plate_02,,,batch_A
