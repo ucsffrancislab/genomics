@@ -1,0 +1,162 @@
+# Phippery Pipeline Configuration
+# Adjust these settings for your specific dataset
+
+# ==============================================================================
+# Input/Output Paths
+# ==============================================================================
+paths:
+  # Your input files (adjust these to your actual file paths)
+  input_counts_matrix: "/path/to/your/counts_matrix.csv"
+  input_sample_metadata: "/path/to/your/sample_metadata.csv"
+  input_peptide_annotations: "/path/to/your/peptide_annotations.csv"
+  
+  # Or if you already have them formatted for phippery:
+  sample_table: "data/sample_table.csv"
+  peptide_table: "data/peptide_table.csv"
+  counts_matrix: "data/counts_matrix.csv"
+  
+  # Output directory
+  output_dir: "results"
+  
+  # Intermediate files
+  work_dir: "work"
+
+# ==============================================================================
+# Dataset Information
+# ==============================================================================
+dataset:
+  name: "virscan_study"
+  description: "VirScan PhIPSeq analysis"
+  num_samples: 1000       # Approximate
+  num_peptides: 115000    # Approximate
+  num_plates: 12
+
+# ==============================================================================
+# Sample Metadata Column Mappings
+# ==============================================================================
+# Map your column names to phippery's expected names
+sample_columns:
+  # Required - adjust left side to match YOUR column names
+  sample_name: "sample_id"              # Your sample ID column
+  control_status: "sample_type"         # Your control type column
+  
+  # Optional covariates for batch correction
+  plate: "plate_id"
+  batch: "batch_id"
+  subject_id: "subject"
+  replicate: "replicate"
+  group: "case_control"
+  sex: "sex"
+  age: "age"
+
+# Control status value mappings
+# Map YOUR values to phippery's expected values
+control_status_mapping:
+  # Your value: phippery value
+  "serum": "empirical"
+  "experimental": "empirical"
+  "no_serum_blank": "beads_only"
+  "blank": "beads_only"
+  "beads": "beads_only"
+  "phage_library": "library"
+  "library_input": "library"
+  "input": "library"
+
+# ==============================================================================
+# Peptide Annotation Column Mappings
+# ==============================================================================
+peptide_columns:
+  # Required
+  oligo: "oligo_sequence"               # Oligonucleotide sequence column
+  
+  # Optional but recommended for VirScan
+  peptide_name: "peptide_id"
+  peptide_seq: "peptide_sequence"
+  virus: "species"
+  protein: "protein_name"
+  start_pos: "start"
+  end_pos: "end"
+
+# ==============================================================================
+# Processing Parameters
+# ==============================================================================
+processing:
+  # Number of parallel processes (adjust based on your HPC allocation)
+  n_cores: 64
+  
+  # Memory per process (for chunked processing)
+  memory_per_core_gb: 7
+  
+  # Whether to use Singularity container
+  use_singularity: true
+  singularity_image: "docker://quay.io/hdc-workflows/phippery:latest"
+
+# ==============================================================================
+# Normalization Settings
+# ==============================================================================
+normalization:
+  # Run counts per million normalization
+  run_cpm: true
+  cpm_per_sample: true    # Normalize within each sample
+  
+  # Run size factors (DESeq-style)
+  run_size_factors: true
+  
+  # Run EdgeR (requires R and EdgeR installed)
+  run_edger: true
+
+# ==============================================================================
+# Enrichment Settings
+# ==============================================================================
+enrichment:
+  # CPM fold enrichment over library controls
+  run_cpm_enrichment: true
+  library_control_status: "library"     # Value in control_status for library samples
+  
+  # Z-score based enrichment
+  run_zscore: true
+  beads_control_status: "beads_only"    # Value in control_status for beads-only
+
+# ==============================================================================
+# Z-Score Analysis Settings
+# ==============================================================================
+zscore:
+  # Z-score threshold for calling hits
+  threshold: 3.5
+  
+  # Replicate concordance requirement
+  require_replicate_concordance: true
+  min_concordant_replicates: 2
+
+# ==============================================================================
+# Batch Effect Correction Settings
+# ==============================================================================
+batch_correction:
+  # Whether to assess/correct for batch effects
+  run_batch_assessment: true
+  
+  # Covariates to consider
+  covariates:
+    - "plate"
+    - "batch"
+    - "sex"
+    - "age"
+  
+  # Method for visualization
+  method: "pca"           # Options: pca, mds, umap
+
+# ==============================================================================
+# Output Settings
+# ==============================================================================
+output:
+  # Output formats
+  save_pickle: true       # .phip binary (fastest for phippery)
+  save_wide_csv: true     # Wide CSV matrices
+  save_tall_csv: false    # Tall/long format (large files)
+  
+  # Compression
+  compress_csv: true      # gzip CSV outputs
+  
+  # Summary reports
+  generate_qc_report: true
+  generate_summary_stats: true
