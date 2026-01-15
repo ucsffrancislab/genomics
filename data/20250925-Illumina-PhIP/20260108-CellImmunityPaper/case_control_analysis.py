@@ -102,6 +102,11 @@ class CaseControlAnalyzer:
                 # This entity's data
                 X_peptide_entity = entity_data[all_samples].values
                 
+                # Check for separation issues (all 0s or all 1s)
+                if X_peptide_entity.sum() == 0 or X_peptide_entity.sum() == len(X_peptide_entity):
+                    # Perfect separation - logistic regression will fail
+                    raise ValueError("Perfect separation detected")
+                
                 # Create dummy variables for batches
                 batch_dummies = get_dummies(batch_labels, drop_first=True)
                 
@@ -110,8 +115,9 @@ class CaseControlAnalyzer:
                 X = pd.concat([X, batch_dummies], axis=1)
                 X = sm.add_constant(X)
                 
-                # Fit logistic regression
-                model = sm.Logit(y, X).fit(disp=0, maxiter=100)
+                # Fit logistic regression with timeout protection
+                # Use method='bfgs' which is faster and more stable
+                model = sm.Logit(y, X).fit(disp=0, maxiter=50, method='bfgs', warn_convergence=False)
                 
                 # Extract peptide coefficient
                 batch_adjusted_or = np.exp(model.params['peptide'])

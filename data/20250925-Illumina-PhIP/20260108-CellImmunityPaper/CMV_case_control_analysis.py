@@ -71,6 +71,7 @@ results = analyzer.test_single_entity(
     control_value='control',
     adjust_for_batch=True,
     batch_col='plate',
+    adjust_for_batch=False,  # DISABLE batch adjustment
     skip_failed_batch=True,  # Use Fisher's p-value when batch adjustment fails
     peptide_metadata=peptide_metadata  # Pass peptide metadata for merging
 )
