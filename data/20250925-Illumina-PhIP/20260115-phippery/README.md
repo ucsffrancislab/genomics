@@ -84,4 +84,7 @@ sbatch scripts/run_all.sh
 
 
 
+Claude crashed and this is getting way out of hand.
+Starting over asking for minimal scripts.
+
 
