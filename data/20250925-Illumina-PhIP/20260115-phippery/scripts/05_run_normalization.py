@@ -12,7 +12,7 @@ This script performs:
 4. Fold enrichment over library controls
 
 Usage:
-    python 05_run_normalization.py \
+    python3 05_run_normalization.py \
         --input results/dataset.phip \
         --output results/dataset_normalized.phip \
         --cores 64

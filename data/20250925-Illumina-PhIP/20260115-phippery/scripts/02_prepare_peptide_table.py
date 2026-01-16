@@ -8,7 +8,7 @@ The key requirement is the 'oligo' column containing oligonucleotide sequences.
 If you don't have oligo sequences, this script can generate placeholder IDs.
 
 Usage:
-    python 02_prepare_peptide_table.py \
+    python3 02_prepare_peptide_table.py \
         --input your_peptide_annotations.csv \
         --output data/peptide_table.csv \
         --config config/pipeline_config.yaml

@@ -6,7 +6,7 @@ Convert your existing sample metadata to phippery's required format.
 Handles the mapping of your column names and control status values.
 
 Usage:
-    python 01_prepare_sample_table.py \
+    python3 01_prepare_sample_table.py \
         --input your_sample_metadata.csv \
         --output data/sample_table.csv \
         --config config/pipeline_config.yaml

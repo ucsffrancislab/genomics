@@ -1,4 +1,6 @@
 #!/bin/bash
+
+#	This won't run on the cluster as the nodes do not have outside access.
 #SBATCH --job-name=install_phippery
 #SBATCH --output=logs/install_phippery_%j.out
 #SBATCH --error=logs/install_phippery_%j.err
@@ -63,7 +65,8 @@ echo "Setting up local Python environment (backup option)..."
 echo "======================================================================"
 
 # Load Python module if available (adjust for your HPC)
-module load python/3.10 2>/dev/null || module load python3 2>/dev/null || true
+#	python3 is "built in"
+#module load python/3.10 2>/dev/null || module load python3 2>/dev/null || true
 
 # Create virtual environment
 VENV_DIR="phippery_env"
@@ -92,9 +95,9 @@ pip install joblib multiprocess
 # Verify installation
 echo ""
 echo "Verifying installation..."
-python -c "import phippery; print(f'phippery version: {phippery.__version__}')"
-python -c "import pandas; print(f'pandas version: {pandas.__version__}')"
-python -c "import xarray; print(f'xarray version: {xarray.__version__}')"
+python3 -c "import phippery; print(f'phippery version: {phippery.__version__}')"
+python3 -c "import pandas; print(f'pandas version: {pandas.__version__}')"
+python3 -c "import xarray; print(f'xarray version: {xarray.__version__}')"
 
 # Test CLI
 phippery --help

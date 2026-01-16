@@ -6,7 +6,7 @@ Alternative Python script to create phippery dataset.
 Better memory handling for large datasets (~115k x 1000).
 
 Usage:
-    python 04_create_phippery_dataset.py \
+    python3 04_create_phippery_dataset.py \
         --sample-table data/sample_table.csv \
         --peptide-table data/peptide_table.csv \
         --counts-matrix data/counts_matrix.csv \

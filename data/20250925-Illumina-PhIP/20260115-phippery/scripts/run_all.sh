@@ -3,7 +3,7 @@
 #SBATCH --output=logs/pipeline_%j.out
 #SBATCH --error=logs/pipeline_%j.err
 #SBATCH --time=08:00:00
-#SBATCH --mem=256G
+#SBATCH --mem=490G
 #SBATCH --cpus-per-task=64
 
 # ==============================================================================
@@ -24,9 +24,10 @@ set -euo pipefail
 # ==============================================================================
 
 # Input files (YOUR data - adjust these paths!)
-INPUT_SAMPLE_METADATA="/path/to/your/sample_metadata.csv"
-INPUT_PEPTIDE_ANNOTATIONS="/path/to/your/peptide_annotations.csv"  
-INPUT_COUNTS_MATRIX="/path/to/your/counts_matrix.csv"
+MY_PATH="/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery"
+INPUT_SAMPLE_METADATA="${MY_PATH}/sample_metadata.csv"
+INPUT_PEPTIDE_ANNOTATIONS="${MY_PATH}/peptide_annotations.csv"  
+INPUT_COUNTS_MATRIX="${MY_PATH}/counts_matrix.csv"
 
 # Output directories
 DATA_DIR="data"
@@ -74,7 +75,7 @@ echo "Step 1: Preparing sample table..."
 echo "======================================================================"
 
 if [ ! -f "${DATA_DIR}/sample_table.csv" ]; then
-    python scripts/01_prepare_sample_table.py \
+    python3 scripts/01_prepare_sample_table.py \
         --input "${INPUT_SAMPLE_METADATA}" \
         --output "${DATA_DIR}/sample_table.csv" \
         --config config/pipeline_config.yaml \
@@ -93,7 +94,7 @@ echo "Step 2: Preparing peptide table..."
 echo "======================================================================"
 
 if [ ! -f "${DATA_DIR}/peptide_table.csv" ]; then
-    python scripts/02_prepare_peptide_table.py \
+    python3 scripts/02_prepare_peptide_table.py \
         --input "${INPUT_PEPTIDE_ANNOTATIONS}" \
         --output "${DATA_DIR}/peptide_table.csv" \
         --config config/pipeline_config.yaml \
@@ -113,7 +114,7 @@ echo "Step 3: Preparing counts matrix..."
 echo "======================================================================"
 
 if [ ! -f "${DATA_DIR}/counts_matrix.csv" ]; then
-    python scripts/03_prepare_counts_matrix.py \
+    python3 scripts/03_prepare_counts_matrix.py \
         --input "${INPUT_COUNTS_MATRIX}" \
         --sample-table "${DATA_DIR}/sample_table.csv" \
         --peptide-table "${DATA_DIR}/peptide_table.csv" \
@@ -157,7 +158,7 @@ echo "======================================================================"
 NORMALIZED_FILE="${RESULTS_DIR}/dataset_normalized.phip"
 
 if [ ! -f "${NORMALIZED_FILE}" ]; then
-    python scripts/05_run_normalization.py \
+    python3 scripts/05_run_normalization.py \
         --input "${DATASET_FILE}" \
         --output "${NORMALIZED_FILE}" \
         --cores ${N_CORES} \
@@ -175,7 +176,7 @@ echo "======================================================================"
 echo "Step 6: Generating QC report..."
 echo "======================================================================"
 
-python - << 'PYTHON_QC_SCRIPT'
+python3 - << 'PYTHON_QC_SCRIPT'
 import sys
 sys.path.insert(0, '.')
 

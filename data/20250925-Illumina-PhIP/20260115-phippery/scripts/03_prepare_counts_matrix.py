@@ -12,7 +12,7 @@ Requirements:
 - No missing values
 
 Usage:
-    python 03_prepare_counts_matrix.py \
+    python3 03_prepare_counts_matrix.py \
         --input your_counts_matrix.csv \
         --sample-table data/sample_table.csv \
         --peptide-table data/peptide_table.csv \
