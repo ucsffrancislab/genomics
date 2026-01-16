@@ -9,7 +9,9 @@ This script:
 2. Validates that peptides in counts matrix match peptide_table
 3. Reorders both dimensions to ensure alignment
 4. Identifies duplicate peptides in your peptide table
-5. Outputs formatted files ready for phippery
+5. Adds required integer index columns (sample_id, peptide_id)
+6. Renames subject_id to subject_name to avoid phippery confusion
+7. Outputs formatted files ready for phippery
 
 Usage:
     python3 format_for_phippery.py \
@@ -39,10 +41,15 @@ def load_and_validate_sample_table(path: str) -> pd.DataFrame:
         raise ValueError("Sample table must have 'sample_name' column")
     df['sample_name'] = df['sample_name'].astype(str)
     
-    # Check for sample_id (should not exist)
+    # Check for sample_id (will be regenerated)
     if 'sample_id' in df.columns:
-        print("WARNING: Removing 'sample_id' column (phippery will auto-generate)")
+        print("  NOTE: Removing existing 'sample_id' column (will be regenerated)")
         df = df.drop(columns=['sample_id'])
+    
+    # Rename subject_id to subject_name to avoid phippery _id convention issues
+    if 'subject_id' in df.columns:
+        print("  NOTE: Renaming 'subject_id' to 'subject_name' (phippery reserves _id suffix for integers)")
+        df = df.rename(columns={'subject_id': 'subject_name'})
     
     # Check for duplicates
     dups = df['sample_name'].duplicated()
@@ -93,9 +100,9 @@ def load_and_validate_peptide_table(path: str) -> pd.DataFrame:
     
     df['peptide_name'] = df['peptide_name'].astype(str)
     
-    # Check for peptide_id (should not exist)
+    # Check for peptide_id (will be regenerated)
     if 'peptide_id' in df.columns:
-        print("WARNING: Removing 'peptide_id' column (phippery will auto-generate)")
+        print("  NOTE: Removing existing 'peptide_id' column (will be regenerated)")
         df = df.drop(columns=['peptide_id'])
     
     # Check for oligo column (required by phippery)
@@ -235,7 +242,16 @@ def align_and_format(
     # Reorder counts matrix to match
     counts_formatted = counts_df.loc[peptide_order, sample_order].copy()
     
-    # Replace column/row labels with integers for phippery
+    # Add integer ID columns as the index (required by phippery)
+    # sample_id must be the index of sample_table
+    sample_df_filtered = sample_df_filtered.reset_index(drop=True)
+    sample_df_filtered.index.name = 'sample_id'
+    
+    # peptide_id must be the index of peptide_table
+    peptide_df_filtered = peptide_df_filtered.reset_index(drop=True)
+    peptide_df_filtered.index.name = 'peptide_id'
+    
+    # Counts matrix: columns = sample_id (integers), rows = peptide_id (integers), no index column
     counts_for_phippery = counts_formatted.copy()
     counts_for_phippery.columns = range(len(sample_order))
     counts_for_phippery.index = range(len(peptide_order))
@@ -250,17 +266,17 @@ def align_and_format(
     print(f"Saving formatted files to: {output_dir}")
     print('='*60)
     
-    # Sample table (no sample_id - phippery adds it)
+    # Sample table (with sample_id as index)
     sample_out = output_path / 'sample_table.csv'
-    sample_df_filtered.to_csv(sample_out, index=False)
+    sample_df_filtered.to_csv(sample_out, index=True)  # index=True to write sample_id
     print(f"  Saved: {sample_out}")
     
-    # Peptide table (no peptide_id - phippery adds it)
+    # Peptide table (with peptide_id as index)
     peptide_out = output_path / 'peptide_table.csv'
-    peptide_df_filtered.to_csv(peptide_out, index=False)
+    peptide_df_filtered.to_csv(peptide_out, index=True)  # index=True to write peptide_id
     print(f"  Saved: {peptide_out}")
     
-    # Counts matrix (integer indices, no row index column)
+    # Counts matrix (integer column headers, no row index)
     counts_out = output_path / 'counts_matrix.csv'
     counts_for_phippery.to_csv(counts_out, index=False)
     print(f"  Saved: {counts_out}")
