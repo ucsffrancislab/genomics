@@ -6,9 +6,9 @@
 # ==============================================================================
 paths:
   # Your input files (adjust these to your actual file paths)
-  input_counts_matrix: "/path/to/your/counts_matrix.csv"
-  input_sample_metadata: "/path/to/your/sample_metadata.csv"
-  input_peptide_annotations: "/path/to/your/peptide_annotations.csv"
+  input_counts_matrix: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/counts_matrix.csv"
+  input_sample_metadata: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/sample_metadata.csv"
+  input_peptide_annotations: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/peptide_annotations.csv"
   
   # Or if you already have them formatted for phippery:
   sample_table: "data/sample_table.csv"
