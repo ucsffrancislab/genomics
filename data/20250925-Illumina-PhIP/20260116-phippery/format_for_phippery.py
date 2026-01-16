@@ -251,10 +251,11 @@ def align_and_format(
     peptide_df_filtered = peptide_df_filtered.reset_index(drop=True)
     peptide_df_filtered.index.name = 'peptide_id'
     
-    # Counts matrix: columns = sample_id (integers), rows = peptide_id (integers), no index column
+    # Counts matrix: columns = sample_id (integers), index = peptide_id (integers)
     counts_for_phippery = counts_formatted.copy()
     counts_for_phippery.columns = range(len(sample_order))
     counts_for_phippery.index = range(len(peptide_order))
+    counts_for_phippery.index.name = None  # phippery reads index_col=0, expects no name
     
     print(f"\n  Final dimensions:")
     print(f"    Samples: {len(sample_order)}")
@@ -276,9 +277,10 @@ def align_and_format(
     peptide_df_filtered.to_csv(peptide_out, index=True)  # index=True to write peptide_id
     print(f"  Saved: {peptide_out}")
     
-    # Counts matrix (integer column headers, no row index)
+    # Counts matrix (with peptide_id as row index, sample_id as column headers)
+    # phippery uses index_col=0 when reading, so we must include the row index
     counts_out = output_path / 'counts_matrix.csv'
-    counts_for_phippery.to_csv(counts_out, index=False)
+    counts_for_phippery.to_csv(counts_out, index=True)  # index=True to write row index
     print(f"  Saved: {counts_out}")
     
     # Also save a human-readable version with names
@@ -323,10 +325,10 @@ def main():
             print("Review the duplicates above and clean your source data if needed.")
             print('!'*60)
             
-#            response = input("\nContinue anyway? (y/n): ")
-#            if response.lower() != 'y':
-#                print("Exiting.")
-#                sys.exit(1)
+            response = input("\nContinue anyway? (y/n): ")
+            if response.lower() != 'y':
+                print("Exiting.")
+                sys.exit(1)
         
         # Align and format
         align_and_format(sample_df, peptide_df, counts_df, args.output_dir)
