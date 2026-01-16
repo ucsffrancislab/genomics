@@ -1,31 +1,7 @@
 
-#	20250925-Illumina-PhIP/20260115-phippery
+#	20250925-Illumina-PhIP/20260116-phippery
 
-Test out phip-flow / phippery / phip-viz
-
-https://matsen.group/phippery/
-
-
-https://claude.ai/chat/dd4b4f89-61d5-41ea-b8c2-179e3687394f
-
-
-I asked Claude to read the phippery paper and pointed him to the documentation and github repositories.
-
-I told him that we already had our alignment counts and to create some code to use the phippery pipeline.
-
-The initial code has been included here.
-
-
-This downloads a container and installs pips so CANNOT be run as a job
-
-
-
-
-
-
-```bash
-./scripts/00_install_phippery.sh 
-``` 
+Starting fresh ...
 
 
 Format your input files according to specifications 
@@ -38,7 +14,8 @@ if( $3 == "Phage Library" ){ control_status = "library" }
 else if( $3 == "input" ){ control_status = "beads_only" }
 else { control_status = "empirical" }
 print "samp_"$1,"subj_"$2,control_status,"plate_"$8,$6,$7}' tmp1.csv > tmp2.csv
-sed '1isample_name,subject_id,plate,sex,age' tmp2.csv > sample_metadata.csv
+sed '1isample_name,subject_id,control_status,plate,sex,age' tmp2.csv > sample_metadata.csv
+\rm tmp?.csv
 ```
 
 
@@ -64,6 +41,13 @@ chmod a-w peptide_table.csv
 ```
 
 
+The above results in many duplicates. 
+All that I've checked are due to repeat entries with slightly varying protein names.
+This is problematic and I really should clean this core "clean" file.
+It will continue to be a problem that I'll continue to have to deal with until I do.
+
+
+
 counts_matrix.csv
 
 ```bash
@@ -74,14 +58,71 @@ cut -d, -f1,10- tmp2.csv > tmp3.csv
 head -1 tmp3.csv | tr , '\n' | awk '(NR==1){print}(NR>1){printf "VS_%06d\n",$1}' | datamash transpose -t, > tmp4.csv
 tail -n +2 tmp3.csv | sed 's/^/samp_/' >> tmp4.csv
 cat tmp4.csv | datamash transpose -t, > counts_matrix.csv
+\rm tmp?.csv
 ```
 
 
 
 ```bash
-sbatch scripts/run_all.sh
+python3 format_for_phippery.py \
+    --sample-table sample_metadata.csv \
+    --peptide-table peptide_table.csv \
+    --counts-matrix counts_matrix.csv \
+    --output-dir formatted_data > format_for_phippery.log
 ```
 
 
+```bash
+bash 00_install_phippery.sh |& tee 00_install_phippery.log
+```
+
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif phippery load-from-csv -s formatted_data/sample_table.csv -p formatted_data/peptide_table.csv -c formatted_data/counts_matrix.csv -o dataset.phip"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif phippery load-from-csv -c formatted_data/counts_matrix.csv -p formatted_data/peptide_table.csv -s formatted_data/sample_table.csv -o dataset.phip"
+```
+
+So this command has a bug. 
+```bash
+# in phippery/cli.py
+def load_from_csv(
+    sample_table,
+    peptide_table,
+    counts_matrix,
+    output,
+):
+
+# eventually calls the function ...
+ds = utils.dataset_from_csv(counts_matrix, peptide_table, sample_table)
+
+#	but in phippery/utils.py
+def dataset_from_csv(
+    peptide_table_filename, sample_table_filename, counts_table_filename
+):
+#	it is expecting them in a different order?
+
+```
+
+
+
+
+
+
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 -c \"
+from phippery.utils import dataset_from_csv
+import phippery
+ds = dataset_from_csv(
+    'formatted_data/peptide_table.csv',
+    'formatted_data/sample_table.csv', 
+    'formatted_data/counts_matrix.csv'
+)
+phippery.dump(ds, 'dataset.phip')
+print('Done!')
+print(ds)
+\""
+```
 
 

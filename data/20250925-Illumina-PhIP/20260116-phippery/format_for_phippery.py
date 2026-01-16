@@ -307,10 +307,10 @@ def main():
             print("Review the duplicates above and clean your source data if needed.")
             print('!'*60)
             
-            response = input("\nContinue anyway? (y/n): ")
-            if response.lower() != 'y':
-                print("Exiting.")
-                sys.exit(1)
+#            response = input("\nContinue anyway? (y/n): ")
+#            if response.lower() != 'y':
+#                print("Exiting.")
+#                sys.exit(1)
         
         # Align and format
         align_and_format(sample_df, peptide_df, counts_df, args.output_dir)
