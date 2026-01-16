@@ -8,7 +8,7 @@ paths:
   # Your input files (adjust these to your actual file paths)
   input_counts_matrix: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/counts_matrix.csv"
   input_sample_metadata: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/sample_metadata.csv"
-  input_peptide_annotations: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/peptide_annotations.csv"
+  input_peptide_annotations: "/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery/peptide_table.csv"
   
   # Or if you already have them formatted for phippery:
   sample_table: "data/sample_table.csv"
@@ -37,13 +37,13 @@ dataset:
 # Map your column names to phippery's expected names
 sample_columns:
   # Required - adjust left side to match YOUR column names
-  sample_name: "sample_id"              # Your sample ID column
-  control_status: "sample_type"         # Your control type column
+  sample_name: "sample_name"              # Your sample ID column
+  control_status: "control_status"         # Your control type column
   
   # Optional covariates for batch correction
-  plate: "plate_id"
+  plate: "plate"
   batch: "batch_id"
-  subject_id: "subject"
+  subject_id: "subject_id"
   replicate: "replicate"
   group: "case_control"
   sex: "sex"
@@ -67,15 +67,15 @@ control_status_mapping:
 # ==============================================================================
 peptide_columns:
   # Required
-  oligo: "oligo_sequence"               # Oligonucleotide sequence column
+  oligo: "oligo"               # Oligonucleotide sequence column
   
   # Optional but recommended for VirScan
   peptide_name: "peptide_id"
-  peptide_seq: "peptide_sequence"
-  virus: "species"
+  peptide_seq: "peptide_seq"
+  virus: "virus"
   protein: "protein_name"
-  start_pos: "start"
-  end_pos: "end"
+  start_pos: "start_pos"
+  end_pos: "end_pos"
 
 # ==============================================================================
 # Processing Parameters

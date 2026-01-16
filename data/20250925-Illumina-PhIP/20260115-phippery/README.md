@@ -38,7 +38,7 @@ if( $3 == "Phage Library" ){ control_status = "library" }
 else if( $3 == "input" ){ control_status = "beads_only" }
 else { control_status = "empirical" }
 print "samp_"$1,"subj_"$2,control_status,"plate_"$8,$6,$7}' tmp1.csv > tmp2.csv
-sed '1isample_name,subject_id,plate,sex,age' tmp2.csv > sample_metadata.csv
+sed '1isample_name,subject_id,control_status,plate,sex,age' tmp2.csv > sample_metadata.csv
 ```
 
 

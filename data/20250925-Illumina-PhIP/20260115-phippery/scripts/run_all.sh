@@ -26,7 +26,7 @@ set -euo pipefail
 # Input files (YOUR data - adjust these paths!)
 MY_PATH="/francislab/data1/working/20250925-Illumina-PhIP/20260115-phippery"
 INPUT_SAMPLE_METADATA="${MY_PATH}/sample_metadata.csv"
-INPUT_PEPTIDE_ANNOTATIONS="${MY_PATH}/peptide_annotations.csv"  
+INPUT_PEPTIDE_ANNOTATIONS="${MY_PATH}/peptide_table.csv"  
 INPUT_COUNTS_MATRIX="${MY_PATH}/counts_matrix.csv"
 
 # Output directories
