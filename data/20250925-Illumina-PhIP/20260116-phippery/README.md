@@ -79,8 +79,6 @@ bash 00_install_phippery.sh |& tee 00_install_phippery.log
 
 ```bash
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif phippery load-from-csv -s formatted_data/sample_table.csv -p formatted_data/peptide_table.csv -c formatted_data/counts_matrix.csv -o dataset.phip"
-
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif phippery load-from-csv -c formatted_data/counts_matrix.csv -p formatted_data/peptide_table.csv -s formatted_data/sample_table.csv -o dataset.phip"
 ```
 
 So this command has a bug. 
@@ -106,23 +104,12 @@ def dataset_from_csv(
 
 
 
-
-
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 01_load_dataset_from_csvs.py"
+```
 
 
 ```bash
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 -c \"
-from phippery.utils import dataset_from_csv
-import phippery
-ds = dataset_from_csv(
-    'formatted_data/peptide_table.csv',
-    'formatted_data/sample_table.csv', 
-    'formatted_data/counts_matrix.csv'
-)
-phippery.dump(ds, 'dataset.phip')
-print('Done!')
-print(ds)
-\""
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 02_normalize_dataset.py"
 ```
-
 
