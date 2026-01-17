@@ -108,8 +108,15 @@ def dataset_from_csv(
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 01_load_dataset_from_csvs.py"
 ```
 
+So the normalization is really the only thing that phippery does.
+Disappointing but let's see how this goes.
 
 ```bash
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 02_normalize_dataset.py"
+```
+
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name phippery --wrap="singularity exec containers/phippery.sif python3 03_export.py"
 ```
 
