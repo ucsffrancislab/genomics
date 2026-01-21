@@ -1889,3 +1889,60 @@ awk 'BEGIN{FS="\t";OFS=","}{print $1}' /francislab/data1/refs/PhIP-Seq/VirScan/V
 comm -2 -3 faa.list blast.list
 
 
+
+
+
+##	20260121
+
+Run Claude's phipseq_qc developed for phippery's output.
+
+
+Create a QC sample metadata file
+
+Your metadata file needs columns: sample_id (or sample_name matching zscore columns), subject_id, sample_type, study, group, age, sex, plate. Missing columns are handled gracefully.
+
+```bash
+mkdir phipseq_qc
+head -1 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv > tmp1.csv
+tail -n +2 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv | sort -t, -k1,1 >> tmp1.csv
+sed '1c\sample_id,subject_id,sample_type,study,group,age,sex,plate' tmp1.csv > phipseq_qc/sample_metadata.csv
+#sed -i '2,$s/^/samp_/' phipseq_qc/sample_metadata.csv
+\rm tmp?.csv
+```
+
+
+```bash
+tail -n +3 out.123456131415161718/Zscores.t.csv | cut -d, -f1,3- | gzip > phipseq_qc/zscore.csv.gz
+```
+
+
+Convert the exported z-scores for QC. 
+    zscore-matrix: Peptides (rows) x Samples (columns), gzipped OK
+
+Remap the phippery sample id to our sample id plus "samp_" prefix.
+Remap the phippery peptide id to our peptide id.
+
+```bash
+zcat phipseq_qc/zscore.csv.gz | head -1 | awk -F, '{print NF}'
+1057
+
+zcat phipseq_qc/zscore.csv.gz | wc -l
+1150000
+```
+
+
+Using a Claude script to QC the data. It should be applicable to any z-score matrix with appropriate metadata.
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name qc --wrap="python3 phipseq_qc.py --zscore-matrix phipseq_qc/zscore.csv.gz --sample-metadata phipseq_qc/sample_metadata.csv --output-dir phipseq_qc/results"
+
+```
+
+
+```bash
+box_upload.bash phipseq_qc/phipseq_qc.txt phipseq_qc/sample_metadata.csv phipseq_qc/results/*
+```
+
+
+
