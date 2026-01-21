@@ -62,13 +62,24 @@ class CaseControlAnalyzer:
         """
         entity, entity_data, cases, controls, has_batch, batch_data, skip_failed_batch = args
         
+        # Validate that entity_data is a Series (not DataFrame)
+        if not isinstance(entity_data, pd.Series):
+            raise ValueError(f"entity_data should be a Series but got {type(entity_data)}. "
+                           f"This usually means the enrichment matrix has duplicate indices or wrong structure.")
+        
         # Create 2x2 contingency table
         case_pos = entity_data[cases].sum()
         case_neg = len(cases) - case_pos
         control_pos = entity_data[controls].sum()
         control_neg = len(controls) - control_pos
         
-        table = [[case_pos, case_neg], [control_pos, control_neg]]
+        # Validate that sums are scalars
+        if not isinstance(case_pos, (int, float, np.integer, np.floating)):
+            raise ValueError(f"case_pos should be scalar but got {type(case_pos)} with value {case_pos}. "
+                           f"Cases list: {cases[:5]}... "
+                           f"This may indicate mismatched sample IDs between enrichment matrix and metadata.")
+        
+        table = [[int(case_pos), int(case_neg)], [int(control_pos), int(control_neg)]]
         
         # Fisher's exact test
         odds_ratio, fisher_p = fisher_exact(table, alternative='two-sided')
