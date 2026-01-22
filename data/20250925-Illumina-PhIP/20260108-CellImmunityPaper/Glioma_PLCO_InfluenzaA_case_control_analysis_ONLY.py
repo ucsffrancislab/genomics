@@ -73,7 +73,7 @@ results = analyzer.test_single_entity(
     batch_col='plate',
     skip_failed_batch=True,  # Use Fisher's p-value when batch adjustment fails
     peptide_metadata=peptide_metadata,  # NEW: Pass peptide metadata for merging
-    min_subjects=5  # NEW: Filter rare peptides
+    min_subjects=6  # NEW: Filter rare peptides
 )
 
 # Apply FDR correction
