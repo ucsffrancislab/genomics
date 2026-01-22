@@ -63,6 +63,13 @@ os.makedirs('CMV_test/results/case_control', exist_ok=True)
 
 # Run peptide-level analysis
 print("\nRunning case-control statistical testing...")
+
+# Prevalence filter: Following Immunity 2023 methodology
+# "We restricted analysis to peptides enriched in ≥5% of samples"
+# With 47 subjects, 5% = 2.35, so use min of 3 subjects
+# Or use absolute minimum like 5 subjects for more stringent filtering
+MIN_SUBJECTS = 3  # Adjust as needed: 3 (lenient) or 5 (standard)
+
 results = analyzer.test_single_entity(
     peptide_enriched,
     metadata_subjects,
@@ -71,9 +78,9 @@ results = analyzer.test_single_entity(
     control_value='control',
     adjust_for_batch=True,
     batch_col='plate',
-    #adjust_for_batch=False,  # DISABLE batch adjustment
     skip_failed_batch=True,  # Use Fisher's p-value when batch adjustment fails
-    peptide_metadata=peptide_metadata  # Pass peptide metadata for merging
+    peptide_metadata=peptide_metadata,  # Pass peptide metadata for merging
+    min_subjects=MIN_SUBJECTS  # NEW: Filter rare peptides
 )
 
 # Apply FDR correction

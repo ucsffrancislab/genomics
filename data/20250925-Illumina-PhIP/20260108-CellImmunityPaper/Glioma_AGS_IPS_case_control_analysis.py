@@ -63,6 +63,13 @@ os.makedirs('Glioma_AGS_IPS/results/case_control', exist_ok=True)
 
 # Run peptide-level analysis
 print("\nRunning case-control statistical testing...")
+
+# Prevalence filter: Following Immunity 2023 methodology
+# "We restricted analysis to peptides enriched in ≥5% of samples"
+# With 215 subjects (110 cases + 105 controls), 5% = 10.75
+# Round up to 11 subjects minimum
+MIN_SUBJECTS = 11  # Or use 5 for less stringent filtering
+
 results = analyzer.test_single_entity(
     peptide_enriched,
     metadata_subjects,
@@ -72,7 +79,8 @@ results = analyzer.test_single_entity(
     adjust_for_batch=True,
     batch_col='plate',
     skip_failed_batch=True,  # Use Fisher's p-value when batch adjustment fails
-    peptide_metadata=peptide_metadata  # NEW: Pass peptide metadata for merging
+    peptide_metadata=peptide_metadata,  # NEW: Pass peptide metadata for merging
+    min_subjects=MIN_SUBJECTS  # NEW: Filter rare peptides
 )
 
 # Apply FDR correction

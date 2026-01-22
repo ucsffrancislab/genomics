@@ -187,7 +187,8 @@ class CaseControlAnalyzer:
                           adjust_for_batch=True,
                           batch_col='plate',
                           skip_failed_batch=True,
-                          peptide_metadata=None):
+                          peptide_metadata=None,
+                          min_subjects=None):
         """
         Test each peptide/protein/virus for case-control enrichment.
         
@@ -216,6 +217,11 @@ class CaseControlAnalyzer:
         peptide_metadata : pd.DataFrame, optional
             Peptide metadata with organism, protein_name columns
             If provided, these will be merged into results
+        min_subjects : int, optional
+            Minimum number of subjects a peptide must be positive in to be tested
+            Example: min_subjects=5 filters peptides present in <5 subjects
+            Recommended: 5 (absolute) or 5% of total subjects (e.g., 11 for 215 subjects)
+            If None, no filtering is applied
             
         Returns:
         --------
@@ -229,6 +235,24 @@ class CaseControlAnalyzer:
         # Filter to samples present in enrichment matrix
         cases = [s for s in cases if s in enriched_matrix.columns]
         controls = [s for s in controls if s in enriched_matrix.columns]
+        
+        # Apply prevalence filter if specified
+        if min_subjects is not None:
+            print(f"\nFiltering rare peptides...")
+            print(f"  Entities before filtering: {len(enriched_matrix)}")
+            
+            # Count how many subjects each peptide is positive in
+            peptide_counts = enriched_matrix.sum(axis=1)
+            
+            # Keep only peptides present in >= min_subjects
+            enriched_matrix = enriched_matrix[peptide_counts >= min_subjects]
+            
+            print(f"  Entities after filtering: {len(enriched_matrix)}")
+            print(f"  Removed {(peptide_counts < min_subjects).sum()} entities present in <{min_subjects} subjects")
+            
+            if len(enriched_matrix) == 0:
+                raise ValueError(f"No entities remain after filtering with min_subjects={min_subjects}. "
+                               f"Try a lower threshold.")
         
         # Check for batch column
         has_batch = batch_col in metadata.columns if adjust_for_batch else False
