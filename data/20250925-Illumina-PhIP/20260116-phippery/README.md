@@ -141,6 +141,7 @@ mkdir phipseq_qc
 head -1 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv > tmp1.csv
 tail -n +2 ../20250414-PhIP-MultiPlate/out.123456131415161718/manifest.csv | sort -t, -k1,1 >> tmp1.csv
 sed '1c\sample_id,subject_id,sample_type,study,group,age,sex,plate' tmp1.csv > phipseq_qc/sample_metadata.csv
+sed -i '/input/d' phipseq_qc/sample_metadata.csv 
 sed -i '2,$s/^/samp_/' phipseq_qc/sample_metadata.csv
 \rm tmp?.csv
 ```
