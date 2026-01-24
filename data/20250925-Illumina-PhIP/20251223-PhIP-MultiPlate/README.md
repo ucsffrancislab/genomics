@@ -1010,3 +1010,22 @@ commands_array_wrapper.bash --jobname Analysis --jobcount 16 --array_file comman
 0         18   0.587302      0.404762  0.891069  0.283426  0.001667  0.041676
 
 
+
+
+
+
+
+
+
+##	20260123
+
+
+Create giant csv with data from all AGS, IPS and CIDR subjects (will be blanks)
+Subject, type, case, control, age, sex, etc, PC1, PC2, …, PC6, HLA101, HLA etc, virus1, virus2, virus3, etc
+molecular subtypes: HGG, LGG, idhmut, idh wt, …
+
+
+```bash
+./merge_all_AGS_IPS_HLA_SEROz10.py
+```
+
