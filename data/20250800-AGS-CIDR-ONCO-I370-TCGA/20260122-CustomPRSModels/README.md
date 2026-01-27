@@ -123,17 +123,29 @@ I think it is using the "harmonized format" so hm_chr, hm_pos, effect_allele, ef
 
 NEEDS other_allele. What is other_allele? The reference allele? All of my checks say, yes, other == reference
 
+hm_inferOtherAllele will let it run, but you will get nothing. You NEED other_allele.
+
+Once included, create_collection will work
+
+```
+paper/idhmut_1p19qcodel_scoring_system.txt.gz
+paper/idhmut_1p19qnoncodel_scoring_system.txt.gz
+paper/idhmut_scoring_system.txt.gz
+paper/idhwt_scoring_system.txt.gz
+```
 
 ```bash
 mkdir models
 for f in paper/{idhmut_1p19qnoncodel,idhmut_1p19qcodel,idhmut,idhwt}_scoring_system.txt.gz ; do
-zcat ${f} | tail -n +2 | sed 's/^chr//' | awk 'BEGIN{FS=" ";OFS="\t"}{split($1,a,":");print a[1],a[2],$2,$3}' | sort -t $'\t' -k1n,1 -k2n,2 -k3,3 > models/$(basename $f .gz)
-sed -i '1ihm_chr\thm_pos\teffect_allele\teffect_weight\thm_inferOtherAllele' models/$(basename $f .gz)
+echo $f
+zcat ${f} | tail -n +2 | sed 's/^chr//' | awk 'BEGIN{FS=" ";OFS="\t"}{split($1,a,":");other_allele=($2==a[3])?a[4]:a[3];print a[1],a[2],$2,$3,other_allele}' | sort -t $'\t' -k1n,1 -k2n,2 -k3,3 > models/$(basename $f .gz)
+sed -i '1ihm_chr\thm_pos\teffect_allele\teffect_weight\tother_allele' models/$(basename $f .gz)
 done
 ```
 
 
 
+Need to extract both the reference and alternate alleles
 
 
 /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids 
@@ -144,38 +156,101 @@ paper/nonGbm_scoring_system.txt.gz
 
 
 ```bash
-echo -e 'rsid\tchr\tpos' > rsid_translation_table.tsv
-awk 'BEGIN{FS=":";OFS="\t"}{print $3,$1,$2}' /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids | sort -t$'\t' -k1,1 | uniq >> rsid_translation_table.tsv
+#	echo -e 'rsid\tchr\tpos' > rsid_translation_table.tsv
+#	awk 'BEGIN{FS=":";OFS="\t"}{print $3,$1,$2}' /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids | sort -t$'\t' -k1,1 | uniq >> rsid_translation_table.tsv
+#	wc -l rsid_translation_table.tsv
+#	
+#	#	660146175 rsid_translation_table
+#	
+#	mkdir models
+#	for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
+#	echo $f
+#	zcat ${f} | wc -l
+#	zcat ${f} | tr ' ' '\t' | head -1 > ${f%.txt.gz}.sorted.txt
+#	zcat ${f} | tr ' ' '\t' | tail -n +2 | sort -t$'\t' -k1,1 | uniq >> ${f%.txt.gz}.sorted.txt
+#	echo -e 'hm_chr\thm_pos\teffect_allele\teffect_weight\thm_inferOtherAllele' > models/$(basename $f .gz)
+#	join --header -t$'\t' rsid_translation_table.tsv ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | sort -t$'\t' -k1n,1 -k2n,2 -k3,3 >> models/$(basename ${f} .gz)
+#	wc -l ${f%.txt.gz}.sorted.txt
+#	wc -l models/$(basename ${f} .gz)
+#	done
+#	
+#	paper/allGlioma_scoring_system.txt.gz
+#	1058980
+#	1058980 paper/allGlioma_scoring_system.sorted.txt
+#	1058942 models/allGlioma_scoring_system.txt
+#	paper/gbm_scoring_system.txt.gz
+#	1059412
+#	1059412 paper/gbm_scoring_system.sorted.txt
+#	1059375 models/gbm_scoring_system.txt
+#	paper/nonGbm_scoring_system.txt.gz
+#	1059475
+#	1059475 paper/nonGbm_scoring_system.sorted.txt
+#	1059437 models/nonGbm_scoring_system.txt
+```
+
+
+```bash
+echo -e 'rsid\tchr\tpos\tref\talt' > rsid_translation_table.tsv
+module load bcftools
+bcftools view -H /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_20180418.vcf.gz | awk 'BEGIN{FS=OFS="\t"}{print $3,$1,$2,$4,$5}' | sort -t$'\t' -k1,1 -k2,2 | uniq >> rsid_translation_table.tsv
+
 wc -l rsid_translation_table.tsv
+#	660146175 rsid_translation_table.tsv
 
-#	660146175 rsid_translation_table
+```
 
+
+
+```bash
 mkdir models
 for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
 echo $f
 zcat ${f} | wc -l
 zcat ${f} | tr ' ' '\t' | head -1 > ${f%.txt.gz}.sorted.txt
 zcat ${f} | tr ' ' '\t' | tail -n +2 | sort -t$'\t' -k1,1 | uniq >> ${f%.txt.gz}.sorted.txt
-echo -e 'hm_chr\thm_pos\teffect_allele\teffect_weight\thm_inferOtherAllele' > models/$(basename $f .gz)
-join --header -t$'\t' rsid_translation_table.tsv ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | sort -t$'\t' -k1n,1 -k2n,2 -k3,3 >> models/$(basename ${f} .gz)
-wc -l ${f%.txt.gz}.sorted.txt
+done
+
+#	paper/allGlioma_scoring_system.txt.gz
+#	1058980
+#	paper/gbm_scoring_system.txt.gz
+#	1059412
+#	paper/nonGbm_scoring_system.txt.gz
+#	1059475
+```
+
+
+```bash
+for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
+echo -e 'hm_chr\thm_pos\teffect_allele\teffect_weight\tother_allele' > models/$(basename $f .gz)
+join --header -t$'\t' rsid_translation_table.tsv ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | awk 'BEGIN{FS=OFS="\t"}{other_allele=($5==$3)?$4:$3;print $1,$2,$5,$6,other_allele}' | sort -t$'\t' -k1n,1 -k2n,2 -k3,3 >> models/$(basename ${f} .gz)
 wc -l models/$(basename ${f} .gz)
 done
 
-paper/allGlioma_scoring_system.txt.gz
-1058980
-1058980 paper/allGlioma_scoring_system.sorted.txt
-1058942 models/allGlioma_scoring_system.txt
-paper/gbm_scoring_system.txt.gz
-1059412
-1059412 paper/gbm_scoring_system.sorted.txt
-1059375 models/gbm_scoring_system.txt
-paper/nonGbm_scoring_system.txt.gz
-1059475
-1059475 paper/nonGbm_scoring_system.sorted.txt
-1059437 models/nonGbm_scoring_system.txt
+#	1058942 models/allGlioma_scoring_system.txt
+#	1059375 models/gbm_scoring_system.txt
+#	1059437 models/nonGbm_scoring_system.txt
 
 ```
+
+
+What will happen if the "other allele" is "C,T"?
+
+```bash
+join --header -t$'\t' rsid_translation_table.tsv ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | head
+12	126406434	G	A	G	2.571696e-6
+4	21617051	T	C	T	1.026691e-5
+4	94812755	G	T	G	1.498636e-6
+3	98624063	A	G	G	2.11919e-4
+4	138678744	T	C	C	3.671438e-6
+4	38922709	G	A	A	4.299083e-5
+4	164700803	G	C,T	G	1.184754e-5			<-----
+2	236843411	T	C	T	1.44378e-6
+4	178567757	C	T	C	1.051877e-5
+4	17346740	C	T	T	1.990849e-5
+```
+
+
+
 
 Unify and harmonize these coordinates. 3 scoring files are rsIDs "rs3766192" and 4 are like "chr1:953279:T:C".
 
@@ -191,32 +266,35 @@ reference 20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/ ( not sure if I reran t
 
 ##	Create collection
 
-
-**MANUALLY ADDED A TAB TO THE END OF EVERY DATA LINE AS NEEDED TO MARK THE EMPTY hg_inferOtherAllele COLUMN**
-
-
-
-
-
 Assuming using pgs-calc for scoring,
+
 Download and install the latest version: https://github.com/lukfor/pgs-calc (1.6.2) Done
 
+create a collection with 
 
-create a collection something like ...
 ```bash
-#refs/Imputation/PGSCatalog/README.md
-#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
-#  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
-#  --wrap="module load htslib openjdk ;pgs-calc create-collection --out=pgs-GLIO-IBD.txt.gz {PGS000155,PGS000781,PGS002302,PGS003384,PGS000017,PGS001288,PGS003981,PGS003997,PGS004013,PGS004023,PGS004038,PGS004051,PGS004067,PGS004081,PGS004097,PGS004105,PGS004121,PGS004135,PGS004151,PGS004270,PGS004271,PGS004272,PGS004273,PGS004274}.txt.gz; tabix -S 5 -p vcf pgs-GLIO-IBD.txt.gz;chmod -w pgs-GLIO-IBD.txt.gz*"
-
-
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
   --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load htslib openjdk ;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar create-collection --out=pgs-scores.txt.gz models/*.txt; tabix -S 5 -p vcf pgs-scores.txt.gz;chmod -w pgs-scores.txt.gz*"
-
-
+  --wrap="module load htslib openjdk ;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar create-collection --out=pgs-collection.txt.gz models/*.txt; tabix -S 5 -p vcf pgs-collection.txt.gz;chmod -w pgs-collection.txt.gz*"
 ```
 
+
+
+
+
+Test
+
+```bash
+indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+data=cidr
+chrnum=22
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=test_apply --time=2-0 --export=None \
+  --output="${PWD}/test_apply.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk; cp ${indir}/imputed-umich-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref models/allGlioma_scoring_system.txt --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${outdir}/pgs-${data}-0.8/; cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${outdir}/pgs-${data}-0.8/; chmod -w ${outdir}/pgs-${data}-0.8/chr${chrnum}.dose.scores.*"
+
+```
 
 
 
@@ -234,6 +312,9 @@ reference 20250700-AGS-CIDR-ONCO-I370/20250618-quick_test
 
 What data? All 4 sets?
 
+These PGS scores were developed using I370 and ONCO and then tested on TCGA.
+This isn't really a good idea.
+
 
 ```bash
 indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
@@ -242,16 +323,12 @@ outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-Custo
 for data in cidr i370 onco tcga; do
 for chrnum in {1..22} ; do
 
-  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz 
-
---ref /francislab/data1/refs/Imputation/PGSCatalog/hg38/pgs-collection.txt.gz 
-
---out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${outdir}/pgs-${data}-0.8/; cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${outdir}/pgs-${data}-0.8/; chmod -w ${outdir}/pgs-${data}-0.8/chr${chrnum}.dose.scores.*"
+  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/chr${chrnum}.dose.vcf.gz --ref pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.dose.scores.txt --info \${TMPDIR}/chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${outdir}/pgs-${data}-0.8/; cp \${TMPDIR}/chr${chrnum}.dose.scores.* ${outdir}/pgs-${data}-0.8/; chmod -w ${outdir}/pgs-${data}-0.8/chr${chrnum}.dose.scores.*"
 
 done
 done > commands
 
-commands_array_wrapper.bash --array_file commands --time 4-0 --threads 8 --mem 60G
+commands_array_wrapper.bash --array_file commands --time 4-0 --threads 8 --mem 60G --jobcount 8
 ```
 
 
@@ -276,5 +353,52 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-i
 
 done
 ```
+
+
+
+
+
+
+
+
+
+
+
+##	Plink
+
+
+```bash
+module load bcftools
+bcftools merge *.vcf.gz -o merged_collection.vcf.gz
+```
+
+
+```bash
+module load plink2
+plink2 --vcf merged_collection.vcf.gz --make-pgen --out Plink_output_prefix
+```
+
+
+```bash
+
+plink2 \
+  --memory 16000 \
+  --threads 6 \
+  --pfile your_data_prefix \
+  --score PGS.betas.tsv 3 5 6 header-read \
+  --out out/pgs_out
+
+```
+
+
+Command Breakdown:
+--pfile: Specifies the input genotype data in PLINK 2 format.
+--score <file> <col1> <col2> <col3> header-read:
+<file>: The scoring file (e.g., PGS.betas.tsv) containing variant IDs, effect alleles, and weights (BETAs).
+<col1>: Column number for variant ID (e.g., 3).
+<col2>: Column number for effect allele (e.g., 5).
+<col3>: Column number for effect size/weight (e.g., 6).
+header-read: Tells PLINK the first line is a header.
+--out: Specifies the prefix for output files. 
 
 
