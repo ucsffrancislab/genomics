@@ -121,12 +121,14 @@ When I used it, I remember getting an error when hm_chr and hm_chr were not ther
 
 I think it is using the "harmonized format" so hm_chr, hm_pos, effect_allele, effect weight. 
 
+NEEDS other_allele. What is other_allele? The reference allele? All of my checks say, yes, other == reference
+
 
 ```bash
 mkdir models
 for f in paper/{idhmut_1p19qnoncodel,idhmut_1p19qcodel,idhmut,idhwt}_scoring_system.txt.gz ; do
 zcat ${f} | tail -n +2 | sed 's/^chr//' | awk 'BEGIN{FS=" ";OFS="\t"}{split($1,a,":");print a[1],a[2],$2,$3}' | sort -t $'\t' -k1n,1 -k2n,2 -k3,3 > models/$(basename $f .gz)
-sed -i '1ihm_chr\thm_pos\teffect_allele\teffect_weight' models/$(basename $f .gz)
+sed -i '1ihm_chr\thm_pos\teffect_allele\teffect_weight\thm_inferOtherAllele' models/$(basename $f .gz)
 done
 ```
 
@@ -152,18 +154,28 @@ mkdir models
 for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
 echo $f
 zcat ${f} | wc -l
-zcat ${f} | head -1 > ${f%.txt.gz}.sorted.txt
-zcat ${f} | tail -n +2 | sort -t$'\t' -k1,1 | uniq >> ${f%.txt.gz}.sorted.txt
-echo -e '1ihm_chr\thm_pos\teffect_allele\teffect_weight' > models/$(basename $f .gz)
-join --header -t$'\t' rsid_translation_table ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | sort -t$'\t' -k1n,1 -k2n,2 -k3,3 >> models/$(basename ${f} .gz)
+zcat ${f} | tr ' ' '\t' | head -1 > ${f%.txt.gz}.sorted.txt
+zcat ${f} | tr ' ' '\t' | tail -n +2 | sort -t$'\t' -k1,1 | uniq >> ${f%.txt.gz}.sorted.txt
+echo -e 'hm_chr\thm_pos\teffect_allele\teffect_weight\thm_inferOtherAllele' > models/$(basename $f .gz)
+join --header -t$'\t' rsid_translation_table.tsv ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | sort -t$'\t' -k1n,1 -k2n,2 -k3,3 >> models/$(basename ${f} .gz)
 wc -l ${f%.txt.gz}.sorted.txt
 wc -l models/$(basename ${f} .gz)
 done
 
+paper/allGlioma_scoring_system.txt.gz
+1058980
+1058980 paper/allGlioma_scoring_system.sorted.txt
+1058942 models/allGlioma_scoring_system.txt
+paper/gbm_scoring_system.txt.gz
+1059412
+1059412 paper/gbm_scoring_system.sorted.txt
+1059375 models/gbm_scoring_system.txt
+paper/nonGbm_scoring_system.txt.gz
+1059475
+1059475 paper/nonGbm_scoring_system.sorted.txt
+1059437 models/nonGbm_scoring_system.txt
+
 ```
-
-
-
 
 Unify and harmonize these coordinates. 3 scoring files are rsIDs "rs3766192" and 4 are like "chr1:953279:T:C".
 
@@ -179,16 +191,30 @@ reference 20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/ ( not sure if I reran t
 
 ##	Create collection
 
+
+**MANUALLY ADDED A TAB TO THE END OF EVERY DATA LINE AS NEEDED TO MARK THE EMPTY hg_inferOtherAllele COLUMN**
+
+
+
+
+
 Assuming using pgs-calc for scoring,
 Download and install the latest version: https://github.com/lukfor/pgs-calc (1.6.2) Done
 
-refs/Imputation/PGSCatalog/README.md
 
-create a colleciton something like ...
-```
+create a collection something like ...
+```bash
+#refs/Imputation/PGSCatalog/README.md
+#sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
+#  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+#  --wrap="module load htslib openjdk ;pgs-calc create-collection --out=pgs-GLIO-IBD.txt.gz {PGS000155,PGS000781,PGS002302,PGS003384,PGS000017,PGS001288,PGS003981,PGS003997,PGS004013,PGS004023,PGS004038,PGS004051,PGS004067,PGS004081,PGS004097,PGS004105,PGS004121,PGS004135,PGS004151,PGS004270,PGS004271,PGS004272,PGS004273,PGS004274}.txt.gz; tabix -S 5 -p vcf pgs-GLIO-IBD.txt.gz;chmod -w pgs-GLIO-IBD.txt.gz*"
+
+
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
   --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load htslib openjdk ;pgs-calc create-collection --out=pgs-GLIO-IBD.txt.gz {PGS000155,PGS000781,PGS002302,PGS003384,PGS000017,PGS001288,PGS003981,PGS003997,PGS004013,PGS004023,PGS004038,PGS004051,PGS004067,PGS004081,PGS004097,PGS004105,PGS004121,PGS004135,PGS004151,PGS004270,PGS004271,PGS004272,PGS004273,PGS004274}.txt.gz; tabix -S 5 -p vcf pgs-GLIO-IBD.txt.gz;chmod -w pgs-GLIO-IBD.txt.gz*"
+  --wrap="module load htslib openjdk ;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar create-collection --out=pgs-scores.txt.gz models/*.txt; tabix -S 5 -p vcf pgs-scores.txt.gz;chmod -w pgs-scores.txt.gz*"
+
+
 ```
 
 
