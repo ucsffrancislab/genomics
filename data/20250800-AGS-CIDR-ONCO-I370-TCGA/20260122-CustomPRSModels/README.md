@@ -328,7 +328,7 @@ for chrnum in {1..22} ; do
 done
 done > commands
 
-commands_array_wrapper.bash --array_file commands --time 4-0 --threads 8 --mem 60G --jobcount 8
+commands_array_wrapper.bash --array_file commands --time 1-0 --threads 8 --mem 60G --jobcount 8
 ```
 
 
@@ -355,6 +355,11 @@ done
 ```
 
 
+```bash
+
+box_upload.bash pgs-*0.8/scores*
+
+```
 
 
 
@@ -368,37 +373,10 @@ done
 
 
 ```bash
-module load bcftools
-bcftools merge *.vcf.gz -o merged_collection.vcf.gz
-```
 
-
-```bash
-module load plink2
-plink2 --vcf merged_collection.vcf.gz --make-pgen --out Plink_output_prefix
-```
-
-
-```bash
-
-plink2 \
-  --memory 16000 \
-  --threads 6 \
-  --pfile your_data_prefix \
-  --score PGS.betas.tsv 3 5 6 header-read \
-  --out out/pgs_out
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2 --time=2-0 --export=None \
+  --output="${PWD}/plink2.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=64 --mem=490G plink_test.bash
 
 ```
-
-
-Command Breakdown:
---pfile: Specifies the input genotype data in PLINK 2 format.
---score <file> <col1> <col2> <col3> header-read:
-<file>: The scoring file (e.g., PGS.betas.tsv) containing variant IDs, effect alleles, and weights (BETAs).
-<col1>: Column number for variant ID (e.g., 3).
-<col2>: Column number for effect allele (e.g., 5).
-<col3>: Column number for effect size/weight (e.g., 6).
-header-read: Tells PLINK the first line is a header.
---out: Specifies the prefix for output files. 
 
 
