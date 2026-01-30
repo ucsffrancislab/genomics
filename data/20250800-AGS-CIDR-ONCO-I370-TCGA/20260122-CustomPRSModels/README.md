@@ -18,6 +18,18 @@ https://pmc.ncbi.nlm.nih.gov/articles/PMC11448969/
 
 
 
+FYI. Skip to 20260130
+
+
+The scores are hg38 and the imputed data are hg19.
+
+My first goes as scoring thought that the data were hg38.
+
+In addition, the scoring ids need to match the imputed result ids which is easily parsable for the CHR:POS:REF:ALT.
+
+The RSID scoring models, will eventually need proper annotation.
+
+
 
 
 
@@ -154,39 +166,6 @@ paper/gbm_scoring_system.txt.gz
 paper/nonGbm_scoring_system.txt.gz
 
 
-
-```bash
-#	echo -e 'rsid\tchr\tpos' > rsid_translation_table.tsv
-#	awk 'BEGIN{FS=":";OFS="\t"}{print $3,$1,$2}' /francislab/data1/refs/sources/ftp.ncbi.nih.gov/snp/organisms/human_9606_b151_GRCh38p7/VCF/All_rsids | sort -t$'\t' -k1,1 | uniq >> rsid_translation_table.tsv
-#	wc -l rsid_translation_table.tsv
-#	
-#	#	660146175 rsid_translation_table
-#	
-#	mkdir models
-#	for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
-#	echo $f
-#	zcat ${f} | wc -l
-#	zcat ${f} | tr ' ' '\t' | head -1 > ${f%.txt.gz}.sorted.txt
-#	zcat ${f} | tr ' ' '\t' | tail -n +2 | sort -t$'\t' -k1,1 | uniq >> ${f%.txt.gz}.sorted.txt
-#	echo -e 'hm_chr\thm_pos\teffect_allele\teffect_weight\thm_inferOtherAllele' > models/$(basename $f .gz)
-#	join --header -t$'\t' rsid_translation_table.tsv ${f%.txt.gz}.sorted.txt | uniq | cut -d$'\t' -f2- | tail -n +2 | sort -t$'\t' -k1n,1 -k2n,2 -k3,3 >> models/$(basename ${f} .gz)
-#	wc -l ${f%.txt.gz}.sorted.txt
-#	wc -l models/$(basename ${f} .gz)
-#	done
-#	
-#	paper/allGlioma_scoring_system.txt.gz
-#	1058980
-#	1058980 paper/allGlioma_scoring_system.sorted.txt
-#	1058942 models/allGlioma_scoring_system.txt
-#	paper/gbm_scoring_system.txt.gz
-#	1059412
-#	1059412 paper/gbm_scoring_system.sorted.txt
-#	1059375 models/gbm_scoring_system.txt
-#	paper/nonGbm_scoring_system.txt.gz
-#	1059475
-#	1059475 paper/nonGbm_scoring_system.sorted.txt
-#	1059437 models/nonGbm_scoring_system.txt
-```
 
 
 ```bash
@@ -371,12 +350,116 @@ box_upload.bash pgs-*0.8/scores*
 
 ##	Plink
 
+```bash
+mkdir plink_models
+for f in paper/{idhmut_1p19qnoncodel,idhmut_1p19qcodel,idhmut,idhwt}_scoring_system.txt.gz ; do
+echo $f
+zcat ${f} |sed 's/^chr//' | gzip > plink_models/$( basename ${f} )
+done
+```
+
+
+
 
 ```bash
+for data in cidr i370 onco tcga; do
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2 --time=2-0 --export=None \
-  --output="${PWD}/plink2.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=64 --mem=490G plink_test.bash
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2_${data} --time=1-0 --export=None \
+  --output="${PWD}/plink2.${data}.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=16 --mem=120G plink_score.bash ${data}
+
+done
 
 ```
+
+
+Need to find add the rsids to the other 3 models.
+
+
+
+
+Plink only finds about 11,000 variants? Dump all the ids from both of these and compare.
+
+/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas/imputed-umich-cidr/dose.pvar
+/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/plink_models/idhmut_1p19qcodel_scoring_system.txt.gz 
+
+
+grep -vs "^#" /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas/imputed-umich-cidr/dose.pvar| awk '{print $3}' | sort > cidr.dose.pvar.ids &
+grep -vs "^#" /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas/imputed-umich-cidr/dose.pvar| cut -d$'\t' -f3 | sort > cidr.dose.pvar.ids2 &
+
+zcat /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/plink_models/idhmut_1p19qcodel_scoring_system.txt.gz | tail -n +2 | cut -d' ' -f1 | sort > model.idhmut_1p19qcodel_scoring_system.ids &
+
+join cidr.dose.pvar.ids model.idhmut_1p19qcodel_scoring_system.ids | wc -l
+11107
+
+
+Hmm. Does pgs-calc note this as well?
+Yes. Even less actually, but that was filtered on 0.8.
+idhmut_1p19qcodel_scoring_system","variants":1071074,"variantsUsed":10935
+
+
+
+
+After, run on just the R2>0.8
+
+
+
+
+
+
+##	20260129
+
+```bash
+bcftools view -H /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas/imputed-umich-cidr/dose.vcf.gz | awk '{print $3":"$4}' | sort | sed 's/^/chr/' > cidr.dose.chr.pos.ref &
+
+f=cidr.dose.chr.pos.ref
+join ${f} hg19.All_20180423.positions.csv | uniq | wc -l
+21967832
+join ${f} hg38.All_20180418.positions.csv | uniq | wc -l
+1326380
+```
+
+So the imputed results are hg19 and the models are hg38. Something need lifted over.
+
+
+Eventually add the pgs-calc scoring to the scripts as well.
+
+Eventually convert the RSID scoring to CHR:POS:REF:ALT
+
+
+```bash
+for data in cidr i370 onco tcga; do
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2_${data} --time=14-0 --export=None \
+  --output="${PWD}/plink2.${data}.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=16 --mem=120G plink_score.bash ${data}
+
+done
+
+```
+
+Getting even more complicated.
+
+Gotta liftover which seems to require chromosome name match with chr prefix.
+
+```bash
+data=cidr
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2_${data} --time=14-0 --export=None   --output="${PWD}/plink2.${data}.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=64 --mem=490G plink_score.dev.bash ${data}
+```
+
+
+
+##	20260130
+
+Chat'ed with ChatGPT 
+
+
+```bash
+for c in {1..22}; do
+
+c=22
+data=cidr
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=lift${c}${data} --time=1-0 --export=None --output="${PWD}/lift.${data}.${c}.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=2 --mem=15G liftover_and_prep_for_pgs_by_chromosome.bash ${data} ${c}
+```
+
 
 

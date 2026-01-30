@@ -31,10 +31,19 @@ fi
 if [ -f ${indir}/imputed-umich-${data}/dose.psam ] ; then
 	echo "Exists. Skipping."
 else
+
+	#	for plink2 appa
 	plink2 --memory 450000 --threads 64 --make-pgen \
+		--set-all-var-ids @:#:\$r:\$a --new-id-max-allele-len 662 \
 		--vcf ${indir}/imputed-umich-${data}/dose.vcf.gz \
 		--out ${indir}/imputed-umich-${data}/dose
 fi
+
+#	zcat paper/idhmut_1p19qcodel_scoring_system.txt.gz | awk '{split($1,a,":");print a[1]":"a[2]" "$2" "$3}' |sed 's/^chr//' > paper/idhmut_1p19qcodel_scoring_system.test
+
+#	zcat paper/idhmut_1p19qcodel_scoring_system.txt.gz |sed 's/^chr//' > paper/idhmut_1p19qcodel_scoring_system.test
+
+#	--set-all-var-ids 'chr#:\$pos:\$r:\$a' \
 
 plink2 --memory 450000 --threads 64 \
 	--pfile ${indir}/imputed-umich-${data}/dose \
@@ -72,6 +81,13 @@ plink2 --memory 450000 --threads 64 \
 #	1       54847488        1:54847488      C       A       IMPUTED;AF=0.00173029;MAF=0.00173029;AVG_CS=0.999294;R2=0.720756
 #	1       54847488        1:54847488      C       T       IMPUTED;AF=0.00123755;MAF=0.00123755;AVG_CS=0.999796;R2=0.865299
 #	1       54847528        1:54847528      G       A      
+
+
+
+
+#	Not sure how to deal with this because its valid
+
+#	need to recreate pfiles with --set-all-var-ids 'chr#:\$pos:\$r:\$a'
 
 
 
