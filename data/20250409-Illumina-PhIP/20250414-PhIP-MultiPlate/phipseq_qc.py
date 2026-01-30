@@ -458,7 +458,8 @@ def analyze_commercial_control(zscore_df: pd.DataFrame, meta_df: pd.DataFrame, o
     # 1. Correlation heatmap
     ax = axes[0]
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool), k=1)
-    sns.heatmap(corr_matrix, mask=mask, annot=True, fmt='.3f', cmap='RdYlBu_r',
+    #sns.heatmap(corr_matrix, mask=mask, annot=True, fmt='.3f', cmap='RdYlBu_r',
+    sns.heatmap(corr_matrix, mask=mask, annot=False, fmt='.3f', cmap='RdYlBu_r',
                 center=1, vmin=0.8, vmax=1, ax=ax, square=True)
     ax.set_title('Commercial Control Correlations')
     
