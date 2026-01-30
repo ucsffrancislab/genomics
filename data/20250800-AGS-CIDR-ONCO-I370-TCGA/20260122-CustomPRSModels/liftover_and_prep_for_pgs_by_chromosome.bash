@@ -26,11 +26,6 @@ outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-Custo
 
 
 vcf=${indir}/imputed-umich-${data}/chr${c}.dose.vcf.gz
-if [ -f ${vcf}.csi ] ; then
-	echo "Index exists. Skipping."
-else
-	bcftools index --threads ${threads} --csi ${vcf}
-fi
 
 outdir=$( dirname ${vcf} )/hg38
 mkdir -p ${outdir}
@@ -64,27 +59,27 @@ else
 		| bcftools sort -Oz -o ${lifted}
 fi
 
-if [ -f ${lifted}.csi ] ; then
-	echo "Index exists. Skipping."
-else
-	bcftools index --threads ${threads} --csi ${lifted}
-fi
-
 norm=${outdir}/norm.$( basename ${vcf} )
 if [ -f ${norm} ] ; then
 	echo "Normalized exists. Skipping."
 else
 	bcftools norm -Oz -o ${norm} \
+		--check-ref x -m -any \
 		-f /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz \
 		${lifted} 
-#--write-index=csi \
 fi
 
-for_pgs=${outdir}/for_pgs.$( basename ${vcf} )
+final=${outdir}/final.$( basename ${vcf} )
 if [ -f ${for_pgs} ] ; then
-	echo "for_pgs exists. Skipping."
+	echo "final exists. Skipping."
 else
-	bcftools view -m2 -M2 -v snps -Oz -o ${for_pgs} ${norm} 
-#--write-index=csi 
+	bcftools annotate --threads ${threads} --set-id '%CHROM:%POS:%REF:%ALT' -O u ${norm} | \
+		bcftools view -m2 -M2 -v snps -Oz --write-index=csi -o ${final}
 fi
+
+
+echo "Done"
+date
+echo "Runtime : $((SECONDS/3600)) hrs $((SECONDS%3600/60)) mins $((SECONDS%3600%60)) secs"
+
 

@@ -453,12 +453,14 @@ Chat'ed with ChatGPT
 
 
 ```bash
+for data in cidr i370 onco tcga; do
 for c in {1..22}; do
+echo liftover_and_prep_for_pgs_by_chromosome.bash ${data} ${c}
+done ; done > commands
 
-c=22
-data=cidr
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=lift${c}${data} --time=1-0 --export=None --output="${PWD}/lift.${data}.${c}.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=2 --mem=15G liftover_and_prep_for_pgs_by_chromosome.bash ${data} ${c}
+commands_array_wrapper.bash --array_file commands --time 2-0 --threads 2 --mem 15G --jobcount 30 --jobname lift
+
 ```
 
 
