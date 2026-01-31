@@ -447,6 +447,7 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2_${da
 
 
 
+
 ##	20260130
 
 Chat'ed with ChatGPT 
@@ -458,10 +459,105 @@ for c in {1..22}; do
 echo liftover_and_prep_for_pgs_by_chromosome.bash ${data} ${c}
 done ; done > commands
 
-
 commands_array_wrapper.bash --array_file commands --time 2-0 --threads 2 --mem 15G --jobcount 30 --jobname lift
+```
+
+
+
+No need to concat. pgs-calc and plink2 can score by chromosome. pgs-calc has a built-in merge. plink2 does not.
+
+pgs-calc models are by chromosome and position. No ids are used.
+The models were prepared above and are still good, but will need the chr prefix added.
+Add the "chr" prefix and rename the file to include "pgs-calc" to differentiate from the plink2 models.
+
+```bash
+mkdir pgs-calc_models
+for f in pgs-calc_models_without_chr_prefix/* ; do
+echo $f
+sed '2,$s/^/chr/' ${f} > pgs-calc_models/$( basename $f )
+done
+```
+
+
+plink2 needs matching ids, whether they be rsids or CHR:POS:REF:ALT, the data must match the model.
+
+The `paper/idh*_scoring_system.txt.gz` files are appropriately formated with CHR:POS:REF:ALT ids.
+`mkdir plink_models; cp paper/idh*_scoring_system.txt.gz plink_models/`
+
+
+This takes a very long time. Mostly the sort I believe
+```bash
+for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.sorted.txt ; do
+join --header -t$'\t' rsid_translation_table.tsv ${f} | uniq | tail -n +2 | sort -t $'\t' -k1n,1 -k2n,2 -k3,3 | awk 'BEGIN{FS="\t";OFS=" "}{print "chr"$2":"$3":"$4":"$5,$6,$7}' | sed '1iID prs_allele prs_weight' | gzip > plink_models/$(basename ${f} .sorted.txt).txt.gz
+done
+```
+
+This results in some entries with multiple ALTs. Probably problem. What will be in the data?
+```bash
+chr4:164700803:G:C,T G 3.466689e-6
+```
+It is what's in the dbSNP file. Hmmm.
+
+
+
+
+
+I think that we are ready to score. We are just waiting for everything to finish lifting over.
+
+
+
+
+
+
+```bash
+indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+
+for data in cidr i370 onco tcga; do
+for chrnum in {1..22} ; do
+
+  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/hg38/final.chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/final.chr${chrnum}.dose.vcf.gz --ref pgs-collection.txt.gz --out \${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info \${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/final.chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${outdir}/pgs-calc-${data}-0.8/; cp \${TMPDIR}/final.chr${chrnum}.dose.scores.* ${outdir}/pgs-calc-${data}-0.8/; chmod -w ${outdir}/pgs-calc-${data}-0.8/final.chr${chrnum}.dose.scores.*"
+
+done
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 1-0 --threads 8 --mem 60G --jobcount 8
+```
+
+
+
+```bash
+
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+
+for data in cidr i370 onco tcga; do
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
+  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-${data}-0.8/chr*.dose.scores.txt --out ${outdir}/pgs-calc-${data}-0.8/scores.txt"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
+  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-${data}-0.8/chr*.dose.scores.info --out ${outdir}/pgs-calc-${data}-0.8/scores.info"
+
+done
+```
+
+
+
+
+```bash
+
+box_upload.bash pgs-calc-*0.8/scores*
 
 ```
+
+
+
+
+Plink scoring ....
 
 
 

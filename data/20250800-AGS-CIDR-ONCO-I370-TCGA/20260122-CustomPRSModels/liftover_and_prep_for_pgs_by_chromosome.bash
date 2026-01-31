@@ -70,7 +70,7 @@ else
 fi
 
 final=${outdir}/final.$( basename ${vcf} )
-if [ -f ${for_pgs} ] ; then
+if [ -f ${final} ] ; then
 	echo "final exists. Skipping."
 else
 	bcftools annotate --threads ${threads} --set-id '%CHROM:%POS:%REF:%ALT' -O u ${norm} | \
