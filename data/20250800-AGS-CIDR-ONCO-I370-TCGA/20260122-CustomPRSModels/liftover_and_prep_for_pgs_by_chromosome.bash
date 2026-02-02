@@ -27,18 +27,25 @@ outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-Custo
 
 vcf=${indir}/imputed-umich-${data}/chr${c}.dose.vcf.gz
 
-outdir=$( dirname ${vcf} )/hg38
+outdir=$( dirname ${vcf} )/hg38_0.8
 mkdir -p ${outdir}
 
 annotated=${outdir}/annotated.$( basename ${vcf} )
 if [ -f ${annotated} ] ; then
 	echo "Annotated exists. Skipping."
 else
-	bcftools annotate \
-		--rename-chrs <(echo -e "${c}\tchr${c}") \
-		-Oz -o ${annotated} \
-		--write-index=csi \
-		${vcf} 
+
+	bcftools filter -i 'INFO/R2 > 0.8' -O u ${vcf} \
+		| bcftools annotate \
+			--rename-chrs <(echo -e "${c}\tchr${c}") \
+			-Oz -o ${annotated} \
+			--write-index=csi
+
+#	bcftools annotate \
+#		--rename-chrs <(echo -e "${c}\tchr${c}") \
+#		-Oz -o ${annotated} \
+#		--write-index=csi \
+#		${vcf}
 fi
 
 lifted=${outdir}/lifted.$( basename ${vcf} )
@@ -66,7 +73,7 @@ else
 	bcftools norm -Oz -o ${norm} \
 		--check-ref x -m -any \
 		-f /francislab/data1/refs/sources/hgdownload.cse.ucsc.edu/goldenPath/hg38/bigZips/latest/hg38.fa.gz \
-		${lifted} 
+		${lifted}
 fi
 
 final=${outdir}/final.$( basename ${vcf} )
