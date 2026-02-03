@@ -84,8 +84,50 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $
 
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$12,$10,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,species,protein,oligo,peptide,start,end,sequence.csv &
 
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq > id,version,version,species,protein,oligo,peptide,start,end,sequence.csv &
 
- 
+
+
+
+
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,protein,oligo,peptide,start,end.csv &
+
+```
+
+
+
+
+
+
+take the highest sequence version and entry version for each id, then drop the versions and keep the rest.
+
+```python3
+
+import pandas as pd
+df = pd.read_csv('id,entry_version,sequence_version,species,protein,oligo,peptide,start,end.csv')
+df = (df
+    .sort_values(['id', 'entry_version', 'sequence_version'], ascending=[True, False, False])
+    .drop_duplicates(subset='id', keep='first')
+    .drop(columns=['entry_version', 'sequence_version'])
+)
+df.to_csv('id,species,protein,oligo,peptide,start,end-clean.csv',index=False)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```bash 
 zcat VIR3_clean.csv.gz | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
   -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
   -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
@@ -98,11 +140,6 @@ zcat VIR3_clean.csv.gz | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g
 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$10,$11,$18,$21,$20,$16}' | sort -t, -k1n,1 | uniq > v900.csv &
 ```
 
-
-
-
-
-
 ---
 
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $14}'
@@ -114,3 +151,4 @@ sed -i '1iid,species,protein,gene' VIR3_clean.id_species_protein_gene.uniq.csv
 sed -i '/89962,O/d' VIR3_clean.id_species_protein_gene.uniq.csv
 chmod a-w VIR3_clean.id_species_protein_gene.uniq.csv
 ```
+
