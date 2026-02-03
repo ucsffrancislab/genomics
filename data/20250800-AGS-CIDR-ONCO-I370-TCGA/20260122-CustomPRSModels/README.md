@@ -351,10 +351,10 @@ box_upload.bash pgs-*0.8/scores*
 ##	Plink
 
 ```bash
-mkdir plink_models
+mkdir plink_models_without_chr_prefix
 for f in paper/{idhmut_1p19qnoncodel,idhmut_1p19qcodel,idhmut,idhwt}_scoring_system.txt.gz ; do
 echo $f
-zcat ${f} |sed 's/^chr//' | gzip > plink_models/$( basename ${f} )
+zcat ${f} |sed 's/^chr//' | gzip > plink_models_without_chr_prefix/$( basename ${f} )
 done
 ```
 
@@ -453,13 +453,15 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=plink2_${da
 Chat'ed with ChatGPT 
 
 
+Copy the script so I don't muck it up if I edit while running.
+
 ```bash
 for data in cidr i370 onco tcga; do
 for c in {1..22}; do
-echo liftover_and_prep_for_pgs_by_chromosome.bash ${data} ${c}
+echo cp liftover_and_prep_for_pgs_by_chromosome.bash \${TMPDIR}\; \${TMPDIR}/liftover_and_prep_for_pgs_by_chromosome.bash ${data} ${c}
 done ; done > commands
 
-commands_array_wrapper.bash --array_file commands --time 2-0 --threads 2 --mem 15G --jobcount 30 --jobname lift
+commands_array_wrapper.bash --array_file commands --time 3-0 --threads 4 --mem 30G --jobcount 16 --jobname lift
 ```
 
 
@@ -474,7 +476,7 @@ Add the "chr" prefix and rename the file to include "pgs-calc" to differentiate 
 mkdir pgs-calc_models
 for f in pgs-calc_models_without_chr_prefix/* ; do
 echo $f
-sed '2,$s/^/chr/' ${f} > pgs-calc_models/$( basename $f )
+sed '2,$s/^/chr/' ${f} > pgs-calc_models_with_chr_prefix/$( basename $f )
 done
 ```
 
@@ -482,13 +484,13 @@ done
 plink2 needs matching ids, whether they be rsids or CHR:POS:REF:ALT, the data must match the model.
 
 The `paper/idh*_scoring_system.txt.gz` files are appropriately formated with CHR:POS:REF:ALT ids.
-`mkdir plink_models; cp paper/idh*_scoring_system.txt.gz plink_models/`
+`mkdir plink_models_with_chr_prefix; cp paper/idh*_scoring_system.txt.gz plink_models_with_chr_prefix/`
 
 
 This takes a very long time. Mostly the sort I believe
 ```bash
 for f in paper/{allGlioma,gbm,nonGbm}_scoring_system.sorted.txt ; do
-join --header -t$'\t' rsid_translation_table.tsv ${f} | uniq | tail -n +2 | sort -t $'\t' -k1n,1 -k2n,2 -k3,3 | awk 'BEGIN{FS="\t";OFS=" "}{print "chr"$2":"$3":"$4":"$5,$6,$7}' | sed '1iID prs_allele prs_weight' | gzip > plink_models/$(basename ${f} .sorted.txt).txt.gz
+join --header -t$'\t' rsid_translation_table.tsv ${f} | uniq | tail -n +2 | sort -t $'\t' -k1n,1 -k2n,2 -k3,3 | awk 'BEGIN{FS="\t";OFS=" "}{print "chr"$2":"$3":"$4":"$5,$6,$7}' | sed '1iID prs_allele prs_weight' | gzip > plink_models_with_chr_prefix/$(basename ${f} .sorted.txt).txt.gz
 done
 ```
 
@@ -500,6 +502,58 @@ It is what's in the dbSNP file. Hmmm.
 
 
 
+
+
+
+
+plink scoring incorporate into the liftover script.
+
+
+Still need to aggregate.
+
+`plink_models_with_chr_prefix` is the usable scores.
+
+`pgs-calc_models_with*` and `plink_models_without_chr_prefix` are unnecessary.
+
+
+```
+grep "^Error: --score variant ID" logs/commands_array_wrapper.bash.20260202092202069416188-1020441_*
+logs/commands_array_wrapper.bash.20260202092202069416188-1020441_14.out.log:Error: --score variant ID 'chr14:22163782:T:C' appears multiple times in main
+logs/commands_array_wrapper.bash.20260202092202069416188-1020441_17.out.log:Error: --score variant ID 'chr17:36608541:G:A' appears multiple times in main
+logs/commands_array_wrapper.bash.20260202092202069416188-1020441_1.out.log:Error: --score variant ID 'chr1:147891874:A:G' appears multiple times in main
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+##	pgs-calc
+
+
+Probably not gonna use it.
+
+pgs-calc DOES NOT LIKE the chr prefix. Back and forth and back and forth and back and rrrrrrrrrrr
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib openjdk ;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar create-collection --out=pgs-collection.txt.gz pgs-calc_models_without_chr_prefix/*.txt; tabix -S 5 -p vcf pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz;chmod -w pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz*"
+
+mkdir pgs-calc_models_with_chr_prefix
+chmod +w pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz*
+cp pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz.info pgs-calc_models_with_chr_prefix/
+zcat pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz | sed '6,$s/^/chr/' | bgzip > pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz
+tabix -S 5 -p vcf pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz
+```
 
 
 I think that we are ready to score. We are just waiting for everything to finish lifting over.
@@ -516,12 +570,12 @@ outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-Custo
 for data in cidr i370 onco tcga; do
 for chrnum in {1..22} ; do
 
-  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/hg38/final.chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/final.chr${chrnum}.dose.vcf.gz --ref pgs-collection.txt.gz --out \${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info \${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/final.chr${chrnum}.dose.scores.html --min-r2 0.8 --no-ansi --threads 8; mkdir -p ${outdir}/pgs-calc-${data}-0.8/; cp \${TMPDIR}/final.chr${chrnum}.dose.scores.* ${outdir}/pgs-calc-${data}-0.8/; chmod -w ${outdir}/pgs-calc-${data}-0.8/final.chr${chrnum}.dose.scores.*"
+  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/final.chr${chrnum}.dose.vcf.gz --ref pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz --out \${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info \${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8; mkdir -p ${outdir}/pgs-calc-${data}/; cp \${TMPDIR}/final.chr${chrnum}.dose.scores.* ${outdir}/pgs-calc-${data}/; chmod -w ${outdir}/pgs-calc-${data}/final.chr${chrnum}.dose.scores.*"
 
 done
-done > commands
+done > commands2
 
-commands_array_wrapper.bash --array_file commands --time 1-0 --threads 8 --mem 60G --jobcount 8
+commands_array_wrapper.bash --array_file commands2 --time 1-0 --threads 4 --mem 30G --jobcount 8 --jobname score
 ```
 
 
@@ -535,12 +589,12 @@ for data in cidr i370 onco tcga; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
   --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-${data}-0.8/chr*.dose.scores.txt --out ${outdir}/pgs-calc-${data}-0.8/scores.txt"
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-${data}/chr*.dose.scores.txt --out ${outdir}/pgs-calc-${data}/scores.txt"
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
   --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-${data}-0.8/chr*.dose.scores.info --out ${outdir}/pgs-calc-${data}-0.8/scores.info"
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-${data}/chr*.dose.scores.info --out ${outdir}/pgs-calc-${data}/scores.info"
 
 done
 ```
@@ -553,11 +607,5 @@ done
 box_upload.bash pgs-calc-*0.8/scores*
 
 ```
-
-
-
-
-Plink scoring ....
-
 
 
