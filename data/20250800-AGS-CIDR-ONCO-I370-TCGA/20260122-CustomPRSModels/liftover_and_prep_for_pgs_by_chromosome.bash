@@ -111,7 +111,10 @@ else
 	#	rerun this import with --psam or --update-sex.  --split-par may also be
 	#	appropriate.
 
+	#	light qc with the --geno
+
 	plink2 --memory ${memory} --threads ${threads} --make-pgen \
+		--geno 0.05 \
 		--not-chr X --vcf ${final} --out ${pfinal}
 	chmod -w ${pfinal}.psam
 
@@ -130,15 +133,19 @@ for model in ${model_dir}/plink_models_with_chr_prefix/*_scoring_system.txt.gz ;
 
 	scores=${scores_outdir}/$( basename ${vcf} .vcf.gz ).${model_base}
 
-	if [ -f ${scores}.score ] && [ ! -w ${scores}.score ] ; then
+	if [ -f ${scores}.sscore ] && [ ! -w ${scores}.sscore ] ; then
 		echo "Write-protected ${pfinal} exists. Skipping."
 	else
 
 		plink2 --memory ${memory} --threads ${threads} \
 			--score ${model} 1 2 3 header-read list-variants \
 			--pfile ${pfinal} --out ${scores}
-		chmod -w ${scores}.score
+		chmod -w ${scores}.sscore
 
+		#	these scores will be averages. Need to un-average during aggregation.
+
+			#--score-sum \
+			#--score-no-mean-imputation \
 	fi
 
 done

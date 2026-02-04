@@ -555,13 +555,7 @@ zcat pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz | sed '6,$s/^/chr/
 tabix -S 5 -p vcf pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz
 ```
 
-
 I think that we are ready to score. We are just waiting for everything to finish lifting over.
-
-
-
-
-
 
 ```bash
 indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
@@ -577,8 +571,6 @@ done > commands2
 
 commands_array_wrapper.bash --array_file commands2 --time 1-0 --threads 4 --mem 30G --jobcount 8 --jobname score
 ```
-
-
 
 ```bash
 
@@ -599,9 +591,6 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-i
 done
 ```
 
-
-
-
 ```bash
 
 box_upload.bash pgs-calc-*0.8/scores*
@@ -609,3 +598,81 @@ box_upload.bash pgs-calc-*0.8/scores*
 ```
 
 
+
+
+
+
+
+
+
+
+##	20260203
+
+https://chatgpt.com/c/69820e15-c2fc-8326-ad17-d60eeb085dde
+
+Aggregate plink2 scoring.
+
+plink2 only provides average. Un-average them
+
+Assumptions (match your files)
+
+$1 = IID
+$2 = ALLELE_CT
+$NF = prs_weight_AVG (last column)
+
+
+```bash
+for data in cidr i370 onco tcga; do
+for fullmodel in plink_models_with_chr_prefix/* ; do
+model=$( basename ${fullmodel} _scoring_system.txt.gz )
+
+awk '
+  FNR==1 {next}      # skip headers
+  {
+    iid = $1
+    snp_ct[iid] += $2            # ALLELE_CT
+    prs[iid]    += $2 * $NF      # AVG × ALLELE_CT
+  }
+  END {
+    print "IID\tPRS_raw\tSNP_CT"
+    for (i in prs) {
+      print i "\t" prs[i] "\t" snp_ct[i]
+    }
+  }
+' scores/imputed-umich-${data}/chr*.dose.${model}.sscore > scores/imputed-umich-${data}.${model}.prs.genome_raw.txt
+
+done
+done
+
+```
+
+
+
+If SNP_CT varies wildly → something went wrong upstream.
+
+
+Standardize (Z-score) across individuals
+
+This is the canonical PRS normalization.
+
+```python
+import pandas as pd
+import glob
+
+for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.txt'):
+	prs = pd.read_csv(file, sep="\t")
+	prs["PRS_z"] = (prs["PRS_raw"] - prs["PRS_raw"].mean()) / prs["PRS_raw"].std()
+	#	prs$PRS_z <- scale(prs$PRS_raw) same thing?
+	prs.to_csv( file.replace('prs.genome_raw.txt', 'prs.genome_z.txt'), sep="\t", index=False)
+
+```
+
+
+
+```bash
+
+./prs_qc.py > prs_qc.log
+
+box_upload.bash prs_qc.py prs_qc.log scores/imputed-umich-*txt scores/qc_plots/*
+
+```
