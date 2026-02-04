@@ -96,6 +96,8 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $
 
 
 
+THERE ARE STILL COMMAS IN THE DATA SO BEWARE
+
 
 
 
