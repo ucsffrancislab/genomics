@@ -1029,3 +1029,51 @@ molecular subtypes: HGG, LGG, idhmut, idh wt, …
 ./merge_all_AGS_IPS_HLA_SEROz10.py
 ```
 
+
+
+##	20260203
+
+Add the ELIZA data to PhIPseq_HLA.csv
+
+/francislab/data1/refs/AGS/AGS.csv
+
+UCSFid,AGSid,age,sex,plate,CMV,EBV,HSV,XVZV2
+
+
+
+
+
+
+
+
+
+
+
+Also, add survival data?
+
+
+head /francislab/data1/refs/AGS/Cleaned_Covariates_with_HLA.tsv
+AGSID	daysdx1	case	series	dxcode	sex	hispanic	race	vstatus	survdays	dexatbd	chemo	temodar	rad	surg	idhmut	pqimpute	tert	who2016	ngrade	igenum	allige	foodnum	foodige	respnum	respige	CMV	EBV	HSV	XVZV2	VZV13PANEL	VZV_NAPPA	CD14	CD23	CCL22	educyrs	degree	income	age	VZV2	white	agen	survmonths	monthsdx1	seriesn	VZVq	VZVhigh	VZVlow	VZVloworno	VZVlowandno	VZVqn	totige12v3	totige1v23	totigeq	totige50	totige75	respigeq	respige50	respige75	foodigeq	foodige50	foodige75	VZVorRespHigh	diag	whogroups	array	HLA_........
+
+
+
+CIDR / IPS
+
+/francislab/data1/raw/20250813-CIDR/IPS_CIDR_446_RAD_TMZ_2025-10-10.csv 
+id,rad,tmz
+
+/francislab/data1/raw/20250813-CIDR/CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv 
+subject_id,id,age_ucsf_surg,age_first_surg,sex,ethnicity,race,bmi,dxgroup,grade,who2021,pq,idhmut,bldyear,timept,dex,surgtype,deceased,survdays,ucsf_surg_year,first_surg_year,mgmt,mgmtindex
+
+TCGA  ( no TCGA in the matrix )
+/francislab/data1/refs/TCGA/TCGA.Glioma.metadata.tsv 
+case_submitter_id	project_id	primary_diagnosis	race	ethnicity	gender	RE_names	IDH	x1p19q	TERT	IDH_1p19q_status	WHO_groups	Triple_group	Tissue_sample_location	MGMT	Age	Survival_months	Vital_status
+
+
+
+
+
+
+
+
+

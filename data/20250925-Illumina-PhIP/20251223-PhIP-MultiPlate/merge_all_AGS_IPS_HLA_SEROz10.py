@@ -275,9 +275,7 @@ tmp = pd.read_csv(hladir+"agsips_manifest.csv",dtype=object).fillna('')
 tmp['UCSFid'] = tmp['UCSFid'].str.rstrip('dup')
 tmp = tmp.drop_duplicates()
 print("agsips_manifest.csv")
-tmp = tmp.drop('age', axis='columns')
-tmp = tmp.drop('sex', axis='columns')
-tmp = tmp.drop('plate', axis='columns')
+tmp = tmp.drop(['age','sex','plate'], axis='columns')
 print(tmp.head())
 print(len(tmp.columns))
 print(tmp.columns)
@@ -544,6 +542,27 @@ df[list(id_sets.keys())] = df[list(id_sets.keys())].astype('Int64')
 
 
 
+#UCSFid,AGSid,age,sex,plate,CMV,EBV,HSV,XVZV2
+
+tmp = pd.read_csv("/francislab/data1/refs/AGS/AGS.csv",dtype=object).fillna('')
+print("AGS.csv")
+tmp = tmp.drop(['AGSid','age','sex','plate'], axis='columns')
+tmp['UCSFid'] = tmp['UCSFid'].str.rstrip('dup')
+tmp = tmp.drop_duplicates()
+print(tmp.head())
+print(len(tmp.columns))
+print(tmp.columns)
+print(len(tmp.index))
+print(tmp.index)
+tmp = tmp.rename(columns={ 'CMV': 'ELISA_CMV', 'EBV': 'ELISA_EBV', 'HSV': 'ELISA_HSV', 'XVZV2': 'ELISA_VZV' })
+
+df = pd.merge(df,tmp, left_on='UCSFid', right_on='UCSFid', how='outer')
+#if ( df['serosubject'].equals(df['subject']) ):
+#	df = df.drop('serosubject', axis='columns')
+
+
+
+df = df.drop('UCSFid', axis='columns')	#	subject is identical and more populated
 
 
 
@@ -553,7 +572,9 @@ pd.set_option('display.max_seq_items', None)
 #	reorder this mess.
 #	pop items out and move them to the front so they end up in a specific order?
 columns = list(df.columns)
-column_order = ['UCSFid','subject','type', 'study', 'phipsamplegroup', 'group', 'age', 'sex', 'plate','AGSIPS','AGS','IPS','CIDR','FID_IID',
+column_order = [ 'subject','type', 'study', 'phipsamplegroup', 'group', 'age', 'sex', 'plate',
+'ELISA_CMV','ELISA_EBV','ELISA_HSV','ELISA_VZV',
+'AGSIPS','AGS','IPS','CIDR','FID_IID',
 'cidr_IDHwt_meta_cases',
        'cidr_LrGG_IDHwt_meta_cases', 'cidr_HGG_IDHmut_meta_cases',
        'cidr_LrGG_IDHmut_meta_cases', 'cidr_LrGG_IDHmut_1p19qcodel_meta_cases',
