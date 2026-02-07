@@ -345,3 +345,37 @@ commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 -
 ```
 
 
+
+
+
+
+
+
+
+
+##	20260205
+
+
+Rerun the above and include CIDR?
+
+Rerun the above and include more comments!
+
+Rerun the above using z-scores (of just our data) and not raw scores?
+
+What was extract_cox_coeffs_for_pgs.r for?
+
+Rerun the above on the 7 new models?
+
+Create a matrix like that returned from the imputation server / pgs-calc? Or actually get pgs-calc working?
+
+
+
+spacox.bash ???
+
+pgscox.bash
+
+metal
+
+
+
+
