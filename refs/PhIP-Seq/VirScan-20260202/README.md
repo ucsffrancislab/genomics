@@ -20,7 +20,7 @@ zcat VIR3_clean.csv.gz | head -1 | tr ',' '\n' | awk '{print NR,$0}'
 7  Gene ontology IDs      useless so drop
 8  Genus                  mostly empty so best to drop
 9  Organism               similar to species (n=1573). mostly strains. Drop?
-10 Protein names
+10 Protein names          (n=3991)
 11 Sequence
 12 Species                similar to organism (n=443)
 13 Subcellular location
@@ -90,7 +90,11 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $
 
 
 
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$9,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv &
+
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,protein,oligo,peptide,start,end.csv &
+
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein' > id,entry_version,sequence_version,species,protein.csv &
 
 ```
 
@@ -106,6 +110,22 @@ take the highest sequence version and entry version for each id, then drop the v
 ```python3
 
 import pandas as pd
+df = pd.read_csv('id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv')
+df = (df
+    .sort_values(['id', 'entry_version', 'sequence_version'], ascending=[True, False, False])
+    .drop_duplicates(subset='id', keep='first')
+    .drop(columns=['entry_version', 'sequence_version'])
+)
+df.to_csv('id,species,organism,protein,oligo,peptide,start,end-clean.csv',index=False)
+
+df = pd.read_csv('id,entry_version,sequence_version,species,protein.csv')
+df = (df
+    .sort_values(['id', 'entry_version', 'sequence_version'], ascending=[True, False, False])
+    .drop_duplicates(subset='id', keep='first')
+    .drop(columns=['entry_version', 'sequence_version'])
+)
+df.to_csv('id,species,protein-clean.csv',index=False)
+
 df = pd.read_csv('id,entry_version,sequence_version,species,protein,oligo,peptide,start,end.csv')
 df = (df
     .sort_values(['id', 'entry_version', 'sequence_version'], ascending=[True, False, False])
@@ -116,6 +136,113 @@ df.to_csv('id,species,protein,oligo,peptide,start,end-clean.csv',index=False)
 
 ```
 
+THERE ARE STILL COMMAS IN THE DATA SO BEWARE
+
+
+
+
+Take AI's lead but use it to create a translation table rather than actually change the data.
+
+Then join on the table, remove the original versions of species, organism and protein names to create new normalized file
+
+
+Read the raw file drom all but species, organism and protein.
+
+Drop duplicates
+
+For all 3 species, create a new version of the column with modifications:
+* replace commas with spaces
+* remove bracketed and parentesized content.
+
+The manually search for synonyms like ...
+* 'Human cytomegalovirus (HHV-5) (Human herpesvirus 5)': 'Human herpesvirus 5',
+
+
+
+```bash
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $2,$3,$4}' id,species,organism,protein,oligo,peptide,start,end-clean.csv | uniq | wc -l
+10147
+
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $2,$3,$4}' id,species,organism,protein,oligo,peptide,start,end-clean.csv | sort | uniq | wc -l
+7857
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $2}' id,species,organism,protein,oligo,peptide,start,end-clean.csv | sort | uniq | wc -l
+443
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $3}' id,species,organism,protein,oligo,peptide,start,end-clean.csv | sort | uniq | wc -l
+1558
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $4}' id,species,organism,protein,oligo,peptide,start,end-clean.csv | sort | uniq | wc -l
+3991
+```
+
+
+```bash
+create_translation_tables.py
+```
+
+
+```bash
+wc -l species_translation_table.csv
+```
+
+
+
+
+NEED TO TRIM OLIGOS
+
+```bash
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print ">"$1;print $5}' id,species,organism,protein,oligo,peptide,start,end-clean.csv > id,species,organism,protein,oligo,peptide,start,end-clean.fna
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
+--output=${PWD}/blastn.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastn -db /francislab/data1/refs/blast/nt -query id,species,organism,protein,oligo,peptide,start,end-clean.fna -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean-blastn.nt.tsv -num_threads 8"
+
+```
+
+This won't include the family and what not.
+
+I think that's why I wrote an app for that.
+
+Blast is missing a lot and including a lot of duplicate alignments. This won't be helpful.
+
+canceling
+
+What about making a ref from RefSeq viral fna?
+
+Should trim the indexes of of the oligos.
+
+Leading indexes ...
+```bash
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{if($18~/^a/){i=2}else{i=1};print substr($18,1,14+i)}' | sort | uniq -c
+
+  70798 aGGAATTCCGCTGCGT (16)
+  37805 aTGAATTCGGAGCGGT (16)
+  19654  GGAATTCCGCTGCGT (15)
+```
+
+Leading and Trailing indexes ...
+```bash
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{if($18~/^a/){i=2}else{i=1};print substr($18,1,14+i)" "substr($18,length($18)-13-i)}' | sort | uniq -c
+
+  70798 aGGAATTCCGCTGCGT CAGGgaagagctcgaa
+  37805 aTGAATTCGGAGCGGT CACTGCACTCGAGACa
+  19654  GGAATTCCGCTGCGT CAGGGAAGAGCTCGA
+```
+
+```bash
+
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{if($18~/^a/){i=2}else{i=1};print substr($18,1,14+i)" "substr($18,length($18)-13-i); print substr($18,15+i,length($18)-30-i))}' | head
+```
+
+
+Actual sequences ...
+
+a bit concerned about the -30-1. (-28-(2*i)) is better
+
+```bash
+zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,toupper(substr($18,15+i,length($18)-28-(2*i))); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_upper_oligo.uniq.csv
+```
 
 
 
@@ -125,9 +252,32 @@ df.to_csv('id,species,protein,oligo,peptide,start,end-clean.csv',index=False)
 
 
 
+##	The Good Stuff
+
+```bash
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,$15,$14,$12,$9,$10,toupper(substr($18,15+i,length($18)-28-(2*i))),$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv &
+```
+
+
+```python3
+
+import pandas as pd
+df = pd.read_csv('id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv')
+df = (df
+    .sort_values(['id', 'entry_version', 'sequence_version'], ascending=[True, False, False])
+    .drop_duplicates(subset='id', keep='first')
+    .drop(columns=['entry_version', 'sequence_version'])
+)
+df.to_csv('id,species,organism,protein,oligo,peptide,start,end-clean.csv',index=False)
+```
 
 
 
+
+
+
+
+---
 
 ```bash 
 zcat VIR3_clean.csv.gz | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
@@ -142,8 +292,7 @@ zcat VIR3_clean.csv.gz | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g
 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$10,$11,$18,$21,$20,$16}' | sort -t, -k1n,1 | uniq > v900.csv &
 ```
 
----
-
+```
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $14}'
 
 zcat VIR3_clean.csv.gz \
