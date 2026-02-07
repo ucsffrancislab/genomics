@@ -350,8 +350,15 @@ Cleaning took over 2 days. And Splitting took 4 so far
 
 
 ```
-
 rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral-20241126/
-
-
 ```
+
+
+##	20260206
+
+
+```bash
+rsync -avz --progress --include=README.txt --include="*f?a.gz" --exclude="*" rsync://ftp.ncbi.nih.gov/refseq/release/viral/ viral-20260206/
+```
+
+
