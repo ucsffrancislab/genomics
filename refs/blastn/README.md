@@ -1,4 +1,5 @@
 
+#	blast
 
 
 update_blastdb.pl --decompress nt
@@ -20,3 +21,13 @@ update_blastdb.pl --decompress nr
 blastdbcmd -db ${db} -entry_batch <( zcat ${input} | awk -F"\t" '( $11 < '${max}' ){print $1"\t"$2}' | sort | uniq | awk '{print $2}' ) -outfmt "%a %t" | sort | uniq -c | awk '{print $1"\t"$2}' | gzip > ${f}
 
 blastdbcmd -db nr -entry 6V22_E
+
+
+
+##	20260205
+
+
+Updating blast nt
+
+
+
