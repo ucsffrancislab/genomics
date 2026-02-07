@@ -9,6 +9,8 @@ from scipy import stats
 
 
 os.chdir('scores')
+#raw_files = sorted(glob.glob("*.prs.genome_raw.select.txt"))
+#z_files   = sorted(glob.glob("*.prs.genome_z.select.txt"))
 raw_files = sorted(glob.glob("*.prs.genome_raw.txt"))
 z_files   = sorted(glob.glob("*.prs.genome_z.txt"))
 #	⚠️ imputed-umich-i370.idhmut_1p19qcodel: 5 extreme PRS outliers
@@ -29,12 +31,15 @@ for raw, z in zip(raw_files, z_files):
     df_z   = pd.read_csv(z, sep="\t")
 
     df = df_raw.merge(df_z[["IID", "PRS_z"]], on="IID")
+    #df["file"] = os.path.basename(raw).removesuffix('.prs.genome_raw.select.txt')
     df["file"] = os.path.basename(raw).removesuffix('.prs.genome_raw.txt')
     prs_data.append(df)
 
 prs = pd.concat(prs_data, ignore_index=True)
 
-
+# Split dataset and model from filename if applicable
+prs["dataset"] = prs["file"].str.split(".").str[0].str.split("-").str[2]
+prs["model"]   = prs["file"].str.split(".").str[1]
 
 snp_summary = (
     prs.groupby("file")["SNP_CT"]
@@ -52,7 +57,8 @@ if not bad.empty:
 
 
 
-os.makedirs("qc_plots", exist_ok=True)
+#os.makedirs("qc_plots_select", exist_ok=True)
+os.makedirs("qc_plots_new", exist_ok=True)
 
 for fname, df in prs.groupby("file"):
     plt.figure()
@@ -61,7 +67,8 @@ for fname, df in prs.groupby("file"):
     plt.xlabel("PRS_raw")
     plt.ylabel("Count")
     plt.tight_layout()
-    plt.savefig(f"qc_plots/{fname}.PRS_raw.hist.png")
+    #plt.savefig(f"qc_plots_select/{fname}.PRS_raw.hist.png")
+    plt.savefig(f"qc_plots_new/{fname}.PRS_raw.hist.png")
     plt.close()
 
     # Shapiro test (large N → mostly diagnostic)
@@ -96,10 +103,6 @@ for fname, df in prs.groupby("file"):
 
 
 
-# Split dataset and model from filename if applicable
-prs["dataset"] = prs["file"].str.split(".").str[0]
-prs["model"]   = prs["file"].str.split(".").str[1]
-
 for dataset, df in prs.groupby("dataset"):
     pivot = df.pivot(index="IID", columns="model", values="PRS_z")
     corr = pivot.corr()
@@ -111,7 +114,8 @@ for dataset, df in prs.groupby("dataset"):
     plt.xticks(range(len(corr)), corr.columns, rotation=90)
     plt.yticks(range(len(corr)), corr.index)
     plt.tight_layout()
-    plt.savefig(f"qc_plots/{dataset}.model_corr.png")
+    #plt.savefig(f"qc_plots_select/{dataset}.model_corr.png")
+    plt.savefig(f"qc_plots_new/{dataset}.model_corr.png")
     plt.close()
 
 
@@ -131,11 +135,137 @@ for fname, df in prs.groupby("file"):
         plt.axvline(-6, color="red", linestyle="--")
         plt.title("PRS_z distribution with extreme outliers")
         plt.show()
-        plt.savefig(f"qc_plots/{fname}.prs_z.outliers.dist.png")
+        #plt.savefig(f"qc_plots_select/{fname}.prs_z.outliers.dist.png")
+        plt.savefig(f"qc_plots_new/{fname}.prs_z.outliers.dist.png")
         plt.close()
 
 
 
 
+
+#prs.to_csv('testing.prs.csv')
+#
+#,IID,PRS_raw,SNP_CT,PRS_z,file,dataset,model
+#0,147_G146-1-0427562915,20.9992,1648348,0.646634036499858,imputed-umich-cidr.allGlioma,cidr,allGlioma
+#1,136_G135-1-0427562904,20.955,1648348,0.3237928454686345,imputed-umich-cidr.allGlioma,cidr,allGlioma
+#2,369_G369-1-0427563047,21.0402,1648348,0.9461021096283708,imputed-umich-cidr.allGlioma,cidr,allGlioma
+#3,27_G025-1-0427562792,20.959,1648348,0.3530092428470355,imputed-umich-cidr.allGlioma,cidr,allGlioma
+#
+#
+#/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-onco-hg19/estimated-population.txt
+#	
+pcs = pd.read_csv('IID_PCs.tsv', sep="\t")
+print(pcs.dtypes)
+print(pcs.head())
+print(prs.dtypes)
+print(prs.head())
+
+print(pcs.shape)
+print(prs.shape)
+prs = pd.merge(prs,pcs, left_on='IID', right_on='IID', how='inner')
+print(prs.shape)
+
+corr_rows = []
+pcs = ["PC1", "PC2", "PC3", "PC4", "PC5"]
+
+for (dataset, model), g in prs.groupby(["dataset", "model"]):
+
+    for pc in pcs:
+        if pc not in g.columns:
+            continue
+
+        gg = g.dropna(subset=["PRS_raw", pc])
+        if len(gg) < 10:
+            continue
+
+        r = np.corrcoef(gg["PRS_raw"], gg[pc])[0, 1]
+
+        corr_rows.append({
+            "dataset": dataset,
+            "model": model,
+            "pc": pc,
+            "n": len(gg),
+            "pearson_r": r,
+            "abs_r": abs(r)
+        })
+
+corr_df = (
+    pd.DataFrame(corr_rows)
+      .sort_values("abs_r", ascending=False)
+)
+
+corr_df.to_csv(
+    "prs_pc1_pc5_correlations.tsv",
+    sep="\t",
+    index=False
+)
+
+
+
+
+#	What you should do next (if you get more time)
+#	
+#	If you only do one more thing, do this:
+#	
+#	Plot PRS by known categorical variables
+#	
+#	For idhwt only:
+#	
+#	IDH mutation status
+#	
+#	1p/19q status
+#	
+#	GBM vs nonGBM
+#	
+#	sequencing center / batch / array (if available)
+#	
+#	A single boxplot will likely explain the modes.
+#	
+#	#sns.boxplot(x="IDH_status", y="PRS_raw", data=idhwt_df)
+#	
+#	If the modes align → mystery solved.
+
+
+
+#	convert the sample's IID column ...
+#	TCGA-02-0003-10A_TCGA-02-0003-10A,
+#	to just the subject ...
+#	TCGA-02-0003
+
+#	awk 'BEGIN{FS=OFS="\t"}{print $1,$4,$5,$6,$8,$9}' /francislab/data1/refs/TCGA/TCGA.Glioma.metadata.tsv | head
+#	case_submitter_id	race	ethnicity	gender	IDH	x1p19q
+#	TCGA-02-0001	white	not hispanic or latino	female	WT	non-codel
+#	TCGA-02-0003	white	not hispanic or latino	male	WT	non-codel
+#	TCGA-02-0004	white	not hispanic or latino	male	WT	NA
+#	TCGA-02-0006	white	not hispanic or latino	female	WT	non-codel
+#	TCGA-02-0007	white	not hispanic or latino	female	WT	non-codel
+#	TCGA-02-0009	white	not hispanic or latino	female	WT	non-codel
+#	TCGA-02-0010	white	not hispanic or latino	female	Mutant	non-codel
+
+#	
+#	prs_tcga = prs[prs['IID'].str.startswith('TCGA')].copy() # make a copy to avoid the CopyWarning
+#	
+#	prs_tcga['subject'] = prs_tcga['IID'].str[0:12]
+#	#prs_tcga.loc[:, 'subject'] = prs_tcga['IID'].str[:12]
+#	print(prs_tcga.shape)
+#	
+#	
+#	#	there are only 873 TCGA samples in the TCGA dataset
+#	
+#	tcga = pd.read_csv('/francislab/data1/refs/TCGA/TCGA.Glioma.metadata.tsv', sep="\t")
+#	print(tcga.shape)
+#	#	Not sure where 1114 is coming from
+#	prs_tcga = pd.merge(prs_tcga, tcga, left_on='subject', right_on='case_submitter_id', how='inner')
+#	print(prs_tcga.shape)
+#	
+#	#	cut -d$'\t' -f1 scores/prs_tcga.tsv | sort | uniq | wc -l
+#	#	870
+#	
+#	prs_tcga.to_csv(
+#		    "prs_tcga.tsv",
+#		    sep="\t",
+#		    index=False
+#		)
+#	
 
 

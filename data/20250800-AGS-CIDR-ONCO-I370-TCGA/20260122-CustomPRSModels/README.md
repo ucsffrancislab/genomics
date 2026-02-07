@@ -658,11 +658,14 @@ This is the canonical PRS normalization.
 ```python
 import pandas as pd
 import glob
+from scipy.stats import zscore
 
 for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.txt'):
 	prs = pd.read_csv(file, sep="\t")
-	prs["PRS_z"] = (prs["PRS_raw"] - prs["PRS_raw"].mean()) / prs["PRS_raw"].std()
+	#	prs["PRS_z"] = (prs["PRS_raw"] - prs["PRS_raw"].mean()) / prs["PRS_raw"].std()
 	#	prs$PRS_z <- scale(prs$PRS_raw) same thing?
+	# Defaults to ddof=0, but you can specify
+	prs['PRS_z'] = zscore(prs['PRS_raw'], ddof=0)
 	prs.to_csv( file.replace('prs.genome_raw.txt', 'prs.genome_z.txt'), sep="\t", index=False)
 
 ```
@@ -676,3 +679,302 @@ for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.txt'):
 box_upload.bash prs_qc.py prs_qc.log scores/imputed-umich-*txt scores/qc_plots/*
 
 ```
+
+
+IDHwt more ancestry related?
+Get ancestry PCs for these studies and test correlation
+
+2. PRS–PC correlation per model
+For each PRS:
+cor(PRS_raw, PC1)
+You will almost certainly see:
+idhwt → strong correlation
+others → weak or none
+That is the smoking gun.
+
+3. Variant frequency differentiation
+If you really want to be thorough:
+compute mean allele frequency difference per SNP across ancestry
+weight by |beta|
+idhwt will dominate
+
+```bash
+tail -q -n +2 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-*-hg19/estimated-population.txt | cut -f1,5 -d$'\t' | sed '1iIID\tPC1' > scores/IID_PC1.tsv
+
+tail -q -n +2 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-*-hg19/estimated-population.txt | cut -f1,5-9 -d$'\t' | sed '1iIID\tPC1\tPC2\tPC3\tPC4\tPC5' > scores/IID_PCs.tsv
+
+./prs_qc.py > prs_qc.log
+```
+
+Nope.
+
+
+##	20260205
+
+
+Try again with other variables like actual IDH status? Seems odd but we shall see.
+
+Just need to find a good way to include all of these.
+
+Not sure how easy this will be because they aren't as centralized.
+
+And we don't have it all.
+
+Start with just the TCGA
+TCGA-02-0003-10A_TCGA-02-0003-10A
+
+/francislab/data1/refs/TCGA/TCGA.Glioma.metadata.tsv 
+
+About 13% (870) of the TCGA (6700) is actually TCGA and we have metadata.
+
+I370 is partially AGS
+
+ONCO is partially AGS
+
+CIDR is mostly IPS
+
+
+Do survival analysis only on cases.
+like ../20250724-pgs/
+
+
+
+ChatGPT advises z-scoring and thereafter should ONLY be OUR data.
+
+I think that I should create "select" subset files and then move on from there.
+
+
+```bash
+
+for f in scores/imputed-umich-cidr.*.prs.genome_raw.txt ; do
+ echo $f
+ head -1 $f > ${f%.txt}.select.txt
+ tail -n +2 $f | grep "_G" >> ${f%.txt}.select.txt
+done
+
+for f in scores/imputed-umich-i370.*.prs.genome_raw.txt ; do
+ echo $f
+ head -1 $f > ${f%.txt}.select.txt
+ tail -n +2 $f | grep "AGS" >> ${f%.txt}.select.txt
+done
+
+for f in scores/imputed-umich-onco.*.prs.genome_raw.txt ; do
+ echo $f
+ head -1 $f > ${f%.txt}.select.txt
+ tail -n +2 $f | grep "AGS" >> ${f%.txt}.select.txt
+done
+
+for f in scores/imputed-umich-tcga.*.prs.genome_raw.txt ; do
+ echo $f
+ head -1 $f > ${f%.txt}.select.txt
+ tail -n +2 $f | grep "^TCGA" >> ${f%.txt}.select.txt
+done
+```
+
+
+CIDR: 447/482 are IPS cases
+
+I370: 1268/4619 are AGS, about half that are cases
+
+Onco: 1339/4365 are AGS cases
+
+TCGA: 873/6716 are TCGA, mostly cases
+
+
+```python
+import pandas as pd
+import glob
+from scipy.stats import zscore
+
+for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.select.txt'):
+	prs = pd.read_csv(file, sep="\t")
+	#	prs["PRS_z"] = (prs["PRS_raw"] - prs["PRS_raw"].mean()) / prs["PRS_raw"].std()
+	#	prs$PRS_z <- scale(prs$PRS_raw) same thing?
+	# Defaults to ddof=0, but you can specify
+	prs['PRS_z'] = zscore(prs['PRS_raw'], ddof=0)
+	prs.to_csv( file.replace('prs.genome_raw.select.txt', 'prs.genome_z.select.txt'), sep="\t", index=False)
+
+```
+
+
+
+
+
+Reinvestigating pgs-calc
+
+
+```bash
+indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+
+data=cidr
+chrnum=22
+
+module load openjdk
+
+
+java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz --ref pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz --out ${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info ${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv ${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html ${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8
+
+
+
+chr prefix doesn't work
+
+bcftools annotate --rename-chrs <(echo -e "chr22\t22\nchr4\t4") -r chr4,chr22 -Oz -o test22.vcf.gz --write-index=csi ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz 
+
+bcftools annotate --rename-chrs <(echo -e "chr22\t22") -r chr22 -Oz -o test22.vcf.gz --write-index=csi ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz 
+
+java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply test${chrnum}.vcf.gz --ref pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz --out ${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info ${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv ${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html ${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8
+```
+
+
+MUST ONLY BE ONE CHROMOSOME PER FILE apparently. Trickly after liftover.
+
+Concatenate, sort, then resplit?
+
+```bash
+
+indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+
+data=cidr
+chrnum=22
+
+module load openjdk
+
+
+bcftools view -r chr${chrnum} -Oz -o test${chrnum}.vcf.gz --write-index=csi ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz 
+
+java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply test${chrnum}.vcf.gz --ref pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz --out ${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info ${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv ${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html ${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8
+
+#	all scores are 0
+
+bcftools annotate --rename-chrs <(echo -e "chr22\t22") -r chr22 -Oz -o noprefix_test${chrnum}.vcf.gz --write-index=csi test${chrnum}.vcf.gz
+
+java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply noprefix_test${chrnum}.vcf.gz --ref pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz --out ${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info ${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv ${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html ${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8
+```
+
+
+pgs-calc seems to REQUIRE NUMERIC chromosome only regardless of model.
+
+
+
+
+
+
+
+
+##	20260206
+
+Create a new collection including these new models
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar create-collection --out=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/*_scoring_system.txt.gz /francislab/data1/refs/Imputation/PGSCatalog/hg38/PGS??????.txt.gz ;tabix -S 5 -p vcf /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz;chmod -w /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz*"
+```
+
+
+Isolate lifted/final data into their own chromosome files.
+
+```bash
+
+for data in cidr i370 onco tcga; do
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${data}-redi --time=2-0 --export=None \
+  --output="${PWD}/redistribute_snps_to_proper_chromosome_files.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  redistribute_snps_to_proper_chromosome_files.bash ${data}
+done
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+Rerun the scoring for all 4 complete datasets for all models including these new 7.
+
+EDIT
+
+```bash
+indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+
+for data in cidr i370 onco tcga; do
+for chrnum in {1..22} ; do
+
+  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/final.chr${chrnum}.dose.vcf.gz --ref pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz --out \${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info \${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8; mkdir -p ${outdir}/pgs-calc-${data}/; cp \${TMPDIR}/final.chr${chrnum}.dose.scores.* ${outdir}/pgs-calc-${data}/; chmod -w ${outdir}/pgs-calc-${data}/final.chr${chrnum}.dose.scores.*"
+
+done
+done > commands
+
+commands_array_wrapper.bash --array_file commands --time 1-0 --threads 4 --mem 30G --jobcount 16 --jobname pgs-calc
+```
+
+
+Merge
+
+
+EDIT
+
+```bash
+
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+
+for data in cidr i370 onco tcga; do
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
+  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-${data}/chr*.dose.scores.txt --out ${outdir}/pgs-calc-${data}/scores.txt"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
+  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-${data}/chr*.dose.scores.info --out ${outdir}/pgs-calc-${data}/scores.info"
+
+done
+```
+
+
+
+Compare plink's scores to pgs-calc's.
+
+
+
+
+
+
+Scale the new raw scores matrix.
+
+```bash
+
+for data in cidr i370 onco tcga; do
+
+scale_raw_pgs_scores_to_z-scores.py -i pgs-calc-${data}/scores.txt -o pgs-calc-${data}/scores.z-scores.txt 
+
+done
+
+```
+
+
+Run survival gwas (I feel like I'm procratinating)
+
+
+
+
+
+
+
+
+
