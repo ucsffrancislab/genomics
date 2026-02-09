@@ -341,9 +341,9 @@ join --header -t, <( cut -d, -f1 Glioma_AGS_IPS/sample_metadata.csv ) tmp3.csv |
 ```
 
 
-Not sure if this is actually needed. Created as was debugging.
+Not sure if this is actually needed. Created as was debugging. (Update to use correct field 3)
 ```bash
-awk -F, '(NR==1 ||  $2 == "Influenza A virus")' peptide_metadata.csv > InfluenzaA_peptide_metadata.csv
+awk -F, '(NR==1 ||  $3 == "Influenza A virus")' peptide_metadata.csv > InfluenzaA_peptide_metadata.csv
 ```
 
 
@@ -352,17 +352,19 @@ awk -F, '(NR==1 ||  $2 == "Influenza A virus")' peptide_metadata.csv > Influenza
 
 Small issue. Script hard coded to filter on 1_250_000.
 
-```bash
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./Glioma_AGS_IPS_InfluenzaA_enrichment.py"
+These scripts don't exist
 
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./Glioma_PLCO_InfluenzaA_enrichment.py"
+```bash
+#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./Glioma_AGS_IPS_InfluenzaA_enrichment.py"
+#
+#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name enrichment --wrap="./Glioma_PLCO_InfluenzaA_enrichment.py"
 ```
 
 
 ```bash
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./Glioma_PLCO_InfluenzaA_case_control_analysis.py"
-
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./Glioma_AGS_IPS_InfluenzaA_case_control_analysis.py"
+#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./Glioma_PLCO_InfluenzaA_case_control_analysis.py"
+#
+#sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./Glioma_AGS_IPS_InfluenzaA_case_control_analysis.py"
 ```
 
 
@@ -445,4 +447,112 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL --time 1-0 --nodes=1 --ntasks=64 --mem=490G --export=None --job-name casecontrol --wrap="./Glioma_AGS_IPS_InfluenzaA_case_control_analysis_ONLY.py"
 ```
+
+
+
+
+
+
+##	20260209
+
+
+could you please make these same files for VZV as we do for influenza A?
+
+
+VZV = Human herpesvirus 3
+
+
+Create a subset matrix with just those tiles then run the enrichment and case control analysis. 
+
+
+
+```bash
+#mkdir Glioma_PLCO_VZV
+#awk -F, '(NR<10 || $2 == "Human herpesvirus 3")' ../20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv | cut -d, -f1,3- | datamash transpose -t, > tmp1.csv
+#head -1 tmp1.csv > tmp2.csv
+#tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+#cut -d, -f1,10- tmp2.csv > tmp3.csv
+#join --header -t, <( cut -d, -f1 Glioma_PLCO/sample_metadata.csv ) tmp3.csv | datamash transpose -t, | sed '1s/^UCSFid/peptide_id/' > Glioma_PLCO_VZV/phipseq_counts_experimental_only.csv
+```
+
+```bash
+#mkdir Glioma_AGS_IPS_VZV
+#awk -F, '(NR<10 || $2 == "Human herpesvirus 3")' ../20250414-PhIP-MultiPlate/out.123456131415161718/Counts.csv | cut -d, -f1,3- | datamash transpose -t, > tmp1.csv
+#head -1 tmp1.csv > tmp2.csv
+#tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+#cut -d, -f1,10- tmp2.csv > tmp3.csv
+#join --header -t, <( cut -d, -f1 Glioma_AGS_IPS/sample_metadata.csv ) tmp3.csv | datamash transpose -t, | sed '1s/^UCSFid/peptide_id/' > Glioma_AGS_IPS_VZV/phipseq_counts_experimental_only.csv
+```
+
+
+Not sure if this is actually needed. Created as was debugging.
+```bash
+#awk -F, '(NR==1 ||  $3 == "Human herpesvirus 3")' peptide_metadata.csv > VZV_peptide_metadata.csv
+```
+
+
+
+
+This time using the datasets from the all-peptide run.
+
+Then select just the VZV peptides.
+
+There are duplicate ids in peptide metadata.
+```bash
+mkdir -p Glioma_AGS_IPS_VZV_CaseControl/results/
+join --header -t, <( awk -F, '(NR==1 || $3=="Human herpesvirus 3")' peptide_metadata.csv) <(head -n 1 Glioma_AGS_IPS/results/peptide_enrichment_binary.csv  && tail -n +2 Glioma_AGS_IPS/results/peptide_enrichment_binary.csv | sort -t, -k1,1 ) | cut -d, -f1,5- > tmp1.csv
+head -1 tmp1.csv > Glioma_AGS_IPS_VZV_CaseControl/results/peptide_enrichment_binary.csv
+tail -n +2 tmp1.csv | sort -t, -k1n,1 >> Glioma_AGS_IPS_VZV_CaseControl/results/peptide_enrichment_binary.csv
+sed -i '1s/^peptide_id/sample_id/' Glioma_AGS_IPS_VZV_CaseControl/results/peptide_enrichment_binary.csv
+
+mkdir -p Glioma_PLCO_VZV_CaseControl/results/
+join --header -t, <( awk -F, '(NR==1 || $3=="Human herpesvirus 3")' peptide_metadata.csv) <(head -n 1 Glioma_PLCO/results/peptide_enrichment_binary.csv  && tail -n +2 Glioma_PLCO/results/peptide_enrichment_binary.csv | sort -t, -k1,1 ) | cut -d, -f1,5- > tmp1.csv
+head -1 tmp1.csv > Glioma_PLCO_VZV_CaseControl/results/peptide_enrichment_binary.csv
+tail -n +2 tmp1.csv | sort -t, -k1n,1 >> Glioma_PLCO_VZV_CaseControl/results/peptide_enrichment_binary.csv
+sed -i '1s/^peptide_id/sample_id/' Glioma_PLCO_VZV_CaseControl/results/peptide_enrichment_binary.csv
+```
+
+
+```python3
+
+import pandas as pd
+enriched = pd.read_csv("Glioma_AGS_IPS_VZV_CaseControl/results/peptide_enrichment_binary.csv", index_col=0)
+print(f"Index type: {type(enriched.index)}")
+print(f"Index levels: {enriched.index.nlevels}")
+print(f"Duplicate indices: {enriched.index.duplicated().sum()}")
+print(f"First few indices: {enriched.index[:5].tolist()}")
+enriched = enriched[~enriched.index.duplicated(keep='first')]
+if enriched.index.nlevels > 1:
+    enriched.index = enriched.index.get_level_values(0)
+
+enriched.index = enriched.index.astype(str)
+enriched.to_csv("Glioma_AGS_IPS_VZV_CaseControl/results/peptide_enrichment_binary.csv")
+
+enriched = pd.read_csv("Glioma_PLCO_VZV_CaseControl/results/peptide_enrichment_binary.csv", index_col=0)
+print(f"Index type: {type(enriched.index)}")
+print(f"Index levels: {enriched.index.nlevels}")
+print(f"Duplicate indices: {enriched.index.duplicated().sum()}")
+print(f"First few indices: {enriched.index[:5].tolist()}")
+enriched = enriched[~enriched.index.duplicated(keep='first')]
+if enriched.index.nlevels > 1:
+    enriched.index = enriched.index.get_level_values(0)
+
+enriched.index = enriched.index.astype(str)
+enriched.to_csv("Glioma_PLCO_VZV_CaseControl/results/peptide_enrichment_binary.csv")
+
+```
+
+
+
+
+```bash
+Glioma_PLCO_VZV_case_control_analysis_ONLY.py > Glioma_PLCO_VZV_CaseControl/Glioma_PLCO_VZV_CaseControl.txt
+Glioma_AGS_IPS_VZV_case_control_analysis_ONLY.py > Glioma_AGS_IPS_VZV_CaseControl/Glioma_AGS_IPS_VZV_CaseControl.txt
+```
+
+
+box_upload.bash Glioma_*_VZV_CaseControl/*txt Glioma_*_VZV_CaseControl/results/*csv Glioma_*_VZV_CaseControl/results/case_control/*
+
+
+
 
