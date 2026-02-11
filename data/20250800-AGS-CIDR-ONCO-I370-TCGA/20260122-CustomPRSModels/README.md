@@ -969,16 +969,85 @@ done
 
 
 
-
-
-
-
 TODO 
 Sadly need to redo the pgs-calc models for the custom models
 Split the commas on the other allele generating multiple entries
 Won't be able to do it in this run.
 Will only effect the 3 rsid models.
 
+```bash
+
+for f in pgs-calc_models_without_chr_prefix/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
+mv ${f} ${f%.txt.gz}.commas.txt.gz
+model=$( basename $f .txt.gz )
+
+zcat ${f%.txt.gz}.commas.txt.gz | awk 'BEGIN{FS=OFS="\t"}
+(NR==1){ print }
+(NR>1){
+ split($5,a,",")
+ for( i in a ){
+   $5=a[i]
+   print
+ }
+}' | gzip > pgs-calc_models_without_chr_prefix/${model}.txt.gz
+
+done
+
+```
+
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_collection --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib openjdk; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar create-collection --out=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/pgs-collection.new_models.txt.gz /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/*_scoring_system*.txt.gz; tabix -S 5 -p vcf /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/pgs-collection.new_models.txt.gz;chmod -w /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc_models_without_chr_prefix/pgs-collection.new_models.txt.gz*"
+```
+
+
+```bash
+
+for data in cidr i370 onco tcga; do
+for chrnum in {1..22} ; do
+echo "pgs-calc.dev.bash ${data} ${chrnum} ${PWD}/pgs-calc_models_without_chr_prefix/pgs-collection.new_models.txt.gz"
+done
+done > commands2
+
+commands_array_wrapper.bash --array_file commands2 --time 1-0 --threads 4 --mem 30G --jobcount 4 --jobname pgs-calc.dev
+```
+
+
+Merge
+
+```bash
+
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models
+
+for data in cidr i370 onco tcga; do
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
+  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=4 --mem=30G \
+  --wrap="module load openjdk;java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/${data}/chr*.scores.txt --out ${outdir}/${data}/scores.txt"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
+  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=4 --mem=30G \
+  --wrap="module load openjdk;java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/${data}/chr*.scores.info --out ${outdir}/${data}/scores.info"
+
+done
+```
+
+
+```bash
+
+outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models
+
+for data in cidr i370 onco tcga; do
+
+scale_raw_pgs_scores_to_z-scores.py -i ${outdir}/${data}/scores.txt -o ${outdir}/${data}/scores.z-scores.txt 
+
+done
+
+```
 
 
 
@@ -1011,125 +1080,147 @@ done
 
 
 
-Run survival gwas (I feel like I'm procratinating)
+
+##	PGS Survival Analysis (just the new models for the moment)
+
+```bash
+
+ln -s ../20250724-pgs/lists
+
+```
 
 
+Extract just cases from PGS matrix. Not sure why.
 
+```bash
+for b in cidr onco i370 tcga ; do
 
-
-
-
-EDIT
-EDIT
-EDIT
-EDIT
-EDIT
-EDIT
-
-
-#	I don't think that this is a PGS thing
-#	
-#	
-#	These take 4 to 26 hours. Really wish that the michiganCoxSurv was parallelizable.
-#	
-#	May need to rerun the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt if I redefine it.
-#	
-#	```BASH
-#	for b in onco i370 tcga cidr ; do
-#	for id in lists/${b}*meta_cases.txt ; do
-#	
-#	echo gwasurvivr.bash --dataset ${b} --vcffile imputed-umich-${b}/${b}-cases/${b}-cases.vcf.gz \
-#	 --outbase ${PWD}/gwas-${b}/ \
-#	 --idfile ${id} --covfile imputed-umich-${b}/${b}-cases/${b}-covariates.tsv
-#	
-#	done ; done > gwas_commands
-#	
-#	commands_array_wrapper.bash --jobname gwasurvivr --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
-#	```
-#	
-
-
-These take about 3-4 hours
-
-```BASH
-for s in topmed umich ; do
-for b in onco i370 tcga cidr ; do
-
-  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
-    --export=None --output="${PWD}/pull_dosage-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
-    --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_pgs-${b} \
+    --output="${PWD}/pull_pgs-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
+    --time=1-0 --nodes=1 --ntasks=4 --mem=30G pull_case_pgs.bash \
     --IDfile ${PWD}/lists/${b}-cases.txt \
-    --vcffile ${PWD}/imputed-${s}-${b}/concated.QC.vcf.gz --outbase ${PWD}/imputed-${s}-${b}
+    --pgsfile ${PWD}/pgs-calc-scores-new_models/${b}/scores.z-scores.txt \
+    --outbase ${PWD}/pgs-calc-scores-new_models/${b}
 
-done; done
+done
 ```
 
 
-###	spacox.bash
-
-Occassional failures. Dataset is too small is the usual cause.
-
-
-SPA cox read in entire dosage file which can be large (30GB for topmed onco)
-Will need memory to support this
-umich i370 is only 3GB
-
-For some reason, reading the transposed crashes so no need to do this. Too many columns?
-
-```BASH
-#for f in imputed-*/*/*dosage ; do
-#echo "sed '1s/^/ /' $f | datamash transpose -t' ' | sed '1s/^ //' > ${f}.transposed; chmod -w ${f}.transposed"
-#done > transpose_commands
-
-#commands_array_wrapper.bash --array_file transpose_commands --time 1-0 --threads 16 --mem 120G
+```bash
+for b in cidr onco i370 tcga ; do
+  cov_in=lists/${b}_covariates.tsv
+  cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
+  cat ${cov_in} | cut -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+  head -1 ${TMPDIR}/tmp.csv > pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv
+  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv
+  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+  join --header -t, pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-new_models/${b}/${b}-covariates.tsv
+done
 ```
 
-2/6 worked with 60G
-
-3/6 needed 120G
-
-1 needed 240G
 
 
 
-This can take 15-60 mins
 
-```BASH
-for b in onco i370 tcga cidr ; do
+
+
+
+
+
+
+
+
+EDIT
+
+EDIT
+
+EDIT
+
+EDIT
+
+EDIT
+
+EDIT
+
+EDIT
+
+EDIT
+
+EDIT
+
+
+
+
+
+
+
+
+
+
+
+Isn't this just for Survival GWAS and NOT PRS? Skipping for the mo
+
+```bash
+for b in cidr onco i370 tcga ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo spacox.bash --dataset ${b} --dosage imputed-umich-${b}/${b}-cases/${b}-cases.dosage \
- --outbase ${PWD}/gwas-${b}/ \
- --idfile ${id} --covfile imputed-umich-${b}/${b}-cases/${b}-covariates.tsv
+echo spacox.bash --dataset ${b} --dosage pgs-${b}-hg19/case_scores.csv \
+ --outbase ${PWD}/pgs-${b}-hg19/ \
+ --idfile ${id} --covfile pgs-${b}-hg19/${b}-covariates.tsv
 
-done ; done > spa_commands
+done; done > spa_commands
 
-#	lists/${b}_covariates.tsv
-
-commands_array_wrapper.bash --jobname spacox --array_file spa_commands --time 1-0 --threads 64 --mem 490G
+commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 4 --mem 30G
 ```
 
-60G isn't enough for many
 
-490G is overkill but works for all
+What's the purpose of this? Skipping for the mo
+
+```bash
+for b in cidr onco i370 tcga ; do
+cat pgs-${b}-hg19/case_scores.csv | datamash transpose -t ' ' --output-delimiter=, > pgs-${b}-hg19/case_scores.t.csv
+cat pgs-${b}-hg19/${b}-covariates.tsv | tr '\t' ',' > pgs-${b}-hg19/${b}-covariates.csv
+join --header -t, pgs-${b}-hg19/${b}-covariates.csv pgs-${b}-hg19/case_scores.t.csv > pgs-${b}-hg19/${b}-covariates-scores.csv
+done
+
+extract_cox_coeffs_for_pgs.r
+```
 
 
 
 
 
-###	Merge
 
-then merge those results
 
-```BASH
-for b in onco i370 tcga cidr ; do
+
+case scores or all scores? previous run looks like it included all scores. it is a different format
+
+```bash
+for b in cidr onco i370 tcga ; do
 for id in lists/${b}*meta_cases.txt ; do
 
-echo merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${b}/ --idfile ${id}
+echo pgscox.bash --dataset ${b} --pgsscores ${PWD}/pgs-calc-scores-new_models/${b}/scores.z-scores.txt \
+ --outbase ${PWD}/pgs-calc-scores-new_models/${b}/ \
+ --idfile ${id} --covfile ${PWD}/pgs-calc-scores-new_models/${b}/${b}-covariates.tsv
 
-done ; done > merge_commands
+done; done > cox_commands
 
-commands_array_wrapper.bash --jobname mergegwasspa --array_file merge_commands --time 1-0 --threads 2 --mem 15G
+commands_array_wrapper.bash --array_file cox_commands --time 1-0 --threads 4 --mem 30G --jobcount 4 --jobname pgscox
+```
+
+
+
+```bash
+for b in cidr onco i370 tcga ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo pgscox.claude.bash --dataset ${b} --pgsscores ${PWD}/pgs-calc-scores-new_models/${b}/scores.z-scores.txt \
+ --outbase ${PWD}/pgs-calc-scores-new_models-claude/${b}/ \
+ --idfile ${id} --covfile ${PWD}/pgs-calc-scores-new_models/${b}/${b}-covariates.tsv
+
+done; done > claude_cox_commands
+
+commands_array_wrapper.bash --array_file claude_cox_commands --time 1-0 --threads 4 --mem 30G --jobcount 4 --jobname pgscox
 ```
 
 
@@ -1137,48 +1228,17 @@ commands_array_wrapper.bash --jobname mergegwasspa --array_file merge_commands -
 
 
 
-### METAL
 
+Use METAL to analyze all 3 datasets together.
 
-
-I use the software METAL, which I downloaded to C4, its a very lightweight script, but does not seem to like being called in a shell script, .sh, I have always had to create .bash files and run those from the command line to get metal to loop over multiple analyses (e.g. multiple subtypes). 
-
-You can find a very straightforward guide here: https://genome.sph.umich.edu/wiki/METAL_Documentation
-
-Depending on which estimates are available, like the beta (effect size) or just p-values (like survival analysis using SPAcox would give), you must specify which mode to use. 
-
-Easy examples of these differences are in the Script_Repository/metal folder of this Box container. 
-
-I've built wrapper files which loop through all subtypes and call this script, see Pharma_surv_meta_wrapper_spa_all4.txt as an example. 
-
-Using Beta estimates look at: script_Pharma_survival_metal_all4.txt
-
-
-```BASH
+```bash
 for id in lists/onco*meta_cases.txt ; do
 
-echo Pharma_surv_meta_wrapper_all4.bash umich $id
+echo survival_metal_wrapper_all3.bash $id
 
 done > metal_commands
 
-commands_array_wrapper.bash --jobname metal --array_file metal_commands --time 1-0 --threads 4 --mem 30G
-```
-
-
-
-
-
-Using just P-values look at: script_Pharma_survival_metal_spa_all4.txt
-
-
-```BASH
-for id in lists/onco*meta_cases.txt ; do
-
-echo Pharma_surv_meta_wrapper_spa_all4.bash umich $id
-
-done ; done > metalspa_commands
-
-commands_array_wrapper.bash --jobname metalspa --array_file metalspa_commands --time 1-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
 ```
 
 
@@ -1189,30 +1249,28 @@ commands_array_wrapper.bash --jobname metalspa --array_file metalspa_commands --
 
 
 
+##	20260205
+
+
+Rerun the above and include CIDR?
+
+Rerun the above and include more comments!
+
+Rerun the above using z-scores (of just our data) and not raw scores?
+
+What was extract_cox_coeffs_for_pgs.r for?
+
+Rerun the above on the 7 new models?
+
+Create a matrix like that returned from the imputation server / pgs-calc? Or actually get pgs-calc working?
 
 
 
+spacox.bash ???
 
+pgscox.bash
 
-Add exit to r scripts when the sample count drops below a certain number?
-
-Geno : I’d say anything running less than 30 individuals is very unreliable for survival models. Possibly the saddle point approximation in SPACox needs even more.
-
-
-
-allGlioma
-paper
-rs9660710 A 2.689802e-5
-
-pgs-calc 
-1	1163962	A	2.689802e-5	C,T
-
-plink
-chr1:1163962:A:C,T A 2.689802e-5
-
-
-
-
+metal
 
 
 
