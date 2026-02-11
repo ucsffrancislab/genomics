@@ -313,9 +313,19 @@ cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_
 #	looks like this is all bacteria. Its finding matches, but they're all bacteria.
 
 cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_protein.tsv | uniq | wc -l
+#	TAKING WAY WAY TOO LONG. 6000 queries in 35 hours. Need to break up
 
 
+cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.tsv | uniq | wc -l
+114855
 
+cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.shorte1000ws2.tsv | uniq | wc -l
+115690
+
+cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.shorte1000ws2PAM30.tsv | uniq | wc -l
+115690
+
+#	closer
 
 
 ```
