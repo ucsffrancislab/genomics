@@ -621,6 +621,12 @@ $2 = ALLELE_CT
 $NF = prs_weight_AVG (last column)
 
 
+
+New suggestion from Claude
+prs[iid] += $3 * $4  # NAMED_ALLELE_DOSAGE_SUM × prs_weight_AVG
+
+
+
 ```bash
 for data in cidr i370 onco tcga; do
 for fullmodel in plink_models_with_chr_prefix/* ; do
@@ -639,7 +645,7 @@ awk '
       print i "\t" prs[i] "\t" snp_ct[i]
     }
   }
-' scores/imputed-umich-${data}/chr*.dose.${model}.sscore > scores/imputed-umich-${data}.${model}.prs.genome_raw.txt
+' plink-scores/imputed-umich-${data}/chr*.dose.${model}.sscore > plink-scores/imputed-umich-${data}.${model}.prs.genome_raw.txt
 
 done
 done
@@ -660,7 +666,7 @@ import pandas as pd
 import glob
 from scipy.stats import zscore
 
-for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.txt'):
+for file in glob.glob('plink-scores/imputed-umich-*.*.prs.genome_raw.txt'):
 	prs = pd.read_csv(file, sep="\t")
 	#	prs["PRS_z"] = (prs["PRS_raw"] - prs["PRS_raw"].mean()) / prs["PRS_raw"].std()
 	#	prs$PRS_z <- scale(prs$PRS_raw) same thing?
@@ -676,7 +682,7 @@ for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.txt'):
 
 ./prs_qc.py > prs_qc.log
 
-box_upload.bash prs_qc.py prs_qc.log scores/imputed-umich-*txt scores/qc_plots/*
+box_upload.bash prs_qc.py prs_qc.log plink-scores/imputed-umich-*txt plink-scores/qc_plots/*
 
 ```
 
@@ -699,9 +705,9 @@ weight by |beta|
 idhwt will dominate
 
 ```bash
-tail -q -n +2 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-*-hg19/estimated-population.txt | cut -f1,5 -d$'\t' | sed '1iIID\tPC1' > scores/IID_PC1.tsv
+tail -q -n +2 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-*-hg19/estimated-population.txt | cut -f1,5 -d$'\t' | sed '1iIID\tPC1' > plink-scores/IID_PC1.tsv
 
-tail -q -n +2 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-*-hg19/estimated-population.txt | cut -f1,5-9 -d$'\t' | sed '1iIID\tPC1\tPC2\tPC3\tPC4\tPC5' > scores/IID_PCs.tsv
+tail -q -n +2 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/pgs-*-hg19/estimated-population.txt | cut -f1,5-9 -d$'\t' | sed '1iIID\tPC1\tPC2\tPC3\tPC4\tPC5' > plink-scores/IID_PCs.tsv
 
 ./prs_qc.py > prs_qc.log
 ```
@@ -746,25 +752,25 @@ I think that I should create "select" subset files and then move on from there.
 
 ```bash
 
-for f in scores/imputed-umich-cidr.*.prs.genome_raw.txt ; do
+for f in plink-scores/imputed-umich-cidr.*.prs.genome_raw.txt ; do
  echo $f
  head -1 $f > ${f%.txt}.select.txt
  tail -n +2 $f | grep "_G" >> ${f%.txt}.select.txt
 done
 
-for f in scores/imputed-umich-i370.*.prs.genome_raw.txt ; do
+for f in plink-scores/imputed-umich-i370.*.prs.genome_raw.txt ; do
  echo $f
  head -1 $f > ${f%.txt}.select.txt
  tail -n +2 $f | grep "AGS" >> ${f%.txt}.select.txt
 done
 
-for f in scores/imputed-umich-onco.*.prs.genome_raw.txt ; do
+for f in plink-scores/imputed-umich-onco.*.prs.genome_raw.txt ; do
  echo $f
  head -1 $f > ${f%.txt}.select.txt
  tail -n +2 $f | grep "AGS" >> ${f%.txt}.select.txt
 done
 
-for f in scores/imputed-umich-tcga.*.prs.genome_raw.txt ; do
+for f in plink-scores/imputed-umich-tcga.*.prs.genome_raw.txt ; do
  echo $f
  head -1 $f > ${f%.txt}.select.txt
  tail -n +2 $f | grep "^TCGA" >> ${f%.txt}.select.txt
@@ -786,7 +792,7 @@ import pandas as pd
 import glob
 from scipy.stats import zscore
 
-for file in glob.glob('scores/imputed-umich-*.*.prs.genome_raw.select.txt'):
+for file in glob.glob('plink-scores/imputed-umich-*.*.prs.genome_raw.select.txt'):
 	prs = pd.read_csv(file, sep="\t")
 	#	prs["PRS_z"] = (prs["PRS_raw"] - prs["PRS_raw"].mean()) / prs["PRS_raw"].std()
 	#	prs$PRS_z <- scale(prs$PRS_raw) same thing?
@@ -854,8 +860,23 @@ java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar appl
 ```
 
 
-pgs-calc seems to REQUIRE NUMERIC chromosome only regardless of model.
+pgs-calc seems to REQUIRE NUMERIC chromosome only regardless of model or will just report 0's
 
+Also only 1 chromosome per file for pgs-calc or get something like this ...
+
+```bash
+[Run]     [Chr 04]...
+[Error]   [Chr 04] failed: java.lang.Exception: Different chromosomes found in file.
+java.lang.Exception: Different chromosomes found in file.
+    at genepi.riskscore.tasks.ApplyScoreTask.processVCF(ApplyScoreTask.java:305)
+    at genepi.riskscore.tasks.ApplyScoreTask.run(ApplyScoreTask.java:192)
+    at lukfor.progress.tasks.Task.call(Task.java:39)
+    at lukfor.progress.tasks.Task.call(Task.java:1)
+    at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+    at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+    at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+    at java.base/java.lang.Thread.run(Thread.java:1583)
+```
 
 
 
@@ -877,20 +898,18 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=create_coll
 Isolate lifted/final data into their own chromosome files.
 
 ```bash
-
 for data in cidr i370 onco tcga; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=${data}-redi --time=2-0 --export=None \
   --output="${PWD}/redistribute_snps_to_proper_chromosome_files.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
   redistribute_snps_to_proper_chromosome_files.bash ${data}
 done
-
-
-
-
-
-
-
 ```
+
+creates .... `20251218-survival_gwas/imputed-umich-*/hg38_0.8/final.chr*.dose.corrected.vcf.gz`
+
+
+
+
 
 
 
@@ -904,28 +923,26 @@ done
 
 Rerun the scoring for all 4 complete datasets for all models including these new 7.
 
-EDIT
+cp ${outdir}/pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz \${TMPDIR}/;  34GB
 
 ```bash
 indir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-survival_gwas
 outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels
+  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.corrected.vcf.gz \${TMPDIR}/; java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/final.chr${chrnum}.dose.corrected.vcf.gz --ref ${outdir}/pgs-calc_models_without_chr_prefix/pgs-collection.txt.gz --out \${TMPDIR}/chr${chrnum}.scores.txt --info \${TMPDIR}/chr${chrnum}.scores.info --report-csv \${TMPDIR}/chr${chrnum}.scores.csv --report-html \${TMPDIR}/chr${chrnum}.scores.html --no-ansi --threads 8; mkdir -p ${outdir}/pgs-calc-scores/${data}/; cp \${TMPDIR}/chr${chrnum}.scores.* ${outdir}/pgs-calc-scores/${data}/; chmod -w ${outdir}/pgs-calc-scores/${data}/chr${chrnum}.scores.*"
+
+
 
 for data in cidr i370 onco tcga; do
 for chrnum in {1..22} ; do
-
-  echo "module load openjdk; cp ${indir}/imputed-umich-${data}/hg38_0.8/final.chr${chrnum}.dose.vcf.gz \${TMPDIR}/; java -Xmx25G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar apply \${TMPDIR}/final.chr${chrnum}.dose.vcf.gz --ref pgs-calc_models_with_chr_prefix/pgs-collection.txt.gz --out \${TMPDIR}/final.chr${chrnum}.dose.scores.txt --info \${TMPDIR}/final.chr${chrnum}.dose.scores.info --report-csv \${TMPDIR}/final.chr${chrnum}.dose.scores.csv --report-html \${TMPDIR}/final.chr${chrnum}.dose.scores.html --no-ansi --threads 8; mkdir -p ${outdir}/pgs-calc-${data}/; cp \${TMPDIR}/final.chr${chrnum}.dose.scores.* ${outdir}/pgs-calc-${data}/; chmod -w ${outdir}/pgs-calc-${data}/final.chr${chrnum}.dose.scores.*"
-
+echo "pgs-calc.bash ${data} ${chrnum}"
 done
 done > commands
 
-commands_array_wrapper.bash --array_file commands --time 1-0 --threads 4 --mem 30G --jobcount 16 --jobname pgs-calc
+commands_array_wrapper.bash --array_file commands --time 2-0 --threads 8 --mem 60G --jobcount 8 --jobname pgs-calc
 ```
 
 
 Merge
-
-
-EDIT
 
 ```bash
 
@@ -936,19 +953,88 @@ for data in cidr i370 onco tcga; do
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
   --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-${data}/chr*.dose.scores.txt --out ${outdir}/pgs-calc-${data}/scores.txt"
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-scores/${data}/chr*.scores.txt --out ${outdir}/pgs-calc-scores/${data}/scores.txt"
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
   --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-${data}/chr*.dose.scores.info --out ${outdir}/pgs-calc-${data}/scores.info"
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-scores/${data}/chr*.scores.info --out ${outdir}/pgs-calc-scores/${data}/scores.info"
 
 done
 ```
 
 
 
-Compare plink's scores to pgs-calc's.
+
+
+
+
+
+
+
+TODO  ---  Compare plink's scores to pgs-calc's.
+
+hc ../20250724-pgs/pgs-cidr-hg19/scores.txt 
+"sample","PGS000008","PGS000006","PGS000005","PGS000002","PGS000003","PGS000007","PGS000004","PGS000
+"CSR01_CSR01-1-0427561327","-0.4388784013230804","-0.06674872281382704","-0.020987556001273333","-0.
+"CSR02_CSR02-1-0427561328","-0.9576076738206964","0.4412269867980285","-0.8594468682276784","-1.2089
+"CSR03_CSR03-1-0427561329","-0.6334767574885873","0.11415971475071274","-0.4800121966745792","-0.616
+"CSR04_CSR04-1-0427561330","0.3822147069489432","0.0914940228976775","0.5728907364637053","-0.275078
+"CSR05_CSR05-1-0427561331","0.2391618190879612","0.749791647094753","0.022534124080266338","-0.27876
+"CSR06_CSR06-1-0427561332","0.015366533532215954","0.04200979381812431","0.34372751272530877","-0.23
+"CSR07_CSR07-1-0427561333","-0.21197748491279356","0.07706609346519144","0.09969380693382845","-0.73
+"CSR08_CSR08-1-0427561334","0.4141717159144491","0.7379417194752023","0.785677000855685","0.45584937
+"CSR09_CSR09-1-0427561335","-0.3031906518672116","0.6785183288570806","-0.13026687371711887","-1.888
+
+
+
+head pgs-calc-scores/cidr/scores.txt | cut -c1-100
+"sample","allGlioma_scoring_system","gbm_scoring_system","idhmut_1p19qcodel_scoring_system","idhmut_
+"CSR01_CSR01-1-0427561327","1.83864491521851","1.7252670221948374","0.497667242799566","0.2153982278
+"CSR02_CSR02-1-0427561328","1.8050973857159829","1.9425654358390896","0.5880943116838441","0.3673133
+"CSR03_CSR03-1-0427561329","1.9994589021232372","2.1365019901441524","0.24853711805148768","0.323879
+"CSR04_CSR04-1-0427561330","1.662360993019792","1.821884169339171","-0.1562705770049962","0.06573025
+"CSR05_CSR05-1-0427561331","1.9441509593460022","2.17114302554223","0.3669397330659182","0.192403005
+"CSR06_CSR06-1-0427561332","1.6707050786918844","1.7692876681132437","-0.06520721070520039","-0.0077
+"CSR07_CSR07-1-0427561333","1.4176768872016032","1.582557853353312","-0.1040461853098565","0.6141375
+"CSR08_CSR08-1-0427561334","1.7530317684494536","1.8823051727841775","0.2702653415488848","0.2385189
+"CSR09_CSR09-1-0427561335","2.0014791607180857","1.938807533630856","0.23648606846047387","0.8399118
+
+wc -l pgs-calc-scores/cidr/scores.txt
+483 pgs-calc-scores/cidr/scores.txt
+
+awk -F, '{print NF}'  pgs-calc-scores/cidr/scores.txt | uniq
+5111
+
+ls -1 plink-scores/imputed-umich-cidr*.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.allGlioma.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.gbm.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.idhmut_1p19qcodel.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.idhmut_1p19qnoncodel.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.idhmut.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.idhwt.prs.genome_raw.txt
+plink-scores/imputed-umich-cidr.nonGbm.prs.genome_raw.txt
+
+head plink-scores/imputed-umich-cidr.allGlioma.prs.genome_raw.txt
+IID	PRS_raw	SNP_CT
+147_G146-1-0427562915	20.9992	1648348
+136_G135-1-0427562904	20.955	1648348
+369_G369-1-0427563047	21.0402	1648348
+27_G025-1-0427562792	20.959	1648348
+16_G014-1-0427562781	21.0807	1648348
+396_G397-1-0427561155	20.8406	1648348
+385_G386-1-0427561144	20.9683	1648348
+45_G043-1-0427562810	20.8441	1648348
+56_G054-1-0427562822	20.9621	1648348
+
+
+
+
+
+
+
+
+
 
 
 
@@ -961,11 +1047,18 @@ Scale the new raw scores matrix.
 
 for data in cidr i370 onco tcga; do
 
-scale_raw_pgs_scores_to_z-scores.py -i pgs-calc-${data}/scores.txt -o pgs-calc-${data}/scores.z-scores.txt 
+scale_raw_pgs_scores_to_z-scores.py -i pgs-calc-scores/${data}/scores.txt -o pgs-calc-scores/${data}/scores.z-scores.txt 
 
 done
 
 ```
+
+
+
+
+
+
+
 
 
 Run survival gwas (I feel like I'm procratinating)
@@ -974,6 +1067,182 @@ Run survival gwas (I feel like I'm procratinating)
 
 
 
+
+
+EDIT
+EDIT
+EDIT
+EDIT
+EDIT
+EDIT
+
+
+
+
+These take 4 to 26 hours. Really wish that the michiganCoxSurv was parallelizable.
+
+May need to rerun the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt if I redefine it.
+
+```BASH
+for b in onco i370 tcga cidr ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo gwasurvivr.bash --dataset ${b} --vcffile imputed-umich-${b}/${b}-cases/${b}-cases.vcf.gz \
+ --outbase ${PWD}/gwas-${b}/ \
+ --idfile ${id} --covfile imputed-umich-${b}/${b}-cases/${b}-covariates.tsv
+
+done ; done > gwas_commands
+
+commands_array_wrapper.bash --jobname gwasurvivr --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
+```
+
+
+
+
+###	spacox.bash
+
+Occassional failures. Dataset is too small is the usual cause.
+
+
+SPA cox read in entire dosage file which can be large (30GB for topmed onco)
+Will need memory to support this
+umich i370 is only 3GB
+
+For some reason, reading the transposed crashes so no need to do this. Too many columns?
+
+```BASH
+#for f in imputed-*/*/*dosage ; do
+#echo "sed '1s/^/ /' $f | datamash transpose -t' ' | sed '1s/^ //' > ${f}.transposed; chmod -w ${f}.transposed"
+#done > transpose_commands
+
+#commands_array_wrapper.bash --array_file transpose_commands --time 1-0 --threads 16 --mem 120G
+```
+
+2/6 worked with 60G
+
+3/6 needed 120G
+
+1 needed 240G
+
+
+
+This can take 15-60 mins
+
+```BASH
+for b in onco i370 tcga cidr ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo spacox.bash --dataset ${b} --dosage imputed-umich-${b}/${b}-cases/${b}-cases.dosage \
+ --outbase ${PWD}/gwas-${b}/ \
+ --idfile ${id} --covfile imputed-umich-${b}/${b}-cases/${b}-covariates.tsv
+
+done ; done > spa_commands
+
+#	lists/${b}_covariates.tsv
+
+commands_array_wrapper.bash --jobname spacox --array_file spa_commands --time 1-0 --threads 64 --mem 490G
+```
+
+60G isn't enough for many
+
+490G is overkill but works for all
+
+
+
+
+
+###	Merge
+
+then merge those results
+
+```BASH
+for b in onco i370 tcga cidr ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo merge_gwasurvivr_spacox.bash --dataset ${b} --outbase ${PWD}/gwas-${b}/ --idfile ${id}
+
+done ; done > merge_commands
+
+commands_array_wrapper.bash --jobname mergegwasspa --array_file merge_commands --time 1-0 --threads 2 --mem 15G
+```
+
+
+
+
+
+
+### METAL
+
+
+
+I use the software METAL, which I downloaded to C4, its a very lightweight script, but does not seem to like being called in a shell script, .sh, I have always had to create .bash files and run those from the command line to get metal to loop over multiple analyses (e.g. multiple subtypes). 
+
+You can find a very straightforward guide here: https://genome.sph.umich.edu/wiki/METAL_Documentation
+
+Depending on which estimates are available, like the beta (effect size) or just p-values (like survival analysis using SPAcox would give), you must specify which mode to use. 
+
+Easy examples of these differences are in the Script_Repository/metal folder of this Box container. 
+
+I've built wrapper files which loop through all subtypes and call this script, see Pharma_surv_meta_wrapper_spa_all4.txt as an example. 
+
+Using Beta estimates look at: script_Pharma_survival_metal_all4.txt
+
+
+```BASH
+for id in lists/onco*meta_cases.txt ; do
+
+echo Pharma_surv_meta_wrapper_all4.bash umich $id
+
+done > metal_commands
+
+commands_array_wrapper.bash --jobname metal --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+Using just P-values look at: script_Pharma_survival_metal_spa_all4.txt
+
+
+```BASH
+for id in lists/onco*meta_cases.txt ; do
+
+echo Pharma_surv_meta_wrapper_spa_all4.bash umich $id
+
+done ; done > metalspa_commands
+
+commands_array_wrapper.bash --jobname metalspa --array_file metalspa_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Add exit to r scripts when the sample count drops below a certain number?
+
+Geno : I’d say anything running less than 30 individuals is very unreliable for survival models. Possibly the saddle point approximation in SPACox needs even more.
+
+
+
+allGlioma
+paper
+rs9660710 A 2.689802e-5
+
+pgs-calc 
+1	1163962	A	2.689802e-5	C,T
+
+plink
+chr1:1163962:A:C,T A 2.689802e-5
 
 
 

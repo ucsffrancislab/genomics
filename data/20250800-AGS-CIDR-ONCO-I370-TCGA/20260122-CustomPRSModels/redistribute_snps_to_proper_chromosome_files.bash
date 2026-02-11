@@ -16,15 +16,15 @@ outdir="/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20251218-surv
 TEMP_DIR="${outdir}/redistribution_temp"
 mkdir -p "${TEMP_DIR}"
 
-## Single pass: read each file once and split by actual chromosome
-#for input_vcf in ${outdir}/final.chr*.dose.vcf.gz; do
-#    echo "Processing $(basename $input_vcf)..."
-#    
-#    # Split this file by actual chromosome coordinate
-#    for chr in {1..22}; do
-#        bcftools view --threads ${threads} -r chr${chr} ${input_vcf} -Oz -o ${TEMP_DIR}/chr${chr}_from_$(basename $input_vcf)
-#    done
-#done
+# Single pass: read each file once and split by actual chromosome
+for input_vcf in ${outdir}/final.chr*.dose.vcf.gz; do
+    echo "Processing $(basename $input_vcf)..."
+    
+    # Split this file by actual chromosome coordinate
+    for chr in {1..22}; do
+        bcftools view --threads ${threads} -r chr${chr} ${input_vcf} -Oz -o ${TEMP_DIR}/chr${chr}_from_$(basename $input_vcf)
+    done
+done
 
 # Now concatenate the fragments for each chromosome
 for chr in {1..22}; do

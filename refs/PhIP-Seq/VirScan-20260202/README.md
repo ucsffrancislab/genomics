@@ -190,25 +190,12 @@ NEED TO TRIM OLIGOS
 
 ```bash
 awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print ">"$1;print $5}' id,species,organism,protein,oligo,peptide,start,end-clean.csv > id,species,organism,protein,oligo,peptide,start,end-clean.fna
-
-
-
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
---job-name=blast --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
---output=${PWD}/blastn.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
---wrap="module load blast; blastn -db /francislab/data1/refs/blast/nt -query id,species,organism,protein,oligo,peptide,start,end-clean.fna -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean-blastn.nt.tsv -num_threads 8"
-
 ```
 
-This won't include the family and what not.
 
-I think that's why I wrote an app for that.
 
-Blast is missing a lot and including a lot of duplicate alignments. This won't be helpful.
 
-canceling
 
-What about making a ref from RefSeq viral fna?
 
 Should trim the indexes of of the oligos.
 
@@ -271,6 +258,109 @@ df = (df
 df.to_csv('id,species,organism,protein,oligo,peptide,start,end-clean.csv',index=False)
 ```
 
+
+
+blastp the PEPTIDES
+
+```bash
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print ">"$1;print $6}' id,species,organism,protein,oligo,peptide,start,end-clean.csv > id,species,organism,protein,oligo,peptide,start,end-clean.faa
+```
+
+
+   'qaccver saccver pident length mismatch gapopen qstart qend sstart send
+   evalue bitscore', which is equivalent to the keyword 'std'
+
+Make sure that the memory is appropriate for the reference.
+
+```bash
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast1 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
+--output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/refseq/viral-20260206/viral -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.tsv -num_threads 8"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast2 --time=14-0 --nodes=1 --ntasks=16 --mem=120GB \
+--output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/blast/refseq_protein -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_protein.tsv -num_threads 16"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast3 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
+--output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/blast/refseq_select_prot -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_select_prot.tsv -num_threads 8"
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast4 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
+--output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/refseq/viral-20260206/viral -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.shorte1000ws2.tsv -num_threads 8 -task blastp-short -evalue 1000 -word_size 2 -seg no -max_target_seqs 100"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast5 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
+--output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/refseq/viral-20260206/viral -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.shorte1000ws2PAM30.tsv -num_threads 8 -task blastp-short -evalue 1000 -word_size 2 -seg no -max_target_seqs 100 -matrix PAM30"
+
+
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+
+#	expecting 115753 which will mean that everything matched something
+
+cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.tsv | uniq | wc -l
+#	114855. short. Which ones missed and why?
+
+cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_select_prot.tsv | uniq | wc -l
+#	looks like this is all bacteria. Its finding matches, but they're all bacteria.
+
+cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_protein.tsv | uniq | wc -l
+
+
+
+
+
+```
+
+
+
+
+
+
+---
+
+```bash
+wc -l id,species,organism,protein,oligo,peptide,start,end-clean.faa
+231506
+
+head -n 115752 id,species,organism,protein,oligo,peptide,start,end-clean.faa > id,species,organism,protein,oligo,peptide,start,end-clean.1of2.faa
+tail -n 115754 id,species,organism,protein,oligo,peptide,start,end-clean.faa > id,species,organism,protein,oligo,peptide,start,end-clean.2of2.faa
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast1 --time=14-0 --nodes=1 --ntasks=32 --mem=240GB \
+--output=${PWD}/blastp.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/blast/nr -query id,species,organism,protein,oligo,peptide,start,end-clean.1of2.faa -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.1of2.blastp.nr.tsv -num_threads 32"
+
+sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
+--job-name=blast2 --time=14-0 --nodes=1 --ntasks=32 --mem=240GB \
+--output=${PWD}/blastp.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
+--wrap="module load blast; blastp -db /francislab/data1/refs/blast/nr -query id,species,organism,protein,oligo,peptide,start,end-clean.2of2.faa -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.2of2.blastp.nr.tsv -num_threads 32"
+
+```
+
+This will include taxids.
+
+Filter blast results based only on, hmmm, 
+
+
+
+This won't include the family and what not.
+
+I think that's why I wrote an app for that.
+
+Blast is missing a lot and including a lot of duplicate alignments. This won't be helpful.
+
+canceling
+
+What about making a ref from RefSeq viral fna?
 
 
 
