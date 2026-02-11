@@ -179,30 +179,72 @@ for ( PGS in names(pgsscores) ) {
 #
 #	scores$SexFemale = ifelse( ( scores$sex == "F" | scores$sex == "female" ), 1L, 0L)
 
+
+
+
+
+
+
+#	#	prepare all available covariates for the formula
+#	cov=c()
+#	if( 'age' %in% names(scores) ){
+#		cov=c(cov,'age')
+#	} else if( 'Age' %in% names(scores) ) {
+#		cov=c(cov,'Age')
+#	}
+#	if( 'SexFemale' %in% names(scores) && length(unique(scores$SexFemale)) > 1 )
+#		cov=c(cov,'SexFemale')
+#	if( 'chemo' %in% names(scores)  && length(unique(scores$chemo)) > 1 )
+#		cov=c(cov,'chemo')
+#	if( 'rad' %in% names(scores)    && length(unique(scores$rad)) > 1 )
+#		cov=c(cov,'rad')
+#	if( 'ngrade' %in% names(scores) && length(unique(scores$ngrade)) > 1 )
+#		cov=c(cov,'ngrade')
+#	if( 'dxyear' %in% names(scores) && length(unique(scores$dxyear)) > 1 )
+#		cov=c(cov,'dxyear')
+#	if( 'source' %in% names(scores) && length(unique(scores$source)) > 1 ){
+#		scores$SourceAGS = ifelse(scores$source =="AGS",1L,0L)
+#		cov=c(cov,"SourceAGS")
+#	}
+#	cov=c(cov, "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8")
+#	cov=c(cov,PGS)
+
+
+
 	#	prepare all available covariates for the formula
-	cov=c()
-	if( 'age' %in% names(scores) ){
-		cov=c(cov,'age')
-	} else if( 'Age' %in% names(scores) ) {
-		cov=c(cov,'Age')
+	covs=c()
+	if( 'source' %in% names(pheno.file) && length(unique(pheno.file$source)) > 1 ){
+		pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
+		covs=c(covs,"SourceAGS")
 	}
-	if( 'SexFemale' %in% names(scores) && length(unique(scores$SexFemale)) > 1 )
-		cov=c(cov,'SexFemale')
-	if( 'chemo' %in% names(scores)  && length(unique(scores$chemo)) > 1 )
-		cov=c(cov,'chemo')
-	if( 'rad' %in% names(scores)    && length(unique(scores$rad)) > 1 )
-		cov=c(cov,'rad')
-	if( 'ngrade' %in% names(scores) && length(unique(scores$ngrade)) > 1 )
-		cov=c(cov,'ngrade')
-	if( 'dxyear' %in% names(scores) && length(unique(scores$dxyear)) > 1 )
-		cov=c(cov,'dxyear')
-	if( 'source' %in% names(scores) && length(unique(scores$source)) > 1 ){
-		scores$SourceAGS = ifelse(scores$source =="AGS",1L,0L)
-		cov=c(cov,"SourceAGS")
+	for( possible in c('age','Age','age_ucsf_surg','SexFemale','chemo','rad','dxyear','ngrade','grade',
+		'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10') ) {
+	
+		if( possible %in% names(pheno.file) ) {
+			print(paste(possible,"found in pheno file"))
+			uniq_count = length(unique(pheno.file[[possible]]))
+			print(paste(uniq_count,"values for",possible,"found"))
+			if( uniq_count > 1 ){
+				print(paste("Adding",possible,"to covariates used"))
+				covs=c(covs,possible)
+			} else {
+				print(paste("Not adding",possible,"to covariates used"))
+			}
+		} else {
+			print(paste(possible,"NOT found in pheno file"))
+		}
 	}
-	cov=c(cov, "PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8")
-	cov=c(cov,PGS)
-	formula=paste("Surv(survdays, vstatus) ~",paste(cov,collapse=" + "))
+	covs=c(covs,PGS)
+
+	print("Using covs")
+	print(covs)
+
+	#	for cidr
+	if( ( 'deceased' %in% names(scores) ) && !( 'vstatus' %in% names(scores) ) )
+		names(scores)[names(scores) == "deceased"] <- "vstatus"
+
+
+	formula=paste("Surv(survdays, vstatus) ~",paste(covs,collapse=" + "))
 	print(formula)
 	
 	res.cox <- coxph(as.formula(formula), data = scores)
