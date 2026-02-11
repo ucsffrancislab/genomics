@@ -625,6 +625,7 @@ $NF = prs_weight_AVG (last column)
 New suggestion from Claude
 prs[iid] += $3 * $4  # NAMED_ALLELE_DOSAGE_SUM × prs_weight_AVG
 
+Claude keeps coming back to this. Not happy with the summation of plink scores
 
 
 ```bash
@@ -972,62 +973,11 @@ done
 
 
 
-TODO  ---  Compare plink's scores to pgs-calc's.
-
-hc ../20250724-pgs/pgs-cidr-hg19/scores.txt 
-"sample","PGS000008","PGS000006","PGS000005","PGS000002","PGS000003","PGS000007","PGS000004","PGS000
-"CSR01_CSR01-1-0427561327","-0.4388784013230804","-0.06674872281382704","-0.020987556001273333","-0.
-"CSR02_CSR02-1-0427561328","-0.9576076738206964","0.4412269867980285","-0.8594468682276784","-1.2089
-"CSR03_CSR03-1-0427561329","-0.6334767574885873","0.11415971475071274","-0.4800121966745792","-0.616
-"CSR04_CSR04-1-0427561330","0.3822147069489432","0.0914940228976775","0.5728907364637053","-0.275078
-"CSR05_CSR05-1-0427561331","0.2391618190879612","0.749791647094753","0.022534124080266338","-0.27876
-"CSR06_CSR06-1-0427561332","0.015366533532215954","0.04200979381812431","0.34372751272530877","-0.23
-"CSR07_CSR07-1-0427561333","-0.21197748491279356","0.07706609346519144","0.09969380693382845","-0.73
-"CSR08_CSR08-1-0427561334","0.4141717159144491","0.7379417194752023","0.785677000855685","0.45584937
-"CSR09_CSR09-1-0427561335","-0.3031906518672116","0.6785183288570806","-0.13026687371711887","-1.888
-
-
-
-head pgs-calc-scores/cidr/scores.txt | cut -c1-100
-"sample","allGlioma_scoring_system","gbm_scoring_system","idhmut_1p19qcodel_scoring_system","idhmut_
-"CSR01_CSR01-1-0427561327","1.83864491521851","1.7252670221948374","0.497667242799566","0.2153982278
-"CSR02_CSR02-1-0427561328","1.8050973857159829","1.9425654358390896","0.5880943116838441","0.3673133
-"CSR03_CSR03-1-0427561329","1.9994589021232372","2.1365019901441524","0.24853711805148768","0.323879
-"CSR04_CSR04-1-0427561330","1.662360993019792","1.821884169339171","-0.1562705770049962","0.06573025
-"CSR05_CSR05-1-0427561331","1.9441509593460022","2.17114302554223","0.3669397330659182","0.192403005
-"CSR06_CSR06-1-0427561332","1.6707050786918844","1.7692876681132437","-0.06520721070520039","-0.0077
-"CSR07_CSR07-1-0427561333","1.4176768872016032","1.582557853353312","-0.1040461853098565","0.6141375
-"CSR08_CSR08-1-0427561334","1.7530317684494536","1.8823051727841775","0.2702653415488848","0.2385189
-"CSR09_CSR09-1-0427561335","2.0014791607180857","1.938807533630856","0.23648606846047387","0.8399118
-
-wc -l pgs-calc-scores/cidr/scores.txt
-483 pgs-calc-scores/cidr/scores.txt
-
-awk -F, '{print NF}'  pgs-calc-scores/cidr/scores.txt | uniq
-5111
-
-ls -1 plink-scores/imputed-umich-cidr*.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.allGlioma.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.gbm.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.idhmut_1p19qcodel.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.idhmut_1p19qnoncodel.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.idhmut.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.idhwt.prs.genome_raw.txt
-plink-scores/imputed-umich-cidr.nonGbm.prs.genome_raw.txt
-
-head plink-scores/imputed-umich-cidr.allGlioma.prs.genome_raw.txt
-IID	PRS_raw	SNP_CT
-147_G146-1-0427562915	20.9992	1648348
-136_G135-1-0427562904	20.955	1648348
-369_G369-1-0427563047	21.0402	1648348
-27_G025-1-0427562792	20.959	1648348
-16_G014-1-0427562781	21.0807	1648348
-396_G397-1-0427561155	20.8406	1648348
-385_G386-1-0427561144	20.9683	1648348
-45_G043-1-0427562810	20.8441	1648348
-56_G054-1-0427562822	20.9621	1648348
-
-
+TODO 
+Sadly need to redo the pgs-calc models for the custom models
+Split the commas on the other allele generating multiple entries
+Won't be able to do it in this run.
+Will only effect the 3 rsid models.
 
 
 
@@ -1077,26 +1027,42 @@ EDIT
 EDIT
 
 
+#	I don't think that this is a PGS thing
+#	
+#	
+#	These take 4 to 26 hours. Really wish that the michiganCoxSurv was parallelizable.
+#	
+#	May need to rerun the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt if I redefine it.
+#	
+#	```BASH
+#	for b in onco i370 tcga cidr ; do
+#	for id in lists/${b}*meta_cases.txt ; do
+#	
+#	echo gwasurvivr.bash --dataset ${b} --vcffile imputed-umich-${b}/${b}-cases/${b}-cases.vcf.gz \
+#	 --outbase ${PWD}/gwas-${b}/ \
+#	 --idfile ${id} --covfile imputed-umich-${b}/${b}-cases/${b}-covariates.tsv
+#	
+#	done ; done > gwas_commands
+#	
+#	commands_array_wrapper.bash --jobname gwasurvivr --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
+#	```
+#	
 
 
-These take 4 to 26 hours. Really wish that the michiganCoxSurv was parallelizable.
-
-May need to rerun the cidr_LrGG_IDHmut_1p19qintact_meta_cases.txt if I redefine it.
+These take about 3-4 hours
 
 ```BASH
+for s in topmed umich ; do
 for b in onco i370 tcga cidr ; do
-for id in lists/${b}*meta_cases.txt ; do
 
-echo gwasurvivr.bash --dataset ${b} --vcffile imputed-umich-${b}/${b}-cases/${b}-cases.vcf.gz \
- --outbase ${PWD}/gwas-${b}/ \
- --idfile ${id} --covfile imputed-umich-${b}/${b}-cases/${b}-covariates.tsv
+  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_dosage-${s}-${b} \
+    --export=None --output="${PWD}/pull_dosage-${s}-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
+    --time=1-0 --nodes=1 --ntasks=16 --mem=120G pull_case_dosage.bash \
+    --IDfile ${PWD}/lists/${b}-cases.txt \
+    --vcffile ${PWD}/imputed-${s}-${b}/concated.QC.vcf.gz --outbase ${PWD}/imputed-${s}-${b}
 
-done ; done > gwas_commands
-
-commands_array_wrapper.bash --jobname gwasurvivr --array_file gwas_commands --time 2-0 --threads 2 --mem 15G
+done; done
 ```
-
-
 
 
 ###	spacox.bash
@@ -1243,6 +1209,10 @@ pgs-calc
 
 plink
 chr1:1163962:A:C,T A 2.689802e-5
+
+
+
+
 
 
 

@@ -57,7 +57,7 @@ zcat ${f} | awk -v chrom=$chrom -v other=$other 'BEGIN{FS=OFS="\t"}
 if(other=="infer"){ $5="hm_inferOtherAllele" }
 print
 }
-{
+(NR>1){
 if( chrom=="chr"){ $1="chr"$1 }
 
 if( other=="split"){
