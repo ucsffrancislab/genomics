@@ -1050,16 +1050,6 @@ done
 ```
 
 
-
-
-
-
-
-
-
-
-
-
 Scale the new raw scores matrix.
 
 ```bash
@@ -1076,11 +1066,6 @@ done
 
 
 
-
-
-
-
-
 ##	PGS Survival Analysis (just the new models for the moment)
 
 ```bash
@@ -1090,7 +1075,7 @@ ln -s ../20250724-pgs/lists
 ```
 
 
-Extract just cases from PGS matrix. Not sure why.
+Extract just cases from PGS matrix. Not sure why. Not used.
 
 ```bash
 for b in cidr onco i370 tcga ; do
@@ -1117,78 +1102,6 @@ for b in cidr onco i370 tcga ; do
   join --header -t, pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-new_models/${b}/${b}-covariates.tsv
 done
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-EDIT
-
-EDIT
-
-EDIT
-
-EDIT
-
-EDIT
-
-EDIT
-
-EDIT
-
-EDIT
-
-EDIT
-
-
-
-
-
-
-
-
-
-
-
-Isn't this just for Survival GWAS and NOT PRS? Skipping for the mo
-
-```bash
-for b in cidr onco i370 tcga ; do
-for id in lists/${b}*meta_cases.txt ; do
-
-echo spacox.bash --dataset ${b} --dosage pgs-${b}-hg19/case_scores.csv \
- --outbase ${PWD}/pgs-${b}-hg19/ \
- --idfile ${id} --covfile pgs-${b}-hg19/${b}-covariates.tsv
-
-done; done > spa_commands
-
-commands_array_wrapper.bash --array_file spa_commands --time 1-0 --threads 4 --mem 30G
-```
-
-
-What's the purpose of this? Skipping for the mo
-
-```bash
-for b in cidr onco i370 tcga ; do
-cat pgs-${b}-hg19/case_scores.csv | datamash transpose -t ' ' --output-delimiter=, > pgs-${b}-hg19/case_scores.t.csv
-cat pgs-${b}-hg19/${b}-covariates.tsv | tr '\t' ',' > pgs-${b}-hg19/${b}-covariates.csv
-join --header -t, pgs-${b}-hg19/${b}-covariates.csv pgs-${b}-hg19/case_scores.t.csv > pgs-${b}-hg19/${b}-covariates-scores.csv
-done
-
-extract_cox_coeffs_for_pgs.r
-```
-
-
-
-
 
 
 
@@ -1253,7 +1166,11 @@ module load r
 
 ```bash
 
-box_upload.bash
+for b in cidr onco i370 tcga ; do
+ cp pgs-calc-scores-new_models/${b}/scores.* pgs-calc-scores-new_models-claude/${b}/
+done
+
+box_upload.bash pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
 
 ```
 
@@ -1286,5 +1203,7 @@ pgscox.bash
 metal
 
 
+
+https://claude.ai/chat/fb6fa5f0-e2b8-4a5b-8074-476eddb176a6
 
 
