@@ -557,99 +557,6 @@ if(nrow(cox_results) > 0) {
 
 ---
 
-
-
----
-
-# Cox Model Specifications and Sample Flow
-
-## Sample Size Flow Through Analysis Pipeline
-
-Understanding how samples are filtered at each stage:
-
-**Data Flow:**
-```
-Raw PRS Scores (all imputed samples)
-    ↓
-Filtered to samples with covariates
-    ↓
-Filtered by case subset list
-    ↓
-Cox regression (N shown in results)
-    ↓
-Meta-analysis
-```
-
-The **N column** in Cox results shows the actual sample size used for each model/dataset/subset combination.
-
-```{r sample_flow}
-if(nrow(cox_results) > 0) {
-  flow_summary <- cox_results %>%
-    group_by(dataset, subset) %>%
-    summarise(
-      N_in_cox = round(mean(N, na.rm = TRUE)),
-      .groups = "drop"
-    )
-  
-  cat("\n**Sample sizes in Cox models by dataset and subset:**\n\n")
-  kable(flow_summary, caption = "Actual sample sizes used in survival analysis")
-}
-```
-
-## Covariates Used by Dataset
-
-**Which variables were included in each survival model?**
-
-```{r model_specifications}
-# Document which covariates were available and used for each dataset
-
-covariate_info <- lapply(datasets, function(ds) {
-  if(!is.null(survival_data_list[[ds]])) {
-    df <- survival_data_list[[ds]]
-    
-    # Check which covariates are present and have variance
-    present_covs <- c()
-    
-    if("age" %in% names(df) || "Age" %in% names(df)) present_covs <- c(present_covs, "Age")
-    if("sex" %in% names(df)) present_covs <- c(present_covs, "Sex")
-    if("chemo" %in% names(df) && length(unique(df$chemo)) > 1) present_covs <- c(present_covs, "Chemo")
-    if("rad" %in% names(df) && length(unique(df$rad)) > 1) present_covs <- c(present_covs, "Radiation")
-    if("ngrade" %in% names(df) && length(unique(df$ngrade)) > 1) present_covs <- c(present_covs, "Grade")
-    if("dxyear" %in% names(df) && length(unique(df$dxyear)) > 1) present_covs <- c(present_covs, "Dx Year")
-    if("source" %in% names(df) && length(unique(df$source)) > 1) present_covs <- c(present_covs, "Source")
-    
-    # PCs
-    pcs <- paste0("PC", 1:8)
-    present_pcs <- pcs[pcs %in% names(df)]
-    
-    data.frame(
-      Dataset = toupper(ds),
-      Clinical_Covariates = paste(present_covs, collapse = ", "),
-      Principal_Components = paste(present_pcs, collapse = ", "),
-      PRS = "Each model tested individually",
-      stringsAsFactors = FALSE
-    )
-  }
-}) %>% bind_rows()
-
-kable(covariate_info,
-      caption = "Covariates Included in Cox Proportional Hazards Models by Dataset")
-```
-
-**Cox Model Formula Structure:**
-
-```
-Surv(survdays, vstatus) ~ PRS + Age + Sex + Chemo + Radiation + Grade + DxYear + Source + PC1-PC8
-```
-
-**Important notes:**
-
-- Each covariate is only included if: (1) the column exists, and (2) there is variance
-- The exact formula varies by dataset based on available covariates
-- All models include PC1-PC8 for population stratification
-- The PRS model being tested is always included
-
-
 # Meta-Analysis Results
 
 ## Load METAL Output
@@ -1074,6 +981,8 @@ if(nrow(cox_results) > 0) {
 
 ---
 
+---
+
 # Kaplan-Meier Survival Curves
 
 ## Load Survival Data
@@ -1171,7 +1080,97 @@ cat("\nSurvival data successfully loaded for:",
     paste(datasets_with_survival, collapse = ", "), "\n")
 ```
 
+---
 
+# Cox Model Specifications and Sample Flow
+
+## Sample Size Flow Through Analysis Pipeline
+
+Understanding how samples are filtered at each stage:
+
+**Data Flow:**
+```
+Raw PRS Scores (all imputed samples)
+    ↓
+Filtered to samples with covariates
+    ↓
+Filtered by case subset list
+    ↓
+Cox regression (N shown in results)
+    ↓
+Meta-analysis
+```
+
+The **N column** in Cox results shows the actual sample size used for each model/dataset/subset combination.
+
+```{r sample_flow}
+if(nrow(cox_results) > 0) {
+  flow_summary <- cox_results %>%
+    group_by(dataset, subset) %>%
+    summarise(
+      N_in_cox = round(mean(N, na.rm = TRUE)),
+      .groups = "drop"
+    )
+  
+  cat("\n**Sample sizes in Cox models by dataset and subset:**\n\n")
+  kable(flow_summary, caption = "Actual sample sizes used in survival analysis")
+}
+```
+
+## Covariates Used by Dataset
+
+**Which variables were included in each survival model?**
+
+```{r model_specifications}
+# Document which covariates were available and used for each dataset
+
+covariate_info <- lapply(datasets, function(ds) {
+  if(!is.null(survival_data_list[[ds]])) {
+    df <- survival_data_list[[ds]]
+    
+    # Check which covariates are present and have variance
+    present_covs <- c()
+    
+    if("age" %in% names(df) || "Age" %in% names(df)) present_covs <- c(present_covs, "Age")
+    if("sex" %in% names(df)) present_covs <- c(present_covs, "Sex")
+    if("chemo" %in% names(df) && length(unique(df$chemo)) > 1) present_covs <- c(present_covs, "Chemo")
+    if("rad" %in% names(df) && length(unique(df$rad)) > 1) present_covs <- c(present_covs, "Radiation")
+    if("ngrade" %in% names(df) && length(unique(df$ngrade)) > 1) present_covs <- c(present_covs, "Grade")
+    if("dxyear" %in% names(df) && length(unique(df$dxyear)) > 1) present_covs <- c(present_covs, "Dx Year")
+    if("source" %in% names(df) && length(unique(df$source)) > 1) present_covs <- c(present_covs, "Source")
+    
+    # PCs
+    pcs <- paste0("PC", 1:8)
+    present_pcs <- pcs[pcs %in% names(df)]
+    
+    data.frame(
+      Dataset = toupper(ds),
+      Clinical_Covariates = paste(present_covs, collapse = ", "),
+      Principal_Components = paste(present_pcs, collapse = ", "),
+      PRS = "Each model tested individually",
+      stringsAsFactors = FALSE
+    )
+  }
+}) %>% bind_rows()
+
+kable(covariate_info,
+      caption = "Covariates Included in Cox Proportional Hazards Models by Dataset")
+```
+
+**Cox Model Formula Structure:**
+
+```
+Surv(survdays, vstatus) ~ PRS + Age + Sex + Chemo + Radiation + Grade + DxYear + Source + PC1-PC8
+```
+
+**Important notes:**
+
+- Each covariate is only included if: (1) the column exists, and (2) there is variance
+- The exact formula varies by dataset based on available covariates
+- All models include PC1-PC8 for population stratification
+- The PRS model being tested is always included
+
+---
 
 
 
