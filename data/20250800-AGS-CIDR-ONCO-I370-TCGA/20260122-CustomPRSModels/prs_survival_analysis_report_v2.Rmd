@@ -774,6 +774,582 @@ if(nrow(metal_results) > 0 && exists("custom_meta") && nrow(custom_meta) > 0) {
 
 ---
 
+# Forest Plots: Effect Sizes Across Datasets
+
+## Forest Plots for Top Meta-Analysis Hits
+
+```{r forest_plots_top, fig.height=12}
+if(nrow(metal_results) > 0 && nrow(cox_results) > 0) {
+  # Get top 10 models from meta-analysis
+  top_models <- metal_results %>%
+    filter(subset == "ALL_meta_cases") %>%
+    arrange(Pvalue) %>%
+    slice_head(n = 10) %>%
+    pull(MarkerName)
+  
+  if(length(top_models) > 0) {
+    # Create forest plots for top models
+    forest_plots <- lapply(top_models, function(model) {
+      # Get per-dataset results for this model
+      model_data <- cox_results %>%
+        filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(dataset, Effect, StdErr, Pvalue, N) %>%
+        mutate(
+          HR = exp(Effect),
+          CI_lower = exp(Effect - 1.96 * StdErr),
+          CI_upper = exp(Effect + 1.96 * StdErr)
+        )
+      
+      # Get meta-analysis result
+      meta_result <- metal_results %>%
+        filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(Effect, StdErr, Pvalue) %>%
+        mutate(
+          dataset = "META",
+          HR = exp(Effect),
+          CI_lower = exp(Effect - 1.96 * StdErr),
+          CI_upper = exp(Effect + 1.96 * StdErr),
+          N = NA
+        )
+      
+      # Combine
+      combined <- bind_rows(model_data, meta_result) %>%
+        mutate(dataset = factor(dataset, levels = c("META", "tcga", "i370", "onco", "cidr")))
+      
+      # Calculate weights (inverse variance)
+      combined$weight <- ifelse(combined$dataset == "META", NA, 1 / combined$StdErr^2)
+      combined$weight_pct <- combined$weight / sum(combined$weight, na.rm = TRUE) * 100
+      
+      # Plot
+      ggplot(combined, aes(x = HR, y = dataset, color = dataset)) +
+        geom_vline(xintercept = 1, linetype = "dashed", color = "gray50", size = 1) +
+        geom_pointrange(aes(xmin = CI_lower, xmax = CI_upper), size = 0.8, fatten = 3) +
+        geom_text(aes(x = Inf, label = sprintf("%.2f [%.2f-%.2f]", HR, CI_lower, CI_upper)),
+                  hjust = 1.1, size = 3, color = "black") +
+        scale_color_manual(values = c("META" = "black", dataset_colors)) +
+        scale_x_log10() +
+        labs(title = model,
+             subtitle = paste0("Meta p = ", formatC(meta_result$Pvalue, format = "e", digits = 2)),
+             x = "Hazard Ratio (95% CI, log scale)",
+             y = "") +
+        theme(legend.position = "none",
+              plot.title = element_text(size = 10),
+              axis.text.y = element_text(size = 9))
+    })
+    
+    # Arrange plots
+    n_plots <- min(6, length(forest_plots))
+    do.call(grid.arrange, c(forest_plots[1:n_plots], ncol = 2))
+  } else {
+    cat("No top models available for forest plots\n")
+  }
+} else {
+  cat("Insufficient data for forest plots\n")
+}
+```
+
+## Forest Plots for Custom Models
+
+```{r forest_plots_custom, fig.height=14}
+if(nrow(cox_results) > 0) {
+  # Get custom models (excluding comma versions)
+  custom_model_names <- grep("glioma|gbm|idh", unique(cox_results$MarkerName), 
+                             value = TRUE, ignore.case = TRUE)
+  custom_model_names <- grep("\\.commas$", custom_model_names, 
+                             value = TRUE, invert = TRUE)
+  
+  if(length(custom_model_names) > 0) {
+    forest_plots_custom <- lapply(custom_model_names, function(model) {
+      # Get per-dataset results
+      model_data <- cox_results %>%
+        filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(dataset, Effect, StdErr, Pvalue, N) %>%
+        mutate(
+          HR = exp(Effect),
+          CI_lower = exp(Effect - 1.96 * StdErr),
+          CI_upper = exp(Effect + 1.96 * StdErr)
+        )
+      
+      # Get meta-analysis result if available
+      if(nrow(metal_results) > 0) {
+        meta_result <- metal_results %>%
+          filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+          select(Effect, StdErr, Pvalue) %>%
+          mutate(
+            dataset = "META",
+            HR = exp(Effect),
+            CI_lower = exp(Effect - 1.96 * StdErr),
+            CI_upper = exp(Effect + 1.96 * StdErr),
+            N = NA
+          )
+        
+        combined <- bind_rows(model_data, meta_result)
+      } else {
+        combined <- model_data
+      }
+      
+      combined <- combined %>%
+        mutate(dataset = factor(dataset, levels = c("META", "tcga", "i370", "onco", "cidr")))
+      
+      # Plot
+      ggplot(combined, aes(x = HR, y = dataset, color = dataset)) +
+        geom_vline(xintercept = 1, linetype = "dashed", color = "gray50", size = 1) +
+        geom_pointrange(aes(xmin = CI_lower, xmax = CI_upper), size = 0.8, fatten = 3) +
+        geom_text(aes(x = Inf, label = sprintf("%.2f [%.2f-%.2f]", HR, CI_lower, CI_upper)),
+                  hjust = 1.1, size = 3, color = "black") +
+        scale_color_manual(values = c("META" = "black", dataset_colors)) +
+        scale_x_log10(limits = c(0.5, 3)) +
+        labs(title = gsub("_scoring_system", "", model),
+             x = "Hazard Ratio (95% CI, log scale)",
+             y = "") +
+        theme(legend.position = "none",
+              plot.title = element_text(size = 10, face = "bold"),
+              axis.text.y = element_text(size = 9))
+    })
+    
+    do.call(grid.arrange, c(forest_plots_custom, ncol = 2))
+  } else {
+    cat("No custom models found for forest plots\n")
+  }
+} else {
+  cat("No Cox results available for forest plots\n")
+}
+```
+
+---
+
+# Kaplan-Meier Survival Curves
+
+## Load Survival Data
+
+```{r load_survival_data}
+# Base path for phenotype/survival data
+pheno_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models"
+
+## Load survival data for each dataset
+#survival_data_list <- lapply(datasets, function(ds) {
+#  # Try to find phenotype/covariate file
+#  # Adjust this path based on where your survival data is stored
+#  pheno_files <- list.files(path = file.path(dirname(pheno_base_path), "pgs-calc-scores-new_models-claude", ds),
+#                            pattern = "cox_coeffs.csv$|phenotype|covariate|survival",
+#                            full.names = TRUE,
+#                            recursive = TRUE)
+#  
+#  if(length(pheno_files) > 0) {
+#    cat("Found phenotype file for", ds, ":", pheno_files[1], "\n")
+#    # Load and return - adjust column names as needed
+#    return(NULL)  # Placeholder - need actual survival data structure
+#  } else {
+#    cat("No survival data found for", ds, "\n")
+#    return(NULL)
+#  }
+#})
+#
+#cat("\nNote: Kaplan-Meier plots require access to individual-level survival data\n")
+#cat("If survival data is available, uncomment and adjust the loading code above\n")
+
+# Load covariate files with survival data
+#covariate_files <- list(
+#  cidr = "lists/cidr_covariates.tsv",
+#  i370 = "lists/i370_covariates.tsv", 
+#  onco = "lists/onco_covariates.tsv",
+#  tcga = "lists/tcga_covariates.tsv"
+#)
+
+
+# Base directory - adjust to your actual path
+base_dir <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels"
+
+covariate_files <- list(
+  cidr = file.path(base_dir, "lists/cidr_covariates.tsv"),
+  i370 = file.path(base_dir, "lists/i370_covariates.tsv"), 
+  onco = file.path(base_dir, "lists/onco_covariates.tsv"),
+  tcga = file.path(base_dir, "lists/tcga_covariates.tsv")
+)
+
+survival_data_list <- lapply(datasets, function(ds) {
+  if(file.exists(covariate_files[[ds]])) {
+    df <- read.table(covariate_files[[ds]], header = TRUE, sep = "\t", 
+                     stringsAsFactors = FALSE, na.strings = c("NA", ""))
+    
+    # Standardize column names to lowercase
+    names(df) <- tolower(names(df))
+    
+    # Rename IID to sample for consistency
+    if("iid" %in% names(df)) {
+      names(df)[names(df) == "iid"] <- "sample"
+    }
+    
+    # Standardize event status column
+    if("deceased" %in% names(df) && !"vstatus" %in% names(df)) {
+      df$vstatus <- df$deceased
+      cat("Note:", ds, "- using 'deceased' as vstatus\n")
+    }
+    
+    # Check required columns
+    if(!all(c("sample", "survdays", "vstatus") %in% names(df))) {
+      cat("WARNING:", ds, "- missing required columns!\n")
+      cat("  Has:", paste(names(df)[names(df) %in% c("sample", "survdays", "vstatus", "deceased")], collapse = ", "), "\n")
+      return(NULL)
+    }
+    
+    df$dataset <- ds
+    
+    # Report summary
+    cat(ds, ":", nrow(df), "samples,", 
+        sum(df$vstatus == 1, na.rm = TRUE), "events,",
+        sum(df$vstatus == 0, na.rm = TRUE), "censored\n")
+    
+    return(df)
+  } else {
+    cat("Warning: Covariate file not found:", covariate_files[[ds]], "\n")
+    return(NULL)
+  }
+})
+
+names(survival_data_list) <- datasets
+
+# Summary
+datasets_with_survival <- names(survival_data_list)[!sapply(survival_data_list, is.null)]
+cat("\nSurvival data successfully loaded for:", 
+    paste(datasets_with_survival, collapse = ", "), "\n")
+```
+
+
+
+
+
+
+
+
+
+## Kaplan-Meier Curves for Top Models (Example)
+
+```{r km_curves_example, fig.height=10, eval=TRUE}
+# This is an EXAMPLE showing how to create KM curves
+# You'll need to provide the path to your actual survival data
+
+# Example structure - adjust to your actual data
+example_survival <- data.frame(
+  sample = raw_scores_list[["cidr"]]$sample,
+  survdays = rnorm(nrow(raw_scores_list[["cidr"]]), 1000, 500),
+  vstatus = rbinom(nrow(raw_scores_list[["cidr"]]), 1, 0.3)
+)
+
+# Merge with PRS scores
+km_data <- merge(example_survival, 
+                 zscores_list[["cidr"]][, c("sample", "idhmut_scoring_system")],
+                 by = "sample")
+
+# Create risk groups (quartiles)
+km_data$risk_group <- cut(km_data$idhmut_scoring_system,
+                          breaks = quantile(km_data$idhmut_scoring_system, 
+                                          probs = c(0, 0.25, 0.5, 0.75, 1),
+                                          na.rm = TRUE),
+                          labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+                          include.lowest = TRUE)
+
+# Fit survival model
+fit <- survfit(Surv(survdays, vstatus) ~ risk_group, data = km_data)
+
+# Plot
+ggsurvplot(fit,
+           data = km_data,
+           pval = TRUE,
+           conf.int = TRUE,
+           risk.table = TRUE,
+           risk.table.height = 0.25,
+           title = "Kaplan-Meier Curve: IDHmut PRS (CIDR)",
+           xlab = "Time (days)",
+           ylab = "Survival Probability",
+           legend.title = "Risk Group",
+           palette = "jco",
+           ggtheme = theme_bw())
+```
+
+## Kaplan-Meier Template for Custom Models
+
+```{r km_curves_template, fig.height=12, eval=TRUE}
+
+cat("=== DEBUGGING ===\n")
+cat("\nZ-scores list has data for CIDR:", !is.null(zscores_list[["cidr"]]), "\n")
+cat("Survival list has data for CIDR:", !is.null(survival_data_list[["cidr"]]), "\n")
+
+if(!is.null(zscores_list[["cidr"]])) {
+  cat("\nColumn names in CIDR z-scores:\n")
+  print(names(zscores_list[["cidr"]]))
+  
+  cat("\nCustom models we're looking for:\n")
+  print(custom_models)
+  
+  cat("\nWhich custom models are actually in CIDR z-scores?\n")
+  for(model in custom_models) {
+    cat("  ", model, ":", model %in% names(zscores_list[["cidr"]]), "\n")
+  }
+}
+
+
+
+#create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
+#
+#  # DEBUG
+#  cat("Survival columns:", paste(names(survival_df)[1:5], collapse=", "), "\n")
+#  cat("Scores columns:", paste(names(scores_df)[1:5], collapse=", "), "\n")
+#  cat("Looking for 'sample' in survival:", "sample" %in% names(survival_df), "\n")
+#  cat("Looking for 'sample' in scores:", "sample" %in% names(scores_df), "\n")
+#
+#  # Merge survival and PRS data
+#  plot_data <- merge(survival_df, scores_df[, c("sample", prs_model)], by = "sample")
+
+
+
+
+
+create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
+  # Convert to data.frame if data.table (they behave differently)
+  if("data.table" %in% class(survival_df)) {
+    survival_df <- as.data.frame(survival_df)
+  }
+  if("data.table" %in% class(scores_df)) {
+    scores_df <- as.data.frame(scores_df)
+  }
+  
+  # DEBUG
+  cat("Survival columns:", paste(names(survival_df)[1:5], collapse=", "), "\n")
+  cat("Scores columns:", paste(names(scores_df)[1:5], collapse=", "), "\n")
+  
+  # Subset scores to just sample + PRS model
+  scores_subset <- scores_df[, c("sample", prs_model), drop=FALSE]
+  
+  # Merge survival and PRS data
+  plot_data <- merge(survival_df, scores_subset, by = "sample")
+  
+  # ... rest of function
+
+
+
+  
+  # Create quartile groups
+  plot_data$risk_group <- cut(plot_data[[prs_model]],
+                               breaks = quantile(plot_data[[prs_model]], 
+                                               probs = c(0, 0.25, 0.5, 0.75, 1),
+                                               na.rm = TRUE),
+                               labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+                               include.lowest = TRUE)
+  
+  # Fit survival model
+  fit <- survfit(Surv(survdays, vstatus) ~ risk_group, data = plot_data)
+  
+  # Calculate log-rank test
+  logrank <- survdiff(Surv(survdays, vstatus) ~ risk_group, data = plot_data)
+  pval <- 1 - pchisq(logrank$chisq, length(logrank$n) - 1)
+  
+  # Create title
+  title_text <- paste(dataset_name, "-", gsub("_scoring_system", "", prs_model))
+  
+  # Plot with survminer
+  p <- ggsurvplot(fit,
+             data = plot_data,
+             pval = TRUE,
+             pval.coord = c(0.1, 0.1),
+             conf.int = FALSE,
+             risk.table = TRUE,
+             risk.table.height = 0.3,
+             title = title_text,
+             subtitle = paste0("Log-rank p = ", formatC(pval, format = "e", digits = 2)),
+             xlab = "Time (days)",
+             ylab = "Survival Probability",
+             legend.title = "PRS Quartile",
+             legend.labs = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+             palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
+             ggtheme = theme_bw(base_size = 12))
+  
+  return(p)
+}
+
+custom_models <- grep("glioma|gbm|idh", names(zscores_list[[1]]), 
+                     value = TRUE, ignore.case = TRUE)
+custom_models <- grep("\\.commas$", custom_models, value = TRUE, invert = TRUE)
+
+cat("Creating KM plots for", length(custom_models), "custom models\n\n")
+
+# Generate all plots
+for(model in custom_models) {
+  cat("\n\n### Model:", gsub("_scoring_system", "", model), "\n\n")
+  
+  # Try CIDR first
+  if(!is.null(survival_data_list[["cidr"]]) && 
+     !is.null(zscores_list[["cidr"]]) &&
+     model %in% names(zscores_list[["cidr"]])) {
+    
+    km_obj <- create_km_plot("CIDR", model, 
+                             survival_data_list[["cidr"]], 
+                             zscores_list[["cidr"]])
+    print(km_obj)
+  } else {
+    cat("Data not available for", model, "in CIDR\n")
+  }
+  
+  cat("\n\n")
+}
+```
+
+## Multi-Dataset Kaplan-Meier Comparison
+
+```{r km_multi_dataset, fig.height=10, eval=TRUE}
+# TEMPLATE: Compare KM curves across datasets for the same PRS model
+
+create_multi_dataset_km <- function(prs_model) {
+  cat("Starting multi-dataset KM for:", prs_model, "\n")
+  
+  # Convert all data.tables to data.frames first
+  for(ds in datasets) {
+    if(!is.null(survival_data_list[[ds]]) && "data.table" %in% class(survival_data_list[[ds]])) {
+      survival_data_list[[ds]] <<- as.data.frame(survival_data_list[[ds]])
+    }
+    if(!is.null(zscores_list[[ds]]) && "data.table" %in% class(zscores_list[[ds]])) {
+      zscores_list[[ds]] <<- as.data.frame(zscores_list[[ds]])
+    }
+  }
+  
+  all_data_list <- lapply(datasets, function(ds) {
+    cat("  Checking dataset:", ds, "\n")
+    
+    if(!is.null(survival_data_list[[ds]]) && !is.null(zscores_list[[ds]])) {
+      cat("    Survival data:", nrow(survival_data_list[[ds]]), "rows\n")
+      cat("    Z-scores:", nrow(zscores_list[[ds]]), "rows\n")
+      
+      if(prs_model %in% names(zscores_list[[ds]])) {
+        cat("    Model found!\n")
+        
+        # Get survival data with required columns
+        surv_subset <- survival_data_list[[ds]][, c("sample", "survdays", "vstatus")]
+        
+        # Get PRS scores
+        prs_subset <- zscores_list[[ds]][, c("sample", prs_model)]
+        
+        # Convert to data.frame if data.table
+        if("data.table" %in% class(surv_subset)) {
+          surv_subset <- as.data.frame(surv_subset)
+        }
+        if("data.table" %in% class(prs_subset)) {
+          prs_subset <- as.data.frame(prs_subset)
+        }
+        
+        # Merge
+        merged <- merge(surv_subset, prs_subset, by = "sample")
+        merged$dataset <- ds
+        
+        # Create risk groups (High vs Low for simplicity)
+        merged$risk_group <- cut(merged[[prs_model]],
+                                 breaks = quantile(merged[[prs_model]], 
+                                                 probs = c(0, 0.5, 1),
+                                                 na.rm = TRUE),
+                                 labels = c("Low Risk", "High Risk"),
+                                 include.lowest = TRUE)
+        
+        # Remove rows with missing data
+        merged <- merged[complete.cases(merged[, c("survdays", "vstatus", prs_model)]), ]
+        
+        return(merged)
+      }
+    }
+    return(NULL)
+  })
+  
+  # Remove NULL entries and combine
+  all_data_list <- all_data_list[!sapply(all_data_list, is.null)]
+  
+  if(length(all_data_list) == 0) {
+    cat("No data available for", prs_model, "\n")
+    return(NULL)
+  }
+  
+  all_data <- bind_rows(all_data_list)
+  
+  # DEBUG
+  cat("Creating plot object...\n")
+  cat("Data rows:", nrow(all_data), "\n")
+  cat("Datasets:", paste(unique(all_data$dataset), collapse=", "), "\n")
+  cat("Risk groups:", paste(names(table(all_data$risk_group)), collapse=", "), "\n")
+  
+  # Fit survival model
+  fit <- survfit(Surv(survdays, vstatus) ~ risk_group, data = all_data)
+  
+  # Try creating plot
+  plot_obj <- tryCatch({
+    ggsurvplot(fit,
+               data = all_data,
+               pval = TRUE,
+               conf.int = FALSE,
+               title = paste("Multi-Dataset KM:", gsub("_scoring_system", "", prs_model)),
+               xlab = "Time (days)",
+               ylab = "Survival Probability",
+               legend.title = "Risk Group",
+               palette = "jco",
+               facet.by = "dataset",
+               ggtheme = theme_bw())
+  }, error = function(e) {
+    cat("Error creating ggsurvplot:", e$message, "\n")
+    return(NULL)
+  })
+  
+  cat("Plot object class:", paste(class(plot_obj), collapse=", "), "\n")
+  cat("Is NULL?", is.null(plot_obj), "\n")
+  
+  return(plot_obj)
+}
+
+# Example usage
+tryCatch({
+  if(!is.null(survival_data_list[["cidr"]])) {
+    km_result <- create_multi_dataset_km("idhmut_scoring_system")
+    if(!is.null(km_result)) {
+      # For faceted ggsurvplot, just print the whole object
+      print(km_result)
+      
+      # If that doesn't work, try:
+      # print(km_result$plot)
+      
+    } else {
+      cat("Function returned NULL\n")
+    }
+  }
+}, error = function(e) {
+  cat("Error in multi-dataset KM:", e$message, "\n")
+})
+```
+
+---
+
+# Instructions for Kaplan-Meier Plots
+
+**To enable Kaplan-Meier curves, you need to:**
+
+1. **Identify survival data location**: Find where `survdays` and `vstatus` columns are stored
+2. **Update the loading code**: Modify the `load_survival_data` chunk with correct file paths
+3. **Set `eval=TRUE`**: Change `eval=FALSE` to `eval=TRUE` in the KM chunks above
+4. **Verify column names**: Ensure your survival data has:
+   - `sample` (or `IID`) for sample identifiers
+   - `survdays` (or `OS.time`, `survival_time`) for time-to-event
+   - `vstatus` (or `OS`, `event`, `status`) for event indicator (1=event, 0=censored)
+
+**Example survival data structure:**
+```
+sample              survdays  vstatus
+CSR01_CSR01-...     1234      1
+CSR02_CSR02-...     567       0
+```
+
+Once survival data is loaded, the KM plots will show:
+- Risk stratification by PRS quartiles
+- Log-rank test p-values
+- Risk tables showing number at risk over time
+- Confidence intervals (optional)
+- Multi-dataset comparisons
+
+---
+
 # Heterogeneity Analysis
 
 ## Heterogeneity Statistics

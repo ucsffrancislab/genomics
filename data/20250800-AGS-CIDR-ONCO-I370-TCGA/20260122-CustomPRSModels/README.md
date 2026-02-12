@@ -1091,17 +1091,47 @@ done
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+What am I doing here? Trimming the PCs (PC1-PC20) are the last 20 columns of all but CIDR
+
+
+
 ```bash
-for b in cidr onco i370 tcga ; do
+for b in onco i370 tcga ; do
   cov_in=lists/${b}_covariates.tsv
   cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
-  cat ${cov_in} | cut -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+  cat ${cov_in} | cut -d$'\t' -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+
+  head -1 ${TMPDIR}/tmp.csv > pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv
+  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv
+  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+  join --header -t, pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-new_models/${b}/${b}-covariates.tsv
+done
+
+
+mv lists/cidr_covariates.tsv lists/cidr_covariates.tsv.old
+ln -s /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.20260212.tsv lists/cidr_covariates.tsv
+
+for b in cidr ; do
+  cov_in=lists/${b}_covariates.tsv
+  cat ${cov_in} | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+
   head -1 ${TMPDIR}/tmp.csv > pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv
   tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv
   cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
   join --header -t, pgs-calc-scores-new_models/${b}/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-new_models/${b}/${b}-covariates.tsv
 done
 ```
+
 
 
 
