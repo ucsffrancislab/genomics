@@ -1229,12 +1229,12 @@ commands_array_wrapper.bash --array_file claude_cox_commands --time 1-0 --thread
 
 
 
-Use METAL to analyze all 3 datasets together.
+Use METAL to analyze all 4 datasets together.
 
 ```bash
 for id in lists/onco*meta_cases.txt ; do
 
-echo survival_metal_wrapper_all3.bash $id
+echo survival_metal_wrapper_all4.bash $id
 
 done > metal_commands
 
@@ -1243,6 +1243,19 @@ commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 -
 
 
 
+```bash
+module load r
+
+./prs_survival_analysis_report.Rmd
+
+```
+
+
+```bash
+
+box_upload.bash
+
+```
 
 
 

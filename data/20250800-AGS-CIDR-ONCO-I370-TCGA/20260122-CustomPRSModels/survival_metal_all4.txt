@@ -1,0 +1,58 @@
+i# METAL meta-analysis for PRS survival analysis across 4 glioma cohorts
+# Using effect-sizes (beta) and standard error with sample-size weighting
+
+# Define meta-analysis scheme
+SCHEME STDERR
+
+# Define separation format (tab-separated from new pgscox_improved.r output)
+SEPARATOR TAB
+
+# Enable genomic correction - OFF for PRS meta-analysis (not SNP-level)
+GENOMICCONTROL OFF
+
+# Track sample sizes for proper weighting
+WEIGHT N
+
+# Process CIDR dataset
+MARKER MarkerName
+ALLELE Allele1 Allele2
+EFFECT Effect
+STDERR StdErr
+PVALUE Pvalue
+#LABEL N as N
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude/cidr/cidr_SUBSETNAME/cidr_SUBSETNAME.cox_coeffs_metal.txt
+
+# Process ONCO dataset
+MARKER MarkerName
+ALLELE Allele1 Allele2
+EFFECT Effect
+STDERR StdErr
+PVALUE Pvalue
+#LABEL N as N
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude/onco/onco_SUBSETNAME/onco_SUBSETNAME.cox_coeffs_metal.txt
+
+# Process I370 dataset
+MARKER MarkerName
+ALLELE Allele1 Allele2
+EFFECT Effect
+STDERR StdErr
+PVALUE Pvalue
+#LABEL N as N
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude/i370/i370_SUBSETNAME/i370_SUBSETNAME.cox_coeffs_metal.txt
+
+# Process TCGA dataset
+MARKER MarkerName
+ALLELE Allele1 Allele2
+EFFECT Effect
+STDERR StdErr
+PVALUE Pvalue
+#LABEL N as N
+PROCESS /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude/tcga/tcga_SUBSETNAME/tcga_SUBSETNAME.cox_coeffs_metal.txt
+
+# Output file
+OUTFILE /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude/metal_survival_SUBSETNAME_ .tbl
+
+# Run analysis with heterogeneity testing
+ANALYZE HETEROGENEITY
+
+QUIT
