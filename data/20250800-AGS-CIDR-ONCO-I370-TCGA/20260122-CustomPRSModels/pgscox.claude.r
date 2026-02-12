@@ -207,16 +207,16 @@ for ( PGS in names(pgsscores) ) {
 
 	#	prepare all available covariates for the formula
 	covs=c()
-	if( 'source' %in% names(pheno.file) && length(unique(pheno.file$source)) > 1 ){
-		pheno.file$SourceAGS = ifelse(pheno.file$source =="AGS",1L,0L)
+	if( 'source' %in% names(scores) && length(unique(scores$source)) > 1 ){
+		scores$SourceAGS = ifelse(scores$source =="AGS",1L,0L)
 		covs=c(covs,"SourceAGS")
 	}
 	for( possible in c('age','Age','age_ucsf_surg','SexFemale','chemo','rad','dxyear','ngrade','grade',
 		'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8', 'PC9', 'PC10') ) {
 	
-		if( possible %in% names(pheno.file) ) {
+		if( possible %in% names(scores) ) {
 			print(paste(possible,"found in pheno file"))
-			uniq_count = length(unique(pheno.file[[possible]]))
+			uniq_count = length(unique(scores[[possible]]))
 			print(paste(uniq_count,"values for",possible,"found"))
 			if( uniq_count > 1 ){
 				print(paste("Adding",possible,"to covariates used"))
