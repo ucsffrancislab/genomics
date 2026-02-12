@@ -247,7 +247,24 @@ Hi Jake, yes we only abstracted the information for patients who were oligos. I 
 
 
 
+##	20260212
 
+merge with other covariates
+
+CIDR_ids.csv CIDR_case_covariates.csv IPS_CIDR_446_RAD_TMZ_2025-10-10.csv CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv 
+
+
+```bash
+CIDR_case_covariates.csv
+
+join --header -t, CIDR_ids.csv CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv | head -1 > tmp1.csv
+join --header -t, CIDR_ids.csv CIDR_IPS_phenotype_2025-08-10_with_IPS_ID.csv | tail -n +2 | sort -t, -k3,3 >> tmp1.csv
+
+join --header -t, -1 3 -2 1 tmp1.csv IPS_CIDR_446_RAD_TMZ_2025-10-10.csv  > tmp2.csv
+cut -d, -f3- tmp2.csv > CIDR_case_covariates.20260212.csv
+cat CIDR_case_covariates.20260212.csv | tr ',' '\t' > CIDR_case_covariates.20260212.tsv
+
+```
 
 
 
