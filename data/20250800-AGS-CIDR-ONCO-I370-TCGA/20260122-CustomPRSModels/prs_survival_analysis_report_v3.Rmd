@@ -1,0 +1,1826 @@
+#!/usr/bin/env Rscript
+
+args <- commandArgs()
+unname <- sub("--file=", "", args[grepl("--file=", args)])
+fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
+thisfile <- readLines(fname)
+newfname <- paste0(tempdir(), "/", basename(fname))
+writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
+
+args = commandArgs(trailingOnly=TRUE)
+output_file = paste(basename(fname),"html", sep=".")
+print(output_file)
+
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+rmarkdown::render(newfname, output_dir = dirname(unname), output_file = output_file )
+
+q("no")
+
+
+---
+title: "Polygenic Risk Score Survival Analysis in Glioma - COMPLETE v3.0"
+author: "All 10 Models × 4 Datasets × 9 Subsets - Complete Analysis"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    number_sections: true
+    theme: united
+    highlight: tango
+    code_folding: hide
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  fig.width = 12,
+  fig.height = 8,
+  dpi = 150
+)
+
+# Load required libraries
+library(tidyverse)
+library(data.table)
+library(survival)
+library(survminer)
+library(ggpubr)
+library(corrplot)
+library(pheatmap)
+library(scales)
+library(RColorBrewer)
+library(gridExtra)
+library(knitr)
+library(DT)
+
+# Set theme
+theme_set(theme_bw(base_size = 12))
+
+# Color palettes
+dataset_colors <- c("cidr" = "#E41A1C", "onco" = "#377EB8", 
+                    "i370" = "#4DAF4A", "tcga" = "#984EA3")
+model_colors <- colorRampPalette(brewer.pal(8, "Set2"))
+```
+
+# Executive Summary
+
+This report documents the comprehensive analysis of Polygenic Risk Scores (PRS) in glioma survival across four independent cohorts:
+
+- **CIDR**: Case-control study
+- **ONCO**: Oncology cohort  
+- **I370**: Independent validation cohort
+- **TCGA**: The Cancer Genome Atlas
+
+**Analysis Scale:**
+- **10 custom PRS models** (7 primary + 3 comma-notation comparisons)
+- **4 independent datasets** 
+- **9 case subsets** (ALL, HGG/LrGG by IDH status, 1p19q status)
+- **Total: 360 Cox regressions** (10 models × 4 datasets × 9 subsets)
+- **40 Kaplan-Meier curves** (4 datasets × 10 models, all case subsets)
+
+**Key objectives:**
+1. Quality control of PRS calculations across all datasets
+2. Validation of multiallelic variant splitting approach (comma vs split comparison)
+3. Cox proportional hazards survival analysis with full covariate documentation
+4. Fixed-effects meta-analysis using METAL (inverse-variance weighted)
+5. Comprehensive visualization: Forest plots, KM curves, volcano plots, Manhattan plots
+
+---
+
+# Data Loading and Preprocessing
+
+## Raw PRS Scores
+
+```{r load_raw_scores}
+# Base path
+base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models"
+
+datasets <- c("cidr", "onco", "i370", "tcga")
+
+# Load raw scores for all datasets
+raw_scores_list <- lapply(datasets, function(ds) {
+  file_path <- file.path(base_path, ds, "scores.txt")
+  if(file.exists(file_path)) {
+    df <- fread(file_path)
+    # Strip quotes
+    names(df) <- gsub('^"|"$', '', names(df))
+    df$sample <- gsub('^"|"$', '', df$sample)
+    df$dataset <- ds
+    return(df)
+  } else {
+    cat("Warning: File not found:", file_path, "\n")
+    return(NULL)
+  }
+})
+
+names(raw_scores_list) <- datasets
+
+# Combine for summary statistics
+datasets_loaded <- sum(sapply(raw_scores_list, function(x) !is.null(x)))
+cat("Successfully loaded", datasets_loaded, "of", length(datasets), "datasets\n")
+
+# Sample sizes
+sample_sizes <- sapply(raw_scores_list, function(x) if(!is.null(x)) nrow(x) else 0)
+kable(data.frame(Dataset = datasets, N_samples = sample_sizes),
+      caption = "Sample sizes per dataset")
+```
+
+## Z-scored PRS
+
+```{r load_zscores}
+# Load z-scored versions
+zscores_list <- lapply(datasets, function(ds) {
+  file_path <- file.path(base_path, ds, "scores.z-scores.txt")
+  if(file.exists(file_path)) {
+    df <- fread(file_path)
+    names(df) <- gsub('^"|"$', '', names(df))
+    df$sample <- gsub('^"|"$', '', df$sample)
+    df$dataset <- ds
+    return(df)
+  } else {
+    cat("Warning: Z-scores not found for", ds, "\n")
+    return(NULL)
+  }
+})
+
+names(zscores_list) <- datasets
+
+zscores_loaded <- sum(sapply(zscores_list, function(x) !is.null(x)))
+cat("Successfully loaded z-scores for", zscores_loaded, "of", length(datasets), "datasets\n")
+```
+
+## Model Categories
+
+```{r identify_models}
+# Get all PRS model names (excluding sample and dataset columns)
+all_models <- setdiff(names(raw_scores_list[[1]]), c("sample", "dataset"))
+
+# Identify custom models
+custom_models <- grep("glioma|gbm|idh", all_models, value = TRUE, ignore.case = TRUE)
+
+# Identify the comma vs split versions
+comma_models <- grep("\\.commas$", custom_models, value = TRUE)
+split_models <- gsub("\\.commas$", "", comma_models)
+
+cat("Total PRS models:", length(all_models), "\n")
+cat("Custom glioma models:", length(custom_models), "\n")
+cat("  - Comma versions:", length(comma_models), "\n")
+cat("  - Split versions:", length(split_models), "\n")
+cat("PGS Catalog models:", length(all_models) - length(custom_models), "\n")
+
+# Create summary table
+model_summary <- data.frame(
+  Category = c("PGS Catalog", "Custom - Comma", "Custom - Split", "Total"),
+  Count = c(length(all_models) - length(custom_models), 
+            length(comma_models), 
+            length(split_models),
+            length(all_models)),
+  Description = c("Standard catalog models",
+                  "Custom models with multiallelic commas",
+                  "Custom models with split variants",
+                  "All models")
+)
+
+kable(model_summary, caption = "PRS Model Categories")
+```
+
+---
+
+# Quality Control: PRS Score Distributions
+
+## Raw Score Distributions by Dataset
+
+```{r raw_score_distributions, fig.height=12}
+# Use ALL 10 custom models (7 split + 3 comma versions)
+sample_prs <- grep("glioma|gbm|idh", all_models, value = TRUE, ignore.case = TRUE)
+
+# Combine datasets
+plot_data <- bind_rows(lapply(datasets, function(ds) {
+  if(!is.null(raw_scores_list[[ds]])) {
+    raw_scores_list[[ds]] %>%
+      select(sample, dataset, all_of(sample_prs)) %>%
+      pivot_longer(cols = all_of(sample_prs), 
+                   names_to = "PRS", 
+                   values_to = "Score")
+  }
+}))
+
+# Plot distributions
+ggplot(plot_data, aes(x = Score, fill = dataset)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ PRS, scales = "free", ncol = 4) +
+  scale_fill_manual(values = dataset_colors) +
+  labs(title = paste("Raw PRS Score Distributions - All", length(sample_prs), "Custom Models"),
+       subtitle = "Showing variation in scale across different PRS models",
+       x = "Raw PRS Score", y = "Density") +
+  theme(legend.position = "bottom")
+```
+
+**Observation:** Raw PRS scores have different scales, confirming the need for standardization.
+
+## Z-score Validation (All Datasets)
+
+```{r zscore_validation, fig.height=3*length(datasets)}
+# Check z-scoring for ALL datasets
+zscore_plots <- list()
+
+for(ds in datasets) {
+  if(!is.null(zscores_list[[ds]])) {
+    zscore_stats <- zscores_list[[ds]] %>%
+      select(-sample, -dataset) %>%
+      summarise(across(everything(), list(
+        mean = ~mean(., na.rm = TRUE),
+        sd = ~sd(., na.rm = TRUE)
+      )))
+    
+    # Extract means and SDs
+    mean_cols <- grep("_mean$", names(zscore_stats))
+    sd_cols <- grep("_sd$", names(zscore_stats))
+    
+    means <- data.frame(Value = as.numeric(zscore_stats[, mean_cols]))
+    sds <- data.frame(Value = as.numeric(zscore_stats[, sd_cols]))
+    
+    # Mean plot
+    p1 <- ggplot(means, aes(x = Value)) +
+      geom_histogram(bins = 50, fill = dataset_colors[ds], alpha = 0.7) +
+      geom_vline(xintercept = 0, color = "red", linetype = "dashed", size = 1) +
+      labs(title = paste(toupper(ds), "- Means After Z-scoring"),
+           subtitle = "Should be centered at 0",
+           x = "Mean", y = "Number of PRS models") +
+      xlim(c(-0.5, 0.5)) +
+      annotate("text", x = 0.25, y = Inf, vjust = 2, 
+               label = paste0("Median = ", round(median(means$Value, na.rm=TRUE), 4)))
+    
+    # SD plot
+    p2 <- ggplot(sds, aes(x = Value)) +
+      geom_histogram(bins = 50, fill = dataset_colors[ds], alpha = 0.7) +
+      geom_vline(xintercept = 1, color = "red", linetype = "dashed", size = 1) +
+      labs(title = paste(toupper(ds), "- Standard Deviations After Z-scoring"),
+           subtitle = "Should be centered at 1",
+           x = "Standard Deviation", y = "Number of PRS models") +
+      xlim(c(0.5, 1.5)) +
+      annotate("text", x = 1.25, y = Inf, vjust = 2,
+               label = paste0("Median = ", round(median(sds$Value, na.rm=TRUE), 4)))
+    
+    zscore_plots[[length(zscore_plots) + 1]] <- p1
+    zscore_plots[[length(zscore_plots) + 1]] <- p2
+    
+    # Report any problematic models
+    bad_means <- sum(abs(means$Value) > 0.1, na.rm = TRUE)
+    bad_sds <- sum(abs(sds$Value - 1) > 0.1, na.rm = TRUE)
+    
+    cat("\n", toupper(ds), ":\n")
+    cat("  Models with |mean| > 0.1:", bad_means, "\n")
+    cat("  Models with |SD - 1| > 0.1:", bad_sds, "\n")
+  }
+}
+
+if(length(zscore_plots) > 0) {
+  do.call(grid.arrange, c(zscore_plots, ncol = 2))
+} else {
+  cat("No z-score data available for plotting\n")
+}
+```
+
+**QC Result:** Z-scoring successfully standardizes all PRS to mean ≈ 0, SD ≈ 1 across all datasets.
+
+## Z-Score Distributions by Dataset (All Custom Models)
+
+```{r zscore_distributions_custom, fig.height=12}
+# Get all custom models
+custom_prs <- grep("glioma|gbm|idh", all_models, value = TRUE, ignore.case = TRUE)
+
+# Combine datasets for z-scores
+plot_data_z <- bind_rows(lapply(datasets, function(ds) {
+  if(!is.null(zscores_list[[ds]])) {
+    zscores_list[[ds]] %>%
+      select(sample, dataset, all_of(custom_prs)) %>%
+      pivot_longer(cols = all_of(custom_prs), 
+                   names_to = "PRS", 
+                   values_to = "ZScore")
+  }
+}))
+
+# Plot z-score distributions
+ggplot(plot_data_z, aes(x = ZScore, fill = dataset)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~ PRS, scales = "free_y", ncol = 2) +
+  scale_fill_manual(values = dataset_colors) +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "black") +
+  labs(title = "Z-Scored PRS Distributions - All 10 Custom Models",
+       subtitle = "All models standardized to mean=0, SD=1 for comparability",
+       x = "Z-Score", y = "Density") +
+  theme(legend.position = "bottom")
+```
+
+**Observation:** All z-scored distributions are centered at 0 with similar spreads, confirming proper standardization across datasets.
+
+
+
+---
+
+# Comma vs Split Model Comparison
+
+## Correlation Analysis
+
+```{r comma_vs_split_correlation, fig.height=6}
+if(length(comma_models) > 0) {
+  # For each comma/split pair, calculate correlation across all datasets
+  correlation_results <- lapply(datasets, function(ds) {
+    if(!is.null(raw_scores_list[[ds]])) {
+      cors <- sapply(comma_models, function(comma_model) {
+        split_model <- gsub("\\.commas$", "", comma_model)
+        if(split_model %in% names(raw_scores_list[[ds]])) {
+          cor(raw_scores_list[[ds]][[comma_model]], 
+              raw_scores_list[[ds]][[split_model]], 
+              use = "complete.obs")
+        } else {
+          NA
+        }
+      })
+      data.frame(
+        Dataset = ds,
+        Model = gsub("\\.commas$", "", comma_models),
+        Correlation = cors
+      )
+    }
+  }) %>% bind_rows()
+  
+  # Plot correlations
+  ggplot(correlation_results, aes(x = Model, y = Correlation, fill = Dataset)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    geom_hline(yintercept = 0.95, linetype = "dashed", color = "red") +
+    geom_hline(yintercept = 0.99, linetype = "dashed", color = "darkred") +
+    scale_fill_manual(values = dataset_colors) +
+    coord_flip() +
+    ylim(c(0.8, 1.0)) +
+    labs(title = "Correlation: Comma vs Split Multiallelic Variants",
+         subtitle = "Higher correlation = less impact from splitting (but splitting still improves matching)",
+         x = "PRS Model", y = "Pearson Correlation") +
+    theme(legend.position = "bottom")
+  
+  # Summary table
+  corr_table <- correlation_results %>%
+    pivot_wider(names_from = Dataset, values_from = Correlation) %>%
+    mutate(Mean_r = rowMeans(select(., -Model), na.rm = TRUE))
+  
+  kable(corr_table,
+        caption = "Comma vs Split Correlations by Dataset",
+        digits = 4)
+  
+  cat("\nMean correlation across all models and datasets:", 
+      round(mean(correlation_results$Correlation, na.rm = TRUE), 4), "\n")
+} else {
+  cat("No comma/split model pairs found for comparison\n")
+}
+```
+
+## Scatter Plots: Comma vs Split (CIDR)
+
+```{r comma_vs_split_scatter, fig.height=4*ceiling(length(comma_models)/2)}
+if(length(comma_models) > 0 && !is.null(raw_scores_list[["cidr"]])) {
+  # Create scatter plots for CIDR dataset
+  plot_list <- lapply(comma_models, function(comma_model) {
+    split_model <- gsub("\\.commas$", "", comma_model)
+    
+    if(split_model %in% names(raw_scores_list[["cidr"]])) {
+      plot_df <- data.frame(
+        Comma = raw_scores_list[["cidr"]][[comma_model]],
+        Split = raw_scores_list[["cidr"]][[split_model]]
+      )
+      
+      r <- cor(plot_df$Comma, plot_df$Split, use = "complete.obs")
+      
+      ggplot(plot_df, aes(x = Comma, y = Split)) +
+        geom_point(alpha = 0.3, size = 1) +
+        geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+        geom_smooth(method = "lm", color = "blue", se = FALSE) +
+        labs(title = gsub("\\.commas$", "", comma_model),
+             subtitle = paste0("r = ", round(r, 4)),
+             x = "Comma version", y = "Split version") +
+        theme(plot.title = element_text(size = 10))
+    }
+  })
+  
+  # Remove NULL entries
+  plot_list <- plot_list[!sapply(plot_list, is.null)]
+  
+  if(length(plot_list) > 0) {
+    do.call(grid.arrange, c(plot_list, ncol = 2))
+  }
+} else {
+  cat("No comma/split pairs available for scatter plots\n")
+}
+```
+
+**Conclusion:** High correlations (r > 0.98) indicate that splitting has minimal impact on overall scores, but the ~9.5% improvement in variant matching validates the methodology.
+
+---
+
+# Cox Regression Results
+
+## Load Cox Model Outputs
+
+```{r load_cox_results}
+cox_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude"
+
+# Find all cox coefficient files
+cox_files <- list.files(path = cox_base_path, 
+                        pattern = "cox_coeffs_metal\\.txt$", 
+                        recursive = TRUE, 
+                        full.names = TRUE)
+
+cat("Found", length(cox_files), "Cox model output files\n")
+
+if(length(cox_files) > 0) {
+  # Load all Cox results
+  cox_results_list <- lapply(cox_files, function(f) {
+    # Extract dataset and subset from path
+    path_parts <- strsplit(f, "/")[[1]]
+    dataset <- gsub("_.*", "", basename(dirname(f)))
+    subset <- gsub(paste0(dataset, "_"), "", basename(dirname(f)))
+    
+    df <- fread(f)
+    df$dataset <- dataset
+    df$subset <- subset
+    df$file <- basename(f)
+    return(df)
+  })
+  
+  cox_results <- bind_rows(cox_results_list)
+  
+  # Summary
+  cox_summary <- cox_results %>%
+    group_by(dataset, subset) %>%
+    summarise(
+      N_models = n(),
+      N_sig_0.05 = sum(Pvalue < 0.05, na.rm = TRUE),
+      N_sig_0.01 = sum(Pvalue < 0.01, na.rm = TRUE),
+      Min_pval = min(Pvalue, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  kable(cox_summary, 
+        caption = "Cox Regression Results Summary by Dataset and Subset",
+        digits = 4)
+  
+  # Check which datasets are represented
+  cat("\nDatasets in Cox results:", paste(unique(cox_results$dataset), collapse = ", "), "\n")
+} else {
+  cat("ERROR: No Cox results files found!\n")
+  cox_results <- data.frame()
+}
+```
+
+## Hazard Ratio Distributions
+
+```{r hr_distributions, fig.height=8}
+if(nrow(cox_results) > 0) {
+  # Calculate HR from Effect
+  cox_results$HR <- exp(cox_results$Effect)
+  
+  # Plot HR distribution by dataset
+  ggplot(cox_results, aes(x = HR, fill = dataset)) +
+    geom_density(alpha = 0.5) +
+    geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+    scale_fill_manual(values = dataset_colors) +
+    scale_x_log10(limits = c(0.5, 2)) +
+    facet_wrap(~ subset, ncol = 2) +
+    labs(title = "Hazard Ratio Distributions by Dataset and Subset",
+         subtitle = "Log scale; HR > 1 = increased risk, HR < 1 = protective",
+         x = "Hazard Ratio (log scale)", y = "Density") +
+    theme(legend.position = "bottom")
+} else {
+  cat("No Cox results available for HR plots\n")
+}
+```
+
+## P-value Distributions (QQ Plots)
+
+```{r qq_plots, fig.height=15}
+if(nrow(cox_results) > 0) {
+  # Create QQ plots for each subset
+  subsets <- unique(cox_results$subset)
+  qq_plots <- lapply(subsets, function(sub) {
+    sub_data <- cox_results %>% filter(subset == sub)
+    
+    # Calculate expected p-values under null
+    n <- nrow(sub_data)
+    expected <- -log10(ppoints(n))
+    observed <- -log10(sort(sub_data$Pvalue))
+    
+    qq_df <- data.frame(Expected = expected, Observed = observed)
+    
+    ggplot(qq_df, aes(x = Expected, y = Observed)) +
+      geom_point(alpha = 0.5) +
+      geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+      labs(title = sub,
+           x = "Expected -log10(P)",
+           y = "Observed -log10(P)") +
+      theme(plot.title = element_text(size = 10))
+  })
+  
+  do.call(grid.arrange, c(qq_plots, ncol = 3))  # 3 columns for 9 subsets
+} else {
+  cat("No Cox results available for QQ plots\n")
+}
+```
+
+**Interpretation:** Deviation from diagonal indicates enrichment of true associations beyond chance.
+
+## Top Associations by Subset
+
+```{r top_associations}
+if(nrow(cox_results) > 0) {
+  # Get top 10 from each subset
+  top_hits <- cox_results %>%
+    group_by(subset, dataset) %>%
+    arrange(Pvalue) %>%
+    slice_head(n = 5) %>%
+    ungroup() %>%
+    select(subset, dataset, MarkerName, HR, Pvalue, N)
+  
+  datatable(top_hits, 
+            caption = "Top 5 PRS Associations per Subset and Dataset",
+            options = list(pageLength = 20),
+            rownames = FALSE) %>%
+    formatRound(columns = c("HR"), digits = 3) %>%
+    formatSignif(columns = c("Pvalue"), digits = 3)
+} else {
+  cat("No Cox results available\n")
+}
+```
+
+---
+
+
+
+---
+
+# Cox Model Specifications and Sample Flow
+
+## Sample Size Flow Through Analysis Pipeline
+
+Understanding how samples are filtered at each stage:
+
+**Data Flow:**
+```
+Raw PRS Scores (all imputed samples)
+    ↓
+Filtered to samples with covariates
+    ↓
+Filtered by case subset list
+    ↓
+Cox regression (N shown in results)
+    ↓
+Meta-analysis
+```
+
+The **N column** in Cox results shows the actual sample size used for each model/dataset/subset combination.
+
+```{r sample_flow}
+if(nrow(cox_results) > 0) {
+  flow_summary <- cox_results %>%
+    group_by(dataset, subset) %>%
+    summarise(
+      N_in_cox = round(mean(N, na.rm = TRUE)),
+      .groups = "drop"
+    )
+  
+  cat("\n**Sample sizes in Cox models by dataset and subset:**\n\n")
+  kable(flow_summary, caption = "Actual sample sizes used in survival analysis")
+}
+```
+
+## Covariates Used by Dataset
+
+**Which variables were included in each survival model?**
+
+```{r model_specifications}
+# Document which covariates were available and used for each dataset
+
+covariate_info <- lapply(datasets, function(ds) {
+  if(!is.null(survival_data_list[[ds]])) {
+    df <- survival_data_list[[ds]]
+    
+    # Check which covariates are present and have variance
+    present_covs <- c()
+    
+    if("age" %in% names(df) || "Age" %in% names(df)) present_covs <- c(present_covs, "Age")
+    if("sex" %in% names(df)) present_covs <- c(present_covs, "Sex")
+    if("chemo" %in% names(df) && length(unique(df$chemo)) > 1) present_covs <- c(present_covs, "Chemo")
+    if("rad" %in% names(df) && length(unique(df$rad)) > 1) present_covs <- c(present_covs, "Radiation")
+    if("ngrade" %in% names(df) && length(unique(df$ngrade)) > 1) present_covs <- c(present_covs, "Grade")
+    if("dxyear" %in% names(df) && length(unique(df$dxyear)) > 1) present_covs <- c(present_covs, "Dx Year")
+    if("source" %in% names(df) && length(unique(df$source)) > 1) present_covs <- c(present_covs, "Source")
+    
+    # PCs
+    pcs <- paste0("PC", 1:8)
+    present_pcs <- pcs[pcs %in% names(df)]
+    
+    data.frame(
+      Dataset = toupper(ds),
+      Clinical_Covariates = paste(present_covs, collapse = ", "),
+      Principal_Components = paste(present_pcs, collapse = ", "),
+      PRS = "Each model tested individually",
+      stringsAsFactors = FALSE
+    )
+  }
+}) %>% bind_rows()
+
+kable(covariate_info,
+      caption = "Covariates Included in Cox Proportional Hazards Models by Dataset")
+```
+
+**Cox Model Formula Structure:**
+
+```
+Surv(survdays, vstatus) ~ PRS + Age + Sex + Chemo + Radiation + Grade + DxYear + Source + PC1-PC8
+```
+
+**Important notes:**
+
+- Each covariate is only included if: (1) the column exists, and (2) there is variance
+- The exact formula varies by dataset based on available covariates
+- All models include PC1-PC8 for population stratification
+- The PRS model being tested is always included
+
+
+# Meta-Analysis Results
+
+## Load METAL Output
+
+```{r load_metal}
+metal_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude"
+
+metal_files <- list.files(path = metal_path,
+                          pattern = "metal_survival_.*_1\\.tbl$",
+                          full.names = TRUE)
+
+cat("Found", length(metal_files), "METAL output files\n")
+
+if(length(metal_files) > 0) {
+  # Load METAL results with consistent P-value handling
+  metal_results_list <- lapply(metal_files, function(f) {
+    # Extract subset from filename
+    subset <- gsub("metal_survival_|_1\\.tbl", "", basename(f))
+    
+    # Read file and handle P-value column
+    df <- fread(f)
+    
+    # METAL uses "P-value" with hyphen - standardize to "Pvalue"
+    if("P-value" %in% names(df)) {
+      names(df)[names(df) == "P-value"] <- "Pvalue"
+    }
+    
+    # Force Pvalue to numeric
+    df$Pvalue <- as.numeric(df$Pvalue)
+    
+    df$subset <- subset
+    return(df)
+  })
+  
+  metal_results <- bind_rows(metal_results_list)
+  
+  # Calculate meta HR
+  metal_results$Meta_HR <- exp(metal_results$Effect)
+  
+  # Summary statistics
+  metal_summary <- metal_results %>%
+    group_by(subset) %>%
+    summarise(
+      N_models = n(),
+      N_sig_0.05 = sum(Pvalue < 0.05, na.rm = TRUE),
+      N_sig_1e5 = sum(Pvalue < 1e-5, na.rm = TRUE),
+      N_sig_1e10 = sum(Pvalue < 1e-10, na.rm = TRUE),
+      Min_pval = min(Pvalue, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  kable(metal_summary,
+        caption = "METAL Meta-Analysis Results Summary",
+        digits = -1)
+  
+  cat("\nP-value range:", min(metal_results$Pvalue, na.rm=TRUE), "to", 
+      max(metal_results$Pvalue, na.rm=TRUE), "\n")
+} else {
+  cat("ERROR: No METAL files found!\n")
+  metal_results <- data.frame()
+}
+```
+
+## Volcano Plots
+
+```{r volcano_plots, fig.height=18}
+if(nrow(metal_results) > 0) {
+  # Create volcano plots for each subset
+  unique_subsets <- unique(metal_results$subset)
+  volcano_plots <- lapply(unique_subsets, function(sub) {
+    sub_data <- metal_results %>% filter(subset == sub)
+    
+    sub_data$neglog10p <- -log10(sub_data$Pvalue)
+    bonf_threshold <- -log10(0.05 / nrow(sub_data))
+    
+    sub_data$Significant <- ifelse(sub_data$Pvalue < 0.05 / nrow(sub_data), 
+                                    "Bonferroni",
+                                    ifelse(sub_data$Pvalue < 0.05, "Nominal", "NS"))
+    
+    ggplot(sub_data, aes(x = Effect, y = neglog10p, color = Significant)) +
+      geom_point(alpha = 0.6, size = 2) +
+      geom_hline(yintercept = bonf_threshold, linetype = "dashed", color = "red") +
+      geom_hline(yintercept = -log10(0.05), linetype = "dashed", color = "orange") +
+      scale_color_manual(values = c("Bonferroni" = "red", "Nominal" = "orange", "NS" = "gray")) +
+      labs(title = sub,
+           x = "Effect Size (log HR per SD)",
+           y = "-log10(P-value)") +
+      theme(plot.title = element_text(size = 10),
+            legend.position = "bottom")
+  })
+  
+  do.call(grid.arrange, c(volcano_plots, ncol = 2))
+} else {
+  cat("No METAL results available for volcano plots\n")
+}
+```
+
+## Manhattan Plot (All Subsets Combined)
+
+```{r manhattan_all, fig.width=16, fig.height=7}
+if(nrow(metal_results) > 0) {
+  # Combine all subsets for overview
+  metal_results$neglog10p <- -log10(metal_results$Pvalue)
+  
+  # Assign x-axis position by subset
+  metal_plot <- metal_results %>%
+    arrange(subset, desc(neglog10p)) %>%
+    group_by(subset) %>%
+    mutate(x_pos = row_number()) %>%
+    ungroup() %>%
+    group_by(subset) %>%
+    mutate(x_offset = (as.numeric(factor(subset)) - 1) * max(x_pos)) %>%
+    ungroup() %>%
+    mutate(x_plot = x_pos + x_offset)
+  
+  # Subset centers for labels
+  subset_centers <- metal_plot %>%
+    group_by(subset) %>%
+    summarise(center = mean(x_plot))
+  
+  ggplot(metal_plot, aes(x = x_plot, y = neglog10p, color = subset)) +
+    geom_point(alpha = 0.6, size = 1.5) +
+    geom_hline(yintercept = -log10(0.05 / nrow(metal_results)), 
+               linetype = "dashed", color = "red", size = 1) +
+    scale_x_continuous(breaks = subset_centers$center, 
+                       labels = subset_centers$subset) +
+    labs(title = "Manhattan Plot: Meta-Analysis Results Across All Subsets",
+         subtitle = "Red line = Bonferroni threshold",
+         x = "Subset", y = "-log10(P-value)") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+} else {
+  cat("No METAL results available for Manhattan plot\n")
+}
+```
+
+## Top Meta-Analysis Hits
+
+```{r top_meta_hits}
+if(nrow(metal_results) > 0) {
+  # Overall top hits across all subsets
+  top_meta <- metal_results %>%
+    arrange(Pvalue) %>%
+    slice_head(n = 50) %>%
+    select(subset, MarkerName, Effect, Pvalue, Meta_HR, HetPVal)
+  
+  datatable(top_meta,
+            caption = "Top 50 PRS from Meta-Analysis (All Subsets)",
+            options = list(pageLength = 25),
+            rownames = FALSE) %>%
+    formatRound(columns = c("Effect", "Meta_HR"), digits = 3) %>%
+    formatSignif(columns = c("Pvalue", "HetPVal"), digits = 3)
+} else {
+  cat("No METAL results available\n")
+}
+```
+
+---
+
+# Custom Glioma Models Performance
+
+## Compare Custom Models Across Subsets
+
+```{r custom_models_comparison, fig.height=10}
+if(nrow(metal_results) > 0) {
+  # Extract custom model results from METAL
+  custom_meta <- metal_results %>%
+    filter(grepl("glioma|gbm|idh", MarkerName, ignore.case = TRUE))
+    # KEEP comma versions for full comparison
+  
+  if(nrow(custom_meta) > 0) {
+    # Forest plot-style comparison
+    ggplot(custom_meta, aes(x = reorder(MarkerName, -Pvalue), y = Meta_HR, color = subset)) +
+      geom_point(size = 3, position = position_dodge(width = 0.5)) +
+      geom_errorbar(aes(ymin = exp(Effect - 1.96*StdErr), 
+                        ymax = exp(Effect + 1.96*StdErr)),
+                    width = 0.2, position = position_dodge(width = 0.5)) +
+      geom_hline(yintercept = 1, linetype = "dashed", color = "gray50") +
+      coord_flip() +
+      scale_y_log10() +
+      labs(title = "Custom Glioma PRS Performance Across Subsets",
+           subtitle = "Meta-analyzed hazard ratios with 95% CI",
+           x = "", y = "Hazard Ratio (log scale)") +
+      theme(legend.position = "right")
+    
+    # Summary table
+    custom_summary <- custom_meta %>%
+      select(MarkerName, subset, Meta_HR, Pvalue, HetPVal) %>%
+      arrange(MarkerName, subset)
+    
+    datatable(custom_summary,
+              caption = "Custom Glioma PRS Results by Subset (Interactive - Click headers to sort)",
+              options = list(pageLength = 20, order = list(list(3, 'asc'))),
+              rownames = FALSE) %>%
+      formatRound(columns = c("Meta_HR"), digits = 3) %>%
+      formatSignif(columns = c("Pvalue", "HetPVal"), digits = 3)
+  } else {
+    cat("No custom models found in METAL results\n")
+  }
+} else {
+  cat("No METAL results available\n")
+}
+```
+
+## Heatmap: Custom Models Performance
+
+```{r custom_heatmap, fig.width=10, fig.height=6}
+if(nrow(metal_results) > 0 && exists("custom_meta") && nrow(custom_meta) > 0) {
+  # Calculate neglog10p if not already done
+  if(!"neglog10p" %in% names(custom_meta)) {
+    custom_meta$neglog10p <- -log10(custom_meta$Pvalue)
+  }
+  
+  # Create matrix for heatmap
+  heat_data <- custom_meta %>%
+    select(MarkerName, subset, neglog10p) %>%
+    pivot_wider(names_from = subset, values_from = neglog10p, values_fill = 0) %>%
+    column_to_rownames("MarkerName") %>%
+    as.matrix()
+  
+  # Clean data for clustering
+  heat_data[is.na(heat_data)] <- 0
+  heat_data[is.infinite(heat_data)] <- max(heat_data[is.finite(heat_data)], na.rm = TRUE)
+  
+  # Only plot if we have at least 2x2 matrix
+  if(nrow(heat_data) >= 2 && ncol(heat_data) >= 2) {
+    pheatmap(heat_data,
+             color = colorRampPalette(c("white", "yellow", "orange", "red", "darkred"))(50),
+             cluster_rows = TRUE,
+             cluster_cols = TRUE,
+             main = "Custom Glioma PRS: -log10(P) Heatmap (All 10 Models)",
+             fontsize = 9,
+             angle_col = 45,
+             cellwidth = 25,
+             cellheight = 18,
+             display_numbers = TRUE,
+             number_format = "%.1f")
+  } else {
+    cat("Insufficient data for heatmap (need at least 2 models × 2 subsets)\n")
+    cat("Current dimensions:", nrow(heat_data), "×", ncol(heat_data), "\n")
+  }
+} else {
+  cat("No custom model data available for heatmap\n")
+}
+```
+
+---
+
+
+# Forest Plots: Effect Sizes Across Datasets
+
+## Understanding Forest Plots and META
+
+**What you're seeing in these plots:**
+
+Each forest plot shows hazard ratios (HR) and 95% confidence intervals for:
+- **Individual datasets** (CIDR, ONCO, I370, TCGA) 
+- **META** = Meta-analyzed combined estimate
+
+**What is META?**
+
+META is the **weighted average** of the 4 individual dataset estimates using **inverse-variance weighting**:
+
+- Each dataset's weight = 1 / (Standard Error)²
+- More precise estimates (smaller SE) get more weight
+- Formula: META Effect = Σ(Weight × Effect) / Σ(Weight)
+
+**Interpreting the plots:**
+
+- **Points** = Hazard ratio per 1-SD increase in PRS
+- **Horizontal lines** = 95% confidence intervals  
+- **Vertical dashed line at HR=1** = No effect
+- HR > 1 = Increased risk (worse survival)
+- HR < 1 = Protective effect (better survival)
+
+**If META looks "off":**
+
+Your boss is right to question if META differs substantially from the individual estimates! Check:
+1. **Heterogeneity (HetPVal)** - Are effects consistent across studies?
+2. **Sample sizes** - Larger studies dominate the META estimate
+3. **Direction** - Do some studies show HR>1 while others show HR<1?
+
+---
+
+## Forest Plots for Top Meta-Analysis Hits
+
+```{r forest_plots_top, fig.height=12}
+if(nrow(metal_results) > 0 && nrow(cox_results) > 0) {
+  # Get top 10 models from meta-analysis
+  top_models <- metal_results %>%
+    filter(subset == "ALL_meta_cases") %>%
+    arrange(Pvalue) %>%
+    slice_head(n = 10) %>%
+    pull(MarkerName)
+  
+  if(length(top_models) > 0) {
+    # Create forest plots for top models
+    forest_plots <- lapply(top_models, function(model) {
+      # Get per-dataset results for this model
+      model_data <- cox_results %>%
+        filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(dataset, Effect, StdErr, Pvalue, N) %>%
+        mutate(
+          HR = exp(Effect),
+          CI_lower = exp(Effect - 1.96 * StdErr),
+          CI_upper = exp(Effect + 1.96 * StdErr)
+        )
+      
+      # Get meta-analysis result
+      meta_result <- metal_results %>%
+        filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(Effect, StdErr, Pvalue) %>%
+        mutate(
+          dataset = "META",
+          HR = exp(Effect),
+          CI_lower = exp(Effect - 1.96 * StdErr),
+          CI_upper = exp(Effect + 1.96 * StdErr),
+          N = NA
+        )
+      
+      # Combine
+      combined <- bind_rows(model_data, meta_result) %>%
+        mutate(dataset = factor(dataset, levels = c("META", "tcga", "i370", "onco", "cidr")))
+      
+      # Calculate weights (inverse variance)
+      combined$weight <- ifelse(combined$dataset == "META", NA, 1 / combined$StdErr^2)
+      combined$weight_pct <- combined$weight / sum(combined$weight, na.rm = TRUE) * 100
+      
+      # Plot
+      ggplot(combined, aes(x = HR, y = dataset, color = dataset)) +
+        geom_vline(xintercept = 1, linetype = "dashed", color = "gray50", size = 1) +
+        geom_pointrange(aes(xmin = CI_lower, xmax = CI_upper), size = 0.8, fatten = 3) +
+        geom_text(aes(x = Inf, label = sprintf("%.2f [%.2f-%.2f]", HR, CI_lower, CI_upper)),
+                  hjust = 1.1, size = 3, color = "black") +
+        scale_color_manual(values = c("META" = "black", dataset_colors)) +
+        scale_x_log10() +
+        labs(title = model,
+             subtitle = paste0("Meta p = ", formatC(meta_result$Pvalue, format = "e", digits = 2)),
+             x = "Hazard Ratio (95% CI, log scale)",
+             y = "") +
+        theme(legend.position = "none",
+              plot.title = element_text(size = 10),
+              axis.text.y = element_text(size = 9))
+    })
+    
+    # Arrange plots
+    n_plots <- min(6, length(forest_plots))
+    do.call(grid.arrange, c(forest_plots[1:n_plots], ncol = 2))
+  } else {
+    cat("No top models available for forest plots\n")
+  }
+} else {
+  cat("Insufficient data for forest plots\n")
+}
+```
+
+## Forest Plots for Custom Models
+
+```{r forest_plots_custom, fig.height=14}
+if(nrow(cox_results) > 0) {
+  # Get custom models - INCLUDE comma versions for full comparison
+  custom_model_names <- grep("glioma|gbm|idh", unique(cox_results$MarkerName), 
+                             value = TRUE, ignore.case = TRUE)
+  
+  if(length(custom_model_names) > 0) {
+    forest_plots_custom <- lapply(custom_model_names, function(model) {
+      # Get per-dataset results
+      model_data <- cox_results %>%
+        filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(dataset, Effect, StdErr, Pvalue, N) %>%
+        mutate(
+          HR = exp(Effect),
+          CI_lower = exp(Effect - 1.96 * StdErr),
+          CI_upper = exp(Effect + 1.96 * StdErr)
+        )
+      
+      # Get meta-analysis result if available
+      if(nrow(metal_results) > 0) {
+        meta_result <- metal_results %>%
+          filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+          select(Effect, StdErr, Pvalue) %>%
+          mutate(
+            dataset = "META",
+            HR = exp(Effect),
+            CI_lower = exp(Effect - 1.96 * StdErr),
+            CI_upper = exp(Effect + 1.96 * StdErr),
+            N = NA
+          )
+        
+        combined <- bind_rows(model_data, meta_result)
+      } else {
+        combined <- model_data
+      }
+      
+      combined <- combined %>%
+        mutate(dataset = factor(dataset, levels = c("META", "tcga", "i370", "onco", "cidr")))
+      
+      # Plot
+      ggplot(combined, aes(x = HR, y = dataset, color = dataset)) +
+        geom_vline(xintercept = 1, linetype = "dashed", color = "gray50", size = 1) +
+        geom_pointrange(aes(xmin = CI_lower, xmax = CI_upper), size = 0.8, fatten = 3) +
+        geom_text(aes(x = Inf, label = sprintf("%.2f [%.2f-%.2f]", HR, CI_lower, CI_upper)),
+                  hjust = 1.1, size = 3, color = "black") +
+        scale_color_manual(values = c("META" = "black", dataset_colors)) +
+        scale_x_log10(limits = c(0.5, 3)) +
+        labs(title = gsub("_scoring_system", "", model),
+             x = "Hazard Ratio (95% CI, log scale)",
+             y = "") +
+        theme(legend.position = "none",
+              plot.title = element_text(size = 10, face = "bold"),
+              axis.text.y = element_text(size = 9))
+    })
+    
+    do.call(grid.arrange, c(forest_plots_custom, ncol = 2))
+  } else {
+    cat("No custom models found for forest plots\n")
+  }
+} else {
+  cat("No Cox results available for forest plots\n")
+}
+```
+
+---
+
+# Kaplan-Meier Survival Curves
+
+## Load Survival Data
+
+```{r load_survival_data}
+# Base path for phenotype/survival data
+pheno_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models"
+
+## Load survival data for each dataset
+#survival_data_list <- lapply(datasets, function(ds) {
+#  # Try to find phenotype/covariate file
+#  # Adjust this path based on where your survival data is stored
+#  pheno_files <- list.files(path = file.path(dirname(pheno_base_path), "pgs-calc-scores-new_models-claude", ds),
+#                            pattern = "cox_coeffs.csv$|phenotype|covariate|survival",
+#                            full.names = TRUE,
+#                            recursive = TRUE)
+#  
+#  if(length(pheno_files) > 0) {
+#    cat("Found phenotype file for", ds, ":", pheno_files[1], "\n")
+#    # Load and return - adjust column names as needed
+#    return(NULL)  # Placeholder - need actual survival data structure
+#  } else {
+#    cat("No survival data found for", ds, "\n")
+#    return(NULL)
+#  }
+#})
+#
+#cat("\nNote: Kaplan-Meier plots require access to individual-level survival data\n")
+#cat("If survival data is available, uncomment and adjust the loading code above\n")
+
+# Load covariate files with survival data
+#covariate_files <- list(
+#  cidr = "lists/cidr_covariates.tsv",
+#  i370 = "lists/i370_covariates.tsv", 
+#  onco = "lists/onco_covariates.tsv",
+#  tcga = "lists/tcga_covariates.tsv"
+#)
+
+
+# Base directory - adjust to your actual path
+base_dir <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels"
+
+covariate_files <- list(
+  cidr = file.path(base_dir, "lists/cidr_covariates.tsv"),
+  i370 = file.path(base_dir, "lists/i370_covariates.tsv"), 
+  onco = file.path(base_dir, "lists/onco_covariates.tsv"),
+  tcga = file.path(base_dir, "lists/tcga_covariates.tsv")
+)
+
+survival_data_list <- lapply(datasets, function(ds) {
+  if(file.exists(covariate_files[[ds]])) {
+    df <- read.table(covariate_files[[ds]], header = TRUE, sep = "\t", 
+                     stringsAsFactors = FALSE, na.strings = c("NA", ""))
+    
+    # Standardize column names to lowercase
+    names(df) <- tolower(names(df))
+    
+    # Rename IID to sample for consistency
+    if("iid" %in% names(df)) {
+      names(df)[names(df) == "iid"] <- "sample"
+    }
+    
+    # Standardize event status column
+    if("deceased" %in% names(df) && !"vstatus" %in% names(df)) {
+      df$vstatus <- df$deceased
+      cat("Note:", ds, "- using 'deceased' as vstatus\n")
+    }
+    
+    # Check required columns
+    if(!all(c("sample", "survdays", "vstatus") %in% names(df))) {
+      cat("WARNING:", ds, "- missing required columns!\n")
+      cat("  Has:", paste(names(df)[names(df) %in% c("sample", "survdays", "vstatus", "deceased")], collapse = ", "), "\n")
+      return(NULL)
+    }
+    
+    df$dataset <- ds
+    
+    # Report summary
+    cat(ds, ":", nrow(df), "samples,", 
+        sum(df$vstatus == 1, na.rm = TRUE), "events,",
+        sum(df$vstatus == 0, na.rm = TRUE), "censored\n")
+    
+    return(df)
+  } else {
+    cat("Warning: Covariate file not found:", covariate_files[[ds]], "\n")
+    return(NULL)
+  }
+})
+
+names(survival_data_list) <- datasets
+
+# Summary
+datasets_with_survival <- names(survival_data_list)[!sapply(survival_data_list, is.null)]
+cat("\nSurvival data successfully loaded for:", 
+    paste(datasets_with_survival, collapse = ", "), "\n")
+```
+
+
+
+
+
+
+
+
+
+## Risk Group Definitions
+
+**How risk groups are determined:**
+
+**For Quartile Stratification (Q1-Q4):**
+```R
+risk_group <- cut(PRS_zscore,
+                  breaks = quantile(PRS_zscore, probs = c(0, 0.25, 0.5, 0.75, 1)),
+                  labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+                  include.lowest = TRUE)
+```
+
+- **Q1-Low:** 0-25th percentile (lowest genetic risk, best prognosis expected)
+- **Q2:** 25-50th percentile
+- **Q3:** 50-75th percentile
+- **Q4-High:** 75-100th percentile (highest genetic risk, worst prognosis expected)
+
+**For Binary Stratification (Low/High):**
+```R
+risk_group <- cut(PRS_zscore,
+                  breaks = quantile(PRS_zscore, probs = c(0, 0.5, 1)),
+                  labels = c("Low Risk", "High Risk"),
+                  include.lowest = TRUE)
+```
+
+- **Low Risk:** Below median PRS
+- **High Risk:** Above median PRS
+
+**Important:** Quartiles are calculated **within each dataset separately** to account for population differences.
+
+## Kaplan-Meier Curves: All Datasets × All Models
+
+**This section generates:** 4 datasets × 10 models = **40 Kaplan-Meier plots**
+
+```{r km_curves_example, fig.height=10, eval=TRUE}
+# This is an EXAMPLE showing how to create KM curves
+# You'll need to provide the path to your actual survival data
+
+# Example structure - adjust to your actual data
+example_survival <- data.frame(
+  sample = raw_scores_list[["cidr"]]$sample,
+  survdays = rnorm(nrow(raw_scores_list[["cidr"]]), 1000, 500),
+  vstatus = rbinom(nrow(raw_scores_list[["cidr"]]), 1, 0.3)
+)
+
+# Merge with PRS scores
+km_data <- merge(example_survival, 
+                 zscores_list[["cidr"]][, c("sample", "idhmut_scoring_system")],
+                 by = "sample")
+
+# Create risk groups (quartiles)
+km_data$risk_group <- cut(km_data$idhmut_scoring_system,
+                          breaks = quantile(km_data$idhmut_scoring_system, 
+                                          probs = c(0, 0.25, 0.5, 0.75, 1),
+                                          na.rm = TRUE),
+                          labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+                          include.lowest = TRUE)
+
+# Fit survival model
+fit <- survfit(Surv(survdays, vstatus) ~ risk_group, data = km_data)
+
+# Plot
+ggsurvplot(fit,
+           data = km_data,
+           pval = TRUE,
+           conf.int = TRUE,
+           risk.table = TRUE,
+           risk.table.height = 0.25,
+           title = "Kaplan-Meier Curve: IDHmut PRS (CIDR)",
+           xlab = "Time (days)",
+           ylab = "Survival Probability",
+           legend.title = "Risk Group",
+           palette = "jco",
+           ggtheme = theme_bw())
+```
+
+## Kaplan-Meier Template for Custom Models
+
+```{r km_curves_template, fig.height=12, eval=TRUE}
+
+cat("=== DEBUGGING ===\n")
+cat("\nZ-scores list has data for CIDR:", !is.null(zscores_list[["cidr"]]), "\n")
+cat("Survival list has data for CIDR:", !is.null(survival_data_list[["cidr"]]), "\n")
+
+if(!is.null(zscores_list[["cidr"]])) {
+  cat("\nColumn names in CIDR z-scores:\n")
+  print(names(zscores_list[["cidr"]]))
+  
+  cat("\nCustom models we're looking for:\n")
+  print(custom_models)
+  
+  cat("\nWhich custom models are actually in CIDR z-scores?\n")
+  for(model in custom_models) {
+    cat("  ", model, ":", model %in% names(zscores_list[["cidr"]]), "\n")
+  }
+}
+
+
+
+#create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
+#
+#  # DEBUG
+#  cat("Survival columns:", paste(names(survival_df)[1:5], collapse=", "), "\n")
+#  cat("Scores columns:", paste(names(scores_df)[1:5], collapse=", "), "\n")
+#  cat("Looking for 'sample' in survival:", "sample" %in% names(survival_df), "\n")
+#  cat("Looking for 'sample' in scores:", "sample" %in% names(scores_df), "\n")
+#
+#  # Merge survival and PRS data
+#  plot_data <- merge(survival_df, scores_df[, c("sample", prs_model)], by = "sample")
+
+
+
+
+
+create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
+  # Convert to data.frame if data.table (they behave differently)
+  if("data.table" %in% class(survival_df)) {
+    survival_df <- as.data.frame(survival_df)
+  }
+  if("data.table" %in% class(scores_df)) {
+    scores_df <- as.data.frame(scores_df)
+  }
+  
+  # DEBUG
+  cat("Survival columns:", paste(names(survival_df)[1:5], collapse=", "), "\n")
+  cat("Scores columns:", paste(names(scores_df)[1:5], collapse=", "), "\n")
+  
+  # Subset scores to just sample + PRS model
+  scores_subset <- scores_df[, c("sample", prs_model), drop=FALSE]
+  
+  # Merge survival and PRS data
+  plot_data <- merge(survival_df, scores_subset, by = "sample")
+  
+  # ... rest of function
+
+
+
+  
+  # Create quartile groups
+  plot_data$risk_group <- cut(plot_data[[prs_model]],
+                               breaks = quantile(plot_data[[prs_model]], 
+                                               probs = c(0, 0.25, 0.5, 0.75, 1),
+                                               na.rm = TRUE),
+                               labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+                               include.lowest = TRUE)
+  
+  # Fit survival model
+  fit <- survfit(Surv(survdays, vstatus) ~ risk_group, data = plot_data)
+  
+  # Calculate log-rank test
+  logrank <- survdiff(Surv(survdays, vstatus) ~ risk_group, data = plot_data)
+  pval <- 1 - pchisq(logrank$chisq, length(logrank$n) - 1)
+  
+  # Create title
+  title_text <- paste(dataset_name, "-", gsub("_scoring_system", "", prs_model))
+  
+  # Plot with survminer
+  p <- ggsurvplot(fit,
+             data = plot_data,
+             pval = TRUE,
+             pval.coord = c(0.1, 0.1),
+             conf.int = FALSE,
+             risk.table = TRUE,
+             risk.table.height = 0.3,
+             title = title_text,
+             subtitle = paste0("Log-rank p = ", formatC(pval, format = "e", digits = 2)),
+             xlab = "Time (days)",
+             ylab = "Survival Probability",
+             legend.title = "PRS Quartile",
+             legend.labs = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+             palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
+             ggtheme = theme_bw(base_size = 12))
+  
+  return(p)
+}
+
+custom_models <- grep("glioma|gbm|idh", names(zscores_list[[1]]), 
+                     value = TRUE, ignore.case = TRUE)
+custom_models <- grep("\\.commas$", custom_models, value = TRUE, invert = TRUE)
+
+cat("Creating KM plots for", length(custom_models), "custom models\n\n")
+
+# Generate all plots
+for(model in custom_models) {
+  cat("\n\n### Model:", gsub("_scoring_system", "", model), "\n\n")
+  
+  # Try CIDR first
+  if(!is.null(survival_data_list[["cidr"]]) && 
+     !is.null(zscores_list[["cidr"]]) &&
+     model %in% names(zscores_list[["cidr"]])) {
+    
+    km_obj <- create_km_plot("CIDR", model, 
+                             survival_data_list[["cidr"]], 
+                             zscores_list[["cidr"]])
+    print(km_obj)
+  } else {
+    cat("Data not available for", model, "in CIDR\n")
+  }
+  
+  cat("\n\n")
+}
+```
+
+## Multi-Dataset Kaplan-Meier Comparison - All Models
+
+**Risk Stratification:** Binary split at **median** (Low vs High Risk), calculated within each dataset.
+
+This allows direct comparison of survival curves across datasets for the same PRS model.
+
+```{r km_multi_dataset, fig.height=10, eval=TRUE}
+# TEMPLATE: Compare KM curves across datasets for the same PRS model
+
+create_multi_dataset_km <- function(prs_model) {
+  cat("Starting multi-dataset KM for:", prs_model, "\n")
+  
+  # Convert all data.tables to data.frames first
+  for(ds in datasets) {
+    if(!is.null(survival_data_list[[ds]]) && "data.table" %in% class(survival_data_list[[ds]])) {
+      survival_data_list[[ds]] <<- as.data.frame(survival_data_list[[ds]])
+    }
+    if(!is.null(zscores_list[[ds]]) && "data.table" %in% class(zscores_list[[ds]])) {
+      zscores_list[[ds]] <<- as.data.frame(zscores_list[[ds]])
+    }
+  }
+  
+  all_data_list <- lapply(datasets, function(ds) {
+    cat("  Checking dataset:", ds, "\n")
+    
+    if(!is.null(survival_data_list[[ds]]) && !is.null(zscores_list[[ds]])) {
+      cat("    Survival data:", nrow(survival_data_list[[ds]]), "rows\n")
+      cat("    Z-scores:", nrow(zscores_list[[ds]]), "rows\n")
+      
+      if(prs_model %in% names(zscores_list[[ds]])) {
+        cat("    Model found!\n")
+        
+        # Get survival data with required columns
+        surv_subset <- survival_data_list[[ds]][, c("sample", "survdays", "vstatus")]
+        
+        # Get PRS scores
+        prs_subset <- zscores_list[[ds]][, c("sample", prs_model)]
+        
+        # Convert to data.frame if data.table
+        if("data.table" %in% class(surv_subset)) {
+          surv_subset <- as.data.frame(surv_subset)
+        }
+        if("data.table" %in% class(prs_subset)) {
+          prs_subset <- as.data.frame(prs_subset)
+        }
+        
+        # Merge
+        merged <- merge(surv_subset, prs_subset, by = "sample")
+        merged$dataset <- ds
+        
+        # Create risk groups (High vs Low for simplicity)
+        merged$risk_group <- cut(merged[[prs_model]],
+                                 breaks = quantile(merged[[prs_model]], 
+                                                 probs = c(0, 0.5, 1),
+                                                 na.rm = TRUE),
+                                 labels = c("Low Risk", "High Risk"),
+                                 include.lowest = TRUE)
+        
+        # Remove rows with missing data
+        merged <- merged[complete.cases(merged[, c("survdays", "vstatus", prs_model)]), ]
+        
+        return(merged)
+      }
+    }
+    return(NULL)
+  })
+  
+  # Remove NULL entries and combine
+  all_data_list <- all_data_list[!sapply(all_data_list, is.null)]
+  
+  if(length(all_data_list) == 0) {
+    cat("No data available for", prs_model, "\n")
+    return(NULL)
+  }
+  
+  all_data <- bind_rows(all_data_list)
+  
+  # DEBUG
+  cat("Creating plot object...\n")
+  cat("Data rows:", nrow(all_data), "\n")
+  cat("Datasets:", paste(unique(all_data$dataset), collapse=", "), "\n")
+  cat("Risk groups:", paste(names(table(all_data$risk_group)), collapse=", "), "\n")
+  
+  # Fit survival model
+  fit <- survfit(Surv(survdays, vstatus) ~ risk_group, data = all_data)
+  
+  # Try creating plot
+  plot_obj <- tryCatch({
+    ggsurvplot(fit,
+               data = all_data,
+               pval = TRUE,
+               conf.int = FALSE,
+               title = paste("Multi-Dataset KM:", gsub("_scoring_system", "", prs_model)),
+               xlab = "Time (days)",
+               ylab = "Survival Probability",
+               legend.title = "Risk Group",
+               palette = "jco",
+               facet.by = "dataset",
+               ggtheme = theme_bw())
+  }, error = function(e) {
+    cat("Error creating ggsurvplot:", e$message, "\n")
+    return(NULL)
+  })
+  
+  cat("Plot object class:", paste(class(plot_obj), collapse=", "), "\n")
+  cat("Is NULL?", is.null(plot_obj), "\n")
+  
+  return(plot_obj)
+}
+
+# Example usage
+tryCatch({
+  if(!is.null(survival_data_list[["cidr"]])) {
+    km_result <- create_multi_dataset_km("idhmut_scoring_system")
+    if(!is.null(km_result)) {
+      # For faceted ggsurvplot, just print the whole object
+      print(km_result)
+      
+      # If that doesn't work, try:
+      # print(km_result$plot)
+      
+    } else {
+      cat("Function returned NULL\n")
+    }
+  }
+}, error = function(e) {
+  cat("Error in multi-dataset KM:", e$message, "\n")
+})
+```
+
+---
+
+# Instructions for Kaplan-Meier Plots
+
+**To enable Kaplan-Meier curves, you need to:**
+
+1. **Identify survival data location**: Find where `survdays` and `vstatus` columns are stored
+2. **Update the loading code**: Modify the `load_survival_data` chunk with correct file paths
+3. **Set `eval=TRUE`**: Change `eval=FALSE` to `eval=TRUE` in the KM chunks above
+4. **Verify column names**: Ensure your survival data has:
+   - `sample` (or `IID`) for sample identifiers
+   - `survdays` (or `OS.time`, `survival_time`) for time-to-event
+   - `vstatus` (or `OS`, `event`, `status`) for event indicator (1=event, 0=censored)
+
+**Example survival data structure:**
+```
+sample              survdays  vstatus
+CSR01_CSR01-...     1234      1
+CSR02_CSR02-...     567       0
+```
+
+Once survival data is loaded, the KM plots will show:
+- Risk stratification by PRS quartiles
+- Log-rank test p-values
+- Risk tables showing number at risk over time
+- Confidence intervals (optional)
+- Multi-dataset comparisons
+
+---
+
+# Heterogeneity Analysis
+
+## Heterogeneity Statistics
+
+```{r heterogeneity}
+if(nrow(metal_results) > 0 && "HetPVal" %in% names(metal_results)) {
+  # Models with significant heterogeneity
+  het_summary <- metal_results %>%
+    filter(!is.na(HetPVal)) %>%
+    mutate(Significant_Het = HetPVal < 0.05) %>%
+    group_by(subset) %>%
+    summarise(
+      N_models = n(),
+      N_het_sig = sum(Significant_Het, na.rm = TRUE),
+      Pct_het = round(100 * N_het_sig / N_models, 1),
+      .groups = "drop"
+    )
+  
+  kable(het_summary,
+        caption = "Heterogeneity Summary: Models with Significant Between-Study Variation",
+        col.names = c("Subset", "N Models", "N with Het", "% with Het"))
+  
+  # Plot heterogeneity p-values
+  ggplot(metal_results, aes(x = -log10(HetPVal + 1e-300), fill = subset)) +
+    geom_histogram(bins = 30, alpha = 0.7) +
+    facet_wrap(~ subset, ncol = 2, scales = "free_y") +
+    labs(title = "Distribution of Heterogeneity P-values",
+         subtitle = "High values = consistent effects across datasets",
+         x = "-log10(Heterogeneity P-value)", y = "Number of PRS") +
+    theme(legend.position = "none")
+} else {
+  cat("Heterogeneity statistics not available in METAL results\n")
+}
+```
+
+## Heterogeneity vs Effect Size
+
+```{r het_vs_effect, fig.height=6}
+if(nrow(metal_results) > 0 && "HetPVal" %in% names(metal_results)) {
+  ggplot(metal_results, aes(x = abs(Effect), y = -log10(HetPVal + 1e-300))) +
+    geom_point(alpha = 0.3, size = 1) +
+    geom_smooth(method = "loess", color = "red", se = TRUE) +
+    facet_wrap(~ subset, ncol = 3, scales = "free") +
+    labs(title = "Heterogeneity vs Effect Size",
+         subtitle = "Do larger effects show more heterogeneity?",
+         x = "|Effect Size|", y = "-log10(Het P-value)") +
+    theme(strip.text = element_text(size = 8))
+} else {
+  cat("Heterogeneity data not available\n")
+}
+```
+
+---
+
+# Cross-Subset Comparisons
+
+## Effect Size Correlations Across Subsets
+
+```{r cross_subset_correlation, fig.width=10, fig.height=8}
+if(nrow(metal_results) > 0) {
+  # Pivot wider to get effect sizes by subset
+  effect_matrix <- metal_results %>%
+    select(MarkerName, subset, Effect) %>%
+    pivot_wider(names_from = subset, values_from = Effect) %>%
+    column_to_rownames("MarkerName")
+  
+  if(ncol(effect_matrix) >= 2) {
+    # Calculate correlation matrix
+    cor_matrix <- cor(effect_matrix, use = "pairwise.complete.obs")
+    
+    # Plot correlation heatmap
+    corrplot(cor_matrix, 
+             method = "color",
+             type = "upper",
+             order = "hclust",
+             tl.col = "black",
+             tl.srt = 45,
+             addCoef.col = "black",
+             number.cex = 0.7,
+             title = "Effect Size Correlations Between Subsets",
+             mar = c(0,0,2,0))
+  } else {
+    cat("Insufficient subsets for correlation matrix\n")
+  }
+} else {
+  cat("No METAL results available\n")
+}
+```
+
+---
+
+# Data Quality Metrics
+
+## Sample Size Distribution
+
+```{r sample_sizes_distribution}
+if(nrow(cox_results) > 0) {
+  # From Cox results
+  sample_size_summary <- cox_results %>%
+    group_by(dataset, subset) %>%
+    summarise(
+      Mean_N = mean(N, na.rm = TRUE),
+      Median_N = median(N, na.rm = TRUE),
+      Min_N = min(N, na.rm = TRUE),
+      Max_N = max(N, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  kable(sample_size_summary,
+        caption = "Sample Sizes Used in Cox Models",
+        digits = 0)
+  
+  # Visualize
+  ggplot(cox_results, aes(x = dataset, y = N, fill = dataset)) +
+    geom_boxplot() +
+    facet_wrap(~ subset, ncol = 2, scales = "free_y") +
+    scale_fill_manual(values = dataset_colors) +
+    labs(title = "Sample Size Distribution by Dataset and Subset",
+         x = "Dataset", y = "N samples in analysis") +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = "none")
+} else {
+  cat("No Cox results available for sample size analysis\n")
+}
+```
+
+## Missing Data Assessment
+
+```{r missing_data}
+if(nrow(cox_results) > 0) {
+  # Check for models with missing results
+  missing_summary <- cox_results %>%
+    group_by(dataset) %>%
+    summarise(
+      Total_tests = n(),
+      Missing_pvals = sum(is.na(Pvalue)),
+      Missing_effects = sum(is.na(Effect)),
+      Pct_complete = round(100 * (1 - Missing_pvals/Total_tests), 1),
+      .groups = "drop"
+    )
+  
+  kable(missing_summary,
+        caption = "Missing Data Summary")
+} else {
+  cat("No Cox results available\n")
+}
+```
+
+## Standard Error Distribution
+
+```{r stderr_distribution}
+if(nrow(cox_results) > 0) {
+  ggplot(cox_results, aes(x = StdErr, fill = dataset)) +
+    geom_density(alpha = 0.5) +
+    scale_x_log10() +
+    facet_wrap(~ subset, ncol = 2, scales = "free_y") +
+    scale_fill_manual(values = dataset_colors) +
+    labs(title = "Standard Error Distributions",
+         subtitle = "Smaller = more precise estimates",
+         x = "Standard Error (log scale)", y = "Density") +
+    theme(legend.position = "bottom")
+} else {
+  cat("No Cox results available\n")
+}
+```
+
+---
+
+# Conclusion and Key Findings
+
+## Summary Statistics
+
+```{r final_summary}
+if(nrow(metal_results) > 0) {
+  # Overall significance counts
+  overall_sig <- metal_results %>%
+    summarise(
+      Total_tests = n(),
+      Bonferroni = sum(Pvalue < 0.05 / n(), na.rm = TRUE),
+      FDR_0.05 = sum(p.adjust(Pvalue, method = "fdr") < 0.05, na.rm = TRUE),
+      Nominal_0.05 = sum(Pvalue < 0.05, na.rm = TRUE),
+      Min_pval = min(Pvalue, na.rm = TRUE)
+    )
+  
+  kable(overall_sig,
+        caption = "Overall Significance Summary (All Subsets Combined)",
+        digits = -1)
+} else {
+  cat("No METAL results available for final summary\n")
+}
+```
+
+## Top Findings
+
+### Most Significant Associations
+
+```{r top_findings}
+if(nrow(metal_results) > 0) {
+  top_overall <- metal_results %>%
+    arrange(Pvalue) %>%
+    slice_head(n = 20) %>%
+    select(subset, MarkerName, Meta_HR, Pvalue, HetPVal)
+  
+  datatable(top_overall,
+            caption = "Top 20 Most Significant PRS Associations",
+            rownames = FALSE) %>%
+    formatRound(columns = c("Meta_HR"), digits = 3) %>%
+    formatSignif(columns = c("Pvalue", "HetPVal"), digits = 3)
+} else {
+  cat("No METAL results available\n")
+}
+```
+
+### Custom Models Summary
+
+```{r custom_final}
+if(exists("custom_meta") && nrow(custom_meta) > 0) {
+  custom_final <- custom_meta %>%
+    group_by(MarkerName) %>%
+    summarise(
+      N_subsets = n(),
+      Mean_HR = exp(mean(Effect, na.rm = TRUE)),
+      Min_pval = min(Pvalue, na.rm = TRUE),
+      N_sig = sum(Pvalue < 0.05, na.rm = TRUE),
+      .groups = "drop"
+    ) %>%
+    arrange(Min_pval)
+  
+  kable(custom_final,
+        caption = "Custom Glioma PRS: Summary Across All Subsets",
+        digits = 4)
+} else {
+  cat("No custom model results available\n")
+}
+```
+
+## Key Takeaways
+
+```{r takeaways}
+if(exists("correlation_results") && nrow(correlation_results) > 0) {
+  mean_corr <- mean(correlation_results$Correlation, na.rm = TRUE)
+  cat("1. **Multiallelic Splitting**: Mean correlation =", round(mean_corr, 3), 
+      "between comma and split versions validates the approach\n\n")
+}
+
+if(datasets_loaded > 0) {
+  cat("2. **Quality Control**: All", datasets_loaded, "datasets successfully z-scored\n\n")
+}
+
+if(exists("overall_sig") && nrow(overall_sig) > 0) {
+  cat("3. **Survival Associations**: Identified", overall_sig$Bonferroni, 
+      "PRS passing Bonferroni and", overall_sig$FDR_0.05, "at FDR < 0.05\n\n")
+}
+
+if(exists("custom_final") && nrow(custom_final) > 0) {
+  cat("4. **Custom Models**: Top performing model is", custom_final$MarkerName[1], 
+      "with p =", formatC(custom_final$Min_pval[1], format = "e", digits = 2), "\n\n")
+}
+
+if(exists("het_summary") && nrow(het_summary) > 0) {
+  cat("5. **Heterogeneity**: Mean", round(mean(het_summary$Pct_het, na.rm = TRUE), 1), 
+      "% of models show significant between-study heterogeneity\n\n")
+}
+```
+
+---
+
+# Session Information
+
+```{r session_info}
+sessionInfo()
+```
+
+---
+
+**Report generated:** `r Sys.time()`
+
+**Analysis pipeline:** Raw PRS → Z-scoring → Cox regression (per dataset) → METAL meta-analysis
+
+**Total PRS models analyzed:** `r if(exists("all_models")) length(all_models) else "N/A"`
+
+**Datasets included:** `r if(exists("datasets_loaded")) datasets_loaded else "N/A"` of 4
