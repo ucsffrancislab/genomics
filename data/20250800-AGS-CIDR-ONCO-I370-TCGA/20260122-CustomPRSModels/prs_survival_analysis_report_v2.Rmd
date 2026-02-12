@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 
 args <- commandArgs()
+unname <- sub("--file=", "", args[grepl("--file=", args)])
 fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
 thisfile <- readLines(fname)
 newfname <- paste0(tempdir(), "/", basename(fname))
@@ -10,7 +11,9 @@ args = commandArgs(trailingOnly=TRUE)
 output_file = paste(basename(fname),"html", sep=".")
 print(output_file)
 
-rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+#rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+rmarkdown::render(newfname, output_dir = dirname(unname), output_file = output_file )
+
 q("no")
 
 

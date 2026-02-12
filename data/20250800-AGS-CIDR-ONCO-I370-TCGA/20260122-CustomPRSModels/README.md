@@ -1166,15 +1166,15 @@ done
 ```bash
 module load r
 
-./prs_survival_analysis_report.Rmd
-mv prs_survival_analysis_report.Rmd.html pgs-calc-scores-new_models-claude/
+./prs_survival_analysis_report_v2.Rmd
+mv prs_survival_analysis_report_v2.Rmd.html pgs-calc-scores-new_models-claude/
 
 ```
 
 
 ```bash
 
-box_upload.bash pgs-calc-scores-new_models-claude/prs_survival_analysis_report.Rmd.html pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
+box_upload.bash pgs-calc-scores-new_models-claude/prs_survival_analysis_report_v2.Rmd.html pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
 
 ```
 
