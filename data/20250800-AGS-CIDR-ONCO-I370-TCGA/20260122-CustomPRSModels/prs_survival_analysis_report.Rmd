@@ -1,16 +1,19 @@
 #!/usr/bin/env Rscript
 
 args <- commandArgs()
+unname <- sub("--file=", "", args[grepl("--file=", args)])
 fname <- normalizePath(sub("--file=", "", args[grepl("--file=", args)]))
 thisfile <- readLines(fname)
 newfname <- paste0(tempdir(), "/", basename(fname))
 writeLines(thisfile[-1:-which(thisfile == "q(\"no\")")], newfname)
 
 args = commandArgs(trailingOnly=TRUE)
+
 output_file = paste(basename(fname),"html", sep=".")
 print(output_file)
 
-rmarkdown::render(newfname, output_dir = dirname(fname), output_file = output_file )
+rmarkdown::render(newfname, output_dir = dirname(unname), output_file = output_file )
+
 q("no")
 
 
@@ -186,8 +189,13 @@ kable(model_summary, caption = "PRS Model Categories")
 ```{r raw_score_distributions, fig.height=10}
 # Sample 20 random PRS for visualization
 set.seed(42)
+
+# Calculate available models
 sample_prs <- sample(setdiff(all_models, c(comma_models, split_models)), 
-                     min(20, length(all_models)))
+                     min(20, length(setdiff(all_models, c(comma_models, split_models)))))
+
+#sample_prs <- sample(setdiff(all_models, c(comma_models, split_models)), 
+#                     min(20, length(all_models)))
 
 # Combine datasets
 plot_data <- bind_rows(lapply(datasets, function(ds) {
@@ -482,14 +490,27 @@ metal_files <- list.files(path = metal_path,
 cat("Found", length(metal_files), "METAL output files\n")
 
 # Load METAL results
+#metal_results_list <- lapply(metal_files, function(f) {
+#  # Extract subset from filename
+#  subset <- gsub("metal_survival_|_1\\.tbl", "", basename(f))
+#  
+#  df <- fread(f)
+#  df$subset <- subset
+#  return(df)
+#})
+
+
 metal_results_list <- lapply(metal_files, function(f) {
   # Extract subset from filename
   subset <- gsub("metal_survival_|_1\\.tbl", "", basename(f))
   
-  df <- fread(f)
+  df <- fread(f, colClasses = list(character = "P-value"))  # Read P-value as character
+  df$`P-value` <- as.numeric(df$`P-value`)  # Convert to numeric
   df$subset <- subset
   return(df)
 })
+
+
 
 metal_results <- bind_rows(metal_results_list)
 
@@ -633,11 +654,38 @@ kable(custom_summary,
 
 ```{r custom_heatmap, fig.width=10, fig.height=6}
 # Create matrix for heatmap
+#heat_data <- custom_meta %>%
+#  select(MarkerName, subset, neglog10p) %>%
+#  pivot_wider(names_from = subset, values_from = neglog10p, values_fill = 0) %>%
+#  column_to_rownames("MarkerName") %>%
+#  as.matrix()
+
+
+# Create matrix for heatmap
 heat_data <- custom_meta %>%
   select(MarkerName, subset, neglog10p) %>%
   pivot_wider(names_from = subset, values_from = neglog10p, values_fill = 0) %>%
   column_to_rownames("MarkerName") %>%
   as.matrix()
+
+# Remove any rows/columns with NA, NaN, or Inf
+heat_data[is.na(heat_data)] <- 0
+heat_data[is.infinite(heat_data)] <- max(heat_data[is.finite(heat_data)], na.rm = TRUE)
+
+# Skip if insufficient data
+if(nrow(heat_data) < 2 || ncol(heat_data) < 2) {
+  cat("Insufficient data for heatmap (need at least 2x2 matrix)\n")
+} else {
+  pheatmap(heat_data,
+           color = colorRampPalette(c("white", "yellow", "red", "darkred"))(50),
+           cluster_rows = TRUE,
+           cluster_cols = TRUE,
+           main = "Custom Glioma PRS: -log10(P) Heatmap",
+           fontsize = 10,
+           angle_col = 45,
+           display_numbers = FALSE)
+}
+
 
 pheatmap(heat_data,
          color = colorRampPalette(c("white", "yellow", "red", "darkred"))(50),

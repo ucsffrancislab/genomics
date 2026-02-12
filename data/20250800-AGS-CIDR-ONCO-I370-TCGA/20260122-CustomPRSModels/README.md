@@ -1155,22 +1155,26 @@ commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 -
 ```
 
 
+```bash
+for b in cidr onco i370 tcga ; do
+ cp pgs-calc-scores-new_models/${b}/scores.* pgs-calc-scores-new_models-claude/${b}/
+done
+```
+
+
 
 ```bash
 module load r
 
 ./prs_survival_analysis_report.Rmd
+mv prs_survival_analysis_report.Rmd.html pgs-calc-scores-new_models-claude/
 
 ```
 
 
 ```bash
 
-for b in cidr onco i370 tcga ; do
- cp pgs-calc-scores-new_models/${b}/scores.* pgs-calc-scores-new_models-claude/${b}/
-done
-
-box_upload.bash pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
+box_upload.bash pgs-calc-scores-new_models-claude/prs_survival_analysis_report.Rmd.html pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
 
 ```
 
