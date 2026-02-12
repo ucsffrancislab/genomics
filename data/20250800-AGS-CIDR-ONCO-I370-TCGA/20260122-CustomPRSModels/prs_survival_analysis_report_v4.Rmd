@@ -661,39 +661,26 @@ if(nrow(metal_results) > 0) {
   # Combine all subsets for overview
   metal_results$neglog10p <- -log10(metal_results$Pvalue)
   
-  # Assign x-axis position by subset
+  # Create x-axis by model (not subset)
   metal_plot <- metal_results %>%
-    arrange(subset, desc(neglog10p)) %>%
-    group_by(subset) %>%
-    mutate(x_pos = row_number()) %>%
-    ungroup() %>%
-    group_by(subset) %>%
-    mutate(x_offset = (as.numeric(factor(subset)) - 1) * max(x_pos)) %>%
-    ungroup() %>%
-    mutate(x_plot = x_pos + x_offset)
+    mutate(model_num = as.numeric(factor(MarkerName))) %>%
+    arrange(model_num, subset)
   
-  # Subset centers for labels
-  subset_centers <- metal_plot %>%
-    group_by(subset) %>%
-    summarise(center = mean(x_plot))
-  
-  # Clean subset names for display
-  subset_centers$clean_label <- gsub("_meta_cases|_meta", "", subset_centers$subset)
+  # Clean subset names for legend
   metal_plot$clean_subset <- gsub("_meta_cases|_meta", "", metal_plot$subset)
   
-  ggplot(metal_plot, aes(x = x_plot, y = neglog10p, color = clean_subset)) +
-    geom_point(alpha = 0.6, size = 1.5) +
+  ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
+    geom_point(alpha = 0.6, size = 1.5, position = position_jitter(width = 0.2, height = 0)) +
     geom_hline(yintercept = -log10(0.05 / nrow(metal_results)), 
                linetype = "dashed", color = "red", size = 1) +
-    scale_x_continuous(breaks = subset_centers$center, 
-                       labels = subset_centers$clean_label) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
-    labs(title = "Manhattan Plot: Meta-Analysis Results Across All Subsets",
-         subtitle = "Red line = Bonferroni threshold; Each color = different case subset",
-         x = "Case Subset", y = "-log10(P-value)",
-         color = "Subset") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 7),
+    labs(title = "Manhattan Plot: Meta-Analysis Results Across All PRS Models",
+         subtitle = "Red line = Bonferroni threshold; X-axis = PRS models; Each color = case subset",
+         x = "PRS Model (ordered)", y = "-log10(P-value)",
+         color = "Case Subset") +
+    theme(axis.text.x = element_blank(),  # Too many models to label individually
+          axis.ticks.x = element_blank(),
           legend.position = "right",
           legend.text = element_text(size = 7),
           legend.key.size = unit(0.4, "cm"))
@@ -1179,7 +1166,7 @@ covariate_info <- lapply(datasets, function(ds) {
     # Check which covariates are present and have variance
     present_covs <- c()
     
-    if("age" %in% names(df) || "Age" %in% names(df)) present_covs <- c(present_covs, "Age")
+    if("age" %in% names(df) || "Age" %in% names(df) || "age_ucsf_surg" %in% names(df)) present_covs <- c(present_covs, "Age")
     if("sex" %in% names(df)) present_covs <- c(present_covs, "Sex")
     if("chemo" %in% names(df) && length(unique(df$chemo)) > 1) present_covs <- c(present_covs, "Chemo")
     if("rad" %in% names(df) && length(unique(df$rad)) > 1) present_covs <- c(present_covs, "Radiation")
@@ -1322,7 +1309,7 @@ for(ds in datasets) {
                        pval = TRUE,
                        conf.int = FALSE,
                        risk.table = TRUE,
-                       risk.table.height = 0.25,
+                       risk.table.height = 0.15,  # Reduced from 0.25
                        title = paste(toupper(ds), "-", model),
                        xlab = "Time (days)",
                        ylab = "Survival Probability",
@@ -1402,7 +1389,7 @@ create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
              pval.coord = c(0.1, 0.1),
              conf.int = TRUE,  # Different: Shows confidence intervals
              risk.table = TRUE,
-             risk.table.height = 0.3,
+             risk.table.height = 0.15,  # Reduced from 0.3
              title = paste(dataset_name, "-", prs_model),  # Different: Keep full model name
              subtitle = paste0("Log-rank p = ", formatC(pval, format = "e", digits = 2)),
              xlab = "Time (days)",
