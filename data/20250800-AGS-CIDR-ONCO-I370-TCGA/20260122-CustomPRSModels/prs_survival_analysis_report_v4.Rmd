@@ -1333,7 +1333,7 @@ for(ds in datasets) {
             p <- ggsurvplot(fit,
                        data = km_data,
                        pval = TRUE,
-                       conf.int = TRUE,
+                       conf.int = FALSE,
                        risk.table = TRUE,
                        risk.table.height = 0.25,  # Reduced from 0.25
                        title = paste(toupper(ds), "-", model),
@@ -1450,8 +1450,9 @@ for(ds in datasets) {
                                      zscores_list[[ds]])
           
           if(!is.null(km_plot)) {
-            print(km_plot$plot)
-            print(km_plot$table)
+            print(km_plot)
+            #print(km_plot$plot)
+            #print(km_plot$table)
             plot_count <- plot_count + 1
           } else {
             cat("Insufficient data (n < 10)\n\n")
