@@ -1196,8 +1196,8 @@ done
 ```bash
 module load r
 
-./prs_survival_analysis_report_v2.Rmd
-mv prs_survival_analysis_report_v2.Rmd.html pgs-calc-scores-new_models-claude/
+./prs_survival_analysis_report_v4.Rmd
+mv prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/
 
 ```
 
