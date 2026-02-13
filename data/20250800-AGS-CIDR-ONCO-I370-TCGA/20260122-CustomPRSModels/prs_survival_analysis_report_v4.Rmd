@@ -1275,7 +1275,7 @@ risk_group <- cut(PRS_zscore,
 
 Each plot shows survival stratified by PRS quartiles (Q1-Q4).
 
-```{r km_curves_example, fig.height=8, eval=TRUE, results='asis'}
+```{r km_curves_example, fig.height=10, eval=TRUE, results='asis'}
 # Get all custom models
 all_custom_models <- grep("glioma|gbm|idh", names(zscores_list[[1]]), 
                          value = TRUE, ignore.case = TRUE)
@@ -1333,7 +1333,7 @@ for(ds in datasets) {
             p <- ggsurvplot(fit,
                        data = km_data,
                        pval = TRUE,
-                       conf.int = FALSE,
+                       conf.int = TRUE,
                        risk.table = TRUE,
                        risk.table.height = 0.25,  # Reduced from 0.25
                        title = paste(toupper(ds), "-", model),
@@ -1343,8 +1343,7 @@ for(ds in datasets) {
                        palette = c("#2E9FDF", "#00AFBB", "#E7B800", "#FC4E07"),
                        ggtheme = theme_bw())
             
-            print(p$plot)
-            print(p$table)
+            print(p)
             plot_count <- plot_count + 1
           } else {
             cat("Insufficient data (n=", nrow(km_data), ")\n\n")
@@ -1369,7 +1368,7 @@ cat("\n**Total KM plots generated:**", plot_count, "\n\n")
 
 Alternative visualization using a function-based approach with different styling options.
 
-```{r km_curves_template, fig.height=8, eval=TRUE, results='asis'}
+```{r km_curves_template, fig.height=10, eval=TRUE, results='asis'}
 # Define KM plotting function
 create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
   # Convert to data.frame if data.table
