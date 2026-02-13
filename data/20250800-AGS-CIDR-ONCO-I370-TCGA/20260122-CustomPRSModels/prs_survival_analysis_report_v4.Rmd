@@ -661,26 +661,52 @@ if(nrow(metal_results) > 0) {
   # Combine all subsets for overview
   metal_results$neglog10p <- -log10(metal_results$Pvalue)
   
-  # Create x-axis by model (not subset)
+  # Create x-axis by model (not subset) - alphabetically sorted
   metal_plot <- metal_results %>%
-    mutate(model_num = as.numeric(factor(MarkerName))) %>%
+    mutate(model_sorted = factor(MarkerName, levels = sort(unique(MarkerName)))) %>%
+    mutate(model_num = as.numeric(model_sorted)) %>%
     arrange(model_num, subset)
   
   # Clean subset names for legend
   metal_plot$clean_subset <- gsub("_meta_cases|_meta", "", metal_plot$subset)
   
+  # Get unique model positions for labels
+  model_positions <- metal_plot %>%
+    group_by(MarkerName, model_num) %>%
+    summarise(x_pos = mean(model_num), .groups = "drop")
+  
+  # Bonferroni threshold
+  bonf_threshold <- -log10(0.05 / nrow(metal_results))
+  
+  # Identify models with points above threshold
+  models_above_threshold <- metal_plot %>%
+    filter(neglog10p > bonf_threshold) %>%
+    pull(MarkerName) %>%
+    unique()
+  
+  # For custom models (few), show all labels; otherwise only significant
+  if(length(unique(metal_plot$MarkerName)) <= 20) {
+    # Few models - show all labels
+    model_positions$label <- model_positions$MarkerName
+  } else {
+    # Many models - only label those above threshold
+    model_positions$label <- ifelse(model_positions$MarkerName %in% models_above_threshold,
+                                    model_positions$MarkerName, "")
+  }
+  
   ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
     geom_point(alpha = 0.6, size = 1.5, position = position_jitter(width = 0.2, height = 0)) +
-    geom_hline(yintercept = -log10(0.05 / nrow(metal_results)), 
+    geom_hline(yintercept = bonf_threshold, 
                linetype = "dashed", color = "red", size = 1) +
+    scale_x_continuous(breaks = model_positions$x_pos,
+                       labels = model_positions$label) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
     labs(title = "Manhattan Plot: Meta-Analysis Results Across All PRS Models",
-         subtitle = "Red line = Bonferroni threshold; X-axis = PRS models; Each color = case subset",
-         x = "PRS Model (ordered)", y = "-log10(P-value)",
+         subtitle = "Red line = Bonferroni threshold; Models sorted alphabetically; Colors = case subsets",
+         x = "PRS Model", y = "-log10(P-value)",
          color = "Case Subset") +
-    theme(axis.text.x = element_blank(),  # Too many models to label individually
-          axis.ticks.x = element_blank(),
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 6),
           legend.position = "right",
           legend.text = element_text(size = 7),
           legend.key.size = unit(0.4, "cm"))
@@ -1249,7 +1275,7 @@ risk_group <- cut(PRS_zscore,
 
 Each plot shows survival stratified by PRS quartiles (Q1-Q4).
 
-```{r km_curves_example, fig.height=8, eval=TRUE, results='asis'}
+```{r km_curves_example, fig.height=10, eval=TRUE, results='asis'}
 # Get all custom models
 all_custom_models <- grep("glioma|gbm|idh", names(zscores_list[[1]]), 
                          value = TRUE, ignore.case = TRUE)
@@ -1309,7 +1335,7 @@ for(ds in datasets) {
                        pval = TRUE,
                        conf.int = FALSE,
                        risk.table = TRUE,
-                       risk.table.height = 0.15,  # Reduced from 0.25
+                       risk.table.height = 0.20,  # Reduced from 0.25
                        title = paste(toupper(ds), "-", model),
                        xlab = "Time (days)",
                        ylab = "Survival Probability",
@@ -1343,7 +1369,7 @@ cat("\n**Total KM plots generated:**", plot_count, "\n\n")
 
 Alternative visualization using a function-based approach with different styling options.
 
-```{r km_curves_template, fig.height=8, eval=TRUE, results='asis'}
+```{r km_curves_template, fig.height=10, eval=TRUE, results='asis'}
 # Define KM plotting function
 create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
   # Convert to data.frame if data.table
@@ -1389,7 +1415,7 @@ create_km_plot <- function(dataset_name, prs_model, survival_df, scores_df) {
              pval.coord = c(0.1, 0.1),
              conf.int = TRUE,  # Different: Shows confidence intervals
              risk.table = TRUE,
-             risk.table.height = 0.15,  # Reduced from 0.3
+             risk.table.height = 0.20,  # Reduced from 0.3
              title = paste(dataset_name, "-", prs_model),  # Different: Keep full model name
              subtitle = paste0("Log-rank p = ", formatC(pval, format = "e", digits = 2)),
              xlab = "Time (days)",
