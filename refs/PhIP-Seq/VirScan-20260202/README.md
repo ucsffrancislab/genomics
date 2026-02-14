@@ -293,7 +293,7 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 --job-name=blast4 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
 --output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
---wrap="module load blast; blastp -db /francislab/data1/refs/refseq/viral-20260206/viral -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.shorte1000ws2.tsv -num_threads 8 -task blastp-short -evalue 1000 -word_size 2 -seg no -max_target_seqs 100"
+--wrap="module load blast; blastp -db /francislab/data1/refs/refseq/viral-20260206/viral -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.shorte1000ws2.txt -num_threads 8 -task blastp-short -evalue 1000 -word_size 2 -seg no -max_target_seqs 10"
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 --job-name=blast5 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
