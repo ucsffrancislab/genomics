@@ -96,23 +96,42 @@ print("Convert to data frame")
 pgsscores <- data.frame(dt,row.names=1)
 
 # Strip quotes from row names if present
-row.names(pgsscores) <- gsub('^"|"$', '', row.names(pgsscores))
+row.names(pgsscores) <- gsub('^\"|\"$', '', row.names(pgsscores))
 
 # Strip quotes from column names if present  
-colnames(pgsscores) <- gsub('^"|"$', '', colnames(pgsscores))
+colnames(pgsscores) <- gsub('^\"|\"$', '', colnames(pgsscores))
 
 #row.names(pgsscores) = as.character(sapply(row.names(pgsscores), dotwithdash))
 print(pgsscores[1:5, 1:5])
 
-# VERIFY Z-SCORES
+# VERIFY Z-SCORES - IMPROVED VERSION WITH ZERO VARIANCE CHECK
 print("Checking if PRS scores are z-scored (mean~0, sd~1)...")
 pgs_means <- colMeans(pgsscores, na.rm=TRUE)
 pgs_sds <- apply(pgsscores, 2, sd, na.rm=TRUE)
-n_not_zscored <- sum(abs(pgs_means) > 0.5 | abs(pgs_sds - 1) > 0.5)
+
+# Check for problematic models (zero variance or all NA)
+zero_var_models <- names(pgs_sds)[pgs_sds == 0 | is.na(pgs_sds)]
+if(length(zero_var_models) > 0) {
+  warning(paste(length(zero_var_models), "models have zero variance or all NA - will be skipped"))
+  print("Zero variance models (first 10):")
+  print(head(zero_var_models, 10))
+  # Remove from analysis
+  pgsscores <- pgsscores[, !names(pgsscores) %in% zero_var_models]
+  pgs_means <- colMeans(pgsscores, na.rm=TRUE)
+  pgs_sds <- apply(pgsscores, 2, sd, na.rm=TRUE)
+}
+
+# Now check z-scoring on remaining valid models
+n_not_zscored <- sum(abs(pgs_means) > 0.5 | abs(pgs_sds - 1) > 0.5, na.rm=TRUE)
+print(paste("Models not properly z-scored:", n_not_zscored))
+
 if(n_not_zscored > 0) {
-	warning(paste(n_not_zscored, "PRS models appear not to be z-scored!"))
-	print("First few models:")
-	print(head(data.frame(PGS=names(pgs_means), Mean=pgs_means, SD=pgs_sds)))
+  warning(paste(n_not_zscored, "PRS models appear not to be z-scored!"))
+  print("First few non-zscored models:")
+  not_zscored_idx <- which(abs(pgs_means) > 0.5 | abs(pgs_sds - 1) > 0.5)
+  print(head(data.frame(PGS=names(pgs_means)[not_zscored_idx], 
+                        Mean=pgs_means[not_zscored_idx], 
+                        SD=pgs_sds[not_zscored_idx])))
 } else {
 	print("PRS scores appear properly z-scored")
 }
@@ -277,17 +296,27 @@ df <- df[order(df$pvalue), ]
 # Write main output
 write.csv(df, paste0(out_base,".csv"), row.names = FALSE, quote = FALSE)
 
-# Write METAL-compatible output
-metal_df <- data.frame(
-	MarkerName = df$pgs,
-	Allele1 = "RISK",
-	Allele2 = "REF", 
-	Effect = df$coef,
-	StdErr = df$se_coef,
-	Pvalue = df$pvalue,
-	N = df$n_samples
-)
-write.table(metal_df, paste0(out_base,"_metal.txt"), sep="\t", row.names = FALSE, quote = FALSE)
+# Write METAL-compatible output - CHECK IF DF HAS ROWS FIRST
+if(nrow(df) > 0) {
+  metal_df <- data.frame(
+    MarkerName = df$pgs,
+    Allele1 = "REF",
+    Allele2 = "RISK",
+    Effect = df$coef,
+    StdErr = df$se_coef,
+    Pvalue = df$pvalue,
+    N = df$n_samples
+  )
+  write.table(metal_df, paste0(out_base,"_metal.txt"), sep="\t", row.names = FALSE, quote = FALSE)
+  print(paste("METAL input written to", paste0(out_base,"_metal.txt")))
+} else {
+  warning("No valid results - METAL output file not created")
+  # Create empty METAL file with proper header so METAL doesn't error
+  write.table(data.frame(MarkerName=character(), Allele1=character(), Allele2=character(),
+                         Effect=numeric(), StdErr=numeric(), Pvalue=numeric(), N=integer()),
+              paste0(out_base,"_metal.txt"), sep="\t", row.names = FALSE, quote = FALSE)
+  print(paste("Empty METAL file created (no valid results):", paste0(out_base,"_metal.txt")))
+}
 
 print(paste("Analysis complete. Results written to", paste0(out_base,".csv")))
-print(paste("METAL input written to", paste0(out_base,"_metal.txt")))
+
