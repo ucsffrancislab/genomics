@@ -249,6 +249,39 @@ reference 20250800-AGS-CIDR-ONCO-I370-TCGA/20250724-pgs/ ( not sure if I reran t
 
 
 
+
+
+MOVE THIS TO ABOVE
+
+TODO 
+Sadly need to redo the pgs-calc models for the custom models
+Split the commas on the other allele generating multiple entries
+Won't be able to do it in this run.
+Will only effect the 3 rsid models.
+
+```bash
+
+for f in pgs-calc_models_without_chr_prefix/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
+mv ${f} ${f%.txt.gz}.commas.txt.gz
+model=$( basename $f .txt.gz )
+
+zcat ${f%.txt.gz}.commas.txt.gz | awk 'BEGIN{FS=OFS="\t"}
+(NR==1){ print }
+(NR>1){
+ split($5,a,",")
+ for( i in a ){
+   $5=a[i]
+   print
+ }
+}' | gzip > pgs-calc_models_without_chr_prefix/${model}.txt.gz
+
+done
+
+```
+
+
+
+
 ##	Create collection
 
 Assuming using pgs-calc for scoring,
@@ -468,36 +501,6 @@ done
 
 
 
-MOVE THIS TO ABOVE
-
-TODO 
-Sadly need to redo the pgs-calc models for the custom models
-Split the commas on the other allele generating multiple entries
-Won't be able to do it in this run.
-Will only effect the 3 rsid models.
-
-```bash
-
-for f in pgs-calc_models_without_chr_prefix/{allGlioma,gbm,nonGbm}_scoring_system.txt.gz ; do
-mv ${f} ${f%.txt.gz}.commas.txt.gz
-model=$( basename $f .txt.gz )
-
-zcat ${f%.txt.gz}.commas.txt.gz | awk 'BEGIN{FS=OFS="\t"}
-(NR==1){ print }
-(NR>1){
- split($5,a,",")
- for( i in a ){
-   $5=a[i]
-   print
- }
-}' | gzip > pgs-calc_models_without_chr_prefix/${model}.txt.gz
-
-done
-
-```
-
-
-
 Create Collection of just the new models, including both version of the RSID models (with and without commas)
 
 ```bash
@@ -584,16 +587,16 @@ ln -s ../20250724-pgs/lists
 Extract just cases from PGS matrix. Not sure why. Not used.
 
 ```bash
-for b in cidr onco i370 tcga ; do
-
-  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_pgs-${b} \
-    --output="${PWD}/pull_pgs-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
-    --time=1-0 --nodes=1 --ntasks=4 --mem=30G pull_case_pgs.bash \
-    --IDfile ${PWD}/lists/${b}-cases.txt \
-    --pgsfile ${PWD}/pgs-calc-scores-new_models/${b}/scores.z-scores.txt \
-    --outbase ${PWD}/pgs-calc-scores-new_models/${b}
-
-done
+#for b in cidr onco i370 tcga ; do
+#
+#  sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pull_pgs-${b} \
+#    --output="${PWD}/pull_pgs-${b}.%j.$( date "+%Y%m%d%H%M%S%N" ).out" \
+#    --time=1-0 --nodes=1 --ntasks=4 --mem=30G pull_case_pgs.bash \
+#    --IDfile ${PWD}/lists/${b}-cases.txt \
+#    --pgsfile ${PWD}/pgs-calc-scores-new_models/${b}/scores.z-scores.txt \
+#    --outbase ${PWD}/pgs-calc-scores-new_models/${b}
+#
+#done
 ```
 
 
@@ -647,9 +650,92 @@ commands_array_wrapper.bash --array_file claude_cox_commands --time 1-0 --thread
 ```
 
 
+Use METAL to analyze all 4 datasets together.
+
+```bash
+for id in lists/onco*meta_cases.txt ; do
+
+echo survival_metal_wrapper_all4.bash $id
+
+done > metal_commands
+
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+```
+
+
+```bash
+for b in cidr onco i370 tcga ; do
+ cp pgs-calc-scores-new_models/${b}/scores.* pgs-calc-scores-new_models-claude/${b}/
+done
+```
+
+```bash
+module load r
+
+./prs_survival_analysis_report_v4.Rmd
+mv prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/
+```
+
+```bash
+box_upload.bash pgs-calc-scores-new_models-claude/prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
+```
 
 
 
+
+##	20260213
+
+All models
+
+Replace the "bad" RSID model scores with the "good" ones.
+
+```bash
+./merge_prs_scores.py --all --catalog-base /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores
+```
+
+```bash
+for b in onco i370 tcga ; do
+  cov_in=lists/${b}_covariates.tsv
+  cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
+  cat ${cov_in} | cut -d$'\t' -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+
+  head -1 ${TMPDIR}/tmp.csv > pgs-calc-scores-merged/${b}/${b}-covariates_base.csv
+  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-calc-scores-merged/${b}/${b}-covariates_base.csv
+  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+  join --header -t, pgs-calc-scores-merged/${b}/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-merged/${b}/${b}-covariates.tsv
+done
+
+
+ln -s /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.20260212.tsv lists/cidr_covariates.tsv
+
+for b in cidr ; do
+  cov_in=lists/${b}_covariates.tsv
+  cat ${cov_in} | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+
+  head -1 ${TMPDIR}/tmp.csv > pgs-calc-scores-merged/${b}/${b}-covariates_base.csv
+  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-calc-scores-merged/${b}/${b}-covariates_base.csv
+  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+  join --header -t, pgs-calc-scores-merged/${b}/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-merged/${b}/${b}-covariates.tsv
+done
+```
+
+
+```bash
+for b in cidr onco i370 tcga ; do
+for id in lists/${b}*meta_cases.txt ; do
+
+echo pgscox.claude.bash --dataset ${b} --pgsscores ${PWD}/pgs-calc-scores-merged/${b}/scores.z-scores.txt \
+ --outbase ${PWD}/pgs-calc-scores-merged/${b}/ \
+ --idfile ${id} --covfile ${PWD}/pgs-calc-scores-merged/${b}/${b}-covariates.tsv
+
+done; done > claude_cox_commands
+
+commands_array_wrapper.bash --array_file claude_cox_commands --time 1-0 --threads 4 --mem 30G --jobcount 4 --jobname pgscox
+```
+
+
+
+EDIT
 
 
 Use METAL to analyze all 4 datasets together.
@@ -671,22 +757,28 @@ for b in cidr onco i370 tcga ; do
 done
 ```
 
-
-
 ```bash
 module load r
 
 ./prs_survival_analysis_report_v4.Rmd
 mv prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/
-
 ```
-
 
 ```bash
-
 box_upload.bash pgs-calc-scores-new_models-claude/prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
-
 ```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
