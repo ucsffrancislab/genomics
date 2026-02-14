@@ -280,8 +280,10 @@ write.csv(df, paste0(out_base,".csv"), row.names = FALSE, quote = FALSE)
 # Write METAL-compatible output
 metal_df <- data.frame(
 	MarkerName = df$pgs,
-	Allele1 = "RISK",
-	Allele2 = "REF", 
+	#Allele1 = "RISK",
+	#Allele2 = "REF", 
+	Allele1 = "REF",
+	Allele2 = "RISK", 
 	Effect = df$coef,
 	StdErr = df$se_coef,
 	Pvalue = df$pvalue,
