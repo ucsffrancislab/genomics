@@ -525,7 +525,7 @@ if(nrow(coverage_data) > 0) {
 ## Load Cox Model Outputs
 
 ```{r load_cox_results}
-cox_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude"
+cox_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-merged"
 
 # Find all cox coefficient files
 cox_files <- list.files(path = cox_base_path, 
@@ -661,7 +661,7 @@ if(nrow(cox_results) > 0) {
 ## Load METAL Output
 
 ```{r load_metal}
-metal_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude"
+metal_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-merged"
 
 metal_files <- list.files(path = metal_path,
                           pattern = "metal_survival_.*_1\\.tbl$",

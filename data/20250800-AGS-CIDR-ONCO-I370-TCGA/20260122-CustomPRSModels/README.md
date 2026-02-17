@@ -735,7 +735,8 @@ commands_array_wrapper.bash --array_file claude_cox_commands --time 1-0 --thread
 
 
 
-EDIT
+
+
 
 
 Use METAL to analyze all 4 datasets together.
@@ -743,29 +744,37 @@ Use METAL to analyze all 4 datasets together.
 ```bash
 for id in lists/onco*meta_cases.txt ; do
 
-echo survival_metal_wrapper_all4.bash $id
+echo survival_metal_wrapper.bash $id /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-merged
 
 done > metal_commands
 
-commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G
+commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 --mem 30G --jobname metal --jobcount 9
 ```
 
 
+
+
+
+
+
+
+
+
+```
+EDIT for pgs-calc-scores-merged
+
 ```bash
-for b in cidr onco i370 tcga ; do
- cp pgs-calc-scores-new_models/${b}/scores.* pgs-calc-scores-new_models-claude/${b}/
-done
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=prs_survival_analysis \
+  --export=None --output="${PWD}/pgs_survival_analysis.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=14-0 --nodes=1 --ntasks=32 --mem=240G \
+  --wrap="module load pandoc r; ${PWD}/prs_survival_analysis_catalog_report.Rmd"
+
+mv prs_survival_analysis_catalog_report.Rmd.html pgs-calc-scores-merged/
 ```
 
 ```bash
-module load r
-
-./prs_survival_analysis_report_v4.Rmd
-mv prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/
-```
-
-```bash
-box_upload.bash pgs-calc-scores-new_models-claude/prs_survival_analysis_report_v4.Rmd.html pgs-calc-scores-new_models-claude/metal* pgs-calc-scores-new_models-claude/*/scores* pgs-calc-scores-new_models-claude/*/*/*
+box_upload.bash pgs-calc-scores-merged/prs_survival_analysis_report_catalog_report.Rmd.html pgs-calc-scores-merged/metal* pgs-calc-scores-merged/*/scores* pgs-calc-scores-merged/*/*/*
 ```
 
 
