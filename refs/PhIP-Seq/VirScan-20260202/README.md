@@ -403,3 +403,66 @@ sed -i '/89962,O/d' VIR3_clean.id_species_protein_gene.uniq.csv
 chmod a-w VIR3_clean.id_species_protein_gene.uniq.csv
 ```
 
+
+
+
+
+
+
+
+
+
+
+
+
+##	20260217
+
+
+That's all fine and dandy. However, lets do this differently
+
+Extract the id and entry ids (and perhaps the oligo, peptide, start, end. Others?)
+
+Then search the UnProt table and map the Entry ID to the TaxId.
+
+/francislab/data1/refs/sources/ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/idmapping_selected.tab.gz
+
+idmapping_selected.tab
+We also provide this tab-delimited table which includes
+the following mappings delimited by tab:
+
+1. UniProtKB-AC                <---- Q6GZX4
+2. UniProtKB-ID                <---- 001R_FRG3G
+3. GeneID (EntrezGene)               (This is commonly blank?)
+4. RefSeq                      <---- RefSeq Accession and Version ( YP_031579.1 )
+5. GI
+6. PDB
+7. GO
+8. UniRef100
+9. UniRef90
+10. UniRef50
+11. UniParc
+12. PIR
+13. NCBI-taxon                 <---- 654924 ( Frog virus 3 )
+14. MIM
+15. UniGene
+16. PubMed
+17. EMBL
+18. EMBL-CDS
+19. Ensembl
+20. Ensembl_TRS
+21. Ensembl_PRO
+22. Additional PubMed
+
+
+
+The build that taxonomic tree based on ...
+
+/francislab/data1/refs/sources/ftp.ncbi.nih.gov/pub/taxonomy/
+
+
+
+
+
+
+
+
