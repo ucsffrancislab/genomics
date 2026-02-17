@@ -383,143 +383,6 @@ ggplot(plot_data_z, aes(x = ZScore, fill = dataset)) +
 
 
 
-# Quality Control Assessment
-
-## P-value Distribution Under Null Hypothesis
-
-```{r pvalue_distribution, fig.height=6}
-if(nrow(metal_results) > 0) {
-  # P-value distribution should be uniform under null
-  # Deviation suggests:
-  # - True signal (enrichment of small p-values)
-  # - Inflation (too many small p-values)
-  # - Deflation (too few small p-values)
-  
-  p1 <- ggplot(metal_results, aes(x = Pvalue)) +
-    geom_histogram(bins = 50, fill = "steelblue", alpha = 0.7) +
-    geom_hline(yintercept = nrow(metal_results) / 50, 
-               linetype = "dashed", color = "red") +
-    facet_wrap(~ subset, scales = "free_y") +
-    labs(title = "P-value Distribution Across Subsets",
-         subtitle = "Red line = expected under null (uniform distribution)",
-         x = "P-value", y = "Count") +
-    theme_bw()
-  
-  print(p1)
-  
-  cat("\nINTERPRETATION:\n")
-  cat("- Uniform distribution (flat) = no signal\n")
-  cat("- Enrichment at low p-values = true associations\n")
-  cat("- Excess everywhere = inflation (population structure, batch effects)\n")
-}
-```
-
-## Genomic Inflation Factor (Lambda GC)
-
-```{r lambda_gc}
-if(nrow(metal_results) > 0) {
-  # Calculate lambda for each subset
-  lambda_calc <- function(pvals) {
-    chisq <- qchisq(1 - pvals, 1)
-    lambda <- median(chisq, na.rm = TRUE) / qchisq(0.5, 1)
-    return(lambda)
-  }
-  
-  lambda_by_subset <- metal_results %>%
-    group_by(subset) %>%
-    summarise(
-      N_tests = n(),
-      Lambda_GC = lambda_calc(Pvalue),
-      .groups = "drop"
-    ) %>%
-    mutate(
-      Interpretation = case_when(
-        Lambda_GC < 0.95 ~ "Deflated (conservative)",
-        Lambda_GC <= 1.05 ~ "Well-calibrated",
-        Lambda_GC <= 1.10 ~ "Slight inflation",
-        TRUE ~ "Inflated (check covariates)"
-      )
-    )
-  
-  kable(lambda_by_subset,
-        digits = 3,
-        caption = "Genomic Inflation Factor by Case Subset") %>%
-    kable_styling(bootstrap_options = c("striped", "hover"))
-  
-  cat("\n**Lambda GC Interpretation:**\n")
-  cat("- λ = 1.0: Perfect calibration\n")
-  cat("- λ < 1.0: Overly conservative (rare)\n")
-  cat("- 1.0 < λ < 1.05: Acceptable\n")
-  cat("- 1.05 < λ < 1.10: Mild inflation (check population structure)\n")
-  cat("- λ > 1.10: Significant inflation (confounding likely)\n")
-}
-```
-
-## PGS Coverage Statistics
-
-```{r coverage_stats, fig.height=8}
-# Read scores.info files to get coverage statistics
-coverage_data_list <- lapply(datasets, function(ds) {
-  info_file <- file.path(base_path, ds, "scores.info")
-  if(file.exists(info_file)) {
-    # Try to read JSON
-    tryCatch({
-      library(jsonlite)
-      info <- fromJSON(info_file)
-      # Extract coverage info
-      if(is.data.frame(info)) {
-        info$dataset <- ds
-        return(info[, c("name", "coverage", "variantsUsed", "variants", "dataset")])
-      }
-    }, error = function(e) {
-      cat("Could not read", info_file, "\n")
-      return(NULL)
-    })
-  }
-  return(NULL)
-})
-
-coverage_data <- bind_rows(coverage_data_list[!sapply(coverage_data_list, is.null)])
-
-if(nrow(coverage_data) > 0) {
-  # Summary statistics
-  coverage_summary <- coverage_data %>%
-    group_by(dataset) %>%
-    summarise(
-      N_models = n(),
-      Mean_coverage = mean(coverage, na.rm = TRUE),
-      Median_coverage = median(coverage, na.rm = TRUE),
-      Min_coverage = min(coverage, na.rm = TRUE),
-      Models_low_cov = sum(coverage < 0.5, na.rm = TRUE),
-      .groups = "drop"
-    )
-  
-  kable(coverage_summary,
-        digits = 3,
-        caption = "PGS Coverage by Dataset") %>%
-    kable_styling(bootstrap_options = c("striped", "hover"))
-  
-  # Distribution plot
-  ggplot(coverage_data, aes(x = coverage, fill = dataset)) +
-    geom_histogram(bins = 50, alpha = 0.6, position = "identity") +
-    geom_vline(xintercept = 0.8, linetype = "dashed", color = "red") +
-    scale_fill_manual(values = dataset_colors) +
-    labs(title = "PGS Variant Coverage Distribution by Dataset",
-         subtitle = "Red line = 80% coverage threshold (high quality)",
-         x = "Coverage (proportion of variants matched)",
-         y = "Count of PGS models") +
-    theme_bw() +
-    theme(legend.position = "bottom")
-  
-  cat("\n**Coverage Interpretation:**\n")
-  cat("- Coverage > 0.80: High quality (most variants matched)\n")
-  cat("- Coverage 0.60-0.80: Medium quality\n")
-  cat("- Coverage < 0.60: Low quality (many variants missing)\n")
-}
-```
-
----
-
 # Cox Regression Results
 
 ## Load Cox Model Outputs
@@ -800,6 +663,145 @@ if(nrow(metal_results) > 0) {
   metal_results <- data.frame()
 }
 ```
+
+# Quality Control Assessment
+
+## P-value Distribution Under Null Hypothesis
+
+```{r pvalue_distribution, fig.height=6}
+if(nrow(metal_results) > 0) {
+  # P-value distribution should be uniform under null
+  # Deviation suggests:
+  # - True signal (enrichment of small p-values)
+  # - Inflation (too many small p-values)
+  # - Deflation (too few small p-values)
+  
+  p1 <- ggplot(metal_results, aes(x = Pvalue)) +
+    geom_histogram(bins = 50, fill = "steelblue", alpha = 0.7) +
+    geom_hline(yintercept = nrow(metal_results) / 50, 
+               linetype = "dashed", color = "red") +
+    facet_wrap(~ subset, scales = "free_y") +
+    labs(title = "P-value Distribution Across Subsets",
+         subtitle = "Red line = expected under null (uniform distribution)",
+         x = "P-value", y = "Count") +
+    theme_bw()
+  
+  print(p1)
+  
+  cat("\nINTERPRETATION:\n")
+  cat("- Uniform distribution (flat) = no signal\n")
+  cat("- Enrichment at low p-values = true associations\n")
+  cat("- Excess everywhere = inflation (population structure, batch effects)\n")
+}
+```
+
+## Genomic Inflation Factor (Lambda GC)
+
+```{r lambda_gc}
+if(nrow(metal_results) > 0) {
+  # Calculate lambda for each subset
+  lambda_calc <- function(pvals) {
+    chisq <- qchisq(1 - pvals, 1)
+    lambda <- median(chisq, na.rm = TRUE) / qchisq(0.5, 1)
+    return(lambda)
+  }
+  
+  lambda_by_subset <- metal_results %>%
+    group_by(subset) %>%
+    summarise(
+      N_tests = n(),
+      Lambda_GC = lambda_calc(Pvalue),
+      .groups = "drop"
+    ) %>%
+    mutate(
+      Interpretation = case_when(
+        Lambda_GC < 0.95 ~ "Deflated (conservative)",
+        Lambda_GC <= 1.05 ~ "Well-calibrated",
+        Lambda_GC <= 1.10 ~ "Slight inflation",
+        TRUE ~ "Inflated (check covariates)"
+      )
+    )
+  
+  kable(lambda_by_subset,
+        digits = 3,
+        caption = "Genomic Inflation Factor by Case Subset") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+  
+  cat("\n**Lambda GC Interpretation:**\n")
+  cat("- λ = 1.0: Perfect calibration\n")
+  cat("- λ < 1.0: Overly conservative (rare)\n")
+  cat("- 1.0 < λ < 1.05: Acceptable\n")
+  cat("- 1.05 < λ < 1.10: Mild inflation (check population structure)\n")
+  cat("- λ > 1.10: Significant inflation (confounding likely)\n")
+}
+```
+
+## PGS Coverage Statistics
+
+```{r coverage_stats, fig.height=8}
+# Read scores.info files to get coverage statistics
+coverage_data_list <- lapply(datasets, function(ds) {
+  info_file <- file.path(base_path, ds, "scores.info")
+  if(file.exists(info_file)) {
+    # Try to read JSON
+    tryCatch({
+      library(jsonlite)
+      info <- fromJSON(info_file)
+      # Extract coverage info
+      if(is.data.frame(info)) {
+        info$dataset <- ds
+        return(info[, c("name", "coverage", "variantsUsed", "variants", "dataset")])
+      }
+    }, error = function(e) {
+      cat("Could not read", info_file, "\n")
+      return(NULL)
+    })
+  }
+  return(NULL)
+})
+
+coverage_data <- bind_rows(coverage_data_list[!sapply(coverage_data_list, is.null)])
+
+if(nrow(coverage_data) > 0) {
+  # Summary statistics
+  coverage_summary <- coverage_data %>%
+    group_by(dataset) %>%
+    summarise(
+      N_models = n(),
+      Mean_coverage = mean(coverage, na.rm = TRUE),
+      Median_coverage = median(coverage, na.rm = TRUE),
+      Min_coverage = min(coverage, na.rm = TRUE),
+      Models_low_cov = sum(coverage < 0.5, na.rm = TRUE),
+      .groups = "drop"
+    )
+  
+  kable(coverage_summary,
+        digits = 3,
+        caption = "PGS Coverage by Dataset") %>%
+    kable_styling(bootstrap_options = c("striped", "hover"))
+  
+  # Distribution plot
+  ggplot(coverage_data, aes(x = coverage, fill = dataset)) +
+    geom_histogram(bins = 50, alpha = 0.6, position = "identity") +
+    geom_vline(xintercept = 0.8, linetype = "dashed", color = "red") +
+    scale_fill_manual(values = dataset_colors) +
+    labs(title = "PGS Variant Coverage Distribution by Dataset",
+         subtitle = "Red line = 80% coverage threshold (high quality)",
+         x = "Coverage (proportion of variants matched)",
+         y = "Count of PGS models") +
+    theme_bw() +
+    theme(legend.position = "bottom")
+  
+  cat("\n**Coverage Interpretation:**\n")
+  cat("- Coverage > 0.80: High quality (most variants matched)\n")
+  cat("- Coverage 0.60-0.80: Medium quality\n")
+  cat("- Coverage < 0.60: Low quality (many variants missing)\n")
+}
+```
+
+---
+
+---
 
 ## Volcano Plots
 
