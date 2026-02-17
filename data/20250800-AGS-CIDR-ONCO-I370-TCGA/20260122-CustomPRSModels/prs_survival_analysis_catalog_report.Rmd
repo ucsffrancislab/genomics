@@ -707,12 +707,14 @@ if(nrow(metal_results) > 0) {
 
 ```{r coverage_stats, fig.height=8}
 # Read scores.info files to get coverage statistics
+# Note: scores.info files are in the original pgs-calc directory, not merged
+original_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude"
+
 coverage_data_list <- lapply(datasets, function(ds) {
-  info_file <- file.path(base_path, ds, "scores.info")
+  info_file <- file.path(original_base_path, ds, "scores.info")
   if(file.exists(info_file)) {
     # Try to read JSON
     tryCatch({
-      library(jsonlite)
       info <- fromJSON(info_file)
       # Extract coverage info
       if(is.data.frame(info)) {
@@ -720,9 +722,11 @@ coverage_data_list <- lapply(datasets, function(ds) {
         return(info[, c("name", "coverage", "variantsUsed", "variants", "dataset")])
       }
     }, error = function(e) {
-      cat("Could not read", info_file, "\n")
+      cat("Could not read", info_file, ":", e$message, "\n")
       return(NULL)
     })
+  } else {
+    cat("File not found:", info_file, "\n")
   }
   return(NULL)
 })
@@ -812,6 +816,12 @@ if(nrow(metal_results) > 0) {
 
 ## Manhattan Plot (All Subsets Combined)
 
+**Interpretation notes:**
+- **X-axis labels:** With ~5,000 models, only top 50 most significant are labeled to maintain readability
+- **Points at top (~300):** These represent p-values < 1e-300 (machine precision limit)
+- **Many significant hits:** This dataset shows strong PGS associations with glioma survival
+- **Colors:** Different case subsets (ALL, HGG, LrGG, IDH status, 1p19q status)
+
 ```{r manhattan_all, fig.width=18, fig.height=8}
 if(nrow(metal_results) > 0) {
   # Create x-axis by model (not subset) - alphabetically sorted
@@ -834,9 +844,11 @@ if(nrow(metal_results) > 0) {
   # Bonferroni threshold
   bonf_threshold <- -log10(0.05 / (n_total_models * n_subsets))
   
-  # Only label models that are Bonferroni significant in ANY subset
+  # Only label TOP 50 most significant models (not all Bonferroni significant)
+  # With 5000+ models, 386 Bonferroni hits is too many to label
   models_to_label <- metal_plot %>%
-    filter(neglog10p > bonf_threshold) %>%
+    arrange(Pvalue) %>%
+    slice_head(n = 50) %>%
     pull(MarkerName) %>%
     unique()
   
@@ -845,7 +857,14 @@ if(nrow(metal_results) > 0) {
   
   cat("Manhattan plot:\n")
   cat("  Total models:", n_total_models, "\n")
-  cat("  Models labeled (Bonferroni sig):", length(models_to_label), "\n\n")
+  cat("  Bonferroni significant:", sum(metal_plot$neglog10p > bonf_threshold, na.rm = TRUE) / n_subsets, "models\n")
+  cat("  Top 50 most significant labeled\n\n")
+  
+  # Note: Many points at top = extremely small p-values (< 1e-300)
+  n_extreme <- sum(metal_plot$neglog10p > 300, na.rm = TRUE)
+  if(n_extreme > 0) {
+    cat("Note:", n_extreme, "associations have p < 1e-300 (appear at top of plot)\n\n")
+  }
   
   ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
     geom_point(alpha = 0.6, size = 1.5, position = position_jitter(width = 0.2, height = 0)) +
@@ -853,13 +872,10 @@ if(nrow(metal_results) > 0) {
                linetype = "dashed", color = "red", size = 1) +
     scale_x_continuous(breaks = model_positions$x_pos,
                        labels = model_positions$label) +
-    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
     labs(title = "Manhattan Plot: Meta-Analysis Results Across All PGS Models",
-         subtitle = paste("Models sorted alphabetically;", 
-                         length(models_to_label), 
-                         "Bonferroni-significant models labeled; Colors = case subsets"),
+         subtitle = paste("Models sorted alphabetically; Top 50 most significant labeled; Colors = case subsets"),
          x = "PGS Model (alphabetical)", y = "-log10(P-value)",
          color = "Case Subset") +
     theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1, size = 6),
@@ -873,20 +889,42 @@ if(nrow(metal_results) > 0) {
 
 ## Top Meta-Analysis Hits
 
+**Note on extreme values:** Some PGS models show extremely small p-values (< 1e-300) and correspondingly extreme hazard ratios. These represent very strong associations but HR values > 1e6 should be interpreted cautiously as they may indicate model overfitting or data quality issues.
+
 ```{r top_meta_hits}
 if(nrow(metal_results) > 0) {
   # Overall top hits across all subsets
   top_meta <- metal_results %>%
     arrange(Pvalue) %>%
     slice_head(n = 50) %>%
-    select(subset, MarkerName, Effect, Pvalue, Meta_HR, HetPVal)
+    mutate(
+      # Flag extreme HR values
+      HR_display = ifelse(Meta_HR > 1e6, sprintf(">1e6 (%.2e)", Meta_HR), 
+                   ifelse(Meta_HR < 1e-6, sprintf("<1e-6 (%.2e)", Meta_HR),
+                          sprintf("%.3f", Meta_HR)))
+    ) %>%
+    select(subset, MarkerName, Effect, Pvalue, Meta_HR, HR_display, HetPVal)
   
   datatable(top_meta,
             caption = "Top 50 PRS from Meta-Analysis (All Subsets)",
             options = list(pageLength = 25),
-            rownames = FALSE) %>%
-    formatRound(columns = c("Effect", "Meta_HR"), digits = 3) %>%
-    formatSignif(columns = c("Pvalue", "HetPVal"), digits = 3)
+            rownames = FALSE,
+            colnames = c("Subset", "PGS Model", "Effect", "P-value", "Meta HR", "HR (Display)", "Het P")) %>%
+    formatRound(columns = c("Effect"), digits = 3) %>%
+    formatSignif(columns = c("Pvalue", "Meta_HR", "HetPVal"), digits = 3) %>%
+    formatStyle('Meta_HR',
+                backgroundColor = styleInterval(c(1e6), c('white', 'lightyellow')))
+  
+  # Summary of extreme values
+  n_extreme <- sum(top_meta$Meta_HR > 1e6 | top_meta$Meta_HR < 1e-6, na.rm = TRUE)
+  if(n_extreme > 0) {
+    cat("\n**Warning:**", n_extreme, "of top 50 hits have extreme HR values (>1e6 or <1e-6)\n")
+    cat("These may indicate:\n")
+    cat("- Very strong true associations\n")
+    cat("- Model overfitting or separation issues\n")
+    cat("- Data quality concerns\n")
+    cat("Review individual model results carefully\n\n")
+  }
 } else {
   cat("No METAL results available\n")
 }
