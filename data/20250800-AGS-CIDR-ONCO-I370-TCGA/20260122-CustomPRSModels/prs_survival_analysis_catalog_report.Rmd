@@ -55,7 +55,9 @@ library(scales)
 library(RColorBrewer)
 library(gridExtra)
 library(knitr)
-library(DT)
+library(kableExtra)  # For kable_styling
+library(DT)          # For datatable
+library(jsonlite)    # For fromJSON
 
 # Set theme
 theme_set(theme_bw(base_size = 12))
