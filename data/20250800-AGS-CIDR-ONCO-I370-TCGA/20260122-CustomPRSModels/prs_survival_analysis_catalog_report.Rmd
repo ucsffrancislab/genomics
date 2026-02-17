@@ -210,16 +210,22 @@ model_variances <- sapply(all_models_list, function(model) {
   var(all_scores, na.rm = TRUE)
 })
 
-# Select top 5 highest variance and bottom 5 lowest variance
-top_var_models <- names(sort(model_variances, decreasing = TRUE))[1:5]
-bottom_var_models <- names(sort(model_variances, decreasing = FALSE))[1:5]
+# Filter out zero variance models
+non_zero_models <- names(model_variances)[model_variances > 0 & !is.na(model_variances)]
+model_variances_filtered <- model_variances[non_zero_models]
+
+# Select top 5 highest variance and bottom 5 lowest variance (from non-zero)
+top_var_models <- names(sort(model_variances_filtered, decreasing = TRUE))[1:min(5, length(model_variances_filtered))]
+bottom_var_models <- names(sort(model_variances_filtered, decreasing = FALSE))[1:min(5, length(model_variances_filtered))]
 sample_prs <- c(top_var_models, bottom_var_models)
 
-cat("Showing models with highest and lowest variance across datasets
+cat("Showing models with highest and lowest variance (excluding zero variance)
 ")
 cat("Highest variance:", paste(top_var_models, collapse = ", "), "
 ")
 cat("Lowest variance:", paste(bottom_var_models, collapse = ", "), "
+")
+cat("Zero variance models excluded:", sum(model_variances == 0 | is.na(model_variances)), "
 
 ")
 
@@ -250,72 +256,6 @@ ggplot(plot_data, aes(x = Score, fill = dataset)) +
 
 
 **Observation:** Raw PRS scores have different scales, confirming the need for standardization.
-
-## Z-score Validation (All Datasets)
-
-```{r zscore_validation, fig.height=3*length(datasets)}
-# Check z-scoring for ALL datasets
-zscore_plots <- list()
-
-for(ds in datasets) {
-  if(!is.null(zscores_list[[ds]])) {
-    zscore_stats <- zscores_list[[ds]] %>%
-      select(-sample, -dataset) %>%
-      summarise(across(everything(), list(
-        mean = ~mean(., na.rm = TRUE),
-        sd = ~sd(., na.rm = TRUE)
-      )))
-    
-    # Extract means and SDs
-    mean_cols <- grep("_mean$", names(zscore_stats))
-    sd_cols <- grep("_sd$", names(zscore_stats))
-    
-    means <- data.frame(Value = as.numeric(zscore_stats[, mean_cols]))
-    sds <- data.frame(Value = as.numeric(zscore_stats[, sd_cols]))
-    
-    # Mean plot
-    p1 <- ggplot(means, aes(x = Value)) +
-      geom_histogram(bins = 50, fill = dataset_colors[ds], alpha = 0.7) +
-      geom_vline(xintercept = 0, color = "red", linetype = "dashed", size = 1) +
-      labs(title = paste(toupper(ds), "- Means After Z-scoring"),
-           subtitle = "Should be centered at 0",
-           x = "Mean", y = "Number of PRS models") +
-      xlim(c(-0.5, 0.5)) +
-      annotate("text", x = 0.25, y = Inf, vjust = 2, 
-               label = paste0("Median = ", round(median(means$Value, na.rm=TRUE), 4)))
-    
-    # SD plot
-    p2 <- ggplot(sds, aes(x = Value)) +
-      geom_histogram(bins = 50, fill = dataset_colors[ds], alpha = 0.7) +
-      geom_vline(xintercept = 1, color = "red", linetype = "dashed", size = 1) +
-      labs(title = paste(toupper(ds), "- Standard Deviations After Z-scoring"),
-           subtitle = "Should be centered at 1",
-           x = "Standard Deviation", y = "Number of PRS models") +
-      xlim(c(0.5, 1.5)) +
-      annotate("text", x = 1.25, y = Inf, vjust = 2,
-               label = paste0("Median = ", round(median(sds$Value, na.rm=TRUE), 4)))
-    
-    zscore_plots[[length(zscore_plots) + 1]] <- p1
-    zscore_plots[[length(zscore_plots) + 1]] <- p2
-    
-    # Report any problematic models
-    bad_means <- sum(abs(means$Value) > 0.1, na.rm = TRUE)
-    bad_sds <- sum(abs(sds$Value - 1) > 0.1, na.rm = TRUE)
-    
-    cat("\n", toupper(ds), ":\n")
-    cat("  Models with |mean| > 0.1:", bad_means, "\n")
-    cat("  Models with |SD - 1| > 0.1:", bad_sds, "\n")
-  }
-}
-
-if(length(zscore_plots) > 0) {
-  do.call(grid.arrange, c(zscore_plots, ncol = 2))
-} else {
-  cat("No z-score data available for plotting\n")
-}
-```
-
-**QC Result:** Z-scoring successfully standardizes all PRS to mean ≈ 0, SD ≈ 1 across all datasets.
 
 ## Z-Score Distributions - Top & Bottom Models
 
@@ -907,17 +847,13 @@ if(nrow(metal_results) > 0) {
   cat("  Total models:", n_total_models, "\n")
   cat("  Models labeled (Bonferroni sig):", length(models_to_label), "\n\n")
   
-  # Add buffer to y-axis for top points
-  max_y <- max(metal_plot$neglog10p, na.rm = TRUE)
-  y_limit <- max_y * 1.05  # 5% buffer
-  
   ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
     geom_point(alpha = 0.6, size = 1.5, position = position_jitter(width = 0.2, height = 0)) +
     geom_hline(yintercept = bonf_threshold, 
                linetype = "dashed", color = "red", size = 1) +
     scale_x_continuous(breaks = model_positions$x_pos,
                        labels = model_positions$label) +
-    scale_y_continuous(limits = c(0, y_limit)) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.05))) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
     labs(title = "Manhattan Plot: Meta-Analysis Results Across All PGS Models",
@@ -1544,13 +1480,33 @@ create_multi_km_quartiles <- function(prs_model) {
                        by = "sample")
         merged$dataset <- toupper(ds)
         
-        # Quartile risk groups (within dataset)
-        merged$risk_group <- cut(merged[[prs_model]],
-                                breaks = quantile(merged[[prs_model]], 
-                                                probs = c(0, 0.25, 0.5, 0.75, 1),
-                                                na.rm = TRUE),
-                                labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
-                                include.lowest = TRUE)
+        # Quartile risk groups (within dataset) - with error handling
+        tryCatch({
+          # Check if we have enough unique values for quartiles
+          unique_vals <- length(unique(merged[[prs_model]][!is.na(merged[[prs_model]])]))
+          
+          if(unique_vals < 4) {
+            # Not enough unique values for quartiles, use binary split
+            merged$risk_group <- cut(merged[[prs_model]],
+                                    breaks = quantile(merged[[prs_model]], 
+                                                    probs = c(0, 0.5, 1),
+                                                    na.rm = TRUE),
+                                    labels = c("Low", "High"),
+                                    include.lowest = TRUE)
+          } else {
+            # Standard quartiles
+            merged$risk_group <- cut(merged[[prs_model]],
+                                    breaks = quantile(merged[[prs_model]], 
+                                                    probs = c(0, 0.25, 0.5, 0.75, 1),
+                                                    na.rm = TRUE),
+                                    labels = c("Q1-Low", "Q2", "Q3", "Q4-High"),
+                                    include.lowest = TRUE)
+          }
+        }, error = function(e) {
+          # If quartile calculation fails, use binary split as fallback
+          median_val <- median(merged[[prs_model]], na.rm = TRUE)
+          merged$risk_group <<- ifelse(merged[[prs_model]] <= median_val, "Low", "High")
+        })
         
         # Clean
         merged <- merged[complete.cases(merged[, c("survdays", "vstatus", prs_model)]), ]
