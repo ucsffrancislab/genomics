@@ -807,8 +807,10 @@ if(nrow(coverage_data) > 0) {
         caption = "PGS Coverage by Dataset") %>%
     kable_styling(bootstrap_options = c("striped", "hover"))
   
+  cat("\n\n")
+  
   # Distribution plot
-  ggplot(coverage_data, aes(x = coverage, fill = dataset)) +
+  p <- ggplot(coverage_data, aes(x = coverage, fill = dataset)) +
     geom_histogram(bins = 50, alpha = 0.6, position = "identity") +
     geom_vline(xintercept = 0.8, linetype = "dashed", color = "red") +
     scale_fill_manual(values = dataset_colors) +
@@ -819,10 +821,14 @@ if(nrow(coverage_data) > 0) {
     theme_bw() +
     theme(legend.position = "bottom")
   
+  print(p)
+  
   cat("\n**Coverage Interpretation:**\n")
   cat("- Coverage > 0.80: High quality (most variants matched)\n")
   cat("- Coverage 0.60-0.80: Medium quality\n")
   cat("- Coverage < 0.60: Low quality (many variants missing)\n")
+} else {
+  cat("No coverage data available\n")
 }
 ```
 
@@ -901,12 +907,17 @@ if(nrow(metal_results) > 0) {
   cat("  Total models:", n_total_models, "\n")
   cat("  Models labeled (Bonferroni sig):", length(models_to_label), "\n\n")
   
+  # Add buffer to y-axis for top points
+  max_y <- max(metal_plot$neglog10p, na.rm = TRUE)
+  y_limit <- max_y * 1.05  # 5% buffer
+  
   ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
     geom_point(alpha = 0.6, size = 1.5, position = position_jitter(width = 0.2, height = 0)) +
     geom_hline(yintercept = bonf_threshold, 
                linetype = "dashed", color = "red", size = 1) +
     scale_x_continuous(breaks = model_positions$x_pos,
                        labels = model_positions$label) +
+    scale_y_continuous(limits = c(0, y_limit)) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
     labs(title = "Manhattan Plot: Meta-Analysis Results Across All PGS Models",
@@ -915,7 +926,7 @@ if(nrow(metal_results) > 0) {
                          "Bonferroni-significant models labeled; Colors = case subsets"),
          x = "PGS Model (alphabetical)", y = "-log10(P-value)",
          color = "Case Subset") +
-    theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1, size = 10),
+    theme(axis.text.x = element_text(angle = 60, hjust = 1, vjust = 1, size = 6),
           legend.position = "right",
           legend.text = element_text(size = 7),
           legend.key.size = unit(0.4, "cm"))
@@ -1122,7 +1133,7 @@ print(paste("METAL Heterogeneity P:", metal_idhmut$HetPVal))
 
 **Showing top 20 PGS models** ranked by p-value in ALL_meta_cases subset.
 
-```{r forest_plots_top, fig.height=20}
+```{r forest_plots_top, fig.height=18, fig.width=14}
 if(nrow(metal_results) > 0 && nrow(cox_results) > 0) {
   # Get top 20 models from ALL_meta_cases
   top_models <- metal_results %>%
@@ -1134,11 +1145,12 @@ if(nrow(metal_results) > 0 && nrow(cox_results) > 0) {
   cat("Creating forest plots for top 20 models by p-value (ALL_meta_cases)\n\n")
   
   if(length(top_models) > 0) {
-    # Create forest plots for top models
+    # Create forest plots for top models in same style as custom
     forest_plots <- lapply(top_models, function(model) {
       # Get per-dataset results for this model
       model_data <- cox_results %>%
         filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(dataset, Effect, StdErr, Pvalue, N) %>%
         mutate(
           HR = exp(Effect),
           CI_lower = exp(Effect - 1.96 * StdErr),
@@ -1148,46 +1160,43 @@ if(nrow(metal_results) > 0 && nrow(cox_results) > 0) {
       # Get META result
       meta_result <- metal_results %>%
         filter(MarkerName == model, subset == "ALL_meta_cases") %>%
+        select(Effect, StdErr, Pvalue, HetPVal) %>%
         mutate(
           dataset = "META",
           HR = exp(Effect),
           CI_lower = exp(Effect - 1.96 * StdErr),
-          CI_upper = exp(Effect + 1.96 * StdErr)
-        ) %>%
-        select(dataset, HR, CI_lower, CI_upper, Pvalue, HetPVal)
+          CI_upper = exp(Effect + 1.96 * StdErr),
+          N = NA
+        )
       
       # Combine
-      plot_data <- bind_rows(
-        model_data %>% select(dataset, HR, CI_lower, CI_upper),
-        meta_result %>% select(dataset, HR, CI_lower, CI_upper)
-      ) %>%
-        mutate(dataset = toupper(dataset))
+      plot_data <- bind_rows(model_data, meta_result) %>%
+        mutate(dataset = factor(dataset, levels = c("META", "tcga", "i370", "onco", "cidr")))
       
-      # Get p-value and het p for title
+      # Get meta p-value and het p for subtitle
       meta_p <- meta_result$Pvalue[1]
-      het_p <- meta_result$HetPVal[1]
+      het_p <- if("HetPVal" %in% names(meta_result)) meta_result$HetPVal[1] else NA
       
-      # Plot
-      ggplot(plot_data, aes(x = HR, y = dataset)) +
-        geom_vline(xintercept = 1, linetype = "dashed", color = "gray50") +
-        geom_errorbarh(aes(xmin = CI_lower, xmax = CI_upper), height = 0.2) +
-        geom_point(aes(color = dataset), size = 3) +
-        scale_color_manual(values = c("CIDR" = "#E41A1C", "ONCO" = "#377EB8",
-                                      "I370" = "#4DAF4A", "TCGA" = "#984EA3",
-                                      "META" = "black")) +
-        scale_x_log10() +
-        labs(title = model,
+      # Plot in same style as custom
+      ggplot(plot_data, aes(x = HR, y = dataset, color = dataset)) +
+        geom_vline(xintercept = 1, linetype = "dashed", color = "gray50", size = 1) +
+        geom_pointrange(aes(xmin = CI_lower, xmax = CI_upper), size = 0.8, fatten = 3) +
+        geom_text(aes(x = Inf, label = sprintf("%.2f [%.2f-%.2f]", HR, CI_lower, CI_upper)),
+                  hjust = 1.1, size = 3, color = "black") +
+        scale_color_manual(values = c("META" = "black", dataset_colors)) +
+        scale_x_log10(limits = c(0.5, 3)) +
+        labs(title = gsub("_scoring_system|_", " ", model),
              subtitle = sprintf("Meta p = %.2e, Het p = %.2f", meta_p, het_p),
              x = "Hazard Ratio (95% CI, log scale)",
              y = "") +
-        theme_bw() +
-        theme(legend.position = "none")
+        theme(legend.position = "none",
+              plot.title = element_text(size = 10, face = "bold"),
+              plot.subtitle = element_text(size = 8),
+              axis.text.y = element_text(size = 9))
     })
     
-    # Display all forest plots
-    for(i in seq_along(forest_plots)) {
-      print(forest_plots[[i]])
-    }
+    # Display in 2-column grid like custom forest plots
+    do.call(grid.arrange, c(forest_plots, ncol = 2))
   }
 }
 ```
