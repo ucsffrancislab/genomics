@@ -707,11 +707,8 @@ if(nrow(metal_results) > 0) {
 
 ```{r coverage_stats, fig.height=8}
 # Read scores.info files to get coverage statistics
-# Note: scores.info files are in the original pgs-calc directory, not merged
-original_base_path <- "/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-new_models-claude"
-
 coverage_data_list <- lapply(datasets, function(ds) {
-  info_file <- file.path(original_base_path, ds, "scores.info")
+  info_file <- file.path(base_path, ds, "scores.info")
   if(file.exists(info_file)) {
     # Try to read JSON
     tryCatch({
@@ -863,7 +860,7 @@ if(nrow(metal_results) > 0) {
   # Note: Many points at top = extremely small p-values (< 1e-300)
   n_extreme <- sum(metal_plot$neglog10p > 300, na.rm = TRUE)
   if(n_extreme > 0) {
-    cat("Note:", n_extreme, "associations have p < 1e-300 (appear at top of plot)\n\n")
+    cat("Note:", n_extreme, "associations have p < 1e-300 (capped at y=350)\n\n")
   }
   
   ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
@@ -872,6 +869,7 @@ if(nrow(metal_results) > 0) {
                linetype = "dashed", color = "red", size = 1) +
     scale_x_continuous(breaks = model_positions$x_pos,
                        labels = model_positions$label) +
+    scale_y_continuous(limits = c(0, 350)) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
     labs(title = "Manhattan Plot: Meta-Analysis Results Across All PGS Models",
