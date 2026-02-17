@@ -691,6 +691,7 @@ Replace the "bad" RSID model scores with the "good" ones.
 
 ```bash
 ./merge_prs_scores.py --all --catalog-base /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores
+./merge_prs_scores_info.py --all --catalog-base /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores
 ```
 
 ```bash
@@ -734,6 +735,11 @@ commands_array_wrapper.bash --array_file claude_cox_commands --time 1-0 --thread
 ```
 
 
+```bash
+for b in cidr onco i370 tcga ; do
+ cp pgs-calc-scores/${b}/scores.info pgs-calc-scores-merged/${b}/
+done
+```
 
 
 
@@ -753,16 +759,6 @@ commands_array_wrapper.bash --array_file metal_commands --time 1-0 --threads 4 -
 
 
 
-
-
-
-
-
-
-
-```
-EDIT for pgs-calc-scores-merged
-
 ```bash
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=prs_survival_analysis \
@@ -773,8 +769,10 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=prs_surviva
 mv prs_survival_analysis_catalog_report.Rmd.html pgs-calc-scores-merged/
 ```
 
+
+
 ```bash
-box_upload.bash pgs-calc-scores-merged/prs_survival_analysis_report_catalog_report.Rmd.html pgs-calc-scores-merged/metal* pgs-calc-scores-merged/*/scores* pgs-calc-scores-merged/*/*/*
+box_upload.bash pgs-calc-scores-merged/prs_survival_analysis_catalog_report.Rmd.html pgs-calc-scores-merged/metal* pgs-calc-scores-merged/*/scores* pgs-calc-scores-merged/*/*/*
 ```
 
 
@@ -791,29 +789,6 @@ box_upload.bash pgs-calc-scores-merged/prs_survival_analysis_report_catalog_repo
 
 
 
-
-
-
-##	20260205
-
-
-Rerun the above and include more comments!
-
-Rerun the above using z-scores (of just our data) and not raw scores?
-
-What was extract_cox_coeffs_for_pgs.r for?
-
-Rerun the above on the 7 new models?
-
-Create a matrix like that returned from the imputation server / pgs-calc? Or actually get pgs-calc working?
-
-
-
-spacox.bash ???
-
-pgscox.bash
-
-metal
 
 
 
@@ -826,7 +801,5 @@ https://claude.ai/chat/fb6fa5f0-e2b8-4a5b-8074-476eddb176a6
 * pgs-calc-scores/ - entire catalog scores PLUS 7 new models HOWEVER the 3 RSID models are a bit wrong as the other_allele can contain commas
 * pgs-calc-scores-new_models/ - scoring of just the 7 new models. The 3 RSID models are included in 2 versions: split and commas.
 * pgs-calc-scores-new_models-claude/ - merge with above.
-
-Clean this all up and create a README_SUCCESS.md
-
+* pgs-calc-scores-merged/ - full catalog analysis
 
