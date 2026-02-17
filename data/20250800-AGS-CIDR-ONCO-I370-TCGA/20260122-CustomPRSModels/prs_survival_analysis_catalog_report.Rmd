@@ -830,6 +830,10 @@ if(nrow(metal_results) > 0) {
   # Calculate -log10(p)
   metal_plot$neglog10p <- -log10(metal_plot$Pvalue)
   
+  # Cap extreme values at 350 (represents p < 1e-350)
+  n_extreme <- sum(metal_plot$neglog10p > 350, na.rm = TRUE)
+  metal_plot$neglog10p <- pmin(metal_plot$neglog10p, 350)
+  
   # Clean subset names for legend
   metal_plot$clean_subset <- gsub("_meta_cases|_meta", "", metal_plot$subset)
   
@@ -855,12 +859,13 @@ if(nrow(metal_results) > 0) {
   cat("Manhattan plot:\n")
   cat("  Total models:", n_total_models, "\n")
   cat("  Bonferroni significant:", sum(metal_plot$neglog10p > bonf_threshold, na.rm = TRUE) / n_subsets, "models\n")
-  cat("  Top 50 most significant labeled\n\n")
+  cat("  Top 50 most significant labeled\n")
   
-  # Note: Many points at top = extremely small p-values (< 1e-300)
-  n_extreme <- sum(metal_plot$neglog10p > 300, na.rm = TRUE)
+  # Report extreme values
   if(n_extreme > 0) {
-    cat("Note:", n_extreme, "associations have p < 1e-300 (capped at y=350)\n\n")
+    cat("  Extreme values capped:", n_extreme, "associations with p < 1e-350 (shown at y=350)\n\n")
+  } else {
+    cat("\n")
   }
   
   ggplot(metal_plot, aes(x = model_num, y = neglog10p, color = clean_subset)) +
@@ -869,7 +874,7 @@ if(nrow(metal_results) > 0) {
                linetype = "dashed", color = "red", size = 1) +
     scale_x_continuous(breaks = model_positions$x_pos,
                        labels = model_positions$label) +
-    scale_y_continuous(limits = c(0, 350)) +
+    scale_y_continuous(limits = c(0, 360), expand = c(0, 0)) +
     scale_color_manual(values = rainbow(length(unique(metal_plot$clean_subset))),
                        guide = guide_legend(ncol = 1)) +
     labs(title = "Manhattan Plot: Meta-Analysis Results Across All PGS Models",
