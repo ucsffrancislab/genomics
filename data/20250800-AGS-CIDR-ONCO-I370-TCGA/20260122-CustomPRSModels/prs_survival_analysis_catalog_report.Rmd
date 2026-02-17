@@ -399,7 +399,7 @@ cox_files <- list.files(path = cox_base_path,
 cat("Found", length(cox_files), "Cox model output files\n")
 
 if(length(cox_files) > 0) {
-  # Load all Cox results
+  # Load all Cox results with proper column types
   cox_results_list <- lapply(cox_files, function(f) {
     # Extract dataset and subset from path
     path_parts <- strsplit(f, "/")[[1]]
@@ -407,31 +407,56 @@ if(length(cox_files) > 0) {
     subset <- gsub(paste0(dataset, "_"), "", basename(dirname(f)))
     
     df <- fread(f)
+    
+    # Skip empty files (only header)
+    if(nrow(df) == 0) {
+      cat("Skipping empty file:", basename(f), "\n")
+      return(NULL)
+    }
+    
+    # Ensure correct column types (in case of mixed types from empty files)
+    df <- as.data.frame(df)
+    if("MarkerName" %in% names(df)) df$MarkerName <- as.character(df$MarkerName)
+    if("Allele1" %in% names(df)) df$Allele1 <- as.character(df$Allele1)
+    if("Allele2" %in% names(df)) df$Allele2 <- as.character(df$Allele2)
+    if("Effect" %in% names(df)) df$Effect <- as.numeric(df$Effect)
+    if("StdErr" %in% names(df)) df$StdErr <- as.numeric(df$StdErr)
+    if("Pvalue" %in% names(df)) df$Pvalue <- as.numeric(df$Pvalue)
+    if("N" %in% names(df)) df$N <- as.integer(df$N)
+    
     df$dataset <- dataset
     df$subset <- subset
     df$file <- basename(f)
     return(df)
   })
   
-  cox_results <- bind_rows(cox_results_list)
+  # Remove NULL entries (empty files)
+  cox_results_list <- cox_results_list[!sapply(cox_results_list, is.null)]
   
-  # Summary
-  cox_summary <- cox_results %>%
-    group_by(dataset, subset) %>%
-    summarise(
-      N_models = n(),
-      N_sig_0.05 = sum(Pvalue < 0.05, na.rm = TRUE),
-      N_sig_0.01 = sum(Pvalue < 0.01, na.rm = TRUE),
-      Min_pval = min(Pvalue, na.rm = TRUE),
-      .groups = "drop"
-    )
-  
-  kable(cox_summary, 
-        caption = "Cox Regression Results Summary by Dataset and Subset",
-        digits = 4)
-  
-  # Check which datasets are represented
-  cat("\nDatasets in Cox results:", paste(unique(cox_results$dataset), collapse = ", "), "\n")
+  if(length(cox_results_list) > 0) {
+    cox_results <- bind_rows(cox_results_list)
+    
+    # Summary
+    cox_summary <- cox_results %>%
+      group_by(dataset, subset) %>%
+      summarise(
+        N_models = n(),
+        N_sig_0.05 = sum(Pvalue < 0.05, na.rm = TRUE),
+        N_sig_0.01 = sum(Pvalue < 0.01, na.rm = TRUE),
+        Min_pval = min(Pvalue, na.rm = TRUE),
+        .groups = "drop"
+      )
+    
+    kable(cox_summary, 
+          caption = "Cox Regression Results Summary by Dataset and Subset",
+          digits = 4)
+    
+    # Check which datasets are represented
+    cat("\nDatasets in Cox results:", paste(unique(cox_results$dataset), collapse = ", "), "\n")
+  } else {
+    cat("All Cox result files were empty!\n")
+    cox_results <- data.frame()
+  }
 } else {
   cat("ERROR: No Cox results files found!\n")
   cox_results <- data.frame()
