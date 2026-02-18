@@ -14,7 +14,7 @@ zcat VIR3_clean.csv.gz | head -1 | tr ',' '\n' | awk '{print NR,$0}'
 1                         useless so drop
 2  Aclstr50               useless so drop
 3  Bclstr50               useless so drop
-4  Entry                  useless so drop
+4  Entry                  useless so drop. NOT USELESS. IMPORTANT. UniProt Entry accession
 5  Gene names             usually a duplicate of protein name but blank 43678 times so drup
 6  Gene ontology (GO)     useless so drop
 7  Gene ontology IDs      useless so drop
@@ -32,9 +32,7 @@ zcat VIR3_clean.csv.gz | head -1 | tr ',' '\n' | awk '{print NR,$0}'
 19 source                 ( 3 different IEDB, Vir2 and Vir3) useful?
 20 start
 21 peptide
-
 ```
-
 
 Some ids are duplicated.
 Some species names have different versions.
@@ -47,62 +45,38 @@ zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print "
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print ": " $12" // "$9" // "$5" // "$10}' | sort | uniq -c > species_organism_gene_protein.txt
 ```
 
-
 Keep 17-id, 12-species, 10-protein name, 11-sequence, 18-oligo, 21-peptide, 20-start, 16-end
 
-
 There are only 115753 uniq ids
-
 ```bash
 cut -d, -f1 v001.csv | uniq | wc -l
 115754
 ```
 
-
-
 ```bash
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17}' | sort -t, -k1n,1 | uniq > v999.csv &
-
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$10,$11,$18,$21,$20,$16}' | sort -t, -k1n,1 > v001.csv &
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$10,$11,$18,$21,$20,$16}' | sort -t, -k1n,1 | uniq > v002.csv &
-
-
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$10,$11,$18,$21,$20,$16}' | sort -t, -k1n,1 | uniq | cut -d, -f1 | uniq -D | uniq -c > v003.test.csv
-
-
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$18}' | sort -t, -k1n,1 | uniq > id,oligo.csv &
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$21}' | sort -t, -k1n,1 | uniq > id,peptide.csv &
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$18,$21}' | sort -t, -k1n,1 | uniq > id,oligo,peptide.csv &
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$18,$21,$20,$16}' | sort -t, -k1n,1 | uniq > id,oligo,peptide,start,end.csv &
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 | uniq > id,oligo,peptide,start,end,sequence.csv &
-
-
-Keep 17-id, 12-species, 10-protein name, 11-sequence, 18-oligo, 21-peptide, 20-start, 16-end
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,oligo,peptide,start,end.csv &
-
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$12,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,species,protein,oligo,peptide,start,end.csv &
-
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$12,$10,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,species,protein,oligo,peptide,start,end,sequence.csv &
-
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq > id,version,version,species,protein,oligo,peptide,start,end,sequence.csv &
-
-
-
-
-
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$9,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv &
-
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,protein,oligo,peptide,start,end.csv &
-
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein' > id,entry_version,sequence_version,species,protein.csv &
-
 ```
 
-
+Keep 17-id, 12-species, 10-protein name, 11-sequence, 18-oligo, 21-peptide, 20-start, 16-end
+```bash
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,oligo,peptide,start,end.csv &
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$12,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,species,protein,oligo,peptide,start,end.csv &
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$14,$12,$10,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 -k2n,2 | uniq > id,version,species,protein,oligo,peptide,start,end,sequence.csv &
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16,$11}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq > id,version,version,species,protein,oligo,peptide,start,end,sequence.csv &
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$9,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv &
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10,$18,$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,protein,oligo,peptide,start,end.csv &
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$15,$14,$12,$10}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,protein' > id,entry_version,sequence_version,species,protein.csv &
+```
 
 THERE ARE STILL COMMAS IN THE DATA SO BEWARE
-
-
 
 
 take the highest sequence version and entry version for each id, then drop the versions and keep the rest.
@@ -138,13 +112,9 @@ df.to_csv('id,species,protein,oligo,peptide,start,end-clean.csv',index=False)
 
 THERE ARE STILL COMMAS IN THE DATA SO BEWARE
 
-
-
-
 Take AI's lead but use it to create a translation table rather than actually change the data.
 
 Then join on the table, remove the original versions of species, organism and protein names to create new normalized file
-
 
 Read the raw file drom all but species, organism and protein.
 
@@ -156,7 +126,6 @@ For all 3 species, create a new version of the column with modifications:
 
 The manually search for synonyms like ...
 * 'Human cytomegalovirus (HHV-5) (Human herpesvirus 5)': 'Human herpesvirus 5',
-
 
 
 ```bash
@@ -173,29 +142,19 @@ awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print $4}' id,species,orga
 3991
 ```
 
-
 ```bash
 create_translation_tables.py
 ```
 
-
 ```bash
 wc -l species_translation_table.csv
 ```
-
-
-
 
 NEED TO TRIM OLIGOS
 
 ```bash
 awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}(NR>1){print ">"$1;print $5}' id,species,organism,protein,oligo,peptide,start,end-clean.csv > id,species,organism,protein,oligo,peptide,start,end-clean.fna
 ```
-
-
-
-
-
 
 Should trim the indexes of of the oligos.
 
@@ -222,7 +181,6 @@ zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+
 zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{if($18~/^a/){i=2}else{i=1};print substr($18,1,14+i)" "substr($18,length($18)-13-i); print substr($18,15+i,length($18)-30-i))}' | head
 ```
 
-
 Actual sequences ...
 
 a bit concerned about the -30-1. (-28-(2*i)) is better
@@ -231,20 +189,11 @@ a bit concerned about the -30-1. (-28-(2*i)) is better
 zcat VIR3_clean.csv.gz | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,toupper(substr($18,15+i,length($18)-28-(2*i))); }' | sort -t, -k1n,1 -k2,2 | uniq > VirScan/VIR3_clean.id_upper_oligo.uniq.csv
 ```
 
-
-
-
-
-
-
-
-
 ##	The Good Stuff
 
 ```bash
 zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,$15,$14,$12,$9,$10,toupper(substr($18,15+i,length($18)-28-(2*i))),$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end' > id,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv &
 ```
-
 
 ```python3
 
@@ -257,8 +206,6 @@ df = (df
 )
 df.to_csv('id,species,organism,protein,oligo,peptide,start,end-clean.csv',index=False)
 ```
-
-
 
 blastp the PEPTIDES
 
@@ -288,7 +235,6 @@ sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 --job-name=blast3 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
 --output=${PWD}/blastp.viral.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
 --wrap="module load blast; blastp -db /francislab/data1/refs/blast/refseq_select_prot -query id,species,organism,protein,oligo,peptide,start,end-clean.faa -outfmt '6 std staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.blastp.refseq_select_prot.tsv -num_threads 8"
-
 
 sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 --job-name=blast4 --time=14-0 --nodes=1 --ntasks=8 --mem=60GB \
@@ -335,134 +281,45 @@ cut -f1 id,species,organism,protein,oligo,peptide,start,end-clean.blastp.viral.s
 
 
 
----
+
+
+##	20260218
 
 ```bash
-wc -l id,species,organism,protein,oligo,peptide,start,end-clean.faa
-231506
-
-head -n 115752 id,species,organism,protein,oligo,peptide,start,end-clean.faa > id,species,organism,protein,oligo,peptide,start,end-clean.1of2.faa
-tail -n 115754 id,species,organism,protein,oligo,peptide,start,end-clean.faa > id,species,organism,protein,oligo,peptide,start,end-clean.2of2.faa
-
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
---job-name=blast1 --time=14-0 --nodes=1 --ntasks=32 --mem=240GB \
---output=${PWD}/blastp.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
---wrap="module load blast; blastp -db /francislab/data1/refs/blast/nr -query id,species,organism,protein,oligo,peptide,start,end-clean.1of2.faa -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.1of2.blastp.nr.tsv -num_threads 32"
-
-sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
---job-name=blast2 --time=14-0 --nodes=1 --ntasks=32 --mem=240GB \
---output=${PWD}/blastp.%j.$( date "+%Y%m%d%H%M%S%N" ).out.log \
---wrap="module load blast; blastp -db /francislab/data1/refs/blast/nr -query id,species,organism,protein,oligo,peptide,start,end-clean.2of2.faa -outfmt '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms' -out id,species,organism,protein,oligo,peptide,start,end-clean.2of2.blastp.nr.tsv -num_threads 32"
-
-```
-
-This will include taxids.
-
-Filter blast results based only on, hmmm, 
-
-
-
-This won't include the family and what not.
-
-I think that's why I wrote an app for that.
-
-Blast is missing a lot and including a lot of duplicate alignments. This won't be helpful.
-
-canceling
-
-What about making a ref from RefSeq viral fna?
-
-
-
-
-
-
----
-
-```bash 
-zcat VIR3_clean.csv.gz | sed -e 's/Chikungunya virus (CHIKV)/Chikungunya virus/g' \
-  -e 's/Eastern equine encephalitis virus (EEEV) (Eastern equine encephalomyelitis virus)/Eastern equine encephalitis virus/g' \
-  -e 's/Uukuniemi virus (Uuk)/Uukuniemi virus/g' \
-  -e 's/Human torovirus (HuTV)/Human torovirus/g' \
-  -e 's/BK polyomavirus (BKPyV)/BK polyomavirus/g' \
-  -e 's/Human cytomegalovirus (HHV-5) (Human herpesvirus 5)/Human herpesvirus 5/g' \
-  -e 's/New York virus (NYV)/New York virus/g' \
-  -e 's/Capsid scaffolding protein (Capsid protein P40) (Protease precursor) (pPR) (Virion structural gene 33 protein) \[Cleaved into: Assemblin (EC 3.4.21.97) (Capsid protein VP24) (Protease); Assembly protein (Capsid protein VP22A)\]/Capsid protein P40/g' \
-  -e 's/Tripartite terminase subunit UL15 homolog (DNA-packaging protein 45) (Terminase large subunit) \[Cleaved into: Gene 42 protein\]/Tripartite terminase subunit UL15 homolog/g' \
-| awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $17,$12,$10,$11,$18,$21,$20,$16}' | sort -t, -k1n,1 | uniq > v900.csv &
-```
-
-```
-zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{print $14}'
-
-zcat VIR3_clean.csv.gz \
-
-  | tail -n +2 | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{gsub(/,/,"",$5);gsub(/,/,"",$10);print $17,$12,$10,$5}' | sort -t, -k1,1 | uniq > VIR3_clean.id_species_protein_gene.uniq.csv
-sed -i '1iid,species,protein,gene' VIR3_clean.id_species_protein_gene.uniq.csv
-sed -i '/89962,O/d' VIR3_clean.id_species_protein_gene.uniq.csv
-chmod a-w VIR3_clean.id_species_protein_gene.uniq.csv
+zcat VIR3_clean.csv.gz | awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{ if($18~/^a/){i=2}else{i=1} print $17,$4,$15,$14,$12,$9,$10,toupper(substr($18,15+i,length($18)-28-(2*i))),$21,$20,$16}' | sort -t, -k1n,1 -k2n,2 -k3n,3 | uniq | sed '1c\id,entry,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end' > id,entry,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv &
 ```
 
 
+```python3
 
+import pandas as pd
+df = pd.read_csv('id,entry,entry_version,sequence_version,species,organism,protein,oligo,peptide,start,end.csv')
+df = (df
+    .sort_values(['id', 'entry_version', 'sequence_version'], ascending=[True, False, False])
+    .drop_duplicates(subset='id', keep='first')
+    .drop(columns=['entry_version', 'sequence_version'])
+)
+df.to_csv('id,entry,species,organism,protein,oligo,peptide,start,end.csv',index=False)
+```
 
+```bash
+head -1 id,entry,species,organism,protein,oligo,peptide,start,end.csv > tmp1.csv
+tail -n +2 id,entry,species,organism,protein,oligo,peptide,start,end.csv | sort -t, -k2,2 -k1,1 >> tmp1.csv
 
+head -1 taxonomic_annotation_database_complete.csv > tmp2.csv
+tail -n +2 taxonomic_annotation_database_complete.csv | sort -t, -k1,1 >> tmp2.csv
 
+join --header -t, -1 2 -2 1 tmp1.csv tmp2.csv > tmp3.csv
 
+awk 'BEGIN{OFS=",";FPAT="([^,]*)|(\"[^\"]+\")"}{temp=$1;$1=$2;$2=temp;print}' tmp3.csv > tmp4.csv
 
+head -1 tmp4.csv > tmp5.csv
+tail -n +2 tmp4.csv | sort -t, -k1,1 >> tmp5.csv
+sed -i '1s/^id,entry,species,organism,protein,/id,entry,original_species,original_organism,original_protein,/' tmp5.csv
+mv tmp5.csv vir3_taxonomic_annotation_database_complete.csv
+\rm tmp?.csv
 
-
-
-
-
-##	20260217
-
-
-That's all fine and dandy. However, lets do this differently
-
-Extract the id and entry ids (and perhaps the oligo, peptide, start, end. Others?)
-
-Then search the UnProt table and map the Entry ID to the TaxId.
-
-/francislab/data1/refs/sources/ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/idmapping_selected.tab.gz
-
-idmapping_selected.tab
-We also provide this tab-delimited table which includes
-the following mappings delimited by tab:
-
-1. UniProtKB-AC                <---- Q6GZX4
-2. UniProtKB-ID                <---- 001R_FRG3G
-3. GeneID (EntrezGene)               (This is commonly blank?)
-4. RefSeq                      <---- RefSeq Accession and Version ( YP_031579.1 )
-5. GI
-6. PDB
-7. GO
-8. UniRef100
-9. UniRef90
-10. UniRef50
-11. UniParc
-12. PIR
-13. NCBI-taxon                 <---- 654924 ( Frog virus 3 )
-14. MIM
-15. UniGene
-16. PubMed
-17. EMBL
-18. EMBL-CDS
-19. Ensembl
-20. Ensembl_TRS
-21. Ensembl_PRO
-22. Additional PubMed
-
-
-
-The build that taxonomic tree based on ...
-
-/francislab/data1/refs/sources/ftp.ncbi.nih.gov/pub/taxonomy/
-
-
-
-
-
+```
 
 
 
