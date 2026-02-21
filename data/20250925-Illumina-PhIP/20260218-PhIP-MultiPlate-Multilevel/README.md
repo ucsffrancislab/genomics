@@ -51,7 +51,7 @@ Do some differential analysis with varying z-score thresholds
 
 
 
-PhIPseq
+##	PhIPseq
 
 1. Phage Library (The "Baseline" or "Control")
   * Definition: This represents the library before any immunoprecipitation (IP) takes place. It is a direct sample of the raw phage library containing all synthesized peptides.
@@ -73,7 +73,7 @@ PhIPseq
 
 
 
-Edison Analysis Prompt:
+##	Edison Analysis Prompt 1:
 
 We are doing a PhIPseq analysis covering multiple subject types, studies and groups and across multiple sequencing plates.  Each subject has 2 replicate samples, usually on the same plate.  Each sample was sequenced and aligned to the VIR3 VirScan reference with bowtie2 and only those alignments with a mapping quality of 40 or greater were kept. Each plate contained a number of input / blank / no serum samples. The counts of these input samples were used to bin the experimental data into bins containing about 300 peptides and then they were scaled creating z-scores.
 
@@ -146,13 +146,104 @@ In each subset analysis, use a variety of z-score thresholds when calling a samp
 
 I'm not sure when it is best to combine the sample replicates. Make an appropriate decision. Our subsets are rather small.
 
-I am asking a lot. 9 pairs of case / controls. At least 3 z-score thresholds. 6 levels of taxonomy.
+I am asking a lot. 9 pairs of case / controls. At least 3 z-score thresholds. 6 levels of taxonomy. Roughly 150 differential analyses.
 
 Evaluate the situation as a whole. Make a plan. Justify your decisions. Prepare to make a bunch of approprate publishable plots. Execute.
 
 
+###	Notes
+
+
+Samples in z-scores but not in manifest:
+ {'E045528.1', 'D082062.1', 'E045528dup.1', 'D082062dup.1'}
+
+These are likely the samples on 2 plates and when read added the .1 suffix.
+
+I presume that without manifest information that they were just dropped.
+
+
+Didn't report any peptide results. Did it run any? Log looks like it did.
+
+Should've asked for organism as well.
 
 
 
+
+##	Edison Analysis Prompt 2:
+
+We are doing a PhIPseq analysis covering multiple subject types, studies and groups and across multiple sequencing plates.  Each subject has 2 replicate samples, usually on the same plate.  Each sample was sequenced and aligned to the VIR3 VirScan reference with bowtie2 and only those alignments with a mapping quality of 40 or greater were kept. Each plate contained a number of input / blank / no serum samples. The counts of these input samples were used to bin the experimental data into bins containing about 300 peptides and then they were scaled creating z-scores.
+
+In addition, each plate contained Phage Library samples containing just the raw phage library. Each plate also contain the same "commercial serum sample". Both of these could possibly be useful correcting or adjusting for plate effects.
+
+I have attached 3 files:
+* manifest.csv containing the following fields for each sample
+  * sample
+  * subject
+  * type
+  * study
+  * group
+  * age
+  * sex
+  * plate
+* vir3_taxonomic_annotation_database_complete.csv.gz containing the following fields for each peptide
+  * id
+  * entry
+  * original_species
+  * original_organism
+  * original_protein
+  * oligo
+  * peptide
+  * start
+  * end
+  * alternate_uniprot_accession
+  * uniparc_accession
+  * uniprot_entry_name
+  * refseq_protein
+  * genbank_protein
+  * gene_name
+  * protein_name
+  * ncbi_taxid
+  * organism
+  * species
+  * genus
+  * subfamily
+  * family
+  * order
+  * class
+  * phylum
+  * kingdom
+  * realm
+* Zscores.csv.gz
+  * Peptide z-scores by sample
+
+I also have the raw counts should the z-score data be inadequate.
+
+While it’s nice to be able to predict known virus seropositivity, there are already methods for this, and our overarching mission is to detect specific (single peptide/tile/antigen) and systematic (global shifts, pathway/virus-level patterns, communities/modules) seroreactivity differences between two groups of subjects. 
+
+I need you to perform a number of differential analysis between the following subsets and subgroups of subjects.
+
+Compare the 
+* glioma serum
+  * IPS cases to AGS controls
+* glioma serum
+  * PLCO cases to PLCO controls
+* ALL maternal serum
+  * cases to controls
+* meningioma serum
+  * Hypermitotic to Immune-enriched
+  * Hypermitotic to Merlin-intact
+  * Immune-enriched to Merlin-intact
+* pemphigus serum
+  * PF Patient to Endemic Control
+  * PF Patient to Non Endemic Control
+  * PF Patient to both Endemic Control and Non Endemic Control
+
+In each subset analysis, use a variety of z-score thresholds when calling a sample / peptide reactive. Start with 3.5, 10, and 20. Evaluate the subset of data to assist in determining appropriate thresholds. Adjust as necessary. Drop any peptides that are reactive in more than 95% or less than 5% of samples. Adjust those thresholds as well if necessary. Be sure to adjust for sex, age and plate. Perform the differential analysis by individual peptide and then progress up the taxonomic levels combining the peptide reactivity in an appropriate fashion and perform differential analyses at each of the the peptide's organism, species, genus, subfamily, family and order. 
+
+I'm not sure when it is best to combine the sample replicates. Make an appropriate decision. Our subsets are rather small.
+
+I am asking a lot. 9 pairs of case / controls. At least 3 z-score thresholds. 6 levels of taxonomy. Roughly 150 differential analyses.
+
+Evaluate the situation as a whole. Make a plan. Justify your decisions. Prepare to make a bunch of approprate publishable plots. Execute.
 
 
