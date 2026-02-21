@@ -803,3 +803,142 @@ https://claude.ai/chat/fb6fa5f0-e2b8-4a5b-8074-476eddb176a6
 * pgs-calc-scores-new_models-claude/ - merge with above.
 * pgs-calc-scores-merged/ - full catalog analysis
 
+
+
+
+
+##	Edison Analysis prompt 1:
+
+Creating a prompt to  pass to Edison Analysis to perform all that I've done above.
+
+The PGS calculation is time consuming so skipping to the Cox model, METAL merging, and analysis.
+
+Merge select covariate fields or just provide then separately with explanation?
+
+pgs-calc-scores-merged/*/*-covariates.tsv
+
+
+
+pgs-calc-scores-merged/*/scores.{info,txt}
+
+tar gz files?
+
+
+
+4 datasets ( CIDR, ONCO, I370 and TCGA ) were genotyped on different SNP arrays.
+Each of these datasets was then prepared / checked with the HRC-1000G-check-bim.pl using the 1000GP_Phase3_combined.legend reference file.
+Imputation on the UMich server was initiated via the command line which used the following options:
+* -F "refpanel=1000g-phase-3-v5"
+* -F "build=hg19"
+* -F "r2Filter=0.3"
+* -F "phasing=eagle"
+* -F "population=off"
+
+Using bcftools, the imputed results were lifted over to hg38, selecting only those with INFO/R2 > 0.8, normalized twice, 
+
+first with "--check-ref x -m -any"
+    -c, --check-ref e|w|x|s         Check REF alleles and exit (e), warn (w), exclude (x), or set (s) bad sites [e]
+    -m, --multiallelics -|+TYPE     Split multiallelics (-) or join biallelics (+), type: snps|indels|both|any [both]
+then with "-d exact"
+    -d, --rm-dup TYPE               Remove duplicate snps|indels|both|all|exact
+
+Then only SNPs were selected using 
+bcftools view -m2 -M2 -v snps -Oz -
+
+    -m/M, --min-alleles/--max-alleles INT  Minimum/maximum number of alleles listed in REF and ALT (e.g. -m2 -M2 for biallelic sites)
+    -v/V, --types/--exclude-types LIST     Select/exclude comma-separated list of variant types: snps,indels,mnps,ref,bnd,other [null]
+
+
+Then any SNPs that were lifted over to a different chromosomes (~1235 SNPs) were redistributed to the correct chromosome.
+
+
+Using https://github.com/lukfor/pgs-calc, scores were calculated for a large subset of the PGS catalog plus 7 additional custom models by chromosome and then merged for each dataset.
+
+Each dataset has then generated a large matrix of scores (DATASET.scores.txt) and json file containing information regarding the scoring process (DATASET.scores.info).
+
+
+For each dataset we have N-1 samples (includes header line) with scores 
+
+wc -l pgs-calc-scores-merged/*/scores.txt
+       483 pgs-calc-scores-merged/cidr/scores.txt
+      4620 pgs-calc-scores-merged/i370/scores.txt
+      4366 pgs-calc-scores-merged/onco/scores.txt
+      6717 pgs-calc-scores-merged/tcga/scores.txt
+
+We don't have covariates for all.
+
+For each dataset we have N-1 samples (includes header line) with some covariates 
+
+wc -l pgs-calc-scores-merged/*/*-covariates.tsv 
+    447 pgs-calc-scores-merged/cidr/cidr-covariates.tsv
+   1252 pgs-calc-scores-merged/i370/i370-covariates.tsv
+   4139 pgs-calc-scores-merged/onco/onco-covariates.tsv
+   6711 pgs-calc-scores-merged/tcga/tcga-covariates.tsv
+
+
+For each dataset, a DATASET.covariates.csv has been created containing
+* IID
+* dataset (cidr,i370,onco,tcga so could possible combine the files)
+* source (Geno added this for Onco because it has AGS and Mayo, would apply to I370 and TCGA too) Only matters as Onco includes cases from different sources that were imputed together? (i370 incudes AGS and WCC, but the WCC are only controls) CIDR is all IPS. TCGA contains FAM_BLOOD,FAM_WTCCC,FAM_WS, TCGA tumor and normal) (treat tumor and normal both as cases?)
+* age (continuous int) from age or age_ucsf_surg
+* sex (onco and i370 are M/F; CIDR is 1/2; TCGA is male/female)
+* case ( 0=control, 1=case; add for CIDR as all are case)
+* PC1-8
+* rad (0=no, 1=yes?; if known. not in TCGA)
+* chemo/tmz (0=no, 1=yes?; if known. not in TCGA; tmz for CIDR) temodar?
+* vstatus (0=dead, 1=alive? or vice versa?; deceased in CIDR)
+* survdays (continuous int)
+* idh (0=wildtype, 1=mutant?) From idh or idhwt_gwas/idhmut_gwas
+* pq (0=intact, 1=codel?) from either pq or pqimpute?
+* tert (0=?, 1=?) (not in CIDR)
+* grade (high and low thresholds?) (grade in CIDR; ngrade in Onco,I370; not in TCGA)
+
+
+    344 lists/tcga_IDHmut_meta_cases.txt
+    378 lists/tcga_IDHwt_meta_cases.txt
+
+     21 lists/tcga_HGG_IDHmut_meta_cases.txt
+    303 lists/tcga_HGG_IDHwt_meta_cases.txt
+
+    320 lists/tcga_LrGG_IDHmut_meta_cases.txt
+     75 lists/tcga_LrGG_IDHwt_meta_cases.txt
+
+    131 lists/tcga_LrGG_IDHmut_1p19qcodel_meta_cases.txt
+    189 lists/tcga_LrGG_IDHmut_1p19qintact_meta_cases.txt
+
+
+CIDR
+Var Name,Code,Description
+ID,,Unique IPS identifier
+rad,1,Received any radiation after IPS eligible surgery
+,0,No radiation documented after IPS eligible surgery
+,9,Unknown if given (could not find treatment information)
+tmz,1,TMZ given at any point after IPS eligible surgery
+,0,Not given (in some cases not able to determine because no information or tx was given elsewhere and we did not follow the patient)
+,9,Unknown if given (could not find treatment information)
+idhmut,IDH mutation status ,encoded value,1=mutated,0=wildtype, 9=unknown,,,,,,,,,,
+pq,Medical record/path review confirmation that tumor was 1p19q co-deleted. Only pulled and confirmed for oligodendroglioma patients,encoded value,0= 1p/19q intact  ,1= 1p/19q codeleted,blank=not abstracted,,,,,,,,,,
+deceased,Vital status at last follow-up,encoded value,0=alive as of last follow up,1= deceased,,,,,,,,,,,
+sex,Biological sex,encoded value,1=Male,2=Female,,,,,,,,,,,
+dxgroup,Tumor type at IPS study enrollment,encoded value,1A=newly diagnosed GBM,1B=newly diagnosed IDH mutant grade 4 astrocytoma,2=newly diagnosed lower grade glioma (lgg),"3=recurrent lgg, still lgg at enrollment","4=recurrent lgg, now grade 4 at enrollment","5=newly diagnosed glioma, uncertain type",,,,,,,
+grade,Tumor grade per pathology report from study enrollment surgery,encoded value,2=tumor grade 2,3=tumor grade 3,4=tumor grade 4,blank=missing/unknown grade,,,,,,,,,
+
+LGG = 2,3
+GBM = 4
+
+Case lists ( 20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/pgs-calc-scores-merged/*/*-covariates.tsv )
+* CIDR is all IPS cases and no controls
+* I370 contains AGS cases and AGS controls
+* ONCO contains AGS and Mayo cases and AGS and Mayo controls
+* TCGA cases contain both tumor and normal samples and FAM controls
+
+
+
+For the PGS Survival analysis, we just use cases.
+
+Does no one do case / control analysis on PGS?
+Steve  [2:31 PM]
+We should do both.
+
+Cases for survival. 
+Case/control for risk[2:32 PM]Instruct it to look at the pgs SNPs for any associated traits. To infer potential biological mechanism
