@@ -11,12 +11,12 @@ BEGIN {
 	FS="\t";OFS=",";
 	print "IID,dataset,source,age,sex,case,grade,idh,pq,tert,rad,chemo,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,survdays,vstatus"
 } 
-(NR==1){ for (i=1; i<=NF; i++) { col_map[$i] = i } }
+(NR==1){ for (i=1; i<=NF; i++) { col[$i] = i } }
 (NR>1){
 	if( dataset == "cidr" ){
 		source="IPS"
-		age = ($(col_map["age_first_surg"]) != "" ? $(col_map["age_first_surg"]) : $(col_map["age_ucsf_surg"]))
-		sex_value = (c = col_map["sex"]) ? $c : ""
+		age = ($(col["age_first_surg"]) != "" ? $(col["age_first_surg"]) : $(col["age_ucsf_surg"]))
+		sex_value = (c = col["sex"]) ? $c : ""
 		sex=""
 		if( sex_value == "1" ){
 			sex="M"
@@ -24,85 +24,85 @@ BEGIN {
 			sex="F"
 		}
 		casecontrol="1"
-		grade_value = (c = col_map["grade"]) ? $c : ""
+		grade_value = (c = col["grade"]) ? $c : ""
 		grade=""
 		if( grade_value <= 3 ){
 			grade="LGG"
 		} else if( grade_value > 3 ){
 			grade="HGG"
 		}
-		idh = (c = col_map["idhmut"]) ? $c : ""
-		pq = (c = col_map["pq"]) ? $c : ""
+		idh = (c = col["idhmut"]) ? $c : ""
+		pq = (c = col["pq"]) ? $c : ""
 		tert=""
-		rad = (c = col_map["rad"]) ? $c : ""
-		chemo=$(col_map["tmz"])
-		vstatus = (c = col_map["deceased"]) ? $c : ""
+		rad = (c = col["rad"]) ? $c : ""
+		chemo=$(col["tmz"])
+		vstatus = (c = col["deceased"]) ? $c : ""
 	} else if ( dataset == "i370" ){
 		source="AGS"
-		age = (c = col_map["Age"]) ? $c : ""
-		sex = (c = col_map["sex"]) ? $c : ""
-		casecontrol = (c = col_map["case"]) ? $c : ""
-		grade_value = (c = col_map["ngrade"]) ? $c : ""
+		age = (c = col["Age"]) ? $c : ""
+		sex = (c = col["sex"]) ? $c : ""
+		casecontrol = (c = col["case"]) ? $c : ""
+		grade_value = (c = col["ngrade"]) ? $c : ""
 		grade=""
 		if( grade_value <= 3 ){
 			grade="LGG"
 		} else if( grade_value > 3 ){
 			grade="HGG"
 		}
-		idh = (c = col_map["idhmut"]) ? $c : ""
-		pq = (c = col_map["pqimpute"]) ? $c : ""
-		tert = (c = col_map["tert"]) ? $c : ""
-		rad = (c = col_map["rad"]) ? $c : ""
-		chemo = (c = col_map["chemo"]) ? $c : ""
-		vstatus = (c = col_map["vstatus"]) ? $c : ""
+		idh = (c = col["idhmut"]) ? $c : ""
+		pq = (c = col["pqimpute"]) ? $c : ""
+		tert = (c = col["tert"]) ? $c : ""
+		rad = (c = col["rad"]) ? $c : ""
+		chemo = (c = col["chemo"]) ? $c : ""
+		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "onco" ){
-		source = (c = col_map["source"]) ? $c : ""
-		age = (c = col_map["age"]) ? $c : ""
-		sex = (c = col_map["sex"]) ? $c : ""
-		casecontrol = (c = col_map["case"]) ? $c : ""
-		grade_value = (c = col_map["ngrade"]) ? $c : ""
+		source = (c = col["source"]) ? $c : ""
+		age = (c = col["age"]) ? $c : ""
+		sex = (c = col["sex"]) ? $c : ""
+		casecontrol = (c = col["case"]) ? $c : ""
+		grade_value = (c = col["ngrade"]) ? $c : ""
 		grade=""
 		if( grade_value <= 3 ){
 			grade="LGG"
 		} else if( grade_value > 3 ){
 			grade="HGG"
 		}
-		idh = (c = col_map["idh"]) ? $c : ""
-		pq = (c = col_map["pq"]) ? $c : ""
-		tert = (c = col_map["tert"]) ? $c : ""
-		rad = (c = col_map["rad"]) ? $c : ""
-		chemo = (c = col_map["chemo"]) ? $c : ""
-		vstatus = (c = col_map["vstatus"]) ? $c : ""
+		idh = (c = col["idh"]) ? $c : ""
+		pq = (c = col["pq"]) ? $c : ""
+		tert = (c = col["tert"]) ? $c : ""
+		rad = (c = col["rad"]) ? $c : ""
+		chemo = (c = col["chemo"]) ? $c : ""
+		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "tcga" ){
-		iid_value = (c = col_map["IID"]) ? $c : ""
+		iid_value = (c = col["IID"]) ? $c : ""
 		dataset="tcga"
 		source="TCGA"
-		age = (c = col_map["age"]) ? $c : ""
-		sex_value = (c = col_map["sex"]) ? $c : ""
+		age = (c = col["age"]) ? $c : ""
+		sex_value = (c = col["sex"]) ? $c : ""
 		sex=""
 		if( sex_value == "male" ){
 			sex="M"
 		} else if( sex_value == "female" ){
 			sex="F"
 		}
-		casecontrol = (c = col_map["case"]) ? $c : ""
+		casecontrol = (c = col["case"]) ? $c : ""
 		grade=""
 		if( iid_value ~ /^TCGA-(CS|DB|DH|DU|E1|EZ|F6|FG|FN|HK|HT|HW|IK|KT|P5|QH|R8|RY|S9|TM|TQ|VM|VV|VW|W9|WH|WY)-/){
 			grade="LGG"
 		} else if( iid_value ~ /^TCGA-(02|06|08|12|14|15|16|19|26|27|28|32|41|4W|65|74|76|81|87|OX|RR)-/){
 			grade="HGG"
 		}
-		idh = (c = col_map["idh"]) ? $c : ""
-		pq = (c = col_map["pqimpute"]) ? $c : ""
-		tert = (c = col_map["tert"]) ? $c : ""
+		idh = (c = col["idh"]) ? $c : ""
+		pq = (c = col["pqimpute"]) ? $c : ""
+		tert = (c = col["tert"]) ? $c : ""
 		rad=""
 		chemo=""
-		vstatus = (c = col_map["vstatus"]) ? $c : ""
+		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else {
 		print "Unknown dataset"
 		exit 1
 	}
-	print $(col_map["IID"]),dataset,source,age,sex,casecontrol,grade,idh,pq,tert,rad,chemo,$(col_map["PC1"]),$(col_map["PC2"]),$(col_map["PC3"]),$(col_map["PC4"]),$(col_map["PC5"]),$(col_map["PC6"]),$(col_map["PC7"]),$(col_map["PC8"]),$(col_map["survdays"]),vstatus
+	print $(col["IID"]),dataset,source,age,sex,casecontrol,grade,idh,pq,tert,rad,chemo,$(col["PC1"]),$(col["PC2"]),$(col["PC3"]),$(col["PC4"]),$(col["PC5"]),$(col["PC6"]),$(col["PC7"]),$(col["PC8"]),$(col["survdays"]),vstatus
 
 }' $infile | sed 's/,NA/,/g'
 
