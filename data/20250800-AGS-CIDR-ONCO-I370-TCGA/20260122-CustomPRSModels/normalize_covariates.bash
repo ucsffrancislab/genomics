@@ -32,7 +32,11 @@ BEGIN {
 			grade="HGG"
 		}
 		idh = (c = col["idhmut"]) ? $c : ""
-		pq = (c = col["pq"]) ? $c : ""
+ 		#pq,Medical record/path review confirmation that tumor was 1p19q co-deleted. Only pulled and confirmed for oligodendroglioma patients,encoded value,0= 1p/19q intact  ,1= 1p/19q codeleted,blank=not abstracted,,,,,,,,,,
+		# there are no 0s. 
+
+		#pq = (c = col["pq"]) ? $c : ""
+		pq = (c = col["pq"]) ? $c : 0
 		tert=""
 		rad = (c = col["rad"]) ? $c : ""
 		chemo=$(col["tmz"])
@@ -74,7 +78,25 @@ BEGIN {
 		chemo = (c = col["chemo"]) ? $c : ""
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "tcga" ){
+
+
+
+
+
+		#	ONLY INCLUDE THE NORMAL "10" samples. Not 01. Not 11.
+		#	This will also drop the controls, but we are not using them at the moment
+		#	Perhaps, just drop the TCGA non-normal?
+		#	TCGA only normal as a case - DROP ALL TUMORS
+		#	Keep only from SINGLE UNIQUE SUBJECT
+		#	10	Blood Derived Normal	NB
+		#	11	Solid Tissue Normal	NT
 		iid_value = (c = col["IID"]) ? $c : ""
+		if ( iid_value ~ /^TCGA-/ && iid_value !~ /^TCGA-..-....-10/ )
+			next
+
+
+
+
 		dataset="tcga"
 		source="TCGA"
 		age = (c = col["age"]) ? $c : ""
