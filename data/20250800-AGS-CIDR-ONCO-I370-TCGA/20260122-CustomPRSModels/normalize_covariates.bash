@@ -9,7 +9,7 @@ infile=$2
 awk -v dataset=$1 '
 BEGIN {
 	FS="\t";OFS=",";
-	print "IID,dataset,source,age,sex,case,grade,idh,pq,tert,rad,chemo,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,survdays,vstatus"
+	print "IID,dataset,source,age,sex,case,grade,idh,pq,tert,rad,chemo,treated,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,survdays,vstatus"
 } 
 (NR==1){ for (i=1; i<=NF; i++) { col[$i] = i } }
 (NR>1){
@@ -34,12 +34,13 @@ BEGIN {
 		idh = (c = col["idhmut"]) ? $c : ""
  		#pq,Medical record/path review confirmation that tumor was 1p19q co-deleted. Only pulled and confirmed for oligodendroglioma patients,encoded value,0= 1p/19q intact  ,1= 1p/19q codeleted,blank=not abstracted,,,,,,,,,,
 		# there are no 0s. 
-
 		#pq = (c = col["pq"]) ? $c : ""
 		pq = (c = col["pq"]) ? $c : 0
 		tert=""
 		rad = (c = col["rad"]) ? $c : ""
-		chemo=$(col["tmz"])
+		chemo = (c = col["tmz"]) ? $c : ""
+		#chemo=$(col["tmz"])
+		treated=""
 		vstatus = (c = col["deceased"]) ? $c : ""
 	} else if ( dataset == "i370" ){
 		source="AGS"
@@ -58,6 +59,7 @@ BEGIN {
 		tert = (c = col["tert"]) ? $c : ""
 		rad = (c = col["rad"]) ? $c : ""
 		chemo = (c = col["chemo"]) ? $c : ""
+		treated=""
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "onco" ){
 		source = (c = col["source"]) ? $c : ""
@@ -76,6 +78,7 @@ BEGIN {
 		tert = (c = col["tert"]) ? $c : ""
 		rad = (c = col["rad"]) ? $c : ""
 		chemo = (c = col["chemo"]) ? $c : ""
+		treated=""
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "tcga" ){
 
@@ -119,6 +122,7 @@ BEGIN {
 		tert = (c = col["tert"]) ? $c : ""
 		rad=""
 		chemo=""
+		treated=""
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else {
 		print "Unknown dataset"
