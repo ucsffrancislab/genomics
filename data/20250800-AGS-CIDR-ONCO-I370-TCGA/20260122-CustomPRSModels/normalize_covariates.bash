@@ -40,7 +40,7 @@ BEGIN {
 		rad = (c = col["rad"]) ? $c : ""
 		chemo = (c = col["tmz"]) ? $c : ""
 		#chemo=$(col["tmz"])
-		treated=""
+		treated = (c = col["tmz"]) ? $c : ""
 		vstatus = (c = col["deceased"]) ? $c : ""
 	} else if ( dataset == "i370" ){
 		source="AGS"
@@ -59,7 +59,7 @@ BEGIN {
 		tert = (c = col["tert"]) ? $c : ""
 		rad = (c = col["rad"]) ? $c : ""
 		chemo = (c = col["chemo"]) ? $c : ""
-		treated=""
+		treated = (c = col["chemo"]) ? $c : ""
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "onco" ){
 		source = (c = col["source"]) ? $c : ""
@@ -78,7 +78,7 @@ BEGIN {
 		tert = (c = col["tert"]) ? $c : ""
 		rad = (c = col["rad"]) ? $c : ""
 		chemo = (c = col["chemo"]) ? $c : ""
-		treated=""
+		treated = (c = col["chemo"]) ? $c : ""
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else if ( dataset == "tcga" ){
 
@@ -122,13 +122,13 @@ BEGIN {
 		tert = (c = col["tert"]) ? $c : ""
 		rad=""
 		chemo=""
-		treated=""
+		treated=1
 		vstatus = (c = col["vstatus"]) ? $c : ""
 	} else {
 		print "Unknown dataset"
 		exit 1
 	}
-	print $(col["IID"]),dataset,source,age,sex,casecontrol,grade,idh,pq,tert,rad,chemo,$(col["PC1"]),$(col["PC2"]),$(col["PC3"]),$(col["PC4"]),$(col["PC5"]),$(col["PC6"]),$(col["PC7"]),$(col["PC8"]),$(col["survdays"]),vstatus
+	print $(col["IID"]),dataset,source,age,sex,casecontrol,grade,idh,pq,tert,rad,chemo,treated,$(col["PC1"]),$(col["PC2"]),$(col["PC3"]),$(col["PC4"]),$(col["PC5"]),$(col["PC6"]),$(col["PC7"]),$(col["PC8"]),$(col["survdays"]),vstatus
 
 }' $infile | sed 's/,NA/,/g'
 
@@ -144,9 +144,9 @@ Should all TCGA samples be used as cases even those that whose sample code is No
 I am mostly finding in Onco and I370 that ngrade=1,2,3 are in Geno's LGG list and ngrade=4 is in the HGG list. While I haven't found one in the other, sometimes they aren't in either list. Is there more to the grade?
 
 
-./normalize_covariates.bash cidr pgs-calc-scores-merged/cidr/cidr-covariates.tsv > edison_covariates/cidr-covariates.tsv
-./normalize_covariates.bash i370 pgs-calc-scores-merged/i370/i370-covariates.tsv > edison_covariates/i370-covariates.tsv
-./normalize_covariates.bash onco pgs-calc-scores-merged/onco/onco-covariates.tsv > edison_covariates/onco-covariates.tsv
-./normalize_covariates.bash tcga pgs-calc-scores-merged/tcga/tcga-covariates.tsv > edison_covariates/tcga-covariates.tsv
+./normalize_covariates.bash cidr pgs-calc-scores-merged/cidr/cidr-covariates.tsv > edison_prs_survival_analysis/cidr-covariates.csv
+./normalize_covariates.bash i370 pgs-calc-scores-merged/i370/i370-covariates.tsv > edison_prs_survival_analysis/i370-covariates.csv
+./normalize_covariates.bash onco pgs-calc-scores-merged/onco/onco-covariates.tsv > edison_prs_survival_analysis/onco-covariates.csv
+./normalize_covariates.bash tcga pgs-calc-scores-merged/tcga/tcga-covariates.tsv > edison_prs_survival_analysis/tcga-covariates.csv
 
 

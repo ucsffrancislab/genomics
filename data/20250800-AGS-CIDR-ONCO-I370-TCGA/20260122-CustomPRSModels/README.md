@@ -942,3 +942,129 @@ We should do both.
 
 Cases for survival. 
 Case/control for risk[2:32 PM]Instruct it to look at the pgs SNPs for any associated traits. To infer potential biological mechanism
+
+
+
+
+
+##	20260225
+
+For whatever reason, these 2 TCGA data has an extra suffix which at some point was swapped from an underscore to a dash or vice versa.
+Not sure what's up with the -1/_1 suffix anyway.
+
+```bash
+
+< TCGA-06-0141-10A_1_TCGA-06-0141-10A_1
+< TCGA-06-0143-10A_1_TCGA-06-0143-10A_1
+
+[gwendt@c4-dev3 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels]$ grep -A1 -B1 TCGA-06-0143 ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt
+TCGA-06-0141-10A-1_TCGA-06-0141-10A-1,EUR,EUR,1.0,-3.27237,147.845,-12.3136,-13.4794,30.8181,-34.6836,-121.173,4.97366
+TCGA-06-0143-10A-1_TCGA-06-0143-10A-1,EUR,EUR,1.0,17.8929,187.361,-17.9997,-11.7032,33.0853,-33.6892,-98.9279,19.6394
+TCGA-06-0152-10A_TCGA-06-0152-10A,EUR,EUR,1.0,23.7741,186.879,-5.55244,-18.1448,35.6049,-37.3577,-88.0531,14.5553
+
+[gwendt@c4-dev3 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels]$ grep -A1 -B1 TCGA-06-0143 pgs-calc-scores-merged/${b}/${b}-covariates_base.csv.test
+TCGA-06-0141-10A_1_TCGA-06-0141-10A_1,male,1,0,0,NA,1,312.998009215667,62,Glioblastoma,NA,NA,NA,1,NA,NA,1,NA,NA
+TCGA-06-0143-10A_1_TCGA-06-0143-10A_1,male,1,0,0,NA,1,356.997729361,58,Glioblastoma,NA,NA,NA,1,NA,NA,1,NA,NA
+TCGA-06-0152-10A_TCGA-06-0152-10A,male,1,0,0,NA,1,374.997614875,68,Glioblastoma,NA,NA,NA,1,NA,NA,1,NA,NA
+
+```
+
+
+##	20260303 - correct the 2 suffixed sample names
+
+It is unclear why these 2 samples have a _1/-1 suffix, but there is only one of each, so I am removing the suffix in all associated files.
+
+Given that plink uses _ to separate IID from FID, the underscore should be translated to dash, or simply removed.
+
+I'm going to translate it rather than drop it just in case
+
+```bash
+TCGA-06-0141-10A_1_TCGA-06-0141-10A_1 -> TCGA-06-0141-10A-1_TCGA-06-0141-10A-1
+TCGA-06-0143-10A_1_TCGA-06-0143-10A_1 -> TCGA-06-0143-10A-1_TCGA-06-0143-10A-1
+
+grep -l TCGA-06-014[13]-10A_1 lists/tcga* 
+lists/tcga_covariates_base.csv
+lists/tcga_covariates.tsv
+
+for f in $( grep -l TCGA-06-014[13]-10A_1 lists/tcga*  ) ; do
+echo $f
+sed -i 's/TCGA-06-0141-10A_1/TCGA-06-0141-10A-1/g' $f
+sed -i 's/TCGA-06-0143-10A_1/TCGA-06-0143-10A-1/g' $f
+done
+
+grep -l TCGA-06-014[13]-10A_ pgs-calc-*/tcga/* edison_prs_survival_analysis*/tcga/*
+pgs-calc-scores-merged/tcga/tcga-covariates_base.csv
+pgs-calc-scores-merged/tcga/tcga-covariates_base.csv.test
+pgs-calc-scores-new_models/tcga/tcga-covariates_base.csv
+
+for f in $( grep -l TCGA-06-014[13]-10A_ pgs-calc-*/tcga/* edison_prs_survival_analysis*/tcga/* ) ; do
+echo $f
+sed -i 's/TCGA-06-0141-10A_1/TCGA-06-0141-10A-1/g' $f
+sed -i 's/TCGA-06-0143-10A_1/TCGA-06-0143-10A-1/g' $f
+done
+grep -l TCGA-06-014[13]-10A_ pgs-calc-*/tcga/* edison_prs_survival_analysis*/tcga/*
+
+for b in tcga ; do
+  cov_in=lists/${b}_covariates.tsv
+  cols=$( head -1 $cov_in | tr '\t' '\n' | wc -l )
+  cat ${cov_in} | cut -d$'\t' -f1-$((cols-20)) | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+
+  head -1 ${TMPDIR}/tmp.csv > pgs-calc-scores-merged/${b}/${b}-covariates_base.csv.test
+  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> pgs-calc-scores-merged/${b}/${b}-covariates_base.csv.test
+  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+  join --header -t, pgs-calc-scores-merged/${b}/${b}-covariates_base.csv.test $TMPDIR/tmp.csv | tr , '\t' > pgs-calc-scores-merged/${b}/${b}-covariates.tsv.test
+done
+
+```
+
+
+
+
+##	20260303 - Run full PGS catalog on all with some minor adjustments
+
+
+Lets do all models adjusted for age, sex, grade, PCs, Chemo (call all the TCGA as treated.
+
+The current covariates are 'source' (needed for Onco which includes Mayo and AGS), 'age', 'sex', 'grade', 'rad', 'chemo', 'PC1', 'PC2', 'PC3', 'PC4', 'PC5', 'PC6', 'PC7', 'PC8'
+
+I will need to modify normalize_covariates.bash
+
+Merge rad and chemo somehow to create "treated"
+
+Just duplicate chemo to create "treated"
+
+```bash
+./normalize_covariates.bash cidr pgs-calc-scores-merged/cidr/cidr-covariates.tsv > edison_prs_survival_analysis/cidr-covariates.csv
+./normalize_covariates.bash i370 pgs-calc-scores-merged/i370/i370-covariates.tsv > edison_prs_survival_analysis/i370-covariates.csv
+./normalize_covariates.bash onco pgs-calc-scores-merged/onco/onco-covariates.tsv > edison_prs_survival_analysis/onco-covariates.csv
+./normalize_covariates.bash tcga pgs-calc-scores-merged/tcga/tcga-covariates.tsv > edison_prs_survival_analysis/tcga-covariates.csv
+```
+
+
+Then modify survival_analysis.py
+
+4 new subset definitions:
+* IDH WT - IDH=WT : idh=0
+* IDH MUT LGG - IDH=MUT, PQ=INTACT, GRADE=LGG : idh=1, pq=0, grade=LGG
+* IDH MUT HGG - IDH=MUT, PQ=INTACT, GRADE=HGG : idh=1, pq=0, grade=HGG
+* Oligo - IDH=MUT, PQ=CODEL : idh=1, pq=1
+
+
+
+```bash
+\rm lists/cidr_covariates.tsv
+ln -s /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.20260303.tsv lists/cidr_covariates.tsv
+
+for b in cidr ; do
+  cov_in=lists/${b}_covariates.tsv
+  cat ${cov_in} | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+
+  head -1 ${TMPDIR}/tmp.csv > edison_prs_survival_analysis/${b}-covariates_base.csv
+  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> edison_prs_survival_analysis/${b}-covariates_base.csv
+  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
+  join --header -t, edison_prs_survival_analysis/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > edison_prs_survival_analysis/${b}-covariates.tsv
+done
+
+./normalize_covariates.bash cidr edison_prs_survival_analysis/cidr-covariates.tsv > edison_prs_survival_analysis/cidr-covariates.csv
+```
+
