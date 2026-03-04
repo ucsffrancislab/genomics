@@ -268,4 +268,27 @@ cat CIDR_case_covariates.20260212.csv | tr ',' '\t' > CIDR_case_covariates.20260
 
 
 
+##	20260303
+
+New file with updated outcomes.
+
+Need to reorder columns to match old column order. Do I?
+
+
+```bash
+
+head -1 CIDR_IPS_phenotype_2026-03-03_updated_vstatus.csv > tmp1.csv
+tail -n +2 CIDR_IPS_phenotype_2026-03-03_updated_vstatus.csv | sort -t, -k1,1 >> tmp1.csv
+
+join --header -t, CIDR_ids.csv tmp1.csv | head -1 > tmp2.csv
+join --header -t, CIDR_ids.csv tmp1.csv | tail -n +2 | sort -t, -k3,3 >> tmp2.csv
+
+join --header -t, -1 3 -2 1 tmp2.csv IPS_CIDR_446_RAD_TMZ_2025-10-10.csv  > tmp3.csv
+
+cut -d, -f3- tmp3.csv > CIDR_case_covariates.20260303.csv
+cat CIDR_case_covariates.20260303.csv | tr ',' '\t' > CIDR_case_covariates.20260303.tsv
+
+```
+
+
 
