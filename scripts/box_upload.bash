@@ -17,7 +17,7 @@ while [ $# -gt 0 ] ; do
 	BOX="${BOX_BASE}/${dir}"
 	echo $BOX
 
-	curl  --silent --ftp-create-dirs -netrc -T "${1}" "${BOX}/"
+	curl  --silent --ftp-create-dirs --netrc -T "${1}" "${BOX}/"
 	shift
 done
 
