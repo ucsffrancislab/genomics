@@ -22,3 +22,10 @@ sbatch run_parallel_survival.sh
 
 
 
+```bash
+
+box_upload.bash survival_parallel_* *-covariates.csv results/*t results/plots/*
+
+
+```
+
