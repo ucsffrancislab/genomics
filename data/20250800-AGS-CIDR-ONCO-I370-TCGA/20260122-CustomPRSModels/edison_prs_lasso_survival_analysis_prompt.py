@@ -332,5 +332,22 @@ cp edison_prs_survival_analysis/${d}.scores.info edison_prs_lasso_survival_analy
 cp edison_prs_survival_analysis/${d}.scores.z-scores.txt.gz edison_prs_lasso_survival_analysis/
 done
 
+
+
+
+"Z-scored PRS files and covariates merged via IID suffix matching (after first underscore)."
+
+So, likely because the covariates and scores were sorted differently and the covariates don't include all of the samples scored, Edison determined that the IID and sample needed to be split on the first undescore in order to merge. This is incorrect. I pointed it out. He confirmed it.
+
+The scores `sample` should match the covariates `IID`. There are scores for samples that do not have an IID in the covariates files.
+
+Edison provided virtualy no instructions at all and no required python package list.
+
+A bit disappointing.
+
+Also, rather than run a small testing subset for development, it actually ran all models and all 4 subtypes.
+
+Neither good, nor bad, just unexpected given the prompt.
+
 """
 
