@@ -36,10 +36,10 @@ BEGIN {
 		# there are no 0s. 
 		#pq = (c = col["pq"]) ? $c : ""
 		pq = (c = col["pq"]) ? $c : 0
+		pq = ( pq == "" ) ? 0 : pq
 		tert=""
 		rad = (c = col["rad"]) ? $c : ""
 		chemo = (c = col["tmz"]) ? $c : ""
-		#chemo=$(col["tmz"])
 		treated = (c = col["tmz"]) ? $c : ""
 		vstatus = (c = col["deceased"]) ? $c : ""
 	} else if ( dataset == "i370" ){
