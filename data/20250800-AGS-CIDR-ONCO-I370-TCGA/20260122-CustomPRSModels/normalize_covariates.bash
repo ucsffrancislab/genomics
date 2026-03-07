@@ -9,10 +9,11 @@ infile=$2
 awk -v dataset=$1 '
 BEGIN {
 	FS="\t";OFS=",";
-	print "IID,dataset,source,age,sex,case,grade,idh,pq,tert,rad,chemo,treated,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,survdays,vstatus"
+	print "IID,dataset,source,age,sex,case,grade,idh,pq,tert,rad,chemo,treated,PC1,PC2,PC3,PC4,PC5,PC6,PC7,PC8,survdays,vstatus,exclude"
 } 
 (NR==1){ for (i=1; i<=NF; i++) { col[$i] = i } }
 (NR>1){
+	exclude=0
 	if( dataset == "cidr" ){
 		source="IPS"
 		age = ($(col["age_first_surg"]) != "" ? $(col["age_first_surg"]) : $(col["age_ucsf_surg"]))
@@ -49,7 +50,9 @@ BEGIN {
 		casecontrol = (c = col["case"]) ? $c : ""
 		grade_value = (c = col["ngrade"]) ? $c : ""
 		grade=""
-		if( grade_value <= 3 ){
+		if( grade_value == "NA" ){
+			grade=""
+		} else if( grade_value <= 3 ){
 			grade="LGG"
 		} else if( grade_value > 3 ){
 			grade="HGG"
@@ -68,7 +71,9 @@ BEGIN {
 		casecontrol = (c = col["case"]) ? $c : ""
 		grade_value = (c = col["ngrade"]) ? $c : ""
 		grade=""
-		if( grade_value <= 3 ){
+		if( grade_value == "NA" ){
+			grade=""
+		} else if( grade_value <= 3 ){
 			grade="LGG"
 		} else if( grade_value > 3 ){
 			grade="HGG"
@@ -83,9 +88,6 @@ BEGIN {
 	} else if ( dataset == "tcga" ){
 
 
-
-
-
 		#	ONLY INCLUDE THE NORMAL "10" samples. Not 01. Not 11.
 		#	This will also drop the controls, but we are not using them at the moment
 		#	Perhaps, just drop the TCGA non-normal?
@@ -93,15 +95,20 @@ BEGIN {
 		#	Keep only from SINGLE UNIQUE SUBJECT
 		#	10	Blood Derived Normal	NB
 		#	11	Solid Tissue Normal	NT
+		# 	DO NOT JUST DROP THEM. FLAG THEM WITH THE EXCLUDE COLUMN
+
 		iid_value = (c = col["IID"]) ? $c : ""
-		if ( iid_value ~ /^TCGA-/ && iid_value !~ /^TCGA-..-....-10/ )
-			next
+		if ( iid_value ~ /^TCGA-/ && iid_value !~ /^TCGA-..-....-10/ ){
+			exclude=1
+		}
 
-
-
+		if ( iid_value ~ /^TCGA-/ ){
+			source="TCGA"
+		} else {
+			source="WTCCC"
+		}
 
 		dataset="tcga"
-		source="TCGA"
 		age = (c = col["age"]) ? $c : ""
 		sex_value = (c = col["sex"]) ? $c : ""
 		sex=""
@@ -128,7 +135,7 @@ BEGIN {
 		print "Unknown dataset"
 		exit 1
 	}
-	print $(col["IID"]),dataset,source,age,sex,casecontrol,grade,idh,pq,tert,rad,chemo,treated,$(col["PC1"]),$(col["PC2"]),$(col["PC3"]),$(col["PC4"]),$(col["PC5"]),$(col["PC6"]),$(col["PC7"]),$(col["PC8"]),$(col["survdays"]),vstatus
+	print $(col["IID"]),dataset,source,age,sex,casecontrol,grade,idh,pq,tert,rad,chemo,treated,$(col["PC1"]),$(col["PC2"]),$(col["PC3"]),$(col["PC4"]),$(col["PC5"]),$(col["PC6"]),$(col["PC7"]),$(col["PC8"]),$(col["survdays"]),vstatus,exclude
 
 }' $infile | sed 's/,NA/,/g'
 
@@ -144,9 +151,9 @@ Should all TCGA samples be used as cases even those that whose sample code is No
 I am mostly finding in Onco and I370 that ngrade=1,2,3 are in Geno's LGG list and ngrade=4 is in the HGG list. While I haven't found one in the other, sometimes they aren't in either list. Is there more to the grade?
 
 
-./normalize_covariates.bash cidr pgs-calc-scores-merged/cidr/cidr-covariates.tsv > edison_prs_survival_analysis/cidr-covariates.csv
-./normalize_covariates.bash i370 pgs-calc-scores-merged/i370/i370-covariates.tsv > edison_prs_survival_analysis/i370-covariates.csv
-./normalize_covariates.bash onco pgs-calc-scores-merged/onco/onco-covariates.tsv > edison_prs_survival_analysis/onco-covariates.csv
-./normalize_covariates.bash tcga pgs-calc-scores-merged/tcga/tcga-covariates.tsv > edison_prs_survival_analysis/tcga-covariates.csv
+./normalize_covariates.bash cidr pgs-calc-scores-merged/cidr/cidr-covariates.tsv > cidr-covariates.csv
+./normalize_covariates.bash i370 pgs-calc-scores-merged/i370/i370-covariates.tsv > i370-covariates.csv
+./normalize_covariates.bash onco pgs-calc-scores-merged/onco/onco-covariates.tsv > onco-covariates.csv
+./normalize_covariates.bash tcga pgs-calc-scores-merged/tcga/tcga-covariates.tsv > tcga-covariates.csv
 
 
