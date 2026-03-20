@@ -59,7 +59,8 @@ async def download():
 
 		# Define your custom path
 		custom_path = os.getenv("PWD")
-		full_path = os.path.join(custom_path, output_file['filename'])
+		os.makedirs(os.path.join(custom_path, "download" ), exist_ok=True)
+		full_path = os.path.join(custom_path, "download", output_file['filename'])
 		print(full_path, flush=True)
 
 		## Write the data to the specified location

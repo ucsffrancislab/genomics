@@ -22,8 +22,15 @@ https://claude.ai/chat/81868de0-9fc9-49a3-8a33-d1901346d8a1
 
 ```bash 
 
-edison_prs_case_control_analysis_prompt.py
+./prompt.py
 
 ```
 
+https://platform.edisonscientific.com/trajectories/916364b4-d11b-40fe-9632-77fe3bd78075
+
+```bash
+
+./download.py
+
+```
 
