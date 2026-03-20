@@ -1,9 +1,11 @@
 
+#	20201006-GTEx
+
 https://trace.ncbi.nlm.nih.gov/Traces/study/?drid=78036&dbgap_project=20942&o=acc_s%3Aa
 
 download metadata as SraRunTable.txt
 
-
+```bash
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print NF}' SraRunTable.txt | uniq
 78
 
@@ -28,6 +30,7 @@ awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16~/bam/ && $21=="Brai
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16=="sra" && $21=="Brain" && $25=="PAIRED"){print $1}' SraRunTable.txt | sort | uniq > PairedBrainRNABamAccessionsJUSTSRA.txt
 
 
+```
 
 
 can't figure out how to download a bam.
@@ -36,7 +39,7 @@ only sra "files" and only individually.
 get those that are just sra as well since can't download bam files.
 
 
-
+```bash
 prefetch --progress --ngc prj_20942_D10852.ngc SRR1098761
 
 Not sure if that's needed?
@@ -209,6 +212,7 @@ grep -vs "Illumina-1.8 35 74" encoding.csv
 
 24 are "corrupt"
 
+```
 
 
 
@@ -217,7 +221,7 @@ grep -vs "Illumina-1.8 35 74" encoding.csv
 
 
 
-```
+```bash
 grep -vs Resequencing SraRunTable.csv > SraRunTable.NoResequencing.csv 
 
 wc -l SraRunTable*
@@ -229,7 +233,7 @@ wc -l SraRunTable*
 
 ##	20240605
 
-```
+```bash
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}(NR==1){for(i=1;i<=NF;i++)print i" : "$i}' SraRunTable.csv 
 1 : Run
 2 : analyte_type
@@ -312,7 +316,7 @@ awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}(NR==1){for(i=1;i<=NF;i++)print i" : "$i}
 ```
 
 
-```
+```bash
 
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $16~/bam/ && $21=="Brain" && $25=="PAIRED" && $60!="Resequencing"){print $1}' SraRunTable.csv | sort | uniq | wc -l 
 350
@@ -326,7 +330,7 @@ awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}($3=="RNA-Seq" && $11=="Brain - Cerebellu
 
 
 
-```
+```bash
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $3}' SraRunTable.csv | sort | uniq -c
       1 Assay Type
   22544 RNA-Seq
@@ -451,7 +455,7 @@ awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")"}{print $11}' SraRunTable.csv | sort | uni
 ```
 
 
-```
+```bash
 awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}($3=="RNA-Seq" && $25=="PAIRED" && $11~/^Brain/ && $60!="Resequencing" && $66!="Normal"){print $26,$27,$37,$64,$65}' SraRunTable.csv | sort | uniq -c
      10 cDNA,TRANSCRIPTOMIC,,,
    1955 cDNA,TRANSCRIPTOMIC,"Allele-Specific Expression,RNA Seq (NGS)",,
@@ -466,3 +470,18 @@ awk 'BEGIN{FPAT="([^,]*)|(\"[^\"]+\")";OFS=","}($3=="RNA-Seq" && $25=="PAIRED" &
 
 
 SRR1120781,RNA:Total RNA,RNA-Seq,GCF_000001405.25,152,6146383720,PRJNA75899,SAMN02465127,GTEx,GTEX-U3ZN-1726-SM-4DXUQ,Esophagus - Mucosa,2891252711,BI,1,GRU,"bam,sra","gs,ncbi,s3","gs.US,ncbi.dbgap,s3.us-east-1",SRX434924,phs000424,Esophagus,Illumina HiSeq 2000,No,Solexa-159875,PAIRED,cDNA,TRANSCRIPTOMIC,Homo sapiens,ILLUMINA,2014-01-16T00:00:00Z,GTEX-U3ZN-1726-SM-4DXUQ,female,SRP012682,Cross-Sectional,Genotype-Tissue Expression (GTEx),GTEX-U3ZN,"Allele-Specific Expression,RNA Seq (NGS)",,,,broadinstitute.org:bsp.prod.sample:4DXUQ,broadinstitute.org:bsp.prod.sample:4DXUQ,G35309,G35309,H0R53ADXX130528,130528_SL-HAA_0164_BFCH0R53ADXX,36298,36298,H0R53ADXX,330418.0,330418.0,RNA:Total RNA,H0R53.1,RP-16,RP-16,SM-2UFAJ,SM-2UFAJ,SM-4DXUQ,SM-4DXUQ,Resequencing,Resequencing,SL-HAA,1,cDNAShotgunStrandAgnostic,cDNAShotgunStrandAgnostic,Normal,PDO-1037,PDO-1037,RNA,RNA,P-RNA-0002,P-RNA-0002,,,,,,
+
+
+
+
+##	20260310
+
+
+```bash
+
+aws sso login
+aws s3 sync /francislab/data1/raw/20201006-GTEx/fastq s3://francislab-backup-73-3-r-us-west-2.sec.ucsf.edu/c4/raw/20201006-GTEx/fastq
+
+
+```
+
