@@ -85,6 +85,13 @@ plink --bfile cidr_shared --exclude variants_to_exclude.txt --make-bed --out cid
 plink --bfile mdsaml_shared --exclude variants_to_exclude.txt --make-bed --out mdsaml_clean
 plink --bfile cidr_clean --bmerge mdsaml_clean --make-bed --out merged
 
+module load plink; plink --freq --bfile work/merged --out work/merged ; chmod -w work/merged.*
+
+ln -s work/merged.bed cidr.bed
+ln -s work/merged.bim cidr.bim
+ln -s work/merged.fam cidr.fam
+ln -s work/merged.frq cidr.frq
+
 ```
 
 
