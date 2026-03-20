@@ -204,7 +204,8 @@ ln -s bravo-dbsnp-all.vcf.gz ALL.TOPMed_freeze5_hg38_dbSNP.vcf.gz
 ```
 
 
-Not clear which reference this is hg19 or hg38.
+Not clear which reference this is hg19 or hg38. 
+It is hg19, based on the position of rs12248560 10:96521657. It is 94761900 in hg38)
 
 ```
 wget https://www.chg.ox.ac.uk/~wrayner/tools/1000GP_Phase3_combined.legend.gz
