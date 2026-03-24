@@ -128,18 +128,22 @@ join --header -t, <( sed 1iAGSIPS,subject AGSIPS_UCSFid.csv ) <( cut -d, -f1,6- 
 
 
 
+
+
+
+
+
+
+##	20260323 ....
+
 MERGE PGS scores
 
 /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260122-CustomPRSModels/edison_prs_lasso_survival_analysis/cidr.scores.z-scores.txt.gz
 
 
+CIDR now has controls ...
 
-
-
-
-
-
-
+Need to rerun the PGS calculations on them
 
 
 Send final prompt to Edison.
@@ -147,3 +151,4 @@ Send final prompt to Edison.
 ```bash
 
 ```
+
