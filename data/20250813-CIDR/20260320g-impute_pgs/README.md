@@ -49,7 +49,58 @@ cd ..
 
 
 
+##	20260324 - rebuild covariates
 
+
+Add the new PCs to the CIDR's
+
+```bash
+cat /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.20260303.tsv | tr -d , | tr '\t' , > tmp1.csv
+
+head -1 tmp1.csv > tmp2.csv
+tail -n +2 tmp1.csv | sort -t, -k1,1 >> tmp2.csv
+
+cat pgs-cidr-hg19/estimated-population.txt | tr '\t' , > tmp3.csv
+head -1 tmp3.csv > pgs-cidr-hg19/estimated-population.sorted.csv
+tail -n +2 tmp3.csv | sort -t, -k1,1 >> pgs-cidr-hg19/estimated-population.sorted.csv
+cat pgs-cidr-hg19/estimated-population.sorted.csv | cut -d, -f1,5- > tmp4.csv
+
+join --header -t, tmp2.csv tmp4.csv | tr , '\t' > tmp5.tsv
+
+./normalize_covariates.bash cidr tmp5.tsv > cidr-covariates.csv
+```
+
+
+Merge the subject/sample link, metadata, fam file's sex and the PCs
+
+```bash
+dir=/francislab/data1/raw/20260318-UCSF-Mayo-KUMC-AGS-dbGaP
+
+f=${dir}/subject_sample.csv; ( head -1 $f ; tail -n +2 $f | sort -t, -k1,1 ) > tmp1.csv
+f=${dir}/metadata.tsv; ( head -1 $f ; tail -n +2 $f | sort -t$'\t' -k2,2 ) | tr '\t' , > tmp2.csv
+
+join --header -t, -1 1 -2 2 tmp1.csv tmp2.csv > tmp3.csv
+f=tmp3.csv; ( head -1 $f ; tail -n +2 $f | sort -t, -k2,2 ) > tmp4.csv
+
+sort -t' ' -k2,2 ${dir}/mdsaml.fam | sed -e 's/\r//' -e '1ifamFID famIID famPID famMID Sex Phenotype' | tr ' ' , > tmp5.csv
+
+join --header -t, -1 2 -2 2 tmp5.csv tmp4.csv > tmp6.csv
+
+awk -F, '{print $2"_"$1","$0}' tmp6.csv | sed '1s/famFID_famIID/IID/' > tmp7.csv
+f=tmp7.csv; ( head -1 $f ; tail -n +2 $f | sort -t, -k1,1 ) > tmp8.csv
+
+cat pgs-cidr-hg19/estimated-population.txt | tr '\t' , > tmp9.csv
+f=tmp9.csv; ( head -1 $f ; tail -n +2 $f | sort -t, -k1,1 ) | cut -d, -f1,5- > tmp10.csv
+
+join --header -t, tmp8.csv tmp10.csv | tr , '\t' > tmp11.tsv
+
+
+./normalize_covariates.bash mdsaml tmp11.tsv > mdsaml-covariates.csv
+\rm tmp*sv
+
+head -1 mdsaml-covariates.csv > cidr+mdsaml-covariates.csv
+tail -q -n +2 cidr-covariates.csv mdsaml-covariates.csv | sed 's/mdsaml/cidr/' >> cidr+mdsaml-covariates.csv
+```
 
 
 
