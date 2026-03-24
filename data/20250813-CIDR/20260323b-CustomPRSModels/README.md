@@ -17,37 +17,40 @@ done > commands
 commands_array_wrapper.bash --array_file commands --time 2-0 --threads 8 --mem 60G --jobcount 8 --jobname pgs-calc
 ```
 
----
 
-
-Recreate the CIDR covariates to include the new ancestry PCs from the UMich PGS imputation.
-
-
-/francislab/data1/raw/20260318-UCSF-Mayo-KUMC-AGS-dbGaP/subject_sample.csv 
-/francislab/data1/raw/20260318-UCSF-Mayo-KUMC-AGS-dbGaP/metadata.tsv 
-
-/francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.20260303.tsv
-
-/francislab/data1/working/20250813-CIDR/20260320g-impute_pgs/pgs-cidr-hg19/estimated-population.txt 
-
-
+Merge after completes
 
 ```bash
-\rm lists/cidr_covariates.tsv
-ln -s /francislab/data1/raw/20250813-CIDR/CIDR_case_covariates.20260303.tsv lists/cidr_covariates.tsv
 
-for b in cidr ; do
-  cov_in=lists/${b}_covariates.tsv
-  cat ${cov_in} | tr -d , | tr '\t' , > $TMPDIR/tmp.csv
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score \
+  --export=None --output="${PWD}/pgs-merge-score.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${PWD}/pgs-calc-scores/chr*.scores.txt --out ${PWD}/pgs-calc-scores/scores.txt"
 
-  head -1 ${TMPDIR}/tmp.csv > edison_prs_survival_analysis/${b}-covariates_base.csv
-  tail -n +2 ${TMPDIR}/tmp.csv | sort -t, -k1,1 >> edison_prs_survival_analysis/${b}-covariates_base.csv
-  cat ../20250724-pgs/pgs-${b}-hg19/estimated-population.sorted.txt | cut -d, -f1,5- > $TMPDIR/tmp.csv
-  join --header -t, edison_prs_survival_analysis/${b}-covariates_base.csv $TMPDIR/tmp.csv | tr , '\t' > edison_prs_survival_analysis/${b}-covariates.tsv
-done
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info \
+  --export=None --output="${PWD}/pgs-merge-info.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${PWD}/pgs-calc-scores/chr*.scores.info --out ${PWD}/pgs-calc-scores/scores.info"
 
-./normalize_covariates.bash cidr edison_prs_survival_analysis/cidr-covariates.tsv > edison_prs_survival_analysis/cidr-covariates.csv
 ```
+
+
+
+
+
+
+
+
+Now have to re-integrate with the others: I370, Onco and TCGA.
+
+That will be done there though.
+
+Probably a new subdir
+
+/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/2026....-CustomPRSModels/
+
+
+
 
 
 
