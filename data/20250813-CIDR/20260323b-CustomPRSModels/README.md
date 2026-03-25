@@ -32,7 +32,14 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-i
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
   --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${PWD}/pgs-calc-scores/chr*.scores.info --out ${PWD}/pgs-calc-scores/scores.info"
 
+
+
+scale_raw_pgs_scores_to_z-scores.py -i pgs-calc-scores/scores.txt -o pgs-calc-scores/scores.z-scores.txt
+
+gzip pgs-calc-scores/scores.z-scores.txt
+
 ```
+
 
 
 
