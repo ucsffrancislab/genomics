@@ -90,4 +90,38 @@ Oh- can you please run the PGS meta analysis for the major subtypes? Lets do IDH
 
 
 
+```bash
+
+sbatch --job-name=test_run --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir test_run     --test
+sbatch --job-name=all_cases --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir all_cases
+sbatch --job-name=idhwt --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir idhwt_cases  --idh-subtype wt
+sbatch --job-name=idhmt --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir idhmt_cases  --idh-subtype mt
+sbatch --job-name=idhmt_codel --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir idhmt_codel  --idh-subtype mt --pq-subtype codel
+sbatch --job-name=idhmt_intact --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir idhmt_intact --idh-subtype mt --pq-subtype intact
+
+box_upload.bash test_run/* all_cases/* idhwt_cases/* idhmt_cases/* idhmt_codel/* idhmt_intact/*
+```
+
+
+
+```bash
+
+sbatch --job-name=test_run --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/test_run --test
+sbatch --job-name=test_run_m --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/test_run_m --test --sex M
+sbatch --job-name=test_run_f --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/test_run_f --test --sex F
+sbatch --job-name=all --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/all
+sbatch --job-name=all_m --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/all_m --sex M
+sbatch --job-name=all_f --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/all_f --sex F
+sbatch --job-name=idhwt --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhwt  --idh-subtype wt
+sbatch --job-name=idhwt_m --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhwt_m  --idh-subtype wt --sex M
+sbatch --job-name=idhwt_f --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhwt_f  --idh-subtype wt --sex F
+sbatch --job-name=idhmt --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhmt  --idh-subtype mt
+sbatch --job-name=idhmt_m --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhmt_m  --idh-subtype mt --sex M
+sbatch --job-name=idhmt_f --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhmt_f  --idh-subtype mt --sex F
+sbatch --job-name=idhmt_codel --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhmt_codel  --idh-subtype mt --pq-subtype codel
+sbatch --job-name=idhmt_intact --ntasks=1 --cpus-per-task=16 --mem=120G run_pipeline.sh --outdir sex/idhmt_intact --idh-subtype mt --pq-subtype intact
+
+box_upload.bash sex/*/*
+```
+
 
