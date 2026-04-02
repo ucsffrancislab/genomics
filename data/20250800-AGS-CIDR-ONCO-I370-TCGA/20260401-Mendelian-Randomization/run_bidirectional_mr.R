@@ -252,7 +252,7 @@ forward_tasks <- forward_tasks[forward_tasks$inst_file %in% names(clumped_exposu
 message("\n  Running ", nrow(forward_tasks), " forward MR tests in parallel...\n")
 
 # Run forward MR in parallel
-forward_raw <- mclapply(1:nrow(forward_tasks), function(idx) {
+forward_raw <- if (nrow(forward_tasks) > 0) mclapply(seq_len(nrow(forward_tasks)), function(idx) {
   inst_file <- forward_tasks$inst_file[idx]
   subtype   <- forward_tasks$subtype[idx]
   pgs_id    <- sub("_instruments.*", "", basename(inst_file))
@@ -264,7 +264,7 @@ forward_raw <- mclapply(1:nrow(forward_tasks), function(idx) {
     subtype      = subtype,
     direction    = "forward"
   )
-}, mc.cores = N_CORES)
+}, mc.cores = N_CORES) else list()
 
 message("  Forward MR complete.\n")
 
@@ -287,10 +287,13 @@ for (i in seq_along(GLIOMA_SUBTYPES)) {
   glioma_exp <- load_glioma(fpath, subtype, "exposure")
 
   # Select instruments
+  n_total <- nrow(glioma_exp)
   instruments <- glioma_exp[glioma_exp$pval.exposure < P_THRESHOLD, ]
+  message("      Total SNPs: ", n_total, ", at p<5e-8: ", nrow(instruments))
   if (nrow(instruments) < MIN_INSTRUMENTS) {
     message("      Only ", nrow(instruments), " at p<5e-8, trying p<5e-6")
     instruments <- glioma_exp[glioma_exp$pval.exposure < P_RELAXED, ]
+    message("      At p<5e-6: ", nrow(instruments))
   }
 
   if (nrow(instruments) < MIN_INSTRUMENTS) {
@@ -349,10 +352,19 @@ reverse_tasks <- expand.grid(
   icvf_file = names(icvf_outcomes),
   stringsAsFactors = FALSE
 )
+if (length(glioma_exposures_clumped) == 0) {
+  message("\n  WARNING: No glioma subtypes had enough instruments for reverse MR.")
+  message("  This likely means no glioma SNPs reached genome-wide significance (p<5e-8)")
+  message("  or the relaxed threshold (p<5e-6). This is common for smaller GWAS or subtypes.")
+  message("  Reverse MR will be skipped.\n")
+} else {
+  message("  Glioma subtypes with instruments: ", paste(names(glioma_exposures_clumped), collapse = ", "))
+}
+
 message("\n  Running ", nrow(reverse_tasks), " reverse MR tests in parallel...\n")
 
 # Run reverse MR in parallel
-reverse_raw <- mclapply(1:nrow(reverse_tasks), function(idx) {
+reverse_raw <- if (nrow(reverse_tasks) > 0) mclapply(seq_len(nrow(reverse_tasks)), function(idx) {
   subtype   <- reverse_tasks$subtype[idx]
   icvf_file <- reverse_tasks$icvf_file[idx]
   pgs_id    <- sub("_.*", "", basename(icvf_file))
@@ -364,7 +376,7 @@ reverse_raw <- mclapply(1:nrow(reverse_tasks), function(idx) {
     subtype      = subtype,
     direction    = "reverse"
   )
-}, mc.cores = N_CORES)
+}, mc.cores = N_CORES) else list()
 
 message("  Reverse MR complete.\n")
 
@@ -382,7 +394,8 @@ collect_results <- function(raw_list, direction_label) {
   steiger_list <- list()
 
   for (res in raw_list) {
-    if (is.null(res) || !is.null(res$error)) next
+    if (is.null(res) || !is.list(res)) next
+    if (!is.null(res$error)) { message("    Skipped: ", res$error); next }
 
     pgs_id  <- res$pgs_id
     subtype <- res$subtype
