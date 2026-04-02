@@ -130,6 +130,9 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
 ```bash
 
 box_upload.bash 20260330a-results/id*/final/*{v,z} 20260330a-results/id*/final/plots/*
+
+
+box_upload.bash 20260330a-results/{idhmt_intact,idhmt,idhwt}/final/*{v,z} 20260330a-results/{idhmt_intact,idhmt,idhwt}/final/plots/*
 ```
 
 
@@ -143,12 +146,18 @@ box_upload.bash 20260330a-results/id*/final/*{v,z} 20260330a-results/id*/final/p
 
 
 
+```bash
+DIR=~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline
 
-python3 ${DIR}/scripts/10_cross_subtype.py \
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
+ --job-name=cross --ntasks=1 --cpus-per-task=64 --mem=490G \
+ --wrap="python3 ${DIR}/scripts/10_cross_subtype.py \
     --result-dirs 20260330a-results/all_glioma \
                   20260330a-results/idhwt \
                   20260330a-results/idhmt \
                   20260330a-results/idhmt_intact \
                   20260330a-results/idhmt_codel \
-    --outdir 20260330a-results/cross_subtype
+    --outdir 20260330a-results/cross_subtype"
+```
+
 
