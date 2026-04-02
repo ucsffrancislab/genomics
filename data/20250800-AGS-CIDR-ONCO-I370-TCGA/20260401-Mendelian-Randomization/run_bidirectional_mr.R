@@ -98,7 +98,9 @@ run_single_mr <- function(exposure_dat, outcome_dat, pgs_id, subtype, direction)
   )
 
   if (is.null(harmonised) || sum(harmonised$mr_keep) < MIN_INSTRUMENTS) {
-    result$error <- "Too few SNPs after harmonisation"
+    n_harm <- if (!is.null(harmonised)) nrow(harmonised) else 0
+    n_keep <- if (!is.null(harmonised)) sum(harmonised$mr_keep) else 0
+    result$error <- paste0("Too few SNPs after harmonisation (matched: ", n_harm, ", kept: ", n_keep, ")")
     return(result)
   }
 
@@ -163,10 +165,14 @@ load_glioma <- function(filepath, subtype_name, type = "outcome") {
   dat <- as.data.frame(dat)
   dat$N <- dat$N_CASES + dat$N_CONTROLS
 
+  # Create chr:pos SNP identifier for matching with ICVF (which uses rsIDs)
+  # Both datasets have chr + pos, so chr:pos is the common key
+  dat$SNP_chrpos <- paste0(dat$CHR, ":", dat$BP)
+
   formatted <- format_data(
     dat,
     type = type,
-    snp_col = "SNP",
+    snp_col = "SNP_chrpos",
     beta_col = "BETA",
     se_col = "SE",
     pval_col = "P",
@@ -240,6 +246,10 @@ for (inst_file in instrument_files) {
   })
 
   if (nrow(clumped) >= MIN_INSTRUMENTS) {
+    # Convert rsID → chr:pos AFTER clumping (API needs rsIDs for clumping)
+    if ("chr.exposure" %in% names(clumped) & "pos.exposure" %in% names(clumped)) {
+      clumped$SNP <- paste0(clumped$chr.exposure, ":", clumped$pos.exposure)
+    }
     clumped_exposures[[inst_file]] <- clumped
     message("    ", pgs_id, ": ", nrow(clumped), " instruments after clumping")
   } else {
@@ -555,18 +565,13 @@ if (!is.null(rev$mr)) {
   }
 }
 
-message("\n--- Output files ---")
-message("  ", OUTPUT_DIR, "/forward_mr_results.tsv")
-message("  ", OUTPUT_DIR, "/reverse_mr_results.tsv")
-message("  ", OUTPUT_DIR, "/combined_mr_results.tsv")
-message("  ", OUTPUT_DIR, "/forward_heterogeneity.tsv")
-message("  ", OUTPUT_DIR, "/forward_pleiotropy.tsv")
-message("  ", OUTPUT_DIR, "/forward_mrpresso.tsv")
-message("  ", OUTPUT_DIR, "/forward_steiger.tsv")
-message("  ", OUTPUT_DIR, "/reverse_heterogeneity.tsv")
-message("  ", OUTPUT_DIR, "/reverse_pleiotropy.tsv")
-message("  ", OUTPUT_DIR, "/plots/forward_mr_forest.pdf")
-message("  ", OUTPUT_DIR, "/plots/reverse_mr_forest.pdf")
+message("\n--- Output files actually created ---")
+output_files <- list.files(OUTPUT_DIR, recursive = TRUE, full.names = TRUE)
+if (length(output_files) > 0) {
+  for (f in output_files) message("  ", f)
+} else {
+  message("  (none)")
+}
 
 message("\n--- Next steps ---")
 message("  1. Review IVW results - look for consistent direction across methods")
