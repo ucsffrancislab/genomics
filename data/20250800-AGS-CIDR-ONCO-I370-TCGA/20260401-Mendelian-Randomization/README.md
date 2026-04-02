@@ -27,4 +27,14 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=N
 
 
 
+Next steps:
+1. Load glioma GWAS as outcome data
+2. Harmonise with: harmonise_data(exposure_dat, outcome_dat)
+3. Run MR:         mr(harmonised_dat)
+4. Sensitivity:    mr_pleiotropy_test(), mr_heterogeneity()
+
+
+
+
+
 
