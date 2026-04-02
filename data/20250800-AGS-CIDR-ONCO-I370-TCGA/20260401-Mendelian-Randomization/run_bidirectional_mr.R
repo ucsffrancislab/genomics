@@ -50,19 +50,19 @@ GLIOMA_DIR <- "../20260326-GWAS_summary_stats/20260330a-results"
 # Glioma subtypes to test (subdirectory names)
 GLIOMA_SUBTYPES <- c(
   "all_glioma",
-  "idh_wildtype",
-  "idh_mutant",
-  "idh_mutant_intact",
-  "idh_mutant_codel"
+  "idhwt",
+  "idhmt",
+  "idhmt_intact",
+  "idhmt_codel"
 )
 
-# Corresponding filenames (adjust if different)
+# Corresponding filenames (.tsv.gz for faster loading)
 GLIOMA_FILES <- c(
-  "all_glioma/final/all_glioma_meta_summary_stats.tsv",
-  "idh_wildtype/final/idh_wildtype_meta_summary_stats.tsv",
-  "idh_mutant/final/idh_mutant_meta_summary_stats.tsv",
-  "idh_mutant_intact/final/idh_mutant_intact_meta_summary_stats.tsv",
-  "idh_mutant_codel/final/idh_mutant_codel_meta_summary_stats.tsv"
+  "all_glioma/final/all_glioma_meta_summary_stats.tsv.gz",
+  "idhwt/final/IDHwt_meta_summary_stats.tsv.gz",
+  "idhmt/final/IDHmut_meta_summary_stats.tsv.gz",
+  "idhmt_intact/final/IDHmut_1p19q_intact_meta_summary_stats.tsv.gz",
+  "idhmt_codel/final/IDHmut_1p19q_codel_meta_summary_stats.tsv.gz"
 )
 
 # Output directory
