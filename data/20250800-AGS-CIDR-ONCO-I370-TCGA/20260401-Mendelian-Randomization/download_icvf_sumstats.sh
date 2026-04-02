@@ -49,18 +49,28 @@ BASE_URL="https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k"
 
 # Download TBSS tracts
 for IDP in "${!TBSS_IDPS[@]}"; do
-    TRACT="${TBSS_IDPS[$IDP]}"
-    FNAME="ICVF_TBSS_${TRACT}_IDP${IDP}.txt.gz"
-    echo "Downloading IDP ${IDP}: ICVF ${TRACT} (TBSS)..."
-    curl -o "$OUTDIR/$FNAME" -L -C - "${BASE_URL}/${IDP}.txt.gz"
+	TRACT="${TBSS_IDPS[$IDP]}"
+	FNAME="ICVF_TBSS_${TRACT}_IDP${IDP}.txt.gz"
+	if [ -f "$OUTDIR/$FNAME" ] ; then
+		echo "Skipping $OUTDIR/$FNAME"
+	else
+		echo "Downloading IDP ${IDP}: ICVF ${TRACT} (TBSS)..."
+		curl -o "$OUTDIR/$FNAME" -L -C - "${BASE_URL}/${IDP}.txt.gz"
+		chmod -w "$OUTDIR/$FNAME"
+	fi
 done
 
 # Download ProbtrackX tracts
 for IDP in "${!PTX_IDPS[@]}"; do
-    TRACT="${PTX_IDPS[$IDP]}"
-    FNAME="ICVF_PTX_${TRACT}_IDP${IDP}.txt.gz"
-    echo "Downloading IDP ${IDP}: ICVF ${TRACT} (ProbtrackX)..."
-    curl -o "$OUTDIR/$FNAME" -L -C - "${BASE_URL}/${IDP}.txt.gz"
+	TRACT="${PTX_IDPS[$IDP]}"
+	FNAME="ICVF_PTX_${TRACT}_IDP${IDP}.txt.gz"
+	if [ -f "$OUTDIR/$FNAME" ] ; then
+		echo "Skipping $OUTDIR/$FNAME"
+	else
+		echo "Downloading IDP ${IDP}: ICVF ${TRACT} (ProbtrackX)..."
+		curl -o "$OUTDIR/$FNAME" -L -C - "${BASE_URL}/${IDP}.txt.gz"
+		chmod -w "$OUTDIR/$FNAME"
+	fi
 done
 
 echo ""

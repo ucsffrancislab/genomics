@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 # =============================================================================
 # Format BIG40 ICVF GWAS summary stats for TwoSampleMR
 # =============================================================================
@@ -52,7 +53,7 @@ for (i in 1:nrow(tract_info)) {
   trait_nm  <- tract_info$trait[i]
 
   # Find the matching file
-  pattern <- paste0("IDP", idp_num, "\\\\.txt\\\\.gz$")
+  pattern <- paste0("IDP", idp_num, "\\.txt\\.gz$")
   fpath <- list.files(SUMSTATS_DIR, pattern = pattern, full.names = TRUE)
 
   if (length(fpath) == 0) {
@@ -100,7 +101,7 @@ for (i in 1:nrow(tract_info)) {
   # Save full formatted data
   outfile <- file.path(OUTPUT_DIR,
                        paste0(pgs_id, "_", gsub(" ", "_", trait_nm), "_mr_ready.tsv.gz"))
-  fwrite(exposure_dat, outfile, sep = "\\t")
+  fwrite(exposure_dat, outfile, sep = "\t")
   message("  Saved: ", outfile, " (", nrow(exposure_dat), " variants)")
 
   # Also save genome-wide significant instruments (p < 5e-8)
@@ -108,7 +109,7 @@ for (i in 1:nrow(tract_info)) {
   if (nrow(instruments) > 0) {
     inst_file <- file.path(OUTPUT_DIR,
                            paste0(pgs_id, "_instruments_5e8.tsv"))
-    fwrite(instruments, inst_file, sep = "\\t")
+    fwrite(instruments, inst_file, sep = "\t")
     message("  Instruments (p<5e-8): ", nrow(instruments))
   } else {
     message("  WARNING: No genome-wide significant instruments!")
@@ -117,7 +118,7 @@ for (i in 1:nrow(tract_info)) {
     if (nrow(instruments_relaxed) > 0) {
       inst_file <- file.path(OUTPUT_DIR,
                              paste0(pgs_id, "_instruments_5e6.tsv"))
-      fwrite(instruments_relaxed, inst_file, sep = "\\t")
+      fwrite(instruments_relaxed, inst_file, sep = "\t")
       message("  Instruments (p<5e-6, relaxed): ", nrow(instruments_relaxed))
     }
   }
@@ -126,9 +127,9 @@ for (i in 1:nrow(tract_info)) {
   gc()
 }
 
-message("\\n=== DONE ===")
+message("\n=== DONE ===")
 message("MR-ready files saved to: ", OUTPUT_DIR)
-message("\\nNext steps:")
+message("\nNext steps:")
 message("1. Load glioma GWAS as outcome data")
 message("2. Harmonise with: harmonise_data(exposure_dat, outcome_dat)")
 message("3. Run MR:         mr(harmonised_dat)")

@@ -1,0 +1,19 @@
+pgs_id,trait_reported,ukb_field_id,big40_idp_number,big40_idp_name,parcellation_method,n_pgs_variants,gwas_sample_size,download_url
+PGS001454,Mean ICVF in body of corpus callosum on FA skeleton,25347,1905,IDP_dMRI_TBSS_ICVF_Body_of_corpus_callosum,TBSS,2881,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1905.txt.gz
+PGS001456,Mean ICVF in cerebral peduncle on FA skeleton (R),25358,1916,IDP_dMRI_TBSS_ICVF_Cerebral_peduncle_R,TBSS,1501,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1916.txt.gz
+PGS001457,Mean ICVF in cingulum cingulate gyrus on FA skeleton (L),25379,1937,IDP_dMRI_TBSS_ICVF_Cingulum_cingulate_gyrus_L,TBSS,1929,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1937.txt.gz
+PGS001458,Mean ICVF in cingulum cingulate gyrus on FA skeleton (R),25378,1936,IDP_dMRI_TBSS_ICVF_Cingulum_cingulate_gyrus_R,TBSS,3061,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1936.txt.gz
+PGS001459,Mean ICVF in cingulum hippocampus on FA skeleton (L),25381,1939,IDP_dMRI_TBSS_ICVF_Cingulum_hippocampus_L,TBSS,1153,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1939.txt.gz
+PGS001460,Mean ICVF in cingulum hippocampus on FA skeleton (R),25380,1938,IDP_dMRI_TBSS_ICVF_Cingulum_hippocampus_R,TBSS,2400,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1938.txt.gz
+PGS001466,Mean ICVF in genu of corpus callosum on FA skeleton,25346,1904,IDP_dMRI_TBSS_ICVF_Genu_of_corpus_callosum,TBSS,2530,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1904.txt.gz
+PGS001471,Mean ICVF in middle cerebellar peduncle on FA skeleton,25344,1902,IDP_dMRI_TBSS_ICVF_Middle_cerebellar_peduncle,TBSS,1580,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1902.txt.gz
+PGS001474,Mean ICVF in posterior limb of internal capsule on FA skeleton (L),25363,1921,IDP_dMRI_TBSS_ICVF_Posterior_limb_of_internal_capsule_L,TBSS,2010,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1921.txt.gz
+PGS001478,Mean ICVF in retrolenticular part of internal capsule on FA skeleton (L),25365,1923,IDP_dMRI_TBSS_ICVF_Retrolenticular_part_of_internal_capsule_L,TBSS,2268,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1923.txt.gz
+PGS001479,Mean ICVF in retrolenticular part of internal capsule on FA skeleton (R),25364,1922,IDP_dMRI_TBSS_ICVF_Retrolenticular_part_of_internal_capsule_R,TBSS,2113,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1922.txt.gz
+PGS001480,Mean ICVF in sagittal stratum on FA skeleton (L),25375,1933,IDP_dMRI_TBSS_ICVF_Sagittal_stratum_L,TBSS,1651,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1933.txt.gz
+PGS001481,Mean ICVF in sagittal stratum on FA skeleton (R),25374,1932,IDP_dMRI_TBSS_ICVF_Sagittal_stratum_R,TBSS,2195,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1932.txt.gz
+PGS001484,Mean ICVF in superior corona radiata on FA skeleton (L),25369,1927,IDP_dMRI_TBSS_ICVF_Superior_corona_radiata_L,TBSS,2789,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1927.txt.gz
+PGS001485,Mean ICVF in superior corona radiata on FA skeleton (R),25368,1926,IDP_dMRI_TBSS_ICVF_Superior_corona_radiata_R,TBSS,2299,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1926.txt.gz
+PGS001662,WA ICVF in tract acoustic radiation (R),25651,1951,IDP_dMRI_ProbtrackX_ICVF_ar_r,ProbtrackX,979,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1951.txt.gz
+PGS001669,WA ICVF in tract forceps major,25660,1960,IDP_dMRI_ProbtrackX_ICVF_fma,ProbtrackX,1466,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1960.txt.gz
+PGS001679,WA ICVF in tract parahippocampal part of cingulum (R),25657,1957,IDP_dMRI_ProbtrackX_ICVF_cgh_r,ProbtrackX,955,33224,https://open.win.ox.ac.uk/ukbiobank/big40/release2/stats33k/1957.txt.gz
