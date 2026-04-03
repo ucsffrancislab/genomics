@@ -4,7 +4,7 @@
 
 ```bash
 
-./download_icvf_sumstats.sh
+~/github/ucsffrancislab/Claude-Operon-Mendelian-Randomization/download_icvf_sumstats.sh
 
 ```
 
@@ -21,26 +21,20 @@ Rscript -e 'remotes::install_github("MRCIEU/TwoSampleMR")'
 
 ```bash
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None --job-name=format --ntasks=1 --cpus-per-task=64 --mem=490G  --output="format.log" --wrap="module load r; format_icvf_for_mr.R"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None --job-name=format --ntasks=1 --cpus-per-task=64 --mem=490G  --output="format_icvf_for_mr.log" --wrap="module load r; ~/github/ucsffrancislab/Claude-Operon-Mendelian-Randomization/format_icvf_for_mr.R"
 
 ```
 
 ```bash
 
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None --job-name=mr --ntasks=1 --cpus-per-task=64 --mem=490G  --output="mr.log" --wrap="module load r; run_bidirectional_mr.R"
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None --job-name=mr --ntasks=1 --cpus-per-task=64 --mem=490G  --output="run_bidirectional_mr.log" --wrap="module load r plink; ~/github/ucsffrancislab/Claude-Operon-Mendelian-Randomization/run_bidirectional_mr.R"
 
 ```
 
 
+```bash
 
-Next steps:
-1. Load glioma GWAS as outcome data
-2. Harmonise with: harmonise_data(exposure_dat, outcome_dat)
-3. Run MR:         mr(harmonised_dat)
-4. Sensitivity:    mr_pleiotropy_test(), mr_heterogeneity()
-
-
-
-
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None --job-name=post --ntasks=1 --cpus-per-task=64 --mem=490G  --output="mr_postprocessing.log" --wrap="module load r plink; ~/github/ucsffrancislab/Claude-Operon-Mendelian-Randomization/mr_postprocessing.R"
+```
 
 
