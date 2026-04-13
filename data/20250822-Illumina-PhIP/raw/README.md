@@ -392,3 +392,20 @@ chmod -w manifest.csv
 
 
 
+
+##	20260413
+
+Create a standardized local covariates file.
+
+```bash
+awk 'BEGIN{
+FS=OFS=","
+print "snumber,sample,subject,type,study,sex,age,casecontrol,plate,well"
+}(NR>1){
+print $1,$7,$6,$8,$9,$12,$13,$10,$26,$27
+}' L5_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p15_and_p16_10-7-25hmh.csv > select_covariates.csv
+
+sed -i -e 's/PBS blank/input/' -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' select_covariates.csv
+chmod -w select_covariates.csv
+```
+

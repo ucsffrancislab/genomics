@@ -344,3 +344,23 @@ creep in when I have merged everything and expected the number of merged samples
 Manually correcting. .... No. Don't do this here.
 
 
+
+##	20260413
+
+Create a standardized local covariates file.
+
+```bash
+awk 'BEGIN{
+FS=OFS=","
+print "snumber,sample,subject,type,study,sex,age,casecontrol,plate,well"
+}(NR>1){
+subject=$3
+gsub(/dup$/,"",subject)
+gsub(/_[12]$/,"",subject)
+print $1,$3,subject,$7,$8,$12,$11,$9,$23,$24
+}' L2_full_covariates_Vir3_phip-seq_GBM_p2_MENPEN_p14_12-29-24hmh_L2_Covar.csv > select_covariates.csv
+
+sed -i -e 's/PBS blank/input/' -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' select_covariates.csv
+chmod -w select_covariates.csv
+```
+

@@ -282,6 +282,7 @@ for z in download/*/*z; do f=$( basename $z _L001_R1_001.fastq.gz ); f=${f/_0820
 sed -i '1isample,s' sample_s_number.csv 
 ```
 
+Drop S0 by hand
 
 
 
@@ -365,6 +366,28 @@ head -1 L6_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p17_and_p18_10-7-25hmh.csv | 
 29 
 30 
 ```
+
+
+
+
+##	20260413
+
+Create a standardized local covariates file.
+
+Hmm. For ALL maternal serum, using sex of the donor which is obviously always F
+
+```bash
+awk 'BEGIN{
+FS=OFS=","
+print "snumber,sample,subject,type,study,sex,age,casecontrol,plate,well"
+}(NR>1){
+print $1,$7,$6,$8,$9,$12,$13,$10,$26,$27
+}' L6_full_covariatesv3_Vir3_phip-seq_GBM_ALL_p17_and_p18_10-7-25hmh.csv > select_covariates.csv
+
+sed -i -e 's/PBS blank/input/' -e 's/VIR phage Library/Phage Library/g' -e 's/phage library (blank)/Phage Library/g' select_covariates.csv
+chmod -w select_covariates.csv
+```
+
 
 
 
