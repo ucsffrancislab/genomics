@@ -451,3 +451,24 @@ tail -n +5 pgs-GLIO-IBD.tsv | awk 'BEGIN{FS=OFS="\t"}(NR==1){print $1,$2,$3,$4,$
 tail -n +5 pgs-GLIO-IBD.tsv | awk 'BEGIN{FS=OFS="\t"}(NR==1){print $1,$2,$3,$4,$5,$6,$7,$8,$9}(NR>1){if( $5 || $6 || $7 || $8 ) print $1,$2,$3,$4,$5,$6,$7,$8,$9}' > pgs-GLIO-IBD.Glio-shared.tsv
 
 
+
+
+##	20260409
+
+
+Create ICVF PGS catalogs
+
+
+```bash
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=hg19ICVF --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=${PWD}/hg19/pgs-ICVF.txt.gz ${PWD}/hg19/{PGS001454,PGS001456,PGS001457,PGS001458,PGS001459,PGS001460,PGS001466,PGS001471,PGS001474,PGS001478,PGS001479,PGS001480,PGS001481,PGS001484,PGS001485,PGS001662,PGS001669,PGS001679}.txt.gz; tabix -S 5 -p vcf ${PWD}/hg19/pgs-ICVF.txt.gz;chmod -w ${PWD}/hg19/pgs-ICVF.txt.gz*"
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=hg38ICVF --time=2-0 --export=None \
+  --output="${PWD}/create_collection.$( date "+%Y%m%d%H%M%S%N" ).out" --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="module load htslib;pgs-calc create-collection --out=${PWD}/hg38/pgs-ICVF.txt.gz ${PWD}/hg38/{PGS001454,PGS001456,PGS001457,PGS001458,PGS001459,PGS001460,PGS001466,PGS001471,PGS001474,PGS001478,PGS001479,PGS001480,PGS001481,PGS001484,PGS001485,PGS001662,PGS001669,PGS001679}.txt.gz; tabix -S 5 -p vcf ${PWD}/hg38/pgs-ICVF.txt.gz;chmod -w ${PWD}/hg38/pgs-ICVF.txt.gz*"
+
+```
+
+
+
