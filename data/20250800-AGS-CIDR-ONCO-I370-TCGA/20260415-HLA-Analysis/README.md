@@ -36,6 +36,10 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=N
 ```
 
 
+```bash
+box_upload.bash $( find results-20260415/ -type f )
+```
+
 
 See if the same HLA needs conditional analysis
 
