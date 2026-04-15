@@ -49,14 +49,14 @@ outdir=/francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260410-compu
 for data in cidr i370 onco tcga; do
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-score-${data} \
-  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --export=None --output="${PWD}/pgs-merge-score-${data}.$( date "+%Y%m%d%H%M%S%N" ).log" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-scores/${data}/chr*.scores.txt --out ${outdir}/pgs-calc-scores/${data}/scores.txt"
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-score ${outdir}/pgs-calc-scores/${data}/chr*.scores.txt --out ${outdir}/pgs-calc-scores/${data}/scores.txt; chmod -w ${outdir}/pgs-calc-scores/${data}/scores.txt"
 
 sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=pgs-merge-info-${data} \
-  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).out" \
+  --export=None --output="${PWD}/pgs-merge-info-${data}.$( date "+%Y%m%d%H%M%S%N" ).log" \
   --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
-  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-scores/${data}/chr*.scores.info --out ${outdir}/pgs-calc-scores/${data}/scores.info"
+  --wrap="module load openjdk;java -Xmx50G -jar /francislab/data1/refs/Imputation/PGSCatalog/pgs-calc.jar merge-info ${outdir}/pgs-calc-scores/${data}/chr*.scores.info --out ${outdir}/pgs-calc-scores/${data}/scores.info; chmod -w ${outdir}/pgs-calc-scores/${data}/scores.info"
 
 done
 ```
@@ -64,23 +64,25 @@ done
 
 
 
+Scale the new raw scores matrix.
 
+```bash
 
-scale to z-scores
+for data in cidr i370 onco tcga; do
 
-usage: scale_raw_pgs_scores_to_z-scores.py [-h] -i INPUT -o OUTPUT
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --job-name=scale-${data} \
+  --export=None --output="${PWD}/scale-${data}.$( date "+%Y%m%d%H%M%S%N" ).log" \
+  --time=1-0 --nodes=1 --ntasks=8 --mem=60G \
+  --wrap="scale_raw_pgs_scores_to_z-scores.py -i pgs-calc-scores/${data}/scores.txt -o pgs-calc-scores/${data}/scores.z-scores.txt; gzip pgs-calc-scores/${data}/scores.txt; gzip pgs-calc-scores/${data}/scores.z-scores.txt; chmod -w pgs-calc-scores/${data}/scores.z-scores.txt*"
 
-Convert raw PRS scores to z-scores by column (PGS model)
+done
 
-options:
-  -h, --help            show this help message and exit
-  -i INPUT, --input INPUT
-                        Input CSV file with raw PRS scores
-  -o OUTPUT, --output OUTPUT
-                        Output CSV file for z-scored PRS
-
-
-gzip
+```
 
 
 
+```bash
+
+cp /francislab/data1/working/20250800-AGS-CIDR-ONCO-I370-TCGA/20260326-GWAS_summary_stats/*csv ./
+
+```
