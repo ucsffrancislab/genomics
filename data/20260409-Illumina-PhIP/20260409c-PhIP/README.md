@@ -10,14 +10,14 @@ DO NOT USE the following samples ...
 snumber,sample,subject,type,study,sex,age,casecontrol,plate,well
 
 
-```BASH
+```bash
 awk 'BEGIN{FS=OFS=","}(NR>1){print $3,$2,"/francislab/data1/working/20260409-Illumina-PhIP/20260409b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$4,$5,$8,$7,$6,$9}' /francislab/data1/raw/20260409-Illumina-PhIP/select_covariates.csv > manifest.all.csv
 
 sed -i '1isubject,sample,bampath,type,study,group,age,sex,plate' manifest.all.csv
 chmod -w manifest.all.csv
 ```
 
-```BASH
+```bash
 #mkdir logs/
 #sbatch --mail-user=$(tail -1 ~/.forward)  --mail-type=FAIL \
 #  --job-name=phip_seq --time=1-0 --nodes=1 --ntasks=16 --mem=120G \
@@ -29,7 +29,7 @@ chmod -w manifest.all.csv
 ##	Per Plate
 
 
-```BASH
+```bash
 awk 'BEGIN{FS=OFS=","}(NR>1){print $3,$2,"/francislab/data1/working/20260409-Illumina-PhIP/20260409b-bowtie2/out/"$1".VIR3_clean.id_upper_oligo.uniq.1-80.bam",$4,$5,$8,$7,$6,$9 > "manifest.plate"$9".csv" }' /francislab/data1/raw/20260409-Illumina-PhIP/select_covariates.csv
 
 for manifest in manifest.plate*.csv ; do
@@ -40,11 +40,7 @@ done
 ```
 
 
-
----
-
-
-```BASH
+```bash
 mkdir logs
 
 for manifest in manifest.plate*.csv ; do
@@ -63,12 +59,7 @@ done
 
 
 
-
-
-
-
-
-```BASH
+```bash
 for manifest in manifest.plate*.csv ; do
   plate=${manifest%.csv}
   plate=${plate#manifest.plate}
@@ -85,13 +76,11 @@ done
 WAIT UNTIL THEY COMPLETE
 
 
-```BASH
-for manifest in manifest.plate*.csv ; do
-  plate=${manifest%.csv}
-  plate=${plate#manifest.plate}
-  echo $plate
-  box_upload.bash out.plate${plate}/Zscores*csv out.plate${plate}/seropositive*csv out.plate${plate}/All* out.plate${plate}/m*
-done
+
+```bash
+
+box_upload.bash out.plate*/Zscores*csv out.plate*/seropositive*csv out.plate*/All* out.plate*/m*
+
 ```
 
 
@@ -116,7 +105,7 @@ Nevertheless
 
 
 
-```BASH
+```bash
 mkdir out.1718
 merge_all_combined_counts_files.py --int --de_nan --out out.1718/Plibs.csv out.plate{17,18}/counts/PLib*
 
@@ -125,7 +114,7 @@ sed -i '1iid' out.1718/Plibs.id.csv
 ```
 
 
-```BASH
+```bash
 for i in 17 18; do
   dir=out.plate${i}
   echo $dir
@@ -148,7 +137,7 @@ done
 ```
 
 
-```BASH
+```bash
 \rm commands
 
 for p in 17 18 ; do 
@@ -168,7 +157,7 @@ commands_array_wrapper.bash --jobname individual --array_file commands --time 1-
 
 
 
-```BASH
+```bash
 \rm commands
 
 plates=$( ls -d ${PWD}/out.plate{17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
@@ -204,7 +193,7 @@ commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-
 
 
 
-```BASH
+```bash
 
 box_upload.bash out.plate*/{Viral_,Seropositivity}* out.1718/*
 
@@ -220,7 +209,7 @@ box_upload.bash out.plate*/{Viral_,Seropositivity}* out.1718/*
 Create subsets of files for VZV (HHV3) only
 
 
-```BASH
+```bash
 for f in out.1718/Multiplate_Peptide_Comparison-*csv ; do
 head -1 $f > tmp1.csv
 tail -n +2 $f | sort -t, -k1,1 >> tmp1.csv
