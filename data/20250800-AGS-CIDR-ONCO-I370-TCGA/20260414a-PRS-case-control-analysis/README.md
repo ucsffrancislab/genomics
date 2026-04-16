@@ -23,3 +23,18 @@ sbatch --job-name ccall ~/github/ucsffrancislab/edison_prs_case_control_analysis
 box_upload.bash $( find allcases-20260415/ -type f )
 ```
 
+
+```bash
+sbatch --job-name ccidhwt ~/github/ucsffrancislab/edison_prs_case_control_analysis/run_pipeline.sh \
+  --outdir idhwt_cases-20260415  --idh-subtype wt
+sbatch --job-name ccidhmt ~/github/ucsffrancislab/edison_prs_case_control_analysis/run_pipeline.sh \
+  --outdir idhmt_cases-20260415  --idh-subtype mt
+sbatch --job-name ccidhmtcodel ~/github/ucsffrancislab/edison_prs_case_control_analysis/run_pipeline.sh \
+  --outdir idhmt_codel-20260415  --idh-subtype mt --pq-subtype codel
+sbatch --job-name ccidhmtintact ~/github/ucsffrancislab/edison_prs_case_control_analysis/run_pipeline.sh \
+  --outdir idhmt_intact-20260415 --idh-subtype mt --pq-subtype intact
+
+
+box_upload.bash $( find idh*-20260415/ -type f )
+```
+
