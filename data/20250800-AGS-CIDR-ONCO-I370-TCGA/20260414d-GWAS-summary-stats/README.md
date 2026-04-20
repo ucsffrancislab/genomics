@@ -83,98 +83,27 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
  ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/run_pipeline.sh \
  --datasets-config ${PWD}/datasets.tsv \
  --outdir results-20260415/idhmt_intact --idh-subtype mt --pq-subtype intact
-
-
 ```
 
 
 
-
----
-
-
-##	20260330
-
 ```bash
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
- --job-name=all --ntasks=1 --cpus-per-task=64 --mem=490G \
- ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/run_pipeline.sh \
- --datasets-config ${PWD}/datasets.tsv \
- --r2-threshold 0.8 --outdir 20260330a-results/all_glioma 
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
- --time=14-0 --export=None \
- --job-name=all --ntasks=1 --cpus-per-task=64 --mem=490G \
- --wrap="python3 ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/scripts/09_known_loci.py \
-    --params 20260330a-results/all_glioma/logs/params.tsv \
-    --final-dir 20260330a-results/all_glioma/final \
-    --known-loci ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/config/known_glioma_loci.tsv \
-    --genome-build hg38 \
-    --outdir 20260330a-results/all_glioma/final/plots"
-
-box_upload.bash 20260330a-results/all_glioma/final/*tsv* 20260330a-results/all_glioma/final/plots/*
-
-
-
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
- --job-name=idhwt --ntasks=1 --cpus-per-task=16 --mem=120G \
- ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/run_pipeline.sh \
- --datasets-config ${PWD}/datasets.tsv \
- --r2-threshold 0.8 --outdir 20260330a-results/idhwt --idh-subtype wt 
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
- --job-name=idhmt --ntasks=1 --cpus-per-task=16 --mem=120G \
- ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/run_pipeline.sh \
- --datasets-config ${PWD}/datasets.tsv \
- --r2-threshold 0.8 --outdir 20260330a-results/idhmt --idh-subtype mt
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
- --job-name=idhmtcodel --ntasks=1 --cpus-per-task=16 --mem=120G \
- ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/run_pipeline.sh \
- --datasets-config ${PWD}/datasets.tsv \
- --r2-threshold 0.8 --outdir 20260330a-results/idhmt_codel --idh-subtype mt --pq-subtype codel 
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
- --job-name=idhmtintact --ntasks=1 --cpus-per-task=16 --mem=120G \
- ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/run_pipeline.sh \
- --datasets-config ${PWD}/datasets.tsv \
- --r2-threshold 0.8 --outdir 20260330a-results/idhmt_intact --idh-subtype mt --pq-subtype intact
-
-```
-
-
-```bash
-
-box_upload.bash 20260330a-results/id*/final/*{v,z} 20260330a-results/id*/final/plots/*
-
-
-box_upload.bash 20260330a-results/{idhmt_intact,idhmt,idhwt}/final/*{v,z} 20260330a-results/{idhmt_intact,idhmt,idhwt}/final/plots/*
-```
-
-
-
-
-
-
-
-
-
-
-
-
-```bash
-
-sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL \
+dir=results-20260415
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 \
  --job-name=cross --ntasks=1 --cpus-per-task=64 --mem=490G \
+ --output="${PWD}/${dir}/cross_subtype.$( date "+%Y%m%d%H%M%S%N" ).log" \
  --wrap="python3 ~/github/ucsffrancislab/Claude-Multi-Array-Glioma-GWAS-Meta-Analysis-Pipeline/scripts/10_cross_subtype.py \
-    --result-dirs 20260330a-results/all_glioma \
-                  20260330a-results/idhwt \
-                  20260330a-results/idhmt \
-                  20260330a-results/idhmt_intact \
-                  20260330a-results/idhmt_codel \
-    --outdir 20260330a-results/cross_subtype"
+    --result-dirs ${dir}/all_glioma \
+                  ${dir}/idhwt \
+                  ${dir}/idhmt \
+                  ${dir}/idhmt_intact \
+                  ${dir}/idhmt_codel \
+    --outdir ${dir}/cross_subtype"
 ```
 
 
+```bash
+
+box_upload.bash $( find results-20260415/ -type f -not -path \*/filtered_vcf/\* )
+
+```
