@@ -292,3 +292,57 @@ cat CIDR_case_covariates.20260303.csv | tr ',' '\t' > CIDR_case_covariates.20260
 
 
 
+
+
+
+##	20260420
+
+
+```
+request_for_genotypes_from_cidr_gwas_4-20-26hmh.csv
+request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.csv
+
+epic_v2_rs_list_4-20-26hmh_.txt
+```
+
+```bash
+grep -f <( tail -n +2 request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.csv ) /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/AGS_Mayo_Oncoarray_for_QC.fam | cut -d' ' -f1,2 > request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.20210226-AGS-Mayo-Oncoarray.AGS_Mayo_Oncoarray_for_QC.samples.txt
+
+grep -f <( tail -n +2 request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.csv ) /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC.fam | cut -d' ' -f1,2 > request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.20210302-AGS-illumina.AGS_illumina_for_QC.samples.txt
+
+grep -f <( tail -n +2 subjects_in_both_cidr_genotyping_and_methylation_projects_2026-02-13.tsv | cut -f1 ) /francislab/data1/raw/20250813-CIDR/CIDR.fam | cut -d' ' -f1,2 > subjects_in_both_cidr_genotyping_and_methylation_projects_2026-02-13.20250813-CIDR.CIDR.samples.txt
+
+```
+
+
+
+```bash
+
+module load plink
+plink --bfile /francislab/data1/raw/20210226-AGS-Mayo-Oncoarray/AGS_Mayo_Oncoarray_for_QC \
+      --keep request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.20210226-AGS-Mayo-Oncoarray.AGS_Mayo_Oncoarray_for_QC.samples.txt \
+      --extract epic_v2_rs_list_4-20-26hmh_.txt \
+      --recode tab \
+      --out ONCO_subset
+convert_to_csv.py ONCO_subset
+
+plink --bfile /francislab/data1/raw/20210302-AGS-illumina/AGS_illumina_for_QC \
+      --keep request_for_genotypes_from_previous_ags_gwas_4-20-26hmh.20210302-AGS-illumina.AGS_illumina_for_QC.samples.txt \
+      --extract epic_v2_rs_list_4-20-26hmh_.txt \
+      --recode tab \
+      --out I370_subset
+convert_to_csv.py I370_subset
+
+plink --bfile /francislab/data1/raw/20250813-CIDR/CIDR \
+      --keep subjects_in_both_cidr_genotyping_and_methylation_projects_2026-02-13.20250813-CIDR.CIDR.samples.txt \
+      --extract epic_v2_rs_list_4-20-26hmh_.txt \
+      --recode tab \
+      --out CIDR_subset
+convert_to_csv.py CIDR_subset
+
+```
+
+
+
+
+
