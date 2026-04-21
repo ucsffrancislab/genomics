@@ -79,16 +79,37 @@ cd $base
 
 
 
-So the SNP in question appears to be in the raw ONCO.
-It exists in the imputation of all 4. 
-However, the imputation R2 quality if below the 0.8 cutoff (0.52 and 0.59) in the data so was filtered out.
-Therefore the PGS scores were calculated without it for those 2 dataset.
-What to do?
-Recompute PGS scores with a lower threshold?
-Locally or on UMich?
-Redo everything else so this is clean and consistent?
+
+```bash
+output_dir="results-20260416"
+mkdir -p ${output_dir}
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None \
+ --job-name=mtconditioning --ntasks=1 --cpus-per-task=32 --mem=240G  \
+ --output="${output_dir}/pipeline.idhmt.log" \
+ ~/github/ucsffrancislab/Claude-ICVF-rs55705857-Conditioning/run_pipeline.sh \
+  --scores-dir ${PWD}/input/scored \
+  --vcf-hg19-dir ${PWD}/input/imputed \
+  --ld-ref /francislab/data1/refs/sources/fileserve.mrcieu.ac.uk/ld/EUR \
+  --pgs-catalog-dir /francislab/data1/refs/Imputation/PGSCatalog/hg19 \
+  --output-dir ${output_dir} --phenotype idhmt 
+
+sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=None \
+ --job-name=wtconditioning --ntasks=1 --cpus-per-task=32 --mem=240G  \
+ --output="${output_dir}/pipeline.idhwt.log" \
+ ~/github/ucsffrancislab/Claude-ICVF-rs55705857-Conditioning/run_pipeline.sh \
+  --scores-dir ${PWD}/input/scored \
+  --vcf-hg19-dir ${PWD}/input/imputed \
+  --ld-ref /francislab/data1/refs/sources/fileserve.mrcieu.ac.uk/ld/EUR \
+  --pgs-catalog-dir /francislab/data1/refs/Imputation/PGSCatalog/hg19 \
+  --output-dir ${output_dir} --phenotype idhwt 
+```
 
 
+```bash
 
+box_upload.bash $( find results-20260416/ -type f )
+
+```
 
 
