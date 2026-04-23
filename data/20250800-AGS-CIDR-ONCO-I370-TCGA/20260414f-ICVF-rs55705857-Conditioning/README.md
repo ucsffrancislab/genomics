@@ -110,6 +110,9 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 --export=N
 
 box_upload.bash $( find results-20260416/ -type f )
 
+box_upload.bash $( find results-20260416/ -type f -not -path \*/raw_pruned_scores/\* )
+
+
 ```
 
 
