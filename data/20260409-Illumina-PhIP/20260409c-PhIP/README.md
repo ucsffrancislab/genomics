@@ -79,110 +79,93 @@ WAIT UNTIL THEY COMPLETE
 
 ```bash
 
-box_upload.bash out.plate*/Zscores*csv out.plate*/seropositive*csv out.plate*/All* out.plate*/m*
+#box_upload.bash out.plate*/Zscores*csv out.plate*/seropositive*csv out.plate*/All* out.plate*/m*
+
+module load rclone
+rclone sync out.plate21 box:Francis\ _Lab_Share/20260409-Illumina-PhIP/20260409c-PhIP/out.plate21 \
+  --filter "+ {{^(Zscores|seropositive|All|m).*csv}}" --filter "- **"
+rclone sync out.plate22 box:Francis\ _Lab_Share/20260409-Illumina-PhIP/20260409c-PhIP/out.plate22 \
+  --filter "+ {{^(Zscores|seropositive|All|m).*csv}}" --filter "- **"
 
 ```
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-I think that these scripts internally check for common peptides and such
-Nevertheless
-
-
-
-```bash
-mkdir out.1718
-merge_all_combined_counts_files.py --int --de_nan --out out.1718/Plibs.csv out.plate{17,18}/counts/PLib*
-
-tail -n +2 out.1718/Plibs.csv | cut -d, -f1 | sort > out.1718/Plibs.id.csv
-sed -i '1iid' out.1718/Plibs.id.csv
-```
-
-
-```bash
-for i in 17 18; do
-  dir=out.plate${i}
-  echo $dir
-  cat ${dir}/Counts.normalized.subtracted.trim.csv | datamash transpose -t, > ${dir}/tmp1.csv
-  head -2 ${dir}/tmp1.csv > ${dir}/tmp2.csv
-  join --header -t, out.1718/Plibs.id.csv <( tail -n +3 ${dir}/tmp1.csv ) >> ${dir}/tmp2.csv
-  cat ${dir}/tmp2.csv | datamash transpose -t, > ${dir}/Counts.normalized.subtracted.trim.select-1718.csv
-  box_upload.bash ${dir}/Counts.normalized.subtracted.trim.select-1718.csv
-
-  head -2 ${dir}/Zscores.t.csv > ${dir}/Zscores.select-1718.t.csv
-  join --header -t, out.1718/Plibs.id.csv <( tail -n +3 ${dir}/Zscores.t.csv ) >> ${dir}/Zscores.select-1718.t.csv
-  cat ${dir}/Zscores.select-1718.t.csv | datamash transpose -t, > ${dir}/Zscores.select-1718.csv
-  box_upload.bash ${dir}/Zscores.select-1718.csv
-
-  head -2 ${dir}/Zscores.minimums.t.csv > ${dir}/Zscores.select-1718.minimums.t.csv
-  join --header -t, out.1718/Plibs.id.csv <( tail -n +3 ${dir}/Zscores.minimums.t.csv ) >> ${dir}/Zscores.select-1718.minimums.t.csv
-  cat ${dir}/Zscores.select-1718.minimums.t.csv | datamash transpose -t, > ${dir}/Zscores.select-1718.minimums.csv
-  box_upload.bash ${dir}/Zscores.select-1718.minimums.csv
-done
-```
-
+##	20260421
 
 ```bash
 \rm commands
 
-for p in 17 18 ; do 
+for datetype in $( cut -d, -f4 manifest.all.csv | sort | uniq | grep -Evs "^(type|Phage Library|input)$" ) ; do
+echo ${datatype}
+done
+
+
+for p in 21 22 ; do 
 plate=out.plate${p}
 manifest=${plate}/manifest.plate${p}.csv
 for z in 3.5 5 10 ; do 
-echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
-echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
-echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"glioma serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
-echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
-echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --zfilename ${plate}/Zscores.select-1718.csv
-echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --study PRN --type \"ALL maternal serum\" -a case -b control --sfilename ${plate}/seropositive.${z}.csv
+
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a case -b \"endemic control\" --zfilename ${plate}/Zscores.csv
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --zfilename ${plate}/Zscores.csv
+echo module load r\; Count_Viral_Tile_Hit_Fraction.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --zfilename ${plate}/Zscores.csv
+
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a case -b \"endemic control\" --zfilename ${plate}/Zscores.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --zfilename ${plate}/Zscores.csv
+echo module load r\; Case_Control_Z_Script.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --zfilename ${plate}/Zscores.csv
+
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a case -b \"endemic control\" --sfilename ${plate}/seropositive.${z}.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --sfilename ${plate}/seropositive.${z}.csv
+echo module load r\; Seropositivity_Comparison.R --zscore ${z} --manifest ${manifest} --output_dir ${plate} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --sfilename ${plate}/seropositive.${z}.csv
+
 done ; done >> commands
 
 commands_array_wrapper.bash --jobname individual --array_file commands --time 1-0 --threads 2 --mem 15G
 ```
 
+```bash
+#box_upload.bash out.plate2?/{Viral,Tile,Sero}*
+
+module load rclone
+rclone sync out.plate21 box:Francis\ _Lab_Share/20260409-Illumina-PhIP/20260409c-PhIP/out.plate21 \
+  --filter "+ {{^(Viral|Tile|Sero).*}}" --filter "- **"
+rclone sync out.plate22 box:Francis\ _Lab_Share/20260409-Illumina-PhIP/20260409c-PhIP/out.plate22 \
+  --filter "+ {{^(Viral|Tile|Sero).*}}" --filter "- **"
+
+```
+
+
 
 
 ```bash
 \rm commands
 
-plates=$( ls -d ${PWD}/out.plate{17,18} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
-
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts >> commands
-
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts >> commands
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts --sex M >> commands
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z 0 --type \"glioma serum\" -a case -b control --zfile_basename Counts.normalized.subtracted.trim.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --counts --sex F >> commands
+plates=$( ls -d ${PWD}/out.plate{21,22} 2>/dev/null | paste -sd, | sed 's/,/ -p /g' )
 
 for z in 3.5 5 10 ; do
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates} --sex F
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" -o ${PWD}/out.2122 -p ${plates} --zfile_basename Zscores.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"endemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates} --sex F
 
-echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control -o ${PWD}/out.1718 -p ${plates} --zfile_basename Zscores.select-1718.csv
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --study PRN --type \"ALL maternal serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1718 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates} --sex F
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" -o ${PWD}/out.2122 -p ${plates} --zfile_basename Zscores.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a case -b \"nonendemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates} --sex F
 
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates}
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --sex M
-echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --zfile_basename Zscores.select-1718.csv -o ${PWD}/out.1718 -p ${plates} --sex F
-
-echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control -o ${PWD}/out.1718 -p ${plates} --zfile_basename Zscores.select-1718.csv
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1718 -p ${plates}
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1718 -p ${plates} --sex M
-echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"glioma serum\" -a case -b control --sfile_basename seropositive.${z}.csv -o ${PWD}/out.1718 -p ${plates} --sex F
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_Peptide_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --zfile_basename Zscores.csv -o ${PWD}/out.2122 -p ${plates} --sex F
+echo module load r\; Multi_Plate_Case_Control_VirHitFrac_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" -o ${PWD}/out.2122 -p ${plates} --zfile_basename Zscores.csv
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates}
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates} --sex M
+echo module load r\; Multi_Plate_Case_Control_VirScan_Seropositivity_Regression.R -z ${z} --type \"pemphigus serum\" -a \"endemic control\" -b \"nonendemic control\" --sfile_basename seropositive.${z}.csv -o ${PWD}/out.2122 -p ${plates} --sex F
 
 done >> commands
 
@@ -191,42 +174,11 @@ commands_array_wrapper.bash --jobname MultiPlate --array_file commands --time 1-
 
 
 
-
-
 ```bash
+#box_upload.bash out.21222/*
 
-box_upload.bash out.plate*/{Viral_,Seropositivity}* out.1718/*
+module load rclone
+rclone sync out.2122 box:Francis\ _Lab_Share/20260409-Illumina-PhIP/20260409c-PhIP/out.2122
 
 ```
-
-
-
-
-
-##	202050902
-
-
-Create subsets of files for VZV (HHV3) only
-
-
-```bash
-for f in out.1718/Multiplate_Peptide_Comparison-*csv ; do
-head -1 $f > tmp1.csv
-tail -n +2 $f | sort -t, -k1,1 >> tmp1.csv
-join --header -t, <( awk -F, '(NR==1 || $2=="Human herpesvirus 3")' /francislab/data1/refs/PhIP-Seq/VirScan/VIR3_clean.id_species.uniq.csv ) tmp1.csv > tmp2.csv
-head -1 tmp2.csv > ${f%.csv}.VZV.csv
-tail -n +2 tmp2.csv | awk -F, '($8!="NA")' | sort -t, -k8n,8 >> ${f%.csv}.VZV.csv
-tail -n +2 tmp2.csv | awk -F, '($8=="NA")' >> ${f%.csv}.VZV.csv
-done
-
-```
-
-
-
-
-
-
-By_virus_plotter.R --manifest out.plate17/manifest.plate17.csv --virus "Human herpesvirus 3" -a case -b control --zfilename out.plate17/Zscores.select-1718.csv --public_eps_filename out.plate17/All.public_epitope_annotations.Zscores.csv
-
-
 
