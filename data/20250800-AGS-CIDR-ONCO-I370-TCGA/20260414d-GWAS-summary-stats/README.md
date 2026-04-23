@@ -104,6 +104,11 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 \
 
 ```bash
 
-box_upload.bash $( find results-20260415/ -type f -not -path \*/filtered_vcf/\* )
+box_upload.bash $( find results-20260415/ -type f -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid )
+
+find results-20260415/ -type f -path \*/final/\* -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid -not -path \*test_run\*/\* -ls | awk '{print $7}' | datamash sum 1
+
+box_upload.bash $( find results-20260415/ -type f -path \*/final/\* -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid -not -path \*test_run\*/\* -ls )
+
 
 ```
