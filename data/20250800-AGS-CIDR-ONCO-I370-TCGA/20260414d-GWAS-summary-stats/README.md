@@ -104,11 +104,20 @@ sbatch --mail-user=$(tail -1 ~/.forward) --mail-type=FAIL --time=14-0 \
 
 ```bash
 
-box_upload.bash $( find results-20260415/ -type f -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid )
+#box_upload.bash $( find results-20260415/ -type f -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid )
 
 find results-20260415/ -type f -path \*/final/\* -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid -not -path \*test_run\*/\* -ls | awk '{print $7}' | datamash sum 1
 
-box_upload.bash $( find results-20260415/ -type f -path \*/final/\* -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid -not -path \*test_run\*/\* -ls )
+#box_upload.bash $( find results-20260415/ -type f -path \*/final/\* -not -path \*/filtered_vcf/\* -not -path \*meta_result_1.tbl -not -path \*.pheno.glm.logistic.hybrid -not -path \*test_run\*/\*  )
 
+
+
+module load rclone
+
+rclone sync results-20260415 box:Francis\ _Lab_Share/20250800-AGS-CIDR-ONCO-I370-TCGA/20260414d-GWAS-summary-stats/results-20260415 \
+  --include "**/final/**" --include "**/logs/**" --include "**/phenotypes/**" --include "**/metal/**"
 
 ```
+
+
+
